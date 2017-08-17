@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<doc version="3">
+    <member name="xxxx" type="Class" namespace="xxx">
+        <section>
+            <summary>Summary.</summary>
+        </section>
+        <member name="xxx" type="Method">
+            <section>
+                <signature><![CDATA[xxx(yyy)]]></signature>
+                <summary>xxx.</summary>
+                <param name="yyy">The playable to retrieve the Animation Clip from.</param>
+            </section>
+        </member>
+    </member>
+</doc>
