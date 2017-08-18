@@ -1,12 +1,12 @@
 # unitypackage-template
 
-## Unity Package Template
+## Synopsis
 
-Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecenas sagittis feugiat luctus a mattis nulla, turpis nam sagittis semper, ipsum mollis sodales wisi faucibus mauris, suspendisse in leo nostra arcu. Ante integer tincidunt ut condimentum sem praesent, convallis erat adipiscing, maecenas purus fringilla, eu quam eu, at diam laoreet eu sed morbi. In sed aenean vitae, aliquam consectetuer leo ipsum, sollicitudin sit facilisis nibh id, consectetuer purus pede non. 
+The purpose of this package template is to provide data structure, samples and guidelines for developping and publishing new packages to developers of new packages for **UPM**.
 
 ## Package structure
 
-```bash
+```none
 <root>
   ├── package.json
   ├── README.md
@@ -32,7 +32,7 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
 
 ### Note
 
-* Package structure will follow special folders from Unity, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details
+* Package structure will follow special folders from **Unity**, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details
 
 ## Developping your package
 
@@ -54,7 +54,7 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
 
 1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
 
-    ```cmd
+    ```none
     cd <YourProjectPath>
     git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
     ```
@@ -90,7 +90,28 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
 
 1. Update **README.md**
 
-    * ***[TODO]***
+    README.md file should contain following section:
+
+    ### **Synopsis**
+    At the top of the file there should be a short introduction and/ or overview that explains what the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
+
+    ### **Code Example**
+    Show what the library does as concisely as possible, developers should be able to figure out how your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+
+    ### **Motivation**
+    A short description of the motivation behind the creation and maintenance of the project. This should explain why the project exists.
+
+    ### **Installation**
+    Provide code examples and explanations of how to get the project.
+
+    ### **API Reference**
+    Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+
+    ### **Tests**
+    Describe and show how to run the tests with code examples.
+
+    ### **Contributors**
+    Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
 
 1. Update **LICENSE.md**
 
@@ -102,7 +123,7 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
 
 ## Sharing your package
 
-### If you want to share your project with other developers:
+### If you want to share your project with other developers
 
 On other developer's machine:
 
@@ -113,20 +134,20 @@ On other developer's machine:
 
 1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
 
-    ```cmd
+    ```none
     cd <YourProjectPath>
     git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
     ```
 1. That's it!
 
-### If you want to dry-run your package with **upm**
+### If you want to dry-run your package with **UPM**
 
-Sed lacinia elit, ullamcorper aliquam proin auctor, a ullamcorper, ultricies aliquam sed, sed mollis maecenas justo. At viverra, sit id lacus vel curabitur vestibulum, tristique congue eu magna nulla sociis eget, orci dolor. Etiam sem nisl proin in tempor, aliquam ut massa, erat erat quam vel ornare at, justo ac in integer neque condimentum et. Pellentesque enim nulla, id diam, ad nullam pellentesque in, scelerisque leo.
+*Will come soon*
 
 ## Publishing your package
 
-Sed lacinia elit, ullamcorper aliquam proin auctor, a ullamcorper, ultricies aliquam sed, sed mollis maecenas justo. At viverra, sit id lacus vel curabitur vestibulum, tristique congue eu magna nulla sociis eget, orci dolor. Etiam sem nisl proin in tempor, aliquam ut massa, erat erat quam vel ornare at, justo ac in integer neque condimentum et. Pellentesque enim nulla, id diam, ad nullam pellentesque in, scelerisque leo.
+*Will come soon*
 
 ### If you want to publish your package on **staging area**
 
-Sed lacinia elit, ullamcorper aliquam proin auctor, a ullamcorper, ultricies aliquam sed, sed mollis maecenas justo. At viverra, sit id lacus vel curabitur vestibulum, tristique congue eu magna nulla sociis eget, orci dolor. Etiam sem nisl proin in tempor, aliquam ut massa, erat erat quam vel ornare at, justo ac in integer neque condimentum et. Pellentesque enim nulla, id diam, ad nullam pellentesque in, scelerisque leo.
+*Will come soon*
