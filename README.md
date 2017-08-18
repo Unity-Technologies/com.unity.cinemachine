@@ -1,6 +1,10 @@
 # unitypackage-template
-Unity Package Template
 
+### Unity Package Template
+
+Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecenas sagittis feugiat luctus a mattis nulla, turpis nam sagittis semper, ipsum mollis sodales wisi faucibus mauris, suspendisse in leo nostra arcu. Ante integer tincidunt ut condimentum sem praesent, convallis erat adipiscing, maecenas purus fringilla, eu quam eu, at diam laoreet eu sed morbi. In sed aenean vitae, aliquam consectetuer leo ipsum, sollicitudin sit facilisis nibh id, consectetuer purus pede non. 
+
+---
 ## Package structure
 
 ```
@@ -10,78 +14,120 @@ Unity Package Template
   ├── CHANGELOG.md
   ├── LICENSE.md
   ├── QAReport.txt
-  ├── PlayModeSample.cs
-  ├── Tests
-  │   └── PlayModeSampleTest.cs
-  ├── Editor
-  │   ├── EditorSample.cs
-  │   └── Tests
-  │       └── EditorSampleTest.cs
+  ├── Samples
+  │   ├── PlayModeExample.cs
+  │   ├── Tests
+  │   │   └── PlayModeExampleTest.cs
+  │   └── Editor
+  │       ├── EditorExample.cs
+  │       └── Tests
+  │           └── EditorExampleTest.cs
   └── Documentation
       ├── ApiDocs
-      │   ├── EditorSample.mem.xml
-      │   └── PlayModeSample.mem.xml
+      │   ├── EditorExample.mem.xml
+      │   └── PlayModeExample.mem.xml
       └── FeatureDocs
-          ├── EditorSample.md
-          └── PlayModeSample.md
+          ├── EditorExample.md
+          └── PlayModeExample.md
 ```
 
-## Step-by-Step development guide
+### Note:
+* Package structure will follow special folders from Unity, see https://docs.unity3d.com/Manual/SpecialFolders.html for more details
 
-1. Fork `unitypackage-template` git repo
-   * Via GitHub: ***[Explain how]***
-   * Via Git: ***[Explain how]***
-   * Naming convention for repo: `unitypackage-[package name]`
-     (Example: `unitypackage-terrain-builder`)
+---
+## Developping your package
 
-2. Start Unity, create an empty project
+### Step-by-Step development guide
 
-3. Thru console, go to Assets folder, clone repo locally
-```
-cd <YourProjectPath>
-git clone git://..... Assets
-cd Assets
-git status
-```
+1. Fork `unitypackage-template` repository
+
+    Forking a repository is a simple two-step process. On GitHub, navigate to the [UnityTech/unitypackage-template](https://github.com/UnityTech/unitypackage-template) repository.
+    Fork button is at the top-right corner of the page, click **Fork**.
+    That's it! Now, you have a fork of the original `UnityTech/unitypackage-template` repository.
+
+    Naming convention for your repository: `unitypackage-[your package name]`
+    (Example: `unitypackage-terrain-builder`)
+
+2. Start **Unity**, create a local empty project. 
+
+    Naming convention proposed for your project: `unitypackage-[your package name]-project`
+    (Example: `unitypackage-terrain-builder-project`)
+
+3. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
+
+    ```
+    cd <YourProjectPath>
+    git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
+    ```
+
 4. Update **package.json** file
 
    * Required fields:
-        * `"name"` is the package name, it should follow this naming convention: `"com.unity3d.[package name]"`
+        * `"name"` is the package name, it should follow this naming convention: `"com.unity3d.[your package name]"`
         (Example: `"com.unity3d.terrain-builder"`)
-        * `"version"` is the package version, it **must** follow this versioning convention: `x.y.z` where:
-            * `x` is the **major** version: 
-                If the package implement new stuff that is likely to break the existing API, you need to bump x because it is a major version.
-            * `y` is the **minor** version: 
-                If you are implementing minor features in a backward-compatible way, or fixing bugs within the development cycle, then you will bump y because this is what’s called a minor version.
-            * `z` is the **patch** version: 
-                When fixing bugs based on a package that was part of an official unity release. We should bump z.  Patch bump should be reserved by sustainable engineering.
+        * `"version"` is the package version `"X.Y.Z"`, your project **must** adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-       * `"unity"` is the Unity Version your package is compatible with. (Example: `"2017.3"`)
-    
-    * Option fields:
+            Follow this guideline:
 
-        * ***[Check with Packam Team for optional fields]***
+            If a change introduce... | Number to increment
+            --- | ---
+            a bug fix | pacth version (X.Y.**Z**)
+            a new feature | minor version (X.**Y**.Z)
+            a breaking change | major version (**X**.Y.Z)
+
+            Only increment the version number if necessary.
+
+        * `"unity"` is the Unity Version your package is compatible with. (Example: `"2017.3"`)
+        
+        * `"description"` is the brief description of your package
+
+    * Optional fields:
+
+        * `"dependencies"` is ***[TODO]***
+
+        * `"keywords"` is ***[TODO]***
+
+        * `"category"` is ***[TODO]***
 
 5. Update **README.md**
 
-    * ***[Explain what needs to be modified]***
+    *  ***[TODO]***
 
 6. Update **LICENSE.md**
 
-    * ***[Explain what needs to be modified]***
+    *  ***[TODO]***
 
 7. Update **CHANGELOG.md**
 
-    * ***[Explain what needs to be modified]***
+    *  Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-8. If you want to share your project with other developers:
+---
+## Sharing your package
 
-    * ***[Explain how]***
+### If you want to share your project with other developers:
 
-9. If you want to dry-run your package with **upm**:
+On other developer's machine:
 
-    * ***[Explain how]***
+2. Start **Unity**, create a local empty project. 
 
-10. If you want to publish your package on **staging area**:
+    Naming convention proposed for your project: `unitypackage-[your package name]-project`
+    (Example: `unitypackage-terrain-builder-project`)
 
-    * ***[Explain how]***
+3. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
+
+    ```
+    cd <YourProjectPath>
+    git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
+    ```
+4. That's it!
+
+### If you want to dry-run your package with **upm**:
+
+---
+## Publishing your package
+
+### If you want to publish your package on **staging area**:
+
+**Coming soon**
+
+Sed lacinia elit, ullamcorper aliquam proin auctor, a ullamcorper, ultricies aliquam sed, sed mollis maecenas justo. At viverra, sit id lacus vel curabitur vestibulum, tristique congue eu magna nulla sociis eget, orci dolor. Etiam sem nisl proin in tempor, aliquam ut massa, erat erat quam vel ornare at, justo ac in integer neque condimentum et. Pellentesque enim nulla, id diam, ad nullam pellentesque in, scelerisque leo.
