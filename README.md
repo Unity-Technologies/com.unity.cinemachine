@@ -1,13 +1,12 @@
 # unitypackage-template
 
-### Unity Package Template
+## Unity Package Template
 
 Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecenas sagittis feugiat luctus a mattis nulla, turpis nam sagittis semper, ipsum mollis sodales wisi faucibus mauris, suspendisse in leo nostra arcu. Ante integer tincidunt ut condimentum sem praesent, convallis erat adipiscing, maecenas purus fringilla, eu quam eu, at diam laoreet eu sed morbi. In sed aenean vitae, aliquam consectetuer leo ipsum, sollicitudin sit facilisis nibh id, consectetuer purus pede non. 
 
----
 ## Package structure
 
-```
+```bash
 <root>
   ├── package.json
   ├── README.md
@@ -31,10 +30,10 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
           └── PlayModeExample.md
 ```
 
-### Note:
-* Package structure will follow special folders from Unity, see https://docs.unity3d.com/Manual/SpecialFolders.html for more details
+### Note
 
----
+* Package structure will follow special folders from Unity, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details
+
 ## Developping your package
 
 ### Step-by-Step development guide
@@ -48,21 +47,21 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
     Naming convention for your repository: `unitypackage-[your package name]`
     (Example: `unitypackage-terrain-builder`)
 
-2. Start **Unity**, create a local empty project. 
+1. Start **Unity**, create a local empty project. 
 
     Naming convention proposed for your project: `unitypackage-[your package name]-project`
     (Example: `unitypackage-terrain-builder-project`)
 
-3. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
+1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
 
-    ```
+    ```cmd
     cd <YourProjectPath>
     git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
     ```
 
-4. Update **package.json** file
+1. Update **package.json** file
 
-   * Required fields:
+    * Required fields:
         * `"name"` is the package name, it should follow this naming convention: `"com.unity3d.[your package name]"`
         (Example: `"com.unity3d.terrain-builder"`)
         * `"version"` is the package version `"X.Y.Z"`, your project **must** adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
@@ -78,7 +77,7 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
             Only increment the version number if necessary.
 
         * `"unity"` is the Unity Version your package is compatible with. (Example: `"2017.3"`)
-        
+
         * `"description"` is the brief description of your package
 
     * Optional fields:
@@ -89,45 +88,45 @@ Lorem ipsum dolor sit amet, suspendisse porttitor erat nunc habitasse id, maecen
 
         * `"category"` is ***[TODO]***
 
-5. Update **README.md**
+1. Update **README.md**
 
-    *  ***[TODO]***
+    * ***[TODO]***
 
-6. Update **LICENSE.md**
+1. Update **LICENSE.md**
 
-    *  ***[TODO]***
+    * ***[TODO]***
 
-7. Update **CHANGELOG.md**
+1. Update **CHANGELOG.md**
 
-    *  Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+    * Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
----
 ## Sharing your package
 
 ### If you want to share your project with other developers:
 
 On other developer's machine:
 
-2. Start **Unity**, create a local empty project. 
+1. Start **Unity**, create a local empty project. 
 
     Naming convention proposed for your project: `unitypackage-[your package name]-project`
     (Example: `unitypackage-terrain-builder-project`)
 
-3. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
+1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
 
-    ```
+    ```cmd
     cd <YourProjectPath>
     git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
     ```
-4. That's it!
+1. That's it!
 
-### If you want to dry-run your package with **upm**:
+### If you want to dry-run your package with **upm**
 
----
+Sed lacinia elit, ullamcorper aliquam proin auctor, a ullamcorper, ultricies aliquam sed, sed mollis maecenas justo. At viverra, sit id lacus vel curabitur vestibulum, tristique congue eu magna nulla sociis eget, orci dolor. Etiam sem nisl proin in tempor, aliquam ut massa, erat erat quam vel ornare at, justo ac in integer neque condimentum et. Pellentesque enim nulla, id diam, ad nullam pellentesque in, scelerisque leo.
+
 ## Publishing your package
 
-### If you want to publish your package on **staging area**:
+Sed lacinia elit, ullamcorper aliquam proin auctor, a ullamcorper, ultricies aliquam sed, sed mollis maecenas justo. At viverra, sit id lacus vel curabitur vestibulum, tristique congue eu magna nulla sociis eget, orci dolor. Etiam sem nisl proin in tempor, aliquam ut massa, erat erat quam vel ornare at, justo ac in integer neque condimentum et. Pellentesque enim nulla, id diam, ad nullam pellentesque in, scelerisque leo.
 
-**Coming soon**
+### If you want to publish your package on **staging area**
 
 Sed lacinia elit, ullamcorper aliquam proin auctor, a ullamcorper, ultricies aliquam sed, sed mollis maecenas justo. At viverra, sit id lacus vel curabitur vestibulum, tristique congue eu magna nulla sociis eget, orci dolor. Etiam sem nisl proin in tempor, aliquam ut massa, erat erat quam vel ornare at, justo ac in integer neque condimentum et. Pellentesque enim nulla, id diam, ad nullam pellentesque in, scelerisque leo.
