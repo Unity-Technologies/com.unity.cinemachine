@@ -95,13 +95,10 @@ The purpose of this package template is to provide data structure, samples and g
     ### **Synopsis**
     At the top of the file there should be a short introduction and/ or overview that explains what the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
 
-    ### **Code Example**
+    ### **Code Example** *(optional)*
     Show what the library does as concisely as possible, developers should be able to figure out how your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
 
-    ### **Motivation**
-    A short description of the motivation behind the creation and maintenance of the project. This should explain why the project exists.
-
-    ### **Installation**
+    ### **Installation** *(optional)*
     Provide code examples and explanations of how to get the project.
 
     ### **API Reference**
@@ -110,12 +107,12 @@ The purpose of this package template is to provide data structure, samples and g
     ### **Tests**
     Describe and show how to run the tests with code examples.
 
-    ### **Contributors**
+    ### **Contributors** *(optional)*
     Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
 
 1. Update **LICENSE.md**
 
-    * ***[TODO]***
+    * Public repositories on GitHub are often used to share open source software. For your repository to truly be open source, you'll need to license it so that others are free to use, change, and distribute the software. For mor detail on the right licence to use see [Choose a Licence](https://choosealicense.com/)
 
 1. Update **CHANGELOG.md**
 
