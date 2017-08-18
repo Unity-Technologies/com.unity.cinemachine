@@ -110,10 +110,6 @@ The purpose of this package template is to provide data structure, samples and g
     ### **Contributors** *(optional)*
     Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
 
-1. Update **LICENSE.md**
-
-    * Public repositories on GitHub are often used to share open source software. For your repository to truly be open source, you'll need to license it so that others are free to use, change, and distribute the software. For mor detail on the right licence to use see [Choose a Licence](https://choosealicense.com/)
-
 1. Update **CHANGELOG.md**
 
     * Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
