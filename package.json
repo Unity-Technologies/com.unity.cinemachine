@@ -1,0 +1,10 @@
+{
+	"name": "com.unity3d.unitypackage-[your package name]",
+	"version": "0.0.1",
+	"unity": "2017.3",
+	"description": "Your description",
+	"keywords": ["Your", "key", "words"],
+	"category": "Your category",
+	"dependencies": {
+	}
+}
