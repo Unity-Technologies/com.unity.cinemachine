@@ -2,7 +2,7 @@
 
 ## Synopsis
 
-The purpose of this package template is to provide data structure, samples and guidelines for developping and publishing new packages to developers of new packages for **UPM**.
+The purpose of this package template is to provide data structure, samples and guidelines for developing and publishing new packages to developers of new packages for the **Unity Package Manager (UPM)**.
 
 ## Package structure
 
@@ -13,14 +13,16 @@ The purpose of this package template is to provide data structure, samples and g
   ├── CHANGELOG.md
   ├── LICENSE.md
   ├── QAReport.txt
+  ├── Editor
+  │   ├── EditorExample.cs
+  │   └── Tests
+  │       └── EditorExampleTest.cs
+  ├── Runtime
+  │   ├── RuntimeExample.cs
+  │   └── Tests
+  │       └── RuntimeExampleTest.cs
   ├── Samples
-  │   ├── PlayModeExample.cs
-  │   ├── Tests
-  │   │   └── PlayModeExampleTest.cs
-  │   └── Editor
-  │       ├── EditorExample.cs
-  │       └── Tests
-  │           └── EditorExampleTest.cs
+  │   └─── SampleExample.cs
   └── Documentation
       ├── ApiDocs
       │   ├── EditorExample.mem.xml
@@ -34,37 +36,36 @@ The purpose of this package template is to provide data structure, samples and g
 
 * Package structure will follow special folders from **Unity**, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details
 
-## Developping your package
+## Developing your package
+Package development works best within the Unity Editor.  Here's out to set that up:
 
-### Step-by-Step development guide
-
-1. Fork `unitypackage-template` repository
+1. Fork the `unitypackage-template` repository
 
     Forking a repository is a simple two-step process. On GitHub, navigate to the [UnityTech/unitypackage-template](https://github.com/UnityTech/unitypackage-template) repository.
-    Fork button is at the top-right corner of the page, click **Fork**.
-    That's it! Now, you have a fork of the original `UnityTech/unitypackage-template` repository.
+    Click on the **Fork** button at the top-right corner of the page, and follow the instructions.
+    That's it! You now have your own copy (fork) of the original `UnityTech/unitypackage-template` repository you can use to develop your package.
 
     Naming convention for your repository: `unitypackage-[your package name]`
     (Example: `unitypackage-terrain-builder`)
 
-1. Start **Unity**, create a local empty project. 
+1. Start **Unity**, create a local empty project.
 
     Naming convention proposed for your project: `unitypackage-[your package name]-project`
     (Example: `unitypackage-terrain-builder-project`)
 
-1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
+1. In a console (or terminal) application, go to the newly created project folder, then clone your newly forked repository into the packages directory.
 
     ```none
-    cd <YourProjectPath>
-    git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
+    cd <YourProjectPath>/packages
+    git clone git@github.com:UnityTech/unitypackage-[your package name].git [your package name]
     ```
 
-1. Update **package.json** file
+1. Fill in your package information in file **package.json**
 
     * Required fields:
-        * `"name"` is the package name, it should follow this naming convention: `"com.unity3d.[your package name]"`
+        * `"name"`: Package name, it should follow this naming convention: `"com.unity3d.[your package name]"`
         (Example: `"com.unity3d.terrain-builder"`)
-        * `"version"` is the package version `"X.Y.Z"`, your project **must** adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+        * `"version"`: Package version `"X.Y.Z"`, your project **must** adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
             Follow this guideline:
 
@@ -76,39 +77,37 @@ The purpose of this package template is to provide data structure, samples and g
 
             Only increment the version number if necessary.
 
-        * `"unity"` is the Unity Version your package is compatible with. (Example: `"2017.3"`)
+        * `"unity"`: Unity Version your package is compatible with. (Example: `"2017.3"`)
 
-        * `"description"` is the brief description of your package
+        * `"description"`: Description of your package, which will appear in the Package Manager UI.
 
     * Optional fields:
 
-        * `"dependencies"` is ***[TODO]***
+        * `"dependencies"`: List of package this package depends on.  All dependencies will also be downloaded and loaded in a project, alongside your package.  Here's an example:
+        ```
+        dependencies: {
+          "com.unity.ads": "1.0.0"
+          "com.unity.analytics": "2.0.0"
+        }
+        ```
 
-        * `"keywords"` is ***[TODO]***
+        * `"keywords"`: List of words that will be indexed by the package manager search engine to facilitate discovery of the package.
 
-        * `"category"` is ***[TODO]***
+        * `"category"`: List of Unity Defined categories used for browsing and filtering (**In Development**)
 
 1. Update **README.md**
 
-    README.md file should contain following section:
+    The README.md file should contain following section:
 
     ### **Synopsis**
-    At the top of the file there should be a short introduction and/ or overview that explains what the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
+    At the top of the file there should be a short introduction and/ or overview that explains what the project is. This description should match the descriptions added in package.json.
 
     ### **Code Example** *(optional)*
-    Show what the library does as concisely as possible, developers should be able to figure out how your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
-
-    ### **Installation** *(optional)*
-    Provide code examples and explanations of how to get the project.
-
-    ### **API Reference**
-    Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+    Show what the package does as concisely as possible, developers should be able to figure out how your package solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
 
     ### **Tests**
     Describe and show how to run the tests with code examples.
 
-    ### **Contributors** *(optional)*
-    Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
 
 1. Update **CHANGELOG.md**
 
@@ -116,31 +115,50 @@ The purpose of this package template is to provide data structure, samples and g
 
 ## Sharing your package
 
-### If you want to share your project with other developers
+If you want to share your project with other developers, steps are similar to what's done above.  On the other developer's machine:
 
-On other developer's machine:
-
-1. Start **Unity**, create a local empty project. 
+1. Start **Unity**, create a local empty project.
 
     Naming convention proposed for your project: `unitypackage-[your package name]-project`
     (Example: `unitypackage-terrain-builder-project`)
 
-1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository
+1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository in the packages directory
 
     ```none
-    cd <YourProjectPath>
-    git clone git@github.com:UnityTech/unitypackage-[your package name].git Assets
+    cd <YourProjectPath>/packages
+    git clone git@github.com:UnityTech/unitypackage-[your package name].git [your-package-name]
     ```
-1. That's it!
 
-### If you want to dry-run your package with **UPM**
 
-*Will come soon*
+## Dry-Running your package with **UPM**
+
+*Coming soon!*
 
 ## Publishing your package
 
-*Will come soon*
+There are a few steps to publishing your package so it can be include as part of the editor's package manifest, and downloaded by the editor.
 
-### If you want to publish your package on **staging area**
+1. Publishing your changes to the package manager's **staging** repository.
 
-*Will come soon*
+    The staging repository is monitored by QA and release management, and is where package validation will take place before it is accepted in production.  To publish to staging, follow the following steps:
+      * Join the "devs-packman" channel on Slack, and request a staging **USERNAME** and **API_KEY**.
+      * [Install NodeJs](https://nodejs.org/en/download/), so you can have access to **npm** (Node Package Manager).
+      * If developing on Windows, [install Curl](https://curl.haxx.se/download.html).  Curl already comes with Mac.
+      * Setup your credentions for **npm** by running the following command line from the root folder of your package.
+        ```
+        curl -u<USERNAME>@unity:<API_KEY> https://staging-packages.unity.com/auth > .npmrc
+        ```
+
+      * Before publishing, check the following:
+          * Your package.json file is filled out correctly.
+          * Your package contains all necessary editor and runtime tests.
+          * QA has tested the package and filled out the QA Report. (**In Development**)
+          * You have filled out the changelog to reflect changes to your package.
+          * You have fleshed out the API and Feature documentation in the `Documentation` folder.
+      * You are now ready to publish your package to staging with the following command line, from the root folder of your folder:
+      ```none
+      npm publish```
+
+1. Inform the Release Management Team that your package is ready for publishing. (**In Development**).
+
+1. Release Management will inform you of changes required before the package is accepted in production.
