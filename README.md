@@ -37,7 +37,7 @@ The purpose of this package template is to provide data structure, samples and g
 * Package structure will follow special folders from **Unity**, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details
 
 ## Developing your package
-Package development works best within the Unity Editor.  Here's out to set that up:
+Package development works best within the Unity Editor.  Here's how to set that up:
 
 1. Fork the `unitypackage-template` repository
 
@@ -59,6 +59,8 @@ Package development works best within the Unity Editor.  Here's out to set that 
     cd <YourProjectPath>/packages
     git clone git@github.com:UnityTech/unitypackage-[your package name].git [your package name]
     ```
+
+1. Turn on package support in the editor (*Internal Feature*).  From the **Project** window's right hang menu, enable `DEVELOPER`->`Show Packages in Project Window` (*only available in developer builds*).  You should now see your package in the Project Window, along with all other available packages for your project.
 
 1. Fill in your package information in file **package.json**
 
@@ -83,7 +85,7 @@ Package development works best within the Unity Editor.  Here's out to set that 
 
     * Optional fields:
 
-        * `"dependencies"`: List of package this package depends on.  All dependencies will also be downloaded and loaded in a project, alongside your package.  Here's an example:
+        * `"dependencies"`: List of packages this package depends on.  All dependencies will also be downloaded and loaded in a project, alongside your package.  Here's an example:
         ```
         dependencies: {
           "com.unity.ads": "1.0.0"
@@ -157,7 +159,8 @@ There are a few steps to publishing your package so it can be include as part of
           * You have fleshed out the API and Feature documentation in the `Documentation` folder.
       * You are now ready to publish your package to staging with the following command line, from the root folder of your folder:
       ```none
-      npm publish```
+      npm publish
+      ```
 
 1. Inform the Release Management Team that your package is ready for publishing. (**In Development**).
 
