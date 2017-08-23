@@ -8,7 +8,7 @@
             <section>
                 <signature><![CDATA[xxx(yyy)]]></signature>
                 <summary>xxx.</summary>
-                <param name="yyy">The playable to retrieve the Animation Clip from.</param>
+                <param name="yyy">yyy.</param>
             </section>
         </member>
     </member>
