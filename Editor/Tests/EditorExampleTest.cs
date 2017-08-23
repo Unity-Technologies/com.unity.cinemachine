@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
 
-public class EditorSampleTest {
+public class EditorExampleTest {
 
 	[Test]
 	public void EditorSampleTestSimplePasses() {
