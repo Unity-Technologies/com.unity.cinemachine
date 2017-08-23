@@ -1,5 +1,5 @@
 {
-	"name": "com.unity3d.unitypackage-[your package name]",
+	"name": "com.unity.[your package name]",
 	"version": "0.1.0",
 	"unity": "2017.3",
 	"description": "Your description, which will show up in the Package Manager UI",
