@@ -65,8 +65,8 @@ Package development works best within the Unity Editor.  Here's how to set that 
 1. Fill in your package information in file **package.json**
 
     * Required fields:
-        * `"name"`: Package name, it should follow this naming convention: `"com.unity3d.[your package name]"`
-        (Example: `"com.unity3d.terrain-builder"`)
+        * `"name"`: Package name, it should follow this naming convention: `"com.unity.[your package name]"`
+        (Example: `"com.unity.terrain-builder"`)
         * `"version"`: Package version `"X.Y.Z"`, your project **must** adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
             Follow this guideline:
@@ -95,7 +95,7 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
         * `"keywords"`: List of words that will be indexed by the package manager search engine to facilitate discovery of the package.
 
-        * `"category"`: List of Unity Defined categories used for browsing and filtering (**In Development**)
+        * `"category"`: List of Unity defined categories used for browsing and filtering (**In Development**)
 
 1. Update **README.md**
 
