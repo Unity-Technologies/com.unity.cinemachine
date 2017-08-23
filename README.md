@@ -26,10 +26,10 @@ The purpose of this package template is to provide data structure, samples and g
   └── Documentation
       ├── ApiDocs
       │   ├── EditorExample.mem.xml
-      │   └── PlayModeExample.mem.xml
+      │   └── RuntimeExample.mem.xml
       └── FeatureDocs
           ├── EditorExample.md
-          └── PlayModeExample.md
+          └── RuntimeExample.md
 ```
 
 ### Note
