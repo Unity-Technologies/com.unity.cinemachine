@@ -1,2 +1,2 @@
-# PlayMode Example Feature
-Feature documentation for `PlayModeExample` class
+# Runtime Example Feature
+Feature documentation for `RuntimeExample` class
