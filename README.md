@@ -60,7 +60,7 @@ Package development works best within the Unity Editor.  Here's how to set that 
     git clone git@github.com:UnityTech/unitypackage-[your package name].git [your package name]
     ```
 
-1. Turn on package support in the editor (*Internal Feature*).  From the **Project** window's right hang menu, enable `DEVELOPER`->`Show Packages in Project Window` (*only available in developer builds*).  You should now see your package in the Project Window, along with all other available packages for your project.
+1. Enable package support in the editor (*Internal Feature*).  From the **Project** window's right hang menu, enable `DEVELOPER`->`Show Packages in Project Window` (*only available in developer builds*).  You should now see your package in the Project Window, along with all other available packages for your project.
 
 1. Fill in your package information in file **package.json**
 
