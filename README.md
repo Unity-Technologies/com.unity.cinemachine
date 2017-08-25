@@ -4,7 +4,7 @@ The purpose of this package template is to provide data structure, samples and g
 
 This is the first step of many towards a fully fleshed out automated package publishing experience within Unity, and in that sense, this package development starter kit presents but a fraction of the creation, edition, validation and publishing tools we will end up with.
 
-We hope you enjoy your experience, you can use ** #devs-packman ** on Slack to provide feedback or ask questions around your package development experience.
+We hope you enjoy your experience, you can use ** #devs-packman ** on Slack to provide feedback or ask questions around your package development efforts.
 
 ## Package structure
 
