@@ -12,4 +12,4 @@ Use this file to outline the test strategy for this package.
 * etc.
 
 ## Package Status
-*Use this section to describe package stability, known bugs, performance, basically, a general feeling on the health of this package.*
+*Use this section to describe package stability, known bugs, performance, etc... in other words, a general feeling on the health of this package.*

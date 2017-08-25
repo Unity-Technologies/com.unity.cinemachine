@@ -4,7 +4,7 @@ The purpose of this package template is to provide data structure, samples and g
 
 This is the first step of many towards a fully fleshed out automated package publishing experience within Unity, and in that sense, this package development starter kit presents but a fraction of the creation, edition, validation and publishing tools we will end up with.
 
-We hope you enjoy your experience, you can use ** #devs-packman ** on Slack to provide feedback or ask questions around your package development efforts.
+We hope you enjoy your experience, you can use **#devs-packman** on Slack to provide feedback or ask questions around your package development efforts.
 
 ## Package structure
 
@@ -14,7 +14,7 @@ We hope you enjoy your experience, you can use ** #devs-packman ** on Slack to p
   ├── README.md
   ├── CHANGELOG.md
   ├── LICENSE.md
-  ├── QAReport.txt
+  ├── QAReport.md
   ├── Editor
   │   ├── EditorExample.cs
   │   └── Tests
@@ -77,7 +77,7 @@ Package development works best within the Unity Editor.  Here's how to set that 
             * To introduce a breaking API change, increment the major version (**X**.Y.Z)
             * The pacth version (X.Y.**Z**), is reserved for sustainable engineering use only.
 
-        * `"unity"`: Unity Version your package is compatible with. (Example: `"2017.3"`)
+        * `"unity"`: Unity Version your package is compatible with. (Example: `"2018.1"`)
 
         * `"description"`: Description of your package, which will appear in the Package Manager UI.
 
@@ -115,7 +115,7 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
 
 ## Register your package
-Once your development efforts go from exploratory to "Ok, let's do this!", reach out to us through ** #devs-packman ** on Slack, and let us know about your plans.  We'll help you coordinate your next steps towards release.  Share the following info:
+Once your development efforts go from exploratory to "Ok, let's do this!", reach out to us through **#devs-packman** on Slack, and let us know about your plans.  We'll help you coordinate your next steps towards release.  Share the following info:
 * Package Name
 * Dev owner
 * QA owner
@@ -149,7 +149,7 @@ There are a few steps to publishing your package so it can be include as part of
 1. Publishing your changes to the package manager's **staging** repository.
 
     The staging repository is monitored by QA and release management, and is where package validation will take place before it is accepted in production.  To publish to staging, follow the following steps:
-      * Join the "devs-packman" channel on Slack, and request a staging **USERNAME** and **API_KEY**.
+      * Join the **#devs-packman** channel on Slack, and request a staging **USERNAME** and **API_KEY**.
       * [Install NodeJs](https://nodejs.org/en/download/), so you can have access to **npm** (Node Package Manager).
       * If developing on Windows, [install Curl](https://curl.haxx.se/download.html).  Curl already comes with Mac.
       * Setup your credentions for **npm** by running the following command line from the root folder of your package.
@@ -168,6 +168,6 @@ There are a few steps to publishing your package so it can be include as part of
       npm publish
       ```
 
-1. Contact ** #devs-packman ** on Slack when your package is on staging, and ready to undergo validation for it's migration towards production.
+1. Contact **#devs-packman** on Slack when your package is on staging, and ready to undergo validation for it's migration towards production.
 
 1. Release Management will inform you of changes required before the package is accepted in production.
