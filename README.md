@@ -1,4 +1,4 @@
-# UPM Package Template
+# UPM Package Starter Kit
 
 The purpose of this template is to provide data structure and develpment guidelines of new packages for the **Unity Package Manager (UPM)**.
 
