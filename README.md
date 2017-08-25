@@ -1,8 +1,8 @@
 # UPM Package Template
 
-The purpose of this template is to provide data structure and guidelines for the development of new packages for the **Unity Package Manager (UPM)**.
+The purpose of this template is to provide data structure and develpment guidelines of new packages for the **Unity Package Manager (UPM)**.
 
-This is the first of many steps towards a an automated package publishing experience within Unity, therefore, this package template starter kit is a fraction of the creation, edition, validation and publishing tools we will end up with.
+This is the first of many steps towards an automated package publishing experience within Unity, therefore, this package template starter kit is a fraction of the creation, edition, validation and publishing tools we will end up with.
 
 We hope you enjoy your experience, you can use **#devs-packman** on Slack to provide feedback or ask questions around your package development efforts.
 
