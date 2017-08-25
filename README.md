@@ -1,8 +1,10 @@
-# unitypackage-template
-
-## Synopsis
+# UPM Package Template
 
 The purpose of this package template is to provide data structure, samples and guidelines for developing and publishing new packages to developers of new packages for the **Unity Package Manager (UPM)**.
+
+This is the first step of many towards a fully fleshed out automated package publishing experience within Unity, and in that sense, this package development starter kit presents but a fraction of the creation, edition, validation and publishing tools we will end up with.
+
+We hope you enjoy your experience, you can use **#devs-packman** on Slack to provide feedback or ask questions around your package development efforts.
 
 ## Package structure
 
@@ -12,7 +14,7 @@ The purpose of this package template is to provide data structure, samples and g
   ├── README.md
   ├── CHANGELOG.md
   ├── LICENSE.md
-  ├── QAReport.txt
+  ├── QAReport.md
   ├── Editor
   │   ├── EditorExample.cs
   │   └── Tests
@@ -36,28 +38,28 @@ The purpose of this package template is to provide data structure, samples and g
 
 * Package structure will follow special folders from **Unity**, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details
 
-## Developing your package
+## Develop your package
 Package development works best within the Unity Editor.  Here's how to set that up:
 
-1. Fork the `unitypackage-template` repository
+1. Fork the `upm-package-template` repository
 
-    Forking a repository is a simple two-step process. On GitHub, navigate to the [UnityTech/unitypackage-template](https://github.com/UnityTech/unitypackage-template) repository.
+    Forking a repository is a simple two-step process. On GitHub, navigate to the [UnityTech/upm-package-template](https://github.com/UnityTech/upm-package-template) repository.
     Click on the **Fork** button at the top-right corner of the page, and follow the instructions.
-    That's it! You now have your own copy (fork) of the original `UnityTech/unitypackage-template` repository you can use to develop your package.
+    That's it! You now have your own copy (fork) of the original `UnityTech/upm-package-template` repository you can use to develop your package.
 
-    Naming convention for your repository: `unitypackage-[your package name]`
-    (Example: `unitypackage-terrain-builder`)
+    Naming convention for your repository: `upm-package-[your package name]`
+    (Example: `upm-package-terrain-builder`)
 
 1. Start **Unity**, create a local empty project.
 
-    Naming convention proposed for your project: `unitypackage-[your package name]-project`
-    (Example: `unitypackage-terrain-builder-project`)
+    Naming convention proposed for your project: `upm-package-[your package name]-project`
+    (Example: `upm-package-terrain-builder-project`)
 
 1. In a console (or terminal) application, go to the newly created project folder, then clone your newly forked repository into the packages directory.
 
     ```none
     cd <YourProjectPath>/packages
-    git clone git@github.com:UnityTech/unitypackage-[your package name].git [your package name]
+    git clone git@github.com:UnityTech/upm-package-[your package name].git [your package name]
     ```
 
 1. Enable package support in the editor (*Internal Feature*).  From the **Project** window's right hang menu, enable `DEVELOPER`->`Show Packages in Project Window` (*only available in developer builds*).  You should now see your package in the Project Window, along with all other available packages for your project.
@@ -71,15 +73,11 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
             Follow this guideline:
 
-            If a change introduce... | Number to increment
-            --- | ---
-            a bug fix | pacth version (X.Y.**Z**)
-            a new feature | minor version (X.**Y**.Z)
-            a breaking change | major version (**X**.Y.Z)
+            * To introduce a new feature or bug fix, increment the minor version (X.**Y**.Z)
+            * To introduce a breaking API change, increment the major version (**X**.Y.Z)
+            * The pacth version (X.Y.**Z**), is reserved for sustainable engineering use only.
 
-            Only increment the version number if necessary.
-
-        * `"unity"`: Unity Version your package is compatible with. (Example: `"2017.3"`)
+        * `"unity"`: Unity Version your package is compatible with. (Example: `"2018.1"`)
 
         * `"description"`: Description of your package, which will appear in the Package Manager UI.
 
@@ -115,35 +113,43 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
     * Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## Sharing your package
+
+## Register your package
+Once your development efforts go from exploratory to "Ok, let's do this!", reach out to us through **#devs-packman** on Slack, and let us know about your plans.  We'll help you coordinate your next steps towards release.  Share the following info:
+* Package Name
+* Dev owner
+* QA owner
+* Unity Version Target
+* Short Package Description.
+
+## Share your package
 
 If you want to share your project with other developers, steps are similar to what's done above.  On the other developer's machine:
 
 1. Start **Unity**, create a local empty project.
 
-    Naming convention proposed for your project: `unitypackage-[your package name]-project`
-    (Example: `unitypackage-terrain-builder-project`)
+    Naming convention proposed for your project: `upm-package-[your package name]-project`
+    (Example: `upm-package-terrain-builder-project`)
 
 1. Launch console (or terminal) application, go to the newly created project folder, then clone your repository in the packages directory
 
     ```none
     cd <YourProjectPath>/packages
-    git clone git@github.com:UnityTech/unitypackage-[your package name].git [your-package-name]
+    git clone git@github.com:UnityTech/upm-package-[your package name].git [your-package-name]
     ```
 
-
-## Dry-Running your package with **UPM**
+## Dry-Run your package with **UPM**
 
 *Coming soon!*
 
-## Publishing your package
+## Publish your package
 
 There are a few steps to publishing your package so it can be include as part of the editor's package manifest, and downloaded by the editor.
 
 1. Publishing your changes to the package manager's **staging** repository.
 
     The staging repository is monitored by QA and release management, and is where package validation will take place before it is accepted in production.  To publish to staging, follow the following steps:
-      * Join the "devs-packman" channel on Slack, and request a staging **USERNAME** and **API_KEY**.
+      * Join the **#devs-packman** channel on Slack, and request a staging **USERNAME** and **API_KEY**.
       * [Install NodeJs](https://nodejs.org/en/download/), so you can have access to **npm** (Node Package Manager).
       * If developing on Windows, [install Curl](https://curl.haxx.se/download.html).  Curl already comes with Mac.
       * Setup your credentions for **npm** by running the following command line from the root folder of your package.
@@ -162,6 +168,6 @@ There are a few steps to publishing your package so it can be include as part of
       npm publish
       ```
 
-1. Inform the Release Management Team that your package is ready for publishing. (**In Development**).
+1. Contact **#devs-packman** on Slack when your package is on staging, and ready to undergo validation for it's migration towards production.
 
 1. Release Management will inform you of changes required before the package is accepted in production.

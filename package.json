@@ -1,7 +1,7 @@
 {
 	"name": "com.unity.[your package name]",
 	"version": "0.1.0",
-	"unity": "2017.3",
+	"unity": "2018.1",
 	"description": "Your description, which will show up in the Package Manager UI",
 	"keywords": ["key", "words", "used", "for", "package", "search"],
 	"category": "Your category (TBD)",
