@@ -7,7 +7,7 @@ This is the first of many steps towards an automated package publishing experien
 We hope you enjoy your experience, you can use **#devs-packman** on Slack to provide feedback or ask questions around your package development efforts.
 
 ## Are you ready to become a package?
-Package development is a work in progress for Unity, and in that sense, there are some simple criteria that must be met to be considered on the package list at this time:
+The Package Manager is work in progress for Unity, and in that sense, there are a few criteria that must be met to be considered on the package list at this time:
 - **Your code accesses public Unity C# apis only.**  If you have a native code component, it will need to ship with an official editor release.  Internal API access might eventually be possible for Unity made packages, but not for the time being.
 - **Your code doesn't require security, obfuscation or conditional access control.**  Anyone will be able to download your package, and even play with the source code.
 - **You have no urgent need to release your package.**  Our current target for new packages is aligned with 2018.1, although, based on upcoming package requests and limited packman capacity, that release date is not assured for any package.
