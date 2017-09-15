@@ -36,9 +36,8 @@ The Package Manager is work in progress for Unity, and in that sense, there are 
       ├── ApiDocs
       │   ├── EditorExample.mem.xml
       │   └── RuntimeExample.mem.xml
-      └── FeatureDocs
-          ├── EditorExample.md
-          └── RuntimeExample.md
+      └── PackagesDocs
+          └── <Your package name>.md
 ```
 
 ### Note
@@ -104,17 +103,16 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
 1. Update **README.md**
 
-    The README.md file should contain following section:
+    The README.md file should contain all pertinents information for your package developpers like:
+    
+    * Prerequistes
+    * External tools or development libraries
+    * Required installed Software
+    * Command lines to build, test, run your package.
 
-    ### **Synopsis**
-    At the top of the file there should be a short introduction and/ or overview that explains what the project is. This description should match the descriptions added in package.json.
+1. Rename and Update **&lt;Your package name&gt;.md** documentation file
 
-    ### **Code Example** *(optional)*
-    Show what the package does as concisely as possible, developers should be able to figure out how your package solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
-
-    ### **Tests**
-    Describe and show how to run the tests with code examples.
-
+    Use this template to create preliminary, high-level documentation meant to introduce users to the feature and the sample files included in this package.
 
 1. Update **CHANGELOG.md**
 
@@ -122,12 +120,15 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
 
 ## Register your package
-Once your development efforts go from exploratory to "Ok, let's do this!", reach out to us through **#devs-packman** on Slack, and let us know about your plans.  We'll help you coordinate your next steps towards release.  Share the following info:
+If you think you are working on a feature that could make a good package candidate please take a minute to answer a few questions [Here](https://docs.google.com/forms/d/e/1FAIpQLSedxgDcIyf1oPyhWegp5FBvMm63MGAopeJhHDT5bU_BkFPNIQ/viewform?usp=sf_link) in  order to share the following info:
 * Package Name
 * Dev owner
 * QA owner
 * Unity Version Target
 * Short Package Description.
+
+Working with the board of dev directors and with product management, we will schedule the entry of the candidates in the ecosystem, based on technical challenges and on our feature roadmap.
+Don’t hesitate to reach out and join us on **#devs-packman** on Slack.
 
 ## Share your package
 
