@@ -145,10 +145,6 @@ If you want to share your project with other developers, steps are similar to wh
     git clone git@github.com:UnityTech/upm-package-[your package name].git [your-package-name]
     ```
 
-## Dry-Run your package with **UPM**
-
-*Coming soon!*
-
 ## Publish your package
 
 There are a few steps to publishing your package so it can be include as part of the editor's package manifest, and downloaded by the editor.
@@ -178,3 +174,13 @@ There are a few steps to publishing your package so it can be include as part of
 1. Contact **#devs-packman** on Slack when your package is on staging, and ready to undergo validation for it's migration towards production.
 
 1. Release Management will inform you of changes required before the package is accepted in production.
+
+## Dry-Run your package with **UPM**
+
+Once your package is published to the package manager's **staging** repository, you can test your package in the editor by creating a new project, and editing the project's `manifest.json` file to point to your staging package, as such:
+```
+dependencies: {
+  "[your package name]": "0.1.0"
+},
+"registry": "http://staging-packages.unity.com"
+```
