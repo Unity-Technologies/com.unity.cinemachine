@@ -36,7 +36,7 @@ The Package Manager is work in progress for Unity, and in that sense, there are 
       ├── ApiDocs
       │   ├── EditorExample.mem.xml
       │   └── RuntimeExample.mem.xml
-      └── PackagesDocs
+      └── PackageDocs
           └── <Your package name>.md
 ```
 
