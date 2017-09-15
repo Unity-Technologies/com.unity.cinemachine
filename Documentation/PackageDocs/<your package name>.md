@@ -93,10 +93,10 @@ The following table provides an alphabetical list of the important files and fol
 *a)*
 *For packages that augment the Unity Editor with additional features, this section should include wor**kflow and/or reference documentation:*
 
-* *At a minimum, this section should include reference documentation that describes the windows, editors, and properties that the package adds to Unity. This reference documentation should include screen grabs, a list of settings, an explanation of what each setting does, and the default values of each setting. *
-* *Ideally, this section should also include a workflow: a list of steps that the user can easily follow that demonstrates how to use the feature. This list of steps should include screen grabs to better describe how to use the feature. *
+* *At a minimum, this section should include reference documentation that describes the windows, editors, and properties that the package adds to Unity. This reference documentation should include screen grabs, a list of settings, an explanation of what each setting does, and the default values of each setting.*
+* *Ideally, this section should also include a workflow: a list of steps that the user can easily follow that demonstrates how to use the feature. This list of steps should include screen grabs to better describe how to use the feature.*
 
-*b) *
+*b)*
 *For packages that include sample files, this section may include detailed information on how the user can use these sample files in their projects and scenes. If this section is too repetitive compared to the Package Contents section, do not include this section.*
 
 # Document Revision History
