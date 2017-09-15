@@ -180,7 +180,7 @@ There are a few steps to publishing your package so it can be include as part of
 Once your package is published to the package manager's **staging** repository, you can test your package in the editor by creating a new project, and editing the project's `manifest.json` file to point to your staging package, as such:
 ```
 dependencies: {
-  "[your package name]": "0.1.0"
+  "com.unity.[your package name]": "0.1.0"
 },
 "registry": "http://staging-packages.unity.com"
 ```
