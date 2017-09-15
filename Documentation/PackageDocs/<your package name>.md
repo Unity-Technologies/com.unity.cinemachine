@@ -14,7 +14,7 @@
 
 *Name the heading of the first topic after the official name of the package. Check with your Product Manager to ensure that the package is named correctly.*
 
-*This first topic includes a brief, high-level explanation of the package and, if applicable, provides links to Unity Manual topics. *
+*This first topic includes a brief, high-level explanation of the package and, if applicable, provides links to Unity Manual topics.*
 
 *There are two types of packages: a) packages that include features that augment the Unity Editor, or b) packages that include sample files. Choose one of the following introductory paragraphs that best fits the package:*
 
@@ -36,7 +36,7 @@ The &lt;package name&gt; package includes examples of &lt;name of asset type, mo
 
 ## Requirements
 
-*This subtopic includes a bullet list with the compatible versions of Unity. This subtopic may also include additional requirements or recommendations. An example includes a dependency on other packages. *
+*This subtopic includes a bullet list with the compatible versions of Unity. This subtopic may also include additional requirements or recommendations. An example includes a dependency on other packages.*
 
 This &lt;package name&gt; version &lt;package version&gt; is compatible with the following versions of the Unity Editor:
 
@@ -52,7 +52,7 @@ To use this package, you must have the following packages installed:
 
 ## Known Limitations
 
-*This section lists the known limitations with this version of the package. **If there are no known limitations, or if the limitations are trivial, exclude this section.** An example is provided:*
+*This section lists the known limitations with this version of the package.*If there are no known limitations, or if the limitations are trivial, exclude this section.** An example is provided:*
 
 The &lt;package name&gt; version &lt;package version&gt; includes the following known limitations:
 
