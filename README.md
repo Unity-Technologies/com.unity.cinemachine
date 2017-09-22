@@ -37,7 +37,7 @@ The Package Manager is work in progress for Unity, and in that sense, there are 
       │   ├── EditorExample.mem.xml
       │   └── RuntimeExample.mem.xml
       └── PackageDocs
-          └── <Your package name>.md
+          └── your-package-name.md
 ```
 
 ### Note
@@ -110,7 +110,7 @@ Package development works best within the Unity Editor.  Here's how to set that 
     * Required installed Software
     * Command lines to build, test, run your package.
 
-1. Rename and Update **&lt;Your package name&gt;.md** documentation file
+1. Rename and Update **your-package-name.md** documentation file
 
     Use this template to create preliminary, high-level documentation meant to introduce users to the feature and the sample files included in this package.
 
