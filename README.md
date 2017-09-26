@@ -104,7 +104,7 @@ Package development works best within the Unity Editor.  Here's how to set that 
 1. Update **README.md**
 
     The README.md file should contain all pertinents information for your package developpers like:
-    
+
     * Prerequistes
     * External tools or development libraries
     * Required installed Software
@@ -146,7 +146,7 @@ If you want to share your project with other developers, steps are similar to wh
     git clone git@github.com:UnityTech/upm-package-[your package name].git [your-package-name]
     ```
 
-## Publish your package
+## Dry-Run your package with **UPM**
 
 There are a few steps to publishing your package so it can be include as part of the editor's package manifest, and downloaded by the editor.
 
@@ -160,28 +160,43 @@ There are a few steps to publishing your package so it can be include as part of
         ```
         curl -u<USERNAME>@unity:<API_KEY> https://staging-packages.unity.com/auth > .npmrc
         ```
-
-      * Before publishing, check the following:
-          * Your package.json file is filled out correctly.
-          * Your package contains all necessary editor and runtime tests.
-          * QA has tested the package and filled out the QA Report. (**In Development**)
-          * You have filled out the changelog to reflect changes to your package.
-          * You have fleshed out the API and Feature documentation in the `Documentation` folder.
       * You are now ready to publish your package to staging with the following command line, from the root folder of your folder:
       ```none
       npm publish
       ```
+2. Test your package locally
 
-1. Contact **#devs-packman** on Slack when your package is on staging, and ready to undergo validation for it's migration towards production.
+    Now that your package is published on the package manager's **staging** repository, you can test your package in the editor by creating a new project, and editing the project's `manifest.json` file to point to your staging package, as such:
+      ```
+      dependencies: {
+        "com.unity.[your package name]": "0.1.0"
+      },
+      "registry": "http://staging-packages.unity.com"
+      ```
 
-1. Release Management will inform you of changes required before the package is accepted in production.
+## Getting your package published to Production
 
-## Dry-Run your package with **UPM**
+  Packages are promoted to the **production** repository from **staging**, described above.  Certain criteria must be met before submitting a request to promote a package to production.
+  The list of criteria can be found [here](https://docs.google.com/forms/d/e/1FAIpQLSdSIRO6s6_gM-BxXbDtdzIej-Hhk-3n68xSyC2sM8tp7413mw/viewform)
 
-Once your package is published to the package manager's **staging** repository, you can test your package in the editor by creating a new project, and editing the project's `manifest.json` file to point to your staging package, as such:
-```
-dependencies: {
-  "com.unity.[your package name]": "0.1.0"
-},
-"registry": "http://staging-packages.unity.com"
-```
+  Release Management requires the following to promote a package to **production**:
+  1. Submit one or more Test Project(s) in Ono, so that your new package can be tested in all ABVs moving forward.
+
+      * Create a branch in Ono, based on the latest branch this package must be compatible with (trunk, or release branch)
+      * If your package contains **EditorTests**:
+        * In in [root]\Tests\EditorTests, create a new EditorTest Project (For new packages) or use an existing project (For new versions of existing package).
+      * If your package contains **PlaymodeTests**:
+        * In in [root]\Tests\PlaymodeTests, create a new PlaymodeTest Project (For new packages) or use an existing project (For new versions of existing package).
+      * Modify the project’s manifest.json file to include the staging version of the package (name@version).
+      * Commit your branch changes to Ono, and run all Windows & Mac Editor/PlayMode tests (not full ABV) in Katana.
+      * Once the tests are green on Katana, create a PR with the changed manifest and add `Latest Release Manager` as a reviewer
+  2. Make sure you’ve taken care of all checklist items on the package publishing form, and [Submit your package publishing request to Release Management](https://docs.google.com/forms/d/e/1FAIpQLSdSIRO6s6_gM-BxXbDtdzIej-Hhk-3n68xSyC2sM8tp7413mw/viewform).
+
+**At this point release management will validate your package content, and check that the editor tests are passed before promoting the package to production.**
+
+Once the package is in production, one more PR is required to complete your package publishing:
+1. In your existing branch, change the test project manifest to point to your production package by removing the following line ``"registry": "http://staging-packages.unity.com"``
+2. If your package is meant to ship with a release of the editor (default package), follow these steps:
+      * Modify the in editor manifest (_[root]\External\PackageManager\Editor\Manifest.json_) to include your package in the list of dependencies.
+      * Create a PR update with the editor manifest changes, wait for Release Manager approval and then add it to the Trunk Merge Queue
+      
