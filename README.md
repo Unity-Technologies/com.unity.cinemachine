@@ -198,5 +198,6 @@ Once the package is in production, one more PR is required to complete your pack
 1. In your existing branch, change the test project manifest to point to your production package by removing the following line ``"registry": "http://staging-packages.unity.com"``
 2. If your package is meant to ship with a release of the editor (default package), follow these steps:
       * Modify the in editor manifest (_[root]\External\PackageManager\Editor\Manifest.json_) to include your package in the list of dependencies.
-      * Create a PR update with the editor manifest changes, wait for Release Manager approval and then add it to the Trunk Merge Queue
+      * Create a PR update with the editor manifest changes, add both `Latest Release Manager` and  `Trunk Merge Queue` as reviewers.
+      * Sit back, relax, your work is done!
       
