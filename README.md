@@ -23,15 +23,16 @@ The Package Manager is work in progress for Unity, and in that sense, there are 
   ├── LICENSE.md
   ├── QAReport.md
   ├── Editor
-  │   ├── EditorExample.cs
-  │   └── Tests
-  │       └── EditorExampleTest.cs
+  │   └── EditorExample.cs
   ├── Runtime
-  │   ├── RuntimeExample.cs
-  │   └── Tests
+  │   └── RuntimeExample.cs
+  ├── Tests
+  │   ├── Editor
+  │   │   └── EditorExampleTest.cs
+  │   └── Runtime
   │       └── RuntimeExampleTest.cs
   ├── Samples
-  │   └─── SampleExample.cs
+  │   └── SampleExample.cs
   └── Documentation
       ├── ApiDocs
       │   ├── EditorExample.mem.xml
