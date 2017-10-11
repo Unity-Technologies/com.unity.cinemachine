@@ -115,6 +115,8 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
     Use this template to create preliminary, high-level documentation meant to introduce users to the feature and the sample files included in this package.
 
+    Api documentation will be generated from [XmlDoc tags](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/xml-documentation-comments) included with all public APIs found in the package.  See the following [file](https://github.com/UnityTech/upm-package-template/blob/master/Editor/EditorExample.cs) as an example.
+
 1. Update **CHANGELOG.md**
 
     * Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
