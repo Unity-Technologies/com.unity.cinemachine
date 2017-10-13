@@ -34,11 +34,7 @@ The Package Manager is work in progress for Unity, and in that sense, there are 
   ├── Samples
   │   └── SampleExample.cs
   └── Documentation
-      ├── ApiDocs
-      │   ├── EditorExample.mem.xml
-      │   └── RuntimeExample.mem.xml
-      └── PackageDocs
-          └── your-package-name.md
+      └── your-package-name.md
 ```
 
 ### Note
