@@ -36,7 +36,7 @@ The &lt;package name&gt; package includes examples of &lt;name of asset type, mo
 
 ## Requirements
 
-*This subtopic includes a bullet list with the compatible versions of Unity. This subtopic may also include additional requirements or recommendations. An example includes a dependency on other packages.*
+*This subtopic includes a bullet list with the compatible versions of Unity. This subtopic may also include additional requirements or recommendations for 3rd party software or hardware. An example includes a dependency on other packages. If you need to include references to non-Unity products, make sure you refer to these products correctly and that all references include the proper trademarks (tm or r)*
 
 This &lt;package name&gt; version &lt;package version&gt; is compatible with the following versions of the Unity Editor:
 
@@ -44,15 +44,15 @@ This &lt;package name&gt; version &lt;package version&gt; is compatible with the
 * 2017.1
 * 5.6
 
-To use this package, you must have the following packages installed:
+To use this package, you must have the following 3rd party products:
 
-* &lt;package name with link to Github repository&gt;
-* &lt;package name with link to Github repository&gt;
-* &lt;package name with link to Github repository&gt;
+* &lt;product name and version with trademark or registered trademark.&gt;
+* &lt;product name and version with trademark or registered trademark.&gt;
+* &lt;product name and version with trademark or registered trademark.&gt;
 
 ## Known Limitations
 
-*This section lists the known limitations with this version of the package.*If there are no known limitations, or if the limitations are trivial, exclude this section.** An example is provided:*
+*This section lists the known limitations with this version of the package. If there are no known limitations, or if the limitations are trivial, exclude this section. An example is provided.*
 
 The &lt;package name&gt; version &lt;package version&gt; includes the following known limitations:
 
@@ -74,30 +74,34 @@ The &lt;package name&gt; version &lt;package version&gt; includes the following 
 
 &lt;The text and cross-reference is still to be determined. It will be added by the Documentation Team.&gt;
 
-# Package Contents
-
-*This subtopic includes a table with an alphabetical list of filenames and a brief description of each file. If the package includes folders with many motion files, assets, models, or other example files, you can include the name of the parent folder with a generic description for all files within the folder. Examples of file and folder descriptions are included in the table below. Use these examples as a basis for the descriptions of files and folders in your package.*
-
-The following table provides an alphabetical list of the important files and folders included in this package.
-
-|Folder or Filename|Description|
-|---|---|
-|license.pdf|Document with licensing and copyright information on the contents of the package.<br>Consult this document before using the package contents in your projects and scenes.|
-|motion files|Folder containing cleaned motion capture files for animating humanoid characters.|
-|shaders|Folder containing different materials, shaders, and lighting examples.|
-
 # Using &lt;package name&gt;
 
 *Exactly what is included in this section depends on the type of package.*
 
 *a)*
-*For packages that augment the Unity Editor with additional features, this section should include wor**kflow and/or reference documentation:*
+*For packages that augment the Unity Editor with additional features, this section should include workflow and/or reference documentation:*
 
-* *At a minimum, this section should include reference documentation that describes the windows, editors, and properties that the package adds to Unity. This reference documentation should include screen grabs, a list of settings, an explanation of what each setting does, and the default values of each setting.*
-* *Ideally, this section should also include a workflow: a list of steps that the user can easily follow that demonstrates how to use the feature. This list of steps should include screen grabs to better describe how to use the feature.*
+* *At a minimum, this section should include reference documentation that describes the windows, editors, and properties that the package adds to Unity. This reference documentation should include screen grabs (see how to add screens below), a list of settings, an explanation of what each setting does, and the default values of each setting.*
+* *Ideally, this section should also include a workflow: a list of steps that the user can easily follow that demonstrates how to use the feature. This list of steps should include screen grabs (see how to add screens below) to better describe how to use the feature.*
 
 *b)*
-*For packages that include sample files, this section may include detailed information on how the user can use these sample files in their projects and scenes. If this section is too repetitive compared to the Package Contents section, do not include this section.*
+*For packages that include sample files, this section may include detailed information on how the user can use these sample files in their projects and scenes. However, workflow diagrams or illustrations could be included if deemed appropriate.*
+
+*c)*
+*For packages that add runtime functionality, this section may include detailed information on what runtime improvements the package adds to Unity. Since there is no customer facing UI, there is probably no need to add screen shots.*
+
+## *How to Add Images*
+
+*(This section is for reference. Do not include in the final documentation file)* 
+*If the **Using &lt;package name&gt;** includes screen grabs or diagrams, a link to the image must be added to this MD file, before or after the paragraph with the instruction or description that references the image. In addition, a caption should be added to the image link that includes the name of the screen or diagram. All images must be PNG files. No animated GIFs. An example is included below:* 
+
+*![A cinematic in the Timeline Editor window.](../images/example.png)*
+
+*Notice that the example screen shot is included in the images folder. All screen grabs and/or diagrams must be added and referenced from the images folder.*
+
+*For more on the Unity documentation standards for creating and adding screen grabs, see this confluence page: https://confluence.hq.unity3d.com/pages/viewpage.action?pageId=13500715*
+
+
 
 # Document Revision History
 
