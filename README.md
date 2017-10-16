@@ -1,16 +1,16 @@
 # UPM Package Starter Kit
 
-The purpose of this template is to provide data structure and develpment guidelines of new packages for the **Unity Package Manager (UPM)**.
+The purpose of this package template starter kit is to provide the data structure and develpment guidelines for new packages meant for the **Unity Package Manager (UPM)**.
 
-This is the first of many steps towards an automated package publishing experience within Unity, therefore, this package template starter kit is a fraction of the creation, edition, validation and publishing tools we will end up with.
+This is the first of many steps towards an automated package publishing experience within Unity. This package template starter kit is merely a fraction of the creation, edition, validation, and publishing tools that we will end up with.
 
-We hope you enjoy your experience, you can use **#devs-packman** on Slack to provide feedback or ask questions around your package development efforts.
+We hope you enjoy your experience. You can use **#devs-packman** on Slack to provide feedback or ask questions regarding your package development efforts.
 
 ## Are you ready to become a package?
-The Package Manager is work in progress for Unity, and in that sense, there are a few criteria that must be met to be considered on the package list at this time:
-- **Your code accesses public Unity C# apis only.**  If you have a native code component, it will need to ship with an official editor release.  Internal API access might eventually be possible for Unity made packages, but not for the time being.
-- **Your code doesn't require security, obfuscation or conditional access control.**  Anyone will be able to download your package, and even play with the source code.
-- **You have no urgent need to release your package.**  Our current target for new packages is aligned with 2018.1, although, based on upcoming package requests and limited packman capacity, that release date is not assured for any package.
+The Package Manager is a work-in-progress for Unity and, in that sense, there are a few criteria that must be met for your package to be considered on the package list at this time:
+- **Your code accesses public Unity C# apis only.**  If you have a native code component, it will need to ship with an official editor release.  Internal API access might eventually be possible for Unity made packages, but not at this time.
+- **Your code doesn't require security, obfuscation, or conditional access control.**  Anyone should be able to download your package and access the source code.
+- **You have no urgent need to release your package.**  Our current target for new packages is aligned with 2018.1. Although, based on upcoming package requests and limited packman capacity, that release date is not assured for any package.
 - **You are willing to bleed with us a little!** Packman is still in development, and therefore has a few rough edges that will require patience and workarounds.
 
 ## Package structure
@@ -39,7 +39,7 @@ The Package Manager is work in progress for Unity, and in that sense, there are 
 
 ### Note
 
-* Package structure will follow special folders from **Unity**, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details
+Package structure follows special folders from **Unity**, see [Special folders](https://docs.unity3d.com/Manual/SpecialFolders.html) for more details.
 
 ## Develop your package
 Package development works best within the Unity Editor.  Here's how to set that up:
@@ -78,15 +78,15 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
             * To introduce a new feature or bug fix, increment the minor version (X.**Y**.Z)
             * To introduce a breaking API change, increment the major version (**X**.Y.Z)
-            * The pacth version (X.Y.**Z**), is reserved for sustainable engineering use only.
+            * The patch version (X.Y.**Z**), is reserved for sustainable engineering use only.
 
         * `"unity"`: Unity Version your package is compatible with. (Example: `"2018.1"`)
 
-        * `"description"`: Description of your package, which will appear in the Package Manager UI.
+        * `"description"`: Description of your package. This appears in the Package Manager UI.
 
     * Optional fields:
 
-        * `"dependencies"`: List of packages this package depends on.  All dependencies will also be downloaded and loaded in a project, alongside your package.  Here's an example:
+        * `"dependencies"`: List of packages this package depends on.  All dependencies will also be downloaded and loaded in a project with your package.  Here's an example:
         ```
         dependencies: {
           "com.unity.ads": "1.0.0"
@@ -94,32 +94,34 @@ Package development works best within the Unity Editor.  Here's how to set that 
         }
         ```
 
-        * `"keywords"`: List of words that will be indexed by the package manager search engine to facilitate discovery of the package.
+        * `"keywords"`: List of words that will be indexed by the package manager search engine to facilitate discovery.
 
         * `"category"`: List of Unity defined categories used for browsing and filtering (**In Development**)
 
 1. Update **README.md**
 
-    The README.md file should contain all pertinents information for your package developpers like:
+    The README.md file should contain all pertinent information for developers using your package, such as:
 
     * Prerequistes
     * External tools or development libraries
     * Required installed Software
-    * Command lines to build, test, run your package.
+    * Command line examples to build, test, and run your package.
 
-1. Rename and Update **your-package-name.md** documentation file
+1. Rename and update **your-package-name.md** documentation file.
 
-    Use this template to create preliminary, high-level documentation meant to introduce users to the feature and the sample files included in this package.
+    Use this template to create preliminary, high-level documentation. This document is meant to introduce users to the features and sample files included in your package.
 
-    Api documentation will be generated from [XmlDoc tags](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/xml-documentation-comments) included with all public APIs found in the package.  See the following [file](https://github.com/UnityTech/upm-package-template/blob/master/Editor/EditorExample.cs) as an example.
+1. Add documentation to your public-facing APIs.
+
+    API documentation is generated from [XmlDoc tags](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/xml-documentation-comments) included with all public APIs found in the package. See this [file](https://github.com/UnityTech/upm-package-template/blob/master/Editor/EditorExample.cs) for an example.
 
 1. Update **CHANGELOG.md**
 
-    * Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+    Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format, see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
 ## Register your package
-If you think you are working on a feature that could make a good package candidate please take a minute to answer a few questions [Here](https://docs.google.com/forms/d/e/1FAIpQLSedxgDcIyf1oPyhWegp5FBvMm63MGAopeJhHDT5bU_BkFPNIQ/viewform?usp=sf_link) in  order to share the following info:
+If you think you are working on a feature that is a good package candidate, please take a minute to fill-in [this form](https://docs.google.com/forms/d/e/1FAIpQLSedxgDcIyf1oPyhWegp5FBvMm63MGAopeJhHDT5bU_BkFPNIQ/viewform?usp=sf_link). This form provides us with the following information:
 * Package Name
 * Dev owner
 * QA owner
@@ -131,7 +133,7 @@ Don’t hesitate to reach out and join us on **#devs-packman** on Slack.
 
 ## Share your package
 
-If you want to share your project with other developers, steps are similar to what's done above.  On the other developer's machine:
+If you want to share your project with other developers, the steps are similar to what's presented above. On the other developer's machine:
 
 1. Start **Unity**, create a local empty project.
 
@@ -151,11 +153,11 @@ There are a few steps to publishing your package so it can be include as part of
 
 1. Publishing your changes to the package manager's **staging** repository.
 
-    The staging repository is monitored by QA and release management, and is where package validation will take place before it is accepted in production.  To publish to staging, follow the following steps:
+    The staging repository is monitored by QA and release management, and is where package validation will take place before it is accepted in production. To publish to staging, do the follow:
       * Join the **#devs-packman** channel on Slack, and request a staging **USERNAME** and **API_KEY**.
       * [Install NodeJs](https://nodejs.org/en/download/), so you can have access to **npm** (Node Package Manager).
-      * If developing on Windows, [install Curl](https://curl.haxx.se/download.html).  Curl already comes with Mac.
-      * Setup your credentions for **npm** by running the following command line from the root folder of your package.
+      * If developing on Windows, [install Curl](https://curl.haxx.se/download.html).  Note: Curl already comes with Mac OS.
+      * Setup your credentials for **npm** by running the following command line from the root folder of your package.
         ```
         curl -u<USERNAME>@unity:<API_KEY> https://staging-packages.unity.com/auth > .npmrc
         ```
@@ -175,7 +177,7 @@ There are a few steps to publishing your package so it can be include as part of
 
 ## Getting your package published to Production
 
-  Packages are promoted to the **production** repository from **staging**, described above.  Certain criteria must be met before submitting a request to promote a package to production.
+  Packages are promoted to the **production** repository from **staging**, described above. Certain criteria must be met before submitting a request to promote a package to production.
   The list of criteria can be found [here](https://docs.google.com/forms/d/e/1FAIpQLSdSIRO6s6_gM-BxXbDtdzIej-Hhk-3n68xSyC2sM8tp7413mw/viewform)
 
   Release Management requires the following to promote a package to **production**:
@@ -183,20 +185,19 @@ There are a few steps to publishing your package so it can be include as part of
 
       * Create a branch in Ono, based on the latest branch this package must be compatible with (trunk, or release branch)
       * If your package contains **EditorTests**:
-        * In in [root]\Tests\EditorTests, create a new EditorTest Project (For new packages) or use an existing project (For new versions of existing package).
+        * In [root]\Tests\EditorTests, create a new EditorTest Project (for new packages) or use an existing project (for new versions of existing package).
       * If your package contains **PlaymodeTests**:
-        * In in [root]\Tests\PlaymodeTests, create a new PlaymodeTest Project (For new packages) or use an existing project (For new versions of existing package).
+        * In [root]\Tests\PlaymodeTests, create a new PlaymodeTest Project (for new packages) or use an existing project (for new versions of existing package).
       * Modify the project’s manifest.json file to include the staging version of the package (name@version).
       * Commit your branch changes to Ono, and run all Windows & Mac Editor/PlayMode tests (not full ABV) in Katana.
       * Once the tests are green on Katana, create a PR with the changed manifest and add `Latest Release Manager` as a reviewer
-  2. Make sure you’ve taken care of all checklist items on the package publishing form, and [Submit your package publishing request to Release Management](https://docs.google.com/forms/d/e/1FAIpQLSdSIRO6s6_gM-BxXbDtdzIej-Hhk-3n68xSyC2sM8tp7413mw/viewform).
+  2. Make sure you’ve completed all checklist items on the package publishing form, and [Submit your package publishing request to Release Management](https://docs.google.com/forms/d/e/1FAIpQLSdSIRO6s6_gM-BxXbDtdzIej-Hhk-3n68xSyC2sM8tp7413mw/viewform).
 
 **At this point release management will validate your package content, and check that the editor tests are passed before promoting the package to production.**
 
-Once the package is in production, one more PR is required to complete your package publishing:
+Once the package is in production, one more PR is required to complete package publishing:
 1. In your existing branch, change the test project manifest to point to your production package by removing the following line ``"registry": "http://staging-packages.unity.com"``
 2. If your package is meant to ship with a release of the editor (default package), follow these steps:
       * Modify the in editor manifest (_[root]\External\PackageManager\Editor\Manifest.json_) to include your package in the list of dependencies.
       * Create a PR update with the editor manifest changes, add both `Latest Release Manager` and  `Trunk Merge Queue` as reviewers.
-      * Sit back, relax, your work is done!
       
