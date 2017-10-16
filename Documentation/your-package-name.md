@@ -93,7 +93,7 @@ The &lt;package name&gt; version &lt;package version&gt; includes the following 
 ## *How to Add Images*
 
 *(This section is for reference. Do not include in the final documentation file)* 
-*If the **Using &lt;package name&gt;** includes screen grabs or diagrams, a link to the image must be added to this MD file, before or after the paragraph with the instruction or description that references the image. In addition, a caption should be added to the image link that includes the name of the screen or diagram. All images must be PNG files. No animated GIFs. An example is included below:* 
+*If the **Using &lt;package name&gt;** includes screen grabs or diagrams, a link to the image must be added to this MD file, before or after the paragraph with the instruction or description that references the image. In addition, a caption should be added to the image link that includes the name of the screen or diagram. All images must be PNG files with underscores for spaces. No animated GIFs. An example is included below:* 
 
 *![A cinematic in the Timeline Editor window.](../images/example.png)*
 
