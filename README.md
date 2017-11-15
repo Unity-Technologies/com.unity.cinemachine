@@ -115,6 +115,14 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
     API documentation is generated from [XmlDoc tags](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/xml-documentation-comments) included with all public APIs found in the package. See this [file](https://github.com/UnityTech/upm-package-template/blob/master/Editor/EditorExample.cs) for an example.
 
+    * All public APIs need to be documented with XmlDoc.  If you dont need an api to be accessed by clients, mark it as internal instead.
+    * All packages that expose UI in the editor or runtime features should use the doc template in `Documentation/your-package-name.md`
+
+    * Documentation needs to be ready when a publish request is sent to Release Management, as they will ask the documentation team to review it.
+        * The package will remain in `preview` mode until the final documentation is completed.  Users will have access to the developer-generated documentation only in preview packages.
+        * When the documentation is completed, the documentation team will update the package git repo with the updates and they will publish it on the web.
+        * The package's development team will then need to submit a new package version with updated docs.
+
 1. Update **CHANGELOG.md**
 
     Every new feature or bug fix should have a trace in this file. For more details on the chosen changelog format, see [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
