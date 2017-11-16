@@ -111,12 +111,18 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
     Use this template to create preliminary, high-level documentation. This document is meant to introduce users to the features and sample files included in your package.
 
-1. Add documentation to your public-facing APIs.
+1.  Document your package
 
-    API documentation is generated from [XmlDoc tags](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/xml-documentation-comments) included with all public APIs found in the package. See this [file](https://github.com/UnityTech/upm-package-template/blob/master/Editor/EditorExample.cs) for an example.
+    ###### Document your public APIs
 
-    * All public APIs need to be documented with XmlDoc.  If you dont need an api to be accessed by clients, mark it as internal instead.
-    * All packages that expose UI in the editor or runtime features should use the doc template in [Documentation/your-package-name.md](Documentation/your-package-name.md).
+    * All public APIs need to be documented with XmlDoc.  If you dont need an API to be accessed by clients, mark it as internal instead.
+    * API documentation is generated from [XmlDoc tags](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/xml-documentation-comments) included with all public APIs found in the package. See [Editor/EditorExample.cs](https://github.com/UnityTech/upm-package-template/blob/master/Editor/EditorExample.cs) for an example.
+
+    ###### Document your features
+
+    * All packages that expose UI in the editor or runtime features should use the documentation template in [Documentation/your-package-name.md](Documentation/your-package-name.md).
+
+    ###### Documentation flow
 
     * Documentation needs to be ready when a publish request is sent to Release Management, as they will ask the documentation team to review it.
         * The package will remain in `preview` mode until the final documentation is completed.  Users will have access to the developer-generated documentation only in preview packages.
