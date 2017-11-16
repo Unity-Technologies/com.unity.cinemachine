@@ -121,12 +121,7 @@ Package development works best within the Unity Editor.  Here's how to set that 
 
 
 ## Register your package
-If you think you are working on a feature that is a good package candidate, please take a minute to fill-in [this form](https://docs.google.com/forms/d/e/1FAIpQLSedxgDcIyf1oPyhWegp5FBvMm63MGAopeJhHDT5bU_BkFPNIQ/viewform?usp=sf_link). This form provides us with the following information:
-* Package Name
-* Dev owner
-* QA owner
-* Unity Version Target
-* Short Package Description.
+If you think you are working on a feature that is a good package candidate, please take a minute to fill-in this form: https://docs.google.com/forms/d/e/1FAIpQLSedxgDcIyf1oPyhWegp5FBvMm63MGAopeJhHDT5bU_BkFPNIQ/viewform?usp=sf_link. 
 
 Working with the board of dev directors and with product management, we will schedule the entry of the candidates in the ecosystem, based on technical challenges and on our feature roadmap.
 Don’t hesitate to reach out and join us on **#devs-packman** on Slack.
