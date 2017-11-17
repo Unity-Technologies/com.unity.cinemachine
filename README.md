@@ -195,7 +195,7 @@ You will receive a confirmation email once the package is in production. Then, o
 2. If your package is meant to ship with a release of the editor (default packages), follow these steps:
       * Get the latest version of your package tarball from production by running the following command line from the folder ``[root]\External\PackageManager\Editor``:  
       ```
-      npm pack --registry https://packages.unity.com <your-package-name>
+      npm pack --registry https://packages.unity.com com.unity.[your package name]
       ```
       * Modify the editor manifest ``[root]\External\PackageManager\Editor\Manifest.json`` to include your package in the list of dependencies.
       * Update your PR, add both `Latest Release Manager` and  `Trunk Merge Queue` as reviewers.
