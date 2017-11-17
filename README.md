@@ -180,18 +180,22 @@ There are a few steps to publishing your package so it can be include as part of
 
       * Create a branch in Ono, based on the latest branch this package must be compatible with (trunk, or release branch)
       * If your package contains **EditorTests**:
-        * In [root]\Tests\EditorTests, create a new EditorTest Project (for new packages) or use an existing project (for new versions of existing package).
+        * In [root]\Tests\EditorTests, create a new EditorTest Project (for new packages use **YourPackageName**) or use an existing project (for new versions of existing package).
+        * A skeleton of EditorTest Project can be found [here](https://oc.unity3d.com/index.php/s/UYYsGINte9Wg6FO). 
+        * Modify the project’s manifest.json file to include the staging version of the package (name@version).
+        * Your project's manifest.json file should contain the following line ``"registry": "http://staging-packages.unity.com"``.
       * If your package contains **PlaymodeTests**:
-        * In [root]\Tests\PlaymodeTests, create a new PlaymodeTest Project (for new packages) or use an existing project (for new versions of existing package).
-      * Modify the project’s manifest.json file to include the staging version of the package (name@version).
+        * In [root]\Tests\PlaymodeTests, create a new PlaymodeTest Project (for new packages use **YourPackageName**) or use an existing project (for new versions of existing package).
+        * Modify the project’s manifest.json file to include the staging version of the package (name@version).
+        * Your project's manifest.json file should contain the following line ``"registry": "http://staging-packages.unity.com"``.
       * Commit your branch changes to Ono, and run all Windows & Mac Editor/PlayMode tests (not full ABV) in Katana.
       * Once the tests are green on Katana, create a PR with the changed manifest and add `Latest Release Manager` as a reviewer
   2. Make sure you’ve completed all checklist items on the package publishing form, and [Submit your package publishing request to Release Management](https://docs.google.com/forms/d/e/1FAIpQLSdSIRO6s6_gM-BxXbDtdzIej-Hhk-3n68xSyC2sM8tp7413mw/viewform).
 
-**At this point release management will validate your package content, and check that the editor tests are passed before promoting the package to production.**
+**At this point release management will validate your package content, and check that the editor/playmode tests are passed before promoting the package to production.**
 
 Once the package is in production, one more PR is required to complete package publishing:
-1. In your existing branch, change the test project manifest to point to your production package by removing the following line ``"registry": "http://staging-packages.unity.com"``
+1. In your existing branch, change the EditorTest/PlaymodeTest project manifest to point to your production package by removing the following line ``"registry": "http://staging-packages.unity.com"``
 2. If your package is meant to ship with a release of the editor (default package), follow these steps:
       * Modify the in editor manifest (_[root]\External\PackageManager\Editor\Manifest.json_) to include your package in the list of dependencies.
       * Create a PR update with the editor manifest changes, add both `Latest Release Manager` and  `Trunk Merge Queue` as reviewers.
