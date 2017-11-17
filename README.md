@@ -181,7 +181,7 @@ There are a few steps to publishing your package so it can be include as part of
       * Create a branch in Ono, based on the latest branch this package must be compatible with (trunk, or release branch)
       * If your package contains **EditorTests**:
         * In [root]\Tests\EditorTests, create a new EditorTest Project (for new packages use **YourPackageName**) or use an existing project (for new versions of existing package).
-        * A skeleton of EditorTest Project can be found [here](https://oc.unity3d.com/index.php/s/FPYdcSYr3t6ZuF9). 
+        * A skeleton of EditorTest Project can be found [here](https://oc.unity3d.com/index.php/s/UYYsGINte9Wg6FO). 
         * Modify the project’s manifest.json file to include the staging version of the package (name@version).
         * Your project's manifest.json file should contain the following line ``"registry": "http://staging-packages.unity.com"``.
       * If your package contains **PlaymodeTests**:
