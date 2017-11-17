@@ -167,7 +167,7 @@ There are a few steps to publishing your package so it can be include as part of
       dependencies: {
         "com.unity.[your package name]": "0.1.0"
       },
-      "registry": "http://staging-packages.unity.com"
+      "registry": "https://staging-packages.unity.com"
       ```
 
 ## Getting your package published to Production
@@ -191,7 +191,7 @@ There are a few steps to publishing your package so it can be include as part of
 **At this point release management will validate your package content, and check that the editor tests are passed before promoting the package to production.**
 
 You will receive a confirmation email once the package is in production. Then, one more step is required to complete package publishing:
-1. In your existing branch, change the test project manifest to point to your production package by removing the following line ``"registry": "http://staging-packages.unity.com"``
+1. In your existing branch, change the test project manifest to point to your production package by removing the following line ``"registry": "https://staging-packages.unity.com"``
 2. If your package is meant to ship with a release of the editor (default packages), follow these steps:
       * Get the latest version of your package tarball from production by running the following command line from the folder ``[root]\External\PackageManager\Editor``:  
       ```
