@@ -18,17 +18,20 @@ This Cinemachine version 2.1.9 is compatible with the following versions of the 
 ## Create your first Virtual Camera
 
 Go to the Unity Main menu, and select Cinemachine/Create Virtual Camera. This is also the way to create additional Cinemachine shots.  
+
 ![Creating a Virtual Camera](images/CreateCameraMenu.png)
 
 You will notice two changes to your scene: 
 
+![Changes to your scene](images/FirstVcam.png)
+
 1. The main camera has a little icon next to it in the scene hierarchy.  This indicates that your camera has been Cinemachine-enabled using a new component: the CinemachineBrain.
 2. A new GameObject CM vcam1 with a CinemachineVirtualCamera component, which is a single camera or shot.
-![Changes to your scene](images/FirstVcam.png)
+
 
 Those two things are the heart of Cinemachine; everything else builds on them.
 
-###Cinemachine Virtual Camera
+### Cinemachine Virtual Camera
 The Virtual Camera is a shot, a single camera. It has child components which you can turn on to make it do things like procedurally track and compose objects, follow things and shake with procedural noise.   Together they are a very powerful combination and can yield an unlimited number of results.  
 
 These modules have been designed, re-designed and re-designed again to offer the widest range of possibilities with the least number of controls.  The math driving these camera behaviours is complex and sophisticated, having gone through many different scenarios across all sorts of games.
@@ -36,7 +39,7 @@ These modules have been designed, re-designed and re-designed again to offer the
 #### Why Virtual Camera?
 The reason for the ‘virtual’ camera scenario is because Unity renders from the main camera. Out-of-the-box Unity is limited to only one camera being active camera at a time – which makes the blending of two shots effectively impossible. Cinemachine is engineered to solve this and provide a wealth of simple, powerful functionality at the same time, allowing unsurpassed camera behaviors which are fast and easy to setup.
 
-###Cinemachine Brain
+### Cinemachine Brain
 
 This is the central Cinemachine component that does all the magic.  It’s a component attached to the Unity camera and it monitors all the Virtual Cameras in the scene and drives the Unity camera using the shot it likes best. 
 
@@ -44,7 +47,7 @@ What happens is that there is only one Unity Camera.  The brain that gets instal
 
 There’s more info below on how to use these new things.  Don’t forget to check out the example scenes included in Cinemachine/Examples/Scenes, and please visit our user forum at https://forum.unity3d.com/forums/cinemachine.136/
 
-##Frequently asked questions
+## Frequently Asked Questions
 **Do we have to replace our camera system with Cinemachine?** 
 No, Cinemachine can work alongside your existing camera system and you can seamlessly blend back and forth between both systems.   If you wrote some camera tech you love but want Cinemachine for something else, no problem, mix the two together. 
 
