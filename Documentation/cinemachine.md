@@ -129,14 +129,17 @@ A Virtual Camera can be in any of three states:
 The Unity Camera can be driven by any virtual camera in the scene.  The game logic can choose the virtual camera to make live by manipulating the virtual cameras' enabled flags and their priorities, based on game logic.
 
 In order to be driven by a virtual camera, the Unity Camera must have a CinemachineBrain behaviour, which will select the most eligible virtual camera based on its priority or on other criteria, and will manage blending.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Look At** | Transform | The object that the camera wants to look at (the Aim target).  If this is null, then the vcam's Transform orientation will define the camera's orientation. |
 | **Follow** | Transform | The object that the camera wants to move with (the Body target).  If this is null, then the vcam's Transform position will define the camera's position. |
 | **Lens** | LensSettings | Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
-###LensSettings
+
+### LensSettings
 Describes the FOV and clip planes for a camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Field Of View** | Single | This is the camera view in vertical degrees.  For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV. |
@@ -245,6 +248,7 @@ This is an asset that defines a noise profile.  A noise profile is the shape of 
 The frequencies and amplitudes should be chosen with care, to ensure an interesting noise quality that is not obviously repetitive.
 
 As a mathematical side-note, any arbitrary periodic curve can be broken down into a series of fixed-amplitude sine-waves added together.  This is called fourier decomposition, and is the basis of much signal processing.  It doesn't really have much to do with this asset, but it's super interesting!
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Position** | TransformNoiseParams[] | These are the noise channels for the virtual camera's position.  Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3. |
@@ -252,6 +256,7 @@ As a mathematical side-note, any arbitrary periodic curve can be broken down int
 
 ### NoiseSettings.NoiseParams
 Describes the behaviour for a channel of noise.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Amplitude** | Single | The amplitude of the noise for this channel.  Larger numbers vibrate higher. |
@@ -259,6 +264,7 @@ Describes the behaviour for a channel of noise.
 
 ### NoiseSettings.TransformNoiseParams
 Contains the behaviour of noise for the noise module for all 3 cardinal axes of the camera.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **X** | NoiseParams | Noise definition for X-axis. |
@@ -300,6 +306,7 @@ The Brain holds the following key settings:
 
 ### CinemachineBlendDefinition
 Definition of a Camera blend.  This struct holds the information necessary to generate a suitable AnimationCurve for a Cinemachine Blend.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Style** | Style | Shape of the blend curve.<br>_Possible Values:_<br>- **Cut**: Zero-length blend.<br>- **Ease In Out**: S-shaped curve, giving a gentle and smooth transition.<br>- **Ease In**: Linear out of the outgoing shot, and easy into the incoming.<br>- **Ease Out**: Easy out of the outgoing shot, and linear into the incoming.<br>- **Hard In**: Easy out of the outgoing, and hard into the incoming.<br>- **Hard Out**: Hard out of the outgoing, and easy into the incoming.<br>- **Linear**: Linear blend.  Mechanical-looking.<br> |
@@ -320,6 +327,7 @@ The From and To settings are name-based, which means that cameras are found by m
 
 ### CinemachineBlenderSettings.CustomBlend
 Container specifying how two specific Cinemachine Virtual Cameras blend together.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **From** | String | When blending from this camera. |
@@ -364,6 +372,7 @@ Another feature of the OrbitalTransposer is automatic recentering.  When enabled
 
 ### CinemachineOrbitalTransposer.Heading
 How the "forward" direction is defined.  Orbital offset is in relation to the forward direction.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Heading Definition** | HeadingDefinition | How 'forward' is defined.  The camera will be placed by default behind the target.  PositionDelta will consider 'forward' to be the direction in which the target is moving.<br>_Possible Values:_<br>- **Position Delta**: Target heading calculated from the difference between its position on the last update and current frame.<br>- **Velocity**: Target heading calculated from its Rigidbody's velocity.  If no Rigidbody exists, it will fall back to HeadingDerivationMode.PositionDelta.<br>- **Target Forward**: Target heading calculated from the Target Transform's euler Y angle.<br>- **World Forward**: Default heading is a constant world space heading.<br> |
@@ -372,6 +381,7 @@ How the "forward" direction is defined.  Orbital offset is in relation to the fo
 
 ### AxisState
 Axis state for defining to react to player input.  The settings here control the responsiveness of the axis to player input.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Value** | Single | The current value of the axis. |
@@ -384,6 +394,7 @@ Axis state for defining to react to player input.  The settings here control the
 
 ### CinemachineOrbitalTransposer.Recentering
 Controls how automatic orbit recentering occurs.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Enabled** | Boolean | If checked, will enable automatic recentering of the camera based on the heading definition.  If unchecked, recenting is disabled. |
@@ -445,6 +456,7 @@ This component can operate in two modes: manual positioning, and Auto-Dolly posi
 
 ### CinemachineTrackedDolly.AutoDolly
 Controls how automatic dollying occurs.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Enabled** | Boolean | If checked, will enable automatic dolly, which chooses a path position that is as close as possible to the Follow target.  Note: this can have significant performance impact. |
@@ -454,6 +466,7 @@ Controls how automatic dollying occurs.
 
 ### CinemachinePath
 Defines a world-space path, consisting of an array of waypoints, each of which has position, tangent, and roll settings.  Bezier interpolation is performed between the waypoints, to get a smooth and continuous path.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Looped** | Boolean | If checked, then the path ends are joined to form a continuous loop. |
@@ -463,6 +476,7 @@ Defines a world-space path, consisting of an array of waypoints, each of which h
 
 ### CinemachinePath.Waypoint
 A waypoint along the path.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Position** | Vector3 | Position in path-local space. |
@@ -471,6 +485,7 @@ A waypoint along the path.
 
 ### CinemachineSmoothPath
 Defines a world-space path, consisting of an array of waypoints, each of which has position and roll settings.  Bezier interpolation is performed between the waypoints, to get a smooth and continuous path.  The path will pass through all waypoints, and (unlike CinemachinePath) first and second order continuity is guaranteed.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Looped** | Boolean | If checked, then the path ends are joined to form a continuous loop. |
@@ -480,6 +495,7 @@ Defines a world-space path, consisting of an array of waypoints, each of which h
 
 ### CinemachineSmoothPath.Waypoint
 A waypoint along the path.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Position** | Vector3 | Position in path-local space. |
@@ -487,6 +503,7 @@ A waypoint along the path.
 
 ### CinemachinePathBase.Appearance
 This class holds the settings that control how the path will appear in the editor scene view.  The path is not visible in the game view.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Path Color** | Color | The color of the path itself when it is active in the editor. |
@@ -621,6 +638,7 @@ There is a shortcut in the Cinemachine menu to set this up and get you going.
 
 ### CinemachineTargetGroup
 Defines a group of target objects, each with a radius and a weight.  The weight is used when calculating the average position of the target group.  Higher-weighted members of the group will count more.  The bounding box is calculated by taking the member positions, weight, and radii into account.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Position Mode** | PositionMode | How the group's position is calculated.  Select GroupCenter for the center of the bounding box, and GroupAverage for a weighted average of the positions of the members.<br>_Possible Values:_<br>- **Group Center**: Group position will be the center of the group's axis-aligned bounding box.<br>- **Group Average**: Group position will be the weighted average of the positions of the members.<br> |
@@ -630,6 +648,7 @@ Defines a group of target objects, each with a radius and a weight.  The weight 
 
 ### CinemachineTargetGroup.Target
 Holds the information that represents a member of the group.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Target** | Transform | The target objects.  This object's position and orientation will contribute to the group's average position and orientation, in accordance with its weight. |
@@ -734,7 +753,7 @@ It's used in 2 ways:
 * As a component on the Unity Camera: it serves as the liaison between the camera's CinemachineBrain and the camera's Post-Processing behaviour.  It listens for camera Cut events and resets the Post-Processing stack when they occur.  If you are using Post-Processing, then you should add this behaviour to your camera alongside the CinemachineBrain, always.
 
 * As a component on the Virtual Camera: In this capacity, it holds a Post-Processing Profile asset that will be applied to the Unity camera whenever the Virtual camera is live.  It also has the (temporary) optional functionality of animating the Focus Distance and DepthOfField properties of the Camera State, and applying them to the current Post-Processing profile.
-* 
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Profile** | PostProcessingProfile | When this behaviour is on a Unity Camera, this setting is the default Post-Processing profile for the camera, and will be applied whenever it is not overridden by a virtual camera.  When the behaviour is on a virtual camera, then this is the Post-Processing profile that will become active whenever this virtual camera is live. |
@@ -770,6 +789,7 @@ Additional components included with Cinemachine are documented in this section.
 
 ### CinemachineFollowZoom
 An add-on module for Cinemachine Virtual Camera that adjusts the FOV of the lens to keep the target object at a constant size on the screen, regardless of camera and target position.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Width** | Single | The shot width to maintain, in world units, at target distance. |
@@ -779,6 +799,7 @@ An add-on module for Cinemachine Virtual Camera that adjusts the FOV of the lens
 
 ### CinemachineDollyCart
 This is a very simple behaviour that constrains its transform to a CinemachinePath.  It can be used to animate any objects along a path, or as a Follow target for Cinemachine Virtual Cameras.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Path** | CinemachinePathBase | The path to follow. |
@@ -791,6 +812,7 @@ This is a very simple behaviour that constrains its transform to a CinemachinePa
 CinemachineMixingCamera is a "manager camera" that takes on the state of the weighted average of the states of its child virtual cameras.
 
 A fixed number of slots are made available for cameras, rather than a dynamic array.  We do it this way in order to support weight animation from the Timeline.  Timeline cannot animate array elements.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Weight 0** | Single | The weight of the first tracked camera. |
@@ -817,6 +839,7 @@ This is a virtual camera "manager" that owns and manages a collection of child V
 
 ### CinemachineExternalCamera
 This component will expose a non-cinemachine camera to the cinemachine system, allowing it to participate in blends.  Just add it as a component alongside an existing Unity Camera component.
+
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Look At** | Transform | The object that the camera is looking at.  Setting this will improve the quality of the blends to and from this camera. |
