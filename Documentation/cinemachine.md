@@ -96,12 +96,12 @@ Cinemachine allows you to create an unlimited number of virtual cameras, blend t
 
 Key components of the Virtual Camera are:
 
-* Priority:  The priority of this shot.  Equal or Higher value camera priorities compared to the current camera priority will be activated.  This allows for camera state machine setups where cameras are called based on trigger volumes, animations, health states, etc.  Important cameras will trigger over lower priority ones.
-* Lens:  What kind of lens to use for this shot: FOV, clipping planes, and dutch (camera roll).  Post-processing effects can also be included here.
-* Body: Where the camera is placed in your scene, and procedural ways to ‘mount’ your camera to any object and move the camera with it.
-* Aim:  What the camera looks at, and procedural ways to track and compose any subject.
+* **Priority**:  The priority of this shot.  Equal or Higher value camera priorities compared to the current camera priority will be activated.  This allows for camera state machine setups where cameras are called based on trigger volumes, animations, health states, etc.  Important cameras will trigger over lower priority ones.
+* **Lens**:  What kind of lens to use for this shot: FOV, clipping planes, and dutch (camera roll).  Post-processing effects can also be included here.
+* **Body**: Where the camera is placed in your scene, and procedural ways to ‘mount’ your camera to any object and move the camera with it.
+* **Aim**:  What the camera looks at, and procedural ways to track and compose any subject.
 * Noise:  Procedural Perlin multi-layered noise system for handheld behaviors, shakes, and vibrations.
-* Extensions:  These are add-ons to the basic Cinemachine pipeline.  Post-Processing and Collision Avoidance are examples of standard extensions shipped with Cinemachine.  The API is open, so that you can author your own extensions as well.
+* **Extensions**:  These are add-ons to the basic Cinemachine pipeline.  Post-Processing and Collision Avoidance are examples of standard extensions shipped with Cinemachine.  The API is open, so that you can author your own extensions as well.
 
 The **Solo Button** in the Virtual Camera inspector panel will make the virtual camera temporarily Live so that you can have immediate visual feedback in the game view when tweaking the behavioural parameters of the camera.
 
@@ -111,7 +111,7 @@ The **Save During Play** checkbox enables the Cinemachine feature of taking came
 
 The following sections describe the behaviours and classes that make up the Cinemachine Virtual Camera, and some of its standard procedural components.
 
-###CinemachineVirtualCamera
+### CinemachineVirtualCamera
 This component is intended to be attached to an empty Transform GameObject, and it represents a Virtual Camera within the Unity scene.
 
 The Virtual Camera will animate its Transform according to the rules contained in its CinemachineComponent pipeline (Aim, Body, and Noise).  When the virtual camera is Live, the Unity camera will assume the position and orientation of the virtual camera.
@@ -145,7 +145,7 @@ Describes the FOV and clip planes for a camera.  This generally mirrors the Unit
 | **Far Clip Plane** | Single | This defines the far region of the renderable range of the camera frustum.  Typically you want to set this value as low as possible without cutting off desired distant objects. |
 | **Dutch** | Single | Camera Z roll, or tilt, in degrees. |
 
-###CinemachineComposer
+### CinemachineComposer
 This is a CinemachineComponent in the Aim section of the component pipeline.  Its job is to aim the camera at the vcam's LookAt target object, with configurable offsets, damping, and composition rules.
 
 The composer does not change the camera's position.  It will only pan and tilt the camera where it is, in order to get the desired framing.  To move the camera, you have to use the virtual camera's Body section.
@@ -176,7 +176,7 @@ Once you’ve set the vcam’s LookAt target and are tracking something, you need to
 | **Bias X** | Single | A non-zero bias will move the target position horizontally away from the center of the soft zone. |
 | **Bias Y** | Single | A non-zero bias will move the target position vertically away from the center of the soft zone. |
 
-###CinemachineTransposer
+### CinemachineTransposer
 This is a CinemachineComponent in the Body section of the component pipeline.  Its job is to position the camera in a fixed relationship to the vcam's Follow target object, with offsets and damping.
 
 The Tansposer will only change the camera's position in space.  It will not re-orient or otherwise aim the camera.  To to that, you need to instruct the vcam in the Aim section of its pipeline.
@@ -214,7 +214,7 @@ These different modes do incredibly different things, so try them out and one sh
 | **Yaw Damping** | Single | How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera. |
 | **Roll Damping** | Single | How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera. |
 
-###CinemachineBasicMultiChannelPerlin
+### CinemachineBasicMultiChannelPerlin
 As a part of the Cinemachine Pipeline implementing the Noise stage, this component adds Perlin Noise to the Camera state, in the Correction channel of the CameraState.
 
 The noise is created by using a predefined noise profile asset.  This defines the shape of the noise over time.  You can scale this in amplitude or in time, to produce a large family of different noises using the same profile.
@@ -239,7 +239,7 @@ We’ve included a number of presets to get you going, under Cinemachine/Examples/
 | **Amplitude Gain** | Single | Gain to apply to the amplitudes defined in the NoiseSettings asset.  1 is normal.  Setting this to 0 completely mutes the noise. |
 | **Frequency Gain** | Single | Scale factor to apply to the frequencies defined in the NoiseSettings asset.  1 is normal.  Larger magnitudes will make the noise shake more rapidly. |
 
-###NoiseSettings
+### NoiseSettings
 This is an asset that defines a noise profile.  A noise profile is the shape of the noise as a function of time.  You can build arbitrarily complex shapes by combining different base perlin noise frequencies at different amplitudes.
 
 The frequencies and amplitudes should be chosen with care, to ensure an interesting noise quality that is not obviously repetitive.
@@ -250,14 +250,14 @@ As a mathematical side-note, any arbitrary periodic curve can be broken down int
 | **Position** | TransformNoiseParams[] | These are the noise channels for the virtual camera's position.  Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3. |
 | **Orientation** | TransformNoiseParams[] | These are the noise channels for the virtual camera's orientation.  Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3. |
 
-###NoiseSettings.NoiseParams
+### NoiseSettings.NoiseParams
 Describes the behaviour for a channel of noise.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Amplitude** | Single | The amplitude of the noise for this channel.  Larger numbers vibrate higher. |
 | **Frequency** | Single | The frequency of noise for this channel.  Higher magnitudes vibrate faster. |
 
-###NoiseSettings.TransformNoiseParams
+### NoiseSettings.TransformNoiseParams
 Contains the behaviour of noise for the noise module for all 3 cardinal axes of the camera.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -271,7 +271,7 @@ The CinemachineBrain is the central Cinemachine component that does all the magi
 
 When it’s time to transition from one shot to another, you can choose how this transition is accomplished.  It can be a camera cut, or a Cinemachine blend.  Cinemachine Blends are special: they are not fades, or wipes, or dissolves.  Rather, they are an interpolation of one camera’s settings to another.  Think of a blend more as if one cameraman smoothly passed the camera to another cameraman in a different position, to elegantly transition the shot without a cut.
 
-###CinemachineBrain
+### CinemachineBrain
 CinemachineBrain is the link between the Unity Camera and the Cinemachine Virtual Cameras in the scene.  It monitors the priority stack to choose the current Virtual Camera, and blend with another if necessary.  Finally and most importantly, it applies the Virtual Camera state to the attached Unity Camera.
 
 The CinemachineBrain is also the place where rules for blending between virtual cameras are defined.  Camera blending is an interpolation over time of one virtual camera position and state to another.  If you think of virtual cameras as cameramen, then blending is a little like one cameraman smoothly passing the camera to another cameraman.  You can specify the time over which to blend, as well as the blend curve shape.  Note that a camera cut is just a zero-time blend.
@@ -298,14 +298,14 @@ The Brain holds the following key settings:
 | **Camera Cut Event** | BrainEvent | This event will fire whenever a virtual camera goes live and there is no blend. |
 | **Camera Activated Event** | VcamEvent | This event will fire whenever a virtual camera goes live.  If a blend is involved, then the event will fire on the first frame of the blend. |
 
-###CinemachineBlendDefinition
+### CinemachineBlendDefinition
 Definition of a Camera blend.  This struct holds the information necessary to generate a suitable AnimationCurve for a Cinemachine Blend.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Style** | Style | Shape of the blend curve.<br>_Possible Values:_<br>- **Cut**: Zero-length blend.<br>- **Ease In Out**: S-shaped curve, giving a gentle and smooth transition.<br>- **Ease In**: Linear out of the outgoing shot, and easy into the incoming.<br>- **Ease Out**: Easy out of the outgoing shot, and linear into the incoming.<br>- **Hard In**: Easy out of the outgoing, and hard into the incoming.<br>- **Hard Out**: Hard out of the outgoing, and easy into the incoming.<br>- **Linear**: Linear blend.  Mechanical-looking.<br> |
 | **Time** | Single | Duration of the blend, in seconds. |
 
-###CinemachineBlenderSettings
+### CinemachineBlenderSettings
 Asset that defines the rules for blending between Virtual Cameras.
 
 The From and To settings are name-based, which means that cameras are found by matching their names to the settings.  They are not linked to specific game objects.
@@ -317,7 +317,8 @@ The From and To settings are name-based, which means that cameras are found by m
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Custom Blends** | CustomBlend[] | The array containing explicitly defined blends between two Virtual Cameras. |
-###CinemachineBlenderSettings.CustomBlend
+
+### CinemachineBlenderSettings.CustomBlend
 Container specifying how two specific Cinemachine Virtual Cameras blend together.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -325,7 +326,7 @@ Container specifying how two specific Cinemachine Virtual Cameras blend together
 | **To** | String | When blending to this camera. |
 | **Blend** | CinemachineBlendDefinition | Blend curve definition. |
 
-##Follow Cams and Player Input
+## Follow Cams and Player Input
 In the previous sections of the manual we discussed basic virtual cameras.  They are great for cinematics and composition, but it’s hard to set up a camera that follows in the path of a moving target, and up to now there has been no consideration of cameras that position themselves in response to player input.
 
 Because Cinemachine is a modular system, it’s easy to replace the Transposer in the Body section with a different component - one that considers the velocity of the Follow target, and player input coming from various HIDs.  One such component is the **OrbitalTransposer**.
@@ -334,7 +335,7 @@ Building on the OrbitalTransposer, the **CinemachineFreeLook** camera is a compl
 
 Player input is accomplished either by setting up axes in the Unity Input Manager, or you can drive the values directly using any custom or proprietary input system.
 
-###CinemachineOrbitalTransposer
+### CinemachineOrbitalTransposer
 This is a CinemachineComponent in the the Body section of the component pipeline.  Its job is to position the camera in a variable relationship to a the vcam's Follow target object, with offsets and damping.
 
 This component is typically used to implement a camera that follows its target.  It can accept player input from an input device, which allows the player to dynamically control the relationship between the camera and the target, for example with a joystick.
@@ -361,7 +362,7 @@ Another feature of the OrbitalTransposer is automatic recentering.  When enabled
 | **Yaw Damping** | Single | How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera. |
 | **Roll Damping** | Single | How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera. |
 
-###CinemachineOrbitalTransposer.Heading
+### CinemachineOrbitalTransposer.Heading
 How the "forward" direction is defined.  Orbital offset is in relation to the forward direction.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -369,7 +370,7 @@ How the "forward" direction is defined.  Orbital offset is in relation to the fo
 | **Velocity Filter Strength** | Int32 | Size of the velocity sampling window for target heading filter.  This filters out irregularities in the target's movement.  Used only if deriving heading from target's movement (PositionDelta or Velocity). |
 | **Heading Bias** | Single | Where the camera is placed when the X-axis value is zero.  This is a rotation in degrees around the Y axis.  When this value is 0, the camera will be placed behind the target.  Nonzero offsets will rotate the zero position around the target. |
 
-###AxisState
+### AxisState
 Axis state for defining to react to player input.  The settings here control the responsiveness of the axis to player input.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -381,7 +382,7 @@ Axis state for defining to react to player input.  The settings here control the
 | **Input Axis Value** | Single | The value of the input axis.  A value of 0 means no input.  You can drive this directly from a custom input system, or you can set the Axis Name and have the value driven by the internal Input Manager. |
 | **Invert Axis** | Boolean | If checked, then the raw value of the input axis will be inverted before it is used. |
 
-###CinemachineOrbitalTransposer.Recentering
+### CinemachineOrbitalTransposer.Recentering
 Controls how automatic orbit recentering occurs.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -389,7 +390,7 @@ Controls how automatic orbit recentering occurs.
 | **Recenter Wait Time** | Single | If no input has been detected, the camera will wait this long in seconds before moving its heading to the zero position. |
 | **Recentering Time** | Single | Maximum angular speed of recentering.  Will accelerate into and decelerate out of this. |
 
-###CinemachineFreeLook
+### CinemachineFreeLook
 A Cinemachine Camera geared towards a 3rd person camera experience.  The camera orbits around its subject with three separate camera rigs defining rings around the target.  Each rig has its own radius, height offset, composer, and lens settings.  Depending on the camera's position along the spline connecting these three rigs, these settings are interpolated to give the final camera position and state.
 
 Player input is supplied along 2 axes: the X axis which controls the orbital position (see CinemachineOrbitalTransposer), and the Y axis which controls the vertical position on the spline connecting the 3 child rigs.
@@ -413,7 +414,7 @@ Each child rig can have its own Lens settings, or common shared values can be us
 | **Orbits** | Orbit[] | The radius and height of the three orbiting rigs. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
-##Tracked Dolly
+## Tracked Dolly
 If you need your camera’s position to be confined to a dolly track, this can be done with a combination of a CinemachinePath for the track, and a TrackedDolly for the Body component of the virtual camera.  There is a shortcut for creating this pair in the Cinemachine menu:
 
 ![Creating a Tracked Dolly Camera](images/TrackedDollyMenu.png)
@@ -422,7 +423,7 @@ The path itself is defined by positioning waypoints.  The CinemachinePath inspec
 
 ![Camera on a Dolly Track](images/DollyTrackImage.png)
 
-###CinemachineTrackedDolly
+### CinemachineTrackedDolly
 A Cinemachine Virtual Camera Body component that constrains camera motion to a CinemachinePath or a CinemachineSmoothPath.  The camera can move along the path.
 
 This component can operate in two modes: manual positioning, and Auto-Dolly positioning.  In Manual mode, the camera's position is specified by animating the Path Position field.  In Auto-Dolly mode, the Path Position field is animated automatically every frame by finding the position on the path that's closest to the virtual camera's Follow target.
@@ -442,7 +443,7 @@ This component can operate in two modes: manual positioning, and Auto-Dolly posi
 | **Roll Damping** | Single | How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera. |
 | **Auto Dolly** | AutoDolly | Controls how automatic dollying occurs.  A Follow target is necessary to use this feature. |
 
-###CinemachineTrackedDolly.AutoDolly
+### CinemachineTrackedDolly.AutoDolly
 Controls how automatic dollying occurs.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -451,7 +452,7 @@ Controls how automatic dollying occurs.
 | **Search Radius** | Int32 | Search up to how many waypoints on either side of the current position.  Use 0 for Entire path. |
 | **Search Resolution** | Int32 | We search between waypoints by dividing the segment into this many straight pieces.  The higher the number, the more accurate the result, but performance is proportionally slower for higher numbers. |
 
-###CinemachinePath
+### CinemachinePath
 Defines a world-space path, consisting of an array of waypoints, each of which has position, tangent, and roll settings.  Bezier interpolation is performed between the waypoints, to get a smooth and continuous path.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -460,7 +461,7 @@ Defines a world-space path, consisting of an array of waypoints, each of which h
 | **Resolution** | Int32 | Path samples per waypoint.  This is used for calculating path distances. |
 | **Appearance** | Appearance | The settings that control how the path will appear in the editor scene view. |
 
-###CinemachinePath.Waypoint
+### CinemachinePath.Waypoint
 A waypoint along the path.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -468,7 +469,7 @@ A waypoint along the path.
 | **Tangent** | Vector3 | Offset from the position, which defines the tangent of the curve at the waypoint.  The length of the tangent encodes the strength of the bezier handle.  The same handle is used symmetrically on both sides of the waypoint, to ensure smoothness. |
 | **Roll** | Single | Defines the roll of the path at this waypoint.  The other orientation axes are inferred from the tangent and world up. |
 
-###CinemachineSmoothPath
+### CinemachineSmoothPath
 Defines a world-space path, consisting of an array of waypoints, each of which has position and roll settings.  Bezier interpolation is performed between the waypoints, to get a smooth and continuous path.  The path will pass through all waypoints, and (unlike CinemachinePath) first and second order continuity is guaranteed.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -477,14 +478,14 @@ Defines a world-space path, consisting of an array of waypoints, each of which h
 | **Resolution** | Int32 | Path samples per waypoint.  This is used for calculating path distances. |
 | **Appearance** | Appearance | The settings that control how the path will appear in the editor scene view. |
 
-###CinemachineSmoothPath.Waypoint
+### CinemachineSmoothPath.Waypoint
 A waypoint along the path.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Position** | Vector3 | Position in path-local space. |
 | **Roll** | Single | Defines the roll of the path at this waypoint.  The other orientation axes are inferred from the tangent and world up. |
 
-###CinemachinePathBase.Appearance
+### CinemachinePathBase.Appearance
 This class holds the settings that control how the path will appear in the editor scene view.  The path is not visible in the game view.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -492,7 +493,7 @@ This class holds the settings that control how the path will appear in the edito
 | **Inactive Path Color** | Color | The color of the path itself when it is inactive in the editor. |
 | **Width** | Single | The width of the railroad-tracks that are drawn to represent the path. |
 
-##State-Driven Camera
+## State-Driven Camera
 The State-Driven Camera is an implementation of a simple yet powerful concept: activate specific shots when the subject enters specific animations states.
 
 Even better, the blending between shots within the state-driven rig can be customized and tuned to maximize the emotional punch of the transitions.
@@ -522,7 +523,7 @@ You will end up with something like this:
 
 So now, when the states in the list become active, the associated child cameras will also become active. They will blend in using the default blend setting defined in the StateDrivenCamera. You can also create custom blends for specific pairs by creating a custom blend asset on the StateDrivenCamera.
 
-###CinemachineStateDrivenCamera
+### CinemachineStateDrivenCamera
 This is a virtual camera "manager" that owns and manages a collection of child Virtual Cameras.  These child vcams are mapped to individual states in an animation state machine, allowing you to associate specific vcams to specific animation states.  When that state is active in the state machine, then the associated camera will be activated.
 
 You can define custom blends and transitions between child cameras.
@@ -542,7 +543,7 @@ In order to use this behaviour, you must have an animated target (i.e.  an objec
 | **Custom Blends** | CinemachineBlenderSettings | This is the asset which contains custom settings for specific child blends. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
-##Collision Avoidance and Shot Evaluation
+## Collision Avoidance and Shot Evaluation
 When characters move around in complex environments, sometimes obstacles in the scene can come between a camera and its subject.  Similarly, it can also happen that scene obstacles will inconveniently find themselves to be exactly where a camera wants to be.  Cinemachine provides a mechanism to handle these situations.
 
 The Collider module can be added to any Cinemachine Virtual Camera (including complex camera types such as FreeLook, State-Driven-Camera, and ClearShot).  It does some or all of several things:
@@ -554,7 +555,7 @@ The Collider module can be added to any Cinemachine Virtual Camera (including co
 
 The collider uses Physics Raycasts to do these things, hence obstacles in the scene must have collider volumes in order to be visible to the CinemachineCollider.  Furthermore, there is an associated performance cost related to this.  If your game is such that the cost of using physics is prohibitive, then you might prefer to implement this functionality in a different way.
 
-###CinemachineCollider
+### CinemachineCollider
 An add-on module for Cinemachine Virtual Camera that post-processes the final position of the virtual camera.  Based on the supplied settings, the Collider will attempt to preserve the line of sight with the LookAt target of the virtual camera by moving away from objects that will obstruct the view.
 
 Additionally, the Collider can be used to assess the shot quality and report this as a field in the camera State.
@@ -571,7 +572,7 @@ Additionally, the Collider can be used to assess the shot quality and report thi
 | **Damping** | Single | The gradualness of collision resolution.  Higher numbers will move the camera more gradually away from obstructions. |
 | **Optimal Target Distance** | Single | If greater than zero, a higher score will be given to shots when the target is closer to this distance.  Set this to zero to disable this feature. |
 
-###CinemachineConfiner
+### CinemachineConfiner
 An add-on module for Cinemachine Virtual Camera that post-processes the final position of the virtual camera.  It will confine the virtual camera's position to the volume specified in the Bounding Volume field.
 
 This is less resource-intensive than CinemachineCollider, but it does not perform shot evaluation.
@@ -588,7 +589,7 @@ If your camera is orthographic, there will be an additional option to confine th
 | **Confine Screen Edges** | Boolean | If camera is orthographic, screen edges will be confined to the volume.  If not checked, then only the camera center will be confined. |
 | **Damping** | Single | How gradually to return the camera to the bounding volume if it goes beyond the borders.  Higher numbers are more gradual. |
 
-###CinemachineClearShot
+### CinemachineClearShot
 Cinemachine ClearShot is a "manager camera" that owns and manages a set of Virtual Camera gameObject children.  When Live, the ClearShot will check the children, and choose the one with the best quality shot and make it Live.
 
 This can be a very powerful tool.  If the child cameras have CinemachineCollider extensions, they will analyze the scene for target obstructions, optimal target distance, and other items, and report their assessment of shot quality back to the ClearShot parent, who will then choose the best one.  You can use this to set up complex multi-camera coverage of a scene, and be assured that a clear shot of the target will always be available.
@@ -608,7 +609,7 @@ You can also define custom blends between the ClearShot children.
 | **Default Blend** | CinemachineBlendDefinition | The blend which is used if you don't explicitly define a blend between two Virtual Cameras. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
-##Multiple Target Objects
+## Multiple Target Objects
 If you have multiple LookAt targets and you want to keep them all in the frame, Cinemachine can do this too.  It’s a 2-step process:
 
 1. Define a target group.  This is a list of target objects, each with a weight and radius.  The weight says how important the group member is, and the radius is a rough indication of its physical size.
@@ -618,7 +619,7 @@ There is a shortcut in the Cinemachine menu to set this up and get you going.
 
 ![Multiple Target Menu](images/MultipleTargetMenu.png)
 
-###CinemachineTargetGroup
+### CinemachineTargetGroup
 Defines a group of target objects, each with a radius and a weight.  The weight is used when calculating the average position of the target group.  Higher-weighted members of the group will count more.  The bounding box is calculated by taking the member positions, weight, and radii into account.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -627,7 +628,7 @@ Defines a group of target objects, each with a radius and a weight.  The weight 
 | **Update Method** | UpdateMethod | When to update the group's transform based on the position of the group members.<br>_Possible Values:_<br>- **Update**: Updated in normal MonoBehaviour Update.<br>- **Fixed Update**: Updated in sync with the Physics module, in FixedUpdate.<br>- **Late Update**: Updated in MonoBehaviour LateUpdate.<br> |
 | **Targets** | Target[] | The target objects, together with their weights and radii, that will contribute to the group's average position, orientation, and size. |
 
-###CinemachineTargetGroup.Target
+### CinemachineTargetGroup.Target
 Holds the information that represents a member of the group.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -635,7 +636,7 @@ Holds the information that represents a member of the group.
 | **Weight** | Single | How much weight to give the target when averaging.  Cannot be negative. |
 | **Radius** | Single | The radius of the target, used for calculating the bounding box.  Cannot be negative. |
 
-###CinemachineGroupComposer
+### CinemachineGroupComposer
 This is a CinemachineComponent in the Aim section of the component pipeline.  Its job is to aim the camera at a target object, with configurable offsets, damping, and composition rules.
 
 In addition, if the target is a CinemachineTargetGroup, the behaviour will adjust the FOV and the camera distance to ensure that the entire group of targets is framed properly.
@@ -668,14 +669,14 @@ In addition, if the target is a CinemachineTargetGroup, the behaviour will adjus
 | **Bias X** | Single | A non-zero bias will move the target position horizontally away from the center of the soft zone. |
 | **Bias Y** | Single | A non-zero bias will move the target position vertically away from the center of the soft zone. |
 
-##2D Environments
+## 2D Environments
 Cinemachine supports Orthographic cameras.  When you set the Unity Camera’s style to Orthographic, Cinemachine will adjust to accommodate it.  FOV will be replaced by Orthographic Size in the Lens settings.  Note that settings related to FOV and certain FOV-oriented behaviours such as FollowZoom will not have any effect if the camera is orthographic.
 
 In orthographic environments, it doesn’t usually make sense to rotate the camera.  Accordingly, Cinemachine has a special transposer that handles framing and composition without rotating the camera.
 
 ![Creating a 2D Camera](images/2DCameraMenu.png)
 
-###CinemachineFramingTransposer
+### CinemachineFramingTransposer
 This is a Cinemachine Component in the Body section of the component pipeline.  Its job is to position the camera in a fixed screen-space relationship to the vcam's Follow target object, with offsets and damping.
 
 The camera will be first moved along the camera Z axis until the Follow target is at the desired distance from the camera's X-Y plane.  The camera will then be moved in its XY plane until the Follow target is at the desired point on the camera's screen.
@@ -718,14 +719,14 @@ Although this component was designed for orthographic cameras, it works equally 
 | **Minimum Ortho Size** | Single | If adjusting Orthographic Size, will not set it lower than this. |
 | **Maximum Ortho Size** | Single | If adjusting Orthographic Size, will not set it higher than this. |
 
-##Post-Processing Stack V1
+## Post-Processing Stack V1
 If you have Unity’s Post-Processing Stack as an asset in your project (and if you don’t, you should, because this is an amazing tool that gives world-class results), you can easily assign custom post-effects to any shot in your scene, even though it’s a virtual camera and not a real one.
 
 This section describes the use of Post Processing stack V1.  If you have Post Processing V2, see the section below.
 
 Just define a Post-Processing profile for your vcam, and connect it by attaching a CinemachinePostFX component to your vcam.  To complete the connection, you will also need a CinemachinePostFX component on the Unity camera, alongside the CinemachineBrain.  That’s all you have to do.  Now, whenever the vcam is activated, its custom Post-Processing profile will be applied to the Unity camera.
 
-###CinemachinePostFX
+### CinemachinePostFX
 This behaviour is a liaison between Cinemachine with the Post-Processing v1 module.  You must have the Post-Processing V1 stack asset store package installed in order to use this behaviour.
 
 It's used in 2 ways:
@@ -743,7 +744,7 @@ It's used in 2 ways:
 ![](images/PPv1_1.png)
 ![](images/PPv1_2.png)
 
-##Post Processing Stack V2
+## Post Processing Stack V2
 If you have Unity's Post Processing Stack V2 package installed, you can add post-processing profiles to you virtual cameras.  The profiles will blend along with the cameras.
 
 Just define a Post-Processing profile for your vcam, and connect it by attaching a **CinemachinePostProcessing** extension to your vcam.  To complete the connection, you will also need a PostProcessingLayer component on the Unity camera, alongside the CinemachineBrain.  
@@ -752,7 +753,7 @@ Just define a Post-Processing profile for your vcam, and connect it by attaching
 
 That’s all you have to do.  Now, whenever the vcam is activated, its custom Post-Processing profile will be applied to the Unity camera.  If the camera is blending with another vcam, then the blend weight will be applied to the Post Processing effects also.
 
-###CinemachinePostProcessing
+### CinemachinePostProcessing
 This behaviour is a liaison between Cinemachine with the Post-Processing V2 module. You must have the Post-Processing Stack V2 unity package installed in order to use this behaviour.
 
 As a component on the Virtual Camera, it holds a Post-Processing Profile asset that will be applied to the camera whenever the Virtual camera is live. It also has the optional functionality of animating the Focus Distance and DepthOfField properties of the Camera State, and applying them to the current Post-Processing profile.
@@ -763,11 +764,11 @@ As a component on the Virtual Camera, it holds a Post-Processing Profile asset t
 | **Focus Tracks Target** | Boolean | If checked, then the Focus Distance will be set to the distance between the camera and the LookAt target. |
 | **Focus Offset** | Single | Offset from target distance, to be used with Focus Tracks Target. |
 
-##And the Rest
+## And the Rest
 
 Additional components included with Cinemachine are documented in this section.
 
-###CinemachineFollowZoom
+### CinemachineFollowZoom
 An add-on module for Cinemachine Virtual Camera that adjusts the FOV of the lens to keep the target object at a constant size on the screen, regardless of camera and target position.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -776,7 +777,7 @@ An add-on module for Cinemachine Virtual Camera that adjusts the FOV of the lens
 | **Min FOV** | Single | Lower limit for the FOV that this behaviour will generate. |
 | **Max FOV** | Single | Upper limit for the FOV that this behaviour will generate. |
 
-###CinemachineDollyCart
+### CinemachineDollyCart
 This is a very simple behaviour that constrains its transform to a CinemachinePath.  It can be used to animate any objects along a path, or as a Follow target for Cinemachine Virtual Cameras.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -786,7 +787,7 @@ This is a very simple behaviour that constrains its transform to a CinemachinePa
 | **Speed** | Single | Move the cart with this speed along the path.  The value is interpreted according to the Position Units setting. |
 | **Position** | Single | The position along the path at which the cart will be placed.  This can be animated directly or, if the velocity is non-zero, will be updated automatically.  The value is interpreted according to the Position Units setting. |
 
-###CinemachineMixingCamera
+### CinemachineMixingCamera
 CinemachineMixingCamera is a "manager camera" that takes on the state of the weighted average of the states of its child virtual cameras.
 
 A fixed number of slots are made available for cameras, rather than a dynamic array.  We do it this way in order to support weight animation from the Timeline.  Timeline cannot animate array elements.
@@ -802,7 +803,7 @@ A fixed number of slots are made available for cameras, rather than a dynamic ar
 | **Weight 7** | Single | The weight of the eighth tracked camera. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
-###CinemachineBlendListCamera
+### CinemachineBlendListCamera
 This is a virtual camera "manager" that owns and manages a collection of child Virtual Cameras.  When the camera goes live, these child vcams are enabled, one after another, holding each camera for a designated time.  Blends between cameras are specified.  The last camera is held indefinitely.
 
 | _Setting_ | _Type_ | _Description_ |
@@ -814,14 +815,14 @@ This is a virtual camera "manager" that owns and manages a collection of child V
 | **Instructions** | Instruction[] | The set of instructions for enabling child cameras. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
-###CinemachineExternalCamera
+### CinemachineExternalCamera
 This component will expose a non-cinemachine camera to the cinemachine system, allowing it to participate in blends.  Just add it as a component alongside an existing Unity Camera component.
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **Look At** | Transform | The object that the camera is looking at.  Setting this will improve the quality of the blends to and from this camera. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
-###SaveDuringPlay
+### SaveDuringPlay
 Cameras need to be tweaked in context - often that means while the game is playing.  Normally, Unity does not propagate those changes to the scene once play mode is exited.  Cinemachine has implemented a special feature to preserve parameter tweaks made during game play.  It won’t save structural changes (like adding or removing a behaviour), but it will keep the tweaks.  Cinemachine behaviours have a special attribute [SaveDuringPlay] to enable this functionality.  Feel free to use it on your own scripts too if you need it.
 
 It works by scanning the scene after Play exits and applying any changed parameters back to the scene.  This kicks in a second or so after exit.  You can always hit Undo to revert the changes.
@@ -830,7 +831,7 @@ If there are specific settings within a behaviour that you want to exclude from 
 
 This feature can be enabled by checking the Save During Play checkbox on any Virtual Camera inspector.  This is a static global setting, not per-camera, so you only need to check it once.
 
-##Timeline Integration
+## Timeline Integration
 1. Drag a Cinemachine-enabled Unity camera (i.e. one with a CinemachineBrain component) onto the timeline, select Create Cinemachine Track from the popup menu.  
 2. The Cinemachine track is an enable/disable style track, which means that the clips will enable Cinemachine Virtual Cameras while they are active in the timeline.
 3. Overlapping Cinemachine Shot Clips will produce blends.
@@ -843,12 +844,12 @@ The following slides will serve as a brief introduction to get you started.
 ![](images/Timeline2.png)
 ![](images/Timeline3.png)
 
-##Special Environments
-###Top-Down Games
+## Special Environments
+### Top-Down Games
 Cinemachine Virtual Cameras are modeled after human camera operators.  As such, they have a sensitivity to the up/down axis, and will always try to avoid introducing roll into the camera framing - unless you deliberately introduce it via such settings as dutch.  Because of this sensitivity, virtual cameras do not like to look straight up or down for extended periods.  They will do it in passing, but if the LookAt target is often straight up or down, they will not always give the desired results.
 
 If you are building a top-down game, the best practice is to redefine the up direction, for the purposes of the camera.  You do this by setting the World Up Override in the CinemachineBrain to a game object whose local up points in the direction that you want the Camera’s up to normally be.   This will be applied to all virtual cameras connected to that brain.
-###Split-screen
+### Split-screen
 You can set up a multi-camera split-screen with Cinemachine 2.0:
 
 1. Make 2 Unity Cameras, give each one its own CinemachineBrain, and set up their viewports.
@@ -858,7 +859,7 @@ You can set up a multi-camera split-screen with Cinemachine 2.0:
 5. Add as many layers and cameras as you like.
 
 
-##Scripting
+## Scripting
 Cinemachine is a pure-csharp implementation and is completely accessible to scripting.  All of the settings visible in the inspector have corresponding fields in the csharp classes.  In addition there is a full scripting API which you can discover either by examining the well-commented sources in the implementation, or by looking at the scripting scene in the examples, or by consulting the API documentation shipped with Cinemachine and available online.
 
 
