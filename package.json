@@ -1,10 +1,10 @@
 {
-	"name": "com.unity.[your package name]",
-	"version": "0.1.0",
+	"name": "com.unity.cinemachine",
+	"version": "2.1.9",
 	"unity": "2018.1",
-	"description": "Your description, which will show up in the Package Manager UI",
-	"keywords": ["key", "words", "used", "for", "package", "search"],
-	"category": "Your category (TBD)",
+	"description": "Smart camera tools for passionate creators",
+	"keywords": ["camera", "follow", "rig", "fps", "cinematography"],
+	"category": "cinematography",
 	"dependencies": {
 	}
 }

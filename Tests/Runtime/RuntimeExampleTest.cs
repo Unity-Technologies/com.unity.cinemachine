@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+#if false
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
@@ -19,3 +20,4 @@ public class RuntimeExampleTest {
 		yield return null;
 	}
 }
+#endif
