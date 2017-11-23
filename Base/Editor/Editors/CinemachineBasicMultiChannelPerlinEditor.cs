@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Cinemachine.Editor
 {
@@ -10,6 +12,7 @@ namespace Cinemachine.Editor
     {
         List<NoiseSettings> mNoisePresets;
         string[] mNoisePresetNames;
+        SerializedProperty m_Profile;
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -20,7 +23,16 @@ namespace Cinemachine.Editor
 
         private void OnEnable()
         {
+            m_Profile = FindProperty(x => x.m_NoiseProfile);
+            RebuildProfileList();
+        }
+
+        void RebuildProfileList()
+        {
             mNoisePresets = FindAssetsByType<NoiseSettings>();
+#if UNITY_2018_1_OR_NEWER
+            AddAssetsFromDirectory(mNoisePresets, "Packages/com.unity.cinemachine/Presets/Noise");
+#endif
             mNoisePresets.Insert(0, null);
             List<string> presetNameList = new List<string>();
             foreach (var n in mNoisePresets)
@@ -32,28 +44,46 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
-            if (Target.m_NoiseProfile == null)
+            if (m_Profile.objectReferenceValue == null)
                 EditorGUILayout.HelpBox(
                     "A Noise Profile is required.  You may choose from among the NoiseSettings assets defined in the project.",
                     MessageType.Warning);
 
-            GUIContent editLabel = new GUIContent("Edit");
-            Vector2 labelDimension = GUI.skin.button.CalcSize(editLabel);
             Rect rect = EditorGUILayout.GetControlRect(true);
-            rect.width -= labelDimension.x;
-            int preset = mNoisePresets.IndexOf(Target.m_NoiseProfile);
+            float iconSize = rect.height + 4;
+            rect.width -= iconSize;
+            int preset = mNoisePresets.IndexOf((NoiseSettings)m_Profile.objectReferenceValue);
             preset = EditorGUI.Popup(rect, "Noise Profile", preset, mNoisePresetNames);
             NoiseSettings newProfile = preset < 0 ? null : mNoisePresets[preset];
-            if (Target.m_NoiseProfile != newProfile)
+            if ((NoiseSettings)m_Profile.objectReferenceValue != newProfile)
             {
-                Undo.RecordObject(Target, "Change Noise Profile");
-                Target.m_NoiseProfile = newProfile;
+                m_Profile.objectReferenceValue = newProfile;
+                serializedObject.ApplyModifiedProperties();
             }
-            if (Target.m_NoiseProfile != null)
+            rect.x += rect.width; rect.width = iconSize; rect.height = iconSize;
+            if (GUI.Button(rect, EditorGUIUtility.IconContent("_Popup"), GUI.skin.label))
             {
-                rect.x += rect.width; rect.width = labelDimension.x;
-                if (GUI.Button(rect, editLabel))
-                    Selection.activeObject = Target.m_NoiseProfile;
+                GenericMenu menu = new GenericMenu();
+                if (m_Profile.objectReferenceValue != null)
+                {
+                    menu.AddItem(new GUIContent("Edit"), false, () => Selection.activeObject = m_Profile.objectReferenceValue);
+                    menu.AddItem(new GUIContent("Clone"), false, () => 
+                        {
+                            m_Profile.objectReferenceValue = CreateProfile(
+                                (NoiseSettings)m_Profile.objectReferenceValue);
+                            RebuildProfileList();
+                            serializedObject.ApplyModifiedProperties();
+                        });
+                    menu.AddItem(new GUIContent("Locate"), false, () => EditorGUIUtility.PingObject(m_Profile.objectReferenceValue));
+                }
+                menu.AddItem(new GUIContent("New"), false, () => 
+                    { 
+                        //Undo.RecordObject(Target, "Change Noise Profile");
+                        m_Profile.objectReferenceValue = CreateProfile(null);
+                        RebuildProfileList();
+                        serializedObject.ApplyModifiedProperties();
+                    });
+                menu.ShowAsContext();
             }
 
             DrawRemainingPropertiesInInspector();
@@ -73,6 +103,52 @@ namespace Cinemachine.Editor
                 }
             }
             return assets;
+        }
+
+        static void AddAssetsFromDirectory<T>(List<T> assets, string path) where T : UnityEngine.Object
+        {
+            try 
+            {
+                var info = new DirectoryInfo(path);
+                var fileInfo = info.GetFiles();
+                foreach (var file in fileInfo)
+                {
+                    string name = path + "/" + file.Name;
+                    T a = AssetDatabase.LoadAssetAtPath(name, typeof(T)) as T;
+                    if (a != null)
+                        assets.Add(a);
+                }
+            }
+            catch 
+            {
+            }
+        }
+
+        NoiseSettings CreateProfile(NoiseSettings copyFrom)
+        {
+            var path = string.Empty;
+            var scene = Target.gameObject.scene;
+            if (string.IsNullOrEmpty(scene.path))
+                path = "Assets/";
+            else
+            {
+                var scenePath = Path.GetDirectoryName(scene.path);
+                var extPath = scene.name + "_Profiles";
+                var profilePath = scenePath + "/" + extPath;
+                if (!AssetDatabase.IsValidFolder(profilePath))
+                    AssetDatabase.CreateFolder(scenePath, extPath);
+                path = profilePath + "/";
+            }
+
+            var profile = ScriptableObject.CreateInstance<NoiseSettings>();
+            if (copyFrom != null)
+                profile.CopyFrom(copyFrom);
+            path += Target.VirtualCamera.Name + " Noise.asset";
+            path = AssetDatabase.GenerateUniqueAssetPath(path);
+            AssetDatabase.CreateAsset(profile, path);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            return profile;
         }
     }
 }
