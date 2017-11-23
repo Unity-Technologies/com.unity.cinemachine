@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.IO;
 
 namespace Cinemachine.Editor
 {
@@ -157,6 +158,17 @@ namespace Cinemachine.Editor
             CinemachineDollyCart cart = Undo.AddComponent<CinemachineDollyCart>(go);
             Undo.RecordObject(cart, "create track");
             cart.m_Path = path;
+        }
+
+        [MenuItem("Cinemachine/Import Example Asset Package")]
+        private static void ImportExamplePackage()
+        {
+            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath 
+                + "/CinemachineExamples.unitypackage";
+            if (!File.Exists(pkgFile))
+                Debug.LogError("Missing file " + pkgFile);
+            else
+                AssetDatabase.ImportPackage(pkgFile, true);
         }
 
         /// <summary>

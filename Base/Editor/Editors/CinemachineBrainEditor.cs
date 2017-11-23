@@ -2,6 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using System.IO;
 
 namespace Cinemachine.Editor
 {
@@ -127,7 +128,7 @@ namespace Cinemachine.Editor
                 return;
 
             CameraState state = vcam.State;
-            Gizmos.DrawIcon(state.FinalPosition, "Cinemachine/cm_logo_lg.png", true);
+            Gizmos.DrawIcon(state.FinalPosition, kGizmoFileName, true);
 
             DrawCameraFrustumGizmo(
                 CinemachineCore.Instance.FindPotentialTargetBrain(vcam),
@@ -138,6 +139,30 @@ namespace Cinemachine.Editor
                 CinemachineCore.Instance.IsLive(vcam)
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
+        }
+
+        static string kGizmoFileName = "Cinemachine/cm_logo_lg.png";
+        [InitializeOnLoad]
+        static class InstallGizmos
+        {
+            static InstallGizmos()
+            {
+                string srcFile = ScriptableObjectUtility.CinemachineInstallPath + "/Gizmos/" + kGizmoFileName;
+                if (File.Exists(srcFile))
+                {
+                    string dstFile = Application.dataPath + "/Gizmos";
+                    if (!Directory.Exists(dstFile))
+                        Directory.CreateDirectory(dstFile);
+                    dstFile += "/" + kGizmoFileName;
+                    if (!File.Exists(dstFile) 
+                        || File.GetCreationTime(dstFile) < File.GetCreationTime(srcFile))
+                    {
+                        if (!Directory.Exists(Path.GetDirectoryName(dstFile)))
+                            Directory.CreateDirectory(Path.GetDirectoryName(dstFile));
+                        File.Copy(srcFile, dstFile);
+                    }
+                }
+            }
         }
     }
 }

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Cinemachine.Editor
 {
@@ -31,7 +30,10 @@ namespace Cinemachine.Editor
         {
             mNoisePresets = FindAssetsByType<NoiseSettings>();
 #if UNITY_2018_1_OR_NEWER
-            AddAssetsFromDirectory(mNoisePresets, "Packages/com.unity.cinemachine/Presets/Noise");
+            if (ScriptableObjectUtility.CinemachineIsPackage)
+                AddAssetsFromDirectory(
+                    mNoisePresets, 
+                    ScriptableObjectUtility.CinemachineInstallAssetPath + "/Presets/Noise");
 #endif
             mNoisePresets.Insert(0, null);
             List<string> presetNameList = new List<string>();

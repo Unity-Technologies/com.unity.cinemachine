@@ -108,8 +108,11 @@ namespace Cinemachine.Editor
 
                 if (GUILayout.Button("<b>Documentation</b>\nRead it", mButtonStyle))
                 {
-                    Application.OpenURL("file://" + ScriptableObjectUtility.CinemachineInstallPath 
-                        + "/CINEMACHINE_install.pdf");
+                    string filename = ScriptableObjectUtility.CinemachineInstallPath 
+                        + "/CINEMACHINE_install.pdf";
+                    if (!File.Exists(filename))
+                        Debug.LogError("Missing file " + filename);
+                    Application.OpenURL("file://" + filename);
                 }
             }
 

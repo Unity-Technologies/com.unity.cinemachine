@@ -10,7 +10,7 @@ namespace Cinemachine.Editor
     {
         public static string CinemachineInstallPath
         {
-            get { return Application.dataPath + CinemachineInstallAssetPath.Substring("Assets".Length); }
+            get { return Path.GetFullPath(CinemachineInstallAssetPath); }
         }
 
         public static string CinemachineInstallAssetPath
@@ -20,8 +20,14 @@ namespace Cinemachine.Editor
                 ScriptableObject dummy = ScriptableObject.CreateInstance<ScriptableObjectUtility>();
                 string path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(dummy));
                 DestroyImmediate(dummy);
-                return path.Substring(0, path.LastIndexOf("/Base"));
+                path = path.Substring(0, path.LastIndexOf("/Base"));
+                return path;
             }
+        }
+
+        public static bool CinemachineIsPackage 
+        { 
+            get { return CinemachineInstallAssetPath.StartsWith("Packages"); } 
         }
 
         public static bool AddDefineForAllBuildTargets(string k_Define)
