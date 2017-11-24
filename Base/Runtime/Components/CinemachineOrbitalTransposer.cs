@@ -191,6 +191,9 @@ namespace Cinemachine
         [HideInInspector, NoSaveDuringPlay]
         public bool m_HeadingIsSlave = false;
 
+        internal delegate float GetXAxisValue();
+        internal GetXAxisValue PreUpdateXAxisValueOverride;
+
         /// <summary>
         /// When in slave mode, this should be called once and only
         /// once every hrame to update the heading.  When not in slave mode, this is called automatically.
@@ -200,7 +203,17 @@ namespace Cinemachine
             // Only read joystick when game is playing
             if (deltaTime >= 0 || CinemachineCore.Instance.IsLive(VirtualCamera))
             {
-                bool xAxisInput = m_XAxis.Update(deltaTime);
+                bool xAxisInput = false;
+                if (PreUpdateXAxisValueOverride != null)
+                {
+                    float value = PreUpdateXAxisValueOverride();
+                    if (value != m_XAxis.Value)
+                    {
+                        xAxisInput = true;
+                        m_XAxis.Value = value;
+                    }
+                }
+                xAxisInput |= m_XAxis.Update(deltaTime);
                 if (xAxisInput)
                 {
                     mLastHeadingAxisInputTime = Time.time;
@@ -249,11 +262,6 @@ namespace Cinemachine
                     }
                 }
             }
-        }
-
-        void OnVlaidate()
-        {
-            m_XAxis.Validate();
         }
 
         private void OnEnable()

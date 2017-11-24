@@ -276,12 +276,9 @@ namespace Cinemachine
 
             // Top rig is the master axis controller
             if (mOrbitals[0] != null)
-                m_XAxis = mOrbitals[0].m_XAxis;
+                m_XAxis.Value = mOrbitals[0].m_XAxis.Value;
             if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                 m_XAxis.Value = 0;
-            for (int i = 1; i < mOrbitals.Length; ++i)
-                if (mOrbitals[i] != null)
-                    mOrbitals[i].m_XAxis = m_XAxis;
 
             PushSettingsToRigs();
                  
@@ -498,6 +495,7 @@ namespace Cinemachine
                             if (mOrbitals[i] != null)
                             {
                                 mOrbitals[i].m_HeadingIsSlave = true;
+                                mOrbitals[i].PreUpdateXAxisValueOverride = () => { return m_XAxis.Value; };
                                 m_Rigs[i] = vcam;
                                 ++rigsFound;
                             }
@@ -555,7 +553,6 @@ namespace Cinemachine
                 mOrbitals[i].m_FollowOffset = GetLocalPositionForCameraFromInput(m_YAxis.Value);
                 mOrbitals[i].m_BindingMode = m_BindingMode;
                 mOrbitals[i].m_Heading = m_Heading;
-                mOrbitals[i].m_HeadingIsSlave = true;
                 mOrbitals[i].m_XAxis = m_XAxis;
                 mOrbitals[i].m_RecenterToTargetHeading = m_RecenterToTargetHeading;
                 if (i > 0)
