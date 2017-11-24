@@ -198,19 +198,6 @@ namespace Cinemachine
         private Transform m_previousLookAtTarget;
         private Transform m_previousFollowTarget;
 
-        
-        /// <summary>
-        /// This is called prior to the updating of the vcam's child cameras, 
-        /// in order to allow the parent to prepare its children.
-        /// If the children are updating on FixedUpdate, then this will not necessarily be called
-        /// prior to every FixedUpdate, but it might be called on LateUpdate instead.
-        /// Base class implementation does nothing.
-        /// </summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        public virtual void PreUpdateChildCameras(Vector3 worldUp, float deltaTime)
-        {
-        }
 
         /// <summary>Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  

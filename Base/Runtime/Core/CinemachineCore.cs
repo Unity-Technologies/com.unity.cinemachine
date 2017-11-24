@@ -156,22 +156,6 @@ namespace Cinemachine
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineCore.UpdateAllActiveVirtualCameras");
             int numCameras;
 
-            // Pre-update child unless smart/fixed
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineCore.UpdateAllActiveVirtualCameras.PreUpdate");
-            if (CurrentUpdateFilter == UpdateFilter.Any || CurrentUpdateFilter == UpdateFilter.Late)
-            {
-                numCameras = VirtualCameraCount;
-                for (int i = 0; i < numCameras; ++i)
-                    GetVirtualCamera(i).PreUpdateChildCameras(worldUp, deltaTime);
-                for (int i = 0; i < mChildCameras.Count-1; ++i)
-                {
-                    numCameras = mChildCameras[i].Count;
-                    for (int j = 0; j < numCameras; ++j)
-                        mChildCameras[i][j].PreUpdateChildCameras(worldUp, deltaTime);
-                }
-            }
-            //UnityEngine.Profiling.Profiler.EndSample();
-
             // Update the leaf-most cameras first
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineCore.UpdateAllActiveVirtualCameras.leaf-most");
             for (int i = mChildCameras.Count-1; i >= 0; --i)

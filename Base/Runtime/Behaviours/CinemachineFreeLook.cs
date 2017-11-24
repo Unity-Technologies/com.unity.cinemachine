@@ -151,8 +151,9 @@ namespace Cinemachine
             // Make the rigs visible instead of destroying - this is to keep Undo happy
             if (m_Rigs != null)
                 foreach (var rig in m_Rigs)
-                    rig.gameObject.hideFlags
-                        &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+                    if (rig != null && rig.gameObject != null)
+                        rig.gameObject.hideFlags
+                            &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
 
             mIsDestroyed = true;
             base.OnDestroy();
@@ -230,38 +231,8 @@ namespace Cinemachine
             UpdateRigCache();
             if (m_Rigs != null)
                 foreach (var vcam in m_Rigs)
-                    vcam.RemovePostPipelineStageHook(d);
-        }
-
-        /// <summary>
-        /// This is called prior to the updating of the vcam's child cameras, 
-        /// in order to allow the parent to prepare its children.
-        /// If the children are updating on FixedUpdate, then this will not necessarily be called
-        /// prior to every FixedUpdate, but might be called on LateUpdate.
-        /// This implementation pushes the axis values to the rigs.
-        /// </summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        override public void PreUpdateChildCameras(Vector3 worldUp, float deltaTime)
-        {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PreUpdateChildCameras");
-            if (!PreviousStateIsValid)
-                deltaTime = -1;
-
-            UpdateRigCache();
-
-            // Read the Height
-            bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
-            if (activeCam)
-                m_YAxis.Update(deltaTime);
-
-            // Read the heading.  Make sure all the rigs get updated first
-            PushSettingsToRigs();
-
-            if (activeCam)
-                UpdateHeading(deltaTime, m_State.ReferenceUp);
-
-            //UnityEngine.Profiling.Profiler.EndSample();
+                    if (vcam != null)
+                        vcam.RemovePostPipelineStageHook(d);
         }
 
         /// <summary>Called by CinemachineCore at designated update time
@@ -297,6 +268,23 @@ namespace Cinemachine
             }
 
             PreviousStateIsValid = true;
+
+            // Set up for next frame
+            bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
+            if (activeCam)
+                m_YAxis.Update(deltaTime);
+
+            // Top rig is the master axis controller
+            if (mOrbitals[0] != null)
+                m_XAxis = mOrbitals[0].m_XAxis;
+            if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                m_XAxis.Value = 0;
+            for (int i = 1; i < mOrbitals.Length; ++i)
+                if (mOrbitals[i] != null)
+                    mOrbitals[i].m_XAxis = m_XAxis;
+
+            PushSettingsToRigs();
+                 
             //UnityEngine.Profiling.Profiler.EndSample();
         }
 
@@ -609,23 +597,6 @@ namespace Cinemachine
             }
             //UnityEngine.Profiling.Profiler.EndSample();
             return state;
-        }
-
-        void UpdateHeading(float deltaTime, Vector3 up)
-        {
-            // We let the first rig calculate the heading
-            if (mOrbitals[0] != null)
-            {
-                mOrbitals[0].UpdateHeading(deltaTime, up);
-                m_XAxis = mOrbitals[0].m_XAxis;
-            }
-            // Then push it to the other rigs
-            for (int i = 1; i < mOrbitals.Length; ++i)
-                if (mOrbitals[i] != null)
-                    mOrbitals[i].m_XAxis = m_XAxis;
-
-            if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                m_XAxis.Value = 0;
         }
 
         private CameraState PullStateFromVirtualCamera(Vector3 worldUp)

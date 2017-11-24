@@ -1,6 +1,11 @@
 <size=20><b>Version 2.1.10</b></size>
 
-- Example Assets included as embedded package, not imported by default
+- New Aim component: Same As Follow Target simply uses the same orientation as the Follow target
+- Perlin Noise component: added UI to clone or locate existing Noise profiles, and to create new ones inspector
+- Noise Presets were moved outside of Examples folder
+- Example Assets are now included as embedded package, not imported by default
+- Bugfix: FreeLook for PositionDelta heading was not properly updating the heading
+- Bugfix: Added some null checks to FreeLook
 
 
 <size=20><b>Version 2.1.09</b></size>

@@ -288,8 +288,7 @@ namespace Cinemachine
                 mLastTargetPosition = (PreviousTarget == null) ? Vector3.zero : PreviousTarget.position;
                 mHeadingTracker = null;
             }
-            if (!m_HeadingIsSlave)
-                UpdateHeading(deltaTime, curState.ReferenceUp);
+            UpdateHeading(deltaTime, curState.ReferenceUp);
 
             if (IsValid)
             {
