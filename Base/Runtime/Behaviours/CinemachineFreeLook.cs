@@ -274,12 +274,6 @@ namespace Cinemachine
             if (activeCam)
                 m_YAxis.Update(deltaTime);
 
-            // Top rig is the master axis controller
-            if (mOrbitals[0] != null)
-                m_XAxis.Value = mOrbitals[0].m_XAxis.Value;
-            if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                m_XAxis.Value = 0;
-
             PushSettingsToRigs();
                  
             //UnityEngine.Profiling.Profiler.EndSample();
@@ -495,7 +489,10 @@ namespace Cinemachine
                             if (mOrbitals[i] != null)
                             {
                                 mOrbitals[i].m_HeadingIsSlave = true;
-                                mOrbitals[i].PreUpdateXAxisValueOverride = () => { return m_XAxis.Value; };
+                                if (i == 0)
+                                    mOrbitals[i].HeadingUpdater 
+                                        = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
+                                            => { return orbital.UpdateHeading(deltaTime, up, ref m_XAxis); };
                                 m_Rigs[i] = vcam;
                                 ++rigsFound;
                             }

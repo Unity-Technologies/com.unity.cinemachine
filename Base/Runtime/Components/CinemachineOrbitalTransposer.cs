@@ -191,41 +191,49 @@ namespace Cinemachine
         [HideInInspector, NoSaveDuringPlay]
         public bool m_HeadingIsSlave = false;
 
-        internal delegate float GetXAxisValue();
-        internal GetXAxisValue PreUpdateXAxisValueOverride;
+        /// <summary>
+        /// Delegate that allows the the m_XAxis object to be replaced with another one.
+        /// </summary>
+        internal delegate float UpdateHeadingDelegate(
+            CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up);
 
         /// <summary>
-        /// When in slave mode, this should be called once and only
-        /// once every hrame to update the heading.  When not in slave mode, this is called automatically.
+        /// Delegate that allows the the XAxis object to be replaced with another one.
+        /// To use it, just call orbital.UpdateHeading() with a reference to a 
+        /// private AxisState object, and that AxisState object will be updated and
+        /// used to calculate the heading.
         /// </summary>
-        public void UpdateHeading(float deltaTime, Vector3 up)
+        internal UpdateHeadingDelegate HeadingUpdater 
+            = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
+                => { return orbital.UpdateHeading(deltaTime, up, ref orbital.m_XAxis); };
+
+        /// <summary>
+        /// Update the X axis and calculate the heading.  This can be called by a delegate
+        /// with a custom axis.
+        /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
+        /// <param name="up">World Up, set by the CinemachineBrain</param>
+        /// <param name="axis"></param>
+        /// <returns>Axis value</returns>
+        /// </summary>
+        public float UpdateHeading(float deltaTime, Vector3 up, ref AxisState axis)
         {
             // Only read joystick when game is playing
             if (deltaTime >= 0 || CinemachineCore.Instance.IsLive(VirtualCamera))
             {
                 bool xAxisInput = false;
-                if (PreUpdateXAxisValueOverride != null)
-                {
-                    float value = PreUpdateXAxisValueOverride();
-                    if (value != m_XAxis.Value)
-                    {
-                        xAxisInput = true;
-                        m_XAxis.Value = value;
-                    }
-                }
-                xAxisInput |= m_XAxis.Update(deltaTime);
+                xAxisInput |= axis.Update(deltaTime);
                 if (xAxisInput)
                 {
                     mLastHeadingAxisInputTime = Time.time;
                     mHeadingRecenteringVelocity = 0;
                 }
             }
-            float targetHeading = GetTargetHeading(m_XAxis.Value, GetReferenceOrientation(up), deltaTime);
+            float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up), deltaTime);
             if (deltaTime < 0)
             {
                 mHeadingRecenteringVelocity = 0;
                 if (m_RecenterToTargetHeading.m_enabled)
-                    m_XAxis.Value = targetHeading;
+                    axis.Value = targetHeading;
             }
             else
             {
@@ -237,14 +245,14 @@ namespace Cinemachine
                     // Scale value determined heuristically, to account for accel/decel
                     float recenterTime = m_RecenterToTargetHeading.m_RecenteringTime / 3f;
                     if (recenterTime <= deltaTime)
-                        m_XAxis.Value = targetHeading;
+                        axis.Value = targetHeading;
                     else
                     {
-                        float headingError = Mathf.DeltaAngle(m_XAxis.Value, targetHeading);
+                        float headingError = Mathf.DeltaAngle(axis.Value, targetHeading);
                         float absHeadingError = Mathf.Abs(headingError);
                         if (absHeadingError < UnityVectorExtensions.Epsilon)
                         {
-                            m_XAxis.Value = targetHeading;
+                            axis.Value = targetHeading;
                             mHeadingRecenteringVelocity = 0;
                         }
                         else 
@@ -256,12 +264,16 @@ namespace Cinemachine
                             float accel = desiredVelocity - mHeadingRecenteringVelocity;
                             if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
                                 desiredVelocity = mHeadingRecenteringVelocity + desiredVelocity * scale;
-                            m_XAxis.Value += desiredVelocity;
+                            axis.Value += desiredVelocity;
                             mHeadingRecenteringVelocity = desiredVelocity;
                         }
                     }
                 }
             }
+            float finalHeading = axis.Value;
+            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+                axis.Value = 0;
+            return finalHeading;
         }
 
         private void OnEnable()
@@ -296,17 +308,14 @@ namespace Cinemachine
                 mLastTargetPosition = (PreviousTarget == null) ? Vector3.zero : PreviousTarget.position;
                 mHeadingTracker = null;
             }
-            UpdateHeading(deltaTime, curState.ReferenceUp);
+            float heading = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
 
             if (IsValid)
             {
                 mLastTargetPosition = FollowTarget.position;
 
                 // Calculate the heading
-                float heading = m_XAxis.Value;
-                if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
-                    m_XAxis.Value = 0;
-                else
+                if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                     heading += m_Heading.m_HeadingBias;
                 Quaternion headingRot = Quaternion.AngleAxis(heading, curState.ReferenceUp);
 
