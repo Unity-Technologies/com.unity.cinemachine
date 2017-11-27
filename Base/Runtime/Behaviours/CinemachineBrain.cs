@@ -335,7 +335,7 @@ namespace Cinemachine
 
         private void Start()
         {
-            UpdateVirtualCameras(CinemachineCore.UpdateFilter.Any, -1f);
+            UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
 
             // We check in after the physics system has had a chance to move things
             StartCoroutine(AfterPhysics());
@@ -386,7 +386,7 @@ namespace Cinemachine
                     else
                     {
                         AddSubframe(); // FixedUpdate can be called multiple times per frame
-                        UpdateVirtualCameras(CinemachineCore.UpdateFilter.Any, GetEffectiveDeltaTime(true));
+                        UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedFixed, GetEffectiveDeltaTime(true));
                     }
                 }
             }
@@ -398,7 +398,7 @@ namespace Cinemachine
             if (m_UpdateMethod == UpdateMethod.SmartUpdate)
                 UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, deltaTime);
             else if (m_UpdateMethod == UpdateMethod.LateUpdate)
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.Any, deltaTime);
+                UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedLate, deltaTime);
 
             // Choose the active vcam and apply it to the Unity camera
             ProcessActiveCamera(GetEffectiveDeltaTime(false));
@@ -416,7 +416,7 @@ namespace Cinemachine
                 // to be painted one frame out of sync.  It will only happen in the editor when not playing.
                 float deltaTime = GetEffectiveDeltaTime(false);
                 msSubframes = 1;
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.Any, deltaTime);
+                UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, deltaTime);
                 ProcessActiveCamera(GetEffectiveDeltaTime(false));
             }
         }
@@ -454,7 +454,7 @@ namespace Cinemachine
                 activeBlend.UpdateCameraState(DefaultWorldUp, deltaTime);
 
             // Restore the filter for general use
-            CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Any;
+            CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Late;
             //UnityEngine.Profiling.Profiler.EndSample();
         }
 

@@ -182,8 +182,17 @@ namespace Cinemachine
         {
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineCore.UpdateVirtualCamera");
             int now = Time.frameCount;
-            bool isSmartUpdate = CurrentUpdateFilter != UpdateFilter.Any;
-            bool isSmartLateUpdate = CurrentUpdateFilter == UpdateFilter.Late;
+            UpdateFilter filter = CurrentUpdateFilter;
+            bool isSmartUpdate = filter != UpdateFilter.ForcedFixed 
+                && filter != UpdateFilter.ForcedLate;
+            bool isSmartLateUpdate = filter == UpdateFilter.Late;
+            if (!isSmartUpdate)
+            {
+                if (filter == UpdateFilter.ForcedFixed)
+                    filter = UpdateFilter.Fixed;
+                if (filter == UpdateFilter.ForcedLate)
+                    filter = UpdateFilter.Late;
+            }
 
             if (mUpdateStatus == null)
                 mUpdateStatus = new Dictionary<ICinemachineCamera, UpdateStatus>();
@@ -215,13 +224,13 @@ namespace Cinemachine
                 if (!GetTargetPosition(vcam, out targetPos))
                     updateNow = isSmartLateUpdate; // no target
                 else
-                    updateNow = status.ChoosePreferredUpdate(now, targetPos, CurrentUpdateFilter) 
-                        == CurrentUpdateFilter;
+                    updateNow = status.ChoosePreferredUpdate(now, targetPos, filter) 
+                        == filter;
             }
 
             if (updateNow)
             {
-                status.preferredUpdate = CurrentUpdateFilter;
+                status.preferredUpdate = filter;
                 while (status.lastUpdateSubframe < subframes)
                 {
 //Debug.Log(vcam.Name + ": frame " + Time.frameCount + "." + status.lastUpdateSubframe + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
@@ -263,6 +272,7 @@ namespace Cinemachine
                 targetPos = Matrix4x4.zero;
             }
 
+            // Important: updateFilter may ONLY be Late or Fixed
             public UpdateFilter ChoosePreferredUpdate(
                 int currentFrame, Matrix4x4 pos, UpdateFilter updateFilter)
             {
@@ -297,7 +307,7 @@ namespace Cinemachine
         Dictionary<ICinemachineCamera, UpdateStatus> mUpdateStatus;
 
         /// <summary>Internal use only</summary>
-        public enum UpdateFilter { Fixed, Late, Any };
+        public enum UpdateFilter { Fixed, ForcedFixed, Late, ForcedLate };
         internal UpdateFilter CurrentUpdateFilter { get; set; }
         private static bool GetTargetPosition(ICinemachineCamera vcam, out Matrix4x4 targetPos)
         {
@@ -328,7 +338,7 @@ namespace Cinemachine
         {
             UpdateStatus status;
             if (mUpdateStatus == null || !mUpdateStatus.TryGetValue(vcam, out status))
-                return UpdateFilter.Any;
+                return UpdateFilter.Late;
             return status.preferredUpdate;
         }
 
