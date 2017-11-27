@@ -159,7 +159,7 @@ namespace Cinemachine.Editor
                     {
                         if (!Directory.Exists(Path.GetDirectoryName(dstFile)))
                             Directory.CreateDirectory(Path.GetDirectoryName(dstFile));
-                        File.Copy(srcFile, dstFile);
+                        File.Copy(srcFile, dstFile, true);
                     }
                 }
             }
