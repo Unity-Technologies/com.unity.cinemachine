@@ -13,7 +13,7 @@ namespace Cinemachine
     /// a large family of different noises using the same profile.
     /// </summary>
     /// <seealso cref="NoiseSettings"/>
-    [DocumentationSorting(8, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]

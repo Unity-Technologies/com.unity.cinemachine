@@ -16,7 +16,7 @@ namespace Cinemachine
     /// Additionally, the Collider can be used to assess the shot quality and 
     /// report this as a field in the camera State.
     /// </summary>
-    [DocumentationSorting(15, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]

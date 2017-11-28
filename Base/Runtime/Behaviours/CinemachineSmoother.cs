@@ -8,7 +8,7 @@ namespace Cinemachine
     /// An add-on module for Cinemachine Virtual Camera which post-processes
     /// the final position and  orientation of the virtual camera, as a kind of low-pass filter.
     /// </summary>
-    [DocumentationSorting(17, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]

@@ -31,7 +31,7 @@ namespace Cinemachine.PostFX
     /// the Focus Distance and DepthOfField properties of the Camera State, and
     /// applying them to the current Post-Processing profile.
     /// </summary>
-    [DocumentationSorting(100, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachinePostFX")]

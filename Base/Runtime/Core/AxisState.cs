@@ -9,7 +9,7 @@ namespace Cinemachine
     /// Axis state for defining to react to player input.  
     /// The settings here control the responsiveness of the axis to player input.
     /// </summary>
-    [DocumentationSorting(6.4f, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
     public struct AxisState
     {

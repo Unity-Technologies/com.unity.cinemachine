@@ -27,7 +27,7 @@ namespace Cinemachine
     /// Although this component was designed for orthographic cameras, it works equally  
     /// well with persective cameras and can be used in 3D environments.
     /// </summary>
-    [DocumentationSorting(5.5f, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode] // for OnGUI
     [AddComponentMenu("")] // Don't display in add component menu
     [RequireComponent(typeof(CinemachinePipeline))]
@@ -137,7 +137,7 @@ namespace Cinemachine
         public float m_BiasY = 0f;
 
         /// <summary>What screen dimensions to consider when framing</summary>
-        [DocumentationSorting(4.01f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum FramingMode
         {
             /// <summary>Consider only the horizontal dimension.  Vertical framing is ignored.</summary>

@@ -8,7 +8,7 @@ namespace Cinemachine
     /// the FOV of the lens to keep the target object at a constant size on the screen,
     /// regardless of camera and target position.
     /// </summary>
-    [DocumentationSorting(16, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]

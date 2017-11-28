@@ -14,7 +14,7 @@ namespace Cinemachine
     /// In Auto-Dolly mode, the Path Position field is animated automatically every frame by finding
     /// the position on the path that's closest to the virtual camera's Follow target.
     /// </summary>
-    [DocumentationSorting(7, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]
@@ -63,7 +63,7 @@ namespace Cinemachine
         public float m_ZDamping = 1f;
 
         /// <summary>Different ways to set the camera's up vector</summary>
-        [DocumentationSorting(7.1f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum CameraUpMode
         {
             /// <summary>Leave the camera's up vector alone.  It will be set according to the Brain's WorldUp.</summary>
@@ -101,7 +101,7 @@ namespace Cinemachine
         public float m_RollDamping = 0f;
 
         /// <summary>Controls how automatic dollying occurs</summary>
-        [DocumentationSorting(7.2f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct AutoDolly
         {

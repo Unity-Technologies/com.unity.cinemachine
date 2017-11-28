@@ -5,7 +5,7 @@ namespace Cinemachine
     /// <summary>
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
-    [DocumentationSorting(24, DocumentationSortingAttribute.Level.API)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     public abstract class CinemachineComponentBase : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>

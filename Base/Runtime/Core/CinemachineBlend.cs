@@ -109,11 +109,11 @@ namespace Cinemachine
     /// <summary>Definition of a Camera blend.  This struct holds the information
     /// necessary to generate a suitable AnimationCurve for a Cinemachine Blend.</summary>
     [Serializable]
-    [DocumentationSorting(10.2f, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     public struct CinemachineBlendDefinition
     {
         /// <summary>Supported predefined shapes for the blend curve.</summary>
-        [DocumentationSorting(10.21f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum Style
         {
             /// <summary>Zero-length blend</summary>

@@ -7,7 +7,7 @@ namespace Cinemachine
     /// Base class for a Cinemachine Virtual Camera extension module.
     /// Hooks into the Cinemachine Pipeline.
     /// </summary>
-    [DocumentationSorting(23, DocumentationSortingAttribute.Level.API)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     public abstract class CinemachineExtension : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>

@@ -13,7 +13,7 @@ namespace Cinemachine
     /// Depending on the camera's position along the spline connecting these three rigs,
     /// these settings are interpolated to give the final camera position and state.
     /// </summary>
-    [DocumentationSorting(11, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase

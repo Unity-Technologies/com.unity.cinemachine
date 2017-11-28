@@ -17,7 +17,7 @@ namespace Cinemachine
     /// In order to use this behaviour, you must have an animated target (i.e. an object
     /// animated with a state machine) to drive the behaviour.
     /// </summary>
-    [DocumentationSorting(13, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineStateDrivenCamera")]
     public class CinemachineStateDrivenCamera : CinemachineVirtualCameraBase
@@ -95,7 +95,7 @@ namespace Cinemachine
 
         /// <summary>Internal API for the Inspector editor.  This implements nested states.</summary>
         [Serializable]
-        [DocumentationSorting(13.2f, DocumentationSortingAttribute.Level.Undoc)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
         public struct ParentHash
         {
             /// <summary>Internal API for the Inspector editor</summary>

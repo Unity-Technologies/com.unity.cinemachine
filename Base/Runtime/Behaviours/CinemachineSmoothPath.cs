@@ -9,7 +9,7 @@ namespace Cinemachine
     /// is performed between the waypoints, to get a smooth and continuous path.
     /// The path will pass through all waypoints, and (unlike CinemachinePath) first 
     /// and second order continuity is guaranteed</summary>
-    [DocumentationSorting(18.5f, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachineSmoothPath")]
     [SaveDuringPlay]
     public class CinemachineSmoothPath : CinemachinePathBase
@@ -19,7 +19,7 @@ namespace Cinemachine
         public bool m_Looped;
 
         /// <summary>A waypoint along the path</summary>
-        [DocumentationSorting(18.7f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable] public struct Waypoint
         {
             /// <summary>Position in path-local space</summary>

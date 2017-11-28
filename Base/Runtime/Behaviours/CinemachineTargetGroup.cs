@@ -10,14 +10,14 @@ namespace Cinemachine
     /// The bounding box is calculated by taking the member positions, weight, 
     /// and radii into account.
     /// </summary>
-    [DocumentationSorting(19, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachineTargetGroup")]
     [SaveDuringPlay]
     [ExecuteInEditMode]
     public class CinemachineTargetGroup : MonoBehaviour
     {
         /// <summary>Holds the information that represents a member of the group</summary>
-        [DocumentationSorting(19.1f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable] public struct Target
         {
             /// <summary>The target objects.  This object's position and orientation will contribute to the 
@@ -33,7 +33,7 @@ namespace Cinemachine
         }
 
         /// <summary>How the group's position is calculated</summary>
-        [DocumentationSorting(19.2f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum PositionMode
         {
             ///<summary>Group position will be the center of the group's axis-aligned bounding box</summary>
@@ -47,7 +47,7 @@ namespace Cinemachine
         public PositionMode m_PositionMode = PositionMode.GroupCenter;
 
         /// <summary>How the group's orientation is calculated</summary>
-        [DocumentationSorting(19.3f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum RotationMode
         {
             /// <summary>Manually set in the group's transform</summary>

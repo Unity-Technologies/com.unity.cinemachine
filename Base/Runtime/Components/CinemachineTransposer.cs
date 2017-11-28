@@ -12,7 +12,7 @@ namespace Cinemachine
     /// re-orient or otherwise aim the camera.  To to that, you need to instruct 
     /// the vcam in the Aim section of its pipeline.
     /// </summary>
-    [DocumentationSorting(5, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]
@@ -21,7 +21,7 @@ namespace Cinemachine
         /// <summary>
         /// The coordinate space to use when interpreting the offset from the target
         /// </summary>
-        [DocumentationSorting(5.01f, DocumentationSortingAttribute.Level.UserRef)]
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum BindingMode
         {
             /// <summary>

@@ -12,7 +12,7 @@ namespace Cinemachine
     /// Blends between cameras are specified.
     /// The last camera is held indefinitely.
     /// </summary>
-    [DocumentationSorting(13, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineBlendListCamera")]
     public class CinemachineBlendListCamera : CinemachineVirtualCameraBase

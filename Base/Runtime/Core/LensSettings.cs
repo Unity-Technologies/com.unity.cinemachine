@@ -8,7 +8,7 @@ namespace Cinemachine
     /// lens settings, and will be used to drive the Unity camera when the vcam is active.
     /// </summary>
     [Serializable]
-    [DocumentationSorting(2, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     public struct LensSettings
     {
         /// <summary>Default Lens Settings</summary>

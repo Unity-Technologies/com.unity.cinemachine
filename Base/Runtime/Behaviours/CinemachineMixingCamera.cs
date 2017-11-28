@@ -12,7 +12,7 @@ namespace Cinemachine
     /// We do it this way in order to support weight animation from the Timeline.
     /// Timeline cannot animate array elements.
     /// </summary>
-    [DocumentationSorting(20, DocumentationSortingAttribute.Level.UserRef)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
     public class CinemachineMixingCamera : CinemachineVirtualCameraBase
