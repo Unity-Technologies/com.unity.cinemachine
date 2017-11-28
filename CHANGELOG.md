@@ -4,8 +4,8 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.1.10] - 2017-11-28
-### This is the first UPM release of *Unity Package \<Cinemachine\>*.
+## [2.1.10.RC1] - 2017-11-28
+### This is the first UPM release of *Unity Package Cinemachine*.
 - New Aim component: Same As Follow Target simply uses the same orientation as the Follow target
 - Perlin Noise component: added inspector UI to clone or locate existing Noise profiles, and to create new ones
 - Noise Presets were moved outside of the Examples folder
