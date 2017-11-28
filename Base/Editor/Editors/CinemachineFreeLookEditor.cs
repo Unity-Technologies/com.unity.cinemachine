@@ -197,7 +197,6 @@ namespace Cinemachine
                 float t = (float)i / (float)kNumStepsPerPair;
                 Vector3 nextPos = vcam.GetLocalPositionForCameraFromInput(t);
                 Gizmos.DrawLine(currPos, nextPos);
-                Gizmos.DrawWireSphere(nextPos, 0.02f);
                 currPos = nextPos;
             }
             Gizmos.matrix = prevMatrix;
