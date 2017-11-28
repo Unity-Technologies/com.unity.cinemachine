@@ -43,11 +43,14 @@ namespace Cinemachine.PostFX.Editor
 
         void OnDisable()
         {
-            m_EffectList.Clear();
+            if (m_EffectList != null)
+                m_EffectList.Clear();
         }
 
         void RefreshEffectListEditor(PostProcessProfile asset)
         {
+            if (m_EffectList == null)
+                m_EffectList = new EffectListEditor(this);
             m_EffectList.Clear();
             if (asset != null)
                 m_EffectList.Init(asset, new SerializedObject(asset));
@@ -161,7 +164,7 @@ namespace Cinemachine.PostFX.Editor
 
             if (m_Profile.objectReferenceValue == null)
             {
-                if (assetHasChanged)
+                if (assetHasChanged && m_EffectList != null)
                     m_EffectList.Clear(); // Asset wasn't null before, do some cleanup
 
                 EditorGUILayout.HelpBox(
@@ -172,7 +175,8 @@ namespace Cinemachine.PostFX.Editor
             {
                 if (assetHasChanged)
                     RefreshEffectListEditor((PostProcessProfile)m_Profile.objectReferenceValue);
-                m_EffectList.OnGUI();
+                if (m_EffectList != null)
+                    m_EffectList.OnGUI();
             }
         }
     }
