@@ -403,13 +403,28 @@ namespace Cinemachine
             m_ComponentPipeline = list.ToArray();
         }
 
+        private Transform mCachedLookAtTarget;
+        private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
             // Initialize the camera state, in case the game object got moved in the editor
             CameraState state = PullStateFromVirtualCamera(worldUp);
 
-            if (LookAt != null)
-                state.ReferenceLookAt = LookAt.position;
+            Transform lookAtTarget = LookAt;
+            if (lookAtTarget != mCachedLookAtTarget)
+            {
+                mCachedLookAtTarget = lookAtTarget;
+                mCachedLookAtTargetVcam = null;
+                if (lookAtTarget != null)
+                    mCachedLookAtTargetVcam = lookAtTarget.GetComponent<CinemachineVirtualCameraBase>();
+            }
+            if (lookAtTarget != null)
+            {
+                if (mCachedLookAtTargetVcam != null)
+                    state.ReferenceLookAt = mCachedLookAtTargetVcam.State.FinalPosition;
+                else
+                    state.ReferenceLookAt = lookAtTarget.position;
+            }
 
             // Update the state by invoking the component pipeline
             CinemachineCore.Stage curStage = CinemachineCore.Stage.Body;

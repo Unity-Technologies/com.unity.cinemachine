@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
             EditorGUI.BeginChangeCheck();
             GUI.enabled = false;
-            EditorGUILayout.LabelField(" ", "Hard Look At has no settings", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(" ", "No additional settings", EditorStyles.miniLabel);
             GUI.enabled = true;
             DrawRemainingPropertiesInInspector();
         }

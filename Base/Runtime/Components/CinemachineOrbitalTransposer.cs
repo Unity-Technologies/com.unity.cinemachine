@@ -312,7 +312,7 @@ namespace Cinemachine
 
             if (IsValid)
             {
-                mLastTargetPosition = FollowTarget.position;
+                mLastTargetPosition = FollowTargetPosition;
 
                 // Calculate the heading
                 if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
@@ -385,13 +385,13 @@ namespace Cinemachine
             switch (m_Heading.m_HeadingDefinition)
             {
                 case Heading.HeadingDefinition.PositionDelta:
-                    velocity = FollowTarget.position - mLastTargetPosition;
+                    velocity = FollowTargetPosition - mLastTargetPosition;
                     break;
                 case Heading.HeadingDefinition.Velocity:
                     velocity = mTargetRigidBody.velocity;
                     break;
                 case Heading.HeadingDefinition.TargetForward:
-                    velocity = FollowTarget.forward;
+                    velocity = FollowTargetRotation * Vector3.forward;
                     break;
                 default:
                 case Heading.HeadingDefinition.WorldForward:

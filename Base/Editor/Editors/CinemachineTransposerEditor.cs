@@ -62,10 +62,10 @@ namespace Cinemachine.Editor
                 CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
                 if (brain != null)
                     up = brain.DefaultWorldUp;
-                Vector3 targetPos = target.FollowTarget.position;
+                Vector3 targetPos = target.FollowTargetPosition;
                 Vector3 desiredPos = target.GeTargetCameraPosition(up);
                 Gizmos.DrawLine(targetPos, desiredPos);
-                Gizmos.DrawWireSphere(desiredPos, HandleUtility.GetHandleSize(desiredPos) / 20);
+                //Gizmos.DrawWireSphere(desiredPos, HandleUtility.GetHandleSize(desiredPos) / 20);
                 Gizmos.color = originalGizmoColour;
             }
         }

@@ -170,7 +170,7 @@ namespace Cinemachine
                     prevPos = m_Path.GetPathPositionFromDistance(prevPos);
                 // This works in path units
                 m_PathPosition = m_Path.FindClosestPoint(
-                    FollowTarget.transform.position,
+                    FollowTargetPosition,
                     Mathf.FloorToInt(prevPos),
                     (deltaTime < 0 || m_AutoDolly.m_SearchRadius <= 0) 
                         ? -1 : m_AutoDolly.m_SearchRadius,
@@ -278,11 +278,11 @@ namespace Cinemachine
                     return Quaternion.LookRotation(pathOrientation * Vector3.forward, up);
                 case CameraUpMode.FollowTarget:
                     if (FollowTarget != null)
-                        return FollowTarget.rotation;
+                        return FollowTargetRotation;
                     break;
                 case CameraUpMode.FollowTargetNoRoll:
                     if (FollowTarget != null)
-                        return Quaternion.LookRotation(FollowTarget.rotation * Vector3.forward, up);
+                        return Quaternion.LookRotation(FollowTargetRotation * Vector3.forward, up);
                     break;
             }
             return Quaternion.LookRotation(transform.rotation * Vector3.forward, up);

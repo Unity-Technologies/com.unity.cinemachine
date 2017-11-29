@@ -43,6 +43,100 @@ namespace Cinemachine
             }
         }
 
+        private Transform mCachedFollowTarget;
+        private CinemachineVirtualCameraBase mCachedFollowTargetVcam;
+
+        /// <summary>Get the position of the Follow target.  Special handling: If the Follow target is
+        /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
+        public Vector3 FollowTargetPosition
+        {
+            get 
+            {
+                Transform target = FollowTarget;
+                if (target != mCachedFollowTarget)
+                {
+                    mCachedFollowTargetVcam = null;
+                    mCachedFollowTarget = target;
+                    if (target != null)
+                        mCachedFollowTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
+                }
+                if (mCachedFollowTargetVcam != null)
+                    return mCachedFollowTargetVcam.State.FinalPosition;
+                if (target != null)
+                    return target.position;
+                return Vector3.zero;
+            }
+        }
+
+        /// <summary>Get the rotation of the Follow target.  Special handling: If the Follow target is
+        /// a VirtualCamera, returns the vcam State's rotation, not the transform's rotation</summary>
+        public Quaternion FollowTargetRotation
+        {
+            get 
+            {
+                Transform target = FollowTarget;
+                if (target != mCachedFollowTarget)
+                {
+                    mCachedFollowTargetVcam = null;
+                    mCachedFollowTarget = target;
+                    if (target != null)
+                        mCachedFollowTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
+                }
+                if (mCachedFollowTargetVcam != null)
+                    return mCachedFollowTargetVcam.State.FinalOrientation;
+                if (target != null)
+                    return target.rotation;
+                return Quaternion.identity;
+            }
+        }
+
+        private Transform mCachedLookAtTarget;
+        private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
+
+        /// <summary>Get the position of the LookAt target.  Special handling: If the LookAt target is
+        /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
+        public Vector3 LookAtTargetPosition
+        {
+            get 
+            {
+                Transform target = LookAtTarget;
+                if (target != mCachedLookAtTarget)
+                {
+                    mCachedLookAtTargetVcam = null;
+                    mCachedLookAtTarget = target;
+                    if (target != null)
+                        mCachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
+                }
+                if (mCachedLookAtTargetVcam != null)
+                    return mCachedLookAtTargetVcam.State.FinalPosition;
+                if (target != null)
+                    return target.position;
+                return Vector3.zero;
+            }
+        }
+
+        /// <summary>Get the rotation of the LookAt target.  Special handling: If the LookAt target is
+        /// a VirtualCamera, returns the vcam State's rotation, not the transform's rotation</summary>
+        public Quaternion LookAtTargetRotation
+        {
+            get 
+            {
+                Transform target = LookAtTarget;
+                if (target != mCachedLookAtTarget)
+                {
+                    mCachedLookAtTargetVcam = null;
+                    mCachedLookAtTarget = target;
+                    if (target != null)
+                        mCachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
+                }
+                if (mCachedLookAtTargetVcam != null)
+                    return mCachedLookAtTargetVcam.State.FinalOrientation;
+                if (target != null)
+                    return target.rotation;
+                return Quaternion.identity;
+            }
+        }
+
         /// <summary>Returns the owner vcam's CameraState.</summary>
         public CameraState VcamState
         {

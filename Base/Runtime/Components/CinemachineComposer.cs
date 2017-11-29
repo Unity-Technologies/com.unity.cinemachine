@@ -124,7 +124,7 @@ namespace Cinemachine
         {
             Vector3 pos = lookAt;
             if (LookAtTarget != null)
-                pos += LookAtTarget.transform.rotation * m_TrackedObjectOffset;
+                pos += LookAtTargetRotation * m_TrackedObjectOffset;
 
             m_Predictor.Smoothing = m_LookaheadSmoothing;
             m_Predictor.AddPosition(pos);

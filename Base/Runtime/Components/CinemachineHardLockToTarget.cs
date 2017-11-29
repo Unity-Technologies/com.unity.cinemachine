@@ -26,7 +26,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             if (IsValid)
-                curState.RawPosition = FollowTarget.position;
+                curState.RawPosition = FollowTargetPosition;
         }
     }
 }

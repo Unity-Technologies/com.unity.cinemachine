@@ -72,7 +72,7 @@ namespace Cinemachine.Editor
                 CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
                 if (brain != null)
                     up = brain.DefaultWorldUp;
-                Vector3 pos = target.FollowTarget.position;
+                Vector3 pos = target.FollowTargetPosition;
 
                 Quaternion orient = target.GetReferenceOrientation(up);
                 up = orient * Vector3.up;

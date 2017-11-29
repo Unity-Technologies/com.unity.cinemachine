@@ -164,7 +164,7 @@ namespace Cinemachine
             {
                 m_previousTarget = FollowTarget;
                 m_targetOrientationOnAssign 
-                    = (m_previousTarget == null) ? Quaternion.identity : FollowTarget.rotation;
+                    = (m_previousTarget == null) ? Quaternion.identity : FollowTargetRotation;
             }
             if (deltaTime < 0)
             {
@@ -197,7 +197,7 @@ namespace Cinemachine
             }
             m_PreviousReferenceOrientation = dampedOrientation;
 
-            Vector3 targetPosition = FollowTarget.position;
+            Vector3 targetPosition = FollowTargetPosition;
             Vector3 currentPosition = m_PreviousTargetPosition;
             Vector3 worldOffset = targetPosition - currentPosition;
 
@@ -262,7 +262,7 @@ namespace Cinemachine
         {
             if (!IsValid)
                 return Vector3.zero;
-            return FollowTarget.position + GetReferenceOrientation(worldUp) * EffectiveOffset;
+            return FollowTargetPosition + GetReferenceOrientation(worldUp) * EffectiveOffset;
         }
 
         /// <summary>State information for damping</summary>
@@ -276,7 +276,7 @@ namespace Cinemachine
         {
             if (FollowTarget != null)
             {
-                Quaternion targetOrientation = FollowTarget.rotation;
+                Quaternion targetOrientation = FollowTargetRotation;
                 switch (m_BindingMode)
                 {
                     case BindingMode.LockToTargetOnAssign:
@@ -289,7 +289,7 @@ namespace Cinemachine
                         return targetOrientation;
                     case BindingMode.SimpleFollowWithWorldUp:
                     {
-                        Vector3 dir = FollowTarget.position - VcamState.RawPosition;
+                        Vector3 dir = FollowTargetPosition - VcamState.RawPosition;
                         if (dir.AlmostZero())
                             break;
                         return Uppify(Quaternion.LookRotation(dir, worldUp), worldUp);

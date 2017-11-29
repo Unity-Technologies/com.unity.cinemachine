@@ -311,7 +311,7 @@ namespace Cinemachine
 
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFramingTransposer.MutateCameraState");
             Vector3 camPosWorld = m_PreviousCameraPosition;
-            curState.ReferenceLookAt = FollowTarget.position;
+            curState.ReferenceLookAt = FollowTargetPosition;
             m_Predictor.Smoothing = m_LookaheadSmoothing;
             m_Predictor.AddPosition(curState.ReferenceLookAt);
             TrackedPoint = (m_LookaheadTime > 0) 
