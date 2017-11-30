@@ -166,9 +166,9 @@ namespace Cinemachine
             }
             //UnityEngine.Profiling.Profiler.EndSample();
 
-            // Then all the top-level cameras
+            // Then all the top-level cameras - in reverse order, so that active cam is updated last
             numCameras = VirtualCameraCount;
-            for (int i = 0; i < numCameras; ++i)
+            for (int i = numCameras - 1; i >= 0; --i)
                 UpdateVirtualCamera(GetVirtualCamera(i), worldUp, deltaTime);
             //UnityEngine.Profiling.Profiler.EndSample();
         }

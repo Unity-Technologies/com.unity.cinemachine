@@ -243,13 +243,13 @@ namespace Cinemachine
             ovr.timeOfOverride = Time.realtimeSinceStartup;
             if (camA != null || camB != null)
             {
-                if (weightB <= Utility.UnityVectorExtensions.Epsilon)
+                if (weightB <= UnityVectorExtensions.Epsilon)
                 {
                     ovr.blend = null;
                     if (camA != null)
                         ovr.camera = camA; // no blend
                 }
-                else if (weightB >= (1f - Utility.UnityVectorExtensions.Epsilon))
+                else if (weightB >= (1f - UnityVectorExtensions.Epsilon))
                 {
                     ovr.blend = null;
                     if (camB != null)
