@@ -1,0 +1,12 @@
+Documentation/ApiDocs/**
+.npmrc
+.npmignore
+.gitignore
+QAReport.md
+QAReport.md.meta
+CINEMACHINE_install.pdf
+CINEMACHINE_install.pdf.meta
+CinemachineAPI.chm
+CinemachineAPI.chm.meta
+LICENSE
+LICENSE.meta
