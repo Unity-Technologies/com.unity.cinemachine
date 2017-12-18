@@ -151,7 +151,7 @@ namespace Cinemachine.PostFX
                     v.sharedProfile = src.Profile;
                     v.isGlobal = true;
                     v.priority = float.MaxValue-(numBlendables-i)-1;
-                    v.weight = isFirst ? 1 : b.m_Weight;
+                    v.weight = (isFirst && i < numBlendables-1) ? 1 : b.m_Weight;
                     isFirst = false;
                 }
             }
