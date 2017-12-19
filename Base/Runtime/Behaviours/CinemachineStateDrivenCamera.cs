@@ -349,7 +349,8 @@ namespace Cinemachine
             CinemachineVirtualCameraBase defaultCam = m_ChildCameras[0];
             if (m_AnimatedTarget == null || !m_AnimatedTarget.gameObject.activeSelf 
                 || m_AnimatedTarget.runtimeAnimatorController == null
-                || m_LayerIndex < 0 || m_LayerIndex >= m_AnimatedTarget.layerCount)
+                || m_LayerIndex < 0 || !m_AnimatedTarget.hasBoundPlayables
+                || m_LayerIndex >= m_AnimatedTarget.layerCount)
             {
                 mActivationTime = 0;
                 //UnityEngine.Profiling.Profiler.EndSample();
