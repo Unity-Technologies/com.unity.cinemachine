@@ -36,6 +36,9 @@ namespace Cinemachine.Editor
             // Ordinary properties
             DrawRemainingPropertiesInInspector();
 
+            // Path length
+            EditorGUILayout.LabelField("Path Length", Target.PathLength.ToString());
+
             GUILayout.Label(new GUIContent("Selected Waypoint:"));
             EditorGUILayout.BeginVertical(GUI.skin.box);
             Rect rect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight * 3 + 10);
@@ -233,6 +236,7 @@ namespace Cinemachine.Editor
             var list = new List<CinemachinePath.Waypoint>(Target.m_Waypoints);
             list.Insert(indexA + 1, wp);
             Target.m_Waypoints = list.ToArray();
+            Target.InvalidateDistanceCache();
             mWaypointList.index = indexA + 1; // select it
         }
 
