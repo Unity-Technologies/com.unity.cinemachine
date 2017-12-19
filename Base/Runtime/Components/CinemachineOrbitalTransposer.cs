@@ -317,7 +317,7 @@ namespace Cinemachine
                 // Calculate the heading
                 if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                     heading += m_Heading.m_HeadingBias;
-                Quaternion headingRot = Quaternion.AngleAxis(heading, curState.ReferenceUp);
+                Quaternion headingRot = Quaternion.AngleAxis(heading, Vector3.up);
 
                 // Track the target, with damping
                 Vector3 offset = EffectiveOffset;
