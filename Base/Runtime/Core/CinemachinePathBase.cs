@@ -40,10 +40,10 @@ namespace Cinemachine
         /// <summary>True if the path ends are joined to form a continuous loop</summary>
         public abstract bool Looped { get; }
 
-        /// <summary>Get a normalized path position, taking spins into account if looped</summary>
+        /// <summary>Get a standardized path position, taking spins into account if looped</summary>
         /// <param name="pos">Position along the path</param>
-        /// <returns>Normalized position, between MinPos and MaxPos</returns>
-        public virtual float NormalizePos(float pos)
+        /// <returns>Standardized position, between MinPos and MaxPos</returns>
+        public virtual float StandardizePos(float pos)
         {
             if (MaxPos == 0)
                 return 0;
@@ -58,18 +58,18 @@ namespace Cinemachine
         }
 
         /// <summary>Get a worldspace position of a point along the path</summary>
-        /// <param name="pos">Postion along the path.  Need not be normalized.</param>
+        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space position of the point along at path at pos</returns>
         public abstract Vector3 EvaluatePosition(float pos);
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
-        /// <param name="pos">Postion along the path.  Need not be normalized.</param>
+        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space direction of the path tangent.
         /// Length of the vector represents the tangent strength</returns>
         public abstract Vector3 EvaluateTangent(float pos);
 
         /// <summary>Get the orientation the curve at a point along the path.</summary>
-        /// <param name="pos">Postion along the path.  Need not be normalized.</param>
+        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space orientation of the path</returns>
         public abstract Quaternion EvaluateOrientation(float pos);
 
@@ -136,34 +136,47 @@ namespace Cinemachine
             PathUnits,
             /// <summary>Use Distance Along Path.  Path will be sampled according to its Resolution
             /// setting, and a distance lookup table will be cached internally</summary>
-            Distance
+            Distance,
+            /// <summary>Normalized units, where 0 is the start of the path, and 1 is the end.  
+            /// Path will be sampled according to its Resolution
+            /// setting, and a distance lookup table will be cached internally</summary>
+            Normalized
         }
 
-        /// <summary>Get the minimum value, for the given unity type</summary>
-        /// <param name="units">The uniot type</param>
+        /// <summary>Get the minimum value, for the given unit type</summary>
+        /// <param name="units">The unit type</param>
         /// <returns>The minimum allowable value for this path</returns>
         public float MinUnit(PositionUnits units)
         { 
+            if (units == PositionUnits.Normalized)
+                return 0;
             return units == PositionUnits.Distance ? 0 : MinPos; 
         }
 
-        /// <summary>Get the maximum value, for the given unity type</summary>
-        /// <param name="units">The uniot type</param>
+        /// <summary>Get the maximum value, for the given unit type</summary>
+        /// <param name="units">The unit type</param>
         /// <returns>The maximum allowable value for this path</returns>
         public float MaxUnit(PositionUnits units)
         { 
+            if (units == PositionUnits.Normalized)
+                return 1;
             return units == PositionUnits.Distance ? PathLength : MaxPos; 
         }
 
-        /// <summary>Normalize the unit, so that it lies between MinUmit and MaxUnit</summary>
-        /// <param name="pos">The value to be normalized</param>
+        /// <summary>Standardize the unit, so that it lies between MinUmit and MaxUnit</summary>
+        /// <param name="pos">The value to be standardized</param>
         /// <param name="units">The unit type</param>
-        /// <returns>The normalized value of pos, between MinUnit and MaxUnit</returns>
-        public virtual float NormalizeUnit(float pos, PositionUnits units)
+        /// <returns>The standardized value of pos, between MinUnit and MaxUnit</returns>
+        public virtual float StandardizeUnit(float pos, PositionUnits units)
         {
+            if (units == PositionUnits.PathUnits)
+                return StandardizePos(pos);
             if (units == PositionUnits.Distance)
-                return NormalizePathDistance(pos);
-            return NormalizePos(pos);
+                return StandardizePathDistance(pos);
+            float len = PathLength;
+            if (len < UnityVectorExtensions.Epsilon)
+                return 0;
+            return StandardizePathDistance(pos * len) / len;
         }
 
         /// <summary>Get a worldspace position of a point along the path</summary>
@@ -172,9 +185,7 @@ namespace Cinemachine
         /// <returns>World-space position of the point along at path at pos</returns>
         public Vector3 EvaluatePositionAtUnit(float pos, PositionUnits units)
         {
-            if (units == PositionUnits.Distance)
-                pos = GetPathPositionFromDistance(pos);
-            return EvaluatePosition(pos);
+            return EvaluatePosition(ToNativePathUnits(pos, units));
         }
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
@@ -184,9 +195,7 @@ namespace Cinemachine
         /// Length of the vector represents the tangent strength</returns>
         public Vector3 EvaluateTangentAtUnit(float pos, PositionUnits units)
         {
-            if (units == PositionUnits.Distance)
-                pos = GetPathPositionFromDistance(pos);
-            return EvaluateTangent(pos);
+            return EvaluateTangent(ToNativePathUnits(pos, units));
         }
 
         /// <summary>Get the orientation the curve at a point along the path.</summary>
@@ -195,9 +204,7 @@ namespace Cinemachine
         /// <returns>World-space orientation of the path</returns>
         public Quaternion EvaluateOrientationAtUnit(float pos, PositionUnits units)
         {
-            if (units == PositionUnits.Distance)
-                pos = GetPathPositionFromDistance(pos);
-            return EvaluateOrientation(pos);
+            return EvaluateOrientation(ToNativePathUnits(pos, units));
         }
 
         /// <summary>When calculating the distance cache, sample the path this many 
@@ -215,7 +222,7 @@ namespace Cinemachine
         }
 
         /// <summary>See whether the distance cache is valid.  If it's not valid,
-        /// then any call to GetPathLength() or GetPathPositionFromDistance() will
+        /// then any call to GetPathLength() or ToNativePathUnits() will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <param name="stepsPerSegment">The number of steps to take between path points</param>
         /// <returns>Whether the cache is valid for this sampling rate</returns>
@@ -243,12 +250,12 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Normalize a distance along the path based on the path length.  
+        /// <summary>Standardize a distance along the path based on the path length.  
         /// If the distance cache is not valid, then calling this will 
         /// trigger a potentially costly regeneration of the path distance cache</summary>
-        /// <param name="distance">The distance to normalize</param>
-        /// <returns>The normalized distance, ranging from 0 to path length</returns>
-        public float NormalizePathDistance(float distance)
+        /// <param name="distance">The distance to standardize</param>
+        /// <returns>The standardized distance, ranging from 0 to path length</returns>
+        public float StandardizePathDistance(float distance)
         {
             float length = PathLength;
             if (length < Vector3.kEpsilon)
@@ -262,16 +269,23 @@ namespace Cinemachine
             return Mathf.Clamp(distance, 0, length);
         }
 
-        /// <summary>Get the path position (in path units) corresponding to this distance along the path.  
+        /// <summary>Get the path position (in native path units) corresponding to the psovided
+        /// value, in the units indicated.  
         /// If the distance cache is not valid, then calling this will 
         /// trigger a potentially costly regeneration of the path distance cache</summary>
-        /// <returns>The length of the path in distance units, when sampled at this rate</returns>
-        public float GetPathPositionFromDistance(float distance)
+        /// <param name="pos">The value to convert from</param>
+        /// <param name="units">The units in which pos is expressed</param>
+        /// <returns>The length of the path in native units, when sampled at this rate</returns>
+        public float ToNativePathUnits(float pos, PositionUnits units)
         {
+            if (units == PositionUnits.PathUnits)
+                return pos;
             if (DistanceCacheSampleStepsPerSegment < 1 || PathLength < UnityVectorExtensions.Epsilon)
                 return MinPos;
-            distance = NormalizePathDistance(distance);
-            float d = distance / m_cachedDistanceStepSize;
+            if (units == PositionUnits.Normalized)
+                pos *= PathLength;
+            pos = StandardizePathDistance(pos);
+            float d = pos / m_cachedDistanceStepSize;
             int i = Mathf.FloorToInt(d);
             if (i >= m_DistanceToPos.Length-1)
                 return MaxPos;
@@ -282,18 +296,29 @@ namespace Cinemachine
         /// <summary>Get the path position (in path units) corresponding to this distance along the path.  
         /// If the distance cache is not valid, then calling this will 
         /// trigger a potentially costly regeneration of the path distance cache</summary>
+        /// <param name="pos">The value to convert from, in native units</param>
+        /// <param name="units">The units to convert toexpressed</param>
         /// <returns>The length of the path in distance units, when sampled at this rate</returns>
-        public float GetPathDistanceFromPosition(float pos)
+        public float FromPathNativeUnits(float pos, PositionUnits units)
         {
-            if (DistanceCacheSampleStepsPerSegment < 1 || PathLength < UnityVectorExtensions.Epsilon)
+            if (units == PositionUnits.PathUnits)
+                return pos;
+            float length = PathLength;
+            if (DistanceCacheSampleStepsPerSegment < 1 || length < UnityVectorExtensions.Epsilon)
                 return 0;
-            pos = NormalizePos(pos);
+            pos = StandardizePos(pos);
             float d = pos / m_cachedPosStepSize;
             int i = Mathf.FloorToInt(d);
             if (i >= m_PosToDistance.Length-1)
-                return m_PathLength;
-            float t = d - (float)i;
-            return Mathf.Lerp(m_PosToDistance[i], m_PosToDistance[i+1], t);
+                pos = m_PathLength;
+            else 
+            {
+                float t = d - (float)i;
+                pos = Mathf.Lerp(m_PosToDistance[i], m_PosToDistance[i+1], t);
+            }
+            if (units == PositionUnits.Normalized)
+                pos /= length;
+            return pos;
         }
 
         private float[] m_DistanceToPos;

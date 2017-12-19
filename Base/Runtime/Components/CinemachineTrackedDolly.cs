@@ -165,9 +165,7 @@ namespace Cinemachine
             // Get the new ideal path base position
             if (m_AutoDolly.m_Enabled && FollowTarget != null)
             {
-                float prevPos = m_PreviousPathPosition;
-                if (m_PositionUnits == CinemachinePathBase.PositionUnits.Distance)
-                    prevPos = m_Path.GetPathPositionFromDistance(prevPos);
+                float prevPos = m_Path.ToNativePathUnits(m_PreviousPathPosition, m_PositionUnits);
                 // This works in path units
                 m_PathPosition = m_Path.FindClosestPoint(
                     FollowTargetPosition,
@@ -175,8 +173,7 @@ namespace Cinemachine
                     (deltaTime < 0 || m_AutoDolly.m_SearchRadius <= 0) 
                         ? -1 : m_AutoDolly.m_SearchRadius,
                     m_AutoDolly.m_SearchResolution);
-                if (m_PositionUnits == CinemachinePathBase.PositionUnits.Distance)
-                    m_PathPosition = m_Path.GetPathDistanceFromPosition(m_PathPosition);
+                m_PathPosition = m_Path.FromPathNativeUnits(m_PathPosition, m_PositionUnits);
 
                 // Apply the path position offset
                 m_PathPosition += m_AutoDolly.m_PositionOffset;
@@ -189,8 +186,8 @@ namespace Cinemachine
                 float maxUnit = m_Path.MaxUnit(m_PositionUnits);
                 if (maxUnit > 0)
                 {
-                    float prev = m_Path.NormalizeUnit(m_PreviousPathPosition, m_PositionUnits);
-                    float next = m_Path.NormalizeUnit(newPathPosition, m_PositionUnits);
+                    float prev = m_Path.StandardizeUnit(m_PreviousPathPosition, m_PositionUnits);
+                    float next = m_Path.StandardizeUnit(newPathPosition, m_PositionUnits);
                     if (m_Path.Looped && Mathf.Abs(next - prev) > maxUnit / 2)
                     {
                         if (next > prev)

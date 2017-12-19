@@ -65,7 +65,7 @@ namespace Cinemachine
         /// <summary>Returns normalized position</summary>
         float GetBoundingIndices(float pos, out int indexA, out int indexB)
         {
-            pos = NormalizePos(pos);
+            pos = StandardizePos(pos);
             int rounded = Mathf.RoundToInt(pos);
             if (Mathf.Abs(pos - rounded) < UnityVectorExtensions.Epsilon)
                 indexA = indexB = (rounded == m_Waypoints.Length) ? 0 : rounded;

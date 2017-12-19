@@ -116,10 +116,10 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Returns normalized position</summary>
+        /// <summary>Returns standardized position</summary>
         float GetBoundingIndices(float pos, out int indexA, out int indexB)
         {
-            pos = NormalizePos(pos);
+            pos = StandardizePos(pos);
             int numWaypoints = m_Waypoints.Length;
             if (numWaypoints < 2)
                 indexA = indexB = 0;
