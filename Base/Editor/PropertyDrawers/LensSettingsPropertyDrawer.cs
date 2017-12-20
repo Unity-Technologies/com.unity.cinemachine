@@ -22,7 +22,7 @@ namespace Cinemachine.Editor
                 PropertyInfo pi = typeof(LensSettings).GetProperty(
                     "Orthographic", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (pi != null)
-                    ortho = bool.Equals(true, pi.GetValue(GetPropertyValue(property), null));
+                    ortho = bool.Equals(true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
 
                 ++EditorGUI.indentLevel;
                 rect.y += height + vSpace;
@@ -38,16 +38,6 @@ namespace Cinemachine.Editor
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Dutch));
                 --EditorGUI.indentLevel;
             }
-        }
-
-        object GetPropertyValue(SerializedProperty property)
-        {
-            var targetObject = property.serializedObject.targetObject;
-            var targetObjectClassType = targetObject.GetType();
-            var field = targetObjectClassType.GetField(property.propertyPath);
-            if (field != null)
-                return field.GetValue(targetObject);
-            return null;
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

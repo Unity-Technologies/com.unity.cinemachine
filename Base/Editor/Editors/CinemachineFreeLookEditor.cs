@@ -49,21 +49,12 @@ namespace Cinemachine
             SerializedProperty orbits = FindProperty(x => x.m_Orbits);
             for (int i = 0; i < CinemachineFreeLook.RigNames.Length; ++i)
             {
-                float hSpace = 3;
-                SerializedProperty orbit = orbits.GetArrayElementAtIndex(i);
                 Rect rect = EditorGUILayout.GetControlRect(true);
-                rect = EditorGUI.PrefixLabel(rect, new GUIContent(CinemachineFreeLook.RigNames[i]));
-                rect.height = EditorGUIUtility.singleLineHeight;
-                rect.width = rect.width / 2 - hSpace;
-
-                float oldWidth = EditorGUIUtility.labelWidth;
-                EditorGUIUtility.labelWidth = rect.width / 2; 
-                SerializedProperty heightProp = orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Height);
-                EditorGUI.PropertyField(rect, heightProp, new GUIContent("Height"));
-                rect.x += rect.width + hSpace;
-                SerializedProperty radiusProp = orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius);
-                EditorGUI.PropertyField(rect, radiusProp, new GUIContent("Radius"));
-                EditorGUIUtility.labelWidth = oldWidth; 
+                SerializedProperty orbit = orbits.GetArrayElementAtIndex(i);
+                InspectorUtility.MultiPropertyOnLine(rect, new GUIContent(CinemachineFreeLook.RigNames[i]),
+                    new [] { orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Height), 
+                            orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
+                    null);
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();

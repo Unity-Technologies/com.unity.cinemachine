@@ -50,30 +50,44 @@ namespace Cinemachine
         /// <summary>If checked, then the raw value of the input axis will be inverted 
         /// before it is used.</summary>
         [NoSaveDuringPlay]
+        [FormerlySerializedAs("m_InvertAxis")]
         [Tooltip("If checked, then the raw value of the input axis will be inverted before it is used")]
-        public bool m_InvertAxis;
+        public bool m_InvertInput;
+
+        /// <summary>The minimum value for the axis</summary>
+        [Tooltip("The minimum value for the axis")]
+        public float m_MinValue;
+
+        /// <summary>The maximum value for the axis</summary>
+        [Tooltip("The maximum value for the axis")]
+        public float m_MaxValue;
+
+        /// <summary>If checked, then the axis will wrap around at the min/max values, forming a loop</summary>
+        [Tooltip("If checked, then the axis will wrap around at the min/max values, forming a loop")]
+        public bool m_Wrap;
 
         private float mCurrentSpeed;
-        private float mMinValue;
-        private float mMaxValue;
-        private bool mWrapAround;
 
         /// <summary>Constructor with specific values</summary>
         public AxisState(
-            float maxSpeed, float accelTime, float decelTime, float val, string name, bool invert)
+            float minValue, float maxValue, bool wrap, bool rangeLocked,
+            float maxSpeed, float accelTime, float decelTime, 
+            string name, bool invert)
         {
+            m_MinValue = minValue;
+            m_MaxValue = maxValue;
+            m_Wrap = wrap;
+            ValueRangeLocked = rangeLocked;
+
             m_MaxSpeed = maxSpeed;
             m_AccelTime = accelTime;
             m_DecelTime = decelTime;
-            Value = val;
+            Value = (minValue + maxValue) / 2;
             m_InputAxisName = name;
             m_InputAxisValue = 0;
-            m_InvertAxis = invert;
+            m_InvertInput = invert;
 
             mCurrentSpeed = 0f;
-            mMinValue = 0f;
-            mMaxValue = 0f;
-            mWrapAround = false;
         }
 
         /// <summary>Call from OnValidate: Make sure the fields are sensible</summary>
@@ -82,21 +96,7 @@ namespace Cinemachine
             m_MaxSpeed = Mathf.Max(0, m_MaxSpeed);
             m_AccelTime = Mathf.Max(0, m_AccelTime);
             m_DecelTime = Mathf.Max(0, m_DecelTime);
-        }
-
-        /// <summary>
-        /// Sets the constraints by which this axis will operate on
-        /// </summary>
-        /// <param name="minValue">The lowest value this axis can achieve</param>
-        /// <param name="maxValue">The highest value this axis can achieve</param>
-        /// <param name="wrapAround">If <b>true</b>, values commanded greater
-        /// than mMaxValue or less than mMinValue will wrap around.
-        /// If <b>false</b>, the value will be clamped within the range.</param>
-        public void SetThresholds(float minValue, float maxValue, bool wrapAround)
-        {
-            mMinValue = minValue;
-            mMaxValue = maxValue;
-            mWrapAround = wrapAround;
+            m_MaxValue = Mathf.Clamp(m_MaxValue, m_MinValue, m_MaxValue);
         }
 
         const float Epsilon = UnityVectorExtensions.Epsilon;
@@ -123,7 +123,7 @@ namespace Cinemachine
             }
 
             float input = m_InputAxisValue;
-            if (m_InvertAxis)
+            if (m_InvertInput)
                 input *= -1f;
 
             if (m_MaxSpeed > Epsilon)
@@ -156,19 +156,19 @@ namespace Cinemachine
             mCurrentSpeed = Mathf.Clamp(mCurrentSpeed, -maxSpeed, maxSpeed);
 
             Value += mCurrentSpeed * deltaTime;
-            bool isOutOfRange = (Value > mMaxValue) || (Value < mMinValue);
+            bool isOutOfRange = (Value > m_MaxValue) || (Value < m_MinValue);
             if (isOutOfRange)
             {
-                if (mWrapAround)
+                if (m_Wrap)
                 {
-                    if (Value > mMaxValue)
-                        Value = mMinValue + (Value - mMaxValue);
+                    if (Value > m_MaxValue)
+                        Value = m_MinValue + (Value - m_MaxValue);
                     else
-                        Value = mMaxValue + (Value - mMinValue);
+                        Value = m_MaxValue + (Value - m_MinValue);
                 }
                 else
                 {
-                    Value = Mathf.Clamp(Value, mMinValue, mMaxValue);
+                    Value = Mathf.Clamp(Value, m_MinValue, m_MaxValue);
                     mCurrentSpeed = 0f;
                 }
             }
@@ -179,22 +179,27 @@ namespace Cinemachine
         // to prevent a hard bump
         private float GetMaxSpeed()
         {
-            float range = mMaxValue - mMinValue;
-            if (!mWrapAround && range > 0)
+            float range = m_MaxValue - m_MinValue;
+            if (!m_Wrap && range > 0)
             {
                 float threshold = range / 10f;
-                if (mCurrentSpeed > 0 && (mMaxValue - Value) < threshold)
+                if (mCurrentSpeed > 0 && (m_MaxValue - Value) < threshold)
                 {
-                    float t = (mMaxValue - Value) / threshold;
+                    float t = (m_MaxValue - Value) / threshold;
                     return Mathf.Lerp(0, m_MaxSpeed, t);
                 }
-                else if (mCurrentSpeed < 0 && (Value - mMinValue) < threshold)
+                else if (mCurrentSpeed < 0 && (Value - m_MinValue) < threshold)
                 {
-                    float t = (Value - mMinValue) / threshold;
+                    float t = (Value - m_MinValue) / threshold;
                     return Mathf.Lerp(0, m_MaxSpeed, t);
                 }
             }
             return m_MaxSpeed;
         }
+
+        /// <summary>
+        /// Value range is locked, i.e. not adjustable by the user
+        /// </summary>
+        internal bool ValueRangeLocked { get; set; }
     }
 }

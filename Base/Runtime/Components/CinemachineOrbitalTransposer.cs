@@ -154,7 +154,8 @@ namespace Cinemachine
         /// <summary>Axis representing the current heading.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Heading Control.  The settings here control the behaviour of the camera in response to the player's input.")]
-        public AxisState m_XAxis = new AxisState(300f, 2f, 1f, 0f, "Mouse X", true);
+        [AxisStateProperty]
+        public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 2f, 1f, "Mouse X", true);
 
         // Legacy support
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_Radius")] private float m_LegacyRadius = float.MaxValue;
@@ -278,7 +279,6 @@ namespace Cinemachine
 
         private void OnEnable()
         {
-            m_XAxis.SetThresholds(0f, 360f, true);
             PreviousTarget = null;
             mLastTargetPosition = Vector3.zero;
         }

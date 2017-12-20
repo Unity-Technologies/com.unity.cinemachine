@@ -44,11 +44,13 @@ namespace Cinemachine
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
         [Tooltip("The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs")]
-        public AxisState m_YAxis = new AxisState(2f, 0.2f, 0.1f, 0.5f, "Mouse Y", false);
+        [AxisStateProperty]
+        public AxisState m_YAxis = new AxisState(0, 1, false, true, 2f, 0.2f, 0.1f, "Mouse Y", false);
 
-        /// <summary>The Horizontal axis.  Value is 0..359.  This is passed on to the rigs' OrbitalTransposer component</summary>
-        [Tooltip("The Horizontal axis.  Value is 0..359.  This is passed on to the rigs' OrbitalTransposer component")]
-        public AxisState m_XAxis = new AxisState(300f, 0.1f, 0.1f, 0f, "Mouse X", true);
+        /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component</summary>
+        [Tooltip("The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component")]
+        [AxisStateProperty]
+        public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
         /// <summary>The definition of Forward.  Camera will follow behind</summary>
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
@@ -197,9 +199,10 @@ namespace Cinemachine
                 // Do not update the rig cache here or there will be infinite loop at creation time 
                 if (m_Rigs == null || m_Rigs.Length != 3)
                     return this;
-                if (m_YAxis.Value < 0.33f)
+                float y = GetYAxisValue();
+                if (y < 0.33f)
                     return m_Rigs[2];
-                if (m_YAxis.Value > 0.66f)
+                if (y > 0.66f)
                     return m_Rigs[0];
                 return m_Rigs[1];
             }
@@ -215,9 +218,10 @@ namespace Cinemachine
             if (m_Rigs == null || m_Rigs.Length != 3)
                 return false;
 
-            if (m_YAxis.Value < 0.33f)
+            float y = GetYAxisValue();
+            if (y < 0.33f)
                 return vcam == (ICinemachineCamera)m_Rigs[2];
-            if (m_YAxis.Value > 0.66f)
+            if (y > 0.66f)
                 return vcam == (ICinemachineCamera)m_Rigs[0];
             return vcam == (ICinemachineCamera)m_Rigs[1]; 
         }
@@ -458,12 +462,6 @@ namespace Cinemachine
             mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
             mBlendB = new CinemachineBlend(m_Rigs[2], m_Rigs[1], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
 
-            // Horizontal rotation clamped to [0,360] (with wraparound)
-            m_XAxis.SetThresholds(0f, 360f, true);
-
-            // Vertical rotation cleamped to [0,1] as it is a t-value for the
-            // catmull-rom spline going through the 3 points on the rig
-            m_YAxis.SetThresholds(0f, 1f, false);
             //UnityEngine.Profiling.Profiler.EndSample();
         }
 
@@ -547,7 +545,7 @@ namespace Cinemachine
                 //UnityEngine.Profiling.Profiler.EndSample();
 
                 //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PushSettingsToRigs.Push");
-                mOrbitals[i].m_FollowOffset = GetLocalPositionForCameraFromInput(m_YAxis.Value);
+                mOrbitals[i].m_FollowOffset = GetLocalPositionForCameraFromInput(GetYAxisValue());
                 mOrbitals[i].m_BindingMode = m_BindingMode;
                 mOrbitals[i].m_Heading = m_Heading;
                 mOrbitals[i].m_XAxis = m_XAxis;
@@ -564,13 +562,19 @@ namespace Cinemachine
             //UnityEngine.Profiling.Profiler.EndSample();
         }
 
+        private float GetYAxisValue()
+        {
+            float range = m_YAxis.m_MaxValue - m_YAxis.m_MinValue;
+            return (range > UnityVectorExtensions.Epsilon) ? m_YAxis.Value / range : 0.5f;
+        }
+
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.CalculateNewState");
             CameraState state = PullStateFromVirtualCamera(worldUp);
 
             // Blend from the appropriate rigs
-            float t = m_YAxis.Value;
+            float t = GetYAxisValue();
             if (t > 0.5f)
             {
                 if (mBlendA != null)

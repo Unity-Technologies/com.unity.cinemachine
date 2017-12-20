@@ -18,11 +18,13 @@ namespace Cinemachine
     {
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-        public AxisState m_VerticalAxis = new AxisState(300f, 0.1f, 0.1f, 0f, "Mouse Y", true);
+        [AxisStateProperty]
+        public AxisState m_VerticalAxis = new AxisState(-90, 90, false, false, 300f, 0.1f, 0.1f, "Mouse Y", true);
 
         /// <summary>The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation</summary>
         [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-        public AxisState m_HorizontalAxis = new AxisState(300f, 0.1f, 0.1f, 0f, "Mouse X", false);
+        [AxisStateProperty]
+        public AxisState m_HorizontalAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", false);
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled; } }
@@ -37,12 +39,6 @@ namespace Cinemachine
             m_VerticalAxis.Validate();
         }
 
-        private void OnEnable()
-        {
-            m_HorizontalAxis.SetThresholds(-180f, 180f, true);
-            m_VerticalAxis.SetThresholds(-90, 90, false);
-        }
-        
         /// <summary>Applies the axis values and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for calculating damping.  Not used.</param>

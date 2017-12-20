@@ -55,5 +55,16 @@ namespace Cinemachine.Editor
         {
             return obj.FindPropertyRelative(PropertyName(exp));
         }
+
+        /// <summary>Get the value of a proprty, as an object</summary>
+        public static object GetPropertyValue(SerializedProperty property)
+        {
+            var targetObject = property.serializedObject.targetObject;
+            var targetObjectClassType = targetObject.GetType();
+            var field = targetObjectClassType.GetField(property.propertyPath);
+            if (field != null)
+                return field.GetValue(targetObject);
+            return null;
+        }
     }
 }
