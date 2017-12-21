@@ -25,6 +25,8 @@ namespace Cinemachine.Utility
             }
         }
 
+        public bool IgnoreY { get; set; }
+
         GaussianWindow1D_Vector3 m_Velocity = new GaussianWindow1D_Vector3(kSmoothingDefault);
         GaussianWindow1D_Vector3 m_Accel = new GaussianWindow1D_Vector3(kSmoothingDefault);
 
@@ -44,6 +46,8 @@ namespace Cinemachine.Utility
             {
                 Vector3 vel = m_Velocity.Value();
                 Vector3 vel2 = (pos - m_Position) / Time.deltaTime;
+                if (IgnoreY)
+                    vel2.y = 0;
                 m_Velocity.AddValue(vel2);
                 m_Accel.AddValue(vel2 - vel);
             }

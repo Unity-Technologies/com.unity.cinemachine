@@ -36,6 +36,7 @@ namespace Cinemachine
         /// to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.
         /// If the camera jitters unacceptably when the target is in motion, turn down this setting, 
         /// or animate the target more smoothly.</summary>
+        [Space]
         [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
         [Range(0f, 1f)]
         public float m_LookaheadTime = 0;
@@ -45,6 +46,10 @@ namespace Cinemachine
         [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag")]
         [Range(3, 30)]
         public float m_LookaheadSmoothing = 10;
+
+        /// <summary>If checked, movement along the Y axis will be ignored for lookahead calculations</summary>
+        [Tooltip("If checked, movement along the Y axis will be ignored for lookahead calculations")]
+        public bool m_LookaheadIgnoreY;
 
         /// <summary>How aggressively the camera tries to follow the target in the screen-horizontal direction.
         /// Small numbers are more responsive, rapidly orienting the camera to keep the target in
@@ -126,6 +131,7 @@ namespace Cinemachine
             if (LookAtTarget != null)
                 pos += LookAtTargetRotation * m_TrackedObjectOffset;
 
+            m_Predictor.IgnoreY = m_LookaheadIgnoreY;
             m_Predictor.Smoothing = m_LookaheadSmoothing;
             m_Predictor.AddPosition(pos);
             TrackedPoint = (m_LookaheadTime > 0)

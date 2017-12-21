@@ -54,10 +54,15 @@ namespace Cinemachine
         [Range(3, 30)]
         public float m_LookaheadSmoothing = 10;
 
+        /// <summary>If checked, movement along the Y axis will be ignored for lookahead calculations</summary>
+        [Tooltip("If checked, movement along the Y axis will be ignored for lookahead calculations")]
+        public bool m_LookaheadIgnoreY;
+
         /// <summary>How aggressively the camera tries to maintain the offset in the X-axis.
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
+        [Space]
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain the offset in the X-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's x-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
         public float m_XDamping = 1f;
@@ -312,6 +317,7 @@ namespace Cinemachine
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFramingTransposer.MutateCameraState");
             Vector3 camPosWorld = m_PreviousCameraPosition;
             curState.ReferenceLookAt = FollowTargetPosition;
+            m_Predictor.IgnoreY = m_LookaheadIgnoreY;
             m_Predictor.Smoothing = m_LookaheadSmoothing;
             m_Predictor.AddPosition(curState.ReferenceLookAt);
             TrackedPoint = (m_LookaheadTime > 0) 
