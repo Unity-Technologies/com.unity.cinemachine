@@ -96,19 +96,19 @@ namespace Cinemachine
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
         public Heading m_Heading = new Heading(Heading.HeadingDefinition.TargetForward, 4, 0);
 
-        /// <summary>Controls how automatic orbit recentering occurs</summary>
+        /// <summary>Controls how automatic axis recentering occurs</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct Recentering
         {
             /// <summary>If checked, will enable automatic recentering of the
-            /// camera based on the heading calculation mode. If FALSE, recenting is disabled.</summary>
-            [Tooltip("If checked, will enable automatic recentering of the camera based on the heading definition. If unchecked, recenting is disabled.")]
+            /// axis. If FALSE, recenting is disabled.</summary>
+            [Tooltip("If checked, will enable automatic recentering of the axis. If unchecked, recenting is disabled.")]
             public bool m_enabled;
 
             /// <summary>If no input has been detected, the camera will wait
             /// this long in seconds before moving its heading to the default heading.</summary>
-            [Tooltip("If no input has been detected, the camera will wait this long in seconds before moving its heading to the zero position.")]
+            [Tooltip("If no user input has been detected on the axis, the axis will wait this long in seconds before recentering.")]
             public float m_RecenterWaitTime;
 
             /// <summary>Maximum angular speed of recentering.  Will accelerate into and decelerate out of this</summary>
@@ -122,6 +122,8 @@ namespace Cinemachine
                 m_RecenterWaitTime = recenterWaitTime;
                 m_RecenteringTime = recenteringSpeed;
                 m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
+                mLastAxisInputTime = 0;
+                mRecenteringVelocity = 0;
             }
 
             /// <summary>Call this from OnValidate()</summary>
@@ -129,6 +131,57 @@ namespace Cinemachine
             {
                 m_RecenterWaitTime = Mathf.Max(0, m_RecenterWaitTime);
                 m_RecenteringTime = Mathf.Max(0, m_RecenteringTime);
+            }
+
+            // Internal state
+            float mLastAxisInputTime;
+            float mRecenteringVelocity;
+
+            internal void CancelRecentering()
+            {
+                mLastAxisInputTime = Time.time;
+                mRecenteringVelocity = 0;
+            }
+
+            internal void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
+            {
+                if (!m_enabled)
+                    return;
+
+                if (deltaTime < 0)
+                {
+                    CancelRecentering();
+                    axis.Value = recenterTarget;
+                }
+                else if (Time.time > (mLastAxisInputTime + m_RecenterWaitTime))
+                {
+                    // Scale value determined heuristically, to account for accel/decel
+                    float recenterTime = m_RecenteringTime / 3f;
+                    if (recenterTime <= deltaTime)
+                        axis.Value = recenterTarget;
+                    else
+                    {
+                        float headingError = Mathf.DeltaAngle(axis.Value, recenterTarget);
+                        float absHeadingError = Mathf.Abs(headingError);
+                        if (absHeadingError < UnityVectorExtensions.Epsilon)
+                        {
+                            axis.Value = recenterTarget;
+                            mRecenteringVelocity = 0;
+                        }
+                        else 
+                        {
+                            float scale = deltaTime / recenterTime;
+                            float desiredVelocity = Mathf.Sign(headingError)
+                                * Mathf.Min(absHeadingError, absHeadingError * scale);
+                            // Accelerate to the desired velocity
+                            float accel = desiredVelocity - mRecenteringVelocity;
+                            if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
+                                desiredVelocity = mRecenteringVelocity + desiredVelocity * scale;
+                            axis.Value += desiredVelocity;
+                            mRecenteringVelocity = desiredVelocity;
+                        }
+                    }
+                }
             }
 
             // Legacy support
@@ -221,56 +274,14 @@ namespace Cinemachine
             // Only read joystick when game is playing
             if (deltaTime >= 0 || CinemachineCore.Instance.IsLive(VirtualCamera))
             {
-                bool xAxisInput = false;
-                xAxisInput |= axis.Update(deltaTime);
-                if (xAxisInput)
-                {
-                    mLastHeadingAxisInputTime = Time.time;
-                    mHeadingRecenteringVelocity = 0;
-                }
+                if (axis.Update(deltaTime))
+                    m_RecenterToTargetHeading.CancelRecentering();
             }
+
             float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up), deltaTime);
-            if (deltaTime < 0)
-            {
-                mHeadingRecenteringVelocity = 0;
-                if (m_RecenterToTargetHeading.m_enabled)
-                    axis.Value = targetHeading;
-            }
-            else
-            {
-                // Recentering
-                if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp
-                    && m_RecenterToTargetHeading.m_enabled
-                    && (Time.time > (mLastHeadingAxisInputTime + m_RecenterToTargetHeading.m_RecenterWaitTime)))
-                {
-                    // Scale value determined heuristically, to account for accel/decel
-                    float recenterTime = m_RecenterToTargetHeading.m_RecenteringTime / 3f;
-                    if (recenterTime <= deltaTime)
-                        axis.Value = targetHeading;
-                    else
-                    {
-                        float headingError = Mathf.DeltaAngle(axis.Value, targetHeading);
-                        float absHeadingError = Mathf.Abs(headingError);
-                        if (absHeadingError < UnityVectorExtensions.Epsilon)
-                        {
-                            axis.Value = targetHeading;
-                            mHeadingRecenteringVelocity = 0;
-                        }
-                        else 
-                        {
-                            float scale = deltaTime / recenterTime;
-                            float desiredVelocity = Mathf.Sign(headingError)
-                                * Mathf.Min(absHeadingError, absHeadingError * scale);
-                            // Accelerate to the desired velocity
-                            float accel = desiredVelocity - mHeadingRecenteringVelocity;
-                            if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
-                                desiredVelocity = mHeadingRecenteringVelocity + desiredVelocity * scale;
-                            axis.Value += desiredVelocity;
-                            mHeadingRecenteringVelocity = desiredVelocity;
-                        }
-                    }
-                }
-            }
+            if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+                m_RecenterToTargetHeading.DoRecentering(ref axis, deltaTime, targetHeading);
+
             float finalHeading = axis.Value;
             if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
                 axis.Value = 0;
@@ -283,8 +294,6 @@ namespace Cinemachine
             mLastTargetPosition = Vector3.zero;
         }
 
-        private float mLastHeadingAxisInputTime = 0f;
-        private float mHeadingRecenteringVelocity = 0f;
         private Vector3 mLastTargetPosition = Vector3.zero;
         private HeadingTracker mHeadingTracker;
         private Rigidbody mTargetRigidBody = null;

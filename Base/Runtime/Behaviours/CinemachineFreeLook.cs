@@ -47,6 +47,11 @@ namespace Cinemachine
         [AxisStateProperty]
         public AxisState m_YAxis = new AxisState(0, 1, false, true, 2f, 0.2f, 0.1f, "Mouse Y", false);
 
+        /// <summary>Controls how automatic recentering of the Y axis is accomplished</summary>
+        [Tooltip("Controls how automatic recentering of the Y axis is accomplished")]
+        public CinemachineOrbitalTransposer.Recentering m_YAxisRecentering
+            = new CinemachineOrbitalTransposer.Recentering(false, 1, 2);
+
         /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component</summary>
         [Tooltip("The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component")]
         [AxisStateProperty]
@@ -119,6 +124,7 @@ namespace Cinemachine
             m_YAxis.Validate();
             m_XAxis.Validate();
             m_RecenterToTargetHeading.Validate();
+            m_YAxisRecentering.Validate();
             m_Lens.Validate();
 
             InvalidateRigCache();
@@ -276,8 +282,10 @@ namespace Cinemachine
             // Set up for next frame
             bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
             if (activeCam)
-                m_YAxis.Update(deltaTime);
-
+            {
+                if (m_YAxis.Update(deltaTime))
+                    m_YAxisRecentering.CancelRecentering();
+            }
             PushSettingsToRigs();
                  
             //UnityEngine.Profiling.Profiler.EndSample();
@@ -549,9 +557,9 @@ namespace Cinemachine
                 mOrbitals[i].m_BindingMode = m_BindingMode;
                 mOrbitals[i].m_Heading = m_Heading;
                 mOrbitals[i].m_XAxis = m_XAxis;
-                mOrbitals[i].m_RecenterToTargetHeading = m_RecenterToTargetHeading;
-                if (i > 0)
-                    mOrbitals[i].m_RecenterToTargetHeading.m_enabled = false;
+                mOrbitals[i].m_RecenterToTargetHeading.m_enabled = (i == 0) ? m_RecenterToTargetHeading.m_enabled : false;
+                mOrbitals[i].m_RecenterToTargetHeading.m_RecenterWaitTime = m_RecenterToTargetHeading.m_RecenterWaitTime;
+                mOrbitals[i].m_RecenterToTargetHeading.m_RecenteringTime = m_RecenterToTargetHeading.m_RecenteringTime;
 
                 // Hack to get SimpleFollow with heterogeneous dampings to work
                 if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
@@ -572,6 +580,8 @@ namespace Cinemachine
         {
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.CalculateNewState");
             CameraState state = PullStateFromVirtualCamera(worldUp);
+
+            m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 
             // Blend from the appropriate rigs
             float t = GetYAxisValue();
