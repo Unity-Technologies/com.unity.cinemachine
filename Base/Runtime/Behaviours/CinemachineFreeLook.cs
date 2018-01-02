@@ -58,6 +58,7 @@ namespace Cinemachine
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
         /// <summary>The definition of Forward.  Camera will follow behind</summary>
+        [OrbitalTransposerHeadingProperty]
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
         public CinemachineOrbitalTransposer.Heading m_Heading 
             = new CinemachineOrbitalTransposer.Heading(

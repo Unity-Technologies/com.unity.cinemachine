@@ -93,6 +93,7 @@ namespace Cinemachine
 
         /// <summary>The definition of Forward.  Camera will follow behind.</summary>
         [Space]
+        [OrbitalTransposerHeadingProperty]
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
         public Heading m_Heading = new Heading(Heading.HeadingDefinition.TargetForward, 4, 0);
 
@@ -381,17 +382,12 @@ namespace Cinemachine
             if (FollowTarget == null)
                 return currentHeading;
 
-            if (m_Heading.m_HeadingDefinition == Heading.HeadingDefinition.Velocity
-                && mTargetRigidBody == null)
-            {
-                Debug.Log(string.Format(
-                        "Attempted to use HeadingDerivationMode.Velocity to calculate heading for {0}. No RigidBody was present on '{1}'. Defaulting to position delta",
-                        GetFullName(VirtualCamera.VirtualCameraGameObject), FollowTarget));
-                m_Heading.m_HeadingDefinition = Heading.HeadingDefinition.PositionDelta;
-            }
+            var headingDef = m_Heading.m_HeadingDefinition;
+            if (headingDef == Heading.HeadingDefinition.Velocity && mTargetRigidBody == null)
+                headingDef = Heading.HeadingDefinition.PositionDelta;
 
             Vector3 velocity = Vector3.zero;
-            switch (m_Heading.m_HeadingDefinition)
+            switch (headingDef)
             {
                 case Heading.HeadingDefinition.PositionDelta:
                     velocity = FollowTargetPosition - mLastTargetPosition;

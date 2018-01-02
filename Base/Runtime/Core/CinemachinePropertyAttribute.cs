@@ -10,6 +10,13 @@ namespace Cinemachine
     }
 
     /// <summary>
+    /// Property applied to OrbitalTransposer.Heading.  Used for custom drawing in the inspector.
+    /// </summary>
+    public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute
+    {
+    }
+
+    /// <summary>
     /// Property applied to LensSettings.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class LensSettingsPropertyAttribute : PropertyAttribute
