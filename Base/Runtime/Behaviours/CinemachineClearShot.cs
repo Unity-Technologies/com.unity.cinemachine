@@ -126,14 +126,14 @@ namespace Cinemachine
                 vcam.RemovePostPipelineStageHook(d);
         }
 
-        /// <summary>Called by CinemachineCore at designated update time
+        /// <summary>Internal use only.  Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
         /// updates all the children, chooses the best one, and implements any required blending.</summary>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
+        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineClearShot.UpdateCameraState");
+            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineClearShot.InternalUpdateCameraState");
             if (!PreviousStateIsValid)
                 deltaTime = -1;
 
@@ -425,7 +425,7 @@ namespace Cinemachine
             {
                 m_RandomizedChilden = null;
                 LiveChild = null;
-                UpdateCameraState(worldUp, deltaTime);
+                InternalUpdateCameraState(worldUp, deltaTime);
             }
         }
     }

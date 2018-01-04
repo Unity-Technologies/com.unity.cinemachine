@@ -98,8 +98,8 @@ namespace Cinemachine
             // Make sure both cameras have been updated (they are not necessarily
             // enabled, and only enabled cameras get updated automatically
             // every frame)
-            CinemachineCore.Instance.UpdateVirtualCamera(CamA, worldUp, deltaTime);
-            CinemachineCore.Instance.UpdateVirtualCamera(CamB, worldUp, deltaTime);
+            CamA.UpdateCameraState(worldUp, deltaTime);
+            CamB.UpdateCameraState(worldUp, deltaTime);
         }
 
         /// <summary>Compute the blended CameraState for the current time in the blend.</summary>

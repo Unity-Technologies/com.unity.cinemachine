@@ -234,7 +234,7 @@ namespace Cinemachine
                 while (status.lastUpdateSubframe < subframes)
                 {
 //Debug.Log(vcam.Name + ": frame " + Time.frameCount + "." + status.lastUpdateSubframe + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
-                    vcam.UpdateCameraState(worldUp, deltaTime);
+                    vcam.InternalUpdateCameraState(worldUp, deltaTime);
                     ++status.lastUpdateSubframe;
                 }
                 status.lastUpdateFrame = now;

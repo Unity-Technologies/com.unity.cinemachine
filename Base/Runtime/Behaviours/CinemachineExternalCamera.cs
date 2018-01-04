@@ -34,8 +34,8 @@ namespace Cinemachine
         /// <summary>This vcam defines no targets</summary>
         override public Transform Follow { get; set; }
 
-        /// <summary>Construct a CameraState object from the Unity Camera</summary>
-        public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
+        /// <summary>Internal use only.  Do not call this method</summary>
+        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             // Get the state from the camera
             if (m_Camera == null)

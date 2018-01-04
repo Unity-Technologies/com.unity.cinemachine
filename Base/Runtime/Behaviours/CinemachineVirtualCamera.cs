@@ -111,12 +111,13 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
-        /// <summary>Called by CinemachineCore at LateUpdate time
+        /// <summary>Internal use only.  Do not call this method.  
+        /// Called by CinemachineCore at the appropriate Update time
         /// so the vcam can position itself and track its targets.  This class will
         /// invoke its pipeline and generate a CameraState for this frame.</summary>
-        override public void UpdateCameraState(Vector3 worldUp, float deltaTime)
+        override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineVirtualCamera.UpdateCameraState");
+            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineVirtualCamera.InternalUpdateCameraState");
             if (!PreviousStateIsValid)
                 deltaTime = -1;
 

@@ -59,15 +59,25 @@ namespace Cinemachine
         bool IsLiveChild(ICinemachineCamera vcam);
 
         /// <summary>
-        /// Updates this Cinemachine Camera. For an active camera this should be
-        /// called once and only once each frame.  To guarantee this, you should never
-        /// call this method directly.  Always use
-        /// CinemachineCore.UpdateVirtualCamera(ICinemachineCamera, float), which
+        /// Update the camera's state.
+        /// The implementation must guarantee against multiple calls per frame, and should
+        /// use CinemachineCore.UpdateVirtualCamera(ICinemachineCamera, Vector3, mfloat), which
         /// has protection against multiple calls per frame.
         /// </summary>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         void UpdateCameraState(Vector3 worldUp, float deltaTime);
+
+        /// <summary>
+        /// Updates this Cinemachine Camera. For an active camera this should be
+        /// called once and only once each frame.  To guarantee this, you should never
+        /// call this method directly.  Always use
+        /// CinemachineCore.UpdateVirtualCamera(ICinemachineCamera, Vector3, float), which
+        /// has protection against multiple calls per frame.
+        /// </summary>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
+        void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
 
         /// <summary>
         /// Notification that a new camera is being activated.  This is sent to the

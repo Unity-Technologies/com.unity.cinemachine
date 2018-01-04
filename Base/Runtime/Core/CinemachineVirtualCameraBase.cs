@@ -198,13 +198,26 @@ namespace Cinemachine
         private Transform m_previousLookAtTarget;
         private Transform m_previousFollowTarget;
 
+        /// <summary>
+        /// Update the camera's state.
+        /// The implementation must guarantee against multiple calls per frame, and should
+        /// use CinemachineCore.UpdateVirtualCamera(ICinemachineCamera, Vector3, float), which
+        /// has protection against multiple calls per frame.
+        /// </summary>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
+        public void UpdateCameraState(Vector3 worldUp, float deltaTime)
+        {
+            CinemachineCore.Instance.UpdateVirtualCamera(this, worldUp, deltaTime);
+        }
 
-        /// <summary>Called by CinemachineCore at designated update time
+        /// <summary>Internal use only.  Do not call this method.  
+        /// Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  
         /// Do not call this method.  Let the framework do it at the appropriate time</summary>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        public abstract void UpdateCameraState(Vector3 worldUp, float deltaTime);
+        public abstract void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
 
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementationmust be called by any overridden method.</summary>
@@ -256,7 +269,8 @@ namespace Cinemachine
             }
             UpdateSlaveStatus();
             UpdateVcamPoolStatus();    // Add to queue
-            PreviousStateIsValid = false;
+            if (!CinemachineCore.Instance.IsLive(this))
+                PreviousStateIsValid = false;
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>

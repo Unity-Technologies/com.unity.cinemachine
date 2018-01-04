@@ -448,7 +448,7 @@ namespace Cinemachine
             // Only cameras that are enabled get automatically updated.
             ICinemachineCamera vcam = ActiveVirtualCamera;
             if (vcam != null)
-                CinemachineCore.Instance.UpdateVirtualCamera(vcam, DefaultWorldUp, deltaTime);
+                vcam.UpdateCameraState(DefaultWorldUp, deltaTime);
             CinemachineBlend activeBlend = ActiveBlend;
             if (activeBlend != null)
                 activeBlend.UpdateCameraState(DefaultWorldUp, deltaTime);
@@ -501,7 +501,7 @@ namespace Cinemachine
                             mActiveCameraPreviousFrame, activeCamera, out duration);
                         activeBlend = CreateBlend(
                                 mActiveCameraPreviousFrame, activeCamera,
-                                curve, duration, mActiveBlend);
+                                curve, duration, mActiveBlend, deltaTime);
                     }
                     // Need this check because Timeline override sometimes inverts outgoing and incoming
                     if (activeCamera != mOutgoingCameraPreviousFrame)
@@ -514,7 +514,7 @@ namespace Cinemachine
                         if (!activeCamera.VirtualCameraGameObject.activeInHierarchy
                             && (activeBlend == null || !activeBlend.Uses(activeCamera)))
                         {
-                            activeCamera.UpdateCameraState(DefaultWorldUp, -1);
+                            activeCamera.InternalUpdateCameraState(DefaultWorldUp, -1);
                         }
                         if (m_CameraActivatedEvent != null)
                             m_CameraActivatedEvent.Invoke(activeCamera);
@@ -700,7 +700,7 @@ namespace Cinemachine
         private CinemachineBlend CreateBlend(
             ICinemachineCamera camA, ICinemachineCamera camB, 
             AnimationCurve blendCurve, float duration,
-            CinemachineBlend activeBlend)
+            CinemachineBlend activeBlend, float deltaTime)
         {
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineTrackedDolly.MutateCameraState");
             if (blendCurve == null || duration <= 0 || (camA == null && camB == null))
@@ -713,14 +713,17 @@ namespace Cinemachine
                 // Blend from the current camera position
                 CameraState state = CameraState.Default;
                 if (activeBlend != null)
+                {
                     state = activeBlend.State;
+                    camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
+                }
                 else
                 {
                     state.RawPosition = transform.position;
                     state.RawOrientation = transform.rotation;
                     state.Lens = LensSettings.FromCamera(OutputCamera);
+                    camA = new StaticPointVirtualCamera(state, "(none)");
                 }
-                camA = new StaticPointVirtualCamera(state, activeBlend == null ? "(none)" : "Mid-blend");
             }
             CinemachineBlend blend = new CinemachineBlend(camA, camB, blendCurve, duration, 0);
             //UnityEngine.Profiling.Profiler.EndSample();
@@ -792,6 +795,7 @@ namespace Cinemachine
         public ICinemachineCamera ParentCamera { get { return null; } }
         public bool IsLiveChild(ICinemachineCamera vcam) { return false; }
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
+        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
     }
 
@@ -826,6 +830,7 @@ namespace Cinemachine
             Blend.UpdateCameraState(worldUp, deltaTime);
             State = Blend.State;
         }
+        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
     }
 }
