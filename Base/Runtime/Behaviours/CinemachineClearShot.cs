@@ -406,8 +406,14 @@ namespace Cinemachine
             if (camA == null || activeBlend != null)
             {
                 // Blend from the current camera position
-                CameraState state = (activeBlend != null) ? activeBlend.State : State;
-                camA = new StaticPointVirtualCamera(state, (activeBlend != null) ? "Mid-blend" : "(none)");
+                CameraState state = State;
+                if (activeBlend == null)
+                    camA = new StaticPointVirtualCamera(state, "(none)");
+                else
+                {
+                    state = activeBlend.State;
+                    camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
+                }
             }
             return new CinemachineBlend(camA, camB, blendCurve, duration, 0);
         }
