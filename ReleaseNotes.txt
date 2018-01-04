@@ -1,3 +1,17 @@
+<size=20><b>Version 2.1.11.a0</b></size>
+
+- Added support for custom blend curves
+- Lookahead: added Ignore Y Axis Movement option
+- Added support for cascading blends (i.e. blending from mid-blend looks better)
+- POV/Orbital/FreeLook axis: exposed Min, Max, and Wrap in the UI, for customized axis range
+- FreeLook: added Y Axis recentering
+- Path: Added Normalized Path units option: 0 is start of path, 1 is end.
+- Path: added length display in inspector
+- Bugfix: OrbitalTransposer works better with WorldUp overrides
+- Bugfix: Remove StateDrivenCamera "not playing a controller" warning
+- Bugfix: DepthOfField blending was wrong in PPv2
+
+
 <size=20><b>Version 2.1.10</b></size>
 
 - New Aim component: Same As Follow Target simply uses the same orientation as the Follow target
