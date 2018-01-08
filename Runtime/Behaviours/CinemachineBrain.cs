@@ -416,7 +416,7 @@ namespace Cinemachine
                 // to be painted one frame out of sync.  It will only happen in the editor when not playing.
                 float deltaTime = GetEffectiveDeltaTime(false);
                 msSubframes = 1;
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, deltaTime);
+                UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedLate, deltaTime);
                 ProcessActiveCamera(GetEffectiveDeltaTime(false));
             }
         }
