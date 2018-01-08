@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
                 ScriptableObject dummy = ScriptableObject.CreateInstance<ScriptableObjectUtility>();
                 string path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(dummy));
                 DestroyImmediate(dummy);
-                path = path.Substring(0, path.LastIndexOf("/Base"));
+                path = path.Substring(0, path.LastIndexOf("/Editor"));
                 return path;
             }
         }
