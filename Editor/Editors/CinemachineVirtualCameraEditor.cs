@@ -383,36 +383,37 @@ namespace Cinemachine.Editor
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 foreach (Assembly assembly in assemblies)
                 {
-                    foreach (var type in assembly.GetTypes())
+                    try 
                     {
-                        try 
+                        foreach (var type in assembly.GetTypes())
                         {
-                            bool added = false;
-                            foreach (var method in type.GetMethods(
-                                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+                            try 
                             {
-                                if (added)
-                                    break;
-                                if (!method.IsStatic)
-                                    continue;
-                                var attributes = method.GetCustomAttributes(typeof(DrawGizmo), true) as DrawGizmo[];
-                                foreach (var a in attributes)
+                                bool added = false;
+                                foreach (var method in type.GetMethods(
+                                             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
                                 {
-                                    if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType))
-                                    {
-                                        m_GizmoDrawers.Add(a.drawnType, method);
-                                        added = true;
+                                    if (added)
                                         break;
+                                    if (!method.IsStatic)
+                                        continue;
+                                    var attributes = method.GetCustomAttributes(typeof(DrawGizmo), true) as DrawGizmo[];
+                                    foreach (var a in attributes)
+                                    {
+                                        if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType))
+                                        {
+                                            m_GizmoDrawers.Add(a.drawnType, method);
+                                            added = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                        }
-                        catch (System.Exception)
-                        {
-                            // screw it
+                            catch (System.Exception) {} // Just skip uncooperative types
                         }
                     }
-                }
+                    catch (System.Exception) {} // Just skip uncooperative assemblies
+               }
             }
             public static Dictionary<Type, MethodInfo> m_GizmoDrawers;
         }
