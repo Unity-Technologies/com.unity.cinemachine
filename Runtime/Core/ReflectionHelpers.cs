@@ -19,7 +19,7 @@ namespace Cinemachine.Utility
         /// Only those fields that get caught in the filter will be copied</param>
         public static void CopyFields(
             Object src, Object dst,
-            BindingFlags bindingAttr = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
         {
             if (src != null && dst != null)
             {
@@ -130,11 +130,11 @@ namespace Cinemachine.Utility
             if (string.IsNullOrEmpty(memberName) || (type == null))
                 return default(T);
 
-            BindingFlags bindingFlags = BindingFlags.NonPublic;
+            System.Reflection.BindingFlags bindingFlags = System.Reflection.BindingFlags.NonPublic;
             if (obj != null)
-                bindingFlags |= BindingFlags.Instance;
+                bindingFlags |= System.Reflection.BindingFlags.Instance;
             else
-                bindingFlags |= BindingFlags.Static;
+                bindingFlags |= System.Reflection.BindingFlags.Static;
 
             FieldInfo field = type.GetField(memberName, bindingFlags);
             if ((field != null) && (field.FieldType == typeof(T)))
@@ -155,7 +155,7 @@ namespace Cinemachine.Utility
                 return obj;
 
             var info = obj.GetType().GetField(
-                    fields[0], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    fields[0], System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             obj = info.GetValue(obj);
 
             return GetParentObject(string.Join(".", fields, 1, fields.Length - 1), obj);
