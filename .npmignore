@@ -1,4 +1,7 @@
 Documentation/ApiDocs/**
+Tests/**
+Tests
+Tests.meta
 .npmrc
 .npmignore
 .gitignore
@@ -10,3 +13,5 @@ CinemachineAPI.chm
 CinemachineAPI.chm.meta
 LICENSE
 LICENSE.meta
+npm-debug.log
+npm-debug.log.meta
