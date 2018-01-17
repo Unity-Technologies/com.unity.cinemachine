@@ -14,7 +14,7 @@ namespace Cinemachine.Editor
         {
             get 
             { 
-                // First see if we're a UPM package
+                // First see if we're a UPM package - use some asset that we expect to find
                 string path = Path.GetFullPath(kPackageRoot + "/Editor/Resources/cm_logo_sm.png");
                 int index = path.LastIndexOf("/Editor");
                 if (index < 0 || !File.Exists(path))
@@ -26,10 +26,13 @@ namespace Cinemachine.Editor
                         path = Path.GetFullPath(path);
                     DestroyImmediate(dummy);
                 }
+                path = path.Replace('\\', '/'); // because of GetFullPath()
                 index = path.LastIndexOf("/Editor");
                 if (index >= 0)
-                    return path.Substring(0, index);
-                return string.Empty;
+                    path = path.Substring(0, index);
+                if (path.Length > 0)
+                    path = Path.GetFullPath(path);  // stupid backslashes
+                return path;
             }
         }
 
