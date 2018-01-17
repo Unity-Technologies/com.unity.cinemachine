@@ -30,10 +30,7 @@ namespace Cinemachine.Editor
         {
             mNoisePresets = FindAssetsByType<NoiseSettings>();
 #if UNITY_2018_1_OR_NEWER
-            if (ScriptableObjectUtility.CinemachineIsPackage)
-                AddAssetsFromDirectory(
-                    mNoisePresets, 
-                    ScriptableObjectUtility.CinemachineInstallAssetPath + "/Presets/Noise");
+            AddAssetsFromPackageSubDirectory(mNoisePresets, "Presets/Noise");
 #endif
             mNoisePresets.Insert(0, null);
             List<string> presetNameList = new List<string>();
@@ -107,15 +104,19 @@ namespace Cinemachine.Editor
             return assets;
         }
 
-        static void AddAssetsFromDirectory<T>(List<T> assets, string path) where T : UnityEngine.Object
+        static void AddAssetsFromPackageSubDirectory<T>(List<T> assets, string path) where T : UnityEngine.Object
         {
             try 
             {
-                var info = new DirectoryInfo(path);
+                path = "/" + path;
+                var info = new DirectoryInfo(ScriptableObjectUtility.CinemachineInstallPath + path);
+                path = ScriptableObjectUtility.kPackageRoot + path + "/";
                 var fileInfo = info.GetFiles();
                 foreach (var file in fileInfo)
                 {
-                    string name = path + "/" + file.Name;
+                    if (file.Extension != ".asset")
+                        continue;
+                    string name = path + file.Name;
                     T a = AssetDatabase.LoadAssetAtPath(name, typeof(T)) as T;
                     if (a != null)
                         assets.Add(a);

@@ -1,6 +1,6 @@
-<size=20><b>Version 2.1.11.a1</b></size>
+<size=20><b>Version 2.1.11-alpha.3</b></size>
 
-- Project restructure: Removed Base, Timeline, and PostFX folders from project root
+- Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option
 - Added support for cascading blends (i.e. blending from mid-blend looks better)

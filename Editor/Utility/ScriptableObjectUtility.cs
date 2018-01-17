@@ -8,26 +8,29 @@ namespace Cinemachine.Editor
 {
     public class ScriptableObjectUtility : ScriptableObject
     {
+        public static string kPackageRoot = "Packages/com.unity.cinemachine";
+
         public static string CinemachineInstallPath
         {
-            get { return Path.GetFullPath(CinemachineInstallAssetPath); }
-        }
-
-        public static string CinemachineInstallAssetPath
-        {
-            get
-            {
-                ScriptableObject dummy = ScriptableObject.CreateInstance<ScriptableObjectUtility>();
-                string path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(dummy));
-                DestroyImmediate(dummy);
-                path = path.Substring(0, path.LastIndexOf("/Editor"));
-                return path;
+            get 
+            { 
+                // First see if we're a UPM package
+                string path = Path.GetFullPath(kPackageRoot + "/Editor/Resources/cm_logo_sm.png");
+                int index = path.LastIndexOf("/Editor");
+                if (index < 0 || !File.Exists(path))
+                {
+                    // Try as an ordinary asset
+                    ScriptableObject dummy = ScriptableObject.CreateInstance<ScriptableObjectUtility>();
+                    path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(dummy));
+                    if (path.Length > 0)
+                        path = Path.GetFullPath(path);
+                    DestroyImmediate(dummy);
+                }
+                index = path.LastIndexOf("/Editor");
+                if (index >= 0)
+                    return path.Substring(0, index);
+                return string.Empty;
             }
-        }
-
-        public static bool CinemachineIsPackage 
-        { 
-            get { return CinemachineInstallAssetPath.StartsWith("Packages"); } 
         }
 
         public static bool AddDefineForAllBuildTargets(string k_Define)
