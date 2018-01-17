@@ -1,6 +1,6 @@
 {
 	"name": "com.unity.cinemachine",
-	"version": "2.1.11-alpha.2",
+	"version": "2.1.11-alpha.3",
 	"unity": "2018.1",
 	"description": "Smart camera tools for passionate creators",
 	"keywords": ["camera", "follow", "rig", "fps", "cinematography"],
