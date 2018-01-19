@@ -42,12 +42,10 @@ namespace Cinemachine.Utility
         {
             if (IsEmpty)
                 m_Velocity.AddValue(Vector3.zero);
-            else
+            else if (Time.deltaTime > Vector3.kEpsilon)
             {
                 Vector3 vel = m_Velocity.Value();
                 Vector3 vel2 = (pos - m_Position) / Time.deltaTime;
-                if (IgnoreY)
-                    vel2.y = 0;
                 m_Velocity.AddValue(vel2);
                 m_Accel.AddValue(vel2 - vel);
             }
@@ -56,17 +54,20 @@ namespace Cinemachine.Utility
 
         public Vector3 PredictPosition(float lookaheadTime)
         {
-            int numSteps = Mathf.Min(Mathf.RoundToInt(lookaheadTime / Time.deltaTime), 6);
-            float dt = lookaheadTime / numSteps;
             Vector3 pos = m_Position;
-            Vector3 vel = m_Velocity.IsEmpty() ? Vector3.zero : m_Velocity.Value();
-            Vector3 accel = m_Accel.IsEmpty() ? Vector3.zero : m_Accel.Value();
-            for (int i = 0; i < numSteps; ++i)
+            if (Time.deltaTime > Vector3.kEpsilon)
             {
-                pos += vel * dt;
-                Vector3 vel2 = vel + (accel * dt);
-                accel = Quaternion.FromToRotation(vel, vel2) * accel;
-                vel = vel2;
+                int numSteps = Mathf.Min(Mathf.RoundToInt(lookaheadTime / Time.deltaTime), 6);
+                float dt = lookaheadTime / numSteps;
+                Vector3 vel = m_Velocity.IsEmpty() ? Vector3.zero : m_Velocity.Value();
+                Vector3 accel = m_Accel.IsEmpty() ? Vector3.zero : m_Accel.Value();
+                for (int i = 0; i < numSteps; ++i)
+                {
+                    pos += vel * dt;
+                    Vector3 vel2 = vel + (accel * dt);
+                    accel = Quaternion.FromToRotation(vel, vel2) * accel;
+                    vel = vel2;
+                }
             }
             return pos;
         }
