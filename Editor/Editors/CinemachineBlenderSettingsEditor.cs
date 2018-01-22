@@ -133,16 +133,8 @@ namespace Cinemachine.Editor
                         toProp.stringValue = mCameraCandidates[sel];
 
                     SerializedProperty blendProp = element.FindPropertyRelative(() => def.m_Blend);
-                    pos.x += rect.width + hSpace; rect.width -= floatFieldWidth; rect.position = pos;
-                    SerializedProperty styleProp = blendProp.FindPropertyRelative(() => def2.m_Style);
-                    EditorGUI.PropertyField(rect, styleProp, GUIContent.none);
-
-                    if (styleProp.intValue != (int)CinemachineBlendDefinition.Style.Cut)
-                    {
-                        pos.x += rect.width + hSpace; rect.width = floatFieldWidth; rect.position = pos;
-                        SerializedProperty timeProp = blendProp.FindPropertyRelative(() => def2.m_Time);
-                        EditorGUI.PropertyField(rect, timeProp, GUIContent.none);
-                    }
+                    pos.x += rect.width + hSpace; rect.position = pos;
+                    EditorGUI.PropertyField(rect, blendProp, GUIContent.none);
                 };
 
             mBlendList.onAddCallback = (ReorderableList l) =>
