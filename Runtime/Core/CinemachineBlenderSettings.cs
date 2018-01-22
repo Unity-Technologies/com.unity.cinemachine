@@ -24,6 +24,7 @@ namespace Cinemachine
             [Tooltip("When blending to this camera")]
             public string m_To;
 
+            [CinemachineBlendDefinitionProperty]
             [Tooltip("Blend curve definition")]
             public CinemachineBlendDefinition m_Blend;
         }

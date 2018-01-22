@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
             SerializedProperty timeProp = property.FindPropertyRelative(() => myClass.m_Time);
-            GUIContent timeText = new GUIContent(" sec ", timeProp.tooltip);
+            GUIContent timeText = new GUIContent(" s", timeProp.tooltip);
             var textDimensions = GUI.skin.label.CalcSize(timeText);
 
             rect = EditorGUI.PrefixLabel(rect, label);
