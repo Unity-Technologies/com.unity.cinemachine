@@ -110,6 +110,27 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// These hints can be or'ed toether to influence how blending is done, and how state
+        /// is applied to the camera
+        /// </summary>
+        public enum BlendHintValue
+        {
+            /// <summary>Normal state blending</summary>
+            Nothing = 0,
+            /// <summary>This state does not affect the camera position</summary>
+            NoPosition = 1,
+            /// <summary>This state does not affect the camera rotation</summary>
+            NoOrientation = 2,
+            // PreserveDistance = 4 // GML implement this later
+        }
+
+        /// <summary>
+        /// These hints can be or'ed toether to influence how blending is done, and how state
+        /// is applied to the camera
+        /// </summary>
+        public BlendHintValue BlendHint { get; set; }
+
+        /// <summary>
         /// State with default values
         /// </summary>
         public static CameraState Default
@@ -126,6 +147,7 @@ namespace Cinemachine
                 state.PositionCorrection = Vector3.zero;
                 state.OrientationCorrection = Quaternion.identity;
                 state.PositionDampingBypass = Vector3.zero;
+                state.BlendHint = BlendHintValue.Nothing;
                 return state;
             }
         }
@@ -245,7 +267,19 @@ namespace Cinemachine
             CameraState state = new CameraState();
             state.Lens = LensSettings.Lerp(stateA.Lens, stateB.Lens, t);
             state.ReferenceUp = Vector3.Slerp(stateA.ReferenceUp, stateB.ReferenceUp, t);
-            state.RawPosition = Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t);
+
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoPosition) == 0)
+                state.RawPosition = Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t);
+            else
+            {
+                // Don't blend positions
+                if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoPosition) != 0)
+                    state.BlendHint |= BlendHintValue.NoPosition;
+                else if ((stateA.BlendHint & BlendHintValue.NoPosition) != 0)
+                    state.RawPosition = stateB.RawPosition;
+                else 
+                    state.RawPosition = stateA.RawPosition;
+            }
 
             state.ShotQuality = Mathf.Lerp(stateA.ShotQuality, stateB.ShotQuality, t);
             state.PositionCorrection = Vector3.Lerp(
@@ -286,36 +320,49 @@ namespace Cinemachine
             }
 
             // Clever orientation interpolation
-            if (dirTarget.AlmostZero())
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoOrientation) == 0)
             {
-                // Don't know what we're looking at - can only slerp
-                state.RawOrientation = UnityQuaternionExtensions.SlerpWithReferenceUp(
-                        stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
-            }
-            else
-            {
-                // Rotate while preserving our lookAt target
-                dirTarget = dirTarget.normalized;
-                if ((dirTarget - state.ReferenceUp).AlmostZero()
-                    || (dirTarget + state.ReferenceUp).AlmostZero())
+                if (dirTarget.AlmostZero())
                 {
-                    // Looking up or down at the pole
+                    // Don't know what we're looking at - can only slerp
                     state.RawOrientation = UnityQuaternionExtensions.SlerpWithReferenceUp(
                             stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
                 }
                 else
                 {
-                    // Put the target in the center
-                    state.RawOrientation = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
+                    // Rotate while preserving our lookAt target
+                    dirTarget = dirTarget.normalized;
+                    if ((dirTarget - state.ReferenceUp).AlmostZero()
+                        || (dirTarget + state.ReferenceUp).AlmostZero())
+                    {
+                        // Looking up or down at the pole
+                        state.RawOrientation = UnityQuaternionExtensions.SlerpWithReferenceUp(
+                                stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
+                    }
+                    else
+                    {
+                        // Put the target in the center
+                        state.RawOrientation = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
 
-                    // Blend the desired offsets from center
-                    Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
-                            stateA.ReferenceLookAt - stateA.CorrectedPosition, stateA.ReferenceUp);
-                    Vector2 deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
-                            stateB.ReferenceLookAt - stateB.CorrectedPosition, stateB.ReferenceUp);
-                    state.RawOrientation = state.RawOrientation.ApplyCameraRotation(
-                            Vector2.Lerp(deltaA, deltaB, adjustedT), state.ReferenceUp);
+                        // Blend the desired offsets from center
+                        Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
+                                stateA.ReferenceLookAt - stateA.CorrectedPosition, stateA.ReferenceUp);
+                        Vector2 deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
+                                stateB.ReferenceLookAt - stateB.CorrectedPosition, stateB.ReferenceUp);
+                        state.RawOrientation = state.RawOrientation.ApplyCameraRotation(
+                                Vector2.Lerp(deltaA, deltaB, adjustedT), state.ReferenceUp);
+                    }
                 }
+            }
+            else
+            {
+                // Don't blend orientations
+                if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
+                    state.BlendHint |= BlendHintValue.NoOrientation;
+                else if ((stateA.BlendHint & BlendHintValue.NoOrientation) != 0)
+                    state.RawOrientation = stateB.RawOrientation;
+                else 
+                    state.RawOrientation = stateA.RawOrientation;
             }
 
             // Accumulate the custom blendables and apply the weights

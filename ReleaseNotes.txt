@@ -1,5 +1,6 @@
-<size=20><b>Version 2.1.11-alpha.3</b></size>
+<size=20><b>Version 2.1.11-alpha.4</b></size>
 
+- New OverlayImage extension to put screen-space overlays on vcams.  Great for storyboard placeholders.
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option
@@ -8,12 +9,14 @@
 - FreeLook: added Y Axis recentering
 - Path: Added Normalized Path units option: 0 is start of path, 1 is end.
 - Path: added length display in inspector
+- Timeline Clip Editor: vcam sections are now collapsible
 - Bugfix: OrbitalTransposer works better with WorldUp overrides
 - Bugfix: Remove StateDrivenCamera "not playing a controller" warning
 - Bugfix: DepthOfField blending was wrong in PPv2
 - Bugfix: Handle exceptions thrown by assemblies that don't want to be introspected
 - Bugfix: vcams following physics objects snapped to origin after exiting play mode
-
+- Bugfix: predictor now supports time pause
+- Bugfix: Moved StartCoroutine in Brain to OnEnable()
 
 <size=20><b>Version 2.1.10</b></size>
 

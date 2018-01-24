@@ -108,17 +108,6 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
-        /// <summary>Remove a Pipeline stage hook callback.
-        /// Make sure it is removed from all the children.</summary>
-        /// <param name="d">The delegate to remove.</param>
-        public override void RemovePostPipelineStageHook(OnPostPipelineStageDelegate d)
-        {
-            base.RemovePostPipelineStageHook(d);
-            UpdateListOfChildren();
-            foreach (var vcam in m_ChildCameras)
-                vcam.RemovePostPipelineStageHook(d);
-        }
-
         /// <summary>Notification that this virtual camera is going live.
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>

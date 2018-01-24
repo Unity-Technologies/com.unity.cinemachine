@@ -115,17 +115,6 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
-        /// <summary>Remove a Pipeline stage hook callback.
-        /// Make sure it is removed from all the children.</summary>
-        /// <param name="d">The delegate to remove.</param>
-        public override void RemovePostPipelineStageHook(OnPostPipelineStageDelegate d)
-        {
-            base.RemovePostPipelineStageHook(d);
-            UpdateListOfChildren();
-            foreach (var vcam in m_ChildCameras)
-                vcam.RemovePostPipelineStageHook(d);
-        }
-
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
         /// updates all the children, chooses the best one, and implements any required blending.</summary>

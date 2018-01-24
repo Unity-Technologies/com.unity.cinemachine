@@ -135,17 +135,6 @@ namespace Cinemachine
         /// <summary>Return the live child.</summary>
         public override ICinemachineCamera LiveChildOrSelf { get { return LiveChild; } }
 
-        /// <summary>Remove a Pipeline stage hook callback.
-        /// Make sure it is removed from all the children.</summary>
-        /// <param name="d">The delegate to remove.</param>
-        public override void RemovePostPipelineStageHook(OnPostPipelineStageDelegate d)
-        {
-            base.RemovePostPipelineStageHook(d);
-            ValidateListOfChildren();
-            foreach (var vcam in m_ChildCameras)
-                vcam.RemovePostPipelineStageHook(d);
-        }
-
         /// <summary>Makes sure the internal child cache is up to date</summary>
         protected override void OnEnable()
         {

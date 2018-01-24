@@ -1,21 +1,30 @@
 using UnityEditor;
 using UnityEngine;
 using Cinemachine.Editor;
+using System.Collections.Generic;
 
 namespace Cinemachine.Timeline
 {
     [CustomEditor(typeof(CinemachineShot))]
-    internal sealed class CinemachineShotEditor : UnityEditor.Editor
+    internal sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
     {
-        private static readonly string[] m_excludeFields = new string[] { "m_Script" };
         private SerializedProperty mVirtualCameraProperty = null;
         private static readonly GUIContent kVirtualCameraLabel
             = new GUIContent("Virtual Camera", "The virtual camera to use for this shot");
 
+        protected override List<string> GetExcludedPropertiesInInspector()
+        {
+            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            excluded.Add(FieldPath(x => x.VirtualCamera));
+            excluded.Add(FieldPath(x => x.m_StoryboardImage));
+            excluded.Add(FieldPath(x => x.m_Image));
+            return excluded;
+        }
+
         private void OnEnable()
         {
             if (serializedObject != null)
-                mVirtualCameraProperty = serializedObject.FindProperty("VirtualCamera");
+                mVirtualCameraProperty = FindProperty(x => x.VirtualCamera);
         }
 
         private void OnDisable()
@@ -30,48 +39,77 @@ namespace Cinemachine.Timeline
 
         public override void OnInspectorGUI()
         {
-            CinemachineVirtualCameraBase obj
+            BeginInspector();
+            EditorGUI.indentLevel = 0; // otherwise subeditor layouts get screwed up
+
+            Rect rect;
+            CinemachineVirtualCameraBase vcam
                 = mVirtualCameraProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
-            if (obj == null)
-            {
-                serializedObject.Update();
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.PropertyField(mVirtualCameraProperty, kVirtualCameraLabel, GUILayout.ExpandWidth(true));
-                obj = mVirtualCameraProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
-                if ((obj == null) && GUILayout.Button(new GUIContent("Create"), GUILayout.ExpandWidth(false)))
-                {
-                    CinemachineVirtualCameraBase vcam = CinemachineMenu.CreateDefaultVirtualCamera();
-                    mVirtualCameraProperty.exposedReferenceValue = vcam;
-                }
-                EditorGUILayout.EndHorizontal();
-                serializedObject.ApplyModifiedProperties();
-            }
+            if (vcam != null)
+                EditorGUILayout.PropertyField(mVirtualCameraProperty, kVirtualCameraLabel);
             else
             {
-                serializedObject.Update();
-                DrawPropertiesExcluding(serializedObject, m_excludeFields);
+                GUIContent createLabel = new GUIContent("Create");
+                Vector2 createSize = GUI.skin.button.CalcSize(createLabel);
 
-                // Create an editor for each of the cinemachine virtual cam and its components
-                UpdateComponentEditors(obj);
-                if (m_editors != null)
+                rect = EditorGUILayout.GetControlRect(true);
+                rect.width -= createSize.x;
+
+                EditorGUI.PropertyField(rect, mVirtualCameraProperty, kVirtualCameraLabel);
+                rect.x += rect.width; rect.width = createSize.x;
+                if (GUI.Button(rect, createLabel))
                 {
-                    foreach (UnityEditor.Editor e in m_editors)
-                    {
-                        EditorGUILayout.Separator();
-                        if (e.target.GetType() != typeof(Transform))
-                        {
-                            GUILayout.Box("", new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(1) } );
-                            EditorGUILayout.LabelField(e.target.GetType().Name, EditorStyles.boldLabel);
-                        }
-                        e.OnInspectorGUI();
-                    }
+                    vcam = CinemachineMenu.CreateDefaultVirtualCamera();
+                    mVirtualCameraProperty.exposedReferenceValue = vcam;
                 }
                 serializedObject.ApplyModifiedProperties();
+            }
+
+#if false // We suppress this experimental feature, not so sure it's a good idea to keep it
+            rect = EditorGUILayout.GetControlRect(true);
+            float width = rect.width;
+            rect.width = EditorGUIUtility.labelWidth + rect.height;
+            EditorGUI.PropertyField(rect, FindProperty(x => x.m_StoryboardImage));
+            rect.x += rect.width; rect.width = width - rect.width;
+            EditorGUI.PropertyField(rect, FindProperty(x => x.m_Image), GUIContent.none);
+            serializedObject.ApplyModifiedProperties();
+#endif
+            DrawRemainingPropertiesInInspector();
+
+            if (vcam != null && !FindProperty(x => x.m_StoryboardImage).boolValue)
+                DrawSubeditors(vcam);
+        }
+
+        void DrawSubeditors(CinemachineVirtualCameraBase vcam)
+        {
+            // Create an editor for each of the cinemachine virtual cam and its components
+            GUIStyle foldoutStyle;
+            foldoutStyle = EditorStyles.foldout;
+            foldoutStyle.fontStyle = FontStyle.Bold;
+            UpdateComponentEditors(vcam);
+            if (m_editors != null)
+            {
+                foreach (UnityEditor.Editor e in m_editors)
+                {
+                    // Separator line - how do you make a thinner one?
+                    GUILayout.Box("", new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(1) } );
+
+                    bool expanded = true;
+                    if (!s_EditorExpanded.TryGetValue(e.target.GetType(), out expanded))
+                        expanded = true;
+                    expanded = EditorGUILayout.Foldout(
+                        expanded, e.target.GetType().Name, true, foldoutStyle);
+                    if (expanded)
+                        e.OnInspectorGUI();
+                    s_EditorExpanded[e.target.GetType()] = expanded;
+                }
             }
         }
 
         CinemachineVirtualCameraBase m_cachedReferenceObject;
         UnityEditor.Editor[] m_editors = null;
+        static Dictionary<System.Type, bool> s_EditorExpanded = new Dictionary<System.Type, bool>();
+
         void UpdateComponentEditors(CinemachineVirtualCameraBase obj)
         {
             MonoBehaviour[] components = null;

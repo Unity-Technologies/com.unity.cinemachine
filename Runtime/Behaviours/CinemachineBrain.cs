@@ -738,8 +738,10 @@ namespace Cinemachine
         {
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBrain.PushStateToUnityCamera");
             CurrentCameraState = state;
-            transform.position = state.FinalPosition;
-            transform.rotation = state.FinalOrientation;
+            if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
+                transform.position = state.FinalPosition;
+            if ((state.BlendHint & CameraState.BlendHintValue.NoOrientation) == 0)
+                transform.rotation = state.FinalOrientation;
             Camera cam = OutputCamera;
             if (cam != null)
             {

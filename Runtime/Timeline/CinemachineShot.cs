@@ -7,16 +7,32 @@ namespace Cinemachine.Timeline
     internal sealed class CinemachineShotPlayable : PlayableBehaviour
     {
         public CinemachineVirtualCameraBase VirtualCamera;
+        public bool m_StoryboardImage;
+        public Texture m_Image;
+
+        public bool IsValid 
+        { 
+            get 
+            { 
+                if (m_StoryboardImage)
+                    return m_Image != null;
+                return VirtualCamera != null;
+            }
+        }
     }
 
     public sealed class CinemachineShot : PlayableAsset, IPropertyPreview
     {
         public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;
+        public bool m_StoryboardImage;
+        public Texture m_Image;
 
         public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
         {
             var playable = ScriptPlayable<CinemachineShotPlayable>.Create(graph);
             playable.GetBehaviour().VirtualCamera = VirtualCamera.Resolve(graph.GetResolver());
+            playable.GetBehaviour().m_StoryboardImage = m_StoryboardImage;
+            playable.GetBehaviour().m_Image = m_Image;
             return playable;
         }
 

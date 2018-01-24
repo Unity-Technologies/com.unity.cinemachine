@@ -233,19 +233,6 @@ namespace Cinemachine
             return vcam == (ICinemachineCamera)m_Rigs[1]; 
         }
 
-        /// <summary>Remove a Pipeline stage hook callback.
-        /// Make sure it is removed from all the children.</summary>
-        /// <param name="d">The delegate to remove.</param>
-        public override void RemovePostPipelineStageHook(OnPostPipelineStageDelegate d)
-        {
-            base.RemovePostPipelineStageHook(d);
-            UpdateRigCache();
-            if (m_Rigs != null)
-                foreach (var vcam in m_Rigs)
-                    if (vcam != null)
-                        vcam.RemovePostPipelineStageHook(d);
-        }
-
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  All 3 child rigs are updated,
         /// and a blend calculated, depending on the value of the Y axis.</summary>
