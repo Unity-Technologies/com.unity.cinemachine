@@ -314,6 +314,8 @@ namespace Cinemachine
             }
         }
 
+        private Coroutine mPhysicsCoroutine;
+
         private void OnEnable()
         {
             mActiveBlend = null;
@@ -321,6 +323,9 @@ namespace Cinemachine
             mOutgoingCameraPreviousFrame = null;
             mPreviousFrameWasOverride = false;
             CinemachineCore.Instance.AddActiveBrain(this);
+
+            // We check in after the physics system has had a chance to move things
+            mPhysicsCoroutine = StartCoroutine(AfterPhysics());
         }
 
         private void OnDisable()
@@ -331,14 +336,12 @@ namespace Cinemachine
             mOutgoingCameraPreviousFrame = null;
             mPreviousFrameWasOverride = false;
             mOverrideStack.Clear();
+            StopCoroutine(mPhysicsCoroutine);
         }
 
         private void Start()
         {
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
-
-            // We check in after the physics system has had a chance to move things
-            StartCoroutine(AfterPhysics());
         }
 
 #if UNITY_EDITOR
