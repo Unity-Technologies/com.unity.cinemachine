@@ -66,6 +66,11 @@ namespace Cinemachine.Utility
 
         /// Returned value will be kernelRadius old
         public T Value() { return Compute(mCurrentPos); }
+
+        // Direct buffer access
+        public int BufferLength { get { return mData.Length; } }
+        public void SetBufferValue(int index, T value) { mData[index] = value; }
+        public T GetBufferValue(int index) { return mData[index]; }
     }
 
     internal class GaussianWindow1D_Vector3 : GaussianWindow1d<Vector3>

@@ -87,5 +87,12 @@ namespace Cinemachine
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime);
+
+        /// <summary>This is called to notify the component that a target got warped,
+        /// so that the component can update its internal state to make the camera 
+        /// also warp seamlessy.  Base class implementation does nothing.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        void OnTargetObjectWarped(Transform target, Vector3 positionDelta);
     }
 }

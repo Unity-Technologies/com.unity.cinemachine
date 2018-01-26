@@ -800,6 +800,7 @@ namespace Cinemachine
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
     }
 
     /// <summary>
@@ -835,5 +836,6 @@ namespace Cinemachine
         }
         public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
     }
 }

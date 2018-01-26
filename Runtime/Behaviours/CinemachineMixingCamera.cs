@@ -146,6 +146,19 @@ namespace Cinemachine
                 vcam.RemovePostPipelineStageHook(d);
         }
 
+        /// <summary>This is called to notify the vcam that a target got warped,
+        /// so that the vcam can update its internal state to make the camera 
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            ValidateListOfChildren();
+            foreach (var vcam in m_ChildCameras)
+                vcam.OnTargetObjectWarped(target, positionDelta);
+            base.OnTargetObjectWarped(target, positionDelta);
+        }
+
         /// <summary>Makes sure the internal child cache is up to date</summary>
         protected override void OnEnable()
         {

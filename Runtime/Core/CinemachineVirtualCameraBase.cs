@@ -370,5 +370,19 @@ namespace Cinemachine
         {
             UpdateVcamPoolStatus();
         }
+
+        /// <summary>This is called to notify the component that a target got warped,
+        /// so that the component can update its internal state to make the camera 
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
+        {
+            // Locate all extensions and inform them
+            var extensions = GetComponents<CinemachineExtension>();
+            if (extensions != null)
+                for (int i = 0; i < extensions.Length; ++i)
+                    extensions[i].OnTargetObjectWarped(target, positionDelta);
+        }
     }
 }

@@ -300,6 +300,21 @@ namespace Cinemachine
         /// <summary>Internal API for inspector</summary>
         public Vector3 TrackedPoint { get; private set; }
 
+        /// <summary>This is called to notify the us that a target got warped,
+        /// so that we can update its internal state to make the camera 
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            base.OnTargetObjectWarped(target, positionDelta);
+            if (target == FollowTarget)
+            {
+                m_PreviousCameraPosition += positionDelta;
+                m_Predictor.ApplyTransformDelta(positionDelta);
+            }
+        }
+
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
