@@ -116,17 +116,18 @@ namespace Cinemachine
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is involved, then the event will fire on the first frame of the blend.")]
         public VcamEvent m_CameraActivatedEvent = new VcamEvent();
 
-        /// <summary>Support for opaque post-processing module</summary>
-        internal Component PostProcessingComponent { get; set; }
+        /// <summary>Internal support for opaque post-processing module</summary>
+        public Component PostProcessingComponent { get; set; }
 
         /// <summary>
         /// Because the PostProcessing package is not guaranteed to be present,
         /// we must handle PostFX in this opaque way.  This delegate will be called
         /// every frame (during LateUpdate) after the camera has been positioned.
         /// The intention is that the callback will make the right calls to the PostProcessing module.
-        /// Cinemachine provides the CinemachinePostFX behaviour that makes use of this delegate.
+        /// Cinemachine provides the CinemachinePostProcessing behaviour that makes use of 
+        /// this delegate.
         /// </summary>
-        internal static BrainEvent sPostProcessingHandler = new BrainEvent();
+        public static BrainEvent sPostProcessingHandler = new BrainEvent();
 
         /// <summary>
         /// API for the Unity Editor.
