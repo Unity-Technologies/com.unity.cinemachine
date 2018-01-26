@@ -233,6 +233,20 @@ namespace Cinemachine
             return vcam == (ICinemachineCamera)m_Rigs[1]; 
         }
 
+        /// <summary>This is called to notify the vcam that a target got warped,
+        /// so that the vcam can update its internal state to make the camera 
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            UpdateRigCache();
+            if (m_Rigs != null)
+                foreach (var vcam in m_Rigs)
+                    vcam.OnTargetObjectWarped(target, positionDelta);
+            base.OnTargetObjectWarped(target, positionDelta);
+        }
+
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  All 3 child rigs are updated,
         /// and a blend calculated, depending on the value of the Y axis.</summary>

@@ -4,9 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.1.11] - 2018-01-21
+## [2.1.11] - 2018-26-01
 ### Bugfixes and minor enhancements.  Also some restructuring in prep for UPM
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root
+- Added API to support seamless warping of target objects
 - New OverlayImage extension to put screen-space overlays on vcams.  Great for storyboard placeholders.
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option

@@ -1,2 +1,4 @@
 Documentation/ApiDocs/**
 .npmrc
+node_modules.meta
+node_modules

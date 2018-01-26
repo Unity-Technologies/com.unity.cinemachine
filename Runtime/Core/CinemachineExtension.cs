@@ -58,6 +58,13 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime);
 
+        /// <summary>This is called to notify the extension that a target got warped,
+        /// so that the extension can update its internal state to make the camera 
+        /// also warp seamlessy.  Base class implementation does nothing.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+
         /// <summary>Because extensions can be placed on manager cams and will in that
         /// case be called for all the vcam children, vcam-specific state information
         /// should be stored here.  Just define a class to hold your state info

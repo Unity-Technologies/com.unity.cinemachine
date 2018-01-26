@@ -151,6 +151,22 @@ namespace Cinemachine
         Quaternion m_CameraOrientationPrevFrame = Quaternion.identity;
         PositionPredictor m_Predictor = new PositionPredictor();
 
+        /// <summary>This is called to notify the us that a target got warped,
+        /// so that we can update its internal state to make the camera 
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            base.OnTargetObjectWarped(target, positionDelta);
+            if (target == LookAtTarget)
+            {
+                m_CameraPosPrevFrame += positionDelta;
+                m_LookAtPrevFrame += positionDelta;
+                m_Predictor.ApplyTransformDelta(positionDelta);
+            }
+        }
+
         public override void PrePipelineMutateCameraState(ref CameraState curState) 
         {
             if (IsValid && curState.HasLookAt)

@@ -476,5 +476,26 @@ namespace Cinemachine
 
         // This is a hack for FreeLook rigs - to be removed
         internal void SetStateRawPosition(Vector3 pos) { m_State.RawPosition = pos; }
+
+        /// <summary>This is called to notify the vcam that a target got warped,
+        /// so that the vcam can update its internal state to make the camera 
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            if (target == Follow)
+            {
+                transform.position += positionDelta;
+                m_State.RawPosition += positionDelta;
+            }
+            UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
+            if (m_ComponentPipeline != null)
+            {
+                for (int i = 0; i < m_ComponentPipeline.Length; ++i)
+                    m_ComponentPipeline[i].OnTargetObjectWarped(target, positionDelta);
+            }
+            base.OnTargetObjectWarped(target, positionDelta);
+        }
     }
 }

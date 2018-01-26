@@ -32,6 +32,11 @@ namespace Cinemachine.Utility
 
         public bool IsEmpty { get { return m_Velocity.IsEmpty(); } }
 
+        public void ApplyTransformDelta(Vector3 positionDelta)
+        {
+            m_Position += positionDelta;
+        }
+
         public void Reset()
         {
             m_Velocity.Reset();

@@ -156,6 +156,18 @@ namespace Cinemachine
             m_FollowOffset = EffectiveOffset;
         }
 
+        /// <summary>This is called to notify the us that a target got warped,
+        /// so that we can update its internal state to make the camera 
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            base.OnTargetObjectWarped(target, positionDelta);
+            if (target == FollowTarget)
+                m_PreviousTargetPosition += positionDelta;
+        }
+        
         /// <summary>Initializes the state for previous frame if appropriate.</summary>
         protected void InitPrevFrameStateInfo(
             ref CameraState curState, float deltaTime)
