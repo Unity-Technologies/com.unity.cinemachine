@@ -121,6 +121,8 @@ namespace Cinemachine
             NoPosition = 1,
             /// <summary>This state does not affect the camera rotation</summary>
             NoOrientation = 2,
+            /// <summary>Combination of NoPosition and NoOrientation</summary>
+            NoTransform = NoPosition | NoOrientation,
             // PreserveDistance = 4 // GML implement this later
         }
 

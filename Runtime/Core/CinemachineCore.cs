@@ -59,6 +59,9 @@ namespace Cinemachine
         /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
         public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
 
+        /// <summary>This event will fire after a brain updates its Camera</summary>
+        public static CinemachineBrain.BrainEvent CameraUpdatedEvent = new CinemachineBrain.BrainEvent();
+
         /// <summary>List of all active CinemachineBrains.</summary>
         private List<CinemachineBrain> mActiveBrains = new List<CinemachineBrain>();
 

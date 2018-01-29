@@ -17,6 +17,18 @@ namespace Cinemachine
         [Tooltip("The image to display")]
         public Texture m_Image;
 
+        public enum FillStrategy
+        {
+            /// <summary>Image will be as large as possible on the screen, without being cropped</summary>
+            BestFit,
+            /// <summary>Image will be cropped if necessary so that the screen is entirely filled</summary>
+            CropImageToFit,
+            /// <summary>Image will be stretched to cover any aspect mismatch with the screen</summary>
+            StretchToFit
+        };
+        [Tooltip("A scale value of 1 will place the image according to this strategy")]
+        public FillStrategy m_DefaultSize = FillStrategy.BestFit;
+
         [Tooltip("The opacity of the image.  0 is transparent, 1 is opaque")]
         [Range(0, 1)]
         public float m_Alpha = 1;
@@ -29,6 +41,12 @@ namespace Cinemachine
 
         [Tooltip("The screen-space scaling to apply to the image")]
         public Vector2 m_Scale = Vector3.one;
+
+        [Tooltip("If checked, X and Y scale are synchronized")]
+        public bool m_SyncScale = true;
+
+        [Tooltip("If checked, Camera transform will not be controlled by this virtual camera")]
+        public bool m_HideCamera;
 
         GameObject mCanvas;
         UnityEngine.UI.RawImage mRawImage;
@@ -49,16 +67,47 @@ namespace Cinemachine
             // Apply after the vcam has finished its calculations
             if (isLive)
             {
+                Vector2 scale = Vector2.one;
+                if (m_Image != null
+                    && m_Image.width > 0 && m_Image.width > 0 
+                    && Screen.width > 0 && Screen.height > 0)
+                {
+                    float f = ((float)m_Image.width / m_Image.height) 
+                        / ((float)Screen.width / Screen.height);
+                    switch (m_DefaultSize)
+                    {
+                        case FillStrategy.BestFit:
+                            if (f >= 1)
+                                scale.y /= f;
+                            else
+                                scale.x *= f;
+                            break;
+                        case FillStrategy.CropImageToFit:
+                            if (f >= 1)
+                                scale.x *= f;
+                            else
+                                scale.y /= f;
+                            break;
+                        case FillStrategy.StretchToFit:
+                            break;
+                    }
+                }
+                scale.x *= m_Scale.x;
+                scale.y *= m_SyncScale ? m_Scale.x : m_Scale.y;
+
                 mRawImage.texture = m_Image;
                 Color tintColor = Color.white;
                 tintColor.a = m_Alpha;
                 mRawImage.color = tintColor;
                 mRawImage.rectTransform.localPosition = m_Position;
                 mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
-                mRawImage.rectTransform.localScale = m_Scale;
+                mRawImage.rectTransform.localScale = scale;
                 mRawImage.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
 
                 state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
+
+                if (m_HideCamera)
+                    state.BlendHint |= CameraState.BlendHintValue.NoTransform;
             }
         }
 
@@ -127,13 +176,15 @@ namespace Cinemachine
             //UnityEngine.Profiling.Profiler.EndSample();
         }
 
-        /// <summary>Internal method called by the editor</summary>
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoad]
+        class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
+#endif
         [RuntimeInitializeOnLoadMethod]
-        public static void InitializeModule()
+        static void InitializeModule()
         {
-            // When the brain pushes the state to the camera, hook in to the PostFX
-            CinemachineBrain.sPostProcessingHandler.RemoveListener(StaticBlendingHandler);
-            CinemachineBrain.sPostProcessingHandler.AddListener(StaticBlendingHandler);
+            CinemachineCore.CameraUpdatedEvent.RemoveListener(StaticBlendingHandler);
+            CinemachineCore.CameraUpdatedEvent.AddListener(StaticBlendingHandler);
         }
     }
 }

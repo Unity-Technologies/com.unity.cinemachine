@@ -250,7 +250,7 @@ namespace Cinemachine.Editor
 
         // This code dynamically discovers eligible classes and builds the menu
         // data for the various component pipeline stages.
-        void UpdateStaticData()
+        static void UpdateStaticData()
         {
             if (sStageData != null)
                 return;
@@ -305,7 +305,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        string NicifyName(string name)
+        static string NicifyName(string name)
         {
             if (name.StartsWith("Cinemachine"))
                 name = name.Substring(11); // Trim the prefix
