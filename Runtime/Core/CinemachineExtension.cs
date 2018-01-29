@@ -32,6 +32,21 @@ namespace Cinemachine
             ConnectToVcam();
         }
 
+        /// <summary>Connect to virtual camera pipeline.
+        /// Override implementations must call this base implementation</summary>
+        protected virtual void OnEnable()
+        {
+            ConnectToVcam();
+        }
+
+        /// <summary>Disconnect from virtual camera pipeline.
+        /// Override implementations must call this base implementation</summary>
+        protected virtual void OnDisable()
+        {
+            if (VirtualCamera != null)
+                VirtualCamera.RemovePostPipelineStageHook(PostPipelineStageCallback);
+        }
+
         /// <summary>Disconnect from virtual camera pipeline.
         /// Override implementations must call this base implementation</summary>
         protected virtual void OnDestroy()
@@ -45,7 +60,10 @@ namespace Cinemachine
             if (VirtualCamera == null)
                 Debug.LogError("CinemachineExtension requires a Cinemachine Virtual Camera component");
             else
+            {
+                VirtualCamera.RemovePostPipelineStageHook(PostPipelineStageCallback);
                 VirtualCamera.AddPostPipelineStageHook(PostPipelineStageCallback);
+            }
             mExtraState = null;
         }
 
