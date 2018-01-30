@@ -28,6 +28,10 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         public Transform m_Follow = null;
 
+        /// <summary>Hint for blending positions to and from this virtual camera</summary>
+        [Tooltip("Hint for blending positions to and from this virtual camera")]
+        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Cylindrical;
+
         /// <summary>If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used</summary>
         [Tooltip("If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used")]
         [FormerlySerializedAs("m_UseCommonLensSetting")]
@@ -266,6 +270,7 @@ namespace Cinemachine
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
+            SetPositionBlendMethod(ref m_State, m_PositionBlending);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.  Leave the orientation alone, because it

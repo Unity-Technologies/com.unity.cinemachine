@@ -123,8 +123,10 @@ namespace Cinemachine
             NoOrientation = 2,
             /// <summary>Combination of NoPosition and NoOrientation</summary>
             NoTransform = NoPosition | NoOrientation,
-            /// <summary>Attempt to presetve distance to LookAt target as much as possible</summary>
-            PreserveLookAtDistance = 4
+            /// <summary>Spherical blend about the LookAt target (if any)</summary>
+            SphericalPositionBlend = 4,
+            /// <summary>Cylidrical blend about the LookAt target (if any)</summary>
+            CylindricalPositionBlend = 8
         }
 
         /// <summary>
@@ -277,8 +279,10 @@ namespace Cinemachine
                 state.BlendHint |= BlendHintValue.NoPosition;
             if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
                 state.BlendHint |= BlendHintValue.NoOrientation;
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.PreserveLookAtDistance) != 0)
-                state.BlendHint |= BlendHintValue.PreserveLookAtDistance;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.SphericalPositionBlend) != 0)
+                state.BlendHint |= BlendHintValue.SphericalPositionBlend;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.CylindricalPositionBlend) != 0)
+                state.BlendHint |= BlendHintValue.CylindricalPositionBlend;
 
             state.PositionCorrection = ApplyPosBlendHint(
                 stateA.PositionCorrection, stateA.BlendHint,
@@ -321,15 +325,26 @@ namespace Cinemachine
             }
             
             // Raw position
-            Vector3 newPos;
-            if ((state.BlendHint & BlendHintValue.PreserveLookAtDistance) == 0 || !state.HasLookAt)
-                newPos = Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t);
-            else
+            Vector3 newPos = Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t);
+            if (state.HasLookAt)
             {
-                // Spherical interpolation about LookAt target
-                newPos = Vector3.Slerp(
-                    stateA.RawPosition - state.ReferenceLookAt, 
-                    stateB.RawPosition - state.ReferenceLookAt, t) + state.ReferenceLookAt;
+                if ((state.BlendHint & BlendHintValue.CylindricalPositionBlend) != 0)
+                {
+                    // Cylindrical interpolation about LookAt target
+                    var a = stateA.RawPosition - state.ReferenceLookAt;
+                    var a0 = Vector3.ProjectOnPlane(a, state.ReferenceUp);
+                    var b = stateB.RawPosition - state.ReferenceLookAt;
+                    var b0 = Vector3.ProjectOnPlane(b, state.ReferenceUp);
+                    newPos = Vector3.Slerp(a0, b0, t) 
+                        + Vector3.Lerp(a - a0, b - b0, t) + state.ReferenceLookAt;
+                }
+                else if ((state.BlendHint & BlendHintValue.SphericalPositionBlend) != 0)
+                {
+                    // Spherical interpolation about LookAt target
+                    newPos = Vector3.Slerp(
+                        stateA.RawPosition - state.ReferenceLookAt, 
+                        stateB.RawPosition - state.ReferenceLookAt, t) + state.ReferenceLookAt;
+                }
             }
             state.RawPosition = ApplyPosBlendHint(
                 stateA.RawPosition, stateA.BlendHint,

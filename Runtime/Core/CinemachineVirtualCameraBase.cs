@@ -128,6 +128,30 @@ namespace Cinemachine
         /// in the CinemachineCore's queue of eligible shots.</summary>
         public int Priority { get { return m_Priority; } set { m_Priority = value; } }
 
+        /// <summary>Hint for blending positions to and from this virtual camera</summary>
+        public enum PositionBlendMethod
+        {
+            /// <summary>Standard linear position blend</summary>
+            Linear,
+            /// <summary>Spherical blend about LookAt target position, if there is a LookAt target</summary>
+            Spherical,
+            /// <summary>Cylindrical blend about LookAt target position, if there is a LookAt target.  Vertical co-ordinate is linearly interpolated.</summary>
+            Cylindrical
+        }
+
+        protected void SetPositionBlendMethod(ref CameraState state, PositionBlendMethod m)
+        {
+            switch (m)
+            {
+                case PositionBlendMethod.Spherical: 
+                    state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend; 
+                    break;
+                case PositionBlendMethod.Cylindrical: 
+                    state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend; 
+                    break;
+            }
+        }
+        
         /// <summary>The GameObject owner of the Virtual Camera behaviour.</summary>
         public GameObject VirtualCameraGameObject
         {
