@@ -512,7 +512,7 @@ namespace Cinemachine
                 {
                     mCameraColliderGameObject = new GameObject("Cinemachine Collider Collider");
                     mCameraColliderGameObject.hideFlags = HideFlags.HideAndDontSave;
-                    mCameraColliderGameObject.transform.position = new Vector3(0, -1000, 0);    // GML temporary hacky location - we hope it doesn't interfere
+                    mCameraColliderGameObject.transform.position = new Vector3(-20000, -20000, -20000);    // GML temp hack position
                     mCameraColliderGameObject.SetActive(true);
                     mCameraCollider = mCameraColliderGameObject.AddComponent<SphereCollider>();
                 }
