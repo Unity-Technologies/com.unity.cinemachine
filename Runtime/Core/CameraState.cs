@@ -123,7 +123,8 @@ namespace Cinemachine
             NoOrientation = 2,
             /// <summary>Combination of NoPosition and NoOrientation</summary>
             NoTransform = NoPosition | NoOrientation,
-            // PreserveDistance = 4 // GML implement this later
+            /// <summary>Attempt to presetve distance to LookAt target as much as possible</summary>
+            PreserveLookAtDistance = 4
         }
 
         /// <summary>
@@ -271,10 +272,13 @@ namespace Cinemachine
             state.ReferenceUp = Vector3.Slerp(stateA.ReferenceUp, stateB.ReferenceUp, t);
             state.ShotQuality = Mathf.Lerp(stateA.ShotQuality, stateB.ShotQuality, t);
 
+            // Combine the blend hints intelligently
             if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoPosition) != 0)
                 state.BlendHint |= BlendHintValue.NoPosition;
             if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
                 state.BlendHint |= BlendHintValue.NoOrientation;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.PreserveLookAtDistance) != 0)
+                state.BlendHint |= BlendHintValue.PreserveLookAtDistance;
 
             state.PositionCorrection = ApplyPosBlendHint(
                 stateA.PositionCorrection, stateA.BlendHint,
@@ -288,15 +292,11 @@ namespace Cinemachine
                 state.OrientationCorrection, 
                 Quaternion.Slerp(stateA.OrientationCorrection, stateB.OrientationCorrection, t));
 
-            // Raw position
-            state.RawPosition = ApplyPosBlendHint(
-                stateA.RawPosition, stateA.BlendHint,
-                stateB.RawPosition, stateB.BlendHint, 
-                state.RawPosition, Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t));
-
-            Vector3 dirTarget = Vector3.zero;
-            if (!stateA.HasLookAt || !stateB.HasLookAt)
-                state.ReferenceLookAt = kNoPoint;   // can't interpolate if undefined
+            // LookAt target
+            if (!stateA.HasLookAt)
+                state.ReferenceLookAt = stateB.ReferenceLookAt;
+            else if (!stateB.HasLookAt)
+                state.ReferenceLookAt = stateA.ReferenceLookAt;
             else
             {
                 // Re-interpolate FOV to preserve target composition, if possible
@@ -318,17 +318,36 @@ namespace Cinemachine
                 // Linear interpolation of lookAt target point
                 state.ReferenceLookAt = Vector3.Lerp(
                         stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
-                
-                // If orientations are different, use LookAt to blend them
-                float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);
-                if (angle > UnityVectorExtensions.Epsilon)
-                    dirTarget = state.ReferenceLookAt - state.CorrectedPosition;
             }
+            
+            // Raw position
+            Vector3 newPos;
+            if ((state.BlendHint & BlendHintValue.PreserveLookAtDistance) == 0 || !state.HasLookAt)
+                newPos = Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t);
+            else
+            {
+                // Spherical interpolation about LookAt target
+                newPos = Vector3.Slerp(
+                    stateA.RawPosition - state.ReferenceLookAt, 
+                    stateB.RawPosition - state.ReferenceLookAt, t) + state.ReferenceLookAt;
+            }
+            state.RawPosition = ApplyPosBlendHint(
+                stateA.RawPosition, stateA.BlendHint,
+                stateB.RawPosition, stateB.BlendHint, 
+                state.RawPosition, newPos);
 
             // Clever orientation interpolation
             Quaternion newOrient = state.RawOrientation;
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoOrientation) == 0)
             {
+                Vector3 dirTarget = Vector3.zero;
+                if (state.HasLookAt)
+                {
+                    // If orientations are different, use LookAt to blend them
+                    float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);
+                    if (angle > UnityVectorExtensions.Epsilon)
+                        dirTarget = state.ReferenceLookAt - state.CorrectedPosition;
+                }
                 if (dirTarget.AlmostZero())
                 {
                     // Don't know what we're looking at - can only slerp

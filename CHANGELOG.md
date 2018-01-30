@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bugfixes and minor enhancements.  Also some restructuring in prep for UPM
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
 - New OverlayImage extension to put screen-space overlays on vcams.  Great for storyboard placeholders.
+- New SphericalPositionBlend extension.  Preserves camera distance to LookAt target during blends
 - Added API to support seamless warping of target objects
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option
