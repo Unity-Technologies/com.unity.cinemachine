@@ -56,6 +56,7 @@ namespace Cinemachine
                     m_State.ReferenceLookAt = m_State.RawPosition + Vector3.Project(
                         dir, State.RawOrientation * Vector3.forward);
             }
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }
 }

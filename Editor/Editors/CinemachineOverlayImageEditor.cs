@@ -44,7 +44,7 @@ namespace Cinemachine.Editor
                     rect.width *= 2;
                     EditorGUI.PropertyField(rect, FindProperty(x => x.m_Scale), GUIContent.none);
                 }
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_HideCamera));
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();

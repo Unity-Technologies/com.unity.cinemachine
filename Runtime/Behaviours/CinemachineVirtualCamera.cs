@@ -442,8 +442,7 @@ namespace Cinemachine
                     m_ComponentPipeline[i].MutateCameraState(ref state, deltaTime);
                 }
             }
-            int numStages = 3; //Enum.GetValues(typeof(CinemachineCore.Stage)).Length;
-            AdvancePipelineStage(ref state, deltaTime, curStage, numStages);
+            AdvancePipelineStage(ref state, deltaTime, curStage, (int)CinemachineCore.Stage.Finalize + 1);
             return state;
         }
 

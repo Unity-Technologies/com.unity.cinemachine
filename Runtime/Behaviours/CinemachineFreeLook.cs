@@ -279,6 +279,7 @@ namespace Cinemachine
                 m_Rigs[2].transform.position -= delta;
             }
 
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
 
             // Set up for next frame

@@ -259,6 +259,7 @@ namespace Cinemachine
                     }
                 }
             }
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             //UnityEngine.Profiling.Profiler.EndSample();
         }
     }

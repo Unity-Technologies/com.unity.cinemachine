@@ -46,9 +46,10 @@ namespace Cinemachine
         public bool m_SyncScale = true;
 
         [Tooltip("If checked, Camera transform will not be controlled by this virtual camera")]
-        public bool m_HideCamera;
+        public bool m_MuteCamera;
 
         GameObject mCanvas;
+        Transform mCanvasParent;
         UnityEngine.UI.RawImage mRawImage;
 
         protected override void PostPipelineStageCallback(
@@ -56,16 +57,88 @@ namespace Cinemachine
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             // Apply to this vcam only, not the children
-            if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Noise)
+            if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Finalize)
                 return;
 
-            bool isLive = CinemachineCore.Instance.IsLive(vcam);
-            LocateMyCanvas(isLive);
+            if (m_ShowImage)
+            {
+                state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
+                if (m_MuteCamera)
+                    state.BlendHint |= CameraState.BlendHintValue.NoTransform;
+            }
+        }
+
+        void CameraUpdatedCallback(CinemachineBrain brain)
+        {
+            bool isLive = CinemachineCore.Instance.IsLive(VirtualCamera);
+            LocateMyCanvas(brain.transform, isLive);
             if (mCanvas != null)
                 mCanvas.SetActive(isLive && m_ShowImage);
+        }
 
-            // Apply after the vcam has finished its calculations
-            if (isLive)
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            int numBrains = CinemachineCore.Instance.BrainCount;
+            for (int i = 0; i < numBrains; ++i)
+            {
+                LocateMyCanvas(CinemachineCore.Instance.GetActiveBrain(i).transform, false);
+                if (mCanvas != null)
+                    DestroyImmediate(mCanvas);
+                mCanvas = null;
+            }
+        }
+
+        protected override void ConnectToVcam(bool connect)
+        {
+            base.ConnectToVcam(connect);
+            CinemachineCore.CameraUpdatedEvent.RemoveListener(CameraUpdatedCallback);
+            if (connect)
+                CinemachineCore.CameraUpdatedEvent.AddListener(CameraUpdatedCallback);
+        }
+        
+        string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
+
+        void LocateMyCanvas(Transform parent, bool createIfNotFound)
+        {
+            if (mCanvas == null || mCanvasParent != parent)
+            {
+                mCanvas = null;
+                mRawImage = null;
+                mCanvasParent = parent;
+                string canvasName = CanvasName;
+                int numChildren = parent.childCount;
+                for (int i = 0; mCanvas == null && i < numChildren; ++i)
+                {
+                    RectTransform child = parent.GetChild(i) as RectTransform;
+                    if (child != null && child.name == canvasName)
+                        mCanvas = child.gameObject;
+                }
+            }
+            if (mCanvas == null && createIfNotFound)
+                CreateCanvas(parent);
+            if (mCanvas != null && mRawImage == null)
+                mRawImage = mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
+        }
+
+        void CreateCanvas(Transform parent)
+        {
+            mCanvas = new GameObject(CanvasName, typeof(RectTransform));
+            mCanvas.hideFlags = HideFlags.HideAndDontSave;
+            mCanvas.transform.SetParent(parent);
+
+            var c = mCanvas.AddComponent<Canvas>();
+            c.renderMode = RenderMode.ScreenSpaceOverlay;
+
+            var go = new GameObject("RawImage", typeof(RectTransform));
+            go.transform.SetParent(mCanvas.transform);
+            mRawImage = go.AddComponent<UnityEngine.UI.RawImage>();
+            mCanvasParent = parent;
+        }
+
+        void UpdateSettings(UnityEngine.UI.RawImage rawImage, float alpha)
+        {
+            if (rawImage != null)
             {
                 Vector2 scale = Vector2.one;
                 if (m_Image != null
@@ -95,63 +168,15 @@ namespace Cinemachine
                 scale.x *= m_Scale.x;
                 scale.y *= m_SyncScale ? m_Scale.x : m_Scale.y;
 
-                mRawImage.texture = m_Image;
+                rawImage.texture = m_Image;
                 Color tintColor = Color.white;
-                tintColor.a = m_Alpha;
-                mRawImage.color = tintColor;
-                mRawImage.rectTransform.localPosition = m_Position;
-                mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
-                mRawImage.rectTransform.localScale = scale;
-                mRawImage.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
-
-                state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
-
-                if (m_HideCamera)
-                    state.BlendHint |= CameraState.BlendHintValue.NoTransform;
-            }
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            LocateMyCanvas(false);
-            if (mCanvas != null)
-                DestroyImmediate(mCanvas);
-        }
-
-        string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
-
-        void LocateMyCanvas(bool createIfNotFound)
-        {
-            if (mCanvas == null)
-            {
-                string canvasName = CanvasName;
-                int numChildren = transform.childCount;
-                for (int i = 0; mCanvas == null && i < numChildren; ++i)
-                {
-                    RectTransform child = transform.GetChild(i) as RectTransform;
-                    if (child != null && child.name == canvasName)
-                        mCanvas = child.gameObject;
-                }
-            }
-            if (mCanvas == null && createIfNotFound)
-                CreateCanvas();
-            if (mCanvas != null && mRawImage == null)
-                mRawImage = mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
-        }
-
-        void CreateCanvas()
-        {
-            mCanvas = new GameObject(CanvasName, typeof(RectTransform));
-            mCanvas.hideFlags = HideFlags.HideAndDontSave;
-            mCanvas.transform.SetParent(transform);
-
-            var c = mCanvas.AddComponent<Canvas>();
-            c.renderMode = RenderMode.ScreenSpaceOverlay;
-
-            var go = new GameObject("RawImage", typeof(RectTransform));
-            go.transform.SetParent(mCanvas.transform);
-            mRawImage = go.AddComponent<UnityEngine.UI.RawImage>();
+                tintColor.a = m_Alpha * alpha;
+                rawImage.color = tintColor;
+                rawImage.rectTransform.localPosition = m_Position;
+                rawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
+                rawImage.rectTransform.localScale = scale;
+                rawImage.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
+            }        
         }
 
         static void StaticBlendingHandler(CinemachineBrain brain)
@@ -165,12 +190,9 @@ namespace Cinemachine
                 CinemachineOverlayImage src = b.m_Custom as CinemachineOverlayImage;
                 if (!(src == null)) // in case it was deleted
                 {
+                    src.LocateMyCanvas(brain.transform, true);
                     if (src.mRawImage != null)
-                    {
-                        Color c = src.mRawImage.color;
-                        c.a *= b.m_Weight;
-                        src.mRawImage.color = c;
-                    }
+                        src.UpdateSettings(src.mRawImage, b.m_Weight);
                 }
             }
             //UnityEngine.Profiling.Profiler.EndSample();
