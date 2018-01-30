@@ -331,9 +331,9 @@ namespace Cinemachine
                 if ((state.BlendHint & BlendHintValue.CylindricalPositionBlend) != 0)
                 {
                     // Cylindrical interpolation about LookAt target
-                    var a = stateA.RawPosition - state.ReferenceLookAt;
+                    var a = stateA.RawPosition - stateA.ReferenceLookAt;
                     var a0 = Vector3.ProjectOnPlane(a, state.ReferenceUp);
-                    var b = stateB.RawPosition - state.ReferenceLookAt;
+                    var b = stateB.RawPosition - stateB.ReferenceLookAt;
                     var b0 = Vector3.ProjectOnPlane(b, state.ReferenceUp);
                     newPos = Vector3.Slerp(a0, b0, t) 
                         + Vector3.Lerp(a - a0, b - b0, t) + state.ReferenceLookAt;
@@ -342,8 +342,8 @@ namespace Cinemachine
                 {
                     // Spherical interpolation about LookAt target
                     newPos = Vector3.Slerp(
-                        stateA.RawPosition - state.ReferenceLookAt, 
-                        stateB.RawPosition - state.ReferenceLookAt, t) + state.ReferenceLookAt;
+                        stateA.RawPosition - stateA.ReferenceLookAt, 
+                        stateB.RawPosition - stateB.ReferenceLookAt, t) + state.ReferenceLookAt;
                 }
             }
             state.RawPosition = ApplyPosBlendHint(

@@ -30,7 +30,7 @@ namespace Cinemachine
 
         /// <summary>Hint for blending positions to and from this virtual camera</summary>
         [Tooltip("Hint for blending positions to and from this virtual camera")]
-        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Cylindrical;
+        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Linear;
 
         /// <summary>If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used</summary>
         [Tooltip("If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used")]
