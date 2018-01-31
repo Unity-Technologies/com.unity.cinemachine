@@ -1,8 +1,9 @@
-<size=20><b>Version 2.1.11-alpha.5</b></size>
+<size=20><b>Version 2.1.11-alpha.6</b></size>
 
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
 - New OverlayImage extension to put screen-space overlays on vcams.  Great for storyboard placeholders.
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
+- Added Recentering feature to POV Aim component
 - Added API to support seamless warping of target objects
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option
