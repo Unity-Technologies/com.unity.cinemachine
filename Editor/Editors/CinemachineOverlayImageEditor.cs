@@ -19,9 +19,9 @@ namespace Cinemachine.Editor
                 rect.x += rect.width; rect.width = width - rect.width;
                 EditorGUI.PropertyField(rect, FindProperty(x => x.m_Image), GUIContent.none);
 
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_DefaultSize));
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_Aspect));
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_Alpha));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_Position));
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_Center));
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_Rotation));
 
                 rect = EditorGUILayout.GetControlRect(true);
@@ -45,6 +45,7 @@ namespace Cinemachine.Editor
                     EditorGUI.PropertyField(rect, FindProperty(x => x.m_Scale), GUIContent.none);
                 }
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_Wipe));
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();

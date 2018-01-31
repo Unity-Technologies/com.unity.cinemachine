@@ -26,15 +26,15 @@ namespace Cinemachine
             /// <summary>Image will be stretched to cover any aspect mismatch with the screen</summary>
             StretchToFit
         };
-        [Tooltip("A scale value of 1 will place the image according to this strategy")]
-        public FillStrategy m_DefaultSize = FillStrategy.BestFit;
+        [Tooltip("How to handle differences between image aspect and screen aspect")]
+        public FillStrategy m_Aspect = FillStrategy.BestFit;
 
         [Tooltip("The opacity of the image.  0 is transparent, 1 is opaque")]
         [Range(0, 1)]
         public float m_Alpha = 1;
 
         [Tooltip("The screen-space position at which to display the image.  Zero is center")]
-        public Vector2 m_Position = Vector3.zero;
+        public Vector2 m_Center = Vector2.zero;
 
         [Tooltip("The screen-space rotation to apply to the image")]
         public Vector3 m_Rotation = Vector3.zero;
@@ -48,8 +48,13 @@ namespace Cinemachine
         [Tooltip("If checked, Camera transform will not be controlled by this virtual camera")]
         public bool m_MuteCamera;
 
+        [Range(0, 1)]
+        [Tooltip("Wipe the image on and off horizontally")]
+        public float m_Wipe = 1;
+
         GameObject mCanvas;
-        Transform mCanvasParent;
+        CinemachineBrain mCanvasParent;
+        RectTransform mViewport; // for mViewport clipping
         UnityEngine.UI.RawImage mRawImage;
 
         protected override void PostPipelineStageCallback(
@@ -71,7 +76,7 @@ namespace Cinemachine
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
             bool isLive = CinemachineCore.Instance.IsLive(VirtualCamera);
-            LocateMyCanvas(brain.transform, isLive);
+            LocateMyCanvas(brain, isLive);
             if (mCanvas != null)
                 mCanvas.SetActive(isLive && m_ShowImage);
         }
@@ -82,7 +87,7 @@ namespace Cinemachine
             int numBrains = CinemachineCore.Instance.BrainCount;
             for (int i = 0; i < numBrains; ++i)
             {
-                LocateMyCanvas(CinemachineCore.Instance.GetActiveBrain(i).transform, false);
+                LocateMyCanvas(CinemachineCore.Instance.GetActiveBrain(i), false);
                 if (mCanvas != null)
                     DestroyImmediate(mCanvas);
                 mCanvas = null;
@@ -99,55 +104,74 @@ namespace Cinemachine
         
         string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
 
-        void LocateMyCanvas(Transform parent, bool createIfNotFound)
+        void LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
         {
             if (mCanvas == null || mCanvasParent != parent)
             {
                 mCanvas = null;
                 mRawImage = null;
+                mViewport = null;
                 mCanvasParent = parent;
                 string canvasName = CanvasName;
-                int numChildren = parent.childCount;
+                int numChildren = parent.transform.childCount;
                 for (int i = 0; mCanvas == null && i < numChildren; ++i)
                 {
-                    RectTransform child = parent.GetChild(i) as RectTransform;
+                    RectTransform child = parent.transform.GetChild(i) as RectTransform;
                     if (child != null && child.name == canvasName)
                         mCanvas = child.gameObject;
                 }
             }
             if (mCanvas == null && createIfNotFound)
                 CreateCanvas(parent);
-            if (mCanvas != null && mRawImage == null)
+            if (mCanvas != null && (mRawImage == null || mViewport == null))
+            {
+                mViewport = mCanvas.GetComponentInChildren<RectTransform>();
                 mRawImage = mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
+            }
         }
 
-        void CreateCanvas(Transform parent)
+        void CreateCanvas(CinemachineBrain parent)
         {
             mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             mCanvas.hideFlags = HideFlags.HideAndDontSave;
-            mCanvas.transform.SetParent(parent);
+            mCanvas.transform.SetParent(parent.transform);
+            mCanvasParent = parent;
 
             var c = mCanvas.AddComponent<Canvas>();
             c.renderMode = RenderMode.ScreenSpaceOverlay;
 
-            var go = new GameObject("RawImage", typeof(RectTransform));
+            var go = new GameObject("Viewport", typeof(RectTransform));
             go.transform.SetParent(mCanvas.transform);
+            mViewport = (RectTransform)go.transform;
+            go.AddComponent<UnityEngine.UI.RectMask2D>();
+
+            go = new GameObject("RawImage", typeof(RectTransform));
+            go.transform.SetParent(mViewport.transform);
             mRawImage = go.AddComponent<UnityEngine.UI.RawImage>();
-            mCanvasParent = parent;
         }
 
-        void UpdateSettings(UnityEngine.UI.RawImage rawImage, float alpha)
+        void PlaceImage(float alpha)
         {
-            if (rawImage != null)
+            if (mRawImage != null && mViewport != null)
             {
+                Rect screen = new Rect(0, 0, Screen.width, Screen.height);
+                if (mCanvasParent.OutputCamera != null)
+                    screen = mCanvasParent.OutputCamera.pixelRect;
+                screen.x -= (float)Screen.width/2;
+                screen.y -= (float)Screen.height/2;
+
+                mViewport.localPosition = screen.center;
+                mViewport.localRotation = Quaternion.identity;
+                mViewport.localScale = Vector3.one;;
+                mViewport.sizeDelta = screen.size;
+
                 Vector2 scale = Vector2.one;
                 if (m_Image != null
                     && m_Image.width > 0 && m_Image.width > 0 
-                    && Screen.width > 0 && Screen.height > 0)
+                    && screen.width > 0 && screen.height > 0)
                 {
-                    float f = ((float)m_Image.width / m_Image.height) 
-                        / ((float)Screen.width / Screen.height);
-                    switch (m_DefaultSize)
+                    float f = (screen.height * m_Image.width) / (screen.width * m_Image.height);
+                    switch (m_Aspect)
                     {
                         case FillStrategy.BestFit:
                             if (f >= 1)
@@ -168,14 +192,21 @@ namespace Cinemachine
                 scale.x *= m_Scale.x;
                 scale.y *= m_SyncScale ? m_Scale.x : m_Scale.y;
 
-                rawImage.texture = m_Image;
+                mRawImage.texture = m_Image;
                 Color tintColor = Color.white;
                 tintColor.a = m_Alpha * alpha;
-                rawImage.color = tintColor;
-                rawImage.rectTransform.localPosition = m_Position;
-                rawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
-                rawImage.rectTransform.localScale = scale;
-                rawImage.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
+                mRawImage.color = tintColor;
+                mRawImage.rectTransform.localPosition 
+                    = new Vector2(screen.width * m_Center.x, screen.height * m_Center.y);
+                mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
+                mRawImage.rectTransform.localScale = scale;
+                mRawImage.rectTransform.sizeDelta = screen.size;
+
+                // Apply wipe
+                float delta = (1 - Mathf.Clamp01(m_Wipe)) * screen.width;
+                var p = mViewport.localPosition; p.x -= delta/2; mViewport.localPosition = p;
+                p = mRawImage.rectTransform.localPosition; p.x += delta/2; mRawImage.rectTransform.localPosition = p;
+                mViewport.sizeDelta = new Vector2(screen.width - delta, screen.height);
             }        
         }
 
@@ -190,9 +221,8 @@ namespace Cinemachine
                 CinemachineOverlayImage src = b.m_Custom as CinemachineOverlayImage;
                 if (!(src == null)) // in case it was deleted
                 {
-                    src.LocateMyCanvas(brain.transform, true);
-                    if (src.mRawImage != null)
-                        src.UpdateSettings(src.mRawImage, b.m_Weight);
+                    src.LocateMyCanvas(brain, true);
+                    src.PlaceImage(b.m_Weight);
                 }
             }
             //UnityEngine.Profiling.Profiler.EndSample();
