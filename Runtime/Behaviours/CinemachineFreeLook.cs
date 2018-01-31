@@ -53,8 +53,7 @@ namespace Cinemachine
 
         /// <summary>Controls how automatic recentering of the Y axis is accomplished</summary>
         [Tooltip("Controls how automatic recentering of the Y axis is accomplished")]
-        public CinemachineOrbitalTransposer.Recentering m_YAxisRecentering
-            = new CinemachineOrbitalTransposer.Recentering(false, 1, 2);
+        public AxisState.Recentering m_YAxisRecentering = new AxisState.Recentering(false, 1, 2);
 
         /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component</summary>
         [Tooltip("The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component")]
@@ -70,8 +69,7 @@ namespace Cinemachine
 
         /// <summary>Controls how automatic recentering of the X axis is accomplished</summary>
         [Tooltip("Controls how automatic recentering of the X axis is accomplished")]
-        public CinemachineOrbitalTransposer.Recentering m_RecenterToTargetHeading
-            = new CinemachineOrbitalTransposer.Recentering(false, 1, 2);
+        public AxisState.Recentering m_RecenterToTargetHeading = new AxisState.Recentering(false, 1, 2);
 
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Header("Orbits")]
@@ -120,10 +118,11 @@ namespace Cinemachine
             // Upgrade after a legacy deserialize
             if (m_LegacyHeadingBias != float.MaxValue)
             {
-                m_Heading.m_HeadingBias = m_LegacyHeadingBias;
+                m_Heading.m_Bias= m_LegacyHeadingBias;
                 m_LegacyHeadingBias = float.MaxValue;
-                m_RecenterToTargetHeading.LegacyUpgrade(
-                    ref m_Heading.m_HeadingDefinition, ref m_Heading.m_VelocityFilterStrength);
+                int heading = (int)m_Heading.m_Definition;
+                if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
+                    m_Heading.m_Definition = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)heading;
                 mUseLegacyRigDefinitions = true;
             }
             m_YAxis.Validate();
@@ -566,7 +565,7 @@ namespace Cinemachine
                 mOrbitals[i].m_Heading = m_Heading;
                 mOrbitals[i].m_XAxis = m_XAxis;
                 mOrbitals[i].m_RecenterToTargetHeading.m_enabled = (i == 0) ? m_RecenterToTargetHeading.m_enabled : false;
-                mOrbitals[i].m_RecenterToTargetHeading.m_RecenterWaitTime = m_RecenterToTargetHeading.m_RecenterWaitTime;
+                mOrbitals[i].m_RecenterToTargetHeading.m_WaitTime = m_RecenterToTargetHeading.m_WaitTime;
                 mOrbitals[i].m_RecenterToTargetHeading.m_RecenteringTime = m_RecenterToTargetHeading.m_RecenteringTime;
 
                 // Hack to get SimpleFollow with heterogeneous dampings to work

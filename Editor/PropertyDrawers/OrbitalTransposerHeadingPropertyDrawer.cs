@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
                 ++EditorGUI.indentLevel;
 
                 rect.y += height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_HeadingDefinition));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_Definition));
 
                 if (IsVelocityMode(property))
                 {
@@ -29,7 +29,7 @@ namespace Cinemachine.Editor
                 }
 
                 rect.y += height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_HeadingBias));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_Bias));
 
                 --EditorGUI.indentLevel;
             }
@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
 
         bool IsVelocityMode(SerializedProperty property)
         {
-            var mode = property.FindPropertyRelative(() => def.m_HeadingDefinition);
+            var mode = property.FindPropertyRelative(() => def.m_Definition);
             var value = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)
                 (System.Enum.GetValues(typeof(CinemachineOrbitalTransposer.Heading.HeadingDefinition))).GetValue(mode.enumValueIndex);
             return value == CinemachineOrbitalTransposer.Heading.HeadingDefinition.Velocity

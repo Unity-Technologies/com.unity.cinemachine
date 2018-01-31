@@ -67,8 +67,9 @@ namespace Cinemachine
             }
             /// <summary>The method by which the 'default heading' is calculated if
             /// recentering to target heading is enabled</summary>
+            [FormerlySerializedAs("m_HeadingDefinition")]
             [Tooltip("How 'forward' is defined.  The camera will be placed by default behind the target.  PositionDelta will consider 'forward' to be the direction in which the target is moving.")]
-            public HeadingDefinition m_HeadingDefinition;
+            public HeadingDefinition m_Definition;
 
             /// <summary>Size of the velocity sampling window for target heading filter.
             /// Used only if deriving heading from target's movement</summary>
@@ -79,15 +80,16 @@ namespace Cinemachine
             /// <summary>Additional Y rotation applied to the target heading.
             /// When this value is 0, the camera will be placed behind the target</summary>
             [Range(-180f, 180f)]
+            [FormerlySerializedAs("m_HeadingBias")]
             [Tooltip("Where the camera is placed when the X-axis value is zero.  This is a rotation in degrees around the Y axis.  When this value is 0, the camera will be placed behind the target.  Nonzero offsets will rotate the zero position around the target.")]
-            public float m_HeadingBias;
+            public float m_Bias;
 
             /// <summary>Constructor</summary>
             public Heading(HeadingDefinition def, int filterStrength, float bias)
             {
-                m_HeadingDefinition = def;
+                m_Definition = def;
                 m_VelocityFilterStrength = filterStrength;
-                m_HeadingBias = bias;
+                m_Bias = bias;
             }
         };
 
@@ -97,113 +99,9 @@ namespace Cinemachine
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
         public Heading m_Heading = new Heading(Heading.HeadingDefinition.TargetForward, 4, 0);
 
-        /// <summary>Controls how automatic axis recentering occurs</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-        [Serializable]
-        public struct Recentering
-        {
-            /// <summary>If checked, will enable automatic recentering of the
-            /// axis. If FALSE, recenting is disabled.</summary>
-            [Tooltip("If checked, will enable automatic recentering of the axis. If unchecked, recenting is disabled.")]
-            public bool m_enabled;
-
-            /// <summary>If no input has been detected, the camera will wait
-            /// this long in seconds before moving its heading to the default heading.</summary>
-            [Tooltip("If no user input has been detected on the axis, the axis will wait this long in seconds before recentering.")]
-            public float m_RecenterWaitTime;
-
-            /// <summary>Maximum angular speed of recentering.  Will accelerate into and decelerate out of this</summary>
-            [Tooltip("Maximum angular speed of recentering.  Will accelerate into and decelerate out of this.")]
-            public float m_RecenteringTime;
-
-            /// <summary>Constructor with specific field values</summary>
-            public Recentering(bool enabled, float recenterWaitTime,  float recenteringSpeed)
-            {
-                m_enabled = enabled;
-                m_RecenterWaitTime = recenterWaitTime;
-                m_RecenteringTime = recenteringSpeed;
-                m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
-                mLastAxisInputTime = 0;
-                mRecenteringVelocity = 0;
-            }
-
-            /// <summary>Call this from OnValidate()</summary>
-            public void Validate()
-            {
-                m_RecenterWaitTime = Mathf.Max(0, m_RecenterWaitTime);
-                m_RecenteringTime = Mathf.Max(0, m_RecenteringTime);
-            }
-
-            // Internal state
-            float mLastAxisInputTime;
-            float mRecenteringVelocity;
-
-            internal void CancelRecentering()
-            {
-                mLastAxisInputTime = Time.time;
-                mRecenteringVelocity = 0;
-            }
-
-            internal void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
-            {
-                if (!m_enabled)
-                    return;
-
-                if (deltaTime < 0)
-                {
-                    CancelRecentering();
-                    axis.Value = recenterTarget;
-                }
-                else if (Time.time > (mLastAxisInputTime + m_RecenterWaitTime))
-                {
-                    // Scale value determined heuristically, to account for accel/decel
-                    float recenterTime = m_RecenteringTime / 3f;
-                    if (recenterTime <= deltaTime)
-                        axis.Value = recenterTarget;
-                    else
-                    {
-                        float headingError = Mathf.DeltaAngle(axis.Value, recenterTarget);
-                        float absHeadingError = Mathf.Abs(headingError);
-                        if (absHeadingError < UnityVectorExtensions.Epsilon)
-                        {
-                            axis.Value = recenterTarget;
-                            mRecenteringVelocity = 0;
-                        }
-                        else 
-                        {
-                            float scale = deltaTime / recenterTime;
-                            float desiredVelocity = Mathf.Sign(headingError)
-                                * Mathf.Min(absHeadingError, absHeadingError * scale);
-                            // Accelerate to the desired velocity
-                            float accel = desiredVelocity - mRecenteringVelocity;
-                            if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
-                                desiredVelocity = mRecenteringVelocity + desiredVelocity * scale;
-                            axis.Value += desiredVelocity;
-                            mRecenteringVelocity = desiredVelocity;
-                        }
-                    }
-                }
-            }
-
-            // Legacy support
-            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeadingDefinition")] private int m_LegacyHeadingDefinition;
-            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_VelocityFilterStrength")] private int m_LegacyVelocityFilterStrength;
-            internal bool LegacyUpgrade(ref Heading.HeadingDefinition heading, ref int velocityFilter)
-            {
-                if (m_LegacyHeadingDefinition != -1 && m_LegacyVelocityFilterStrength != -1)
-                {
-                    heading = (Heading.HeadingDefinition)m_LegacyHeadingDefinition;
-                    velocityFilter = m_LegacyVelocityFilterStrength;
-                    m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
-                    return true;
-                }
-                return false;
-            }
-        };
-
         /// <summary>Parameters that control Automating Heading Recentering</summary>
         [Tooltip("Automatic heading recentering.  The settings here defines how the camera will reposition itself in the absence of player input.")]
-        public Recentering m_RecenterToTargetHeading = new Recentering(true, 1, 2);
+        public AxisState.Recentering m_RecenterToTargetHeading = new AxisState.Recentering(true, 1, 2);
 
         /// <summary>Axis representing the current heading.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
@@ -225,13 +123,14 @@ namespace Cinemachine
                 m_FollowOffset = new Vector3(0, m_LegacyHeightOffset, -m_LegacyRadius);
                 m_LegacyHeightOffset = m_LegacyRadius = float.MaxValue;
 
-                m_Heading.m_HeadingBias = m_LegacyHeadingBias;
+                m_Heading.m_Bias = m_LegacyHeadingBias;
                 m_XAxis.m_MaxSpeed /= 10;
                 m_XAxis.m_AccelTime /= 10;
                 m_XAxis.m_DecelTime /= 10;
                 m_LegacyHeadingBias = float.MaxValue;
-                m_RecenterToTargetHeading.LegacyUpgrade(
-                    ref m_Heading.m_HeadingDefinition, ref m_Heading.m_VelocityFilterStrength);
+                int heading = (int)m_Heading.m_Definition;
+                if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
+                    m_Heading.m_Definition = (Heading.HeadingDefinition)heading;
             }
             m_XAxis.Validate();
             m_RecenterToTargetHeading.Validate();
@@ -340,7 +239,7 @@ namespace Cinemachine
 
                 // Calculate the heading
                 if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
-                    heading += m_Heading.m_HeadingBias;
+                    heading += m_Heading.m_Bias;
                 Quaternion headingRot = Quaternion.AngleAxis(heading, Vector3.up);
 
                 // Track the target, with damping
@@ -396,7 +295,7 @@ namespace Cinemachine
             if (FollowTarget == null)
                 return currentHeading;
 
-            var headingDef = m_Heading.m_HeadingDefinition;
+            var headingDef = m_Heading.m_Definition;
             if (headingDef == Heading.HeadingDefinition.Velocity && mTargetRigidBody == null)
                 headingDef = Heading.HeadingDefinition.PositionDelta;
 
