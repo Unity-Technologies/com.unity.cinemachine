@@ -297,10 +297,8 @@ namespace Cinemachine
                 Quaternion.Slerp(stateA.OrientationCorrection, stateB.OrientationCorrection, t));
 
             // LookAt target
-            if (!stateA.HasLookAt)
-                state.ReferenceLookAt = stateB.ReferenceLookAt;
-            else if (!stateB.HasLookAt)
-                state.ReferenceLookAt = stateA.ReferenceLookAt;
+            if (!stateA.HasLookAt || !stateB.HasLookAt)
+                state.ReferenceLookAt = kNoPoint;
             else
             {
                 // Re-interpolate FOV to preserve target composition, if possible
@@ -309,7 +307,7 @@ namespace Cinemachine
                 if (!state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
                 {
                     LensSettings lens = state.Lens;
-                    lens.FieldOfView = state.InterpolateFOV(
+                    lens.FieldOfView = InterpolateFOV(
                             fovA, fovB,
                             Mathf.Max((stateA.ReferenceLookAt - stateA.CorrectedPosition).magnitude, stateA.Lens.NearClipPlane),
                             Mathf.Max((stateB.ReferenceLookAt - stateB.CorrectedPosition).magnitude, stateB.Lens.NearClipPlane), t);
@@ -325,31 +323,13 @@ namespace Cinemachine
             }
             
             // Raw position
-            Vector3 newPos = Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t);
-            if (state.HasLookAt)
-            {
-                if ((state.BlendHint & BlendHintValue.CylindricalPositionBlend) != 0)
-                {
-                    // Cylindrical interpolation about LookAt target
-                    var a = stateA.RawPosition - stateA.ReferenceLookAt;
-                    var a0 = Vector3.ProjectOnPlane(a, state.ReferenceUp);
-                    var b = stateB.RawPosition - stateB.ReferenceLookAt;
-                    var b0 = Vector3.ProjectOnPlane(b, state.ReferenceUp);
-                    newPos = Vector3.Slerp(a0, b0, t) 
-                        + Vector3.Lerp(a - a0, b - b0, t) + state.ReferenceLookAt;
-                }
-                else if ((state.BlendHint & BlendHintValue.SphericalPositionBlend) != 0)
-                {
-                    // Spherical interpolation about LookAt target
-                    newPos = Vector3.Slerp(
-                        stateA.RawPosition - stateA.ReferenceLookAt, 
-                        stateB.RawPosition - stateB.ReferenceLookAt, t) + state.ReferenceLookAt;
-                }
-            }
             state.RawPosition = ApplyPosBlendHint(
                 stateA.RawPosition, stateA.BlendHint,
                 stateB.RawPosition, stateB.BlendHint, 
-                state.RawPosition, newPos);
+                state.RawPosition, state.InterpolatePosition(
+                    stateA.RawPosition, stateA.ReferenceLookAt,
+                    stateB.RawPosition, stateB.ReferenceLookAt,
+                    state.ReferenceLookAt, t));
 
             // Clever orientation interpolation
             Quaternion newOrient = state.RawOrientation;
@@ -418,7 +398,7 @@ namespace Cinemachine
             return state;
         }
 
-        float InterpolateFOV(float fovA, float fovB, float dA, float dB, float t)
+        static float InterpolateFOV(float fovA, float fovB, float dA, float dB, float t)
         {
             // We interpolate shot height
             float hA = dA * 2f * Mathf.Tan(fovA * Mathf.Deg2Rad / 2f);
@@ -457,6 +437,32 @@ namespace Cinemachine
             if ((hintA & BlendHintValue.NoOrientation) != 0)
                 return rotB;
             return rotA;
+        }
+
+        Vector3 InterpolatePosition(
+            Vector3 posA, Vector3 pivotA,
+            Vector3 posB, Vector3 pivotB,
+            Vector3 pivot, float t)
+        {
+            #pragma warning disable 1718 // comparison made to same variable
+            if (pivot == pivot && pivotA == pivotA && pivotB == pivotB) // check for NaN
+            {
+                if ((BlendHint & BlendHintValue.CylindricalPositionBlend) != 0)
+                {
+                    // Cylindrical interpolation about travelling pivot
+                    var a = posA - pivotA;
+                    var a0 = Vector3.ProjectOnPlane(a, ReferenceUp);
+                    var b = posB - pivotB;
+                    var b0 = Vector3.ProjectOnPlane(b, ReferenceUp);
+                    return Vector3.Slerp(a0, b0, t) + Vector3.Lerp(a - a0, b - b0, t) + pivot;
+                }
+                if ((BlendHint & BlendHintValue.SphericalPositionBlend) != 0)
+                {
+                    // Spherical interpolation about travelling pivot
+                    return Vector3.Slerp(posA - pivotA, posB - pivotB, t) + pivot;
+                }
+            }
+            return Vector3.Lerp(posA, posB, t);
         }
     }
 }
