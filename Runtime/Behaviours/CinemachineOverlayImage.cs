@@ -48,9 +48,9 @@ namespace Cinemachine
         [Tooltip("If checked, Camera transform will not be controlled by this virtual camera")]
         public bool m_MuteCamera;
 
-        [Range(0, 1)]
+        [Range(-1, 1)]
         [Tooltip("Wipe the image on and off horizontally")]
-        public float m_Wipe = 1;
+        public float m_Wipe = 0f;
 
         GameObject mCanvas;
         CinemachineBrain mCanvasParent;
@@ -203,10 +203,10 @@ namespace Cinemachine
                 mRawImage.rectTransform.sizeDelta = screen.size;
 
                 // Apply wipe
-                float delta = (1 - Mathf.Clamp01(m_Wipe)) * screen.width;
+                float delta = -Mathf.Clamp(m_Wipe, -1, 1) * screen.width;
                 var p = mViewport.localPosition; p.x -= delta/2; mViewport.localPosition = p;
                 p = mRawImage.rectTransform.localPosition; p.x += delta/2; mRawImage.rectTransform.localPosition = p;
-                mViewport.sizeDelta = new Vector2(screen.width - delta, screen.height);
+                mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(delta), screen.height);
             }        
         }
 
