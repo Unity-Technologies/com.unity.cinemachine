@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.1.11] - 2018-02-01
+## [2.1.11] - 2018-02-06
 ### Bugfixes and minor enhancements.  Also some restructuring in prep for UPM
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added support for cascading blends (i.e. blending from mid-blend looks better)
 - POV/Orbital/FreeLook axis: exposed Min, Max, and Wrap in the UI, for customized axis range
 - FreeLook: added Y Axis recentering
-- Added recentering feature to both axes POV Aim component
+- POV: Added recentering feature to both axes
 - Path: Added Normalized Path units option: 0 is start of path, 1 is end.
 - Path: added length display in inspector
 - Timeline Clip Editor: vcam sections are now collapsible
