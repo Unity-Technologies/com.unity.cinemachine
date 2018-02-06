@@ -16,8 +16,6 @@ namespace Cinemachine.Timeline
         {
             List<string> excluded = base.GetExcludedPropertiesInInspector();
             excluded.Add(FieldPath(x => x.VirtualCamera));
-            excluded.Add(FieldPath(x => x.m_StoryboardImage));
-            excluded.Add(FieldPath(x => x.m_Image));
             return excluded;
         }
 
@@ -65,18 +63,9 @@ namespace Cinemachine.Timeline
                 serializedObject.ApplyModifiedProperties();
             }
 
-#if false // We suppress this experimental feature, not so sure it's a good idea to keep it
-            rect = EditorGUILayout.GetControlRect(true);
-            float width = rect.width;
-            rect.width = EditorGUIUtility.labelWidth + rect.height;
-            EditorGUI.PropertyField(rect, FindProperty(x => x.m_StoryboardImage));
-            rect.x += rect.width; rect.width = width - rect.width;
-            EditorGUI.PropertyField(rect, FindProperty(x => x.m_Image), GUIContent.none);
-            serializedObject.ApplyModifiedProperties();
-#endif
             DrawRemainingPropertiesInInspector();
 
-            if (vcam != null && !FindProperty(x => x.m_StoryboardImage).boolValue)
+            if (vcam != null)
                 DrawSubeditors(vcam);
         }
 
@@ -91,6 +80,9 @@ namespace Cinemachine.Timeline
             {
                 foreach (UnityEditor.Editor e in m_editors)
                 {
+                    if (e == null || e.target == null)
+                        continue;
+
                     // Separator line - how do you make a thinner one?
                     GUILayout.Box("", new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(1) } );
 
