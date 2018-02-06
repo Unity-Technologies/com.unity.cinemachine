@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.1.11] - 2018-02-01
 ### Bugfixes and minor enhancements.  Also some restructuring in prep for UPM
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
-- New OverlayImage extension to put screen-space overlays on vcams.  Great for storyboard placeholders.
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
+- New Collider option: Shortest Way Out.  Takes the shortest path out of any intersecting obstacles, without considering the LookAt target
 - Added API to support seamless position warping of target objects
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option

@@ -1,8 +1,8 @@
 <size=20><b>Version 2.1.11-alpha.6</b></size>
 
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
-- New OverlayImage extension to put screen-space overlays on vcams.  Great for storyboard placeholders.
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
+- New Collider option: Shortest Way Out.  Takes the shortest path out of any intersecting obstacles, without considering the LookAt target
 - Added API to support seamless posiiton warping of target objects
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option

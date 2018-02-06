@@ -71,7 +71,10 @@ namespace Cinemachine
             PreserveCameraHeight,
             /// <summary>In addition to pulling the camera forward, an effort will be made to 
             /// return the camera to its original distance from the target</summary>
-            PreserveCameraDistance
+            PreserveCameraDistance,
+            /// <summary>Take the shortest path out of intersecting colliders,
+            /// regardless of LookAt target visibility</summary>
+            ShortestWayOut
         };
         /// <summary>The way in which the Collider will attempt to preserve sight of the target.</summary>
         [Tooltip("The way in which the Collider will attempt to preserve sight of the target.")]
@@ -188,7 +191,11 @@ namespace Cinemachine
             {
                 if (m_AvoidObstacles)
                 {
-                    Vector3 displacement = PreserveLignOfSight(ref state, ref extra);
+                    Vector3 displacement = Vector3.zero;
+                    if (m_Strategy == ResolutionStrategy.ShortestWayOut)
+                        displacement = RespectCameraRadius(state.RawPosition);
+                    else
+                        displacement = PreserveLignOfSight(ref state, ref extra);
                     if (m_Damping > 0 && deltaTime >= 0)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
@@ -277,7 +284,7 @@ namespace Cinemachine
                     }
                 }
                 if (m_CameraRadius > Epsilon)
-                    pos += RespectCameraRadius(pos, state.ReferenceLookAt);
+                    pos += RespectCameraRadius(pos);
                 else if (mCameraColliderGameObject != null)
                     CleanupCameraCollider();
                 displacement = pos - cameraPos;
@@ -500,7 +507,7 @@ namespace Cinemachine
         private Collider[] mColliderBuffer = new Collider[5];
         private SphereCollider mCameraCollider;
         private GameObject mCameraColliderGameObject;
-        private Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
+        private Vector3 RespectCameraRadius(Vector3 cameraPos)
         {
             Vector3 result = Vector3.zero;
             int numObstacles = Physics.OverlapSphereNonAlloc(
@@ -510,11 +517,14 @@ namespace Cinemachine
             {
                 if (mCameraColliderGameObject == null)
                 {
-                    mCameraColliderGameObject = new GameObject("Cinemachine Collider Collider");
+                    mCameraColliderGameObject = new GameObject("CinemachineCollider Collider");
                     mCameraColliderGameObject.hideFlags = HideFlags.HideAndDontSave;
-                    mCameraColliderGameObject.transform.position = new Vector3(-20000, -20000, -20000);    // GML temp hack position
+                    mCameraColliderGameObject.transform.position = Vector3.zero;
                     mCameraColliderGameObject.SetActive(true);
                     mCameraCollider = mCameraColliderGameObject.AddComponent<SphereCollider>();
+                    var rb = mCameraColliderGameObject.AddComponent<Rigidbody>();
+                    rb.detectCollisions = false;
+                    rb.isKinematic = false;
                 }
                 mCameraCollider.radius = m_CameraRadius;
                 for (int i = 0; i < numObstacles; ++i)
@@ -538,8 +548,7 @@ namespace Cinemachine
 
         private void CleanupCameraCollider()
         {
-            if (mCameraColliderGameObject != null)
-                DestroyImmediate(mCameraColliderGameObject);
+            RuntimeUtility.DestroyObject(mCameraColliderGameObject);
             mCameraColliderGameObject = null;
             mCameraCollider = null;
         }
