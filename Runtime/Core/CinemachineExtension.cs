@@ -29,23 +29,51 @@ namespace Cinemachine
         /// Override implementations must call this base implementation</summary>
         protected virtual void Awake()
         {
-            ConnectToVcam();
+            ConnectToVcam(true);
+        }
+
+        /// <summary>Connect to virtual camera pipeline.
+        /// Override implementations must call this base implementation</summary>
+        protected virtual void OnEnable()
+        {
         }
 
         /// <summary>Disconnect from virtual camera pipeline.
         /// Override implementations must call this base implementation</summary>
-        protected virtual void OnDestroy()
+        protected virtual void OnDisable()
         {
-            if (VirtualCamera != null)
-                VirtualCamera.RemovePostPipelineStageHook(PostPipelineStageCallback);
         }
 
-        void ConnectToVcam()
+#if UNITY_EDITOR
+        [UnityEditor.Callbacks.DidReloadScripts]
+        static void OnScriptReload() 
         {
-            if (VirtualCamera == null)
+            var extensions = Resources.FindObjectsOfTypeAll(
+                typeof(CinemachineExtension)) as CinemachineExtension[];
+            foreach (var e in extensions)
+                e.ConnectToVcam(true); 
+        }
+#endif
+        /// <summary>Disconnect from virtual camera pipeline.
+        /// Override implementations must call this base implementation</summary>
+        protected virtual void OnDestroy()
+        {
+            ConnectToVcam(false);
+        }
+
+        /// <summary>Connect to virtual camera.  Implementation must be safe to be called
+        /// redundantly.  Override implementations must call this base implementation</summary>
+        /// <param name="connect">True if connectinf, false if disconnecting</param>
+        protected virtual void ConnectToVcam(bool connect)
+        {
+            if (connect && VirtualCamera == null)
                 Debug.LogError("CinemachineExtension requires a Cinemachine Virtual Camera component");
-            else
-                VirtualCamera.AddPostPipelineStageHook(PostPipelineStageCallback);
+            if (VirtualCamera != null)
+            {
+                VirtualCamera.RemovePostPipelineStageHook(PostPipelineStageCallback);
+                if (connect)
+                    VirtualCamera.AddPostPipelineStageHook(PostPipelineStageCallback);
+            }
             mExtraState = null;
         }
 

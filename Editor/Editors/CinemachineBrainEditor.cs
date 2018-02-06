@@ -155,11 +155,14 @@ namespace Cinemachine.Editor
                         Directory.CreateDirectory(dstFile);
                     dstFile += "/" + kGizmoFileName;
                     if (!File.Exists(dstFile) 
-                        || File.GetCreationTime(dstFile) < File.GetCreationTime(srcFile))
+                        || (File.GetLastWriteTime(dstFile) < File.GetLastWriteTime(srcFile)
+                            && (File.GetAttributes(dstFile) & FileAttributes.ReadOnly) == 0))
                     {
                         if (!Directory.Exists(Path.GetDirectoryName(dstFile)))
                             Directory.CreateDirectory(Path.GetDirectoryName(dstFile));
                         File.Copy(srcFile, dstFile, true);
+                        File.SetAttributes(
+                            dstFile, File.GetAttributes(dstFile) & ~FileAttributes.ReadOnly);
                     }
                 }
             }

@@ -34,6 +34,10 @@ namespace Cinemachine
         /// <summary>This vcam defines no targets</summary>
         override public Transform Follow { get; set; }
 
+        /// <summary>Hint for blending positions to and from this virtual camera</summary>
+        [Tooltip("Hint for blending positions to and from this virtual camera")]
+        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Linear;
+
         /// <summary>Internal use only.  Do not call this method</summary>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
@@ -56,6 +60,8 @@ namespace Cinemachine
                     m_State.ReferenceLookAt = m_State.RawPosition + Vector3.Project(
                         dir, State.RawOrientation * Vector3.forward);
             }
+            SetPositionBlendMethod(ref m_State, m_PositionBlending);
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }
 }

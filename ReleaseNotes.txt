@@ -1,23 +1,26 @@
-<size=20><b>Version 2.1.11-alpha.4</b></size>
+<size=20><b>Version 2.1.11-beta.1</b></size>
 
-- New OverlayImage extension to put screen-space overlays on vcams.  Great for storyboard placeholders.
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
-- Added API to support seamless warping of target objects
+- New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
+- New Collider option: Shortest Way Out.  Takes the shortest path out of any intersecting obstacles, without considering the LookAt target
+- Added API to support seamless posiiton warping of target objects
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option
 - Added support for cascading blends (i.e. blending from mid-blend looks better)
 - POV/Orbital/FreeLook axis: exposed Min, Max, and Wrap in the UI, for customized axis range
 - FreeLook: added Y Axis recentering
+- Added recentering feature to both axes POV Aim component
 - Path: Added Normalized Path units option: 0 is start of path, 1 is end.
 - Path: added length display in inspector
 - Timeline Clip Editor: vcam sections are now collapsible
+- API enhancement: added Finalize to Pipeline stages, called even for manager-style vcams
 - Bugfix: OrbitalTransposer works better with WorldUp overrides
 - Bugfix: Remove StateDrivenCamera "not playing a controller" warning
-- Bugfix: DepthOfField blending was wrong in PPv2
 - Bugfix: Handle exceptions thrown by assemblies that don't want to be introspected
-- Bugfix: vcams following physics objects snapped to origin after exiting play mode
+- Bugfix: vcams following physics objects incorrectly snapped to origin after exiting play mode
 - Bugfix: predictor now supports time pause
 - Bugfix: Moved StartCoroutine in Brain to OnEnable()
+- Bugfix: Collider was causing problems in Physics on Android platforms
 
 <size=20><b>Version 2.1.10</b></size>
 

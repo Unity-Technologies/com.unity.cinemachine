@@ -74,6 +74,10 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         public Transform m_Follow = null;
 
+        /// <summary>Hint for blending positions to and from this virtual camera</summary>
+        [Tooltip("Hint for blending positions to and from this virtual camera")]
+        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Linear;
+
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
         [FormerlySerializedAs("m_LensAttributes")]
@@ -127,6 +131,7 @@ namespace Cinemachine
 
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
+            SetPositionBlendMethod(ref m_State, m_PositionBlending);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -442,8 +447,7 @@ namespace Cinemachine
                     m_ComponentPipeline[i].MutateCameraState(ref state, deltaTime);
                 }
             }
-            int numStages = 3; //Enum.GetValues(typeof(CinemachineCore.Stage)).Length;
-            AdvancePipelineStage(ref state, deltaTime, curStage, numStages);
+            AdvancePipelineStage(ref state, deltaTime, curStage, (int)CinemachineCore.Stage.Finalize + 1);
             return state;
         }
 

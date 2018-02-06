@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// Axis state for defining to react to player input.  
+    /// Axis state for defining how to react to player input.  
     /// The settings here control the responsiveness of the axis to player input.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -197,9 +197,115 @@ namespace Cinemachine
             return m_MaxSpeed;
         }
 
-        /// <summary>
-        /// Value range is locked, i.e. not adjustable by the user
-        /// </summary>
+        /// <summary>Value range is locked, i.e. not adjustable by the user</summary>
         internal bool ValueRangeLocked { get; set; }
+
+
+        /// <summary>Helper for automatic axis recentering</summary>
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
+        [Serializable]
+        public struct Recentering
+        {
+            /// <summary>If checked, will enable automatic recentering of the
+            /// axis. If FALSE, recenting is disabled.</summary>
+            [Tooltip("If checked, will enable automatic recentering of the axis. If unchecked, recenting is disabled.")]
+            public bool m_enabled;
+
+            /// <summary>If no input has been detected, the camera will wait
+            /// this long in seconds before moving its heading to the default heading.</summary>
+            [FormerlySerializedAs("m_WaitTime")]
+            [Tooltip("If no user input has been detected on the axis, the axis will wait this long in seconds before recentering.")]
+            public float m_WaitTime;
+
+            /// <summary>Maximum angular speed of recentering.  Will accelerate into and decelerate out of this</summary>
+            [Tooltip("Maximum angular speed of recentering.  Will accelerate into and decelerate out of this.")]
+            public float m_RecenteringTime;
+
+            /// <summary>Constructor with specific field values</summary>
+            public Recentering(bool enabled, float recenterWaitTime,  float recenteringSpeed)
+            {
+                m_enabled = enabled;
+                m_WaitTime = recenterWaitTime;
+                m_RecenteringTime = recenteringSpeed;
+                mLastAxisInputTime = 0;
+                mRecenteringVelocity = 0;
+                m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
+            }
+
+            /// <summary>Call this from OnValidate()</summary>
+            public void Validate()
+            {
+                m_WaitTime = Mathf.Max(0, m_WaitTime);
+                m_RecenteringTime = Mathf.Max(0, m_RecenteringTime);
+            }
+
+            // Internal state
+            float mLastAxisInputTime;
+            float mRecenteringVelocity;
+
+            /// <summary>Cancel any recenetering in progress.</summary>
+            public void CancelRecentering()
+            {
+                mLastAxisInputTime = Time.time;
+                mRecenteringVelocity = 0;
+            }
+
+            /// <summary>Bring the axis back to the cenetered state.</summary>
+            public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
+            {
+                if (!m_enabled)
+                    return;
+
+                if (deltaTime < 0)
+                {
+                    CancelRecentering();
+                    axis.Value = recenterTarget;
+                }
+                else if (Time.time > (mLastAxisInputTime + m_WaitTime))
+                {
+                    // Scale value determined heuristically, to account for accel/decel
+                    float recenterTime = m_RecenteringTime / 3f;
+                    if (recenterTime <= deltaTime)
+                        axis.Value = recenterTarget;
+                    else
+                    {
+                        float headingError = Mathf.DeltaAngle(axis.Value, recenterTarget);
+                        float absHeadingError = Mathf.Abs(headingError);
+                        if (absHeadingError < UnityVectorExtensions.Epsilon)
+                        {
+                            axis.Value = recenterTarget;
+                            mRecenteringVelocity = 0;
+                        }
+                        else 
+                        {
+                            float scale = deltaTime / recenterTime;
+                            float desiredVelocity = Mathf.Sign(headingError)
+                                * Mathf.Min(absHeadingError, absHeadingError * scale);
+                            // Accelerate to the desired velocity
+                            float accel = desiredVelocity - mRecenteringVelocity;
+                            if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
+                                desiredVelocity = mRecenteringVelocity + desiredVelocity * scale;
+                            axis.Value += desiredVelocity;
+                            mRecenteringVelocity = desiredVelocity;
+                        }
+                    }
+                }
+            }
+
+            // Legacy support
+            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeadingDefinition")] private int m_LegacyHeadingDefinition;
+            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_VelocityFilterStrength")] private int m_LegacyVelocityFilterStrength;
+            internal bool LegacyUpgrade(ref int heading, ref int velocityFilter)
+            {
+                if (m_LegacyHeadingDefinition != -1 && m_LegacyVelocityFilterStrength != -1)
+                {
+                    heading = m_LegacyHeadingDefinition;
+                    velocityFilter = m_LegacyVelocityFilterStrength;
+                    m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }

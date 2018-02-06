@@ -160,7 +160,7 @@ namespace Cinemachine
                 var MiddleRig = vcam.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
                 Quaternion orient = MiddleRig.GetReferenceOrientation(up);
                 up = orient * Vector3.up;
-                float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_HeadingBias;
+                float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_Bias;
                 orient = Quaternion.AngleAxis(rotation, up) * orient;
 
                 CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(

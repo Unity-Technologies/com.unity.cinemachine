@@ -28,6 +28,10 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         public Transform m_Follow = null;
 
+        /// <summary>Hint for blending positions to and from this virtual camera</summary>
+        [Tooltip("Hint for blending positions to and from this virtual camera")]
+        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Linear;
+
         /// <summary>If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used</summary>
         [Tooltip("If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used")]
         [FormerlySerializedAs("m_UseCommonLensSetting")]
@@ -49,8 +53,7 @@ namespace Cinemachine
 
         /// <summary>Controls how automatic recentering of the Y axis is accomplished</summary>
         [Tooltip("Controls how automatic recentering of the Y axis is accomplished")]
-        public CinemachineOrbitalTransposer.Recentering m_YAxisRecentering
-            = new CinemachineOrbitalTransposer.Recentering(false, 1, 2);
+        public AxisState.Recentering m_YAxisRecentering = new AxisState.Recentering(false, 1, 2);
 
         /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component</summary>
         [Tooltip("The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component")]
@@ -66,8 +69,7 @@ namespace Cinemachine
 
         /// <summary>Controls how automatic recentering of the X axis is accomplished</summary>
         [Tooltip("Controls how automatic recentering of the X axis is accomplished")]
-        public CinemachineOrbitalTransposer.Recentering m_RecenterToTargetHeading
-            = new CinemachineOrbitalTransposer.Recentering(false, 1, 2);
+        public AxisState.Recentering m_RecenterToTargetHeading = new AxisState.Recentering(false, 1, 2);
 
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Header("Orbits")]
@@ -116,10 +118,11 @@ namespace Cinemachine
             // Upgrade after a legacy deserialize
             if (m_LegacyHeadingBias != float.MaxValue)
             {
-                m_Heading.m_HeadingBias = m_LegacyHeadingBias;
+                m_Heading.m_Bias= m_LegacyHeadingBias;
                 m_LegacyHeadingBias = float.MaxValue;
-                m_RecenterToTargetHeading.LegacyUpgrade(
-                    ref m_Heading.m_HeadingDefinition, ref m_Heading.m_VelocityFilterStrength);
+                int heading = (int)m_Heading.m_Definition;
+                if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
+                    m_Heading.m_Definition = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)heading;
                 mUseLegacyRigDefinitions = true;
             }
             m_YAxis.Validate();
@@ -266,6 +269,7 @@ namespace Cinemachine
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
+            SetPositionBlendMethod(ref m_State, m_PositionBlending);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.  Leave the orientation alone, because it
@@ -279,6 +283,7 @@ namespace Cinemachine
                 m_Rigs[2].transform.position -= delta;
             }
 
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
 
             // Set up for next frame
@@ -560,7 +565,7 @@ namespace Cinemachine
                 mOrbitals[i].m_Heading = m_Heading;
                 mOrbitals[i].m_XAxis = m_XAxis;
                 mOrbitals[i].m_RecenterToTargetHeading.m_enabled = (i == 0) ? m_RecenterToTargetHeading.m_enabled : false;
-                mOrbitals[i].m_RecenterToTargetHeading.m_RecenterWaitTime = m_RecenterToTargetHeading.m_RecenterWaitTime;
+                mOrbitals[i].m_RecenterToTargetHeading.m_WaitTime = m_RecenterToTargetHeading.m_WaitTime;
                 mOrbitals[i].m_RecenterToTargetHeading.m_RecenteringTime = m_RecenterToTargetHeading.m_RecenteringTime;
 
                 // Hack to get SimpleFollow with heterogeneous dampings to work

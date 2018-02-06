@@ -121,7 +121,12 @@ namespace Cinemachine
             NoPosition = 1,
             /// <summary>This state does not affect the camera rotation</summary>
             NoOrientation = 2,
-            // PreserveDistance = 4 // GML implement this later
+            /// <summary>Combination of NoPosition and NoOrientation</summary>
+            NoTransform = NoPosition | NoOrientation,
+            /// <summary>Spherical blend about the LookAt target (if any)</summary>
+            SphericalPositionBlend = 4,
+            /// <summary>Cylidrical blend about the LookAt target (if any)</summary>
+            CylindricalPositionBlend = 8
         }
 
         /// <summary>
@@ -267,30 +272,33 @@ namespace Cinemachine
             CameraState state = new CameraState();
             state.Lens = LensSettings.Lerp(stateA.Lens, stateB.Lens, t);
             state.ReferenceUp = Vector3.Slerp(stateA.ReferenceUp, stateB.ReferenceUp, t);
-
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoPosition) == 0)
-                state.RawPosition = Vector3.Lerp(stateA.RawPosition, stateB.RawPosition, t);
-            else
-            {
-                // Don't blend positions
-                if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoPosition) != 0)
-                    state.BlendHint |= BlendHintValue.NoPosition;
-                else if ((stateA.BlendHint & BlendHintValue.NoPosition) != 0)
-                    state.RawPosition = stateB.RawPosition;
-                else 
-                    state.RawPosition = stateA.RawPosition;
-            }
-
             state.ShotQuality = Mathf.Lerp(stateA.ShotQuality, stateB.ShotQuality, t);
-            state.PositionCorrection = Vector3.Lerp(
-                    stateA.PositionCorrection, stateB.PositionCorrection, t);
-            // GML todo: is this right?  Can it introduce a roll?
-            state.OrientationCorrection = Quaternion.Slerp(
-                    stateA.OrientationCorrection, stateB.OrientationCorrection, t);
 
-            Vector3 dirTarget = Vector3.zero;
+            // Combine the blend hints intelligently
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoPosition) != 0)
+                state.BlendHint |= BlendHintValue.NoPosition;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
+                state.BlendHint |= BlendHintValue.NoOrientation;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.SphericalPositionBlend) != 0)
+                state.BlendHint |= BlendHintValue.SphericalPositionBlend;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.CylindricalPositionBlend) != 0)
+                state.BlendHint |= BlendHintValue.CylindricalPositionBlend;
+
+            state.PositionCorrection = ApplyPosBlendHint(
+                stateA.PositionCorrection, stateA.BlendHint,
+                stateB.PositionCorrection, stateB.BlendHint, 
+                state.PositionCorrection, 
+                Vector3.Lerp(stateA.PositionCorrection, stateB.PositionCorrection, t));
+
+            state.OrientationCorrection = ApplyRotBlendHint(
+                stateA.OrientationCorrection, stateA.BlendHint,
+                stateB.OrientationCorrection, stateB.BlendHint, 
+                state.OrientationCorrection, 
+                Quaternion.Slerp(stateA.OrientationCorrection, stateB.OrientationCorrection, t));
+
+            // LookAt target
             if (!stateA.HasLookAt || !stateB.HasLookAt)
-                state.ReferenceLookAt = kNoPoint;   // can't interpolate if undefined
+                state.ReferenceLookAt = kNoPoint;
             else
             {
                 // Re-interpolate FOV to preserve target composition, if possible
@@ -299,7 +307,7 @@ namespace Cinemachine
                 if (!state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
                 {
                     LensSettings lens = state.Lens;
-                    lens.FieldOfView = state.InterpolateFOV(
+                    lens.FieldOfView = InterpolateFOV(
                             fovA, fovB,
                             Mathf.Max((stateA.ReferenceLookAt - stateA.CorrectedPosition).magnitude, stateA.Lens.NearClipPlane),
                             Mathf.Max((stateB.ReferenceLookAt - stateB.CorrectedPosition).magnitude, stateB.Lens.NearClipPlane), t);
@@ -312,20 +320,33 @@ namespace Cinemachine
                 // Linear interpolation of lookAt target point
                 state.ReferenceLookAt = Vector3.Lerp(
                         stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
-                
-                // If orientations are different, use LookAt to blend them
-                float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);
-                if (angle > UnityVectorExtensions.Epsilon)
-                    dirTarget = state.ReferenceLookAt - state.CorrectedPosition;
             }
+            
+            // Raw position
+            state.RawPosition = ApplyPosBlendHint(
+                stateA.RawPosition, stateA.BlendHint,
+                stateB.RawPosition, stateB.BlendHint, 
+                state.RawPosition, state.InterpolatePosition(
+                    stateA.RawPosition, stateA.ReferenceLookAt,
+                    stateB.RawPosition, stateB.ReferenceLookAt,
+                    state.ReferenceLookAt, t));
 
             // Clever orientation interpolation
+            Quaternion newOrient = state.RawOrientation;
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoOrientation) == 0)
             {
+                Vector3 dirTarget = Vector3.zero;
+                if (state.HasLookAt)
+                {
+                    // If orientations are different, use LookAt to blend them
+                    float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);
+                    if (angle > UnityVectorExtensions.Epsilon)
+                        dirTarget = state.ReferenceLookAt - state.CorrectedPosition;
+                }
                 if (dirTarget.AlmostZero())
                 {
                     // Don't know what we're looking at - can only slerp
-                    state.RawOrientation = UnityQuaternionExtensions.SlerpWithReferenceUp(
+                    newOrient = UnityQuaternionExtensions.SlerpWithReferenceUp(
                             stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
                 }
                 else
@@ -336,34 +357,28 @@ namespace Cinemachine
                         || (dirTarget + state.ReferenceUp).AlmostZero())
                     {
                         // Looking up or down at the pole
-                        state.RawOrientation = UnityQuaternionExtensions.SlerpWithReferenceUp(
+                        newOrient = UnityQuaternionExtensions.SlerpWithReferenceUp(
                                 stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
                     }
                     else
                     {
                         // Put the target in the center
-                        state.RawOrientation = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
+                        newOrient = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
 
                         // Blend the desired offsets from center
                         Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
                                 stateA.ReferenceLookAt - stateA.CorrectedPosition, stateA.ReferenceUp);
                         Vector2 deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
                                 stateB.ReferenceLookAt - stateB.CorrectedPosition, stateB.ReferenceUp);
-                        state.RawOrientation = state.RawOrientation.ApplyCameraRotation(
+                        newOrient = newOrient.ApplyCameraRotation(
                                 Vector2.Lerp(deltaA, deltaB, adjustedT), state.ReferenceUp);
                     }
                 }
             }
-            else
-            {
-                // Don't blend orientations
-                if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
-                    state.BlendHint |= BlendHintValue.NoOrientation;
-                else if ((stateA.BlendHint & BlendHintValue.NoOrientation) != 0)
-                    state.RawOrientation = stateB.RawOrientation;
-                else 
-                    state.RawOrientation = stateA.RawOrientation;
-            }
+            state.RawOrientation = ApplyRotBlendHint(
+                stateA.RawOrientation, stateA.BlendHint,
+                stateB.RawOrientation, stateB.BlendHint, 
+                state.RawOrientation, newOrient);
 
             // Accumulate the custom blendables and apply the weights
             for (int i = 0; i < stateA.NumCustomBlendables; ++i)
@@ -383,7 +398,7 @@ namespace Cinemachine
             return state;
         }
 
-        float InterpolateFOV(float fovA, float fovB, float dA, float dB, float t)
+        static float InterpolateFOV(float fovA, float fovB, float dA, float dB, float t)
         {
             // We interpolate shot height
             float hA = dA * 2f * Mathf.Tan(fovA * Mathf.Deg2Rad / 2f);
@@ -394,6 +409,60 @@ namespace Cinemachine
             if (d > UnityVectorExtensions.Epsilon)
                 fov = 2f * Mathf.Atan(h / (2 * d)) * Mathf.Rad2Deg;
             return Mathf.Clamp(fov, Mathf.Min(fovA, fovB), Mathf.Max(fovA, fovB));
+        }
+
+        static Vector3 ApplyPosBlendHint(
+            Vector3 posA, BlendHintValue hintA, 
+            Vector3 posB, BlendHintValue hintB, 
+            Vector3 original, Vector3 blended)
+        {
+            if (((hintA | hintB) & BlendHintValue.NoPosition) == 0)
+                return blended;
+            if (((hintA & hintB) & BlendHintValue.NoPosition) != 0)
+                return original;
+            if ((hintA & BlendHintValue.NoPosition) != 0)
+                return posB;
+            return posA;
+        }
+
+        static Quaternion ApplyRotBlendHint(
+            Quaternion rotA, BlendHintValue hintA, 
+            Quaternion rotB, BlendHintValue hintB, 
+            Quaternion original, Quaternion blended)
+        {
+            if (((hintA | hintB) & BlendHintValue.NoOrientation) == 0)
+                return blended;
+            if (((hintA & hintB) & BlendHintValue.NoOrientation) != 0)
+                return original;
+            if ((hintA & BlendHintValue.NoOrientation) != 0)
+                return rotB;
+            return rotA;
+        }
+
+        Vector3 InterpolatePosition(
+            Vector3 posA, Vector3 pivotA,
+            Vector3 posB, Vector3 pivotB,
+            Vector3 pivot, float t)
+        {
+            #pragma warning disable 1718 // comparison made to same variable
+            if (pivot == pivot && pivotA == pivotA && pivotB == pivotB) // check for NaN
+            {
+                if ((BlendHint & BlendHintValue.CylindricalPositionBlend) != 0)
+                {
+                    // Cylindrical interpolation about travelling pivot
+                    var a = posA - pivotA;
+                    var a0 = Vector3.ProjectOnPlane(a, ReferenceUp);
+                    var b = posB - pivotB;
+                    var b0 = Vector3.ProjectOnPlane(b, ReferenceUp);
+                    return Vector3.Slerp(a0, b0, t) + Vector3.Lerp(a - a0, b - b0, t) + pivot;
+                }
+                if ((BlendHint & BlendHintValue.SphericalPositionBlend) != 0)
+                {
+                    // Spherical interpolation about travelling pivot
+                    return Vector3.Slerp(posA - pivotA, posB - pivotB, t) + pivot;
+                }
+            }
+            return Vector3.Lerp(posA, posB, t);
         }
     }
 }

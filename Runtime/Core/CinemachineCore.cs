@@ -27,9 +27,13 @@ namespace Cinemachine
             /// <summary>Third stage: orient the camera to point at the target</summary>
             Aim,
 
-            /// <summary>Final stage: apply noise (this is done separately, in the
+            /// <summary>Final pipeline stage: apply noise (this is done separately, in the
             /// Correction channel of the CameraState)</summary>
-            Noise
+            Noise,
+
+            /// <summary>Not a pipeline stage.  This is invoked on all virtual camera 
+            /// types, after the pipeline is complete</summary>
+            Finalize
         };
 
         private static CinemachineCore sInstance = null;
@@ -58,6 +62,9 @@ namespace Cinemachine
         /// If you set this, then your delegate will be called instead of
         /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
         public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
+
+        /// <summary>This event will fire after a brain updates its Camera</summary>
+        public static CinemachineBrain.BrainEvent CameraUpdatedEvent = new CinemachineBrain.BrainEvent();
 
         /// <summary>List of all active CinemachineBrains.</summary>
         private List<CinemachineBrain> mActiveBrains = new List<CinemachineBrain>();

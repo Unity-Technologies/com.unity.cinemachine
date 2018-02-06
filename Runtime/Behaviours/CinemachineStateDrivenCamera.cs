@@ -242,6 +242,7 @@ namespace Cinemachine
             else if (LiveChild != null)
                 m_State =  LiveChild.State;
 
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
             //UnityEngine.Profiling.Profiler.EndSample();
         }

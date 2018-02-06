@@ -120,16 +120,6 @@ namespace Cinemachine
         public Component PostProcessingComponent { get; set; }
 
         /// <summary>
-        /// Because the PostProcessing package is not guaranteed to be present,
-        /// we must handle PostFX in this opaque way.  This delegate will be called
-        /// every frame (during LateUpdate) after the camera has been positioned.
-        /// The intention is that the callback will make the right calls to the PostProcessing module.
-        /// Cinemachine provides the CinemachinePostProcessing behaviour that makes use of 
-        /// this delegate.
-        /// </summary>
-        public static BrainEvent sPostProcessingHandler = new BrainEvent();
-
-        /// <summary>
         /// API for the Unity Editor.
         /// Show this camera no matter what.  This is static, and so affects all Cinemachine brains.
         /// </summary>
@@ -751,8 +741,8 @@ namespace Cinemachine
                 cam.nearClipPlane = state.Lens.NearClipPlane;
                 cam.farClipPlane = state.Lens.FarClipPlane;
             }
-            if (sPostProcessingHandler != null)
-                sPostProcessingHandler.Invoke(this);
+            if (CinemachineCore.CameraUpdatedEvent != null)
+                CinemachineCore.CameraUpdatedEvent.Invoke(this);
             //UnityEngine.Profiling.Profiler.EndSample();
         }
 
