@@ -1,4 +1,4 @@
-<size=20><b>Version 2.1.11-alpha.6</b></size>
+<size=20><b>Version 2.1.11-beta.1</b></size>
 
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
