@@ -265,18 +265,6 @@ namespace Cinemachine
             //UnityEngine.Profiling.Profiler.EndSample();
         }
 
-        /// <summary>API for the editor, to process a position drag from the user.
-        /// This implementation adds the delta to the follow offset, after zeroing out local x.</summary>
-        /// <param name="delta">The amount dragged this frame</param>
-        public override void OnPositionDragged(Vector3 delta)
-        {
-            Quaternion targetOrientation = GetReferenceOrientation(VcamState.ReferenceUp);
-            Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-            localOffset.x = 0;
-            m_FollowOffset += localOffset;
-            m_FollowOffset = EffectiveOffset;
-        }
-        
         static string GetFullName(GameObject current)
         {
             if (current == null)

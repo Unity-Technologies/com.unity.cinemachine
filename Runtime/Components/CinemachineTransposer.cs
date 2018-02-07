@@ -105,7 +105,7 @@ namespace Cinemachine
         }
         
         /// <summary>Get the target offset, with sanitization</summary>
-        protected Vector3 EffectiveOffset 
+        public Vector3 EffectiveOffset 
         { 
             get 
             { 
@@ -143,17 +143,6 @@ namespace Cinemachine
                 curState.ReferenceUp = orient * Vector3.up;
             }
             //UnityEngine.Profiling.Profiler.EndSample();
-        }
-
-        /// <summary>API for the editor, to process a position drag from the user.
-        /// This implementation adds the delta to the follow offset.</summary>
-        /// <param name="delta">The amount dragged this frame</param>
-        public override void OnPositionDragged(Vector3 delta)
-        {
-            Quaternion targetOrientation = GetReferenceOrientation(VcamState.ReferenceUp);
-            Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-            m_FollowOffset += localOffset;
-            m_FollowOffset = EffectiveOffset;
         }
 
         /// <summary>This is called to notify the us that a target got warped,

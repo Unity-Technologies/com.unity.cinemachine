@@ -62,8 +62,7 @@ namespace Cinemachine.Editor
                 Vector3 delta = Target.transform.position - mPreviousPosition;
                 if (!delta.AlmostZero())
                 {
-                    Undo.RegisterFullObjectHierarchyUndo(Target.gameObject, "Camera drag");
-                    Target.OnPositionDragged(delta);
+                    OnPositionDragged(delta);
                     mPreviousPosition = Target.transform.position;
                 }
             }
@@ -72,6 +71,23 @@ namespace Cinemachine.Editor
                 // We're not dragging anything now, but we were
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
                 Target.UserIsDragging = false;
+            }
+        }
+
+
+        void OnPositionDragged(Vector3 delta)
+        {
+            foreach (UnityEditor.Editor e in m_componentEditors)
+            {
+                if (e != null)
+                {
+                    MethodInfo mi = e.GetType().GetMethod("OnVcamPositionDragged"
+                        , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                    if (mi != null && e.target != null)
+                    {
+                        mi.Invoke(e, new object[] { delta } );
+                    }
+                }
             }
         }
 

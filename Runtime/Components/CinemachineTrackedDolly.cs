@@ -253,16 +253,6 @@ namespace Cinemachine
             curState.ReferenceUp = curState.RawOrientation * Vector3.up;
             //UnityEngine.Profiling.Profiler.EndSample();
         }
-
-        /// <summary>API for the editor, to process a position drag from the user.
-        /// This implementation adds the delta to the follow offset.</summary>
-        /// <param name="delta">The amount dragged this frame</param>
-        public override void OnPositionDragged(Vector3 delta)
-        {
-            Quaternion targetOrientation = m_Path.EvaluateOrientationAtUnit(m_PathPosition, m_PositionUnits);
-            Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-            m_PathOffset += localOffset;
-        }
         
         private Quaternion GetTargetOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)
         {

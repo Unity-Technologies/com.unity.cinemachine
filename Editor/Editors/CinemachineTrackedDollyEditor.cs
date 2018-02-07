@@ -37,6 +37,18 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
+        /// Process a position drag from the user.
+        /// Called "magically" by the vcam editor.
+        public void OnVcamPositionDragged(Vector3 delta)
+        {
+            Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
+            Quaternion targetOrientation = Target.m_Path.EvaluateOrientationAtUnit(
+                Target.m_PathPosition, Target.m_PositionUnits);
+            Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
+            FindProperty(x => x.m_PathOffset).vector3Value += localOffset;
+            serializedObject.ApplyModifiedProperties();
+        }
+        
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineTrackedDolly))]
         private static void DrawTrackeDollyGizmos(CinemachineTrackedDolly target, GizmoType selectionType)
         {

@@ -351,15 +351,6 @@ namespace Cinemachine
         /// <summary>API for the editor, to make the dragging of position handles behave better.</summary>
         public bool UserIsDragging { get; set; }
 
-        /// <summary>API for the editor, to process a position drag from the user.</summary>
-        public void OnPositionDragged(Vector3 delta)
-        {
-            CinemachineComponentBase[] components = GetComponentPipeline();
-            if (components != null)
-                for (int i = 0; i < components.Length; ++i)
-                    components[i].OnPositionDragged(delta);
-        }
-
         CameraState m_State = CameraState.Default; // Current state this frame
 
         CinemachineComponentBase[] m_ComponentPipeline = null;
