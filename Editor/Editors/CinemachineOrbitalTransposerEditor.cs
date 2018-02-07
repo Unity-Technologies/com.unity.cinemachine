@@ -59,7 +59,7 @@ namespace Cinemachine.Editor
         }
 
         /// Process a position drag from the user.
-        /// Called "magically" by the vcam editor.
+        /// Called "magically" by the vcam editor, so don't change the signature.
         private void OnVcamPositionDragged(Vector3 delta)
         {
             Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
