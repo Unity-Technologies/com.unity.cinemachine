@@ -1,5 +1,6 @@
 {
   "name": "com.unity.cinemachine",
+  "displayName": "Cinemachine",
   "version": "2.1.11-beta.1",
   "unity": "2018.1",
   "description": "Smart camera tools for passionate creators",
