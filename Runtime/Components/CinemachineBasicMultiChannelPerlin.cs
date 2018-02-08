@@ -64,7 +64,7 @@ namespace Cinemachine
             curState.PositionCorrection += curState.CorrectedOrientation * NoiseSettings.GetCombinedFilterResults(
                     m_NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain;
             Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
-                        m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
+                    m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
             curState.OrientationCorrection = curState.OrientationCorrection * rotNoise;
             //UnityEngine.Profiling.Profiler.EndSample();
         }
@@ -78,10 +78,9 @@ namespace Cinemachine
             mInitialized = true;
             mNoiseTime = 0;
             mNoiseOffsets = new Vector3(
-                    UnityEngine.Random.Range(-10000f, 10000f),
-                    UnityEngine.Random.Range(-10000f, 10000f),
-                    UnityEngine.Random.Range(-10000f, 10000f));
+                    Random.Range(-1000f, 1000f),
+                    Random.Range(-1000f, 1000f),
+                    Random.Range(-1000f, 1000f));
         }
-
     }
 }
