@@ -1,0 +1,9 @@
+{
+    "name": "Cinemachine.Editor",
+    "references": [
+        "Cinemachine"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
