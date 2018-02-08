@@ -5,8 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.1.11] - 2018-02-06
-### Bugfixes and minor enhancements.  Also some restructuring in prep for UPM
-- Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
+### Bugfixes and minor enhancements.  Also some restructuring for UPM
+- Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
 - New Collider option: Shortest Way Out.  Takes the shortest path out of any intersecting obstacles, without considering the LookAt target
 - Added API to support seamless position warping of target objects

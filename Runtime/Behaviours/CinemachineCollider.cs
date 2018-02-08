@@ -525,7 +525,7 @@ namespace Cinemachine
                     mCameraCollider = mCameraColliderGameObject.AddComponent<SphereCollider>();
                     var rb = mCameraColliderGameObject.AddComponent<Rigidbody>();
                     rb.detectCollisions = false;
-                    rb.isKinematic = false;
+                    rb.isKinematic = true;
                 }
                 mCameraCollider.radius = m_CameraRadius;
                 for (int i = 0; i < numObstacles; ++i)

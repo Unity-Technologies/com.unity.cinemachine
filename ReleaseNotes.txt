@@ -1,6 +1,6 @@
-<size=20><b>Version 2.1.11-beta.1</b></size>
+<size=20><b>Version 2.1.11-beta.2</b></size>
 
-- Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu
+- Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
 - New Collider option: Shortest Way Out.  Takes the shortest path out of any intersecting obstacles, without considering the LookAt target
 - Added API to support seamless posiiton warping of target objects
