@@ -78,5 +78,38 @@ namespace Cinemachine
             m_Orientation = new TransformNoiseParams[other.m_Orientation.Length];
             other.m_Orientation.CopyTo(m_Orientation, 0);
         }
+
+        /// <summary>Get the noise signal value at a specific time</summary>
+        /// <param name="noiseParams">The parameters that define the noise function</param>
+        /// <param name="time">The time at which to sample the noise function</param>
+        /// <param name="timeOffsets">Start time offset for each channel</param>
+        /// <returns>The 3-channel noise signal value at the specified time</returns>
+        public static Vector3 GetCombinedFilterResults(
+            TransformNoiseParams[] noiseParams, float time, Vector3 timeOffsets)
+        {
+            float xPos = 0f;
+            float yPos = 0f;
+            float zPos = 0f;
+            if (noiseParams != null)
+            {
+                for (int i = 0; i < noiseParams.Length; ++i)
+                {
+                    TransformNoiseParams param = noiseParams[i];
+                    Vector3 timeVal = new Vector3(param.X.Frequency, param.Y.Frequency, param.Z.Frequency) * time;
+                    timeVal += timeOffsets;
+
+                    Vector3 noise = new Vector3(
+                            Mathf.PerlinNoise(timeVal.x, 0f) - 0.5f,
+                            Mathf.PerlinNoise(timeVal.y, 0f) - 0.5f,
+                            Mathf.PerlinNoise(timeVal.z, 0f) - 0.5f);
+
+                    xPos += noise.x * param.X.Amplitude;
+                    yPos += noise.y * param.Y.Amplitude;
+                    zPos += noise.z * param.Z.Amplitude;
+                }
+            }
+            return new Vector3(xPos, yPos, zPos);
+        }
+
     }
 }

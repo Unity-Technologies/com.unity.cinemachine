@@ -11,4 +11,5 @@ LICENSE
 LICENSE.meta
 npm-debug.log
 npm-debug.log.meta
-node_modules
+node_modules.meta
+node_modules/**

@@ -53,6 +53,11 @@ namespace Cinemachine
     {
     }
 
+    /// <summary>Property field is a NoiseSettings asset.</summary>
+    public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute
+    {
+    }    
+    
     /// <summary>
     /// Atrtribute to control the automatic generation of documentation.
     /// </summary>
