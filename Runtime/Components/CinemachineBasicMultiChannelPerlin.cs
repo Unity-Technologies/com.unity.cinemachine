@@ -22,9 +22,9 @@ namespace Cinemachine
         /// <summary>
         /// Serialized property for referencing a NoiseSettings asset
         /// </summary>
-        [HideInInspector]
         [Tooltip("The asset containing the Noise Profile.  Define the frequencies and amplitudes there to make a characteristic noise profile.  Make your own or just use one of the many presets.")]
         [FormerlySerializedAs("m_Definition")]
+        [NoiseSettingsProperty]
         public NoiseSettings m_NoiseProfile;
 
         /// <summary>
@@ -61,9 +61,9 @@ namespace Cinemachine
                 Initialize();
 
             mNoiseTime += deltaTime * m_FrequencyGain;
-            curState.PositionCorrection += curState.CorrectedOrientation * GetCombinedFilterResults(
+            curState.PositionCorrection += curState.CorrectedOrientation * NoiseSettings.GetCombinedFilterResults(
                     m_NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain;
-            Quaternion rotNoise = Quaternion.Euler(GetCombinedFilterResults(
+            Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
                         m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
             curState.OrientationCorrection = curState.OrientationCorrection * rotNoise;
             //UnityEngine.Profiling.Profiler.EndSample();
@@ -83,31 +83,5 @@ namespace Cinemachine
                     UnityEngine.Random.Range(-10000f, 10000f));
         }
 
-        static Vector3 GetCombinedFilterResults(
-            NoiseSettings.TransformNoiseParams[] noiseParams, float time, Vector3 noiseOffsets)
-        {
-            float xPos = 0f;
-            float yPos = 0f;
-            float zPos = 0f;
-            if (noiseParams != null)
-            {
-                for (int i = 0; i < noiseParams.Length; ++i)
-                {
-                    NoiseSettings.TransformNoiseParams param = noiseParams[i];
-                    Vector3 timeVal = new Vector3(param.X.Frequency, param.Y.Frequency, param.Z.Frequency) * time;
-                    timeVal += noiseOffsets;
-
-                    Vector3 noise = new Vector3(
-                            Mathf.PerlinNoise(timeVal.x, 0f) - 0.5f,
-                            Mathf.PerlinNoise(timeVal.y, 0f) - 0.5f,
-                            Mathf.PerlinNoise(timeVal.z, 0f) - 0.5f);
-
-                    xPos += noise.x * param.X.Amplitude;
-                    yPos += noise.y * param.Y.Amplitude;
-                    zPos += noise.z * param.Z.Amplitude;
-                }
-            }
-            return new Vector3(xPos, yPos, zPos);
-        }
     }
 }
