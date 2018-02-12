@@ -72,7 +72,7 @@ namespace Cinemachine.Editor
 
             sNoisePresets = FindAssetsByType<NoiseSettings>();
 #if UNITY_2018_1_OR_NEWER
-            AddAssetsFromPackageSubDirectory(mNoisePresets, "Presets/Noise");
+            AddAssetsFromPackageSubDirectory(sNoisePresets, "Presets/Noise");
 #endif
             sNoisePresets.Insert(0, null);
             List<GUIContent> presetNameList = new List<GUIContent>();

@@ -1,3 +1,9 @@
+<size=20><b>Version 2.1.12-alpha.2</b></size>
+
+- New Image Overlay extention, to display images over the vcams.  Great for storyboarding
+- New Waveform monitor window for color grading
+- Bugfix: dragging a vcam's position updtaes prefabs properly
+
 <size=20><b>Version 2.1.11-beta.2</b></size>
 
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.
