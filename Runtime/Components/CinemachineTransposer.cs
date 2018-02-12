@@ -277,7 +277,7 @@ namespace Cinemachine
         {
             if (FollowTarget != null)
             {
-                Quaternion targetOrientation = FollowTargetRotation;
+                Quaternion targetOrientation = FollowTarget.rotation;
                 switch (m_BindingMode)
                 {
                     case BindingMode.LockToTargetOnAssign:
@@ -290,10 +290,11 @@ namespace Cinemachine
                         return targetOrientation;
                     case BindingMode.SimpleFollowWithWorldUp:
                     {
-                        Vector3 dir = FollowTargetPosition - VcamState.RawPosition;
+                        Vector3 dir = FollowTarget.position - VcamState.RawPosition;
+                        dir = dir.ProjectOntoPlane(worldUp);
                         if (dir.AlmostZero())
                             break;
-                        return Uppify(Quaternion.LookRotation(dir, worldUp), worldUp);
+                        return Quaternion.LookRotation(dir.normalized, worldUp);
                     }
                     default:
                         break;
