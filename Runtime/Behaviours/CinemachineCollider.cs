@@ -75,7 +75,7 @@ namespace Cinemachine
             /// <summary>Take the shortest path out of intersecting colliders,
             /// regardless of LookAt target visibility or position.  Note: Shortest Way Out ignores 
             /// the Minimum Distance From Target field.</summary>
-            ShortestWayOut
+            //ShortestWayOut
         };
         /// <summary>The way in which the Collider will attempt to preserve sight of the target.</summary>
         [Tooltip("The way in which the Collider will attempt to preserve sight of the target.")]
@@ -193,9 +193,9 @@ namespace Cinemachine
                 if (m_AvoidObstacles)
                 {
                     Vector3 displacement = Vector3.zero;
-                    if (m_Strategy == ResolutionStrategy.ShortestWayOut)
-                        displacement = RespectCameraRadius(state.RawPosition);
-                    else
+                    //if (m_Strategy == ResolutionStrategy.ShortestWayOut)
+                    //    displacement = RespectCameraRadius(state.RawPosition);
+                    //else
                         displacement = PreserveLignOfSight(ref state, ref extra);
                     if (m_Damping > 0 && deltaTime >= 0)
                     {

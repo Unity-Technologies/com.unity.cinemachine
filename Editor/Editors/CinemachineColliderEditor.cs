@@ -22,11 +22,11 @@ namespace Cinemachine.Editor
             {
                 excluded.Add(FieldPath(x => x.m_MaximumEffort));
             }
-            else if (Target.m_Strategy == CinemachineCollider.ResolutionStrategy.ShortestWayOut)
-            {
-                excluded.Add(FieldPath(x => x.m_DistanceLimit));
-                excluded.Add(FieldPath(x => x.m_MaximumEffort));
-            }
+            //else if (Target.m_Strategy == CinemachineCollider.ResolutionStrategy.ShortestWayOut)
+            //{
+            //    excluded.Add(FieldPath(x => x.m_DistanceLimit));
+            //    excluded.Add(FieldPath(x => x.m_MaximumEffort));
+            //}
             return excluded;
         }
 
@@ -36,7 +36,7 @@ namespace Cinemachine.Editor
 
             if (Target.m_AvoidObstacles && !Target.VirtualCamera.State.HasLookAt)
                 EditorGUILayout.HelpBox(
-                    "Preserve Line Of Sight requires a LookAt target.", 
+                    "Avoid Obstacles requires a LookAt target.", 
                     MessageType.Warning);
 
             DrawRemainingPropertiesInInspector();
