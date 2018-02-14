@@ -4,6 +4,8 @@
         "Cinemachine"
     ],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": []
 }
