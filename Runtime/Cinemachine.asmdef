@@ -1,3 +1,7 @@
-﻿{
-	"name": "Cinemachine"
+{
+    "name": "Cinemachine",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": []
 }
