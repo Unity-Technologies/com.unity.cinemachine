@@ -381,7 +381,7 @@ How the "forward" direction is defined.  Orbital offset is in relation to the fo
 | **Velocity Filter Strength** | Int32 | Size of the velocity sampling window for target heading filter.  This filters out irregularities in the target's movement.  Used only if deriving heading from target's movement (PositionDelta or Velocity). |
 | **Heading Bias** | Single | Where the camera is placed when the X-axis value is zero.  This is a rotation in degrees around the Y axis.  When this value is 0, the camera will be placed behind the target.  Nonzero offsets will rotate the zero position around the target. |
 
-###AxisState
+### AxisState
 Axis state for defining how to react to player input.  The settings here control the responsiveness of the axis to player input.
 
 | _Setting_ | _Type_ | _Description_ |
@@ -397,7 +397,7 @@ Axis state for defining how to react to player input.  The settings here control
 | **Max Value** | Single | The maximum value for the axis. |
 | **Wrap** | Boolean | If checked, then the axis will wrap around at the min/max values, forming a loop. |
 
-###AxisState.Recentering
+### AxisState.Recentering
 Helper for automatic axis recentering.
 
 | _Setting_ | _Type_ | _Description_ |
@@ -710,7 +710,7 @@ The FramingTansposer will only change the camera's position in space.  It will n
 
 For this component to work properly, the vcam's LookAt target must be null.  The Follow target will define what the camera is looking at.
 
-If the Follow target is a CinemachineTargetGroup, then additional controls will be available to dynamically adjust the camera’s view in order to frame the entire group.
+If the Follow target is a CinemachineTargetGroup, then additional controls will be available to dynamically adjust the camera's view in order to frame the entire group.
 
 Although this component was designed for orthographic cameras, it works equally well with persective cameras and can be used in 3D environments.
 
@@ -791,8 +791,32 @@ As a component on the Virtual Camera, it holds a Post-Processing Profile asset t
 | **Focus Offset** | Single | Offset from target distance, to be used with Focus Tracks Target. |
 
 ## And the Rest
-
 Additional components included with Cinemachine are documented in this section.
+
+### CinemachinePOV
+This is a CinemachineComponent in the Aim section of the component pipeline.  Its job is to aim the camera in response to the user's mouse or joystick input.
+
+The composer does not change the camera's position.  It will only pan and tilt the camera where it is, in order to get the desired framing.  To move the camera, you have to use the virtual camera's Body section.
+
+| _Setting_ | _Type_ | _Description_ |
+| --- | --- | --- |
+| **Vertical Axis** | AxisState | The Vertical axis.  Value is -90..90.  Controls the vertical orientation. |
+| **Vertical Recentering** | Recentering | Controls how automatic recentering of the Vertical axis is accomplished. |
+| **Horizontal Axis** | AxisState | The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation. |
+| **Horizontal Recentering** | Recentering | Controls how automatic recentering of the Horizontal axis is accomplished. |
+
+### CinemachineSameAsFollowTarget
+This is a CinemachineComponent in the Aim section of the component pipeline.  Its job is to match the orientation of the Follow target.
+
+### CinemachineSmoothPath
+Defines a world-space path, consisting of an array of waypoints, each of which has position and roll settings.  Bezier interpolation is performed between the waypoints, to get a smooth and continuous path.  The path will pass through all waypoints, and (unlike CinemachinePath) first and second order continuity is guaranteed.
+
+| _Setting_ | _Type_ | _Description_ |
+| --- | --- | --- |
+| **Looped** | Boolean | If checked, then the path ends are joined to form a continuous loop. |
+| **Waypoints** | Waypoint[] | The waypoints that define the path.  They will be interpolated using a bezier curve. |
+| **Resolution** | Int32 | Path samples per waypoint.  This is used for calculating path distances. |
+| **Appearance** | Appearance | The settings that control how the path will appear in the editor scene view. |
 
 ### CinemachineFollowZoom
 An add-on module for Cinemachine Virtual Camera that adjusts the FOV of the lens to keep the target object at a constant size on the screen, regardless of camera and target position.
@@ -852,7 +876,7 @@ This component will expose a non-cinemachine camera to the cinemachine system, a
 | **Look At** | Transform | The object that the camera is looking at.  Setting this will improve the quality of the blends to and from this camera. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
-###CinemachineStoryboard
+### CinemachineStoryboard
 An add-on module for Cinemachine Virtual Camera that places an image in screen space over the camera's output.
 
 | _Setting_ | _Type_ | _Description_ |

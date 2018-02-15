@@ -22,7 +22,7 @@ namespace Cinemachine
     /// The Follow target will define what the camera is looking at.
     /// 
     /// If the Follow target is a CinemachineTargetGroup, then additional controls will 
-    /// be available to dynamically adjust the camera’s view in order to frame the entire group.
+    /// be available to dynamically adjust the camera's view in order to frame the entire group.
     /// 
     /// Although this component was designed for orthographic cameras, it works equally  
     /// well with persective cameras and can be used in 3D environments.
