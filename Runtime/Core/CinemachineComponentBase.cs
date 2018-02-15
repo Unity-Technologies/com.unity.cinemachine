@@ -153,7 +153,7 @@ namespace Cinemachine
         /// <summary>Override this to do such things as offset the RefereceLookAt.
         /// Base class implementation does nothing.</summary>
         /// <param name="curState">Input state that must be mutated</param>
-        public virtual void PrePipelineMutateCameraState(ref CameraState state) {}
+        public virtual void PrePipelineMutateCameraState(ref CameraState curState) {}
 
         /// <summary>What part of the pipeline this fits into</summary>
         public abstract CinemachineCore.Stage Stage { get; }

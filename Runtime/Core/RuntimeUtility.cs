@@ -8,6 +8,9 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
     public static class RuntimeUtility
     {
+        /// <summary>Convenience to destroy an object, using the appropriate method depending 
+        /// on whether the game is playing</summary>
+        /// <param name="obj">The object to destroy</param>
         public static void DestroyObject(UnityEngine.Object obj)
         {
             if (obj != null)

@@ -224,8 +224,7 @@ namespace Cinemachine
         /// <summary>See whether the distance cache is valid.  If it's not valid,
         /// then any call to GetPathLength() or ToNativePathUnits() will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
-        /// <param name="stepsPerSegment">The number of steps to take between path points</param>
-        /// <returns>Whether the cache is valid for this sampling rate</returns>
+        /// <returns>Whether the cache is valid</returns>
         public bool DistanceCacheIsValid()
         {
             return (MaxPos == MinPos)

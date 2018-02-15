@@ -19,7 +19,9 @@ namespace Cinemachine
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>
         public enum Mode 
         { 
+            /// <summary>Use a 2D bounding shape, suitable for an orthographic camera</summary>
             Confine2D, 
+            /// <summary>Use a 3D bounding shape, suitable for perspective cameras</summary>
             Confine3D 
         };
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>

@@ -72,10 +72,12 @@ namespace Cinemachine
             /// <summary>In addition to pulling the camera forward, an effort will be made to 
             /// return the camera to its original distance from the target</summary>
             PreserveCameraDistance,
+#if false // took it out because it's confusing
             /// <summary>Take the shortest path out of intersecting colliders,
             /// regardless of LookAt target visibility or position.  Note: Shortest Way Out ignores 
             /// the Minimum Distance From Target field.</summary>
-            //ShortestWayOut
+            ShortestWayOut
+#endif
         };
         /// <summary>The way in which the Collider will attempt to preserve sight of the target.</summary>
         [Tooltip("The way in which the Collider will attempt to preserve sight of the target.")]

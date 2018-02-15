@@ -99,6 +99,7 @@ namespace Cinemachine
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
 
+        /// <summary>Derived classes should call this from their OnValidate() implementation</summary>
         protected virtual void OnValidate()
         {
             m_FollowOffset = EffectiveOffset;

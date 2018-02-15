@@ -139,6 +139,7 @@ namespace Cinemachine
             Cylindrical
         }
 
+        /// <summary>Applies a position blend hint to the camera state</summary>
         protected void SetPositionBlendMethod(ref CameraState state, PositionBlendMethod m)
         {
             switch (m)

@@ -4,11 +4,12 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that replaces the camera's
-    /// output with a storyboard image
+    /// An add-on module for Cinemachine Virtual Camera that places an image in screen space 
+    /// over the camera's output.
     /// </summary>
     [ExecuteInEditMode]
     [SaveDuringPlay]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineStoryboard : CinemachineExtension
     {
@@ -18,6 +19,7 @@ namespace Cinemachine
         [Tooltip("The image to display")]
         public Texture m_Image;
 
+        /// <summary>How to fit the image in the frame, in the event that the aspect ratios don't match</summary>
         public enum FillStrategy
         {
             /// <summary>Image will be as large as possible on the screen, without being cropped</summary>
@@ -58,6 +60,7 @@ namespace Cinemachine
         RectTransform mViewport; // for mViewport clipping
         UnityEngine.UI.RawImage mRawImage;
 
+        /// <summary>Standard CinemachineExtension callback</summary>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)

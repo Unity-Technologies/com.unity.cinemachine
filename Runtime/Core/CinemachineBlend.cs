@@ -77,6 +77,7 @@ namespace Cinemachine
         /// <param name="a">First camera</param>
         /// <param name="b">Second camera</param>
         /// <param name="curve">Blend curve</param>
+        /// <param name="duration">Duration of the blend, in seconds</param>
         /// <param name="t">Current time in blend, relative to the start of the blend</param>
         public CinemachineBlend(
             ICinemachineCamera a, ICinemachineCamera b, AnimationCurve curve, float duration, float t)

@@ -103,6 +103,9 @@ namespace Cinemachine.Utility
             return foundTypes;
         }
 
+        /// <summary>Is a type defined and visible</summary>
+        /// <param name="fullname">Fullly-qualified type name</param>
+        /// <returns>true if the type exists</returns>
         public static bool TypeIsDefined(string fullname)
         {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();

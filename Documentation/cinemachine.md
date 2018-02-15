@@ -134,6 +134,7 @@ In order to be driven by a virtual camera, the Unity Camera must have a Cinemach
 | --- | --- | --- |
 | **Look At** | Transform | The object that the camera wants to look at (the Aim target).  If this is null, then the vcam's Transform orientation will define the camera's orientation. |
 | **Follow** | Transform | The object that the camera wants to move with (the Body target).  If this is null, then the vcam's Transform position will define the camera's position. |
+| **Position Blending** | PositionBlendMethod | Hint for blending positions to and from this virtual camera.<br>_Possible Values:_<br>- **Linear**: Standard linear position blend.<br>- **Spherical**: Spherical blend about LookAt target position, if there is a LookAt target.<br>- **Cylindrical**: Cylindrical blend about LookAt target position, if there is a LookAt target.  Vertical co-ordinate is linearly interpolated.<br> |
 | **Lens** | LensSettings | Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
@@ -168,6 +169,7 @@ Once you’ve set the vcam’s LookAt target and are tracking something, you need to
 | **Tracked Object Offset** | Vector3 | Target offset from the target object's center in target-local space.  Use this to fine-tune the tracking target position when the desired area is not the tracked object's center. |
 | **Lookahead Time** | Single | This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly. |
 | **Lookahead Smoothing** | Single | Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag. |
+| **Lookahead Ignore Y** | Boolean | If checked, movement along the Y axis will be ignored for lookahead calculations. |
 | **Horizontal Damping** | Single | How aggressively the camera tries to follow the target in the screen-horizontal direction.  Small numbers are more responsive, rapidly orienting the camera to keep the target in the dead zone.  Larger numbers give a more heavy slowly responding camera.  Using different vertical and horizontal settings can yield a wide range of camera behaviors. |
 | **Vertical Damping** | Single | How aggressively the camera tries to follow the target in the screen-vertical direction.  Small numbers are more responsive, rapidly orienting the camera to keep the target in the dead zone.  Larger numbers give a more heavy slowly responding camera.  Using different vertical and horizontal settings can yield a wide range of camera behaviors. |
 | **Screen X** | Single | Horizontal screen position for target.  The camera will rotate to position the tracked object here. |
@@ -309,7 +311,7 @@ Definition of a Camera blend.  This struct holds the information necessary to ge
 
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
-| **Style** | Style | Shape of the blend curve.<br>_Possible Values:_<br>- **Cut**: Zero-length blend.<br>- **Ease In Out**: S-shaped curve, giving a gentle and smooth transition.<br>- **Ease In**: Linear out of the outgoing shot, and easy into the incoming.<br>- **Ease Out**: Easy out of the outgoing shot, and linear into the incoming.<br>- **Hard In**: Easy out of the outgoing, and hard into the incoming.<br>- **Hard Out**: Hard out of the outgoing, and easy into the incoming.<br>- **Linear**: Linear blend.  Mechanical-looking.<br> |
+| **Style** | Style | Shape of the blend curve.<br>_Possible Values:_<br>- **Cut**: Zero-length blend.<br>- **Ease In Out**: S-shaped curve, giving a gentle and smooth transition.<br>- **Ease In**: Linear out of the outgoing shot, and easy into the incoming.<br>- **Ease Out**: Easy out of the outgoing shot, and linear into the incoming.<br>- **Hard In**: Easy out of the outgoing, and hard into the incoming.<br>- **Hard Out**: Hard out of the outgoing, and easy into the incoming.<br>- **Linear**: Linear blend.  Mechanical-looking.<br>- **Custom**: Custom blend curve.<br> |
 | **Time** | Single | Duration of the blend, in seconds. |
 
 ### CinemachineBlenderSettings
@@ -379,8 +381,8 @@ How the "forward" direction is defined.  Orbital offset is in relation to the fo
 | **Velocity Filter Strength** | Int32 | Size of the velocity sampling window for target heading filter.  This filters out irregularities in the target's movement.  Used only if deriving heading from target's movement (PositionDelta or Velocity). |
 | **Heading Bias** | Single | Where the camera is placed when the X-axis value is zero.  This is a rotation in degrees around the Y axis.  When this value is 0, the camera will be placed behind the target.  Nonzero offsets will rotate the zero position around the target. |
 
-### AxisState
-Axis state for defining to react to player input.  The settings here control the responsiveness of the axis to player input.
+###AxisState
+Axis state for defining how to react to player input.  The settings here control the responsiveness of the axis to player input.
 
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -390,15 +392,18 @@ Axis state for defining to react to player input.  The settings here control the
 | **Decel Time** | Single | The amount of time in seconds it takes to decelerate the axis to zero if the supplied axis is in a neutral position. |
 | **Input Axis Name** | String | The name of this axis as specified in Unity Input manager.  Setting to an empty string will disable the automatic updating of this axis. |
 | **Input Axis Value** | Single | The value of the input axis.  A value of 0 means no input.  You can drive this directly from a custom input system, or you can set the Axis Name and have the value driven by the internal Input Manager. |
-| **Invert Axis** | Boolean | If checked, then the raw value of the input axis will be inverted before it is used. |
+| **Invert Input** | Boolean | If checked, then the raw value of the input axis will be inverted before it is used. |
+| **Min Value** | Single | The minimum value for the axis. |
+| **Max Value** | Single | The maximum value for the axis. |
+| **Wrap** | Boolean | If checked, then the axis will wrap around at the min/max values, forming a loop. |
 
-### CinemachineOrbitalTransposer.Recentering
-Controls how automatic orbit recentering occurs.
+###AxisState.Recentering
+Helper for automatic axis recentering.
 
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
-| **Enabled** | Boolean | If checked, will enable automatic recentering of the camera based on the heading definition.  If unchecked, recenting is disabled. |
-| **Recenter Wait Time** | Single | If no input has been detected, the camera will wait this long in seconds before moving its heading to the zero position. |
+| **Enabled** | Boolean | If checked, will enable automatic recentering of the axis.  If unchecked, recenting is disabled. |
+| **Wait Time** | Single | If no user input has been detected on the axis, the axis will wait this long in seconds before recentering. |
 | **Recentering Time** | Single | Maximum angular speed of recentering.  Will accelerate into and decelerate out of this. |
 
 ### CinemachineFreeLook
@@ -443,7 +448,7 @@ This component can operate in two modes: manual positioning, and Auto-Dolly posi
 | --- | --- | --- |
 | **Path** | CinemachinePathBase | The path to which the camera will be constrained.  This must be non-null. |
 | **Path Position** | Single | The position along the path at which the camera will be placed.  This can be animated directly, or set automatically by the Auto-Dolly feature to get as close as possible to the Follow target.  The value is interpreted according to the Position Units setting. |
-| **Position Units** | PositionUnits | How to interpret Path Position.  If set to Path Units, values are as follows: 0 represents the first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in between the waypoints.  If set to Distance, then Path Position represents distance along the path.<br>_Possible Values:_<br>- **Path Units**: Use PathPosition units, where 0 is first waypoint, 1 is second waypoint, etc.<br>- **Distance**: Use Distance Along Path.  Path will be sampled according to its Resolution setting, and a distance lookup table will be cached internally.<br> |
+| **Position Units** | PositionUnits | How to interpret Path Position.  If set to Path Units, values are as follows: 0 represents the first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in between the waypoints.  If set to Distance, then Path Position represents distance along the path.<br>_Possible Values:_<br>- **Path Units**: Use PathPosition units, where 0 is first waypoint, 1 is second waypoint, etc.<br>- **Distance**: Use Distance Along Path.  Path will be sampled according to its Resolution setting, and a distance lookup table will be cached internally.<br>- **Normalized**: Normalized units, where 0 is the start of the path, and 1 is the end.  Path will be sampled according to its Resolution setting, and a distance lookup table will be cached internally.<br> |
 | **Path Offset** | Vector3 | Where to put the camera relative to the path position.  X is perpendicular to the path, Y is up, and Z is parallel to the path.  This allows the camera to be offset from the path itself (as if on a tripod, for example). |
 | **X Damping** | Single | How aggressively the camera tries to maintain its position in a direction perpendicular to the path.  Small numbers are more responsive, rapidly translating the camera to keep the target's x-axis offset.  Larger numbers give a more heavy slowly responding camera.  Using different settings per axis can yield a wide range of camera behaviors. |
 | **Y Damping** | Single | How aggressively the camera tries to maintain its position in the path-local up direction.  Small numbers are more responsive, rapidly translating the camera to keep the target's y-axis offset.  Larger numbers give a more heavy slowly responding camera.  Using different settings per axis can yield a wide range of camera behaviors. |
@@ -677,6 +682,7 @@ In addition, if the target is a CinemachineTargetGroup, the behaviour will adjus
 | **Tracked Object Offset** | Vector3 | Target offset from the target object's center in target-local space.  Use this to fine-tune the tracking target position when the desired area is not the tracked object's center. |
 | **Lookahead Time** | Single | This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly. |
 | **Lookahead Smoothing** | Single | Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag. |
+| **Lookahead Ignore Y** | Boolean | If checked, movement along the Y axis will be ignored for lookahead calculations. |
 | **Horizontal Damping** | Single | How aggressively the camera tries to follow the target in the screen-horizontal direction.  Small numbers are more responsive, rapidly orienting the camera to keep the target in the dead zone.  Larger numbers give a more heavy slowly responding camera.  Using different vertical and horizontal settings can yield a wide range of camera behaviors. |
 | **Vertical Damping** | Single | How aggressively the camera tries to follow the target in the screen-vertical direction.  Small numbers are more responsive, rapidly orienting the camera to keep the target in the dead zone.  Larger numbers give a more heavy slowly responding camera.  Using different vertical and horizontal settings can yield a wide range of camera behaviors. |
 | **Screen X** | Single | Horizontal screen position for target.  The camera will rotate to position the tracked object here. |
@@ -712,6 +718,7 @@ Although this component was designed for orthographic cameras, it works equally 
 | --- | --- | --- |
 | **Lookahead Time** | Single | This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly. |
 | **Lookahead Smoothing** | Single | Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag. |
+| **Lookahead Ignore Y** | Boolean | If checked, movement along the Y axis will be ignored for lookahead calculations. |
 | **X Damping** | Single | How aggressively the camera tries to maintain the offset in the X-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's x-axis offset.  Larger numbers give a more heavy slowly responding camera.  Using different settings per axis can yield a wide range of camera behaviors. |
 | **Y Damping** | Single | How aggressively the camera tries to maintain the offset in the Y-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's y-axis offset.  Larger numbers give a more heavy slowly responding camera.  Using different settings per axis can yield a wide range of camera behaviors. |
 | **Z Damping** | Single | How aggressively the camera tries to maintain the offset in the Z-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.  Using different settings per axis can yield a wide range of camera behaviors. |
@@ -845,6 +852,22 @@ This component will expose a non-cinemachine camera to the cinemachine system, a
 | **Look At** | Transform | The object that the camera is looking at.  Setting this will improve the quality of the blends to and from this camera. |
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
+###CinemachineStoryboard
+An add-on module for Cinemachine Virtual Camera that places an image in screen space over the camera's output.
+
+| _Setting_ | _Type_ | _Description_ |
+| --- | --- | --- |
+| **Show Image** | Boolean | If checked, the specified image will be displayed as an overlay over the virtual camera's output. |
+| **Image** | Texture | The image to display. |
+| **Aspect** | FillStrategy | How to handle differences between image aspect and screen aspect.<br>_Possible Values:_<br>- **Best Fit**: Image will be as large as possible on the screen, without being cropped.<br>- **Crop Image To Fit**: Image will be cropped if necessary so that the screen is entirely filled.<br>- **Stretch To Fit**: Image will be stretched to cover any aspect mismatch with the screen.<br> |
+| **Alpha** | Single | The opacity of the image.  0 is transparent, 1 is opaque. |
+| **Center** | Vector2 | The screen-space position at which to display the image.  Zero is center. |
+| **Rotation** | Vector3 | The screen-space rotation to apply to the image. |
+| **Scale** | Vector2 | The screen-space scaling to apply to the image. |
+| **Sync Scale** | Boolean | If checked, X and Y scale are synchronized. |
+| **Mute Camera** | Boolean | If checked, Camera transform will not be controlled by this virtual camera. |
+| **Split View** | Single | Wipe the image on and off horizontally. |
+
 ### SaveDuringPlay
 Cameras need to be tweaked in context - often that means while the game is playing.  Normally, Unity does not propagate those changes to the scene once play mode is exited.  Cinemachine has implemented a special feature to preserve parameter tweaks made during game play.  It won’t save structural changes (like adding or removing a behaviour), but it will keep the tweaks.  Cinemachine behaviours have a special attribute [SaveDuringPlay] to enable this functionality.  Feel free to use it on your own scripts too if you need it.
 
@@ -892,5 +915,6 @@ Cinemachine is a pure-csharp implementation and is completely accessible to scri
 
 |Date|Reason|
 |---|---|
+|Feb 15, 2018|Updated for 2.1.11|
 |Nov 21, 2017|Initial version.|
 

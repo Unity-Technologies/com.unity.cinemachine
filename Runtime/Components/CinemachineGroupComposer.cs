@@ -122,7 +122,7 @@ namespace Cinemachine
         }
         
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
-        /// <param name="state">The current camera state</param>
+        /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for calculating damping.  If less than
         /// zero, then target will snap to the center of the dead zone.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)

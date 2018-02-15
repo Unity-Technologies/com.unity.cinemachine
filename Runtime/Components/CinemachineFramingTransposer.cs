@@ -114,8 +114,8 @@ namespace Cinemachine
         [FormerlySerializedAs("m_DistanceDeadZoneSize")]
         public float m_DeadZoneDepth = 0;
 
-        [Space]
         /// <summary>If checked, then then soft zone will be unlimited in size</summary>
+        [Space]
         [Tooltip("If checked, then then soft zone will be unlimited in size.")]
         public bool m_UnlimitedSoftZone = false;
 
