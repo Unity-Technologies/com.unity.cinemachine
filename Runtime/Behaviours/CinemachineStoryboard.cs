@@ -10,7 +10,7 @@ namespace Cinemachine
     [ExecuteInEditMode]
     [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
-    public class CinemachineOverlayImage : CinemachineExtension
+    public class CinemachineStoryboard : CinemachineExtension
     {
         [Tooltip("If checked, the specified image will be displayed as an overlay over the virtual camera's output")]
         public bool m_ShowImage = true;
@@ -51,7 +51,7 @@ namespace Cinemachine
 
         [Range(-1, 1)]
         [Tooltip("Wipe the image on and off horizontally")]
-        public float m_Wipe = 0f;
+        public float m_SplitView = 0f;
 
         GameObject mCanvas;
         CinemachineBrain mCanvasParent;
@@ -203,8 +203,8 @@ namespace Cinemachine
                 mRawImage.rectTransform.localScale = scale;
                 mRawImage.rectTransform.sizeDelta = screen.size;
 
-                // Apply wipe
-                float delta = -Mathf.Clamp(m_Wipe, -1, 1) * screen.width;
+                // Apply Split View
+                float delta = -Mathf.Clamp(m_SplitView, -1, 1) * screen.width;
                 var p = mViewport.localPosition; p.x -= delta/2; mViewport.localPosition = p;
                 p = mRawImage.rectTransform.localPosition; p.x += delta/2; mRawImage.rectTransform.localPosition = p;
                 mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(delta), screen.height);
@@ -213,13 +213,13 @@ namespace Cinemachine
 
         static void StaticBlendingHandler(CinemachineBrain brain)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineOverlayImage.StaticBlendingHandler");
+            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineStoryboard.StaticBlendingHandler");
             CameraState state = brain.CurrentCameraState;
             int numBlendables = state.NumCustomBlendables;
             for (int i = 0; i < numBlendables; ++i)
             {
                 var b = state.GetCustomBlendable(i);
-                CinemachineOverlayImage src = b.m_Custom as CinemachineOverlayImage;
+                CinemachineStoryboard src = b.m_Custom as CinemachineStoryboard;
                 if (!(src == null)) // in case it was deleted
                 {
                     src.LocateMyCanvas(brain, true);

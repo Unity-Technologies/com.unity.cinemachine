@@ -12,8 +12,8 @@ namespace Cinemachine.Editor
         Texture2D mScreenshot;
         string mScreenshotFilename;
 
-        [MenuItem("Window/Waveform Monitor")]
-        private static void OpenWindow()
+        //[MenuItem("Window/Waveform Monitor")]
+        public static void OpenWindow()
         {
             WaveformWindow window = EditorWindow.GetWindow<WaveformWindow>(false);
             window.autoRepaintOnSceneChange = true;

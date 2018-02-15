@@ -3,8 +3,8 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineOverlayImage))]
-    public sealed class CinemachineOverlayImageEditor : BaseEditor<CinemachineOverlayImage>
+    [CustomEditor(typeof(CinemachineStoryboard))]
+    public sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
         public override void OnInspectorGUI()
         {
@@ -45,7 +45,17 @@ namespace Cinemachine.Editor
                     EditorGUI.PropertyField(rect, FindProperty(x => x.m_Scale), GUIContent.none);
                 }
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_Wipe));
+
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_SplitView));
+
+                rect = EditorGUILayout.GetControlRect(true);
+                GUI.Label(new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), 
+                    "Waveform Monitor");
+                rect.width -= EditorGUIUtility.labelWidth; rect.width /= 2;
+                rect.x += EditorGUIUtility.labelWidth;
+                if (GUI.Button(rect, "Open"))
+                    WaveformWindow.OpenWindow();
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
