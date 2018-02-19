@@ -32,19 +32,11 @@ namespace Cinemachine
             ConnectToVcam(true);
         }
 
-        /// <summary>Connect to virtual camera pipeline.
-        /// Override implementations must call this base implementation</summary>
-        protected virtual void OnEnable()
-        {
-        }
-
-        /// <summary>Disconnect from virtual camera pipeline.
-        /// Override implementations must call this base implementation</summary>
-        protected virtual void OnDisable()
-        {
-        }
-
 #if UNITY_EDITOR
+        /// <summary>Does nothing.  This is only here so we get the little "enabled" 
+        /// checkbox in the inspector</summary>
+        void Update() {}
+
         [UnityEditor.Callbacks.DidReloadScripts]
         static void OnScriptReload() 
         {
@@ -70,11 +62,21 @@ namespace Cinemachine
                 Debug.LogError("CinemachineExtension requires a Cinemachine Virtual Camera component");
             if (VirtualCamera != null)
             {
-                VirtualCamera.RemovePostPipelineStageHook(PostPipelineStageCallback);
                 if (connect)
-                    VirtualCamera.AddPostPipelineStageHook(PostPipelineStageCallback);
+                    VirtualCamera.AddExtension(this);
+                else
+                    VirtualCamera.RemoveExtension(this);
             }
             mExtraState = null;
+        }
+
+        /// <summary>Legacy support.  This is only here to avoid changing the API 
+        /// to make PostPipelineStageCallback() public</summary>
+        public void InvokePostPipelineStageCallback(
+            CinemachineVirtualCameraBase vcam,
+            CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
+        {
+            PostPipelineStageCallback(vcam, stage, ref state, deltaTime);
         }
 
         /// <summary>

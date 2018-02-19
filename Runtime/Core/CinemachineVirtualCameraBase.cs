@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine
@@ -63,55 +64,53 @@ namespace Cinemachine
         /// This will be called after each pipeline stage, to allow others to hook into the pipeline.
         /// See CinemachineCore.Stage.
         /// </summary>
-        /// <param name="d">The delegate to call.</param>
-        public virtual void AddPostPipelineStageHook(OnPostPipelineStageDelegate d)
+        /// <param name="extension">The extension to add.</param>
+        public virtual void AddExtension(CinemachineExtension extension)
         {
-            OnPostPipelineStage -= d;
-            OnPostPipelineStage += d;
+            if (mExtensions == null)
+                mExtensions = new List<CinemachineExtension>();
+            else
+                mExtensions.Remove(extension);
+            mExtensions.Add(extension);
         }
 
         /// <summary>Remove a Pipeline stage hook callback.</summary>
-        /// <param name="d">The delegate to remove.</param>
-        public virtual void RemovePostPipelineStageHook(OnPostPipelineStageDelegate d)
+        /// <param name="extension">The extension to remove.</param>
+        public virtual void RemoveExtension(CinemachineExtension extension)
         {
-            OnPostPipelineStage -= d;
+            if (mExtensions != null)
+                mExtensions.Remove(extension);
         }
 
-        /// <summary>
-        /// A delegate to hook into the state calculation pipeline.
-        /// This will be called after each pipeline stage, to allow other
-        /// services to hook into the pipeline.
-        /// See CinemachineCore.Stage.
-        /// 
-        /// Parameters:
-        /// 
-        /// * CinemachineVirtualCameraBase vcam: the virtual camera being updated
-        /// * CinemachineCore.Stage stage: what stage in the pipeline has just been updated
-        /// * ref CameraState newState: the current state of the vcam
-        /// * float deltaTime: the frame timestep.  Less than 0 means "don't consider the previous frame"
-        /// </summary>
-        public delegate void OnPostPipelineStageDelegate(
-            CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage,
-            ref CameraState newState, float deltaTime);
-
-        /// <summary>
-        /// A delegate to hook into the state calculation pipeline.
-        /// Implementaion must be sure to call this after each pipeline stage, to allow
-        /// other services to hook into the pipeline.
-        /// See CinemachineCore.Stage.
-        /// </summary>
-        protected OnPostPipelineStageDelegate OnPostPipelineStage;
+        /// <summary> THe extensions connected to this vcam</summary>
+        List<CinemachineExtension> mExtensions;
 
         /// <summary>
         /// Invokes the PostPipelineStageDelegate for this camera, and up the hierarchy for all
         /// parent cameras (if any).
+        /// Implementaion must be sure to call this after each pipeline stage, to allow
+        /// other services to hook into the pipeline.
+        /// See CinemachineCore.Stage.
         /// </summary>
         protected void InvokePostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage,
             ref CameraState newState, float deltaTime)
         {
-            if (OnPostPipelineStage != null)
-                OnPostPipelineStage(vcam, stage, ref newState, deltaTime);
+            if (mExtensions != null)
+            {
+                for (int i = 0; i < mExtensions.Count; ++i)
+                {
+                    var e = mExtensions[i];
+                    if (e == null)
+                    {
+                        // Object was deleted (possibly because of Undo in the editor)
+                        mExtensions.RemoveAt(i);
+                        --i;
+                    }
+                    else if (e.enabled)
+                        e.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
+                }
+            }
             CinemachineVirtualCameraBase parent = ParentCamera as CinemachineVirtualCameraBase;
             if (parent != null)
                 parent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);

@@ -54,7 +54,7 @@ namespace Cinemachine
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             VcamExtraState extra = GetExtraState<VcamExtraState>(vcam);
-            if (!enabled || deltaTime < 0)
+            if (deltaTime < 0)
                 extra.m_previousFrameZoom = state.Lens.FieldOfView;
 
             // Set the zoom after the body has been positioned, but before the aim,
