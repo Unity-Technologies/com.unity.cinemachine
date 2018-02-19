@@ -773,9 +773,7 @@ It's used in 2 ways:
 ## Post Processing Stack V2
 If you have Unity's Post Processing Stack V2 package installed, you can add post-processing profiles to you virtual cameras.  The profiles will blend along with the cameras.
 
-Just define a Post-Processing profile for your vcam, and connect it by attaching a **CinemachinePostProcessing** extension to your vcam.  To complete the connection, you will also need a PostProcessingLayer component on the Unity camera, alongside the CinemachineBrain.  
-
-**IMPORTANT: Make sure that the PostProcessingLayer is configured to see the layer that the vcams are on**. 
+Define a Post-Processing profile for your vcam, and connect it by attaching a **CinemachinePostProcessing** extension to your vcam.  To complete the connection, you will also need a PostProcessingLayer component on the Unity camera, alongside the CinemachineBrain.  
 
 That’s all you have to do.  Now, whenever the vcam is activated, its custom Post-Processing profile will be applied to the Unity camera.  If the camera is blending with another vcam, then the blend weight will be applied to the Post Processing effects also.
 
