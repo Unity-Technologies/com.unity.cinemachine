@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine
@@ -79,23 +80,10 @@ namespace Cinemachine
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
-            bool isLive = CinemachineCore.Instance.IsLive(VirtualCamera);
-            LocateMyCanvas(brain, isLive);
+            bool showIt = enabled && m_ShowImage && CinemachineCore.Instance.IsLive(VirtualCamera);
+            LocateMyCanvas(brain, showIt);
             if (mCanvas != null)
-                mCanvas.SetActive(isLive && m_ShowImage);
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            int numBrains = CinemachineCore.Instance.BrainCount;
-            for (int i = 0; i < numBrains; ++i)
-            {
-                LocateMyCanvas(CinemachineCore.Instance.GetActiveBrain(i), false);
-                if (mCanvas != null)
-                    DestroyImmediate(mCanvas);
-                mCanvas = null;
-            }
+                mCanvas.SetActive(showIt);
         }
 
         protected override void ConnectToVcam(bool connect)
@@ -104,6 +92,8 @@ namespace Cinemachine
             CinemachineCore.CameraUpdatedEvent.RemoveListener(CameraUpdatedCallback);
             if (connect)
                 CinemachineCore.CameraUpdatedEvent.AddListener(CameraUpdatedCallback);
+            else
+                DestroyCanvas();
         }
         
         string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
@@ -140,6 +130,10 @@ namespace Cinemachine
             mCanvas.hideFlags = HideFlags.HideAndDontSave;
             mCanvas.transform.SetParent(parent.transform);
             mCanvasParent = parent;
+#if UNITY_EDITOR
+            // Workaround for Unity bug case Case 1004117
+            CanvasesAndTheirOwners.AddCanvas(mCanvas, this);
+#endif
 
             var c = mCanvas.AddComponent<Canvas>();
             c.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -152,6 +146,24 @@ namespace Cinemachine
             go = new GameObject("RawImage", typeof(RectTransform));
             go.transform.SetParent(mViewport.transform);
             mRawImage = go.AddComponent<UnityEngine.UI.RawImage>();
+        }
+
+        void DestroyCanvas()
+        {
+            int numBrains = CinemachineCore.Instance.BrainCount;
+            for (int i = 0; i < numBrains; ++i)
+            {
+                LocateMyCanvas(CinemachineCore.Instance.GetActiveBrain(i), false);
+                if (mCanvas != null)
+                {
+                    RuntimeUtility.DestroyObject(mCanvas);
+#if UNITY_EDITOR
+                    // Workaround for Unity bug case Case 1004117
+                    CanvasesAndTheirOwners.RemoveCanvas(mCanvas);
+#endif
+                }
+                mCanvas = null;
+            }
         }
 
         void PlaceImage(float alpha)
@@ -242,5 +254,56 @@ namespace Cinemachine
             CinemachineCore.CameraUpdatedEvent.RemoveListener(StaticBlendingHandler);
             CinemachineCore.CameraUpdatedEvent.AddListener(StaticBlendingHandler);
         }
+
+
+#if UNITY_EDITOR
+        // Workaround for the Unity bug where OnDestroy doesn't get called if Undo
+        // bug case Case 1004117
+        [UnityEditor.InitializeOnLoad]
+        class CanvasesAndTheirOwners 
+        { 
+            static Dictionary<UnityEngine.Object, UnityEngine.Object> sCanvasesAndTheirOwners;
+            static CanvasesAndTheirOwners() 
+            { 
+                UnityEditor.Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+                UnityEditor.Undo.undoRedoPerformed += OnUndoRedoPerformed;
+            } 
+            static void OnUndoRedoPerformed()
+            {
+                if (sCanvasesAndTheirOwners != null)
+                {
+                    List<UnityEngine.Object> toDestroy = null;
+                    foreach (var v in sCanvasesAndTheirOwners)
+                    {
+                        if (v.Value == null)
+                        {
+                            if (toDestroy == null)
+                                toDestroy = new List<UnityEngine.Object>();
+                            toDestroy.Add(v.Key);
+                        }
+                    }
+                    if (toDestroy != null)
+                    {
+                        foreach (var o in toDestroy)
+                        {
+                            RemoveCanvas(o);
+                            RuntimeUtility.DestroyObject(o);
+                        }
+                    }
+                }
+            }
+            public static void RemoveCanvas(UnityEngine.Object canvas)
+            {
+                if (sCanvasesAndTheirOwners != null && sCanvasesAndTheirOwners.ContainsKey(canvas))
+                    sCanvasesAndTheirOwners.Remove(canvas);
+            }
+            public static void AddCanvas(UnityEngine.Object canvas, UnityEngine.Object owner)
+            {
+                if (sCanvasesAndTheirOwners == null)
+                    sCanvasesAndTheirOwners = new Dictionary<UnityEngine.Object, UnityEngine.Object>();
+                sCanvasesAndTheirOwners.Add(canvas, owner);
+            }
+        }
+#endif
     }
 }
