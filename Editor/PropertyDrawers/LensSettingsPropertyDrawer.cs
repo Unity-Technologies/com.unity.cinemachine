@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
     public sealed  class LensSettingsPropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;
-        bool mExpanded = true;
+        static bool mExpanded = true;
         LensSettings def = new LensSettings(); // to access name strings
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
