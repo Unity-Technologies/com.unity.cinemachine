@@ -22,6 +22,8 @@
 - Bugfix: Moved StartCoroutine in Brain to OnEnable()
 - Bugfix: Collider was causing problems in Physics on Android platforms
 - Bugfix: dragging a vcam's position updtaes prefabs properly
+- Bugfix: All extension now respect the "enabled" checkbox
+- Bugfix: Undo for Extasion add will no longer generate null references
 
 <size=20><b>Version 2.1.10</b></size>
 
