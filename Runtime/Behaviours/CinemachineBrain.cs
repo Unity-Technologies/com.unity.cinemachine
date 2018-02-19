@@ -490,12 +490,10 @@ namespace Cinemachine
                         && deltaTime >= 0)
                     {
                         // Create a blend (will be null if a cut)
-                        float duration = 0;
-                        AnimationCurve curve = LookupBlendCurve(
-                            mActiveCameraPreviousFrame, activeCamera, out duration);
                         activeBlend = CreateBlend(
                                 mActiveCameraPreviousFrame, activeCamera,
-                                curve, duration, mActiveBlend, deltaTime);
+                                LookupBlend(mActiveCameraPreviousFrame, activeCamera), 
+                                mActiveBlend, deltaTime);
                     }
                     // Need this check because Timeline override sometimes inverts outgoing and incoming
                     if (activeCamera != mOutgoingCameraPreviousFrame)
@@ -670,21 +668,19 @@ namespace Cinemachine
         /// If there is a specific blend defined for these cameras it will be used, otherwise
         /// a default blend will be created, which could be a cut.
         /// </summary>
-        private AnimationCurve LookupBlendCurve(
-            ICinemachineCamera fromKey, ICinemachineCamera toKey, out float duration)
+        private CinemachineBlendDefinition LookupBlend(
+            ICinemachineCamera fromKey, ICinemachineCamera toKey)
         {
             // Get the blend curve that's most appropriate for these cameras
-            AnimationCurve blendCurve = m_DefaultBlend.BlendCurve;
+            CinemachineBlendDefinition blend = m_DefaultBlend;
             if (m_CustomBlends != null)
             {
                 string fromCameraName = (fromKey != null) ? fromKey.Name : string.Empty;
                 string toCameraName = (toKey != null) ? toKey.Name : string.Empty;
-                blendCurve = m_CustomBlends.GetBlendCurveForVirtualCameras(
-                        fromCameraName, toCameraName, blendCurve);
+                blend = m_CustomBlends.GetBlendForVirtualCameras(
+                        fromCameraName, toCameraName, blend);
             }
-            var keys = blendCurve.keys;
-            duration = (keys == null || keys.Length == 0) ? 0 : keys[keys.Length-1].time;
-            return blendCurve;
+            return blend;
         }
 
         /// <summary>
@@ -693,35 +689,23 @@ namespace Cinemachine
         /// </summary>
         private CinemachineBlend CreateBlend(
             ICinemachineCamera camA, ICinemachineCamera camB, 
-            AnimationCurve blendCurve, float duration,
+            CinemachineBlendDefinition blendDef,
             CinemachineBlend activeBlend, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineTrackedDolly.MutateCameraState");
-            if (blendCurve == null || duration <= 0 || (camA == null && camB == null))
-            {
-                //UnityEngine.Profiling.Profiler.EndSample();
+            if (blendDef.BlendCurve == null || blendDef.m_Time <= 0 || (camA == null && camB == null))
                 return null;
-            }
-            if (camA == null || activeBlend != null)
+            if (activeBlend != null)
+                camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
+            else if (camA == null)
             {
                 // Blend from the current camera position
                 CameraState state = CameraState.Default;
-                if (activeBlend != null)
-                {
-                    state = activeBlend.State;
-                    camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
-                }
-                else
-                {
-                    state.RawPosition = transform.position;
-                    state.RawOrientation = transform.rotation;
-                    state.Lens = LensSettings.FromCamera(OutputCamera);
-                    camA = new StaticPointVirtualCamera(state, "(none)");
-                }
+                state.RawPosition = transform.position;
+                state.RawOrientation = transform.rotation;
+                state.Lens = LensSettings.FromCamera(OutputCamera);
+                camA = new StaticPointVirtualCamera(state, "(none)");
             }
-            CinemachineBlend blend = new CinemachineBlend(camA, camB, blendCurve, duration, 0);
-            //UnityEngine.Profiling.Profiler.EndSample();
-            return blend;
+            return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
         }
 
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
@@ -769,66 +753,5 @@ namespace Cinemachine
         /// update the virtual cameras.</summary>
         /// <returns>Number of subframes registered by the first brain's FixedUpdate</returns>
         internal static int GetSubframeCount() { return Math.Max(1, msSubframes); }
-    }
-
-    /// <summary>
-    /// Point source for blending. It's not really a virtual camera, but takes
-    /// a CameraState and exposes it as a virtual camera for the purposes of blending.
-    /// </summary>
-    internal class StaticPointVirtualCamera : ICinemachineCamera
-    {
-        public StaticPointVirtualCamera(CameraState state, string name) { State = state; Name = name; }
-        public void SetState(CameraState state) { State = state; }
-
-        public string Name { get; private set; }
-        public string Description { get { return ""; }}
-        public int Priority { get; set; }
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
-        public CameraState State { get; private set; }
-        public GameObject VirtualCameraGameObject { get { return null; } }
-        public ICinemachineCamera LiveChildOrSelf { get { return this; } }
-        public ICinemachineCamera ParentCamera { get { return null; } }
-        public bool IsLiveChild(ICinemachineCamera vcam) { return false; }
-        public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
-    }
-
-    /// <summary>
-    /// Blend result source for blending.   This exposes a CinemachineBlend object
-    /// as an ersatz virtual camera for the purposes of blending.  This achieves the purpose
-    /// of blending the result oif a blend.
-    /// </summary>
-    internal class BlendSourceVirtualCamera : ICinemachineCamera
-    {
-        public BlendSourceVirtualCamera(CinemachineBlend blend, float deltaTime)
-        {
-            Blend = blend;
-            UpdateCameraState(blend.CamA.State.ReferenceUp, deltaTime);
-        }
-
-        public CinemachineBlend Blend { get; private set; }
-
-        public string Name { get { return "Blend"; }}
-        public string Description { get { return Blend.Description; }}
-        public int Priority { get; set; }
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
-        public CameraState State { get; private set; }
-        public GameObject VirtualCameraGameObject { get { return null; } }
-        public ICinemachineCamera LiveChildOrSelf { get { return Blend.CamB; } }
-        public ICinemachineCamera ParentCamera { get { return null; } }
-        public bool IsLiveChild(ICinemachineCamera vcam) { return vcam == Blend.CamA || vcam == Blend.CamB; }
-        public CameraState CalculateNewState(float deltaTime) { return State; }
-        public void UpdateCameraState(Vector3 worldUp, float deltaTime)
-        {
-            Blend.UpdateCameraState(worldUp, deltaTime);
-            State = Blend.State;
-        }
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
     }
 }

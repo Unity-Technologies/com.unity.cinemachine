@@ -183,8 +183,8 @@ namespace Cinemachine
                     // Create a blend (will be null if a cut)
                     mActiveBlend = CreateBlend(
                             previousCam, LiveChild,
-                            m_Instructions[mCurrentInstruction].m_Blend.BlendCurve, 
-                            m_Instructions[mCurrentInstruction].m_Blend.m_Time, mActiveBlend, deltaTime);
+                            m_Instructions[mCurrentInstruction].m_Blend, 
+                            mActiveBlend, deltaTime);
 
                     // Notify incoming camera of transition
                     LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);
@@ -326,25 +326,16 @@ namespace Cinemachine
 
         private CinemachineBlend CreateBlend(
             ICinemachineCamera camA, ICinemachineCamera camB, 
-            AnimationCurve blendCurve, float duration,
+            CinemachineBlendDefinition blend,
             CinemachineBlend activeBlend, float deltaTime)
         {
-            if (blendCurve == null || duration <= 0 || (camA == null && camB == null))
+            if (blend.BlendCurve == null || blend.m_Time <= 0 || (camA == null && camB == null))
                 return null;
-
-            if (camA == null || activeBlend != null)
-            {
-                // Blend from the current camera position
-                CameraState state = State;
-                if (activeBlend == null)
-                    camA = new StaticPointVirtualCamera(state, "(none)");
-                else
-                {
-                    state = activeBlend.State;
-                    camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
-                }
-            }
-            return new CinemachineBlend(camA, camB, blendCurve,duration,  0);
+            if (activeBlend != null)
+                camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
+            else if (camA == null)
+                camA = new StaticPointVirtualCamera(State, "(none)");
+            return new CinemachineBlend(camA, camB, blend.BlendCurve, blend.m_Time, 0);
         }
     }
 }

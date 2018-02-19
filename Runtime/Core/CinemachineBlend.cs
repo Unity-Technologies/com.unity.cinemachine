@@ -16,7 +16,7 @@ namespace Cinemachine
         public ICinemachineCamera CamB { get; set; }
 
         /// <summary>The curve that describes the way the blend transitions over time
-        /// from the first camera to the second.  X-axis is time in seconds over which
+        /// from the first camera to the second.  X-axis is normalized time (0...1) over which
         /// the blend takes place and Y axis is blend weight (0..1)</summary>
         public AnimationCurve BlendCurve { get; set; }
 
@@ -28,7 +28,12 @@ namespace Cinemachine
         /// 0 means camA, 1 means camB.</summary>
         public float BlendWeight
         { 
-            get { return BlendCurve != null ? BlendCurve.Evaluate(TimeInBlend) : 0; } 
+            get 
+            { 
+                if (BlendCurve == null || BlendCurve.keys.Length < 2 || IsComplete)
+                    return 1;
+                return Mathf.Clamp01(BlendCurve.Evaluate(TimeInBlend / Duration)); 
+            } 
         }
 
         /// <summary>Validity test for the blend.  True if both cameras are defined.</summary>
@@ -37,8 +42,7 @@ namespace Cinemachine
             get { return (CamA != null || CamB != null); }
         }
 
-        /// <summary>Duration in seconds of the blend.
-        /// This is given read from the BlendCurve.</summary>
+        /// <summary>Duration in seconds of the blend.</summary>
         public float Duration { get; set; }
 
         /// <summary>True if the time relative to the start of the blend is greater
@@ -159,6 +163,39 @@ namespace Cinemachine
         /// </summary>
         public AnimationCurve m_CustomCurve;
 
+        static AnimationCurve[] sStandardCurves;
+        void CreateStandardCurves()
+        {
+            sStandardCurves = new AnimationCurve[(int)Style.Custom];
+
+            sStandardCurves[(int)Style.Cut] = null;
+            sStandardCurves[(int)Style.EaseInOut] = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
+
+            sStandardCurves[(int)Style.EaseIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            Keyframe[] keys = sStandardCurves[(int)Style.EaseIn].keys;
+            keys[1].inTangent = 0;
+            sStandardCurves[(int)Style.EaseIn].keys = keys;
+
+            sStandardCurves[(int)Style.EaseOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = sStandardCurves[(int)Style.EaseOut].keys;
+            keys[0].outTangent = 0;
+            sStandardCurves[(int)Style.EaseOut].keys = keys;
+
+            sStandardCurves[(int)Style.HardIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = sStandardCurves[(int)Style.HardIn].keys;
+            keys[0].outTangent = 0;
+            keys[1].inTangent = 1.5708f; // pi/2 = up
+            sStandardCurves[(int)Style.HardIn].keys = keys;
+                        
+            sStandardCurves[(int)Style.HardOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = sStandardCurves[(int)Style.HardOut].keys;
+            keys[0].outTangent = 1.5708f; // pi/2 = up
+            keys[1].inTangent = 0;
+            sStandardCurves[(int)Style.HardOut].keys = keys;
+
+            sStandardCurves[(int)Style.Linear] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+        }
+
         /// <summary>
         /// A normalized AnimationCurve specifying the interpolation curve 
         /// for this camera blend. Y-axis values must be in range [0,1] (internally clamped
@@ -168,55 +205,77 @@ namespace Cinemachine
         {
             get
             {
-                float time = Mathf.Max(0, m_Time);
-                switch (m_Style)
+                if (m_Style == Style.Custom)
                 {
-                    default:
-                    case Style.Cut: return new AnimationCurve();
-                    case Style.EaseInOut: return AnimationCurve.EaseInOut(0f, 0f, time, 1f);
-                    case Style.EaseIn:
-                    {
-                        AnimationCurve curve = AnimationCurve.Linear(0f, 0f, time, 1f);
-                        Keyframe[] keys = curve.keys;
-                        keys[1].inTangent = 0;
-                        curve.keys = keys;
-                        return curve;
-                    }
-                    case Style.EaseOut:
-                    {
-                        AnimationCurve curve = AnimationCurve.Linear(0f, 0f, time, 1f);
-                        Keyframe[] keys = curve.keys;
-                        keys[0].outTangent = 0;
-                        curve.keys = keys;
-                        return curve;
-                    }
-                    case Style.HardIn:
-                    {
-                        AnimationCurve curve = AnimationCurve.Linear(0f, 0f, time, 1f);
-                        Keyframe[] keys = curve.keys;
-                        keys[0].outTangent = 0;
-                        keys[1].inTangent = 1.5708f; // pi/2 = up
-                        curve.keys = keys;
-                        return curve;
-                    }
-                    case Style.HardOut:
-                    {
-                        AnimationCurve curve = AnimationCurve.Linear(0f, 0f, time, 1f);
-                        Keyframe[] keys = curve.keys;
-                        keys[0].outTangent = 1.5708f; // pi/2 = up
-                        keys[1].inTangent = 0;
-                        curve.keys = keys;
-                        return curve;
-                    }
-                    case Style.Linear: return AnimationCurve.Linear(0f, 0f, time, 1f);
-                    case Style.Custom: 
-                    {
-                        if (m_CustomCurve == null)
-                            m_CustomCurve = new AnimationCurve();
-                        return m_CustomCurve;
-                    }
+                    if (m_CustomCurve == null)
+                        m_CustomCurve = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
+                    return m_CustomCurve;
                 }
+                if (sStandardCurves == null)
+                    CreateStandardCurves();
+                return sStandardCurves[(int)m_Style];
             }
         }
+    }
+
+    /// <summary>
+    /// Point source for blending. It's not really a virtual camera, but takes
+    /// a CameraState and exposes it as a virtual camera for the purposes of blending.
+    /// </summary>
+    internal class StaticPointVirtualCamera : ICinemachineCamera
+    {
+        public StaticPointVirtualCamera(CameraState state, string name) { State = state; Name = name; }
+        public void SetState(CameraState state) { State = state; }
+
+        public string Name { get; private set; }
+        public string Description { get { return ""; }}
+        public int Priority { get; set; }
+        public Transform LookAt { get; set; }
+        public Transform Follow { get; set; }
+        public CameraState State { get; private set; }
+        public GameObject VirtualCameraGameObject { get { return null; } }
+        public ICinemachineCamera LiveChildOrSelf { get { return this; } }
+        public ICinemachineCamera ParentCamera { get { return null; } }
+        public bool IsLiveChild(ICinemachineCamera vcam) { return false; }
+        public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
+        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
+        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+    }
+
+    /// <summary>
+    /// Blend result source for blending.   This exposes a CinemachineBlend object
+    /// as an ersatz virtual camera for the purposes of blending.  This achieves the purpose
+    /// of blending the result oif a blend.
+    /// </summary>
+    internal class BlendSourceVirtualCamera : ICinemachineCamera
+    {
+        public BlendSourceVirtualCamera(CinemachineBlend blend, float deltaTime)
+        {
+            Blend = blend;
+            UpdateCameraState(blend.CamA.State.ReferenceUp, deltaTime);
+        }
+
+        public CinemachineBlend Blend { get; private set; }
+
+        public string Name { get { return "Blend"; }}
+        public string Description { get { return Blend.Description; }}
+        public int Priority { get; set; }
+        public Transform LookAt { get; set; }
+        public Transform Follow { get; set; }
+        public CameraState State { get; private set; }
+        public GameObject VirtualCameraGameObject { get { return null; } }
+        public ICinemachineCamera LiveChildOrSelf { get { return Blend.CamB; } }
+        public ICinemachineCamera ParentCamera { get { return null; } }
+        public bool IsLiveChild(ICinemachineCamera vcam) { return vcam == Blend.CamA || vcam == Blend.CamB; }
+        public CameraState CalculateNewState(float deltaTime) { return State; }
+        public void UpdateCameraState(Vector3 worldUp, float deltaTime)
+        {
+            Blend.UpdateCameraState(worldUp, deltaTime);
+            State = Blend.State;
+        }
+        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
+        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
     }
 }

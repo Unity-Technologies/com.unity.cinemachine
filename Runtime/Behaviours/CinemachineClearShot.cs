@@ -148,11 +148,9 @@ namespace Cinemachine
             if (previousCam != null && LiveChild != null && previousCam != LiveChild)
             {
                 // Create a blend (will be null if a cut)
-                float duration = 0;
-                AnimationCurve curve = LookupBlendCurve(previousCam, LiveChild, out duration);
                 mActiveBlend = CreateBlend(
                         previousCam, LiveChild,
-                        curve, duration, mActiveBlend, deltaTime);
+                        LookupBlend(previousCam, LiveChild), mActiveBlend, deltaTime);
 
                 // Notify incoming camera of transition
                 LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);
@@ -381,44 +379,33 @@ namespace Cinemachine
             return dst;
         }
 
-        private AnimationCurve LookupBlendCurve(
-            ICinemachineCamera fromKey, ICinemachineCamera toKey, out float duration)
+        private CinemachineBlendDefinition LookupBlend(
+            ICinemachineCamera fromKey, ICinemachineCamera toKey)
         {
             // Get the blend curve that's most appropriate for these cameras
-            AnimationCurve blendCurve = m_DefaultBlend.BlendCurve;
+            CinemachineBlendDefinition blend = m_DefaultBlend;
             if (m_CustomBlends != null)
             {
                 string fromCameraName = (fromKey != null) ? fromKey.Name : string.Empty;
                 string toCameraName = (toKey != null) ? toKey.Name : string.Empty;
-                blendCurve = m_CustomBlends.GetBlendCurveForVirtualCameras(
-                        fromCameraName, toCameraName, blendCurve);
+                blend = m_CustomBlends.GetBlendForVirtualCameras(
+                        fromCameraName, toCameraName, blend);
             }
-            var keys = blendCurve.keys;
-            duration = (keys == null || keys.Length == 0) ? 0 : keys[keys.Length-1].time;
-            return blendCurve;
+            return blend;
         }
 
         private CinemachineBlend CreateBlend(
             ICinemachineCamera camA, ICinemachineCamera camB, 
-            AnimationCurve blendCurve, float duration,
+            CinemachineBlendDefinition blendDef,
             CinemachineBlend activeBlend, float deltaTime)
         {
-            if (blendCurve == null || duration <= 0 || (camA == null && camB == null))
+            if (blendDef.BlendCurve == null || blendDef.m_Time <= 0 || (camA == null && camB == null))
                 return null;
-
-            if (camA == null || activeBlend != null)
-            {
-                // Blend from the current camera position
-                CameraState state = State;
-                if (activeBlend == null)
-                    camA = new StaticPointVirtualCamera(state, "(none)");
-                else
-                {
-                    state = activeBlend.State;
-                    camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
-                }
-            }
-            return new CinemachineBlend(camA, camB, blendCurve, duration, 0);
+            if (activeBlend != null)
+                camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
+            else if (camA == null)
+                camA = new StaticPointVirtualCamera(State, "(none)");
+            return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
         }
 
         /// <summary>Notification that this virtual camera is going live.
