@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine.Utility
@@ -51,6 +49,8 @@ namespace Cinemachine.Utility
             {
                 Vector3 vel = m_Velocity.Value();
                 Vector3 vel2 = (pos - m_Position) / Time.deltaTime;
+                if (IgnoreY)
+                    vel2.y = 0;
                 m_Velocity.AddValue(vel2);
                 m_Accel.AddValue(vel2 - vel);
             }
