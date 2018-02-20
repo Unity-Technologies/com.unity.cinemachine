@@ -17,6 +17,7 @@ namespace Cinemachine.Editor
             rect.width -= iconSize;
             int preset = sNoisePresets.IndexOf((NoiseSettings)property.objectReferenceValue);
             preset = EditorGUI.Popup(rect, label, preset, sNoisePresetNames);
+            string labelText = label.text;
             NoiseSettings newProfile = preset < 0 ? null : sNoisePresets[preset];
             if ((NoiseSettings)property.objectReferenceValue != newProfile)
             {
@@ -34,7 +35,7 @@ namespace Cinemachine.Editor
                     menu.AddItem(new GUIContent("Clone"), false, () => 
                         {
                             property.objectReferenceValue = CreateProfile(
-                                property, label.text,
+                                property, labelText,
                                 (NoiseSettings)property.objectReferenceValue);
                             property.serializedObject.ApplyModifiedProperties();
                             InvalidateProfileList();
@@ -45,7 +46,7 @@ namespace Cinemachine.Editor
                 menu.AddItem(new GUIContent("New"), false, () => 
                     { 
                         //Undo.RecordObject(Target, "Change Noise Profile");
-                        property.objectReferenceValue = CreateProfile(property, label.text, null);
+                        property.objectReferenceValue = CreateProfile(property, labelText, null);
                         property.serializedObject.ApplyModifiedProperties();
                         InvalidateProfileList();
                     });
