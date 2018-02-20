@@ -4,12 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.1.11] - 2018-02-19
+## [2.1.11] - 2018-02-20
 ### Storyboard, Bugfixes and other enhancements.  Also some restructuring for Package Manager
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.
 - New Storyboard extension, to display images over the vcams.  Comes with a Waveform monitor window for color grading
 - New option to specify vcam position blend style: linear, spherical, or cylindrical, based on LookAt target
-- Added API to support seamless position warping of target objects
+- Added API to support seamless position warping of target objects: OnTargetObjectWarped().
 - Added support for custom blend curves
 - Lookahead: added Ignore Y Axis Movement option
 - Added support for cascading blends (i.e. blending from mid-blend looks better)
