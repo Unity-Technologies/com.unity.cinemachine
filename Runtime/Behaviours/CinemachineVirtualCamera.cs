@@ -322,7 +322,7 @@ namespace Cinemachine
                     if (components[i].Stage == stage)
                     {
                         components[i].enabled = false;
-                        DestroyImmediate(components[i]);
+                        RuntimeUtility.DestroyObject(components[i]);
                     }
                 }
             }
@@ -341,7 +341,7 @@ namespace Cinemachine
                     if (c is T)
                     {
                         c.enabled = false;
-                        DestroyImmediate(c);
+                        RuntimeUtility.DestroyObject(c);
                         InvalidateComponentPipeline();
                     }
                 }
