@@ -12,6 +12,11 @@ namespace Cinemachine.Editor
         Texture2D mScreenshot;
         string mScreenshotFilename;
 
+        // Controls how frequently (in seconds) the view will update.  
+        // Performance is really bad, so keep this as large as possible.
+        public static float UpdateInterval = 0.5f;
+        public static void SetDefaultUpdateInterval() { UpdateInterval = 0.5f; }
+
         //[MenuItem("Window/Waveform Monitor")]
         public static void OpenWindow()
         {
@@ -65,7 +70,7 @@ namespace Cinemachine.Editor
         {
             // Don't do this too often
             float now = Time.time;
-            if (mScreenshot != null && now - mLastUpdateTime < 0.1f)
+            if (mScreenshot != null && now - mLastUpdateTime < UpdateInterval)
                 return;
 
             mLastUpdateTime = now;

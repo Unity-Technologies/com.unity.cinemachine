@@ -64,7 +64,7 @@ namespace Cinemachine
         /// <summary>Standard CinemachineExtension callback</summary>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
-            CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
+            CinemachineCore.Stage stage, ref CameraState state, float wipeAmountTime)
         {
             // Apply to this vcam only, not the children
             if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Finalize)
@@ -176,10 +176,16 @@ namespace Cinemachine
                 screen.x -= (float)Screen.width/2;
                 screen.y -= (float)Screen.height/2;
 
-                mViewport.localPosition = screen.center;
+                // Apply Split View
+                float wipeAmount = -Mathf.Clamp(m_SplitView, -1, 1) * screen.width;
+
+                Vector3 pos = screen.center;
+                pos.x -= wipeAmount/2;
+                mViewport.localPosition = pos;
                 mViewport.localRotation = Quaternion.identity;
-                mViewport.localScale = Vector3.one;;
-                mViewport.sizeDelta = screen.size;
+                mViewport.localScale = Vector3.one;
+                mViewport.ForceUpdateRectTransforms();
+                mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(wipeAmount), screen.height);
 
                 Vector2 scale = Vector2.one;
                 if (m_Image != null
@@ -212,17 +218,14 @@ namespace Cinemachine
                 Color tintColor = Color.white;
                 tintColor.a = m_Alpha * alpha;
                 mRawImage.color = tintColor;
-                mRawImage.rectTransform.localPosition 
-                    = new Vector2(screen.width * m_Center.x, screen.height * m_Center.y);
+
+                pos = new Vector2(screen.width * m_Center.x, screen.height * m_Center.y);
+                pos.x += wipeAmount/2; 
+                mRawImage.rectTransform.localPosition = pos;
                 mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
                 mRawImage.rectTransform.localScale = scale;
+                mRawImage.rectTransform.ForceUpdateRectTransforms();
                 mRawImage.rectTransform.sizeDelta = screen.size;
-
-                // Apply Split View
-                float delta = -Mathf.Clamp(m_SplitView, -1, 1) * screen.width;
-                var p = mViewport.localPosition; p.x -= delta/2; mViewport.localPosition = p;
-                p = mRawImage.rectTransform.localPosition; p.x += delta/2; mRawImage.rectTransform.localPosition = p;
-                mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(delta), screen.height);
             }        
         }
 

@@ -6,12 +6,24 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineStoryboard))]
     public sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
+        public void OnDisable()
+        {
+            WaveformWindow.SetDefaultUpdateInterval();
+        }
+
+        const float FastWaveformUpdateInterval = 0.1f;
+        float mLastSplitScreenEventTime = 0;
+
         public override void OnInspectorGUI()
         {
+            float now = Time.realtimeSinceStartup;
+            if (now - mLastSplitScreenEventTime > FastWaveformUpdateInterval * 5)
+                WaveformWindow.SetDefaultUpdateInterval();
+
             BeginInspector();
+            Rect rect = EditorGUILayout.GetControlRect(true);
             EditorGUI.BeginChangeCheck();
             {
-                Rect rect = EditorGUILayout.GetControlRect(true);
                 float width = rect.width;
                 rect.width = EditorGUIUtility.labelWidth + rect.height;
                 EditorGUI.PropertyField(rect, FindProperty(x => x.m_ShowImage));
@@ -45,20 +57,26 @@ namespace Cinemachine.Editor
                     EditorGUI.PropertyField(rect, FindProperty(x => x.m_Scale), GUIContent.none);
                 }
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
-
-                EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_SplitView));
-
-                rect = EditorGUILayout.GetControlRect(true);
-                GUI.Label(new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), 
-                    "Waveform Monitor");
-                rect.width -= EditorGUIUtility.labelWidth; rect.width /= 2;
-                rect.x += EditorGUIUtility.labelWidth;
-                if (GUI.Button(rect, "Open"))
-                    WaveformWindow.OpenWindow();
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
+
+            EditorGUILayout.Space();
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(FindProperty(x => x.m_SplitView));
+            if (EditorGUI.EndChangeCheck())
+            {
+                mLastSplitScreenEventTime = now;
+                WaveformWindow.UpdateInterval = FastWaveformUpdateInterval;
+                serializedObject.ApplyModifiedProperties();
+            }
+            rect = EditorGUILayout.GetControlRect(true);
+            GUI.Label(new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), 
+                "Waveform Monitor");
+            rect.width -= EditorGUIUtility.labelWidth; rect.width /= 2;
+            rect.x += EditorGUIUtility.labelWidth;
+            if (GUI.Button(rect, "Open"))
+                WaveformWindow.OpenWindow();
         }
     }
 }
