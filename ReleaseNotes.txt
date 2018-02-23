@@ -14,6 +14,7 @@
 - Path: added length display in inspector
 - Timeline Clip Editor: vcam sections are now collapsible
 - API enhancement: added Finalize to Pipeline stages, called even for manager-style vcams
+- Bugfix: PostProcessing V2 DoF blending works better
 - Bugfix: OrbitalTransposer works better with WorldUp overrides
 - Bugfix: Remove StateDrivenCamera "not playing a controller" warning
 - Bugfix: Handle exceptions thrown by assemblies that don't want to be introspected
