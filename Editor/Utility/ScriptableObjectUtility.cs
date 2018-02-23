@@ -36,6 +36,25 @@ namespace Cinemachine.Editor
             }
         }
 
+        public static T CreateAt<T>(string assetPath) where T : ScriptableObject
+        {
+            return CreateAt(typeof(T), assetPath) as T;
+        }
+
+        public static ScriptableObject CreateAt(Type assetType, string assetPath)
+        {
+            ScriptableObject asset = ScriptableObject.CreateInstance(assetType);
+            if (asset == null)
+            {
+                Debug.LogError("failed to create instance of " + assetType.Name + " at " + assetPath);
+                return null;
+            }
+            AssetDatabase.CreateAsset(asset, assetPath);
+            return asset;        
+        }
+
+
+#if false // unused
         public static bool AddDefineForAllBuildTargets(string k_Define)
         {
             bool added = false;
@@ -72,6 +91,7 @@ namespace Cinemachine.Editor
 
             return attrs != null && attrs.Length > 0;
         }
+#endif
 
         public static void Create<T>(bool prependFolderName = false, bool trimName = true) where T : ScriptableObject
         {
@@ -95,20 +115,6 @@ namespace Cinemachine.Editor
             }
 
             Create(className, assetName, folder);
-        }
-
-        public static T CreateAt<T>(string assetPath) where T : ScriptableObject
-        {
-            T asset = ScriptableObject.CreateInstance<T>();
-            if (asset == null)
-            {
-                Debug.LogError("failed to create instance of " + typeof(T).Name);
-                return null;
-            }
-
-            AssetDatabase.CreateAsset(asset, assetPath);
-
-            return asset;
         }
 
         private static ScriptableObject Create(string className, string assetName, string folder)
