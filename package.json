@@ -1,7 +1,7 @@
 {
   "name": "com.unity.cinemachine",
   "displayName": "Cinemachine",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "unity": "2018.1",
   "description": "Smart camera tools for passionate creators",
   "keywords": [ "camera", "follow", "rig", "fps", "cinematography", "aim", "orbit", "cutscene", "cinematic", "collision", "freelook", "cinemachine", "compose", "composition", "dolly", "track", "clearshot", "noise", "framing", "handheld", "lens" ],

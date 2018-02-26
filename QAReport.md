@@ -5,7 +5,7 @@ Use this file to outline the test strategy for this package.
 ## UX Owner: [*Joel Fortin*]
 
 ## Testing coverage done on this package:
-Cinemachine 2.1.11
+Cinemachine 2.1.12
 Packman integration
 -	Old projects already containing the plugin will generate error in the console if updated with package manager. The correct way to update to the latest packman plugin would be to delete the Cinemachine folder you have in the project then download the package from package manager.
 -	Also templates work fine with cinemachine except for the “lightweight” template, where the blending camera preview in edit mode will simply not work. The work needed to fix is too risky to include cinemachine in template for 2018.1 so the package will only be discoverable for now.
