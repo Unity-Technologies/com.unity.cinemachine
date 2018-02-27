@@ -69,62 +69,72 @@ namespace Cinemachine
         /// <summary>Generate an impulse at a location in space</summary>
         public override void CreateEvent(Vector3 velocity, Vector3 pos, int channel = 1)
         {
-            CinemachineImpulseManager.ImpulseEvent e 
-                = CinemachineImpulseManager.Instance.NewImpulseEvent();
-            e.m_Envelope = m_ImpactEnvelope;
-            e.m_SignalSource = GetImpulse;
-            e.m_SignalParameters = new object [] { velocity };
-            e.m_Position = pos;
-            e.m_Radius = m_ImpactRadius;
-            e.m_Channel = Mathf.Abs(channel);
-            e.m_DissipationMode = m_DissipationMode;
-            e.m_DissipationDistance = m_DissipationDistance;
-            CinemachineImpulseManager.Instance.AddImpulseEvent(e);
-        }
-
-        /// <summary>Get the raw signal from the Perlin Profile</summary>
-        Vector3 GetImpulse(object[] parameters) 
-        { 
-            Vector3 signal = Vector3.zero;
-            if (!mInitialized)
-                Initialize();
             if (m_PerlinProfile != null)
             {
+                CinemachineImpulseManager.ImpulseEvent e 
+                    = CinemachineImpulseManager.Instance.NewImpulseEvent();
+                e.m_Envelope = m_ImpactEnvelope;
+                e.m_SignalSource = new SignalSource(
+                    m_PerlinProfile, velocity, m_AmplitudeGain, m_FrequencyGain);
+                e.m_Position = pos;
+                e.m_Radius = m_ImpactRadius;
+                e.m_Channel = Mathf.Abs(channel);
+                e.m_DissipationMode = m_DissipationMode;
+                e.m_DissipationDistance = m_DissipationDistance;
+                CinemachineImpulseManager.Instance.AddImpulseEvent(e);
+            }
+        }
+
+        class SignalSource : CinemachineImpulseManager.IRawSignalSource
+        {
+            NoiseSettings m_PerlinProfile;
+            Vector3 m_Velocity;
+            float m_AmplitudeGain;
+            float m_FrequencyGain;
+
+            public SignalSource(
+                NoiseSettings perlinProfile, Vector3 velocity,
+                float amplitudeGain, float frequencyGain)
+            {
+                m_PerlinProfile = perlinProfile;
+                m_Velocity = velocity;
+                m_AmplitudeGain = amplitudeGain;
+                m_FrequencyGain = frequencyGain;
+            }
+
+            public Vector3 GetSignal(float timeSinceSignalStart)
+            {
+                Vector3 signal = Vector3.zero;
+
                 // Use whatever channel is more defined (kinda hacky I know)
                 NoiseSettings.TransformNoiseParams[] profile 
                     = m_PerlinProfile.PositionNoise.Length > m_PerlinProfile.OrientationNoise.Length
                         ? m_PerlinProfile.PositionNoise : m_PerlinProfile.OrientationNoise;
 
-                float time = (Time.realtimeSinceStartup - mNoiseStartTime) * m_FrequencyGain;
+                float time = timeSinceSignalStart * m_FrequencyGain;
                 signal = NoiseSettings.GetCombinedFilterResults(
                     profile, time, mNoiseOffsets) * m_AmplitudeGain;
-                if (parameters != null && parameters.Length > 0 && parameters[0] is Vector3)
+                float gain = m_Velocity.magnitude;
+                signal *= gain;
+                if (gain > UnityVectorExtensions.Epsilon)
                 {
-                    Vector3 velocity = (Vector3)parameters[0];
-                    float gain = velocity.magnitude;
-                    signal *= gain;
-                    if (gain > UnityVectorExtensions.Epsilon)
-                    {
-                        Quaternion rot = Quaternion.FromToRotation(Vector3.up, velocity);
-                        signal = rot * signal;
-                    }
+                    Quaternion rot = Quaternion.FromToRotation(Vector3.up, m_Velocity);
+                    signal = rot * signal;
                 }
+                return signal; 
             }
-            return signal; 
-        }
+    
+            bool mInitialized = false;
+            Vector3 mNoiseOffsets = Vector3.zero;
 
-        private bool mInitialized = false;
-        private float mNoiseStartTime = 0;
-        private Vector3 mNoiseOffsets = Vector3.zero;
-
-        void Initialize()
-        {
-            mInitialized = true;
-            mNoiseStartTime = Time.realtimeSinceStartup;
-            mNoiseOffsets = new Vector3(
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f));
+            void Initialize()
+            {
+                mInitialized = true;
+                mNoiseOffsets = new Vector3(
+                        Random.Range(-1000f, 1000f),
+                        Random.Range(-1000f, 1000f),
+                        Random.Range(-1000f, 1000f));
+            }
         }
     }
 }

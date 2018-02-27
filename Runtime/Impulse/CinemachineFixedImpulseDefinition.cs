@@ -42,11 +42,16 @@ namespace Cinemachine
         [Tooltip("The raw signal shape")]
         public AnimationCurve m_RawSignal;
 
+        /// <summary>How to fit the curve into the envelope time</summary>
         public enum RepeatMode
         {
+            /// <summary>Time-stretch the curve to fit the envelope</summary>
             Stretch,
+            /// <summary>Loop the curve in time to fill the envelope</summary>
             Loop
         }
+        /// <summary>How to fit the curve into the envelope time</summary>
+        [Tooltip("How to fit the curve into the envelope time")]
         public RepeatMode m_RepeatMode = RepeatMode.Stretch;
 
         private void OnValidate()
@@ -59,53 +64,65 @@ namespace Cinemachine
         /// <summary>Generate an impulse at a location in space</summary>
         public override void CreateEvent(Vector3 velocity, Vector3 pos, int channel = 1)
         {
-            CinemachineImpulseManager.ImpulseEvent e 
-                = CinemachineImpulseManager.Instance.NewImpulseEvent();
-            e.m_Envelope = m_ImpactEnvelope;
-            e.m_SignalSource = GetImpulse;
-            e.m_SignalParameters = new object [] { velocity, Time.realtimeSinceStartup };
-            e.m_Position = pos;
-            e.m_Radius = m_ImpactRadius;
-            e.m_Channel = Mathf.Abs(channel);
-            e.m_DissipationMode = m_DissipationMode;
-            e.m_DissipationDistance = m_DissipationDistance;
-            CinemachineImpulseManager.Instance.AddImpulseEvent(e);
+            if (m_RawSignal != null && m_ImpactEnvelope.Duration > UnityVectorExtensions.Epsilon)
+            {
+                CinemachineImpulseManager.ImpulseEvent e 
+                    = CinemachineImpulseManager.Instance.NewImpulseEvent();
+                e.m_Envelope = m_ImpactEnvelope;
+                e.m_SignalSource = new SignalSource(
+                    m_RawSignal, velocity, m_RepeatMode, m_ImpactEnvelope.Duration);
+                e.m_Position = pos;
+                e.m_Radius = m_ImpactRadius;
+                e.m_Channel = Mathf.Abs(channel);
+                e.m_DissipationMode = m_DissipationMode;
+                e.m_DissipationDistance = m_DissipationDistance;
+                CinemachineImpulseManager.Instance.AddImpulseEvent(e);
+            }
         }
 
-        /// <summary>Get the raw signal from the Perlin Profile</summary>
-        Vector3 GetImpulse(object[] parameters) 
-        { 
-            Vector3 signal = Vector3.zero;
-            if (m_RawSignal != null && parameters != null && parameters.Length > 1 
-                && parameters[0] is Vector3 && parameters[1] is float)
-            {
-                Vector3 velocity = (Vector3)parameters[0];
-                float deltaTime = Time.realtimeSinceStartup - (float)parameters[1];
+        class SignalSource : CinemachineImpulseManager.IRawSignalSource
+        {
+            AnimationCurve m_RawSignal;
+            Vector3 m_Velocity;
+            RepeatMode m_RepeatMode;
+            float m_EnvelopeDuration;
 
+            public SignalSource(
+                AnimationCurve rawSignal, Vector3 velocity,
+                RepeatMode repeatMode, float duration)
+            {
+                m_RawSignal = rawSignal;
+                m_Velocity = velocity;
+                m_RepeatMode = repeatMode;
+                m_EnvelopeDuration = duration;
+            }
+
+            public Vector3 GetSignal(float timeSinceSignalStart)
+            {
+                Vector3 signal = Vector3.zero;
                 var keys = m_RawSignal.keys;
                 if (keys.Length > 0)
                 {
                     float value = keys[0].value;
                     float start = keys[0].time;
                     float duration = keys[keys.Length-1].time - start;
-                    if (duration > UnityVectorExtensions.Epsilon 
-                        && m_ImpactEnvelope.Duration > UnityVectorExtensions.Epsilon)
+                    if (duration > UnityVectorExtensions.Epsilon)
                     {
                         switch (m_RepeatMode)
                         {
                             default:
                             case RepeatMode.Stretch:
-                                value = m_RawSignal.Evaluate(start + (deltaTime / m_ImpactEnvelope.Duration) * duration);
+                                value = m_RawSignal.Evaluate(start + (timeSinceSignalStart / m_EnvelopeDuration) * duration);
                                 break;
                             case RepeatMode.Loop:
-                                value = m_RawSignal.Evaluate(start + (deltaTime % duration));
+                                value = m_RawSignal.Evaluate(start + (timeSinceSignalStart % duration));
                                 break;
                         }
-                        signal = value * velocity;
+                        signal = value * m_Velocity;
                     }
                 }
+                return signal; 
             }
-            return signal; 
         }
     }
 }

@@ -140,8 +140,11 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Delegate for raw signal function</summary>
-        public delegate Vector3 SignalDelegate(object[] parameters);
+        /// <summary>Interface for raw signal provider</summary>
+        public interface IRawSignalSource
+        {
+            Vector3 GetSignal(float timeSinceSignalStart);
+        }
         
         /// <summary>Describes an event that generates an impulse signal on one or more channels.
         /// The event has a location in space, a start time, a duration, and a signal.  The signal
@@ -158,11 +161,7 @@ namespace Cinemachine
 
             /// <summary>Raw signal source.  The ouput of this will be scaled to fit in the envelope.</summary>
             [Tooltip("Raw signal source.  The ouput of this will be scaled to fit in the envelope.")]
-            public SignalDelegate m_SignalSource;
-
-            /// <summary>Parameters sent to the raw signal source.</summary>
-            [Tooltip("Parameters sent to the raw signal source.")]
-            public object[] m_SignalParameters;
+            public IRawSignalSource m_SignalSource;
 
             /// <summary>If true, then duration is infinite.</summary>
             [Tooltip("If true, then duration is infinite.")]
@@ -241,9 +240,10 @@ namespace Cinemachine
             {
                 if (m_SignalSource != null)
                 {
+                    float time = Time.time - m_StartTime;
                     float distance = Vector3.Distance(listenerPosition, m_Position);
-                    float scale = m_Envelope.GetValueAt(Time.time - m_StartTime) * DistanceDecay(distance);
-                    return m_SignalSource(m_SignalParameters) * scale;
+                    float scale = m_Envelope.GetValueAt(time) * DistanceDecay(distance);
+                    return m_SignalSource.GetSignal(time) * scale;
                 }
                 return Vector3.zero;
             }
@@ -254,7 +254,6 @@ namespace Cinemachine
                 m_Envelope.Clear();
                 m_StartTime = 0;
                 m_SignalSource = null;
-                m_SignalParameters = null;
                 m_Position = Vector3.zero;
                 m_Channel = 0;
                 m_Radius = 0;
