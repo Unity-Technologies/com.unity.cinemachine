@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.13-alpha.1] - 2018-02-27
+### Impulse Module
+- New Cinemachine Impulse module for event-driven camera shakes
+
 ## [2.1.12] - 2018-02-26
 ### Storyboard, Bugfixes and other enhancements.  Also some restructuring for Package Manager
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.

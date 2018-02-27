@@ -120,5 +120,12 @@ namespace Cinemachine.Editor
             }
             return curve;
         }
+
+        public static string NicifyClassName(string name)
+        {
+            if (name.StartsWith("Cinemachine"))
+                name = name.Substring(11); // Trim the prefix
+            return ObjectNames.NicifyVariableName(name);
+        }
     }
 }

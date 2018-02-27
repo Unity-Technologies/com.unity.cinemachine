@@ -1,3 +1,8 @@
+<size=20><b>Version 2.1.13-alpha.1</b></size>
+
+- New Cinemachine Impulse module for event-driven camera shakes
+
+
 <size=20><b>Version 2.1.12</b></size>
 
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.

@@ -120,7 +120,7 @@ namespace Cinemachine.Editor
                 Rect rect = EditorGUILayout.GetControlRect(true);
 
                 // Don't use PrefixLabel() because it will link the enabled status of field and label
-                GUIContent label = new GUIContent(NicifyName(stage.ToString()));
+                GUIContent label = new GUIContent(InspectorUtility.NicifyClassName(stage.ToString()));
                 if (m_stageError[index])
                     label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
                 float labelWidth = EditorGUIUtility.labelWidth - (indentOffset + EditorGUI.indentLevel * 15);
@@ -315,17 +315,10 @@ namespace Cinemachine.Editor
                         names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
                     }
                     else
-                        names[n] = new GUIContent(NicifyName(sStageData[i].types[n].Name));
+                        names[n] = new GUIContent(InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
                 }
                 sStageData[i].PopupOptions = names;
             }
-        }
-
-        static string NicifyName(string name)
-        {
-            if (name.StartsWith("Cinemachine"))
-                name = name.Substring(11); // Trim the prefix
-            return ObjectNames.NicifyVariableName(name);
         }
 
         void UpdateInstanceData()
