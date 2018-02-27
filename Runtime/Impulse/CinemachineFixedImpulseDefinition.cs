@@ -38,32 +38,21 @@ namespace Cinemachine
         [Tooltip("At this distance beyond the impact radius, the signal will have dissipated to zero.")]
         public float m_DissipationDistance = 100;
 
-        /// <summary>
-        /// The asset containing the Perlin Profile.  
-        /// Define the frequencies and amplitudes there to make a signal profile
-        /// </summary>
-        [Tooltip("The asset containing the Perlin Profile.  Define the frequencies and amplitudes there to make a make a signal profile.  Make your own or just use one of the many presets.")]
-        [NoiseSettingsProperty]
-        public NoiseSettings m_PerlinProfile;
+        /// <summary>The raw signal shape</summary>
+        [Tooltip("The raw signal shape")]
+        public AnimationCurve m_RawSignal;
 
-        /// <summary>
-        /// Gain to apply to the amplitudes defined in the Perlin Profile asset.
-        /// </summary>
-        [Tooltip("Gain to apply to the amplitudes defined in the Perlin Profile asset.  1 is normal.  Setting this to 0 completely mutes the signal.")]
-        public float m_AmplitudeGain = 1f;
-
-        /// <summary>
-        /// Scale factor to apply to the frequencies defined in the Perlin Profile asset.
-        /// </summary>
-        [Tooltip("Scale factor to apply to the frequencies defined in the Perlin Profile asset.  1 is normal.  Larger magnitudes will make the signal shake more rapidly.")]
-        public float m_FrequencyGain = 1f;
+        public enum RepeatMode
+        {
+            Stretch,
+            Loop
+        }
+        public RepeatMode m_RepeatMode = RepeatMode.Stretch;
 
         private void OnValidate()
         {
             m_ImpactRadius = Mathf.Max(0, m_ImpactRadius);
             m_DissipationDistance = Mathf.Max(0, m_DissipationDistance);
-            m_AmplitudeGain = Mathf.Max(0, m_AmplitudeGain);
-            m_FrequencyGain = Mathf.Max(0, m_FrequencyGain);
             m_ImpactEnvelope.Validate();
         }
 
@@ -74,7 +63,7 @@ namespace Cinemachine
                 = CinemachineImpulseManager.Instance.NewImpulseEvent();
             e.m_Envelope = m_ImpactEnvelope;
             e.m_SignalSource = GetImpulse;
-            e.m_SignalParameters = new object [] { velocity };
+            e.m_SignalParameters = new object [] { velocity, Time.realtimeSinceStartup };
             e.m_Position = pos;
             e.m_Radius = m_ImpactRadius;
             e.m_Channel = Mathf.Abs(channel);
@@ -87,45 +76,36 @@ namespace Cinemachine
         Vector3 GetImpulse(object[] parameters) 
         { 
             Vector3 signal = Vector3.zero;
-            if (!mInitialized)
-                Initialize();
-            if (m_PerlinProfile != null)
+            if (m_RawSignal != null && parameters != null && parameters.Length > 1 
+                && parameters[0] is Vector3 && parameters[1] is float)
             {
-                // Use whatever channel is more defined (kinda hacky I know)
-                NoiseSettings.TransformNoiseParams[] profile 
-                    = m_PerlinProfile.PositionNoise.Length > m_PerlinProfile.OrientationNoise.Length
-                        ? m_PerlinProfile.PositionNoise : m_PerlinProfile.OrientationNoise;
+                Vector3 velocity = (Vector3)parameters[0];
+                float deltaTime = Time.realtimeSinceStartup - (float)parameters[1];
 
-                float time = (Time.realtimeSinceStartup - mNoiseStartTime) * m_FrequencyGain;
-                signal = NoiseSettings.GetCombinedFilterResults(
-                    profile, time, mNoiseOffsets) * m_AmplitudeGain;
-                if (parameters != null && parameters.Length > 0 && parameters[0] is Vector3)
+                var keys = m_RawSignal.keys;
+                if (keys.Length > 0)
                 {
-                    Vector3 velocity = (Vector3)parameters[0];
-                    float gain = velocity.magnitude;
-                    signal *= gain;
-                    if (gain > UnityVectorExtensions.Epsilon)
+                    float value = keys[0].value;
+                    float start = keys[0].time;
+                    float duration = keys[keys.Length-1].time - start;
+                    if (duration > UnityVectorExtensions.Epsilon 
+                        && m_ImpactEnvelope.Duration > UnityVectorExtensions.Epsilon)
                     {
-                        Quaternion rot = Quaternion.FromToRotation(Vector3.up, velocity);
-                        signal = rot * signal;
+                        switch (m_RepeatMode)
+                        {
+                            default:
+                            case RepeatMode.Stretch:
+                                value = m_RawSignal.Evaluate(start + (deltaTime / m_ImpactEnvelope.Duration) * duration);
+                                break;
+                            case RepeatMode.Loop:
+                                value = m_RawSignal.Evaluate(start + (deltaTime % duration));
+                                break;
+                        }
+                        signal = value * velocity;
                     }
                 }
             }
             return signal; 
-        }
-
-        private bool mInitialized = false;
-        private float mNoiseStartTime = 0;
-        private Vector3 mNoiseOffsets = Vector3.zero;
-
-        void Initialize()
-        {
-            mInitialized = true;
-            mNoiseStartTime = Time.realtimeSinceStartup;
-            mNoiseOffsets = new Vector3(
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f));
         }
     }
 }
