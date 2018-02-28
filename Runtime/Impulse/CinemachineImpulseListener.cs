@@ -35,7 +35,7 @@ namespace Cinemachine
             {
                 Vector3 impulse = CinemachineImpulseManager.Instance.GetImpulseAt(
                     state.FinalPosition, m_ChannelMask);
-                state.PositionCorrection += impulse * m_Gain;
+                state.PositionCorrection += impulse * -m_Gain;
             }
         }
     }

@@ -40,9 +40,9 @@ namespace Cinemachine
             [Tooltip("If there is no RigidBody component, this mass will affect the intensity of the impulse")]
             public float m_Mass = 1;
 
-            /// <summary>If there is no RigidBody component, this velocity will affect the intensity of the impulse.</summary>
-            [Tooltip("If there is no RigidBody component, this velocity will affect the intensity of the impulse")]
-            public Vector3 m_Velocity = Vector3.up;
+            /// <summary>If there is no RigidBody component, this velocity will affect the intensity and direction of the impulse.</summary>
+            [Tooltip("If there is no RigidBody component, this velocity will affect the intensity and direction of the impulse")]
+            public Vector3 m_Velocity = Vector3.down;
         }
 
         /// <summary>How to calculate the direction and intensity of the impact</summary>
@@ -87,14 +87,14 @@ namespace Cinemachine
             mRigidBody2D = GetComponent<Rigidbody2D>();
         }
         
-        private void GenerateImpactEvent(GameObject other)
+        private void GenerateImpactEvent(GameObject other, bool otherCollided)
         {
             // Check the filters
             if (!enabled)
                 return;
             if (((1 << other.layer) & m_CollideAgainst) == 0)
                 return;
-            if (m_IgnoreTag.Length != 0 && !other.CompareTag(m_IgnoreTag))
+            if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
                 return;
 
             Vector3 vel = m_DefaultIfNoRigidBody.m_Velocity;
@@ -126,7 +126,10 @@ namespace Cinemachine
                     var rb = other.GetComponent<Rigidbody>();
                     if (rb != null)
                     {
-                        vel += rb.velocity;
+                        if (otherCollided)
+                            vel -= rb.velocity;
+                        else
+                            vel += rb.velocity;
                         mass += rb.mass;
                     }
                     else
@@ -134,7 +137,10 @@ namespace Cinemachine
                         var rb2d = other.GetComponent<Rigidbody2D>();
                         if (rb2d != null)
                         {
-                            vel += (Vector3)rb2d.velocity;
+                            if (otherCollided)
+                                vel -= (Vector3)rb2d.velocity;
+                            else
+                                vel += (Vector3)rb2d.velocity;
                             mass += rb2d.mass;
                         }
                         else 
@@ -150,22 +156,22 @@ namespace Cinemachine
 
         private void OnCollisionEnter(Collision other)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(other.gameObject, true);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(other.gameObject, false);
         }
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(other.gameObject, true);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(other.gameObject, false);
         }
 
         private void OnEnable() {} // For the Enabled checkbox
