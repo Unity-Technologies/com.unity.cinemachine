@@ -10,6 +10,7 @@ namespace Cinemachine
     [ExecuteInEditMode]
     [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     public class CinemachineImpulseListener : CinemachineExtension
     {
         /// <summary>

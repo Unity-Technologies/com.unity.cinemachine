@@ -5,7 +5,7 @@ namespace Cinemachine
     /// <summary>
     /// An event-driven impulse that gets propagated to listeners
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
     public class CinemachineImpulseSource : MonoBehaviour
     {

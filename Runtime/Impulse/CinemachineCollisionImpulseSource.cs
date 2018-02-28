@@ -7,7 +7,7 @@ namespace Cinemachine
     /// An event-driven impulse that gets propagated to listeners when the object's
     /// Collider collides with anything or its trigger zone is entered.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
     public class CinemachineCollisionImpulseSource : MonoBehaviour
     {

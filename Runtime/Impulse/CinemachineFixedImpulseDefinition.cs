@@ -6,7 +6,7 @@ namespace Cinemachine
     /// <summary>
     /// A definition of an impulse signal that gets propagated to listeners
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
+    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
     public class CinemachineFixedImpulseDefinition : CinemachineImpulseDefinition
     {

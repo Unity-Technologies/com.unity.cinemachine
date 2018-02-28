@@ -5,30 +5,22 @@ namespace Cinemachine
     /// <summary>
     /// Property applied to AxisState.  Used for custom drawing in the inspector.
     /// </summary>
-    public sealed class AxisStatePropertyAttribute : PropertyAttribute
-    {
-    }
+    public sealed class AxisStatePropertyAttribute : PropertyAttribute {}
 
     /// <summary>
     /// Property applied to OrbitalTransposer.Heading.  Used for custom drawing in the inspector.
     /// </summary>
-    public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute
-    {
-    }
+    public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute {}
 
     /// <summary>
     /// Property applied to LensSettings.  Used for custom drawing in the inspector.
     /// </summary>
-    public sealed class LensSettingsPropertyAttribute : PropertyAttribute
-    {
-    }
+    public sealed class LensSettingsPropertyAttribute : PropertyAttribute {}
     
     /// <summary>
     /// Property applied to CinemachineBlendDefinition.  Used for custom drawing in the inspector.
     /// </summary>
-    public sealed class CinemachineBlendDefinitionPropertyAttribute : PropertyAttribute
-    {
-    }
+    public sealed class CinemachineBlendDefinitionPropertyAttribute : PropertyAttribute {}
 
     /// <summary>
     /// Invoke play-mode-save for a class.  This class's fields will be scanned
@@ -36,27 +28,19 @@ namespace Cinemachine
     /// This is a stopgap measure that will become obsolete once Unity implements
     /// play-mode-save in a more general way.
     /// </summary>
-    public sealed class SaveDuringPlayAttribute : System.Attribute
-    {
-    }
+    public sealed class SaveDuringPlayAttribute : System.Attribute {}
 
     /// <summary>
     /// Suppresses play-mode-save for a field.  Use it if the calsee has [SaveDuringPlay] 
     /// attribute but there are fields in the class that shouldn't be saved.
     /// </summary>
-    public sealed class NoSaveDuringPlayAttribute : PropertyAttribute
-    {
-    }
+    public sealed class NoSaveDuringPlayAttribute : PropertyAttribute {}
 
     /// <summary>Property field is a Tag.</summary>
-    public sealed class TagFieldAttribute : PropertyAttribute
-    {
-    }
+    public sealed class TagFieldAttribute : PropertyAttribute {}
 
     /// <summary>Property field is a NoiseSettings asset.</summary>
-    public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute
-    {
-    }    
+    public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute {}    
     
     /// <summary>
     /// Atrtribute to control the automatic generation of documentation.
