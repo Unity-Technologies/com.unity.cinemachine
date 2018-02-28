@@ -47,6 +47,7 @@ namespace Cinemachine
             string fromCameraName, string toCameraName, CinemachineBlendDefinition defaultBlend)
         {
             bool gotAnyToMe = false;
+            bool gotMeToAny = false;
             CinemachineBlendDefinition anyToMe = defaultBlend;
             CinemachineBlendDefinition meToAny = defaultBlend;
             if (m_CustomBlends != null)
@@ -60,7 +61,7 @@ namespace Cinemachine
                     {
                         return blendParams.m_Blend;
                     }
-                    // If we come across default applicable wildcards, remember them
+                    // If we come across applicable wildcards, remember them
                     if (blendParams.m_From == kBlendFromAnyCameraLabel)
                     {
                         if (!string.IsNullOrEmpty(toCameraName)
@@ -77,6 +78,7 @@ namespace Cinemachine
                              && blendParams.m_From == fromCameraName)
                     {
                         meToAny = blendParams.m_Blend;
+                        gotMeToAny = true;
                     }
                 }
             }
@@ -86,7 +88,11 @@ namespace Cinemachine
             if (gotAnyToMe)
                 return anyToMe;
 
-            return meToAny;
+            // Still have nothing? Try from our camera to any camera
+            if (gotMeToAny)
+                return meToAny;
+
+            return defaultBlend;
         }
     }
 }
