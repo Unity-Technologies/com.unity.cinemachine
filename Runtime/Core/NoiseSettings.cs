@@ -1,11 +1,12 @@
 using UnityEngine;
 using System;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
     /// <summary>
     /// This is an asset that defines a noise profile.  A noise profile is the 
-    /// shape of the noise as a function of time.  You can build arbitrarily complex shapes by
+    /// shape of the noise signal as a function of time.  You can build arbitrarily complex shapes by
     /// combining different base perlin noise frequencies at different amplitudes.
     /// 
     /// The frequencies and amplitudes should be chosen with care, to ensure an interesting
@@ -19,19 +20,31 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     public sealed class NoiseSettings : ScriptableObject
     {
-        /// <summary>
-        /// Describes the behaviour for a channel of noise
-        /// </summary>
+        /// <summary>Describes the behaviour for a channel of noise</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct NoiseParams
         {
-            /// <summary>The amplitude of the noise for this channel.  Larger numbers vibrate higher</summary>
-            [Tooltip("The amplitude of the noise for this channel.  Larger numbers vibrate higher.")]
-            public float Amplitude;
             /// <summary>The frequency of noise for this channel.  Higher magnitudes vibrate faster</summary>
             [Tooltip("The frequency of noise for this channel.  Higher magnitudes vibrate faster.")]
             public float Frequency;
+
+            /// <summary>The amplitude of the noise for this channel.  Larger numbers vibrate higher</summary>
+            [Tooltip("The amplitude of the noise for this channel.  Larger numbers vibrate higher.")]
+            public float Amplitude;
+
+            /// <summary>If checked, then the amplitude will not be randomized</summary>
+            [Tooltip("If checked, then the amplitude will not be randomized.")]
+            public bool Constant;
+
+            /// <summary>Get the signal value at a given time, offset by a given amount</summary>
+            public float GetValueAt(float time, float timeOffset)
+            {
+                float t = (Frequency * time) + timeOffset;
+                if (Constant)
+                    return  Mathf.Sin(t * 2 * Mathf.PI) * Amplitude * 0.5f;
+                return (Mathf.PerlinNoise(t, 0f) - 0.5f) * Amplitude;
+            }
         }
 
         /// <summary>
@@ -50,33 +63,34 @@ namespace Cinemachine
             /// <summary>Noise definition for Z-axis</summary>
             [Tooltip("Noise definition for Z-axis")]
             public NoiseParams Z;
+
+            /// <summary>Get the signal value at a given time, offset by a given amount</summary>
+            public Vector3 GetValueAt(float time, Vector3 timeOffsets)
+            {
+                return new Vector3(
+                    X.GetValueAt(time, timeOffsets.x), 
+                    Y.GetValueAt(time, timeOffsets.y), 
+                    Z.GetValueAt(time, timeOffsets.z));
+            }
         }
 
-        [SerializeField]
+        /// <summary>The array of positional noise channels for this <c>NoiseSettings</c></summary>
         [Tooltip("These are the noise channels for the virtual camera's position. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
-        private TransformNoiseParams[] m_Position = new TransformNoiseParams[0];
+        [FormerlySerializedAs("m_Position")]
+        public TransformNoiseParams[] PositionNoise = new TransformNoiseParams[0];
 
-        /// <summary>
-        /// Gets the array of positional noise channels for this <c>NoiseSettings</c>
-        /// </summary>
-        public TransformNoiseParams[] PositionNoise { get { return m_Position; } }
-
-        [SerializeField]
+        /// <summary>The array of orientation noise channels for this <c>NoiseSettings</c></summary>
         [Tooltip("These are the noise channels for the virtual camera's orientation. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
-        private TransformNoiseParams[] m_Orientation = new TransformNoiseParams[0];
-
-        /// <summary>
-        /// Gets the array of orientation noise channels for this <c>NoiseSettings</c>
-        /// </summary>
-        public TransformNoiseParams[] OrientationNoise { get { return m_Orientation; } }
+        [FormerlySerializedAs("m_Orientation")]
+        public TransformNoiseParams[] OrientationNoise = new TransformNoiseParams[0];
 
         /// <summary>Clones the contents of the other asset into this one</summary>
         public void CopyFrom(NoiseSettings other)
         {
-            m_Position = new TransformNoiseParams[other.m_Position.Length];
-            other.m_Position.CopyTo(m_Position, 0);
-            m_Orientation = new TransformNoiseParams[other.m_Orientation.Length];
-            other.m_Orientation.CopyTo(m_Orientation, 0);
+            PositionNoise = new TransformNoiseParams[other.PositionNoise.Length];
+            other.PositionNoise.CopyTo(PositionNoise, 0);
+            OrientationNoise = new TransformNoiseParams[other.OrientationNoise.Length];
+            other.OrientationNoise.CopyTo(OrientationNoise, 0);
         }
 
         /// <summary>Get the noise signal value at a specific time</summary>
@@ -87,28 +101,13 @@ namespace Cinemachine
         public static Vector3 GetCombinedFilterResults(
             TransformNoiseParams[] noiseParams, float time, Vector3 timeOffsets)
         {
-            float xPos = 0f;
-            float yPos = 0f;
-            float zPos = 0f;
+            Vector3 pos = Vector3.zero;
             if (noiseParams != null)
             {
                 for (int i = 0; i < noiseParams.Length; ++i)
-                {
-                    TransformNoiseParams param = noiseParams[i];
-                    Vector3 timeVal = new Vector3(param.X.Frequency, param.Y.Frequency, param.Z.Frequency) * time;
-                    timeVal += timeOffsets;
-
-                    Vector3 noise = new Vector3(
-                            Mathf.PerlinNoise(timeVal.x, 0f) - 0.5f,
-                            Mathf.PerlinNoise(timeVal.y, 0f) - 0.5f,
-                            Mathf.PerlinNoise(timeVal.z, 0f) - 0.5f);
-
-                    xPos += noise.x * param.X.Amplitude;
-                    yPos += noise.y * param.Y.Amplitude;
-                    zPos += noise.z * param.Z.Amplitude;
-                }
+                    pos += noiseParams[i].GetValueAt(time, timeOffsets);
             }
-            return new Vector3(xPos, yPos, zPos);
+            return pos;
         }
 
     }
