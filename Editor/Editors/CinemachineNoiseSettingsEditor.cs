@@ -20,20 +20,20 @@ namespace Cinemachine.Editor
 
         private ReorderableList[] mPosChannels;
         private ReorderableList[] mRotChannels;
-        private GUIContent[] mPoslabels = new GUIContent[] 
+        private static GUIContent[] mPoslabels = new GUIContent[] 
         { 
             new GUIContent("Position X"), 
             new GUIContent("Position Y"), 
             new GUIContent("Position Z") 
         };
-        private GUIContent[] mRotlabels = new GUIContent[] 
+        private static GUIContent[] mRotlabels = new GUIContent[] 
         { 
             new GUIContent("Rotation X"), 
             new GUIContent("Rotation Y"), 
             new GUIContent("Rotation Z") 
         };
-        private bool[] mPosExpanded = new bool[3];
-        private bool[] mRotExpanded = new bool[3];
+        private static bool[] mPosExpanded = new bool[3];
+        private static bool[] mRotExpanded = new bool[3];
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -62,9 +62,8 @@ namespace Cinemachine.Editor
 
             r = EditorGUILayout.GetControlRect();
             EditorGUI.LabelField(r, "Position Noise", EditorStyles.boldLabel);
-            float graphAmplitude = GetMaxAmplitude(Target.PositionNoise);
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-            DrawNoisePreview(r, Target.PositionNoise, 7, graphAmplitude);
+            DrawNoisePreview(r, Target.PositionNoise, 7);
             for (int i = 0; i < mPosChannels.Length; ++i)
             {
                 r = EditorGUILayout.GetControlRect();
@@ -72,7 +71,7 @@ namespace Cinemachine.Editor
                 if (mPosExpanded[i])
                 {
                     r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-                    DrawNoisePreview(r, Target.PositionNoise, 1 << i, graphAmplitude);
+                    DrawNoisePreview(r, Target.PositionNoise, 1 << i);
                     mPosChannels[i].DoLayoutList();
                 }
             }
@@ -80,9 +79,8 @@ namespace Cinemachine.Editor
 
             r = EditorGUILayout.GetControlRect();
             EditorGUI.LabelField(r, "Rotation Noise", EditorStyles.boldLabel);
-            graphAmplitude = GetMaxAmplitude(Target.OrientationNoise);
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-            DrawNoisePreview(r, Target.OrientationNoise, 7, graphAmplitude);
+            DrawNoisePreview(r, Target.OrientationNoise, 7);
             for (int i = 0; i < mPosChannels.Length; ++i)
             {
                 r = EditorGUILayout.GetControlRect();
@@ -90,24 +88,12 @@ namespace Cinemachine.Editor
                 if (mRotExpanded[i])
                 {
                     r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-                    DrawNoisePreview(r, Target.OrientationNoise, 1 << i, graphAmplitude);
+                    DrawNoisePreview(r, Target.OrientationNoise, 1 << i);
                     mRotChannels[i].DoLayoutList();
                 }
             }
 
             serializedObject.ApplyModifiedProperties();
-        }
-
-        private float GetMaxAmplitude(NoiseSettings.TransformNoiseParams[] settings)
-        {
-            float result = 0.001f;
-            for (int i = 0; i < settings.Length; ++i)
-            {
-                result = Mathf.Max(result, Mathf.Abs(settings[i].X.Amplitude));
-                result = Mathf.Max(result, Mathf.Abs(settings[i].Y.Amplitude));
-                result = Mathf.Max(result, Mathf.Abs(settings[i].Z.Amplitude));
-            }
-            return result;
         }
 
         private List<Vector3> mSampleCurveX = new List<Vector3>();
@@ -117,7 +103,7 @@ namespace Cinemachine.Editor
 
         private void GetSampleCurve(
             Rect r, NoiseSettings.TransformNoiseParams[] signal, 
-            int numSamples, float graphAmplitude)
+            int numSamples)
         {
             float maxVal = 0;
             mSampleNoise.Clear(); 
@@ -146,11 +132,10 @@ namespace Cinemachine.Editor
         }
 
         private void DrawNoisePreview(
-            Rect r, NoiseSettings.TransformNoiseParams[] signal, 
-            int channelMask, float graphAmplitude)
+            Rect r, NoiseSettings.TransformNoiseParams[] signal, int channelMask)
         {
             EditorGUI.DrawRect(r, Color.black);
-            GetSampleCurve(r, signal, (int)(r.width / 2), graphAmplitude);
+            GetSampleCurve(r, signal, (int)(r.width / 2));
             if ((channelMask & 1) != 0)
             {
                 Handles.color = new Color(1, 0.5f, 0, 0.8f); 
