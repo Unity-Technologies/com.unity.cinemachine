@@ -1,9 +1,9 @@
 <size=20><b>Version 2.1.13-alpha.1</b></size>
 
 - New Cinemachine Impulse module for event-driven camera shakes (WIP)
+- Added Named FOV presets for Camera Lens
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview
-
 
 <size=20><b>Version 2.1.12</b></size>
 
