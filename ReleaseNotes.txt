@@ -4,6 +4,7 @@
 - Added Named FOV presets for Camera Lens
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview
+- If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera
 
 <size=20><b>Version 2.1.12</b></size>
 
