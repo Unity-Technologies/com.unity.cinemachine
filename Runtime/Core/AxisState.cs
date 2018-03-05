@@ -197,8 +197,8 @@ namespace Cinemachine
             return m_MaxSpeed;
         }
 
-        /// <summary>Value range is locked, i.e. not adjustable by the user</summary>
-        internal bool ValueRangeLocked { get; set; }
+        /// <summary>Value range is locked, i.e. not adjustable by the user (used by editor)</summary>
+        public bool ValueRangeLocked { get; set; }
 
 
         /// <summary>Helper for automatic axis recentering</summary>

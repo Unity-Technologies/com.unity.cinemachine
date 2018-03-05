@@ -424,7 +424,7 @@ namespace Cinemachine
                         composer.m_HorizontalDamping = composer.m_VerticalDamping = 0;
                         composer.m_ScreenX = 0.5f;
                         composer.m_ScreenY = softCenterDefaultsV[i];
-                        composer.m_DeadZoneWidth = composer.m_DeadZoneHeight = 0.1f;
+                        composer.m_DeadZoneWidth = composer.m_DeadZoneHeight = 0f;
                         composer.m_SoftZoneWidth = composer.m_SoftZoneHeight = 0.8f;
                         composer.m_BiasX = composer.m_BiasY = 0;
                     }
@@ -522,22 +522,14 @@ namespace Cinemachine
             UpdateRigCache();
             for (int i = 0; i < m_Rigs.Length; ++i)
             {
-                //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PushSettingsToRigs.m_Rigs[i] == null");
                 if (m_Rigs[i] == null)
-                {
-                    //UnityEngine.Profiling.Profiler.EndSample();
                     continue;
-                }
-                //UnityEngine.Profiling.Profiler.EndSample();
 
-                //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PushSettingsToRigs.m_CommonLens");
                 if (m_CommonLens)
                     m_Rigs[i].m_Lens = m_Lens;
-                //UnityEngine.Profiling.Profiler.EndSample();
 
                 // If we just deserialized from a legacy version, 
                 // pull the orbits and targets from the rigs
-                //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PushSettingsToRigs.mUseLegacyRigDefinitions");
                 if (mUseLegacyRigDefinitions)
                 {
                     mUseLegacyRigDefinitions = false;
@@ -547,19 +539,15 @@ namespace Cinemachine
                         Follow = m_Rigs[i].Follow;
                 }
                 m_Rigs[i].Follow = null;
-                //UnityEngine.Profiling.Profiler.EndSample();
 
                 // Hide the rigs from prying eyes
-                //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PushSettingsToRigs.Hide the rigs");
                 if (CinemachineCore.sShowHiddenObjects)
                     m_Rigs[i].gameObject.hideFlags
                         &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
                 else
                     m_Rigs[i].gameObject.hideFlags
                         |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
-                //UnityEngine.Profiling.Profiler.EndSample();
 
-                //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PushSettingsToRigs.Push");
                 mOrbitals[i].m_FollowOffset = GetLocalPositionForCameraFromInput(GetYAxisValue());
                 mOrbitals[i].m_BindingMode = m_BindingMode;
                 mOrbitals[i].m_Heading = m_Heading;
@@ -571,8 +559,6 @@ namespace Cinemachine
                 // Hack to get SimpleFollow with heterogeneous dampings to work
                 if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                     m_Rigs[i].SetStateRawPosition(State.RawPosition);
-
-                //UnityEngine.Profiling.Profiler.EndSample();
             }
             //UnityEngine.Profiling.Profiler.EndSample();
         }

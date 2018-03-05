@@ -55,6 +55,8 @@ namespace Cinemachine.Editor
                 EditorGUILayout.HelpBox(
                     "Orbital Transposer requires a Follow target.", 
                     MessageType.Warning);
+            Target.m_XAxis.ValueRangeLocked 
+                = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
             DrawRemainingPropertiesInInspector();
         }
 

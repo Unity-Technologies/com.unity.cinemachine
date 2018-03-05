@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
         {
             bool locked = false;
             PropertyInfo pi = typeof(AxisState).GetProperty(
-                "ValueRangeLocked", BindingFlags.NonPublic | BindingFlags.Instance);
+                "ValueRangeLocked", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             if (pi != null)
                 locked = bool.Equals(true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
             return locked;

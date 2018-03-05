@@ -37,6 +37,9 @@ namespace Cinemachine
 
         public override void OnInspectorGUI()
         {
+            Target.m_XAxis.ValueRangeLocked 
+                = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
+
             // Ordinary properties
             BeginInspector();
             DrawHeaderInInspector();
