@@ -231,7 +231,7 @@ namespace Cinemachine
 
             // Set the orientation and up
             Quaternion newOrientation 
-                = GetTargetOrientationAtPathPoint(newPathOrientation, curState.ReferenceUp);
+                = GetCameraOrientationAtPathPoint(newPathOrientation, curState.ReferenceUp);
             if (deltaTime < 0)
                 m_PreviousOrientation = newOrientation;
             else 
@@ -250,11 +250,12 @@ namespace Cinemachine
             }
 
             curState.RawOrientation = newOrientation;
-            curState.ReferenceUp = curState.RawOrientation * Vector3.up;
+            if (m_CameraUp != CameraUpMode.Default)
+                curState.ReferenceUp = curState.RawOrientation * Vector3.up;
             //UnityEngine.Profiling.Profiler.EndSample();
         }
         
-        private Quaternion GetTargetOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)
+        private Quaternion GetCameraOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)
         {
             switch (m_CameraUp)
             {
