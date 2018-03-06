@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using UnityEngine;
 
 namespace Cinemachine.Utility
 {
@@ -18,8 +19,11 @@ namespace Cinemachine.Utility
         /// <param name="bindingAttr">The mask to filter the attributes.
         /// Only those fields that get caught in the filter will be copied</param>
         public static void CopyFields(
-            Object src, Object dst,
-            System.Reflection.BindingFlags bindingAttr = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            System.Object src, System.Object dst,
+            System.Reflection.BindingFlags bindingAttr 
+                = System.Reflection.BindingFlags.Public 
+                | System.Reflection.BindingFlags.NonPublic 
+                | System.Reflection.BindingFlags.Instance)
         {
             if (src != null && dst != null)
             {
@@ -158,7 +162,9 @@ namespace Cinemachine.Utility
                 return obj;
 
             var info = obj.GetType().GetField(
-                    fields[0], System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    fields[0], System.Reflection.BindingFlags.Public 
+                        | System.Reflection.BindingFlags.NonPublic 
+                        | System.Reflection.BindingFlags.Instance);
             obj = info.GetValue(obj);
 
             return GetParentObject(string.Join(".", fields, 1, fields.Length - 1), obj);
@@ -192,6 +198,124 @@ namespace Cinemachine.Utility
                 if (i > 0) sb.Append('.');
             }
             return sb.ToString();
+        }
+
+
+        class GameObjectFieldScanner
+        {
+            public OnFieldFoundDelegate OnFieldFound;
+            public delegate bool OnFieldFoundDelegate(string fullName, FieldInfo field, ref object owner);
+
+            /// <summary>Which fields will be scanned</summary>
+            public BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance;
+
+            public bool ScanFields(string fullName, ref object obj)
+            {
+                bool doneSomething = false;
+                FieldInfo[] fields = obj.GetType().GetFields(bindingFlags);
+                if (fields.Length > 0)
+                {
+                    for (int i = 0; i < fields.Length; ++i)
+                    {
+                        string name = fullName + "." + fields[i].Name;
+                        object fieldValue = fields[i].GetValue(obj);
+                        if (fieldValue != null && OnFieldFound != null && OnFieldFound(name, fields[i], ref obj))
+                            doneSomething = true;
+
+                        // Check if it's a complex type
+                        Type type = fields[i].FieldType;
+                        if (fieldValue != null
+                            && !type.IsSubclassOf(typeof(Component))
+                            && !type.IsSubclassOf(typeof(GameObject)))
+                        {
+                            if (ScanFields(name, ref fieldValue))
+                                doneSomething = true;
+
+                            // Is it an array?
+                            if (type.IsArray)
+                            {
+                                Array array = fieldValue as Array;
+                                for (int j = 0; j < array.Length; ++j)
+                                {
+                                    object element = array.GetValue(j);
+                                    if (element != null && ScanFields(fullName + "[" + j + "]", ref element))
+                                        doneSomething = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                return doneSomething;
+            }
+
+            /// <summary>
+            /// Recursively scan the MonoBehaviours of a GameObject.
+            /// For each leaf field found, call the OnFieldValue delegate.
+            /// </summary>
+            public bool ScanFields(GameObject go)
+            {
+                bool doneSomething = false;
+                MonoBehaviour[] components = go.GetComponents<MonoBehaviour>();
+                for (int i = 0; i < components.Length; ++i)
+                {
+                    object c = components[i] as object;
+                    if (c != null && ScanFields(c.GetType().Name, ref c))
+                        doneSomething = true;
+                }
+                return doneSomething;
+            }
+        };
+
+        public static List<string> GetAllFieldOfType(Type type, GameObject go)
+        {
+            List<string> fields = new List<string>();
+            GameObjectFieldScanner scanner = new GameObjectFieldScanner();
+            scanner.OnFieldFound = (string fullName, FieldInfo field, ref object owner) =>
+                {
+                    //Debug.Log(fullName);
+                    if (!field.FieldType.IsSubclassOf(type))
+                        return false;
+                    fields.Add(fullName);
+                    return true;
+                };
+
+            scanner.ScanFields(go);
+            return fields;
+        }
+
+        public static FieldInfo FieldFromPath(GameObject go, string path, out object outObj)
+        {
+            List<string> fields = new List<string>();
+            GameObjectFieldScanner scanner = new GameObjectFieldScanner();
+            FieldInfo resultFI = null;
+            object resultObj = null;
+            scanner.OnFieldFound = (string fullName, FieldInfo field, ref object owner) =>
+                {
+                    if (resultFI != null && fullName == path)
+                    {
+                        resultFI = field;
+                        resultObj = owner;
+                        return true;
+                    }
+                    return false;
+                };
+
+            scanner.ScanFields(go);
+            outObj = resultObj;
+            return resultFI;
+        }
+
+        public static T FieldValueFromPath<T>(GameObject go, string path, T defaultValue)
+        {
+            object owner;
+            FieldInfo field = FieldFromPath(go, path, out owner);
+            if (field != null)
+            {
+                object value = field.GetValue(owner);
+                if (value != null && value.GetType() == typeof(T))
+                    return (T)value;
+            }
+            return defaultValue;
         }
     }
 }

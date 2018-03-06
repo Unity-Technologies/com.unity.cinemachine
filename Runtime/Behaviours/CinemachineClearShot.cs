@@ -394,20 +394,6 @@ namespace Cinemachine
             return blend;
         }
 
-        private CinemachineBlend CreateBlend(
-            ICinemachineCamera camA, ICinemachineCamera camB, 
-            CinemachineBlendDefinition blendDef,
-            CinemachineBlend activeBlend, float deltaTime)
-        {
-            if (blendDef.BlendCurve == null || blendDef.m_Time <= 0 || (camA == null && camB == null))
-                return null;
-            if (activeBlend != null)
-                camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
-            else if (camA == null)
-                camA = new StaticPointVirtualCamera(State, "(none)");
-            return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
-        }
-
         /// <summary>Notification that this virtual camera is going live.
         /// This implementation resets the child randomization.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>

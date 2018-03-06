@@ -408,5 +408,21 @@ namespace Cinemachine
                 for (int i = 0; i < extensions.Length; ++i)
                     extensions[i].OnTargetObjectWarped(target, positionDelta);
         }
+
+        /// <summary>Create a blend between 2 virtual cameras, taking into account 
+        /// any existing active blend.</summary>
+        protected CinemachineBlend CreateBlend(
+            ICinemachineCamera camA, ICinemachineCamera camB, 
+            CinemachineBlendDefinition blendDef,
+            CinemachineBlend activeBlend, float deltaTime)
+        {
+            if (blendDef.BlendCurve == null || blendDef.m_Time <= 0 || (camA == null && camB == null))
+                return null;
+            if (activeBlend != null)
+                camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
+            else if (camA == null)
+                camA = new StaticPointVirtualCamera(State, "(none)");
+            return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
+        }    
     }
 }

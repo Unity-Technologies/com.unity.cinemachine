@@ -63,7 +63,7 @@ namespace Cinemachine
         public CalculationMode m_CalculationMode = CalculationMode.UseCombinedMassesAndVelocities;
 
         /// <summary>These values will be used if no relevant RigidBodies can be found</summary>
-        public DefaultValues m_DefaultIfNoRigidBody;
+        public DefaultValues m_DefaultIfNoRigidBody = new DefaultValues();
 
 
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels</summary>
