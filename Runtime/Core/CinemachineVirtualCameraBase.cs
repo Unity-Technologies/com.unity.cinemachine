@@ -137,11 +137,7 @@ namespace Cinemachine
             /// <summary>Cylindrical blend about LookAt target position if there is a LookAt target (vertical co-ordinate is linearly interpolated), linear blend between LookAt targets</summary>
             CylindricalPosition,
             /// <summary>Standard linear position blend, radial blend between LookAt targets</summary>
-            LinearPositionRadialAim,
-            /// <summary>Spherical blend about LookAt target position if there is a LookAt target, radial blend between LookAt targets</summary>
-            //SphericalPositionRadialAim,
-            /// <summary>Cylindrical blend about LookAt target position if there is a LookAt target (vertical co-ordinate is linearly interpolated), radial blend between LookAt targets</summary>
-            //CylindricalPositionRadialAim
+            ScreenSpaceAimWhenTargetsDiffer
         }
 
         /// <summary>Applies a position blend hint to the camera state</summary>
@@ -157,15 +153,9 @@ namespace Cinemachine
                 case BlendHint.CylindricalPosition: 
                     state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend; 
                     break;
-                case BlendHint.LinearPositionRadialAim: 
+                case BlendHint.ScreenSpaceAimWhenTargetsDiffer: 
                     state.BlendHint |= CameraState.BlendHintValue.RadialAimBlend; 
                     break;
-                //case BlendHint.SphericalPositionRadialAim: 
-                //    state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend | CameraState.BlendHintValue.RadialAimBlend; 
-                //    break;
-                //case BlendHint.CylindricalPositionRadialAim: 
-                //    state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend | CameraState.BlendHintValue.RadialAimBlend; 
-                //    break;
             }
         }
         

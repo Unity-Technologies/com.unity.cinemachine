@@ -6,7 +6,7 @@
 - Added NoiseSettings editor with signal preview
 - If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera
 - TrackedDolly: Default up mode sets Up to World Up
-- Added Radial Aim as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
+- Added ScreenSpaceAimWhenTargetsDiffer as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
 
 <size=20><b>Version 2.1.12</b></size>
 
