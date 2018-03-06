@@ -76,7 +76,8 @@ namespace Cinemachine
 
         /// <summary>Hint for blending positions to and from this virtual camera</summary>
         [Tooltip("Hint for blending positions to and from this virtual camera")]
-        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Linear;
+        [FormerlySerializedAs("m_PositionBlending")]
+        public BlendHint m_BlendHint = BlendHint.None;
 
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
@@ -131,7 +132,7 @@ namespace Cinemachine
 
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            SetPositionBlendMethod(ref m_State, m_PositionBlending);
+            ApplyPositionBlendMethod(ref m_State, m_BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.

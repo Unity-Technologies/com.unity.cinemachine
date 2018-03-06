@@ -125,8 +125,10 @@ namespace Cinemachine
             NoTransform = NoPosition | NoOrientation,
             /// <summary>Spherical blend about the LookAt target (if any)</summary>
             SphericalPositionBlend = 4,
-            /// <summary>Cylidrical blend about the LookAt target (if any)</summary>
-            CylindricalPositionBlend = 8
+            /// <summary>Cylindrical blend about the LookAt target (if any)</summary>
+            CylindricalPositionBlend = 8,
+            /// <summary>Radial blend when the LookAt target changes(if any)</summary>
+            RadialAimBlend = 16
         }
 
         /// <summary>
@@ -329,14 +331,23 @@ namespace Cinemachine
                 state.RawPosition, state.InterpolatePosition(
                     stateA.RawPosition, stateA.ReferenceLookAt,
                     stateB.RawPosition, stateB.ReferenceLookAt,
-                    state.ReferenceLookAt, t));
+                    t));
+
+            // Interpolate the LookAt in Screen Space if requested
+            if (state.HasLookAt 
+                && ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.RadialAimBlend) != 0)
+            {
+                state.ReferenceLookAt = state.RawPosition + Vector3.Slerp(
+                        stateA.ReferenceLookAt - state.RawPosition, 
+                        stateB.ReferenceLookAt - state.RawPosition, adjustedT);
+            }
 
             // Clever orientation interpolation
             Quaternion newOrient = state.RawOrientation;
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoOrientation) == 0)
             {
                 Vector3 dirTarget = Vector3.zero;
-                if (state.HasLookAt)
+                if (state.HasLookAt)//&& ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.RadialAimBlend) == 0)
                 {
                     // If orientations are different, use LookAt to blend them
                     float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);
@@ -442,24 +453,26 @@ namespace Cinemachine
         Vector3 InterpolatePosition(
             Vector3 posA, Vector3 pivotA,
             Vector3 posB, Vector3 pivotB,
-            Vector3 pivot, float t)
+            float t)
         {
             #pragma warning disable 1718 // comparison made to same variable
-            if (pivot == pivot && pivotA == pivotA && pivotB == pivotB) // check for NaN
+            if (pivotA == pivotA && pivotB == pivotB) // check for NaN
             {
                 if ((BlendHint & BlendHintValue.CylindricalPositionBlend) != 0)
                 {
-                    // Cylindrical interpolation about travelling pivot
-                    var a = posA - pivotA;
-                    var a0 = Vector3.ProjectOnPlane(a, ReferenceUp);
-                    var b = posB - pivotB;
-                    var b0 = Vector3.ProjectOnPlane(b, ReferenceUp);
-                    return Vector3.Slerp(a0, b0, t) + Vector3.Lerp(a - a0, b - b0, t) + pivot;
+                    // Cylindrical interpolation about pivot
+                    var a = Vector3.ProjectOnPlane(posA - pivotA, ReferenceUp);
+                    var b = Vector3.ProjectOnPlane(posB - pivotB, ReferenceUp);
+                    var c = Vector3.Slerp(a, b, t);
+                    posA = (posA - a) + c;
+                    posB = (posB - b) + c;
                 }
-                if ((BlendHint & BlendHintValue.SphericalPositionBlend) != 0)
+                else if ((BlendHint & BlendHintValue.SphericalPositionBlend) != 0)
                 {
-                    // Spherical interpolation about travelling pivot
-                    return Vector3.Slerp(posA - pivotA, posB - pivotB, t) + pivot;
+                    // Spherical interpolation about pivot
+                    var c = Vector3.Slerp(posA - pivotA, posB - pivotB, t);
+                    posA = pivotA + c;
+                    posB = pivotB + c;
                 }
             }
             return Vector3.Lerp(posA, posB, t);

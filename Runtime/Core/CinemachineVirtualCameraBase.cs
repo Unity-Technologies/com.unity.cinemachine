@@ -127,28 +127,45 @@ namespace Cinemachine
         /// in the CinemachineCore's queue of eligible shots.</summary>
         public int Priority { get { return m_Priority; } set { m_Priority = value; } }
 
-        /// <summary>Hint for blending positions to and from this virtual camera</summary>
-        public enum PositionBlendMethod
+        /// <summary>Hint for blending to and from this virtual camera</summary>
+        public enum BlendHint
         {
-            /// <summary>Standard linear position blend</summary>
-            Linear,
-            /// <summary>Spherical blend about LookAt target position, if there is a LookAt target</summary>
-            Spherical,
-            /// <summary>Cylindrical blend about LookAt target position, if there is a LookAt target.  Vertical co-ordinate is linearly interpolated.</summary>
-            Cylindrical
+            /// <summary>Standard linear position and aim blend</summary>
+            None,
+            /// <summary>Spherical blend about LookAt target position if there is a LookAt target, linear blend between LookAt targets</summary>
+            SphericalPosition,
+            /// <summary>Cylindrical blend about LookAt target position if there is a LookAt target (vertical co-ordinate is linearly interpolated), linear blend between LookAt targets</summary>
+            CylindricalPosition,
+            /// <summary>Standard linear position blend, radial blend between LookAt targets</summary>
+            LinearPositionRadialAim,
+            /// <summary>Spherical blend about LookAt target position if there is a LookAt target, radial blend between LookAt targets</summary>
+            //SphericalPositionRadialAim,
+            /// <summary>Cylindrical blend about LookAt target position if there is a LookAt target (vertical co-ordinate is linearly interpolated), radial blend between LookAt targets</summary>
+            //CylindricalPositionRadialAim
         }
 
         /// <summary>Applies a position blend hint to the camera state</summary>
-        protected void SetPositionBlendMethod(ref CameraState state, PositionBlendMethod m)
+        protected void ApplyPositionBlendMethod(ref CameraState state, BlendHint hint)
         {
-            switch (m)
+            switch (hint)
             {
-                case PositionBlendMethod.Spherical: 
+                default:
+                    break;
+                case BlendHint.SphericalPosition: 
                     state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend; 
                     break;
-                case PositionBlendMethod.Cylindrical: 
+                case BlendHint.CylindricalPosition: 
                     state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend; 
                     break;
+                case BlendHint.LinearPositionRadialAim: 
+                    state.BlendHint |= CameraState.BlendHintValue.RadialAimBlend; 
+                    break;
+                //case BlendHint.SphericalPositionRadialAim: 
+                //    state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend | CameraState.BlendHintValue.RadialAimBlend; 
+                //    break;
+                //case BlendHint.CylindricalPositionRadialAim: 
+                //    state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend | CameraState.BlendHintValue.RadialAimBlend; 
+                //    break;
             }
         }
         

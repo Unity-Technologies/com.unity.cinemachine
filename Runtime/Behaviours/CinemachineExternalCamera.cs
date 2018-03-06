@@ -1,5 +1,6 @@
 using Cinemachine.Utility;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -36,7 +37,8 @@ namespace Cinemachine
 
         /// <summary>Hint for blending positions to and from this virtual camera</summary>
         [Tooltip("Hint for blending positions to and from this virtual camera")]
-        public PositionBlendMethod m_PositionBlending = PositionBlendMethod.Linear;
+        [FormerlySerializedAs("m_PositionBlending")]
+        public BlendHint m_BlendHint = BlendHint.None;
 
         /// <summary>Internal use only.  Do not call this method</summary>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
@@ -60,7 +62,7 @@ namespace Cinemachine
                     m_State.ReferenceLookAt = m_State.RawPosition + Vector3.Project(
                         dir, State.RawOrientation * Vector3.forward);
             }
-            SetPositionBlendMethod(ref m_State, m_PositionBlending);
+            ApplyPositionBlendMethod(ref m_State, m_BlendHint);
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }
