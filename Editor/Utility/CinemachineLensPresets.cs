@@ -20,7 +20,12 @@ namespace Cinemachine.Editor
             get
             {
                 if (sInstance == null)
-                    sInstance = Resources.FindObjectsOfTypeAll<CinemachineLensPresets>().FirstOrDefault();
+                {
+                    var guids = AssetDatabase.FindAssets("t:CinemachineLensPresets");
+                    for (int i = 0; i < guids.Length && sInstance == null; ++i)
+                        sInstance = AssetDatabase.LoadAssetAtPath<CinemachineLensPresets>(
+                            AssetDatabase.GUIDToAssetPath(guids[i]));
+                }
                 if (sInstance == null)
                 {
                     sInstance = CreateInstance<CinemachineLensPresets>();
