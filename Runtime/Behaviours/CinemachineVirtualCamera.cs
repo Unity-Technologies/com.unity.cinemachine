@@ -74,17 +74,35 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         public Transform m_Follow = null;
 
-        /// <summary>Hint for blending positions to and from this virtual camera</summary>
-        [Tooltip("Hint for blending positions to and from this virtual camera")]
-        [FormerlySerializedAs("m_PositionBlending")]
-        public BlendHint m_BlendHint = BlendHint.None;
-
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
         [FormerlySerializedAs("m_LensAttributes")]
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
         [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
+
+        [Serializable]
+        public struct TransitionParams
+        {
+            /// <summary>Hint for blending positions to and from this virtual camera</summary>
+            [Tooltip("Hint for blending positions to and from this virtual camera")]
+            [FormerlySerializedAs("m_PositionBlending")]
+            public BlendHint m_BlendHint;
+
+            /// <summary>When enabling this virtual camera, attempt to force the position to be the same as that of the Camera</summary>
+            [Tooltip("When enabling this virtual camera, attempt to force the position to be the same as that of the Camera")]
+            public bool m_InheritPosition;
+
+            /// <summary>This event fires when the virtual camera goes Live</summary>
+            [Tooltip("This event fires when the virtual camera goes Live")]
+            public CinemachineBrain.VcamEvent m_CameraActivated;
+        }
+        public TransitionParams m_Transitions;
+
+        /// <summary>Legacy support</summary>
+        [SerializeField] [HideInInspector] 
+        [FormerlySerializedAs("m_BlendHint")] 
+        [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
 
         /// <summary>This is the name of the hidden GameObject that will be created as a child object
         /// of the virtual camera.  This hidden game object acts as a container for the polymorphic
@@ -132,7 +150,7 @@ namespace Cinemachine
 
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_BlendHint);
+            ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -181,6 +199,11 @@ namespace Cinemachine
         {
             base.OnValidate();
             m_Lens.Validate();
+            if (m_LegacyBlendHint != BlendHint.None)
+            {
+                m_Transitions.m_BlendHint = m_LegacyBlendHint;
+                m_LegacyBlendHint = BlendHint.None;
+            }
         }
 
         void OnTransformChildrenChanged()
@@ -492,6 +515,24 @@ namespace Cinemachine
                     m_ComponentPipeline[i].OnTargetObjectWarped(target, positionDelta);
             }
             base.OnTargetObjectWarped(target, positionDelta);
+        }
+
+        /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        public override void OnTransitionFromCamera(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+        {
+            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            if (m_Transitions.m_InheritPosition)
+            {
+                PreviousStateIsValid = false;
+                transform.position = fromCam.State.CorrectedPosition;
+                InternalUpdateCameraState(worldUp, deltaTime);
+            }
+            if (m_Transitions.m_CameraActivated != null)
+                m_Transitions.m_CameraActivated.Invoke(this);
         }
     }
 }

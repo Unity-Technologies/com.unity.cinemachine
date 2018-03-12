@@ -2,6 +2,7 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
+using UnityEngine.Events;
 
 namespace Cinemachine
 {
@@ -28,11 +29,6 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         public Transform m_Follow = null;
 
-        /// <summary>Hint for blending positions to and from this virtual camera</summary>
-        [Tooltip("Hint for blending positions to and from this virtual camera")]
-        [FormerlySerializedAs("m_PositionBlending")]
-        public BlendHint m_BlendHint = BlendHint.None;
-
         /// <summary>If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used</summary>
         [Tooltip("If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used")]
         [FormerlySerializedAs("m_UseCommonLensSetting")]
@@ -45,6 +41,29 @@ namespace Cinemachine
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active")]
         [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
+
+        [Serializable]
+        public struct TransitionParams
+        {
+            /// <summary>Hint for blending positions to and from this virtual camera</summary>
+            [Tooltip("Hint for blending positions to and from this virtual camera")]
+            [FormerlySerializedAs("m_PositionBlending")]
+            public BlendHint m_BlendHint;
+
+            /// <summary>When enabling this virtual camera, attempt to force the position to be the same as that of the Camera</summary>
+            [Tooltip("When enabling this virtual camera, attempt to force the position to be the same as that of the Camera")]
+            public bool m_InheritPosition;
+
+            /// <summary>This event fires when the virtual camera goes Live</summary>
+            [Tooltip("This event fires when the virtual camera goes Live")]
+            public CinemachineBrain.VcamEvent m_CameraActivated;
+        }
+        public TransitionParams m_Transitions;
+
+        /// <summary>Legacy support</summary>
+        [SerializeField] [HideInInspector] 
+        [FormerlySerializedAs("m_BlendHint")] 
+        [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
@@ -125,6 +144,11 @@ namespace Cinemachine
                 if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
                     m_Heading.m_Definition = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)heading;
                 mUseLegacyRigDefinitions = true;
+            }
+            if (m_LegacyBlendHint != BlendHint.None)
+            {
+                m_Transitions.m_BlendHint = m_LegacyBlendHint;
+                m_LegacyBlendHint = BlendHint.None;
             }
             m_YAxis.Validate();
             m_XAxis.Validate();
@@ -270,7 +294,7 @@ namespace Cinemachine
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_BlendHint);
+            ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.  Leave the orientation alone, because it
@@ -307,6 +331,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            bool doUpdate = false;
             if ((fromCam != null) && (fromCam is CinemachineFreeLook))
             {
                 CinemachineFreeLook freeLookFrom = fromCam as CinemachineFreeLook;
@@ -314,9 +339,22 @@ namespace Cinemachine
                 {
                     m_XAxis.Value = freeLookFrom.m_XAxis.Value;
                     m_YAxis.Value = freeLookFrom.m_YAxis.Value;
-                    InternalUpdateCameraState(worldUp, deltaTime);
+                    doUpdate = true;
                 }
             }
+            if (m_Transitions.m_InheritPosition)
+            {
+                PreviousStateIsValid = false;
+                transform.position = fromCam.State.CorrectedPosition;
+                doUpdate = true;
+            }
+            if (doUpdate)
+            {
+                PreviousStateIsValid = false;
+                InternalUpdateCameraState(worldUp, deltaTime);
+            }
+            if (m_Transitions.m_CameraActivated != null)
+                m_Transitions.m_CameraActivated.Invoke(this);
         }
 
         CameraState m_State = CameraState.Default;          // Current state this frame
