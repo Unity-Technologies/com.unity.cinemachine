@@ -255,12 +255,15 @@ namespace Cinemachine.Utility
             public bool ScanFields(GameObject go)
             {
                 bool doneSomething = false;
-                MonoBehaviour[] components = go.GetComponents<MonoBehaviour>();
-                for (int i = 0; i < components.Length; ++i)
+                if (go != null)
                 {
-                    object c = components[i] as object;
-                    if (c != null && ScanFields(c.GetType().Name, ref c))
-                        doneSomething = true;
+                    MonoBehaviour[] components = go.GetComponents<MonoBehaviour>();
+                    for (int i = 0; i < components.Length; ++i)
+                    {
+                        object c = components[i] as object;
+                        if (c != null && ScanFields(c.GetType().Name, ref c))
+                            doneSomething = true;
+                    }
                 }
                 return doneSomething;
             }
@@ -291,7 +294,7 @@ namespace Cinemachine.Utility
             object resultObj = null;
             scanner.OnFieldFound = (string fullName, FieldInfo field, ref object owner) =>
                 {
-                    if (resultFI != null && fullName == path)
+                    if (resultFI == null && fullName == path)
                     {
                         resultFI = field;
                         resultObj = owner;
@@ -312,7 +315,7 @@ namespace Cinemachine.Utility
             if (field != null)
             {
                 object value = field.GetValue(owner);
-                if (value != null && value.GetType() == typeof(T))
+                if (value != null && value.GetType().IsSubclassOf(typeof(T)))
                     return (T)value;
             }
             return defaultValue;
