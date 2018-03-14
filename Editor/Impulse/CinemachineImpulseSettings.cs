@@ -40,5 +40,11 @@ namespace Cinemachine.Editor
         {
             ScriptableObjectUtility.Create<CinemachinePerlinImpulseDefinition>();
         }
+
+        [MenuItem(CinemachineMenu.kCinemachineRootMenu + "Impulse/Fixed Impulse Definition")]
+        private static void CreateFixedImpulseDefinition()
+        {
+            ScriptableObjectUtility.Create<CinemachineFixedImpulseDefinition>();
+        }
     }
 }
