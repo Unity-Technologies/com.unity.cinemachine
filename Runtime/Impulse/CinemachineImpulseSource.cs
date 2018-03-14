@@ -24,7 +24,7 @@ namespace Cinemachine
         public CinemachineImpulseDefinition m_SignalDefinition = null;
 
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels</summary>
-        public void OnImpact(Vector3 velocity)
+        public void GenerateImpulse(Vector3 velocity)
         {
             if (m_SignalDefinition != null)
                 m_SignalDefinition.CreateEvent(velocity, transform.position, m_ImpulseChannel);

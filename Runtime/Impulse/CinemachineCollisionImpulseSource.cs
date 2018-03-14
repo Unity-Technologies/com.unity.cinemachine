@@ -9,7 +9,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
-    public class CinemachineCollisionImpulseSource : MonoBehaviour
+    public class CinemachineCollisionImpulseSource : CinemachineImpulseSource
     {
         /// <summary>Only collisions with objects on these layers will generate Impulse events.</summary>
         [Tooltip("Only collisions with objects on these layers will generate Impulse events")]
@@ -19,18 +19,6 @@ namespace Cinemachine
         [TagField]
         [Tooltip("No Impulse evemts will be generated for collisions with objects having these tags")]
         public string m_IgnoreTag = string.Empty;
-
-        /// <summary>
-        /// Impulse events generated here will appear on the channels included in the mask.
-        /// </summary>
-        [Tooltip("Impulse events generated here will appear on the channels included in the mask.")]
-        [CinemachineImpulseChannelProperty]
-        public int m_ImpulseChannel = 1;
-
-        /// <summary>Defines the signal that will be generated.</summary>
-        [Tooltip("Defines the signal that will be generated.")]
-        [CinemachineEmbeddedAssetProperty(true)]
-        public CinemachineImpulseDefinition m_SignalDefinition = null;
 
         /// <summary>These values will be used if no relevant RigidBodies can be found</summary>
         [Serializable]
@@ -64,14 +52,6 @@ namespace Cinemachine
 
         /// <summary>These values will be used if no relevant RigidBodies can be found</summary>
         public DefaultValues m_DefaultIfNoRigidBody = new DefaultValues();
-
-
-        /// <summary>Broadcast the Impulse Signal onto the appropriate channels</summary>
-        public void OnImpact(Vector3 velocity)
-        {
-            if (m_SignalDefinition != null)
-                m_SignalDefinition.CreateEvent(velocity, transform.position, m_ImpulseChannel);
-        }
 
         Rigidbody mRigidBody;
         Rigidbody2D mRigidBody2D;
@@ -151,7 +131,7 @@ namespace Cinemachine
                     }
                 }
             }
-            OnImpact(vel * mass);
+            GenerateImpulse(vel * mass);
         }
 
         private void OnCollisionEnter(Collision other)

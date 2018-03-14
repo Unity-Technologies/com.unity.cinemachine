@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
             BeginInspector();
             EditorGUILayout.Separator();
             EditorGUILayout.HelpBox(
-                "First set up the Impulse Definition, then connect your Impact Event to the OnImpact method defined here.",
+                "First set up the Impulse Definition, then connect your Event to the GenerateImpulse method defined here.",
                 MessageType.Info);
             DrawRemainingPropertiesInInspector();
         }
