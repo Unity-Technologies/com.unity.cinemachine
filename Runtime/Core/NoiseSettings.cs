@@ -33,8 +33,8 @@ namespace Cinemachine
             [Tooltip("The amplitude of the noise for this channel.  Larger numbers vibrate higher.")]
             public float Amplitude;
 
-            /// <summary>If checked, then the amplitude will not be randomized</summary>
-            [Tooltip("If checked, then the amplitude will not be randomized.")]
+            /// <summary>If checked, then the amplitude and frequency will not be randomized</summary>
+            [Tooltip("If checked, then the amplitude and frequency will not be randomized.")]
             public bool Constant;
 
             /// <summary>Get the signal value at a given time, offset by a given amount</summary>
@@ -42,7 +42,7 @@ namespace Cinemachine
             {
                 float t = (Frequency * time) + timeOffset;
                 if (Constant)
-                    return  Mathf.Sin(t * 2 * Mathf.PI) * Amplitude * 0.5f;
+                    return  Mathf.Cos(t * 2 * Mathf.PI) * Amplitude * 0.5f;
                 return (Mathf.PerlinNoise(t, 0f) - 0.5f) * Amplitude;
             }
         }

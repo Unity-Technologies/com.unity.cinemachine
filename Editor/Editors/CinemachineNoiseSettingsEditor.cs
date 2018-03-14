@@ -168,7 +168,7 @@ namespace Cinemachine.Editor
             ChannelList list = new ChannelList(
                 property.serializedObject, property, channel, title);
 
-            GUIContent steadyLabel = new GUIContent("(constant amplitude if checked)");
+            GUIContent steadyLabel = new GUIContent("(constant wave if checked)");
             float steadyLabelWidth = GUI.skin.label.CalcSize(steadyLabel).x;
             NoiseSettings.TransformNoiseParams[] signalArray = new NoiseSettings.TransformNoiseParams[1];
 
