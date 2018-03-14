@@ -405,30 +405,32 @@ namespace Cinemachine
         /// Try to find a CinemachineBrain to associate with a
         /// Cinemachine Virtual Camera.  The first CinemachineBrain
         /// in which this Cinemachine Virtual Camera is live will be used.
-        /// If none, then the first active CinemachineBrain will be used.
+        /// If none, then the first active CinemachineBrain with the correct 
+        /// layer filter will be used.  
         /// Brains with OutputCamera == null will not be returned.
         /// Final result may be null.
         /// </summary>
         /// <param name="vcam">Virtual camera whose potential brain we need.</param>
         /// <returns>First CinemachineBrain found that might be
         /// appropriate for this vcam, or null</returns>
-        public CinemachineBrain FindPotentialTargetBrain(ICinemachineCamera vcam)
+        public CinemachineBrain FindPotentialTargetBrain(CinemachineVirtualCameraBase vcam)
         {
-            int numBrains = BrainCount;
-            if (vcam != null && numBrains > 1)
+            if (vcam != null)
             {
+                int numBrains = BrainCount;
                 for (int i = 0; i < numBrains; ++i)
                 {
                     CinemachineBrain b = GetActiveBrain(i);
                     if (b != null && b.OutputCamera != null && b.IsLive(vcam))
                         return b;
                 }
-            }
-            for (int i = 0; i < numBrains; ++i)
-            {
-                CinemachineBrain b = GetActiveBrain(i);
-                if (b != null && b.OutputCamera != null)
-                    return b;
+                int layer = 1 << vcam.gameObject.layer;
+                for (int i = 0; i < numBrains; ++i)
+                {
+                    CinemachineBrain b = GetActiveBrain(i);
+                    if (b != null && b.OutputCamera != null && (b.OutputCamera.cullingMask & layer) != 0)
+                        return b;
+                }
             }
             return null;
         }
