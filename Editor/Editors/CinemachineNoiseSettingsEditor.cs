@@ -15,8 +15,9 @@ namespace Cinemachine.Editor
         private NoiseSettings.TransformNoiseParams tpDef;
         private NoiseSettings.NoiseParams npDef;
 
-        private static float mPreviewTime = 1;
+        private static float mPreviewTime = 5;
         private static float mPreviewHeight = 5;
+        private static Vector3 mNoiseOffsets = Vector3.zero;
 
         private ReorderableList[] mPosChannels;
         private ReorderableList[] mRotChannels;
@@ -55,9 +56,15 @@ namespace Cinemachine.Editor
             BeginInspector();
 
             Rect r = EditorGUILayout.GetControlRect();
+            //EditorGUI.LabelField(r, "Signal Preview Only", EditorStyles.boldLabel);
+            //r = EditorGUILayout.GetControlRect();
             mPreviewTime = EditorGUI.Slider(r, "Preview Time", mPreviewTime, 0.01f, 10f);
             r = EditorGUILayout.GetControlRect();
             mPreviewHeight = EditorGUI.Slider(r, "Preview Height", mPreviewHeight, 1f, 10f);
+            //r = EditorGUILayout.GetControlRect(true);
+            //r.width -= EditorGUIUtility.labelWidth; r.x += EditorGUIUtility.labelWidth;
+            //if (GUI.Button(r, "New random seed"))
+            //    ReSeed();
             EditorGUILayout.Separator();
 
             r = EditorGUILayout.GetControlRect();
@@ -94,6 +101,17 @@ namespace Cinemachine.Editor
             }
 
             serializedObject.ApplyModifiedProperties();
+
+            // Make it live!
+            //InternalEditorUtility.RepaintAllViews();
+        }
+
+        private void ReSeed()
+        {
+            mNoiseOffsets = new Vector3(
+                    Random.Range(-1000f, 1000f),
+                    Random.Range(-1000f, 1000f),
+                    Random.Range(-1000f, 1000f));
         }
 
         private List<Vector3> mSampleCurveX = new List<Vector3>();
@@ -110,7 +128,8 @@ namespace Cinemachine.Editor
             for (int i = 0; i < numSamples; ++i)
             {
                 float t = (float)i / (numSamples - 1);
-                Vector3 p = NoiseSettings.GetCombinedFilterResults(signal, t * mPreviewTime, Vector3.zero);
+                Vector3 p = NoiseSettings.GetCombinedFilterResults(
+                    signal, t * mPreviewTime /*+ Time.realtimeSinceStartup*/, mNoiseOffsets);
                 maxVal = Mathf.Max(maxVal, Mathf.Abs(p.x));
                 maxVal = Mathf.Max(maxVal, Mathf.Abs(p.y));
                 maxVal = Mathf.Max(maxVal, Mathf.Abs(p.z));

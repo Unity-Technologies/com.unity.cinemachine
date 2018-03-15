@@ -104,6 +104,8 @@ namespace Cinemachine
 
             public Vector3 GetSignal(float timeSinceSignalStart)
             {
+                if (!mInitialized)
+                    Initialize();
                 Vector3 signal = Vector3.zero;
 
                 // Use whatever channel is more defined (kinda hacky I know)

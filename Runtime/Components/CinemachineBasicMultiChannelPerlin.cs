@@ -71,16 +71,25 @@ namespace Cinemachine
 
         private bool mInitialized = false;
         private float mNoiseTime = 0;
+
+        [SerializeField][HideInInspector]
         private Vector3 mNoiseOffsets = Vector3.zero;
+
+        /// <summary>Generate a new random seed</summary>
+        public void ReSeed()
+        {
+            mNoiseOffsets = new Vector3(
+                    Random.Range(-1000f, 1000f),
+                    Random.Range(-1000f, 1000f),
+                    Random.Range(-1000f, 1000f));
+        }
 
         void Initialize()
         {
             mInitialized = true;
             mNoiseTime = 0;
-            mNoiseOffsets = new Vector3(
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f));
+            if (mNoiseOffsets == Vector3.zero)
+                ReSeed();
         }
     }
 }

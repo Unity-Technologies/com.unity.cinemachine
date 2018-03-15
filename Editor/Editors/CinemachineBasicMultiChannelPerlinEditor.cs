@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEditor;
 
 namespace Cinemachine.Editor
@@ -19,6 +20,11 @@ namespace Cinemachine.Editor
                     "A Noise Profile is required.  You may choose from among the NoiseSettings assets defined in the project.",
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
+
+            Rect rect = EditorGUILayout.GetControlRect(true);
+            rect.width -= EditorGUIUtility.labelWidth; rect.x += EditorGUIUtility.labelWidth;
+            if (GUI.Button(rect, "New random seed"))
+                Target.ReSeed();
         }
     }
 }
