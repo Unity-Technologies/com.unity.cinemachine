@@ -12,6 +12,7 @@ namespace Cinemachine.Editor
         private const float hSpace = 3;
 
         // Needed for accessing string names of fields
+        #pragma warning disable 0649 // assigned but never used
         private NoiseSettings.TransformNoiseParams tpDef;
         private NoiseSettings.NoiseParams npDef;
 
@@ -187,12 +188,11 @@ namespace Cinemachine.Editor
             ChannelList list = new ChannelList(
                 property.serializedObject, property, channel, title);
 
-            GUIContent steadyLabel = new GUIContent("(constant wave if checked)");
-            float steadyLabelWidth = GUI.skin.label.CalcSize(steadyLabel).x;
-            NoiseSettings.TransformNoiseParams[] signalArray = new NoiseSettings.TransformNoiseParams[1];
-
             list.drawHeaderCallback = (Rect rect) =>
                 {
+                    GUIContent steadyLabel = new GUIContent("(constant wave if checked)");
+                    float steadyLabelWidth = GUI.skin.label.CalcSize(steadyLabel).x;
+
                     Rect r = rect;
                     EditorGUI.LabelField(r, list.mTitle);
                     r.x = rect.x + rect.width - steadyLabelWidth; r.width = steadyLabelWidth;
@@ -261,7 +261,6 @@ namespace Cinemachine.Editor
         };
         
         private GUIContent steadyLabel;
-        private float steadyLabelWidth;
         private GUIContent freqLabel;
         private float freqLabelWidth;
         private GUIContent ampLabel;
@@ -273,7 +272,6 @@ namespace Cinemachine.Editor
             {
                 SerializedProperty p = property.FindPropertyRelative(() => npDef.Constant);
                 steadyLabel = new GUIContent(p.displayName, p.tooltip) { text = " " };
-                steadyLabelWidth = GUI.skin.label.CalcSize(steadyLabel).x;
             }
             if (freqLabel == null)
             {
@@ -292,9 +290,6 @@ namespace Cinemachine.Editor
         private void DrawNoiseChannel(Rect rect, SerializedProperty property)
         {
             InitializeLabels(property);
-
-            // Needed for accessing string names of fields
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
             Rect r = rect;
             r.height -= vSpace;

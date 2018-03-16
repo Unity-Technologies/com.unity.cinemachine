@@ -81,22 +81,7 @@ namespace Cinemachine.Editor
             // Give it a child
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create state driven camera");
         }
-/*
-        [MenuItem("Cinemachine/Create Event-Driven Camera", false, 1)]
-        private static void CreateEventDrivenCamera()
-        {
-            CreateCameraBrainIfAbsent();
-            GameObject go = new GameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineEventDrivenCamera), "CM EventDrivenCamera"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
-            Undo.RegisterCreatedObjectUndo(go, "create event driven camera");
-            Undo.AddComponent<CinemachineEventDrivenCamera>(go);
-            Selection.activeGameObject = go;
 
-            // Give it a child
-            Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create state driven camera");
-        }
-*/
         [MenuItem("Cinemachine/Create ClearShot Camera", false, 1)]
         private static void CreateClearShotVirtualCamera()
         {
