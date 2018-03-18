@@ -412,25 +412,27 @@ namespace Cinemachine
         /// <param name="vcam">Virtual camera whose potential brain we need.</param>
         /// <returns>First CinemachineBrain found that might be
         /// appropriate for this vcam, or null</returns>
-        public CinemachineBrain FindPotentialTargetBrain(ICinemachineCamera vcam)
+        public CinemachineBrain FindPotentialTargetBrain(CinemachineVirtualCameraBase vcam)
         {
-            int numBrains = BrainCount;
-            if (vcam != null && numBrains > 1)
+            if (vcam != null)
             {
+                int numBrains = BrainCount;
                 for (int i = 0; i < numBrains; ++i)
                 {
                     CinemachineBrain b = GetActiveBrain(i);
                     if (b != null && b.OutputCamera != null && b.IsLive(vcam))
                         return b;
                 }
-            }
-            for (int i = 0; i < numBrains; ++i)
-            {
-                CinemachineBrain b = GetActiveBrain(i);
-                if (b != null && b.OutputCamera != null)
-                    return b;
+                int layer = 1 << vcam.gameObject.layer;
+                for (int i = 0; i < numBrains; ++i)
+                {
+                    CinemachineBrain b = GetActiveBrain(i);
+                    if (b != null && b.OutputCamera != null && (b.OutputCamera.cullingMask & layer) != 0)
+                        return b;
+                }
             }
             return null;
         }
     }
+
 }

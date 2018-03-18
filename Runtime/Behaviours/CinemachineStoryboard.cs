@@ -56,10 +56,14 @@ namespace Cinemachine
         [Tooltip("Wipe the image on and off horizontally")]
         public float m_SplitView = 0f;
 
-        GameObject mCanvas;
-        CinemachineBrain mCanvasParent;
-        RectTransform mViewport; // for mViewport clipping
-        UnityEngine.UI.RawImage mRawImage;
+        class CanvasInfo
+        {
+            public GameObject mCanvas;
+            public CinemachineBrain mCanvasParent;
+            public RectTransform mViewport; // for mViewport clipping 
+            public UnityEngine.UI.RawImage mRawImage;
+        }
+        List<CanvasInfo> mCanvasInfo = new List<CanvasInfo>();
 
         /// <summary>Standard CinemachineExtension callback</summary>
         protected override void PostPipelineStageCallback(
@@ -78,14 +82,6 @@ namespace Cinemachine
             }
         }
 
-        void CameraUpdatedCallback(CinemachineBrain brain)
-        {
-            bool showIt = enabled && m_ShowImage && CinemachineCore.Instance.IsLive(VirtualCamera);
-            LocateMyCanvas(brain, showIt);
-            if (mCanvas != null)
-                mCanvas.SetActive(showIt);
-        }
-
         protected override void ConnectToVcam(bool connect)
         {
             base.ConnectToVcam(connect);
@@ -98,54 +94,69 @@ namespace Cinemachine
         
         string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
 
-        void LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
+        void CameraUpdatedCallback(CinemachineBrain brain)
         {
-            if (mCanvas == null || mCanvasParent != parent)
+            bool showIt = enabled && m_ShowImage && CinemachineCore.Instance.IsLive(VirtualCamera);
+            int layer = 1 << gameObject.layer;
+            if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
+                showIt = false;
+            CanvasInfo ci = LocateMyCanvas(brain, showIt);
+            if (ci != null && ci.mCanvas != null)
+                ci.mCanvas.SetActive(showIt);
+        }
+        
+        CanvasInfo LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
+        {
+            CanvasInfo ci = null;
+            for (int i = 0; ci == null && i < mCanvasInfo.Count; ++i)
+                if (mCanvasInfo[i].mCanvasParent == parent)
+                    ci = mCanvasInfo[i];
+            if (createIfNotFound)
             {
-                mCanvas = null;
-                mRawImage = null;
-                mViewport = null;
-                mCanvasParent = parent;
-                string canvasName = CanvasName;
-                int numChildren = parent.transform.childCount;
-                for (int i = 0; mCanvas == null && i < numChildren; ++i)
+                if (ci == null)
                 {
-                    RectTransform child = parent.transform.GetChild(i) as RectTransform;
-                    if (child != null && child.name == canvasName)
-                        mCanvas = child.gameObject;
+                    ci = new CanvasInfo() { mCanvasParent = parent };
+                    int numChildren = parent.transform.childCount;
+                    for (int i = 0; ci.mCanvas == null && i < numChildren; ++i)
+                    {
+                        RectTransform child = parent.transform.GetChild(i) as RectTransform;
+                        if (child != null && child.name == CanvasName)
+                        {
+                            ci.mCanvas = child.gameObject;
+                            ci.mViewport = ci.mCanvas.GetComponentInChildren<RectTransform>();
+                            ci.mRawImage = ci.mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
+                        }
+                    }
+                    mCanvasInfo.Add(ci);
                 }
+                if (ci.mCanvas == null || ci.mViewport == null || ci.mRawImage == null)
+                    CreateCanvas(ci);
             }
-            if (mCanvas == null && createIfNotFound)
-                CreateCanvas(parent);
-            if (mCanvas != null && (mRawImage == null || mViewport == null))
-            {
-                mViewport = mCanvas.GetComponentInChildren<RectTransform>();
-                mRawImage = mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
-            }
+            return ci;
         }
 
-        void CreateCanvas(CinemachineBrain parent)
+        void CreateCanvas(CanvasInfo ci)
         {
-            mCanvas = new GameObject(CanvasName, typeof(RectTransform));
-            mCanvas.hideFlags = HideFlags.HideAndDontSave;
-            mCanvas.transform.SetParent(parent.transform);
-            mCanvasParent = parent;
+            ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
+            ci.mCanvas.layer = gameObject.layer;
+            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
+            ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
-            CanvasesAndTheirOwners.AddCanvas(mCanvas, this);
+            CanvasesAndTheirOwners.AddCanvas(ci.mCanvas, this);
 #endif
 
-            var c = mCanvas.AddComponent<Canvas>();
+            var c = ci.mCanvas.AddComponent<Canvas>();
             c.renderMode = RenderMode.ScreenSpaceOverlay;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
-            go.transform.SetParent(mCanvas.transform);
-            mViewport = (RectTransform)go.transform;
+            go.transform.SetParent(ci.mCanvas.transform);
+            ci.mViewport = (RectTransform)go.transform;
             go.AddComponent<UnityEngine.UI.RectMask2D>();
 
             go = new GameObject("RawImage", typeof(RectTransform));
-            go.transform.SetParent(mViewport.transform);
-            mRawImage = go.AddComponent<UnityEngine.UI.RawImage>();
+            go.transform.SetParent(ci.mViewport.transform);
+            ci.mRawImage = go.AddComponent<UnityEngine.UI.RawImage>();
         }
 
         void DestroyCanvas()
@@ -153,26 +164,32 @@ namespace Cinemachine
             int numBrains = CinemachineCore.Instance.BrainCount;
             for (int i = 0; i < numBrains; ++i)
             {
-                LocateMyCanvas(CinemachineCore.Instance.GetActiveBrain(i), false);
-                if (mCanvas != null)
+                var parent = CinemachineCore.Instance.GetActiveBrain(i);
+                int numChildren = parent.transform.childCount;
+                for (int j = 0; j < numChildren; ++j)
                 {
-                    RuntimeUtility.DestroyObject(mCanvas);
+                    RectTransform child = parent.transform.GetChild(j) as RectTransform;
+                    if (child != null && child.name == CanvasName)
+                    {
+                        var canvas = child.gameObject;
+                        RuntimeUtility.DestroyObject(canvas);
 #if UNITY_EDITOR
-                    // Workaround for Unity bug case Case 1004117
-                    CanvasesAndTheirOwners.RemoveCanvas(mCanvas);
+                        // Workaround for Unity bug case Case 1004117
+                        CanvasesAndTheirOwners.RemoveCanvas(canvas);
 #endif
+                    }
                 }
-                mCanvas = null;
             }
+            mCanvasInfo.Clear();
         }
 
-        void PlaceImage(float alpha)
+        void PlaceImage(CanvasInfo ci, float alpha)
         {
-            if (mRawImage != null && mViewport != null)
+            if (ci.mRawImage != null && ci.mViewport != null)
             {
                 Rect screen = new Rect(0, 0, Screen.width, Screen.height);
-                if (mCanvasParent.OutputCamera != null)
-                    screen = mCanvasParent.OutputCamera.pixelRect;
+                if (ci.mCanvasParent.OutputCamera != null)
+                    screen = ci.mCanvasParent.OutputCamera.pixelRect;
                 screen.x -= (float)Screen.width/2;
                 screen.y -= (float)Screen.height/2;
 
@@ -181,11 +198,11 @@ namespace Cinemachine
 
                 Vector3 pos = screen.center;
                 pos.x -= wipeAmount/2;
-                mViewport.localPosition = pos;
-                mViewport.localRotation = Quaternion.identity;
-                mViewport.localScale = Vector3.one;
-                mViewport.ForceUpdateRectTransforms();
-                mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(wipeAmount), screen.height);
+                ci.mViewport.localPosition = pos;
+                ci.mViewport.localRotation = Quaternion.identity;
+                ci.mViewport.localScale = Vector3.one;
+                ci.mViewport.ForceUpdateRectTransforms();
+                ci.mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(wipeAmount), screen.height);
 
                 Vector2 scale = Vector2.one;
                 if (m_Image != null
@@ -214,18 +231,18 @@ namespace Cinemachine
                 scale.x *= m_Scale.x;
                 scale.y *= m_SyncScale ? m_Scale.x : m_Scale.y;
 
-                mRawImage.texture = m_Image;
+                ci.mRawImage.texture = m_Image;
                 Color tintColor = Color.white;
                 tintColor.a = m_Alpha * alpha;
-                mRawImage.color = tintColor;
+                ci.mRawImage.color = tintColor;
 
                 pos = new Vector2(screen.width * m_Center.x, screen.height * m_Center.y);
                 pos.x += wipeAmount/2; 
-                mRawImage.rectTransform.localPosition = pos;
-                mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
-                mRawImage.rectTransform.localScale = scale;
-                mRawImage.rectTransform.ForceUpdateRectTransforms();
-                mRawImage.rectTransform.sizeDelta = screen.size;
+                ci.mRawImage.rectTransform.localPosition = pos;
+                ci.mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
+                ci.mRawImage.rectTransform.localScale = scale;
+                ci.mRawImage.rectTransform.ForceUpdateRectTransforms();
+                ci.mRawImage.rectTransform.sizeDelta = screen.size;
             }        
         }
 
@@ -240,8 +257,13 @@ namespace Cinemachine
                 CinemachineStoryboard src = b.m_Custom as CinemachineStoryboard;
                 if (!(src == null)) // in case it was deleted
                 {
-                    src.LocateMyCanvas(brain, true);
-                    src.PlaceImage(b.m_Weight);
+                    bool showIt = true;
+                    int layer = 1 << src.gameObject.layer;
+                    if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
+                        showIt = false;
+                    CanvasInfo ci = src.LocateMyCanvas(brain, showIt);
+                    if (ci != null)
+                        src.PlaceImage(ci, b.m_Weight);
                 }
             }
             //UnityEngine.Profiling.Profiler.EndSample();
