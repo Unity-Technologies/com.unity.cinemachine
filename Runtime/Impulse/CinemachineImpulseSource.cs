@@ -29,5 +29,12 @@ namespace Cinemachine
             if (m_SignalDefinition != null)
                 m_SignalDefinition.CreateEvent(velocity, transform.position, m_ImpulseChannel);
         }
+
+        /// <summary>Broadcast the Impulse Signal onto the appropriate channels, 
+        /// with default velocity = (0, 1, 0)</summary>
+        public void GenerateImpulse()
+        {
+            GenerateImpulse(Vector3.up);
+        }
     }
 }

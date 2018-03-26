@@ -288,7 +288,6 @@ namespace Cinemachine.Utility
 
         public static FieldInfo FieldFromPath(GameObject go, string path, out object outObj)
         {
-            List<string> fields = new List<string>();
             GameObjectFieldScanner scanner = new GameObjectFieldScanner();
             FieldInfo resultFI = null;
             object resultObj = null;
