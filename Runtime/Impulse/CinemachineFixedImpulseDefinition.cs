@@ -54,6 +54,10 @@ namespace Cinemachine
         [Tooltip("How to fit the curve into the envelope time")]
         public RepeatMode m_RepeatMode = RepeatMode.Stretch;
 
+        /// <summary>Scale factor for the signal.  Signal is multiplied by this value</summary>
+        [Tooltip("Scale factor for the signal.  Signal is multiplied by this value.")]
+        public float m_Gain = 1;
+
         private void OnValidate()
         {
             m_ImpactRadius = Mathf.Max(0, m_ImpactRadius);
@@ -70,7 +74,7 @@ namespace Cinemachine
                     = CinemachineImpulseManager.Instance.NewImpulseEvent();
                 e.m_Envelope = m_ImpactEnvelope;
                 e.m_SignalSource = new SignalSource(
-                    m_RawSignal, velocity, m_RepeatMode, m_ImpactEnvelope.Duration);
+                    m_RawSignal, m_Gain, velocity, m_RepeatMode, m_ImpactEnvelope.Duration);
                 e.m_Position = pos;
                 e.m_Radius = m_ImpactRadius;
                 e.m_Channel = Mathf.Abs(channel);
@@ -83,15 +87,17 @@ namespace Cinemachine
         class SignalSource : CinemachineImpulseManager.IRawSignalSource
         {
             AnimationCurve m_RawSignal;
+            float m_Gain;
             Vector3 m_Velocity;
             RepeatMode m_RepeatMode;
             float m_EnvelopeDuration;
 
             public SignalSource(
-                AnimationCurve rawSignal, Vector3 velocity,
+                AnimationCurve rawSignal, float gain, Vector3 velocity,
                 RepeatMode repeatMode, float duration)
             {
                 m_RawSignal = rawSignal;
+                m_Gain = gain;
                 m_Velocity = velocity;
                 m_RepeatMode = repeatMode;
                 m_EnvelopeDuration = duration;
@@ -118,7 +124,7 @@ namespace Cinemachine
                                 value = m_RawSignal.Evaluate(start + (timeSinceSignalStart % duration));
                                 break;
                         }
-                        signal = value * m_Velocity;
+                        signal = value * m_Velocity * m_Gain;
                     }
                 }
                 return signal; 
