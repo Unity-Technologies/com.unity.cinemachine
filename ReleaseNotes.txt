@@ -1,6 +1,8 @@
-<size=20><b>Version 2.1.13-alpha.3</b></size>
+<size=20><b>Version 2.2.0-alpha.0</b></size>
 
-- New Cinemachine Impulse module for event-driven camera shakes (WIP)
+- New Cinemachine Impulse module for event-driven camera shakes
+- New Event Helper script CinemachineEventMapper maps UnityEvents to Virtual Cameras
+- New Event Helper script CinemachineETriggerActivator takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
 - Added Named FOV presets for Camera Lens
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview
