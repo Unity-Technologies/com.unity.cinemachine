@@ -121,10 +121,13 @@ namespace Cinemachine.Editor
             // GUI.color = Target.m_Appearance.pathColor;
             if (GUI.Button(r, new GUIContent(index.ToString(), "Go to the waypoint in the scene view")))
             {
-                mWaypointList.index = index;
-                SceneView.lastActiveSceneView.pivot = Target.EvaluatePosition(index);
-                SceneView.lastActiveSceneView.size = 3;
-                SceneView.lastActiveSceneView.Repaint();
+                if (SceneView.lastActiveSceneView != null)
+                {
+                    mWaypointList.index = index;
+                    SceneView.lastActiveSceneView.pivot = Target.EvaluatePosition(index);
+                    SceneView.lastActiveSceneView.size = 3;
+                    SceneView.lastActiveSceneView.Repaint();
+                }
             }
             GUI.color = color;
 
@@ -140,7 +143,7 @@ namespace Cinemachine.Editor
             buttonContent.tooltip = "Set to scene-view camera position";
             GUIStyle style = new GUIStyle(GUI.skin.label);
             style.alignment = TextAnchor.MiddleCenter;
-            if (GUI.Button(r, buttonContent, style))
+            if (GUI.Button(r, buttonContent, style) && SceneView.lastActiveSceneView != null)
             {
                 Undo.RecordObject(Target, "Set waypoint");
                 CinemachinePath.Waypoint wp = Target.m_Waypoints[index];

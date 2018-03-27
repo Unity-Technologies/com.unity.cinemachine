@@ -34,7 +34,8 @@ namespace Cinemachine.Editor
             CreateCameraBrainIfAbsent();
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineFreeLook), "CM FreeLook"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create FreeLook");
             Undo.AddComponent<CinemachineFreeLook>(go);
             Selection.activeGameObject = go;
@@ -46,7 +47,8 @@ namespace Cinemachine.Editor
             CreateCameraBrainIfAbsent();
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineBlendListCamera), "CM BlendListCamera"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create Blend List camera");
             var vcam = Undo.AddComponent<CinemachineBlendListCamera>(go);
             Selection.activeGameObject = go;
@@ -73,7 +75,8 @@ namespace Cinemachine.Editor
             CreateCameraBrainIfAbsent();
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineStateDrivenCamera), "CM StateDrivenCamera"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create state driven camera");
             Undo.AddComponent<CinemachineStateDrivenCamera>(go);
             Selection.activeGameObject = go;
@@ -88,7 +91,8 @@ namespace Cinemachine.Editor
             CreateCameraBrainIfAbsent();
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineClearShot), "CM ClearShot"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create ClearShot camera");
             Undo.AddComponent<CinemachineClearShot>(go);
             Selection.activeGameObject = go;
@@ -108,7 +112,8 @@ namespace Cinemachine.Editor
                     "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
             CinemachineSmoothPath path = Undo.AddComponent<CinemachineSmoothPath>(go);
             var dolly = vcam.GetCinemachineComponent<CinemachineTrackedDolly>();
@@ -124,7 +129,8 @@ namespace Cinemachine.Editor
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineTargetGroup), "TargetGroup"),
                     typeof(CinemachineTargetGroup));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create target group");
             vcam.LookAt = go.transform;
             vcam.Follow = go.transform;
@@ -136,7 +142,8 @@ namespace Cinemachine.Editor
             CreateCameraBrainIfAbsent();
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineMixingCamera), "CM MixingCamera"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create MixingCamera camera");
             Undo.AddComponent<CinemachineMixingCamera>(go);
             Selection.activeGameObject = go;
@@ -157,13 +164,15 @@ namespace Cinemachine.Editor
         {
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
             CinemachineSmoothPath path = Undo.AddComponent<CinemachineSmoothPath>(go);
             Selection.activeGameObject = go;
 
             go = new GameObject(GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create cart");
             CinemachineDollyCart cart = Undo.AddComponent<CinemachineDollyCart>(go);
             Undo.RecordObject(cart, "create track");
@@ -222,7 +231,8 @@ namespace Cinemachine.Editor
             CreateCameraBrainIfAbsent();
             GameObject go = new GameObject(
                     GenerateUniqueObjectName(typeof(CinemachineVirtualCamera), name));
-            go.transform.position = SceneView.lastActiveSceneView.pivot;
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create " + name);
             CinemachineVirtualCamera vcam = Undo.AddComponent<CinemachineVirtualCamera>(go);
             GameObject componentOwner = vcam.GetComponentOwner().gameObject;

@@ -73,10 +73,13 @@ namespace Cinemachine.Editor
             Rect r = new Rect(rect.position, numberDimension);
             if (GUI.Button(r, new GUIContent(index.ToString(), "Go to the waypoint in the scene view")))
             {
-                mWaypointList.index = index;
-                SceneView.lastActiveSceneView.pivot = Target.EvaluatePosition(index);
-                SceneView.lastActiveSceneView.size = 4;
-                SceneView.lastActiveSceneView.Repaint();
+                if (SceneView.lastActiveSceneView != null)
+                {
+                    mWaypointList.index = index;
+                    SceneView.lastActiveSceneView.pivot = Target.EvaluatePosition(index);
+                    SceneView.lastActiveSceneView.size = 4;
+                    SceneView.lastActiveSceneView.Repaint();
+                }
             }
 
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2f;
@@ -95,7 +98,7 @@ namespace Cinemachine.Editor
             r.x += r.width + hSpace; r.height += 1; r.width = r.height; 
             GUIContent setButtonContent = EditorGUIUtility.IconContent("d_RectTransform Icon");
             setButtonContent.tooltip = "Set to scene-view camera position";
-            if (GUI.Button(r, setButtonContent, GUI.skin.label))
+            if (GUI.Button(r, setButtonContent, GUI.skin.label) && SceneView.lastActiveSceneView != null)
             {
                 Undo.RecordObject(Target, "Set waypoint");
                 CinemachineSmoothPath.Waypoint wp = Target.m_Waypoints[index];

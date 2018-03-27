@@ -113,7 +113,7 @@ namespace Cinemachine.Editor
                 if (sStageData[index].PopupOptions.Length <= 1)
                     continue;
 
-                const float indentOffset = 6;
+                const float indentOffset = 4;
 
                 GUIStyle stageBoxStyle = GUI.skin.box;
                 EditorGUILayout.BeginVertical(stageBoxStyle);
