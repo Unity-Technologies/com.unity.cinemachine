@@ -323,7 +323,7 @@ namespace Cinemachine
             if (deltaTime < 0)
             {
                 m_Predictor.Reset();
-                m_PreviousCameraPosition = curState.RawPosition 
+                m_PreviousCameraPosition = FollowTargetPosition
                     + (curState.RawOrientation * Vector3.back) * m_CameraDistance;
             }
             if (!IsValid)
