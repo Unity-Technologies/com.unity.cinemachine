@@ -30,7 +30,7 @@ namespace Cinemachine.Editor
         int[] m_stageState = null;
         bool[] m_stageError = null;
         CinemachineComponentBase[] m_components;
-        UnityEditor.Editor[] m_componentEditors;
+        UnityEditor.Editor[] m_componentEditors = new UnityEditor.Editor[0];
 
         protected override void OnEnable()
         {

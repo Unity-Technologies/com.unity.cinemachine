@@ -9,6 +9,9 @@
 - If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera
 - TrackedDolly: Default up mode sets Up to World Up
 - Added ScreenSpaceAimWhenTargetsDiffer as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
+- Bugfix: Custom Blends "Any to Any" was not working (regression)
+- Bugfix: Composer was sometimes getting wrong aspect if multiple brains with different aspect ratios
+- Bugfix: could not drag vcam transforms if multiple inspectors and one is hidden
 
 <size=20><b>Version 2.1.12</b></size>
 
