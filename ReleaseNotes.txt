@@ -1,3 +1,8 @@
+<size=20><b>Version 2.1.13</b></size>
+- Bugfix: Custom Blends "Any to Any" was not working (regression)
+- Bugfix: Composer was sometimes getting wrong aspect if multiple brains with different aspect ratios
+- Bugfix: could not drag vcam transforms if multiple inspectors and one is hidden
+
 <size=20><b>Version 2.1.12</b></size>
 
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.
