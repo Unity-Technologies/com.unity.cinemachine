@@ -107,7 +107,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="deltaTime">Delta time in seconds</param>
         /// <returns>Returns <b>true</b> if this axis' input was non-zero this Update,
-        /// <b>flase</b> otherwise</returns>
+        /// <b>false</b> otherwise</returns>
         public bool Update(float deltaTime)
         {
             if (!string.IsNullOrEmpty(m_InputAxisName))

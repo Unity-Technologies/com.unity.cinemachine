@@ -10,6 +10,9 @@ namespace Cinemachine.Timeline
         public bool IsValid { get { return VirtualCamera != null; } }
     }
 
+    /// <summary>
+    /// Internal use only.  Not part of the public API.
+    /// </summary>
     public sealed class CinemachineShot : PlayableAsset, IPropertyPreview
     {
         public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;

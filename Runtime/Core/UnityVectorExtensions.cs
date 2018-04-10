@@ -106,7 +106,7 @@ namespace Cinemachine.Utility
         }
     }
 
-    /// <summary>Extentions to the Quaternion class, usen in various places by Cinemachine</summary>
+    /// <summary>Extensions to the Quaternion class, usen in various places by Cinemachine</summary>
     public static class UnityQuaternionExtensions
     {
         /// <summary>This is a slerp that mimics a camera operator's movement in that

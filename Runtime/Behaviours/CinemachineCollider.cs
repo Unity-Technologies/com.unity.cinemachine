@@ -175,7 +175,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Callcack to to the collision resolution and shot evaluation</summary>
+        /// <summary>Callback to do the collision resolution and shot evaluation</summary>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)

@@ -10,7 +10,7 @@ namespace Cinemachine.Timeline
     [TrackMediaType(TimelineAsset.MediaType.Script)]
     [TrackBindingType(typeof(CinemachineBrain))]
     [TrackColor(0.53f, 0.0f, 0.08f)]
-    public class CinemachineTrack : TrackAsset
+    internal class CinemachineTrack : TrackAsset
     {
         public override Playable CreateTrackMixer(
             PlayableGraph graph, GameObject go, int inputCount)

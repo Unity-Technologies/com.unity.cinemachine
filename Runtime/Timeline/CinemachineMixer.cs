@@ -3,7 +3,7 @@ using UnityEngine.Playables;
 
 namespace Cinemachine.Timeline
 {
-    public sealed class CinemachineMixer : PlayableBehaviour
+    internal sealed class CinemachineMixer : PlayableBehaviour
     {
         // The brain that this track controls
         private CinemachineBrain mBrain;

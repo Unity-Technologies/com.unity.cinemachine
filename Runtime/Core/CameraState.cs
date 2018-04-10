@@ -163,13 +163,13 @@ namespace Cinemachine
         /// The base system ignores this data - it is intended for extension modules</summary>
         public struct CustomBlendable 
         { 
-            /// <summary>The custom stuff that the extention module will consider</summary>
+            /// <summary>The custom stuff that the extension module will consider</summary>
             public Object m_Custom; 
             /// <summary>The weight of the custom stuff.  Must be 0...1</summary>
             public float m_Weight; 
 
             /// <summary>Constructor with specific values</summary>
-            /// <param name="custom">The custom stuff that the extention module will consider</param>
+            /// <param name="custom">The custom stuff that the extension module will consider</param>
             /// <param name="weight">The weight of the custom stuff.  Must be 0...1</param>
             public CustomBlendable(Object custom, float weight) 
                 { m_Custom = custom; m_Weight = weight; }

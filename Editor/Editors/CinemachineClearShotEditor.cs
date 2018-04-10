@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
@@ -62,7 +61,7 @@ namespace Cinemachine.Editor
                     break;
                 case ColliderState.ColliderOnChildrenAndParent:
                     EditorGUILayout.HelpBox(
-                        "There is a Collider extention on the ClearShot camera, and also on some of its child cameras.  You can't have both.",
+                        "There is a Collider extension on the ClearShot camera, and also on some of its child cameras.  You can't have both.",
                         MessageType.Error);
                     break;
             }
