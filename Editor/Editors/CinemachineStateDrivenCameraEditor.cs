@@ -106,6 +106,16 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
+        static AnimatorController GetControllerFromAnimator(Animator animator)
+        {
+            if (animator == null)
+                return null;
+            var ovr = animator.runtimeAnimatorController as AnimatorOverrideController;
+            if (ovr)
+                return ovr.runtimeAnimatorController as AnimatorController;
+            return animator.runtimeAnimatorController as AnimatorController;
+        }
+
         private string[] mLayerNames;
         private int[] mTargetStates;
         private string[] mTargetStateNames;
@@ -113,8 +123,7 @@ namespace Cinemachine.Editor
         private void UpdateTargetStates()
         {
             // Scrape the Animator Controller for states
-            AnimatorController ac = (Target.m_AnimatedTarget == null)
-                ? null : Target.m_AnimatedTarget.runtimeAnimatorController as AnimatorController;
+            AnimatorController ac = GetControllerFromAnimator(Target.m_AnimatedTarget);
             StateCollector collector = new StateCollector();
             collector.CollectStates(ac, Target.m_LayerIndex);
             mTargetStates = collector.mStates.ToArray();
