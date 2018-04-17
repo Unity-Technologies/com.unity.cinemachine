@@ -285,7 +285,7 @@ namespace Cinemachine
 #endif
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
-        public override bool IsValid { get { return enabled && FollowTarget != null && LookAtTarget == null; } }
+        public override bool IsValid { get { return enabled && FollowTarget != null; } }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
@@ -331,12 +331,14 @@ namespace Cinemachine
 
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFramingTransposer.MutateCameraState");
             Vector3 camPosWorld = m_PreviousCameraPosition;
-            curState.ReferenceLookAt = FollowTargetPosition;
+            Vector3 followTargetPosition = FollowTargetPosition;
+            if (!curState.HasLookAt)
+                curState.ReferenceLookAt = followTargetPosition;
             m_Predictor.IgnoreY = m_LookaheadIgnoreY;
             m_Predictor.Smoothing = m_LookaheadSmoothing;
-            m_Predictor.AddPosition(curState.ReferenceLookAt);
+            m_Predictor.AddPosition(followTargetPosition);
             TrackedPoint = (m_LookaheadTime > 0) 
-                ? m_Predictor.PredictPosition(m_LookaheadTime) : curState.ReferenceLookAt;
+                ? m_Predictor.PredictPosition(m_LookaheadTime) : followTargetPosition;
 
             // Work in camera-local space
             Quaternion localToWorld = curState.RawOrientation;

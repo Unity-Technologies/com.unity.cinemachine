@@ -101,10 +101,6 @@ namespace Cinemachine.Editor
                 EditorGUILayout.HelpBox(
                     "Framing Transposer requires a Follow target.  Change Body to Do Nothing if you don't want a Follow target.", 
                     MessageType.Warning);
-            if (Target.LookAtTarget != null)
-                EditorGUILayout.HelpBox(
-                    "The LookAt target must be null.  The Follow target will be used in place of the LookAt target.",
-                    MessageType.Warning);
 
             // First snapshot some settings
             Rect oldHard = Target.HardGuideRect;
