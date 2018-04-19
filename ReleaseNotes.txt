@@ -2,7 +2,7 @@
 
 - New Cinemachine Impulse module for event-driven camera shakes
 - New Event Helper script CinemachineEventMapper maps UnityEvents to Virtual Cameras
-- New Event Helper script CinemachineETriggerActivator takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
+- New Event Helper script CinemachineTriggerAction takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
 - Added Named FOV presets for Camera Lens
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview

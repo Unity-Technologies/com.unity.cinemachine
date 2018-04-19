@@ -5,12 +5,12 @@ using UnityEngine.Playables;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineTriggerActivator))]
-    public class CinemachineTriggerAcivatorEditor : BaseEditor<CinemachineTriggerActivator>
+    [CustomEditor(typeof(CinemachineTriggerAction))]
+    public class CCinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
     {
         const int vSpace = 2;
-        CinemachineTriggerActivator.ActionSettings def 
-            = new CinemachineTriggerActivator.ActionSettings(); // to access name strings
+        CinemachineTriggerAction.ActionSettings def 
+            = new CinemachineTriggerAction.ActionSettings(); // to access name strings
 
         static bool mEnterExpanded;
         static bool mExitExpanded;
@@ -63,11 +63,11 @@ namespace Cinemachine.Editor
                 SerializedProperty targetProp = property.FindPropertyRelative(() => def.m_Target);
                 EditorGUILayout.PropertyField(targetProp);
 
-                bool isBoost = actionProp.intValue == (int)CinemachineTriggerActivator.ActionSettings.Mode.PriorityBoost;
+                bool isBoost = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.PriorityBoost;
                 if (isBoost)
                     EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.m_BoostAmount));
 
-                bool isPlay = actionProp.intValue == (int)CinemachineTriggerActivator.ActionSettings.Mode.Play;
+                bool isPlay = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Play;
                 if (isPlay)
                 {
                     SerializedProperty[] props = new SerializedProperty[2]
@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
                 }
 
                 SerializedProperty methodProp = property.FindPropertyRelative(() => def.m_MethodName);
-                bool isBroadcast = actionProp.intValue == (int)CinemachineTriggerActivator.ActionSettings.Mode.Broadcast;
+                bool isBroadcast = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Broadcast;
                 if (isBroadcast)
                 {
                     EditorGUILayout.PropertyField(methodProp);
@@ -99,8 +99,8 @@ namespace Cinemachine.Editor
                         EditorGUILayout.HelpBox("Target must be a CinemachineVirtualCameraBase in order to boost priority", MessageType.Warning);
                 }
 
-                bool isEnableDisable = (actionProp.intValue == (int)CinemachineTriggerActivator.ActionSettings.Mode.Enable
-                    || actionProp.intValue == (int)CinemachineTriggerActivator.ActionSettings.Mode.Disable);
+                bool isEnableDisable = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Enable
+                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Disable);
                 if (isEnableDisable)
                 {
                     var value = targetProp.objectReferenceValue;
@@ -109,7 +109,7 @@ namespace Cinemachine.Editor
                 }
 
                 bool isPlayStop = isPlay
-                    || actionProp.intValue == (int)CinemachineTriggerActivator.ActionSettings.Mode.Stop;
+                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Stop;
                 if (isPlayStop)
                 {
                     if (GetTargetComponent<Animator>(targetProp.objectReferenceValue) == null
