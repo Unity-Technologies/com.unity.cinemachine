@@ -720,10 +720,15 @@ namespace Cinemachine
             Camera cam = OutputCamera;
             if (cam != null)
             {
-                cam.fieldOfView = state.Lens.FieldOfView;
                 cam.orthographicSize = state.Lens.OrthographicSize;
                 cam.nearClipPlane = state.Lens.NearClipPlane;
                 cam.farClipPlane = state.Lens.FarClipPlane;
+                if (state.Lens.PhysicalCamera)
+                    cam.focalLength= state.Lens.FocalLength;
+                else
+                    cam.fieldOfView = state.Lens.FieldOfView;
+                cam.usePhysicalProperties = state.Lens.PhysicalCamera;
+                cam.lensShift = state.Lens.LensShift;
             }
             if (CinemachineCore.CameraUpdatedEvent != null)
                 CinemachineCore.CameraUpdatedEvent.Invoke(this);

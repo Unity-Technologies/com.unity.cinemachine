@@ -19,25 +19,33 @@ namespace Cinemachine.Editor
             mExpanded = EditorGUI.Foldout(rect, mExpanded, label);
             if (mExpanded)
             {
+                bool isPhysical = IsPhysical(property);
                 ++EditorGUI.indentLevel;
                 rect.y += height + vSpace;
                 if (IsOrtho(property))
                     EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.OrthographicSize));
                 else
-                    DrawFOVControl(rect, property);
+                    DrawFOVControl(rect, property, isPhysical);
                 rect.y += height + vSpace;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.NearClipPlane));
                 rect.y += height + vSpace;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.FarClipPlane));
+                if (isPhysical)
+                {
+                    rect.y += height + vSpace;
+                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.LensShift));
+                }
                 rect.y += height + vSpace;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Dutch));
                 --EditorGUI.indentLevel;
             }
         }
 
-        void DrawFOVControl(Rect rect, SerializedProperty property)
+        void DrawFOVControl(Rect rect, SerializedProperty property, bool isPhysical)
         {
-            var FOVProperty = property.FindPropertyRelative(() => def.FieldOfView);
+            var FOVProperty = isPhysical
+                ? property.FindPropertyRelative(() => def.FocalLength)
+                : property.FindPropertyRelative(() => def.FieldOfView);
             float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 3;
             rect.width -= dropdownWidth;
             EditorGUI.PropertyField(rect, FOVProperty);
@@ -75,11 +83,22 @@ namespace Cinemachine.Editor
                 true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
         }
 
+        bool IsPhysical(SerializedProperty property)
+        {
+            PropertyInfo pi = typeof(LensSettings).GetProperty(
+                "PhysicalCamera", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (pi == null)
+                return false;
+            return bool.Equals(
+                true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
+        }
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             float height = EditorGUIUtility.singleLineHeight + vSpace;
             if (mExpanded)
-                height *= 5;
+                height *= IsPhysical(property) ? 6 : 5;
+
             return height;
         }
     }

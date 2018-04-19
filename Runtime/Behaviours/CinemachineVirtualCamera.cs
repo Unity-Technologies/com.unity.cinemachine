@@ -488,6 +488,7 @@ namespace Cinemachine
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
             m_Lens.Aspect = brain != null ? brain.OutputCamera.aspect : 1;
             m_Lens.Orthographic = brain != null ? brain.OutputCamera.orthographic : false;
+            m_Lens.PhysicalCamera = brain != null ? brain.OutputCamera.usePhysicalProperties : false;
             state.Lens = m_Lens;
 
             return state;
