@@ -288,10 +288,6 @@ namespace Cinemachine
 
             UpdateRigCache();
 
-            // Reset the base camera state, in case the game object got moved in the editor
-            if (deltaTime < 0)
-                m_State = PullStateFromVirtualCamera(worldUp); // Not in gameplay
-
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
             ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
@@ -611,7 +607,8 @@ namespace Cinemachine
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.CalculateNewState");
-            CameraState state = PullStateFromVirtualCamera(worldUp);
+            CameraState state = PullStateFromVirtualCamera(worldUp, m_Lens);
+            m_Lens = m_State.Lens;
 
             m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 
@@ -636,22 +633,6 @@ namespace Cinemachine
                 }
             }
             //UnityEngine.Profiling.Profiler.EndSample();
-            return state;
-        }
-
-        private CameraState PullStateFromVirtualCamera(Vector3 worldUp)
-        {
-            CameraState state = CameraState.Default;
-            state.RawPosition = transform.position;
-            state.RawOrientation = transform.rotation;
-            state.ReferenceUp = worldUp;
-
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
-            m_Lens.Aspect = brain != null ? brain.OutputCamera.aspect : 1;
-            m_Lens.Orthographic = brain != null ? brain.OutputCamera.orthographic : false;
-            m_Lens.PhysicalCamera = brain != null ? brain.OutputCamera.usePhysicalProperties : false;
-            state.Lens = m_Lens;
-
             return state;
         }
 

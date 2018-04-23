@@ -424,10 +424,10 @@ namespace Cinemachine
         float m_prevTargetHeight; // State for frame damping
 
         /// <summary>For editor visulaization of the calculated bounding box of the group</summary>
-        public Bounds m_LastBounds { get; private set; }
+        public Bounds LastBounds { get; private set; }
 
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
-        public Matrix4x4 m_lastBoundsMatrix { get; private set; }
+        public Matrix4x4 LastBoundsMatrix { get; private set; }
 
         /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a group</summary>
         public CinemachineTargetGroup TargetGroup 
@@ -450,11 +450,11 @@ namespace Cinemachine
             // Get the bounding box from that POV in view space, and find its height
             Bounds bounds = group.BoundingBox;
             Vector3 fwd = curState.RawOrientation * Vector3.forward;
-            m_lastBoundsMatrix = Matrix4x4.TRS(
+            LastBoundsMatrix = Matrix4x4.TRS(
                     bounds.center - (fwd * bounds.extents.magnitude),
                     curState.RawOrientation, Vector3.one);
-            m_LastBounds = group.GetViewSpaceBoundingBox(m_lastBoundsMatrix);
-            float targetHeight = GetTargetHeight(m_LastBounds);
+            LastBounds = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+            float targetHeight = GetTargetHeight(LastBounds);
 
             // Apply damping
             if (deltaTime >= 0)
@@ -473,7 +473,7 @@ namespace Cinemachine
                     = targetHeight / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
 
                 // target the near surface of the bounding box
-                desiredDistance += m_LastBounds.extents.z;
+                desiredDistance += LastBounds.extents.z;
 
                 // Clamp to respect min/max distance settings
                 desiredDistance = Mathf.Clamp(
@@ -487,7 +487,7 @@ namespace Cinemachine
             // Apply zoom
             if (curState.Lens.Orthographic || m_AdjustmentMode != AdjustmentMode.DollyOnly)
             {
-                float nearBoundsDistance = (targetZ + cameraOffset) - m_LastBounds.extents.z;
+                float nearBoundsDistance = (targetZ + cameraOffset) - LastBounds.extents.z;
                 float currentFOV = 179;
                 if (nearBoundsDistance > Epsilon)
                     currentFOV = 2f * Mathf.Atan(targetHeight / (2 * nearBoundsDistance)) * Mathf.Rad2Deg;

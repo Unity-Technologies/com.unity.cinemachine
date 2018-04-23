@@ -150,6 +150,29 @@ namespace Cinemachine.Utility
                 return default(T);
         }
 
+        /// <summary>Cheater extension to access internal property of an object</summary>
+        /// <param name="type">The type of the field</param>
+        /// <param name="obj">The object to access</param>
+        /// <param name="memberName">The string name of the field to access</param>
+        /// <returns>The value of the field in the objects</returns>
+        public static T AccessInternalProperty<T>(this Type type, object obj, string memberName)
+        {
+            if (string.IsNullOrEmpty(memberName) || (type == null))
+                return default(T);
+
+            System.Reflection.BindingFlags bindingFlags = System.Reflection.BindingFlags.NonPublic;
+            if (obj != null)
+                bindingFlags |= System.Reflection.BindingFlags.Instance;
+            else
+                bindingFlags |= System.Reflection.BindingFlags.Static;
+
+            PropertyInfo pi = type.GetProperty(memberName, bindingFlags);
+            if ((pi != null) && (pi.PropertyType == typeof(T)))
+                return (T)pi.GetValue(obj, null);
+            else
+                return default(T);
+        }
+
         /// <summary>Get the object owner of a field.  This method processes
         /// the '.' separator to get from the object that owns the compound field
         /// to the object that owns the leaf field</summary>

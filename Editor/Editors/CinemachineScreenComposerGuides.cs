@@ -34,11 +34,13 @@ namespace Cinemachine.Editor
 
         public void OnGUI_DrawGuides(bool isLive, Camera outputCamera, LensSettings lens, bool showHardGuides)
         {
-            Rect cameraRect = outputCamera.pixelRect;
+            Rect gateRect = outputCamera.pixelRect;
+            Rect cameraRect = gateRect;
             float screenWidth = cameraRect.width;
-            float screenHeight = cameraRect.height;
+            float screenHeight = screenWidth / typeof(LensSettings).AccessInternalProperty<float>(lens, "Aspect");
             cameraRect.yMax = Screen.height - cameraRect.yMin;
             cameraRect.yMin = cameraRect.yMax - screenHeight;
+            cameraRect.position += new Vector2(0, (gateRect.y - cameraRect.y) / 2);
 
             // Shift the guides along with the lens
             cameraRect.position += new Vector2(
@@ -166,7 +168,7 @@ namespace Cinemachine.Editor
             {
                 Vector2 d = new Vector2(
                         Event.current.delta.x / screenWidth,
-                        Event.current.delta.y / screenHeight);
+                        Event.current.delta.y / screenHeight) / 2;
 
                 // First snapshot some settings
                 Rect newHard = GetHardGuide();

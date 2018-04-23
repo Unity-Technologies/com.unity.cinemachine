@@ -7,7 +7,7 @@ namespace Cinemachine.Timeline
 {
     [Serializable]
     [TrackClipType(typeof(CinemachineShot))]
-#if !UNITY_2018_3_OR_NEWER
+#if !UNITY_2018_2_OR_NEWER
     [TrackMediaType(TimelineAsset.MediaType.Script)]
 #endif
     [TrackBindingType(typeof(CinemachineBrain))]

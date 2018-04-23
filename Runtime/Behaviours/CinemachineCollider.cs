@@ -120,7 +120,7 @@ namespace Cinemachine
         /// virtual camera that owns the collider, in the event that the camera has children</param>
         /// <returns>True if the virtual camera has been displaced due to collision or
         /// target obstruction</returns>
-        public bool CameraWasDisplaced(CinemachineVirtualCameraBase vcam)
+        public bool CameraWasDisplaced(ICinemachineCamera vcam)
         {
             return GetExtraState<VcamExtraState>(vcam).colliderDisplacement > 0;
         }

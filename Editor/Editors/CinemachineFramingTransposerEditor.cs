@@ -159,8 +159,8 @@ namespace Cinemachine.Editor
             if (group != null)
             {
                 Matrix4x4 m = Gizmos.matrix;
-                Bounds b = target.m_LastBounds;
-                Gizmos.matrix = target.m_lastBoundsMatrix;
+                Bounds b = target.LastBounds;
+                Gizmos.matrix = target.LastBoundsMatrix;
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawWireCube(b.center, b.size);
                 Gizmos.matrix = m;

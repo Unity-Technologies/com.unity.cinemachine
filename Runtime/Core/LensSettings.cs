@@ -12,7 +12,7 @@ namespace Cinemachine
     public struct LensSettings
     {
         /// <summary>Default Lens Settings</summary>
-        public static LensSettings Default = new LensSettings(40f, 10f, 30f, 0.1f, 5000f, 0, false, 1);
+        public static LensSettings Default = new LensSettings(40f, 10f, 0.1f, 5000f, 0);
         
         /// <summary>
         /// This is the camera view in vertical degrees. For cinematic people, a 50mm lens
@@ -28,11 +28,6 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("When using an orthographic camera, this defines the half-height, in world coordinates, of the camera view.")]
         public float OrthographicSize;
-
-        internal bool PhysicalCamera { get; set; }
-        public float FocalLength;
-        public Vector2 LensShift;
-//        internal Vector2 SensorSize;
 
         /// <summary>
         /// The near clip plane for this LensSettings
@@ -63,7 +58,21 @@ namespace Cinemachine
         /// This is set every frame by the virtual camera, based on the value 
         /// found in the currently associated Unity camera
         /// </summary>
-        internal float Aspect { get; set; }
+        internal bool IsPhysicalCamera { get; set; }
+
+        /// <summary>
+        /// This is set every frame by the virtual camera, based on the value 
+        /// found in the currently associated Unity camera
+        /// </summary>
+        internal Vector2 SensorSize { get; set; }
+
+        /// <summary>
+        /// Sensor aspect, not screen aspect.  For nonphysical cameras, this is the same thing.
+        /// </summary>
+        internal float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
+
+        /// <summary>For physical cameras only: position of the gate relative to the film back</summary>
+        public Vector2 LensShift;
 
         /// <summary>
         /// Creates a new LensSettings, copying the values from the 
@@ -77,16 +86,16 @@ namespace Cinemachine
             if (fromCamera != null)
             {
                 lens.FieldOfView = fromCamera.fieldOfView;
+                lens.SensorSize = new Vector2(fromCamera.aspect, 1f);
+                lens.Orthographic = fromCamera.orthographic;
 #if UNITY_2018_2_OR_NEWER
-                lens.PhysicalCamera = fromCamera.usePhysicalProperties;
-                lens.FocalLength = fromCamera.focalLength;
+                lens.IsPhysicalCamera = fromCamera.usePhysicalProperties;
+                lens.SensorSize = fromCamera.sensorSize;
                 lens.LensShift = fromCamera.lensShift;
 #endif
                 lens.OrthographicSize = fromCamera.orthographicSize;
                 lens.NearClipPlane = fromCamera.nearClipPlane;
                 lens.FarClipPlane = fromCamera.farClipPlane;
-                lens.Orthographic = fromCamera.orthographic;
-                lens.Aspect = fromCamera.aspect;
             }
             return lens;
         }
@@ -99,22 +108,16 @@ namespace Cinemachine
         /// <param name="nearClip">The near clip plane</param>
         /// <param name="farClip">The far clip plane</param>
         /// <param name="dutch">Camera roll, in degrees.  This is applied at the end 
-        /// <param name="ortho">Whether the lens is orthographic</param>
-        /// <param name="aspect">The aspect ratio of the lens  Width/height</param>
         /// after shot composition.</param>
         public LensSettings(
-            float fov, float orthographicSize, float focalLength,
-            float nearClip, float farClip, float dutch,
-            bool ortho, float aspect) : this()
+            float fov, float orthographicSize,
+            float nearClip, float farClip, float dutch) : this()
         {
             FieldOfView = fov;
             OrthographicSize = orthographicSize;
-            FocalLength = focalLength;
             NearClipPlane = nearClip;
             FarClipPlane = farClip;
             Dutch = dutch;
-            Orthographic = ortho;
-            Aspect = aspect;
         }
 
         /// <summary>
@@ -133,29 +136,10 @@ namespace Cinemachine
             blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
             blendedLens.OrthographicSize = Mathf.Lerp(lensA.OrthographicSize, lensB.OrthographicSize, t);
             blendedLens.Dutch = Mathf.Lerp(lensA.Dutch, lensB.Dutch, t);
-            blendedLens.Aspect = Mathf.Lerp(lensA.Aspect, lensB.Aspect, t);
             blendedLens.Orthographic = lensA.Orthographic && lensB.Orthographic;
-
-            blendedLens.PhysicalCamera = lensA.PhysicalCamera || lensB.PhysicalCamera;
-            if (blendedLens.PhysicalCamera)
-            {
-                if (!lensA.PhysicalCamera)
-                {
-                    blendedLens.FocalLength = lensB.FocalLength;
-                    blendedLens.LensShift = lensB.LensShift;
-                }
-                else if (!lensB.PhysicalCamera)
-                {
-                    blendedLens.FocalLength = lensA.FocalLength;
-                    blendedLens.LensShift = lensA.LensShift;
-                }
-                else
-                {
-                    blendedLens.FocalLength = Mathf.Lerp(lensA.FocalLength, lensB.FocalLength, t);
-                    blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
-                }
-            }
-
+            blendedLens.IsPhysicalCamera = lensA.IsPhysicalCamera || lensB.IsPhysicalCamera;
+            blendedLens.SensorSize = Vector2.Lerp(lensA.SensorSize, lensB.SensorSize, t);
+            blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
             return blendedLens;
         }
 
@@ -164,7 +148,7 @@ namespace Cinemachine
         {
             NearClipPlane = Mathf.Max(NearClipPlane, 0.01f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.01f);
-            FocalLength = Mathf.Max(FocalLength, 0.1f);
+            FieldOfView = Mathf.Clamp(FieldOfView, 0.1f, 179f);
         }
     }
 }
