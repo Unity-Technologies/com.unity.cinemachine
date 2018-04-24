@@ -608,7 +608,7 @@ namespace Cinemachine
         {
             //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.CalculateNewState");
             CameraState state = PullStateFromVirtualCamera(worldUp, m_Lens);
-            m_Lens = m_State.Lens;
+            m_Lens = state.Lens;
 
             m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 
