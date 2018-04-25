@@ -128,7 +128,9 @@ namespace Cinemachine
             /// <summary>Cylindrical blend about the LookAt target (if any)</summary>
             CylindricalPositionBlend = 8,
             /// <summary>Radial blend when the LookAt target changes(if any)</summary>
-            RadialAimBlend = 16
+            RadialAimBlend = 16,
+            /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
+            IgnoreLookAtTarget = 32
         }
 
         /// <summary>
@@ -354,7 +356,8 @@ namespace Cinemachine
                     if (angle > UnityVectorExtensions.Epsilon)
                         dirTarget = state.ReferenceLookAt - state.CorrectedPosition;
                 }
-                if (dirTarget.AlmostZero())
+                if (dirTarget.AlmostZero() 
+                    || ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.IgnoreLookAtTarget) != 0)
                 {
                     // Don't know what we're looking at - can only slerp
                     newOrient = UnityQuaternionExtensions.SlerpWithReferenceUp(

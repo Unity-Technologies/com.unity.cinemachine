@@ -214,7 +214,7 @@ namespace Cinemachine
             if (stage == CinemachineCore.Stage.Aim)
             {
                 extra = GetExtraState<VcamExtraState>(vcam);
-                extra.targetObscured = CheckForTargetObstructions(state);
+                extra.targetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);
 
                 // GML these values are an initial arbitrary attempt at rating quality
                 if (extra.targetObscured)
@@ -569,6 +569,27 @@ namespace Cinemachine
                 Ray ray = new Ray(pos, dir.normalized);
                 RaycastHit hitInfo;
                 if (RaycastIgnoreTag(ray, out hitInfo, distance - m_MinimumDistanceFromTarget))
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsTargetOffscreen(CameraState state)
+        {
+            if (state.HasLookAt)
+            {
+                Vector3 dir = state.ReferenceLookAt - state.CorrectedPosition;
+                Vector3 fwd = state.CorrectedOrientation * Vector3.forward;
+                float fov = state.Lens.FieldOfView / 2;
+                float angle = Vector3.Angle(
+                    dir.ProjectOntoPlane(state.CorrectedOrientation * Vector3.right), fwd);
+                if (angle > fov)
+                    return true;
+
+                fov = Mathf.Rad2Deg * Mathf.Atan(Mathf.Tan(fov * Mathf.Deg2Rad) * state.Lens.Aspect);
+                angle = Vector3.Angle(
+                    dir.ProjectOntoPlane(state.CorrectedOrientation * Vector3.up), fwd);
+                if (angle > fov)
                     return true;
             }
             return false;

@@ -447,28 +447,37 @@ namespace Cinemachine
             // Update the state by invoking the component pipeline
             CinemachineCore.Stage curStage = CinemachineCore.Stage.Body;
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
+            bool hasAim = false;
             if (m_ComponentPipeline != null)
             {
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
+                {
                     m_ComponentPipeline[i].PrePipelineMutateCameraState(ref state);
-
+                    if (m_ComponentPipeline[i].Stage == CinemachineCore.Stage.Aim)
+                        hasAim = true;
+                }
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
                 {
                     curStage = AdvancePipelineStage(
-                        ref state, deltaTime, curStage, (int)m_ComponentPipeline[i].Stage);
+                        ref state, deltaTime, curStage, 
+                        (int)m_ComponentPipeline[i].Stage, hasAim);
                     m_ComponentPipeline[i].MutateCameraState(ref state, deltaTime);
                 }
             }
-            AdvancePipelineStage(ref state, deltaTime, curStage, (int)CinemachineCore.Stage.Finalize + 1);
+            AdvancePipelineStage(
+                ref state, deltaTime, curStage, 
+                (int)CinemachineCore.Stage.Finalize + 1, hasAim);
             return state;
         }
 
         private CinemachineCore.Stage AdvancePipelineStage(
             ref CameraState state, float deltaTime,
-            CinemachineCore.Stage curStage, int maxStage)
+            CinemachineCore.Stage curStage, int maxStage, bool hasAim)
         {
             while ((int)curStage < maxStage)
             {
+                if (!hasAim && curStage == CinemachineCore.Stage.Aim)
+                    state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                 InvokePostPipelineStageCallback(this, curStage, ref state, deltaTime);
                 ++curStage;
             }
