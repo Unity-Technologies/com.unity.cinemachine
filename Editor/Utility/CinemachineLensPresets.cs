@@ -6,7 +6,7 @@ using System.Linq;
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// User-definable named presets for lenses.  This is a Singleton asswet, available in editor only
+    /// User-definable named presets for lenses.  This is a Singleton asset, available in editor only
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]

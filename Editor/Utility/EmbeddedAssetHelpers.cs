@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Helper for drawing embedded asset editors
     /// </summary>
-    public class EmbeddeAssetEditor<T> where T : ScriptableObject
+    internal class EmbeddeAssetEditor<T> where T : ScriptableObject
     {
         /// <summary>
         /// Create in OnEnable()

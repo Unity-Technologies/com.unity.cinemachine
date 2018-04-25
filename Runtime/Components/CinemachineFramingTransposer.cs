@@ -216,7 +216,7 @@ namespace Cinemachine
         public float m_MaximumOrthoSize = 100;
 
         /// <summary>Internal API for the inspector editor</summary>
-        public Rect SoftGuideRect
+        internal Rect SoftGuideRect
         {
             get
             {
@@ -236,7 +236,7 @@ namespace Cinemachine
         }
 
         /// <summary>Internal API for the inspector editor</summary>
-        public Rect HardGuideRect
+        internal Rect HardGuideRect
         {
             get
             {

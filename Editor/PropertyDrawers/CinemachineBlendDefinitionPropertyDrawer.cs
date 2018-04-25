@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CinemachineBlendDefinitionPropertyAttribute))]
-    public sealed  class CinemachineBlendDefinitionPropertyDrawer : PropertyDrawer
+    internal sealed class CinemachineBlendDefinitionPropertyDrawer : PropertyDrawer
     {
         CinemachineBlendDefinition myClass = new CinemachineBlendDefinition(); // to access name strings
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)

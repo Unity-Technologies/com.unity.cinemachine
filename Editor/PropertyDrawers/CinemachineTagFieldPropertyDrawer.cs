@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(TagFieldAttribute))]
-    public sealed  class CinemachineTagFieldPropertyDrawer : PropertyDrawer
+    internal sealed class CinemachineTagFieldPropertyDrawer : PropertyDrawer
     {
         const float hSpace = 2;
         GUIContent clearText = new GUIContent("Clear", "Set the tag to empty");

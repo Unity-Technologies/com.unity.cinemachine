@@ -37,7 +37,7 @@ namespace Cinemachine
 
         /// <summary>Internal API for the editor.  Do not use this field</summary>
         [SerializeField][HideInInspector][NoSaveDuringPlay]
-        public CinemachineVirtualCameraBase[] m_ChildCameras = null;
+        internal CinemachineVirtualCameraBase[] m_ChildCameras = null;
 
         /// <summary>This represents a single entry in the instrunction list of the BlendListCamera.</summary>
         [Serializable]
@@ -228,7 +228,7 @@ namespace Cinemachine
         }
 
         /// <summary>Makes sure the internal child cache is up to date</summary>
-        public void OnTransformChildrenChanged()
+        void OnTransformChildrenChanged()
         {
             InvalidateListOfChildren();
         }
@@ -278,7 +278,7 @@ namespace Cinemachine
 
         /// <summary>Internal API for the inspector editor.</summary>
         /// // GML todo: make this private, part of UpdateListOfChildren()
-        public void ValidateInstructions()
+        internal void ValidateInstructions()
         {
             if (m_Instructions == null)
                 m_Instructions = new Instruction[0];

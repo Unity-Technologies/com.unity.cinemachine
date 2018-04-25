@@ -7,7 +7,7 @@ using Cinemachine.Utility;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(LensSettingsPropertyAttribute))]
-    public sealed class LensSettingsPropertyDrawer : PropertyDrawer
+    internal sealed class LensSettingsPropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;
         static bool mExpanded = true;

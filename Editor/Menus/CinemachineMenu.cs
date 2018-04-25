@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Cinemachine.Editor
 {
-    public static class CinemachineMenu
+    internal static class CinemachineMenu
     {
         public const string kCinemachineRootMenu = "Assets/Create/Cinemachine/";
 

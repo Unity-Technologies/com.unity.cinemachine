@@ -51,7 +51,7 @@ namespace Cinemachine
 
         /// <summary>Internal API for the editor.  Do not use this field</summary>
         [SerializeField][HideInInspector][NoSaveDuringPlay]
-        public CinemachineVirtualCameraBase[] m_ChildCameras = null;
+        internal CinemachineVirtualCameraBase[] m_ChildCameras = null;
 
         /// <summary>This represents a single instrunction to the StateDrivenCamera.  It associates
         /// an state from the state machine with a child Virtual Camera, and also holds
@@ -96,7 +96,7 @@ namespace Cinemachine
         /// <summary>Internal API for the Inspector editor.  This implements nested states.</summary>
         [Serializable]
         [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
-        public struct ParentHash
+        internal struct ParentHash
         {
             /// <summary>Internal API for the Inspector editor</summary>
             public int m_Hash;
@@ -106,7 +106,7 @@ namespace Cinemachine
             public ParentHash(int h, int p) { m_Hash = h; m_ParentHash = p; }
         }
         /// <summary>Internal API for the Inspector editor</summary>
-        [HideInInspector][SerializeField] public ParentHash[] m_ParentHash = null;
+        [HideInInspector][SerializeField] internal ParentHash[] m_ParentHash = null;
 
         /// <summary>Gets a brief debug description of this virtual camera, for use when displayiong debug info</summary>
         public override string Description 
@@ -312,7 +312,7 @@ namespace Cinemachine
         private Dictionary<int, int> mInstructionDictionary;
         private Dictionary<int, int> mStateParentLookup;
         /// <summary>Internal API for the inspector editor.</summary>
-        public void ValidateInstructions()
+        internal void ValidateInstructions()
         {
             if (m_Instructions == null)
                 m_Instructions = new Instruction[0];

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(NoiseSettingsPropertyAttribute))]
-    public sealed class NoiseSettingsPropertyDrawer : PropertyDrawer
+    internal sealed class NoiseSettingsPropertyDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {

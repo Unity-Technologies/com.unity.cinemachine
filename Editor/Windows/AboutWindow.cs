@@ -5,7 +5,7 @@ using System.IO;
 namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
-    public class AboutWindow : EditorWindow
+    internal class AboutWindow : EditorWindow
     {
         private const string kLastVersionOpened = "CNMCN_Last_Version_Loaded";
         private const string kInvalidVersionNumber = "0.0";

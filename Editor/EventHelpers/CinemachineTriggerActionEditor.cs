@@ -6,7 +6,7 @@ using UnityEngine.Playables;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTriggerAction))]
-    public class CCinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
+    internal class CinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
     {
         const int vSpace = 2;
         CinemachineTriggerAction.ActionSettings def 

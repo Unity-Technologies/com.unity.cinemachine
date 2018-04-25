@@ -43,7 +43,7 @@ namespace Cinemachine
 
         /// <summary>Internal API for the editor.  Do not use this filed.</summary>
         [SerializeField, HideInInspector, NoSaveDuringPlay]
-        public CinemachineVirtualCameraBase[] m_ChildCameras = null;
+        internal CinemachineVirtualCameraBase[] m_ChildCameras = null;
 
         /// <summary>Wait this many seconds before activating a new child camera</summary>
         [Tooltip("Wait this many seconds before activating a new child camera")]

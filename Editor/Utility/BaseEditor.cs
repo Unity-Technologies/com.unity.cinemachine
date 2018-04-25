@@ -6,6 +6,10 @@ using System.Linq.Expressions;
 
 namespace Cinemachine.Editor
 {
+    /// <summary>
+    /// A convenience base class for making inspector editors.
+    /// </summary>
+    /// <typeparam name="T">The class we're editing</typeparam>
     public class BaseEditor<T> : UnityEditor.Editor where T : class
     {
         protected T Target { get { return target as T; } }

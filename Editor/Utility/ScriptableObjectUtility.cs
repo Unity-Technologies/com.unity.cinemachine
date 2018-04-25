@@ -5,7 +5,7 @@ using System;
 
 namespace Cinemachine.Editor
 {
-    public class ScriptableObjectUtility : ScriptableObject
+    internal class ScriptableObjectUtility : ScriptableObject
     {
         public static string kPackageRoot = "Packages/com.unity.cinemachine";
 

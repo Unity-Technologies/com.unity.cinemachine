@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineStoryboard))]
-    public sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
+    internal sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
         public void OnDisable()
         {

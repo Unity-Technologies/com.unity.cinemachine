@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SaveDuringPlay
 {
     /// <summary>A collection of tools for finding objects</summary>
-    public static class ObjectTreeUtil
+    internal static class ObjectTreeUtil
     {
         /// <summary>
         /// Get the full name of an object, travelling up the transform parents to the root.

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSameAsFollowTarget))]
-    public sealed class CinemachineSameAsFollowTargetEditor : BaseEditor<CinemachineSameAsFollowTarget>
+    internal sealed class CinemachineSameAsFollowTargetEditor : BaseEditor<CinemachineSameAsFollowTarget>
     {
         public override void OnInspectorGUI()
         {

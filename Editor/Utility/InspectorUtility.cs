@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
-    public class InspectorUtility
+    internal class InspectorUtility
     {
         /// <summary>Put multiple properties on a single inspector line, with 
         /// optional label overrides.  Passing null as a label (or sublabel) override will 

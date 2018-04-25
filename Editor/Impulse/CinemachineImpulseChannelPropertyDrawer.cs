@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CinemachineImpulseChannelPropertyAttribute))]
-    public sealed class CinemachineImpulseChannelPropertyDrawer : PropertyDrawer
+    internal sealed class CinemachineImpulseChannelPropertyDrawer : PropertyDrawer
     {
         const float hSpace = 2;
         GUIContent mAddLabel = new GUIContent("Add...", "Add, remove, or rename channels");

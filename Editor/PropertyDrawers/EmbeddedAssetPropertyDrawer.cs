@@ -7,7 +7,7 @@ using System.Linq;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CinemachineEmbeddedAssetPropertyAttribute))]
-    public sealed class EmbeddedAssetPropertyDrawer : PropertyDrawer
+    internal sealed class EmbeddedAssetPropertyDrawer : PropertyDrawer
     {
         const float vSpace = 2;
         const float kIndentAmount = 15;

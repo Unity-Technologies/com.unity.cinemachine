@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(OrbitalTransposerHeadingPropertyAttribute))]
-    public sealed class OrbitalTransposerHeadingPropertyDrawer : PropertyDrawer
+    internal sealed class OrbitalTransposerHeadingPropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;
         bool mExpanded = true;

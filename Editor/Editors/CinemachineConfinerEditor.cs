@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineConfiner))]
-    public sealed class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>
+    internal sealed class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>
     {
         protected override List<string> GetExcludedPropertiesInInspector()
         {

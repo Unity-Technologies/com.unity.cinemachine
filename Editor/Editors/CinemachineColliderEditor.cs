@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineCollider))]
-    public sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
+    internal sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
     {
         protected override List<string> GetExcludedPropertiesInInspector()
         {

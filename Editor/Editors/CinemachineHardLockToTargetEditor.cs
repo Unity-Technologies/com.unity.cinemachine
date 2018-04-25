@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineHardLockToTarget))]
-    public sealed class CinemachineHardLockToTargetEditor : BaseEditor<CinemachineHardLockToTarget>
+    internal sealed class CinemachineHardLockToTargetEditor : BaseEditor<CinemachineHardLockToTarget>
     {
         public override void OnInspectorGUI()
         {

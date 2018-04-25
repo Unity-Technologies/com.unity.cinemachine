@@ -33,7 +33,7 @@ namespace Cinemachine
         public CustomBlend[] m_CustomBlends = null;
 
         /// <summary>Internal API for the inspector editopr: a label to represent any camera</summary>
-        public const string kBlendFromAnyCameraLabel = "**ANY CAMERA**";
+        internal const string kBlendFromAnyCameraLabel = "**ANY CAMERA**";
 
         /// <summary>
         /// Attempts to find a blend definition which matches the to and from cameras as specified.

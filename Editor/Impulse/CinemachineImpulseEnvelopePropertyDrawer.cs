@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CinemachineImpulseEnvelopePropertyAttribute))]
-    public sealed  class CinemachineImpulseEnvelopePropertyDrawer : PropertyDrawer
+    internal sealed class CinemachineImpulseEnvelopePropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;
         static bool mExpanded = true;
