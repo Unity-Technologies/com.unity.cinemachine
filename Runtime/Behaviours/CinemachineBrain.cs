@@ -720,13 +720,17 @@ namespace Cinemachine
             Camera cam = OutputCamera;
             if (cam != null)
             {
-                cam.orthographicSize = state.Lens.OrthographicSize;
                 cam.nearClipPlane = state.Lens.NearClipPlane;
                 cam.farClipPlane = state.Lens.FarClipPlane;
                 cam.fieldOfView = state.Lens.FieldOfView;
+                if (cam.orthographic)
+                    cam.orthographicSize = state.Lens.OrthographicSize;
 #if UNITY_2018_2_OR_NEWER
-                cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
-                cam.lensShift = state.Lens.LensShift;
+                else
+                {
+                    cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
+                    cam.lensShift = state.Lens.LensShift;
+                }
 #endif
             }
             if (CinemachineCore.CameraUpdatedEvent != null)
