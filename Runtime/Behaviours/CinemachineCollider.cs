@@ -579,18 +579,26 @@ namespace Cinemachine
             if (state.HasLookAt)
             {
                 Vector3 dir = state.ReferenceLookAt - state.CorrectedPosition;
-                Vector3 fwd = state.CorrectedOrientation * Vector3.forward;
-                float fov = state.Lens.FieldOfView / 2;
-                float angle = Vector3.Angle(
-                    dir.ProjectOntoPlane(state.CorrectedOrientation * Vector3.right), fwd);
-                if (angle > fov)
-                    return true;
+                dir = Quaternion.Inverse(state.CorrectedOrientation) * dir;
+                if (state.Lens.Orthographic)
+                {
+                    if (Mathf.Abs(dir.y) > state.Lens.OrthographicSize)
+                        return true;
+                    if (Mathf.Abs(dir.x) > state.Lens.OrthographicSize * state.Lens.Aspect)
+                        return true;
+                }
+                else
+                {
+                    float fov = state.Lens.FieldOfView / 2;
+                    float angle = Vector3.Angle(dir.ProjectOntoPlane(Vector3.right), Vector3.forward);
+                    if (angle > fov)
+                        return true;
 
-                fov = Mathf.Rad2Deg * Mathf.Atan(Mathf.Tan(fov * Mathf.Deg2Rad) * state.Lens.Aspect);
-                angle = Vector3.Angle(
-                    dir.ProjectOntoPlane(state.CorrectedOrientation * Vector3.up), fwd);
-                if (angle > fov)
-                    return true;
+                    fov = Mathf.Rad2Deg * Mathf.Atan(Mathf.Tan(fov * Mathf.Deg2Rad) * state.Lens.Aspect);
+                    angle = Vector3.Angle(dir.ProjectOntoPlane(Vector3.up), Vector3.forward);
+                    if (angle > fov)
+                        return true;
+                }
             }
             return false;
         }
