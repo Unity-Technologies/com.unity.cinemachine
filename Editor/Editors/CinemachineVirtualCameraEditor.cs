@@ -77,15 +77,18 @@ namespace Cinemachine.Editor
 
         void OnPositionDragged(Vector3 delta)
         {
-            foreach (UnityEditor.Editor e in m_componentEditors)
+            if (m_componentEditors != null)
             {
-                if (e != null)
+                foreach (UnityEditor.Editor e in m_componentEditors)
                 {
-                    MethodInfo mi = e.GetType().GetMethod("OnVcamPositionDragged"
-                        , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                    if (mi != null && e.target != null)
+                    if (e != null)
                     {
-                        mi.Invoke(e, new object[] { delta } );
+                        MethodInfo mi = e.GetType().GetMethod("OnVcamPositionDragged"
+                            , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                        if (mi != null && e.target != null)
+                        {
+                            mi.Invoke(e, new object[] { delta } );
+                        }
                     }
                 }
             }
@@ -176,13 +179,16 @@ namespace Cinemachine.Editor
 
         UnityEditor.Editor GetEditorForPipelineStage(CinemachineCore.Stage stage)
         {
-            foreach (UnityEditor.Editor e in m_componentEditors)
+            if (m_componentEditors != null)
             {
-                if (e != null)
+                foreach (UnityEditor.Editor e in m_componentEditors)
                 {
-                    CinemachineComponentBase c = e.target as CinemachineComponentBase;
-                    if (c != null && c.Stage == stage)
-                        return e;
+                    if (e != null)
+                    {
+                        CinemachineComponentBase c = e.target as CinemachineComponentBase;
+                        if (c != null && c.Stage == stage)
+                            return e;
+                    }
                 }
             }
             return null;
