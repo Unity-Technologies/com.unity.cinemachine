@@ -34,9 +34,15 @@ namespace Cinemachine
         {
             if (stage == CinemachineCore.Stage.Aim)
             {
-                Vector3 impulse = CinemachineImpulseManager.Instance.GetImpulseAt(
-                    state.FinalPosition, m_ChannelMask);
-                state.PositionCorrection += impulse * -m_Gain;
+                Vector3 impulsePos = Vector3.zero;
+                Quaternion impulseRot = Quaternion.identity;
+                if (CinemachineImpulseManager.Instance.GetImpulseAt(
+                    state.FinalPosition, m_ChannelMask, out impulsePos, out impulseRot))
+                {
+                    state.PositionCorrection += impulsePos * -m_Gain;
+                    impulseRot = Quaternion.SlerpUnclamped(Quaternion.identity, impulseRot, -m_Gain);
+                    state.OrientationCorrection = state.OrientationCorrection * impulseRot;
+                }
             }
         }
     }

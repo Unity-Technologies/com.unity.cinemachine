@@ -102,28 +102,36 @@ namespace Cinemachine
                 m_FrequencyGain = frequencyGain;
             }
 
-            public Vector3 GetSignal(float timeSinceSignalStart)
+            /// <summary>Get the raw signal at this time</summary>
+            /// <param name="timeSinceSignalStart">The time since in seconds since the start of the signal</param>
+            /// <param name="pos">The position impulse signal</param>
+            /// <param name="rot">The rotation impulse signal</param>
+            /// <returns>true if non-trivial signal is returned</returns>
+            public bool GetSignal(float timeSinceSignalStart, out Vector3 pos, out Quaternion rot)
             {
                 if (!mInitialized)
                     Initialize();
-                Vector3 signal = Vector3.zero;
-
-                // Use whatever channel is more defined (kinda hacky I know)
-                NoiseSettings.TransformNoiseParams[] profile 
-                    = m_PerlinProfile.PositionNoise.Length > m_PerlinProfile.OrientationNoise.Length
-                        ? m_PerlinProfile.PositionNoise : m_PerlinProfile.OrientationNoise;
+                Vector3 signalPos = Vector3.zero;
+                Vector3 signalRot = Vector3.zero;
 
                 float time = timeSinceSignalStart * m_FrequencyGain;
-                signal = NoiseSettings.GetCombinedFilterResults(
-                    profile, time, mNoiseOffsets) * m_AmplitudeGain;
+                signalPos = NoiseSettings.GetCombinedFilterResults(
+                    m_PerlinProfile.PositionNoise, time, mNoiseOffsets) * m_AmplitudeGain;
+                signalRot = NoiseSettings.GetCombinedFilterResults(
+                    m_PerlinProfile.OrientationNoise, time, mNoiseOffsets) * m_AmplitudeGain;
+
                 float gain = m_Velocity.magnitude;
-                signal *= gain;
+                signalPos *= gain;
+                signalRot *= gain;
                 if (gain > UnityVectorExtensions.Epsilon)
                 {
-                    Quaternion rot = Quaternion.FromToRotation(Vector3.up, m_Velocity);
-                    signal = rot * signal;
+                    Quaternion local = Quaternion.FromToRotation(Vector3.up, m_Velocity);
+                    signalPos = local * signalPos;
+                    signalRot = local * signalRot;
                 }
-                return signal; 
+                pos = signalPos;
+                rot = Quaternion.Euler(signalRot);
+                return gain > UnityVectorExtensions.Epsilon;
             }
     
             bool mInitialized = false;

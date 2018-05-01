@@ -43,6 +43,18 @@ namespace Cinemachine
     public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute {}    
     
     /// <summary>
+    /// Used for custom drawing in the inspector.
+    /// </summary>
+    public sealed class CinemachineEmbeddedAssetPropertyAttribute : PropertyAttribute 
+    {
+        public bool WarnIfNull;
+        public CinemachineEmbeddedAssetPropertyAttribute(bool warnIfNull = false)
+        {
+            WarnIfNull = warnIfNull;
+        }
+    }
+    
+    /// <summary>
     /// Atrtribute to control the automatic generation of documentation.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]

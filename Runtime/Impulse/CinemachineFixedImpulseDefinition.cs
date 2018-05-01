@@ -103,9 +103,16 @@ namespace Cinemachine
                 m_EnvelopeDuration = duration;
             }
 
-            public Vector3 GetSignal(float timeSinceSignalStart)
+            /// <summary>Get the raw signal at this time</summary>
+            /// <param name="timeSinceSignalStart">The time since in seconds since the start of the signal</param>
+            /// <param name="pos">The position impulse signal</param>
+            /// <param name="rot">The rotation impulse signal</param>
+            /// <returns>true if non-trivial signal is returned</returns>
+            public bool GetSignal(float timeSinceSignalStart, out Vector3 pos, out Quaternion rot)
             {
-                Vector3 signal = Vector3.zero;
+                pos = Vector3.zero;
+                rot = Quaternion.identity;
+
                 var keys = m_RawSignal.keys;
                 if (keys.Length > 0)
                 {
@@ -124,10 +131,11 @@ namespace Cinemachine
                                 value = m_RawSignal.Evaluate(start + (timeSinceSignalStart % duration));
                                 break;
                         }
-                        signal = value * m_Velocity * m_Gain;
+                        pos = value * m_Velocity * m_Gain;
+                        return true;
                     }
                 }
-                return signal; 
+                return false;
             }
         }
     }
