@@ -16,9 +16,12 @@ namespace Cinemachine.Editor
         private NoiseSettings.TransformNoiseParams tpDef;
         private NoiseSettings.NoiseParams npDef;
 
-        private static float mPreviewTime = 5;
+        private static float mPreviewTime = 2;
         private static float mPreviewHeight = 5;
-        private static Vector3 mNoiseOffsets = Vector3.zero;
+        private static float mNoiseOffset = 0;
+        private static bool mAnimatedPreview = false;
+        GUIContent mAnimatedLabel = new GUIContent("Animated", "Animate the noise signal preview");
+
 
         private ReorderableList[] mPosChannels;
         private ReorderableList[] mRotChannels;
@@ -36,6 +39,11 @@ namespace Cinemachine.Editor
         };
         private static bool[] mPosExpanded = new bool[3];
         private static bool[] mRotExpanded = new bool[3];
+
+        private void OnEnable()
+        {
+            mNoiseOffset = Time.realtimeSinceStartup;
+        }
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -57,15 +65,13 @@ namespace Cinemachine.Editor
             BeginInspector();
 
             Rect r = EditorGUILayout.GetControlRect();
-            //EditorGUI.LabelField(r, "Signal Preview Only", EditorStyles.boldLabel);
-            //r = EditorGUILayout.GetControlRect();
             mPreviewTime = EditorGUI.Slider(r, "Preview Time", mPreviewTime, 0.01f, 10f);
             r = EditorGUILayout.GetControlRect();
+            float labelWidth = GUI.skin.label.CalcSize(mAnimatedLabel).x + EditorGUIUtility.singleLineHeight;
+            r.width -= labelWidth + hSpace;
             mPreviewHeight = EditorGUI.Slider(r, "Preview Height", mPreviewHeight, 1f, 10f);
-            //r = EditorGUILayout.GetControlRect(true);
-            //r.width -= EditorGUIUtility.labelWidth; r.x += EditorGUIUtility.labelWidth;
-            //if (GUI.Button(r, "New random seed"))
-            //    ReSeed();
+            r.x += r.width + hSpace; r.width = labelWidth;
+            mAnimatedPreview = EditorGUI.ToggleLeft(r, mAnimatedLabel, mAnimatedPreview);
             EditorGUILayout.Separator();
 
             r = EditorGUILayout.GetControlRect();
@@ -104,15 +110,11 @@ namespace Cinemachine.Editor
             serializedObject.ApplyModifiedProperties();
 
             // Make it live!
-            //InternalEditorUtility.RepaintAllViews();
-        }
-
-        private void ReSeed()
-        {
-            mNoiseOffsets = new Vector3(
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f),
-                    Random.Range(-1000f, 1000f));
+            if (mAnimatedPreview && Event.current.type == EventType.Repaint)
+            {
+                mNoiseOffset = Time.realtimeSinceStartup;
+                Repaint();
+            }
         }
 
         private List<Vector3> mSampleCurveX = new List<Vector3>();
@@ -124,16 +126,25 @@ namespace Cinemachine.Editor
             Rect r, NoiseSettings.TransformNoiseParams[] signal, 
             int numSamples)
         {
+            // These values give a smoother curve, more-or-less fitting in the window
+            numSamples *= 5;
+            const float signalScale = 0.75f;
+
             float maxVal = 0;
+            for (int i = 0; i < signal.Length; ++i)
+            {
+                maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].X.Amplitude * signalScale));
+                maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].Y.Amplitude * signalScale));
+                maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].Y.Amplitude * signalScale));
+            }
             mSampleNoise.Clear(); 
             for (int i = 0; i < numSamples; ++i)
             {
-                float t = (float)i / (numSamples - 1);
-                Vector3 p = NoiseSettings.GetCombinedFilterResults(
-                    signal, t * mPreviewTime /*+ Time.realtimeSinceStartup*/, mNoiseOffsets);
-                maxVal = Mathf.Max(maxVal, Mathf.Abs(p.x));
-                maxVal = Mathf.Max(maxVal, Mathf.Abs(p.y));
-                maxVal = Mathf.Max(maxVal, Mathf.Abs(p.z));
+                float t = (float)i / (numSamples - 1) * mPreviewTime + mNoiseOffset;
+                Vector3 p = NoiseSettings.GetCombinedFilterResults(signal, t, Vector3.zero);
+                //maxVal = Mathf.Max(maxVal, Mathf.Abs(p.x));
+                //maxVal = Mathf.Max(maxVal, Mathf.Abs(p.y));
+                //maxVal = Mathf.Max(maxVal, Mathf.Abs(p.z));
                 mSampleNoise.Add(p);
             }
             mSampleCurveX.Clear(); 
@@ -190,7 +201,7 @@ namespace Cinemachine.Editor
 
             list.drawHeaderCallback = (Rect rect) =>
                 {
-                    GUIContent steadyLabel = new GUIContent("(constant wave if checked)");
+                    GUIContent steadyLabel = new GUIContent("(non-random wave if checked)");
                     float steadyLabelWidth = GUI.skin.label.CalcSize(steadyLabel).x;
 
                     Rect r = rect;
