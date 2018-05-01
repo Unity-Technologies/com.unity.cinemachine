@@ -89,13 +89,13 @@ namespace Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public BlendHint m_BlendHint;
 
-            /// <summary>When enabling this virtual camera, attempt to force the position to be the same as that of the Camera</summary>
-            [Tooltip("When enabling this virtual camera, attempt to force the position to be the same as that of the Camera")]
+            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same as the current position of the Unity Camera</summary>
+            [Tooltip("When this virtual camera goes Live, attempt to force the position to be the same as the current position of the Unity Camera")]
             public bool m_InheritPosition;
 
             /// <summary>This event fires when the virtual camera goes Live</summary>
             [Tooltip("This event fires when the virtual camera goes Live")]
-            public CinemachineBrain.VcamEvent m_CameraActivated;
+            public CinemachineBrain.VcamEvent m_OnCameraLive;
         }
         public TransitionParams m_Transitions;
 
@@ -508,7 +508,7 @@ namespace Cinemachine
             base.OnTargetObjectWarped(target, positionDelta);
         }
 
-        /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
+        /// <summary>If we are transitioning from another vcam, grab the position from it.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
@@ -522,8 +522,8 @@ namespace Cinemachine
                 transform.position = fromCam.State.CorrectedPosition;
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
-            if (m_Transitions.m_CameraActivated != null)
-                m_Transitions.m_CameraActivated.Invoke(this);
+            if (m_Transitions.m_OnCameraLive != null)
+                m_Transitions.m_OnCameraLive.Invoke(this);
         }
     }
 }
