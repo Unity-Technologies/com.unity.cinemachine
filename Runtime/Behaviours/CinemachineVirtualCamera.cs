@@ -516,7 +516,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            if (m_Transitions.m_InheritPosition)
+            if (m_Transitions.m_InheritPosition && fromCam != null)
             {
                 PreviousStateIsValid = false;
                 transform.position = fromCam.State.CorrectedPosition;

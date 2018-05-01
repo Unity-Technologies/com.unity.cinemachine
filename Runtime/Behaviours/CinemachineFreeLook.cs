@@ -338,7 +338,7 @@ namespace Cinemachine
                     doUpdate = true;
                 }
             }
-            if (m_Transitions.m_InheritPosition)
+            if (m_Transitions.m_InheritPosition && fromCam != null)
             {
                 PreviousStateIsValid = false;
                 transform.position = fromCam.State.CorrectedPosition;
