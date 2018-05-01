@@ -38,9 +38,17 @@ namespace Cinemachine
         [Tooltip("At this distance beyond the impact radius, the signal will have dissipated to zero.")]
         public float m_DissipationDistance = 100;
 
-        /// <summary>The raw signal shape</summary>
-        [Tooltip("The raw signal shape")]
-        public AnimationCurve m_RawSignal;
+        /// <summary>The raw signal shape along the X axis</summary>
+        [Tooltip("The raw signal shape along the X axis")]
+        public AnimationCurve m_RawSignalX;
+
+        /// <summary>The raw signal shape along the Y axis</summary>
+        [Tooltip("The raw signal shape along the Y axis")]
+        public AnimationCurve m_RawSignalY;
+
+        /// <summary>The raw signal shape along the Z axis</summary>
+        [Tooltip("The raw signal shape along the Z axis")]
+        public AnimationCurve m_RawSignalZ;
 
         /// <summary>How to fit the curve into the envelope time</summary>
         public enum RepeatMode
@@ -65,16 +73,23 @@ namespace Cinemachine
             m_ImpactEnvelope.Validate();
         }
 
+        bool IsNonTrivial()
+        {
+            return m_ImpactEnvelope.Duration > UnityVectorExtensions.Epsilon
+                && (m_RawSignalX != null || m_RawSignalY != null || m_RawSignalZ != null);
+        }
+
         /// <summary>Generate an impulse at a location in space</summary>
         public override void CreateEvent(Vector3 velocity, Vector3 pos, int channel = 1)
         {
-            if (m_RawSignal != null && m_ImpactEnvelope.Duration > UnityVectorExtensions.Epsilon)
+            if (IsNonTrivial())
             {
                 CinemachineImpulseManager.ImpulseEvent e 
                     = CinemachineImpulseManager.Instance.NewImpulseEvent();
                 e.m_Envelope = m_ImpactEnvelope;
                 e.m_SignalSource = new SignalSource(
-                    m_RawSignal, m_Gain, velocity, m_RepeatMode, m_ImpactEnvelope.Duration);
+                    m_RawSignalX, m_RawSignalY, m_RawSignalZ, 
+                    m_Gain, velocity, m_RepeatMode, m_ImpactEnvelope.Duration);
                 e.m_Position = pos;
                 e.m_Radius = m_ImpactRadius;
                 e.m_Channel = Mathf.Abs(channel);
@@ -86,17 +101,24 @@ namespace Cinemachine
 
         class SignalSource : CinemachineImpulseManager.IRawSignalSource
         {
-            AnimationCurve m_RawSignal;
+            AnimationCurve m_RawSignalX;
+            AnimationCurve m_RawSignalY;
+            AnimationCurve m_RawSignalZ;
             float m_Gain;
             Vector3 m_Velocity;
             RepeatMode m_RepeatMode;
             float m_EnvelopeDuration;
 
             public SignalSource(
-                AnimationCurve rawSignal, float gain, Vector3 velocity,
+                AnimationCurve rawSignalX, 
+                AnimationCurve rawSignalY, 
+                AnimationCurve rawSignalZ, 
+                float gain, Vector3 velocity,
                 RepeatMode repeatMode, float duration)
             {
-                m_RawSignal = rawSignal;
+                m_RawSignalX = rawSignalX;
+                m_RawSignalY = rawSignalY;
+                m_RawSignalZ = rawSignalZ;
                 m_Gain = gain;
                 m_Velocity = velocity;
                 m_RepeatMode = repeatMode;
@@ -112,30 +134,45 @@ namespace Cinemachine
             {
                 pos = Vector3.zero;
                 rot = Quaternion.identity;
-
-                var keys = m_RawSignal.keys;
-                if (keys.Length > 0)
+                float gain = m_Gain * m_Velocity.magnitude;
+                if (Mathf.Abs(gain) > UnityVectorExtensions.Epsilon)
                 {
-                    float value = keys[0].value;
-                    float start = keys[0].time;
-                    float duration = keys[keys.Length-1].time - start;
-                    if (duration > UnityVectorExtensions.Epsilon)
-                    {
-                        switch (m_RepeatMode)
-                        {
-                            default:
-                            case RepeatMode.Stretch:
-                                value = m_RawSignal.Evaluate(start + (timeSinceSignalStart / m_EnvelopeDuration) * duration);
-                                break;
-                            case RepeatMode.Loop:
-                                value = m_RawSignal.Evaluate(start + (timeSinceSignalStart % duration));
-                                break;
-                        }
-                        pos = value * m_Velocity * m_Gain;
-                        return true;
-                    }
+                    pos = new Vector3(
+                        GetAxisValue(m_RawSignalX, timeSinceSignalStart),
+                        GetAxisValue(m_RawSignalY, timeSinceSignalStart),
+                        GetAxisValue(m_RawSignalZ, timeSinceSignalStart)) * gain;
+
+                    Quaternion local = Quaternion.FromToRotation(Vector3.up, m_Velocity);
+                    pos = local * pos;
+                    return true;
                 }
                 return false;
+            }
+
+            float GetAxisValue(AnimationCurve axis, float timeSinceSignalStart)
+            {
+                if (axis == null)
+                    return 0;
+                var keys = axis.keys;
+                if (keys.Length == 0)
+                    return 0;
+                float value = keys[0].value;
+                float start = keys[0].time;
+                float duration = keys[keys.Length-1].time - start;
+                if (duration > UnityVectorExtensions.Epsilon)
+                {
+                    switch (m_RepeatMode)
+                    {
+                        default:
+                        case RepeatMode.Stretch:
+                            value = axis.Evaluate(start + (timeSinceSignalStart / m_EnvelopeDuration) * duration);
+                            break;
+                        case RepeatMode.Loop:
+                            value = axis.Evaluate(start + (timeSinceSignalStart % duration));
+                            break;
+                    }
+                }
+                return value;
             }
         }
     }
