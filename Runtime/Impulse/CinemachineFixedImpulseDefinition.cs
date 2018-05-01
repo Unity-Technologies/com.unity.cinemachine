@@ -87,9 +87,7 @@ namespace Cinemachine
                 CinemachineImpulseManager.ImpulseEvent e 
                     = CinemachineImpulseManager.Instance.NewImpulseEvent();
                 e.m_Envelope = m_ImpactEnvelope;
-                e.m_SignalSource = new SignalSource(
-                    m_RawSignalX, m_RawSignalY, m_RawSignalZ, 
-                    m_Gain, velocity, m_RepeatMode, m_ImpactEnvelope.Duration);
+                e.m_SignalSource = new SignalSource(this, velocity);
                 e.m_Position = pos;
                 e.m_Radius = m_ImpactRadius;
                 e.m_Channel = Mathf.Abs(channel);
@@ -101,28 +99,15 @@ namespace Cinemachine
 
         class SignalSource : CinemachineImpulseManager.IRawSignalSource
         {
-            AnimationCurve m_RawSignalX;
-            AnimationCurve m_RawSignalY;
-            AnimationCurve m_RawSignalZ;
-            float m_Gain;
+            CinemachineFixedImpulseDefinition m_Definition;
             Vector3 m_Velocity;
-            RepeatMode m_RepeatMode;
-            float m_EnvelopeDuration;
 
             public SignalSource(
-                AnimationCurve rawSignalX, 
-                AnimationCurve rawSignalY, 
-                AnimationCurve rawSignalZ, 
-                float gain, Vector3 velocity,
-                RepeatMode repeatMode, float duration)
+                CinemachineFixedImpulseDefinition definition,
+                Vector3 velocity)
             {
-                m_RawSignalX = rawSignalX;
-                m_RawSignalY = rawSignalY;
-                m_RawSignalZ = rawSignalZ;
-                m_Gain = gain;
+                m_Definition = definition;
                 m_Velocity = velocity;
-                m_RepeatMode = repeatMode;
-                m_EnvelopeDuration = duration;
             }
 
             /// <summary>Get the raw signal at this time</summary>
@@ -134,13 +119,13 @@ namespace Cinemachine
             {
                 pos = Vector3.zero;
                 rot = Quaternion.identity;
-                float gain = m_Gain * m_Velocity.magnitude;
+                float gain = m_Definition.m_Gain * m_Velocity.magnitude;
                 if (Mathf.Abs(gain) > UnityVectorExtensions.Epsilon)
                 {
                     pos = new Vector3(
-                        GetAxisValue(m_RawSignalX, timeSinceSignalStart),
-                        GetAxisValue(m_RawSignalY, timeSinceSignalStart),
-                        GetAxisValue(m_RawSignalZ, timeSinceSignalStart)) * gain;
+                        GetAxisValue(m_Definition.m_RawSignalX, timeSinceSignalStart),
+                        GetAxisValue(m_Definition.m_RawSignalY, timeSinceSignalStart),
+                        GetAxisValue(m_Definition.m_RawSignalZ, timeSinceSignalStart)) * gain;
 
                     Quaternion local = Quaternion.FromToRotation(Vector3.up, m_Velocity);
                     pos = local * pos;
@@ -161,11 +146,12 @@ namespace Cinemachine
                 float duration = keys[keys.Length-1].time - start;
                 if (duration > UnityVectorExtensions.Epsilon)
                 {
-                    switch (m_RepeatMode)
+                    switch (m_Definition.m_RepeatMode)
                     {
                         default:
                         case RepeatMode.Stretch:
-                            value = axis.Evaluate(start + (timeSinceSignalStart / m_EnvelopeDuration) * duration);
+                            value = axis.Evaluate(
+                                start + (timeSinceSignalStart / m_Definition.m_ImpactEnvelope.Duration) * duration);
                             break;
                         case RepeatMode.Loop:
                             value = axis.Evaluate(start + (timeSinceSignalStart % duration));
