@@ -77,7 +77,11 @@ namespace Cinemachine.Editor
             r = EditorGUILayout.GetControlRect();
             EditorGUI.LabelField(r, "Position Noise", EditorStyles.boldLabel);
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-            DrawNoisePreview(r, Target.PositionNoise, 7);
+            if (Event.current.type == EventType.Repaint)
+            {
+                mSampleCachePos.SnapshotSample(r.size, Target.PositionNoise, mAnimatedPreview);
+                mSampleCachePos.DrawSamplePreview(r, 7);
+            }
             for (int i = 0; i < mPosChannels.Length; ++i)
             {
                 r = EditorGUILayout.GetControlRect();
@@ -85,7 +89,8 @@ namespace Cinemachine.Editor
                 if (mPosExpanded[i])
                 {
                     r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-                    DrawNoisePreview(r, Target.PositionNoise, 1 << i);
+                    if (Event.current.type == EventType.Repaint)
+                        mSampleCachePos.DrawSamplePreview(r, 1 << i);
                     mPosChannels[i].DoLayoutList();
                 }
             }
@@ -94,7 +99,11 @@ namespace Cinemachine.Editor
             r = EditorGUILayout.GetControlRect();
             EditorGUI.LabelField(r, "Rotation Noise", EditorStyles.boldLabel);
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-            DrawNoisePreview(r, Target.OrientationNoise, 7);
+            if (Event.current.type == EventType.Repaint)
+            {
+                mSampleCacheRot.SnapshotSample(r.size, Target.OrientationNoise, mAnimatedPreview);
+                mSampleCacheRot.DrawSamplePreview(r, 7);
+            }
             for (int i = 0; i < mPosChannels.Length; ++i)
             {
                 r = EditorGUILayout.GetControlRect();
@@ -102,7 +111,8 @@ namespace Cinemachine.Editor
                 if (mRotExpanded[i])
                 {
                     r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
-                    DrawNoisePreview(r, Target.OrientationNoise, 1 << i);
+                    if (Event.current.type == EventType.Repaint)
+                        mSampleCacheRot.DrawSamplePreview(r, 1 << i);
                     mRotChannels[i].DoLayoutList();
                 }
             }
@@ -117,73 +127,77 @@ namespace Cinemachine.Editor
             }
         }
 
-        private List<Vector3> mSampleCurveX = new List<Vector3>();
-        private List<Vector3> mSampleCurveY = new List<Vector3>();
-        private List<Vector3> mSampleCurveZ = new List<Vector3>();
-        private List<Vector3> mSampleNoise = new List<Vector3>();
-
-        private void GetSampleCurve(
-            Rect r, NoiseSettings.TransformNoiseParams[] signal, 
-            int numSamples)
+        class SampleCache
         {
-            // These values give a smoother curve, more-or-less fitting in the window
-            numSamples *= 5;
-            const float signalScale = 0.75f;
+            private List<Vector3> mSampleCurveX = new List<Vector3>();
+            private List<Vector3> mSampleCurveY = new List<Vector3>();
+            private List<Vector3> mSampleCurveZ = new List<Vector3>();
+            private List<Vector3> mSampleNoise = new List<Vector3>();
 
-            float maxVal = 0;
-            for (int i = 0; i < signal.Length; ++i)
+            public void SnapshotSample(
+                Vector2 areaSize, NoiseSettings.TransformNoiseParams[] signal, bool animated)
             {
-                maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].X.Amplitude * signalScale));
-                maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].Y.Amplitude * signalScale));
-                maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].Y.Amplitude * signalScale));
+                // These values give a smoother curve, more-or-less fitting in the window
+                int numSamples = Mathf.RoundToInt(areaSize.x);
+                if (animated)
+                    numSamples *= 2;
+                const float signalScale = 0.75f;
+
+                float maxVal = 0;
+                for (int i = 0; i < signal.Length; ++i)
+                {
+                    maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].X.Amplitude * signalScale));
+                    maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].Y.Amplitude * signalScale));
+                    maxVal = Mathf.Max(maxVal, Mathf.Abs(signal[i].Z.Amplitude * signalScale));
+                }
+                mSampleNoise.Clear(); 
+                for (int i = 0; i < numSamples; ++i)
+                {
+                    float t = (float)i / (numSamples - 1) * mPreviewTime + mNoiseOffset;
+                    Vector3 p = NoiseSettings.GetCombinedFilterResults(signal, t, Vector3.zero);
+                    mSampleNoise.Add(p);
+                }
+                mSampleCurveX.Clear(); 
+                mSampleCurveY.Clear(); 
+                mSampleCurveZ.Clear(); 
+                float halfHeight = areaSize.y / 2;
+                float yOffset = halfHeight;
+                for (int i = 0; i < numSamples; ++i)
+                {
+                    float t = (float)i / (numSamples - 1);
+                    Vector3 p = mSampleNoise[i];
+                    mSampleCurveX.Add(new Vector3(areaSize.x * t, halfHeight * Mathf.Clamp(-p.x / maxVal, -1, 1) + yOffset, 0));
+                    mSampleCurveY.Add(new Vector3(areaSize.x * t, halfHeight * Mathf.Clamp(-p.y / maxVal, -1, 1) + yOffset, 0));
+                    mSampleCurveZ.Add(new Vector3(areaSize.x * t, halfHeight * Mathf.Clamp(-p.z / maxVal, -1, 1) + yOffset, 0));
+                }
             }
-            mSampleNoise.Clear(); 
-            for (int i = 0; i < numSamples; ++i)
+
+            public void DrawSamplePreview(Rect r, int channelMask)
             {
-                float t = (float)i / (numSamples - 1) * mPreviewTime + mNoiseOffset;
-                Vector3 p = NoiseSettings.GetCombinedFilterResults(signal, t, Vector3.zero);
-                //maxVal = Mathf.Max(maxVal, Mathf.Abs(p.x));
-                //maxVal = Mathf.Max(maxVal, Mathf.Abs(p.y));
-                //maxVal = Mathf.Max(maxVal, Mathf.Abs(p.z));
-                mSampleNoise.Add(p);
-            }
-            mSampleCurveX.Clear(); 
-            mSampleCurveY.Clear(); 
-            mSampleCurveZ.Clear(); 
-            float halfHeight = r.height / 2;
-            float yOffset = r.y + halfHeight;
-            for (int i = 0; i < numSamples; ++i)
-            {
-                float t = (float)i / (numSamples - 1);
-                Vector3 p = mSampleNoise[i];
-                mSampleCurveX.Add(new Vector3(r.width * t + r.x, halfHeight * (-p.x / maxVal) + yOffset, 0));
-                mSampleCurveY.Add(new Vector3(r.width * t + r.x, halfHeight * (-p.y / maxVal) + yOffset, 0));
-                mSampleCurveZ.Add(new Vector3(r.width * t + r.x, halfHeight * (-p.z / maxVal) + yOffset, 0));
+                EditorGUI.DrawRect(r, Color.black);
+                var oldMatrix = Handles.matrix;
+                Handles.matrix = Handles.matrix * Matrix4x4.Translate(r.position);
+                if ((channelMask & 1) != 0)
+                {
+                    Handles.color = new Color(1, 0.5f, 0, 0.8f); 
+                    Handles.DrawAAPolyLine(mSampleCurveX.ToArray());
+                }
+                if ((channelMask & 2) != 0)
+                {
+                    Handles.color = new Color(0, 1, 0, 0.8f); 
+                    Handles.DrawAAPolyLine(mSampleCurveY.ToArray());
+                }
+                if ((channelMask & 4) != 0)
+                {
+                    Handles.color = new Color(0, 0.5f, 1, 0.8f); 
+                    Handles.DrawAAPolyLine(mSampleCurveZ.ToArray());
+                }
+                Handles.matrix = oldMatrix;
             }
         }
+        SampleCache mSampleCachePos = new SampleCache();
+        SampleCache mSampleCacheRot = new SampleCache();
 
-        private void DrawNoisePreview(
-            Rect r, NoiseSettings.TransformNoiseParams[] signal, int channelMask)
-        {
-            EditorGUI.DrawRect(r, Color.black);
-            GetSampleCurve(r, signal, (int)(r.width / 2));
-            if ((channelMask & 1) != 0)
-            {
-                Handles.color = new Color(1, 0.5f, 0, 0.8f); 
-                Handles.DrawAAPolyLine(mSampleCurveX.ToArray());
-            }
-            if ((channelMask & 2) != 0)
-            {
-                Handles.color = new Color(0, 1, 0, 0.8f); 
-                Handles.DrawAAPolyLine(mSampleCurveY.ToArray());
-            }
-            if ((channelMask & 4) != 0)
-            {
-                Handles.color = new Color(0, 0.5f, 1, 0.8f); 
-                Handles.DrawAAPolyLine(mSampleCurveZ.ToArray());
-            }
-        }
-        
         private ReorderableList[] SetupReorderableLists(
             SerializedProperty property, GUIContent[] titles)
         {
