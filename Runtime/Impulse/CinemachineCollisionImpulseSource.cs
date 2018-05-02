@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using System;
 using UnityEngine;
 
@@ -12,8 +13,9 @@ namespace Cinemachine
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource
     {
         /// <summary>Only collisions with objects on these layers will generate Impulse events.</summary>
+        [Header("Trigger Object Filter")]
         [Tooltip("Only collisions with objects on these layers will generate Impulse events")]
-        public LayerMask m_CollideAgainst = 1;
+        public LayerMask m_LayerMask = 1;
 
         /// <summary>No Impulse evemts will be generated for collisions with objects having these tags</summary>
         [TagField]
@@ -33,33 +35,25 @@ namespace Cinemachine
             public Vector3 m_Velocity = Vector3.down;
         }
 
-        /// <summary>How to calculate the direction and intensity of the impact</summary>
-        public enum CalculationMode
-        {
-            /// <summary>Ignore the RigidBodies, use the default values</summary>
-            AlwaysUseDefaultValues,
-            /// <summary>Ignore the other collider's RigidBody body</summary>
-            UseMyMassAndVelocity,
-            /// <summary>Ignore my RigidBody</summary>
-            UseOthersMassAndVelocity,
-            /// <summary>Use the sum of the values found in both RigidBodies (or the defaults, if no RigidBodies)</summary>
-            UseCombinedMassesAndVelocities
-        }
+        /// <summary>The defined signal' amplitude will be multiplied by this amount</summary>
+        [Header("How To Generate The Impulse")]
+        [Tooltip("The defined signal will be multiplied by this amount")]
+        public float m_SignalGain = 1;
 
-        /// <summary>How to calculate the direction and intensity of the impact</summary>
-        [Tooltip("How to calculate the direction and intensity of the impact")]
-        public CalculationMode m_CalculationMode = CalculationMode.UseCombinedMassesAndVelocities;
+        /// <summary>If checked, signal amplitude will be multiplied by the mass of the impacting object</summary>
+        [Tooltip("If checked, signal amplitude will be multiplied by the mass of the impacting object")]
+        public bool m_ScaleWithMass = false;
 
-        /// <summary>These values will be used if no relevant RigidBodies can be found</summary>
-        public DefaultValues m_DefaultIfNoRigidBody = new DefaultValues();
+        /// <summary>If checked, signal amplitude will be multiplied by the speed of the impacting object</summary>
+        [Tooltip("If checked, signal amplitude will be multiplied by the speed of the impacting object")]
+        public bool m_ScaleWithSpeed = false;
+
+        /// <summary>If checked, signal direction will be affected by the direction of impact</summary>
+        [Tooltip("If checked, signal direction will be affected by the direction of impact")]
+        public bool m_UseImpactDirection = false;
 
         Rigidbody mRigidBody;
         Rigidbody2D mRigidBody2D;
-
-        private void OnValidate()
-        {
-            m_DefaultIfNoRigidBody.m_Mass = Mathf.Max(0, m_DefaultIfNoRigidBody.m_Mass);
-        }
 
         private void Start()
         {
@@ -67,93 +61,90 @@ namespace Cinemachine
             mRigidBody2D = GetComponent<Rigidbody2D>();
         }
         
-        private void GenerateImpactEvent(GameObject other, bool otherCollided)
-        {
-            // Check the filters
-            if (!enabled)
-                return;
-            if (((1 << other.layer) & m_CollideAgainst) == 0)
-                return;
-            if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
-                return;
-
-            Vector3 vel = m_DefaultIfNoRigidBody.m_Velocity;
-            float mass = m_DefaultIfNoRigidBody.m_Mass;
-            if (m_CalculationMode != CalculationMode.AlwaysUseDefaultValues)
-            {
-                if (m_CalculationMode == CalculationMode.UseOthersMassAndVelocity)
-                {
-                    vel = Vector3.zero;
-                    mass = 0;
-                }
-                else
-                {
-                    if (mRigidBody != null)
-                    {
-                        mass = mRigidBody.mass;
-                        if (!mRigidBody.isKinematic)
-                            vel = mRigidBody.velocity;
-                    }
-                    else if (mRigidBody2D != null)
-                    {
-                        mass = mRigidBody2D.mass;
-                        if (!mRigidBody2D.isKinematic)
-                            vel = mRigidBody2D.velocity;
-                    }
-                }
-                if (m_CalculationMode != CalculationMode.UseMyMassAndVelocity)
-                {
-                    var rb = other.GetComponent<Rigidbody>();
-                    if (rb != null)
-                    {
-                        if (otherCollided)
-                            vel -= rb.velocity;
-                        else
-                            vel += rb.velocity;
-                        mass += rb.mass;
-                    }
-                    else
-                    {
-                        var rb2d = other.GetComponent<Rigidbody2D>();
-                        if (rb2d != null)
-                        {
-                            if (otherCollided)
-                                vel -= (Vector3)rb2d.velocity;
-                            else
-                                vel += (Vector3)rb2d.velocity;
-                            mass += rb2d.mass;
-                        }
-                        else 
-                        {
-                            vel += m_DefaultIfNoRigidBody.m_Velocity;
-                            mass += m_DefaultIfNoRigidBody.m_Mass;
-                        }
-                    }
-                }
-            }
-            GenerateImpulse(vel * mass);
-        }
+        private void OnEnable() {} // For the Enabled checkbox
 
         private void OnCollisionEnter(Collision other)
         {
-            GenerateImpactEvent(other.gameObject, true);
+            GenerateImpactEvent(other.gameObject);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            GenerateImpactEvent(other.gameObject, false);
+            GenerateImpactEvent(other.gameObject);
         }
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            GenerateImpactEvent(other.gameObject, true);
+            GenerateImpactEvent(other.gameObject);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            GenerateImpactEvent(other.gameObject, false);
+            GenerateImpactEvent(other.gameObject);
         }
 
-        private void OnEnable() {} // For the Enabled checkbox
+        private float GetMassAndVelocity(GameObject other, out Vector3 vel)
+        {
+            vel = Vector3.zero;
+            float mass = 1;
+            if (m_ScaleWithMass || m_ScaleWithSpeed || m_UseImpactDirection)
+            {
+                if (mRigidBody != null)
+                {
+                    if (m_ScaleWithMass)
+                        mass *= mRigidBody.mass;
+                    vel -= mRigidBody.velocity;
+                }
+                else if (mRigidBody2D != null)
+                {
+                    if (m_ScaleWithMass)
+                        mass *= mRigidBody2D.mass;
+                    Vector3 v = mRigidBody2D.velocity;
+                    vel -= v;
+                }
+                var rb = other.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    if (m_ScaleWithMass)
+                        mass *= rb.mass;
+                    vel += rb.velocity;
+                }
+                else
+                {
+                    var rb2d = other.GetComponent<Rigidbody2D>();
+                    if (rb2d != null)
+                    {
+                        if (m_ScaleWithMass)
+                            mass *= rb2d.mass;
+                        Vector3 v = rb2d.velocity;
+                        vel += v;
+                    }
+                }
+            }
+            return mass;
+        }
+
+        private void GenerateImpactEvent(GameObject other)
+        {
+            // Check the filters
+            if (!enabled)
+                return;
+            if (((1 << other.layer) & m_LayerMask) == 0)
+                return;
+            if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
+                return;
+
+            // Generate the signal
+            Vector3 vel = Vector3.zero;
+            float mass = GetMassAndVelocity(other, out vel);
+            if (m_ScaleWithSpeed)
+                mass *= vel.magnitude;
+            
+            Vector3 dir = Vector3.down;
+            if (m_UseImpactDirection && !vel.AlmostZero())
+                dir = vel.normalized;
+                
+            GenerateImpulse(dir * mass * m_SignalGain);
+        }
     }
 }

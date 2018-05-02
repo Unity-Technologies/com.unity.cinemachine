@@ -31,12 +31,6 @@ namespace Cinemachine.Editor
                     property.FindPropertyRelative(() => myClass.m_AttackTime));
 
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
-                DrawCurveTimeProperty(
-                    rect, new GUIContent("Decay"),
-                    property.FindPropertyRelative(() => myClass.m_DecayShape),
-                    property.FindPropertyRelative(() => myClass.m_DecayTime));
-
-                rect.y += EditorGUIUtility.singleLineHeight + vSpace;
 #if false // with "forever" button... dangerous because signal never goes away!
                 var holdProp = property.FindPropertyRelative(() => myClass.m_HoldTime);
                 InspectorUtility.MultiPropertyOnLine(
@@ -46,6 +40,12 @@ namespace Cinemachine.Editor
 #else
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.m_HoldTime));
 #endif
+                rect.y += EditorGUIUtility.singleLineHeight + vSpace;
+                DrawCurveTimeProperty(
+                    rect, new GUIContent("Decay"),
+                    property.FindPropertyRelative(() => myClass.m_DecayShape),
+                    property.FindPropertyRelative(() => myClass.m_DecayTime));
+
                 EditorGUIUtility.labelWidth = oldWidth;
             }
         }

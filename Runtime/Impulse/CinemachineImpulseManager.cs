@@ -68,6 +68,12 @@ namespace Cinemachine
             [Tooltip("If true, then duration is infinite.")]
             public bool m_HoldForever;
 
+            /// <summary>Get an envelope with default values.</summary>
+            public static EnvelopeDefinition Default()
+            {
+                return new EnvelopeDefinition { m_DecayTime = 0.7f, m_HoldTime = 0.2f };
+            }
+
             /// <summary>Duration of the envelope, in seconds.  If negative, then duration is infinite.</summary>
             public float Duration 
             { 

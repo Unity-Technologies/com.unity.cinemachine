@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
             BeginInspector();
             EditorGUILayout.Separator();
             EditorGUILayout.HelpBox(
-                "First set up the Impulse Definition, then connect your Event to the GenerateImpulse method defined here.",
+                "First set up the Signal and Range, then connect your impulse-generating event to the GenerateImpulse API method defined in this script.",
                 MessageType.Info);
             DrawRemainingPropertiesInInspector();
         }

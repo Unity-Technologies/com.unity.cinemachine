@@ -9,6 +9,9 @@ namespace Cinemachine
     public abstract class CinemachineImpulseDefinition : ScriptableObject
     {
         /// <summary>Generate an impulse at a location in space</summary>
-        public abstract void CreateEvent(Vector3 velocity, Vector3 pos, int channel = 1);
+        public abstract void CreateEvent(Vector3 velocity, Vector3 pos, int channel,
+            CinemachineImpulseManager.EnvelopeDefinition timeEnvelope,
+            float impactRadius, CinemachineImpulseManager.ImpulseEvent.DissipationMode dissipationMode,
+            float dissipationDistance);
     }
 }
