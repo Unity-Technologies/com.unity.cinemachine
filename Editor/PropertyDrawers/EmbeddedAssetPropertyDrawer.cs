@@ -24,10 +24,38 @@ namespace Cinemachine.Editor
             }
         }
 
+        float HeaderHeight { get { return EditorGUIUtility.singleLineHeight * 1.5f; } }
+        float DrawHeader(Rect rect, string text)
+        {
+            float delta = HeaderHeight - EditorGUIUtility.singleLineHeight;
+            rect.y += delta; rect.height -= delta;
+            EditorGUI.LabelField(rect, new GUIContent(text), EditorStyles.boldLabel);
+            return HeaderHeight;
+        }
+
+        string HeaderText(SerializedProperty property)
+        {
+            var attrs = property.serializedObject.targetObject.GetType()
+                .GetCustomAttributes(typeof(HeaderAttribute), false);
+            if (attrs != null && attrs.Length > 0)
+                return ((HeaderAttribute)attrs[0]).header;
+            return null;
+        }
+
+        bool AssetHasCustomEditor(SerializedProperty property)
+        {
+            ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
+            if (asset != null)
+                return ActiveEditorTracker.HasCustomEditor(asset);
+            return false;
+        }
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            float height = base.GetPropertyHeight(property, label) + 2 * (kBoxMargin + vSpace);
-            if (mExpanded)
+            bool hasCustomEditor = AssetHasCustomEditor(property);
+            float height = base.GetPropertyHeight(property, label);
+            height += + 2 * (kBoxMargin + vSpace);
+            if (mExpanded && !hasCustomEditor)
             {
                 height += HelpBoxHeight + kBoxMargin;
                 ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
@@ -36,8 +64,16 @@ namespace Cinemachine.Editor
                     SerializedObject so = new SerializedObject(asset);
                     var prop = so.GetIterator();
                     prop.NextVisible(true);
-                    while (prop.NextVisible(prop.isExpanded))
-                        height += EditorGUI.GetPropertyHeight(prop, label, prop.isExpanded) + vSpace;
+                    do
+                    {
+                        if (prop.name == "m_Script")
+                            continue;
+                        string header = HeaderText(prop);
+                        if (header != null)
+                            height += HeaderHeight + vSpace;
+                        height += EditorGUI.GetPropertyHeight(prop, false) + vSpace;
+                    }
+                    while (prop.NextVisible(prop.isExpanded));
                     height += kBoxMargin;
                 }
             }
@@ -46,6 +82,7 @@ namespace Cinemachine.Editor
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
+            bool hasCustomEditor = AssetHasCustomEditor(property);
             rect.y += vSpace; rect.height -= 2 * vSpace;
             GUI.Box(rect, GUIContent.none, GUI.skin.box);
             rect.y += kBoxMargin;
@@ -58,7 +95,7 @@ namespace Cinemachine.Editor
                 property.serializedObject.targetObject.name + " " + label.text);
 
             ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
-            if (asset != null)
+            if (asset != null && !hasCustomEditor)
             {
                 mExpanded = EditorGUI.Foldout(rect, mExpanded, GUIContent.none);
                 if (mExpanded)
@@ -80,13 +117,22 @@ namespace Cinemachine.Editor
                     prop.NextVisible(true);
 
                     var indent = EditorGUI.indentLevel;
-                    while (prop.NextVisible(prop.isExpanded))
+                    do
                     {
-                        rect.height = EditorGUI.GetPropertyHeight(prop, label, prop.isExpanded);
+                        if (prop.name == "m_Script")
+                            continue;
+                        string header = HeaderText(prop);
+                        if (header != null)
+                        {
+                            DrawHeader(rect, header);
+                            rect.y += HeaderHeight + vSpace;
+                            rect.height -= HeaderHeight + vSpace;
+                        }
+                        rect.height = EditorGUI.GetPropertyHeight(prop, false);
                         EditorGUI.indentLevel = indent + prop.depth;
                         EditorGUI.PropertyField(rect, prop);
                         rect.y += rect.height + vSpace;
-                    }
+                    } while (prop.NextVisible(prop.isExpanded));
 
                     if (GUI.changed)
                         so.ApplyModifiedProperties();
@@ -101,16 +147,21 @@ namespace Cinemachine.Editor
 
         static Type EmbeddedAssetType(SerializedProperty property)
         {
-            return property.serializedObject.targetObject.GetType().GetField(property.propertyPath).FieldType;
+            Type type = property.serializedObject.targetObject.GetType();
+            var a = property.propertyPath.Split('.');
+            for (int i = 0; i < a.Length; ++i)
+                type = type.GetField(a[i]).FieldType;
+            return type;
         }
 
         void AssetFieldWithCreateButton(
             Rect r, SerializedProperty property, bool warnIfNull, string defaultName)
         {
             // Collect all the eligible asset types
+            Type type = EmbeddedAssetType(property);
             if (mAssetTypes == null)
                 mAssetTypes = ReflectionHelpers.GetTypesInAllLoadedAssemblies(
-                    (Type t) => t.IsSubclassOf(EmbeddedAssetType(property))).ToArray();
+                    (Type t) => t.IsSubclassOf(type)).ToArray();
 
             float iconSize = r.height + 4;
             r.width -= iconSize;

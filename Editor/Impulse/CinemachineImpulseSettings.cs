@@ -35,16 +35,10 @@ namespace Cinemachine.Editor
     // GML this is here temporarily to maintain separation.  Move to CinemachineMenu.
     class ImpulseMenu 
     {
-        [MenuItem(CinemachineMenu.kCinemachineRootMenu + "Impulse/Perlin Impulse Definition")]
-        private static void CreatePerlinImpulseDefinition()
+        [MenuItem(CinemachineMenu.kCinemachineRootMenu + "Impulse/Fixed Signal Definition")]
+        private static void CreateFixedSignalDefinition()
         {
-            ScriptableObjectUtility.Create<CinemachinePerlinImpulseDefinition>();
-        }
-
-        [MenuItem(CinemachineMenu.kCinemachineRootMenu + "Impulse/Fixed Impulse Definition")]
-        private static void CreateFixedImpulseDefinition()
-        {
-            ScriptableObjectUtility.Create<CinemachineFixedImpulseDefinition>();
+            ScriptableObjectUtility.Create<CinemachineFixedSignal>();
         }
     }
 }

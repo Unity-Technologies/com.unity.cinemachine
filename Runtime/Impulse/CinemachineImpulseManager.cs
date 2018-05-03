@@ -56,13 +56,17 @@ namespace Cinemachine
             [Tooltip("Duration in seconds of the attack.  Attack curve will be scaled to fit.  Must be >= 0.")]
             public float m_AttackTime; // Must be >= 0
 
+            /// <summary>Duration in seconds of the central fully-scaled part of the envelope.  Must be >= 0.</summary>
+            [Tooltip("Duration in seconds of the central fully-scaled part of the envelope.  Must be >= 0.")]
+            public float m_HoldTime; // Must be >= 0
+
             /// <summary>Duration in seconds of the decay.  Decay curve will be scaled to fit.  Must be >= 0.</summary>
             [Tooltip("Duration in seconds of the decay.  Decay curve will be scaled to fit.  Must be >= 0.")]
             public float m_DecayTime; // Must be >= 0
 
-            /// <summary>Duration in seconds of the central fully-scaled part of the envelope.  Must be >= 0.</summary>
-            [Tooltip("Duration in seconds of the central fully-scaled part of the envelope.  Must be >= 0.")]
-            public float m_HoldTime; // Must be >= 0
+            /// <summary>If checked, signal amplitude scaling will also be applied to the time envelope of the signal.  Bigger signals will last longer</summary>
+            [Tooltip("If checked, signal amplitude scaling will also be applied to the time envelope of the signal.  Bigger signals will last longer.")]
+            public bool m_ScaleWithImpact;
 
             /// <summary>If true, then duration is infinite.</summary>
             [Tooltip("If true, then duration is infinite.")]
@@ -71,11 +75,11 @@ namespace Cinemachine
             /// <summary>Get an envelope with default values.</summary>
             public static EnvelopeDefinition Default()
             {
-                return new EnvelopeDefinition { m_DecayTime = 0.7f, m_HoldTime = 0.2f };
+                return new EnvelopeDefinition { m_DecayTime = 0.7f, m_HoldTime = 0.2f, m_ScaleWithImpact = true };
             }
 
             /// <summary>Duration of the envelope, in seconds.  If negative, then duration is infinite.</summary>
-            public float Duration 
+            public float Duration
             { 
                 get 
                 { 
@@ -133,15 +137,6 @@ namespace Cinemachine
                 m_HoldTime = Mathf.Max(0, m_HoldTime);
             }
         }
-
-        /// <summary>Interface for raw signal provider</summary>
-        /// <param name="pos">The position impulse signal</param>
-        /// <param name="rot">The rotation impulse signal</param>
-        /// <returns>true if non-trivial signal is returned</returns>
-        public interface IRawSignalSource
-        {
-            bool GetSignal(float timeSinceSignalStart, out Vector3 pos, out Quaternion rot);
-        }
         
         /// <summary>Describes an event that generates an impulse signal on one or more channels.
         /// The event has a location in space, a start time, a duration, and a signal.  The signal
@@ -158,7 +153,7 @@ namespace Cinemachine
 
             /// <summary>Raw signal source.  The ouput of this will be scaled to fit in the envelope.</summary>
             [Tooltip("Raw signal source.  The ouput of this will be scaled to fit in the envelope.")]
-            public IRawSignalSource m_SignalSource;
+            public ISignalSource6D m_SignalSource;
 
             /// <summary>If true, then duration is infinite.</summary>
             [Tooltip("If true, then duration is infinite.")]
@@ -243,8 +238,7 @@ namespace Cinemachine
                     float time = Time.time - m_StartTime;
                     float distance = Vector3.Distance(listenerPosition, m_Position);
                     float scale = m_Envelope.GetValueAt(time) * DistanceDecay(distance);
-                    if (!m_SignalSource.GetSignal(time, out pos, out rot))
-                        return false;
+                    m_SignalSource.GetSignal(time, out pos, out rot);
                     pos *= scale;
                     rot = Quaternion.SlerpUnclamped(Quaternion.identity, rot, scale);
                     return true;

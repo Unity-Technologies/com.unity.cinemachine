@@ -75,7 +75,7 @@ namespace Cinemachine.Editor
             EditorGUILayout.Separator();
 
             r = EditorGUILayout.GetControlRect();
-            EditorGUI.LabelField(r, "Position Noise", EditorStyles.boldLabel);
+            EditorGUI.LabelField(r, "Position Noise - amplitudes are in Distance units", EditorStyles.boldLabel);
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
             if (Event.current.type == EventType.Repaint)
             {
@@ -97,7 +97,7 @@ namespace Cinemachine.Editor
             EditorGUILayout.Separator();
 
             r = EditorGUILayout.GetControlRect();
-            EditorGUI.LabelField(r, "Rotation Noise", EditorStyles.boldLabel);
+            EditorGUI.LabelField(r, "Rotation Noise - amplitude units are degrees", EditorStyles.boldLabel);
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
             if (Event.current.type == EventType.Repaint)
             {
@@ -180,18 +180,21 @@ namespace Cinemachine.Editor
                 if ((channelMask & 1) != 0)
                 {
                     Handles.color = new Color(1, 0.5f, 0, 0.8f); 
-                    Handles.DrawAAPolyLine(mSampleCurveX.ToArray());
+                    Handles.DrawPolyLine(mSampleCurveX.ToArray());
                 }
                 if ((channelMask & 2) != 0)
                 {
                     Handles.color = new Color(0, 1, 0, 0.8f); 
-                    Handles.DrawAAPolyLine(mSampleCurveY.ToArray());
+                    Handles.DrawPolyLine(mSampleCurveY.ToArray());
                 }
                 if ((channelMask & 4) != 0)
                 {
                     Handles.color = new Color(0, 0.5f, 1, 0.8f); 
-                    Handles.DrawAAPolyLine(mSampleCurveZ.ToArray());
+                    Handles.DrawPolyLine(mSampleCurveZ.ToArray());
                 }
+                Handles.color = Color.black; 
+                Handles.DrawLine(new Vector3(1, 0, 0), new Vector3(r.width, 0, 0));
+                Handles.DrawLine(new Vector3(0, r.height, 0), new Vector3(r.width, r.height, 0));
                 Handles.matrix = oldMatrix;
             }
         }

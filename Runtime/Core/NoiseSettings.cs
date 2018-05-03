@@ -18,7 +18,7 @@ namespace Cinemachine
     /// asset, but it's super interesting!
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    public sealed class NoiseSettings : ScriptableObject
+    public sealed class NoiseSettings : SignalSourceAssetBase
     {
         /// <summary>Describes the behaviour for a channel of noise</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -108,6 +108,21 @@ namespace Cinemachine
                     pos += noiseParams[i].GetValueAt(time, timeOffsets);
             }
             return pos;
+        }
+
+        /// <summary>
+        /// Returns the total length in seconds of the signal.  
+        /// Returns 0 for signals of indeterminate length.
+        /// </summary>
+        public override float SignalDuration { get { return 0; } }
+
+        /// <summary>Interface for raw signal provider</summary>
+        /// <param name="pos">The position impulse signal</param>
+        /// <param name="rot">The rotation impulse signal</param>
+        public override void GetSignal(float timeSinceSignalStart, out Vector3 pos, out Quaternion rot)
+        {
+            pos = GetCombinedFilterResults(PositionNoise, timeSinceSignalStart, Vector3.zero);
+            rot = Quaternion.Euler(GetCombinedFilterResults(OrientationNoise, timeSinceSignalStart, Vector3.zero));
         }
 
     }

@@ -46,6 +46,9 @@ namespace Cinemachine.Editor
                     property.FindPropertyRelative(() => myClass.m_DecayShape),
                     property.FindPropertyRelative(() => myClass.m_DecayTime));
 
+                rect.y += EditorGUIUtility.singleLineHeight + vSpace;
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.m_ScaleWithImpact));
+
                 EditorGUIUtility.labelWidth = oldWidth;
             }
         }
@@ -87,7 +90,7 @@ namespace Cinemachine.Editor
         {
             float height = EditorGUIUtility.singleLineHeight + vSpace;
             if (mExpanded)
-                height *= 4;
+                height *= 5;
             return height;
         }
     }
