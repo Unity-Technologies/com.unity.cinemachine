@@ -26,23 +26,23 @@ namespace Cinemachine.Editor
 
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
                 DrawCurveTimeProperty(
-                    rect, new GUIContent("Attack"),
+                    rect, new GUIContent("Attack", "The custom shape of the attack curve.  Leave it blank for a default shape"),
                     property.FindPropertyRelative(() => myClass.m_AttackShape),
                     property.FindPropertyRelative(() => myClass.m_AttackTime));
 
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
 #if false // with "forever" button... dangerous because signal never goes away!
-                var holdProp = property.FindPropertyRelative(() => myClass.m_HoldTime);
+                var holdProp = property.FindPropertyRelative(() => myClass.m_SustainTime);
                 InspectorUtility.MultiPropertyOnLine(
                     rect, new GUIContent(holdProp.displayName, holdProp.tooltip),
                     new SerializedProperty[] { holdProp, property.FindPropertyRelative(() => myClass.m_HoldForever) },
                     new GUIContent[] { GUIContent.none, new GUIContent("forever") });
 #else
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.m_HoldTime));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.m_SustainTime));
 #endif
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
                 DrawCurveTimeProperty(
-                    rect, new GUIContent("Decay"),
+                    rect, new GUIContent("Decay", "The custom shape of the decay curve.  Leave it blank for a default shape"),
                     property.FindPropertyRelative(() => myClass.m_DecayShape),
                     property.FindPropertyRelative(() => myClass.m_DecayTime));
 

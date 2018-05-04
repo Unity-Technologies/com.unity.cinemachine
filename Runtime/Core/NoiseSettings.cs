@@ -18,7 +18,7 @@ namespace Cinemachine
     /// asset, but it's super interesting!
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    public sealed class NoiseSettings : SignalSourceAssetBase
+    public sealed class NoiseSettings : SignalSourceAsset
     {
         /// <summary>Describes the behaviour for a channel of noise</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]

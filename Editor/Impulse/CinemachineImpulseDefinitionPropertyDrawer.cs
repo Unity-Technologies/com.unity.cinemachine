@@ -32,7 +32,7 @@ namespace Cinemachine.Editor
         public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
         {
             CinemachineImpulseDefinition myClass = null; // to access name strings
-            SignalSourceAssetBase asset = null;
+            SignalSourceAsset asset = null;
             float height = 0;
             mHideProperties.Clear();
             string prefix = prop.name;
@@ -48,7 +48,7 @@ namespace Cinemachine.Editor
                 // Do we hide this property?
                 bool hide = false;
                 if (prop.name == SerializedPropertyHelper.PropertyName(() => myClass.m_RawSignal))
-                    asset = prop.objectReferenceValue as SignalSourceAssetBase;
+                    asset = prop.objectReferenceValue as SignalSourceAsset;
                 if (prop.name == SerializedPropertyHelper.PropertyName(() => myClass.m_RepeatMode))
                     hide = asset == null || asset.SignalDuration <= 0;
                 else if (prop.name == SerializedPropertyHelper.PropertyName(() => myClass.m_Randomize))

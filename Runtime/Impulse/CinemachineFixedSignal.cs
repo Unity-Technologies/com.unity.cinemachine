@@ -1,5 +1,3 @@
-using Cinemachine.Utility;
-using System;
 using UnityEngine;
 
 namespace Cinemachine
@@ -8,7 +6,7 @@ namespace Cinemachine
     /// A definition of an impulse signal that gets propagated to listeners
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    public class CinemachineFixedSignal : SignalSourceAssetBase
+    public class CinemachineFixedSignal : SignalSourceAsset
     {
         /// <summary>The raw signal shape along the X axis</summary>
         [Tooltip("The raw signal shape along the X axis")]

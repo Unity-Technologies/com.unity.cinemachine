@@ -3,9 +3,6 @@
 namespace Cinemachine
 {
     /// <summary>Interface for raw signal provider</summary>
-    /// <param name="pos">The position impulse signal</param>
-    /// <param name="rot">The rotation impulse signal</param>
-    /// <returns>true if non-trivial signal is returned</returns>
     public interface ISignalSource6D
     {
         /// <summary>
@@ -26,8 +23,12 @@ namespace Cinemachine
     /// This is used by the Cinemachine Impulse module.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
-    public abstract class SignalSourceAssetBase : ScriptableObject, ISignalSource6D
+    public abstract class SignalSourceAsset : ScriptableObject, ISignalSource6D
     {
+        /// <summary>
+        /// Returns the length on seconds of the signal.  
+        /// Returns 0 for signals of indeterminate length.
+        /// </summary>
         public abstract float SignalDuration { get; }
 
         /// <summary>Get the signal value at a given time relative to signal start</summary>

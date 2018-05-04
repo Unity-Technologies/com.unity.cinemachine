@@ -11,7 +11,20 @@ namespace Cinemachine
     public sealed class CinemachineImpulseDefinitionPropertyAttribute : PropertyAttribute {}
 
     /// <summary>
-    /// Base class for a definition of an impulse signal that gets propagated to listeners
+    /// Definition of an impulse signal that gets propagated to listeners.
+    /// 
+    /// Here you provide a Raw Signal source, and define an envelope for time-scaling
+    /// it to craft the complete Impulse signal shape.  Also, you provide here parameters 
+    /// that define how the signal dissipates with spatial distance from the source location.
+    /// Finally, you specify the Impulse Channel on which the signal will be sent.
+    /// 
+    /// An API method is provided here to take these parameters, create an Impulse Event,
+    /// and broadcast it on the channel.
+    /// 
+    /// When creating a custom Impulse Source class, you will have an instance of this class
+    /// as a field in your custom class.  Be sure also to include the
+    /// [CinemachineImpulseDefinition] attribute on the field, to get the right
+    /// property drawer for it.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     [Serializable]
@@ -20,7 +33,6 @@ namespace Cinemachine
         /// <summary>
         /// Impulse events generated here will appear on the channels included in the mask.
         /// </summary>
-        //[Header("Broadcast")]
         [CinemachineImpulseChannelProperty]
         [Tooltip("Impulse events generated here will appear on the channels included in the mask.")]
         public int m_ImpulseChannel = 1;
@@ -31,7 +43,7 @@ namespace Cinemachine
         [Header("Signal Shape")]
         [Tooltip("Defines the signal that will be generated.")]
         [CinemachineEmbeddedAssetProperty(true)]
-        public SignalSourceAssetBase m_RawSignal = null;
+        public SignalSourceAsset m_RawSignal = null;
 
         /// <summary>
         /// Gain to apply to the amplitudes defined in the signal source asset.
@@ -99,7 +111,8 @@ namespace Cinemachine
             m_TimeEnvelope.Validate();
         }
 
-        /// <summary>Generate an impulse at a location in space</summary>
+        /// <summary>Generate an impulse event at a location in space, 
+        /// and broadcast it on the appropriate impulse channel</summary>
         public void CreateEvent(Vector3 position, Vector3 velocity)
         {
             if (m_RawSignal == null || Mathf.Abs(m_TimeEnvelope.Duration) < UnityVectorExtensions.Epsilon)
@@ -109,7 +122,7 @@ namespace Cinemachine
                 = CinemachineImpulseManager.Instance.NewImpulseEvent();
             e.m_Envelope = m_TimeEnvelope;
 
-            // Scale time-envelope decay as the root of the amplitude scale
+            // Scale the time-envelope decay as the root of the amplitude scale
             e.m_Envelope = m_TimeEnvelope;
             if (m_TimeEnvelope.m_ScaleWithImpact)
                 e.m_Envelope.m_DecayTime *= Mathf.Sqrt(velocity.magnitude);

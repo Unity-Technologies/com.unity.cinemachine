@@ -3,7 +3,7 @@
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera which post-processes
+    /// An extension for Cinemachine Virtual Camera which post-processes
     /// the final position of the virtual camera.  It listens for CinemachineImpulse
     /// signals on the specified channels, and moves the camera in response to them.
     /// </summary>
@@ -23,7 +23,7 @@ namespace Cinemachine
         /// <summary>
         /// Gain to apply to the Impulse signal.
         /// </summary>
-        [Tooltip("Gain to apply to the Impulse signal.  1 is normal.  Setting this to 0 completely mutes the signal.")]
+        [Tooltip("Gain to apply to the Impulse signal.  1 is normal strength.  Setting this to 0 completely mutes the signal.")]
         public float m_Gain = 1;
 
         // GML todo: add reaction configuration params here

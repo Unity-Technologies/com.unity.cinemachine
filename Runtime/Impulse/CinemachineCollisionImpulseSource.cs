@@ -1,12 +1,16 @@
 using Cinemachine.Utility;
-using System;
 using UnityEngine;
 
 namespace Cinemachine
 {
     /// <summary>
-    /// An event-driven impulse that gets propagated to listeners when the object's
-    /// Collider collides with anything or its trigger zone is entered.
+    /// Generate an Impulse Event this object's Collider collides with something 
+    /// or its trigger zone is entered.
+    /// 
+    /// This component should be attached to a GameObject with a Collider or a Collider2D.
+    /// Objects colliding with this (or entering its trigger zone if it's a trigger) will be
+    /// filtered according to the layer and tag settings defined here, and if they
+    /// pass the filter, they will cause an impulse event to be generated.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
@@ -117,16 +121,16 @@ namespace Cinemachine
             if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
                 return;
 
-            // Generate the signal
+            // Calculate the signal direction and magnitude
             Vector3 vel = Vector3.zero;
             float mass = GetMassAndVelocity(other, out vel);
             if (m_ScaleImpactWithSpeed)
                 mass *= vel.magnitude;
-            
             Vector3 dir = Vector3.down;
             if (m_UseImpactDirection && !vel.AlmostZero())
                 dir = vel.normalized;
 
+            // Fire it off!
             GenerateImpulse(dir * mass);
         }
     }
