@@ -5,6 +5,11 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
+    /// <summary>
+    ///  This class contains setting for the Impulse system.  Specifically, it holds
+    ///  the Impulse Channel definitions.  These work like Unity Layers, you can
+    ///  define and name them, and create masks to filter only the layers you want.
+    /// </summary>
     [Serializable]
     public class CinemachineImpulseSettings : ScriptableObject 
     {
@@ -30,15 +35,5 @@ namespace Cinemachine.Editor
             }
         }
         public string[] ImpulseChannels;
-    }
-
-    // GML this is here temporarily to maintain separation.  Move to CinemachineMenu.
-    class ImpulseMenu 
-    {
-        [MenuItem(CinemachineMenu.kCinemachineRootMenu + "Impulse/Fixed Signal Definition")]
-        private static void CreateFixedSignalDefinition()
-        {
-            ScriptableObjectUtility.Create<CinemachineFixedSignal>();
-        }
     }
 }

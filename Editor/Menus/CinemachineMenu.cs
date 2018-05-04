@@ -9,18 +9,24 @@ namespace Cinemachine.Editor
     {
         public const string kCinemachineRootMenu = "Assets/Create/Cinemachine/";
 
-        [MenuItem(kCinemachineRootMenu + "Blender/BlenderSettings")]
+        [MenuItem(kCinemachineRootMenu + "BlenderSettings")]
         private static void CreateBlenderSettingAsset()
         {
             ScriptableObjectUtility.Create<CinemachineBlenderSettings>();
         }
 
-        [MenuItem(kCinemachineRootMenu + "Noise/NoiseSettings")]
+        [MenuItem(kCinemachineRootMenu + "NoiseSettings")]
         private static void CreateNoiseSettingAsset()
         {
             ScriptableObjectUtility.Create<NoiseSettings>();
         }
 
+        [MenuItem(kCinemachineRootMenu + "Fixed Signal Definition")]
+        private static void CreateFixedSignalDefinition()
+        {
+            ScriptableObjectUtility.Create<CinemachineFixedSignal>();
+        }
+    
         [MenuItem("Cinemachine/Create Virtual Camera", false, 1)]
         public static CinemachineVirtualCamera CreateVirtualCamera()
         {
