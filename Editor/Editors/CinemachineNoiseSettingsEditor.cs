@@ -18,8 +18,9 @@ namespace Cinemachine.Editor
 
         private static float mPreviewTime = 2;
         private static float mPreviewHeight = 5;
-        private static float mNoiseOffset = 0;
-        private static bool mAnimatedPreview = false;
+        private float mNoiseOffsetBase = 0;
+        private float mNoiseOffset = 0;
+        private bool mAnimatedPreview = false;
         GUIContent mAnimatedLabel = new GUIContent("Animated", "Animate the noise signal preview");
 
 
@@ -42,7 +43,8 @@ namespace Cinemachine.Editor
 
         private void OnEnable()
         {
-            mNoiseOffset = Time.realtimeSinceStartup;
+            mNoiseOffsetBase = Time.realtimeSinceStartup;
+            mNoiseOffset = 0;
         }
 
         protected override List<string> GetExcludedPropertiesInInspector()
@@ -79,7 +81,7 @@ namespace Cinemachine.Editor
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
             if (Event.current.type == EventType.Repaint)
             {
-                mSampleCachePos.SnapshotSample(r.size, Target.PositionNoise, mAnimatedPreview);
+                mSampleCachePos.SnapshotSample(r.size, Target.PositionNoise, mNoiseOffset, mAnimatedPreview);
                 mSampleCachePos.DrawSamplePreview(r, 7);
             }
             for (int i = 0; i < mPosChannels.Length; ++i)
@@ -101,7 +103,7 @@ namespace Cinemachine.Editor
             r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
             if (Event.current.type == EventType.Repaint)
             {
-                mSampleCacheRot.SnapshotSample(r.size, Target.OrientationNoise, mAnimatedPreview);
+                mSampleCacheRot.SnapshotSample(r.size, Target.OrientationNoise, mNoiseOffset, mAnimatedPreview);
                 mSampleCacheRot.DrawSamplePreview(r, 7);
             }
             for (int i = 0; i < mPosChannels.Length; ++i)
@@ -122,9 +124,10 @@ namespace Cinemachine.Editor
             // Make it live!
             if (mAnimatedPreview && Event.current.type == EventType.Repaint)
             {
-                mNoiseOffset = Time.realtimeSinceStartup;
+                mNoiseOffset += Time.realtimeSinceStartup - mNoiseOffsetBase;
                 Repaint();
             }
+            mNoiseOffsetBase = Time.realtimeSinceStartup;
         }
 
         class SampleCache
@@ -135,7 +138,7 @@ namespace Cinemachine.Editor
             private List<Vector3> mSampleNoise = new List<Vector3>();
 
             public void SnapshotSample(
-                Vector2 areaSize, NoiseSettings.TransformNoiseParams[] signal, bool animated)
+                Vector2 areaSize, NoiseSettings.TransformNoiseParams[] signal, float noiseOffset, bool animated)
             {
                 // These values give a smoother curve, more-or-less fitting in the window
                 int numSamples = Mathf.RoundToInt(areaSize.x);
@@ -153,7 +156,7 @@ namespace Cinemachine.Editor
                 mSampleNoise.Clear(); 
                 for (int i = 0; i < numSamples; ++i)
                 {
-                    float t = (float)i / (numSamples - 1) * mPreviewTime + mNoiseOffset;
+                    float t = (float)i / (numSamples - 1) * mPreviewTime + noiseOffset;
                     Vector3 p = NoiseSettings.GetCombinedFilterResults(signal, t, Vector3.zero);
                     mSampleNoise.Add(p);
                 }
