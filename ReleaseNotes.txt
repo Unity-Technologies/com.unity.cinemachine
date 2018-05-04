@@ -1,10 +1,10 @@
 <size=20><b>Version 2.2.0-alpha.1</b></size>
 
-- Added support for Physical Camera
 - New Cinemachine Impulse module for event-driven camera shakes
 - New Event Helper script CinemachineEventMapper maps UnityEvents to Virtual Cameras
 - New Event Helper script CinemachineTriggerAction takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
 - Added Focal Length or Named FOV presets for Camera Lens
+- Added support for Physical Camera
 - Collider: now returns TargetIsObscured if the target is offscreen (great for cameras with fixed aim)
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview

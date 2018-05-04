@@ -196,17 +196,6 @@ namespace Cinemachine.Editor
                 AssetDatabase.ImportPackage(pkgFile, true);
         }
 
-        [MenuItem("Cinemachine/Import Post Processing V1 Adaptor Asset Package")]
-        private static void ImportPostProcessingV1Package()
-        {
-            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath 
-                + "/CinemachinePostProcessingV1.unitypackage";
-            if (!File.Exists(pkgFile))
-                Debug.LogError("Missing file " + pkgFile);
-            else
-                AssetDatabase.ImportPackage(pkgFile, true);
-        }
-
         [MenuItem("Cinemachine/Import Post Processing V2 Adaptor Asset Package")]
         private static void ImportPostProcessingV2Package()
         {

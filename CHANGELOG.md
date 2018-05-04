@@ -4,17 +4,25 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.0-alpha.0] - 2018-04-01
+## [2.2.0-alpha.0] - 2018-05-04
 ### Impulse Module and More
 - New Cinemachine Impulse module for event-driven camera shakes
 - New Event Helper script CinemachineEventMapper maps UnityEvents to Virtual Cameras
-- New Event Helper script CinemachineETriggerActivator takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
-- Added Named FOV presets for Camera Lens
+- New Event Helper script CinemachineTriggerAction takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
+- Added Focal Length or Named FOV presets for Camera Lens
+- Added support for Physical Camera
+- Collider: now returns TargetIsObscured if the target is offscreen (great for cameras with fixed aim)
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview
 - If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera
 - TrackedDolly: Default up mode sets Up to World Up
 - Added ScreenSpaceAimWhenTargetsDiffer as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
+- Framing Transposer no longer requires LookAt to be null
+- Bugfix: Custom Blends "Any to Any" was not working (regression)
+- Bugfix: Composer was sometimes getting wrong aspect if multiple brains with different aspect ratios
+- Bugfix: could not drag vcam transforms if multiple inspectors and one is hidden
+- Bugfix: Framing Transposer initializes in the wrong place - noticeable if dead zone
+- Bugfix: StateDrivenCamera Editor was not finding states if target was OverrideController
 
 ## [2.1.12] - 2018-02-26
 ### Storyboard, Bugfixes and other enhancements.  Also some restructuring for Package Manager
