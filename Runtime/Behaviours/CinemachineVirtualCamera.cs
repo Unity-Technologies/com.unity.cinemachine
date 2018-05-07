@@ -259,7 +259,8 @@ namespace Cinemachine
             PreviousStateIsValid = false;
         }
 
-        /// <summary>Create a default pipeline container.</summary>
+        /// <summary>Create a default pipeline container.
+        /// Note: copyFrom only supported in Editor, not build</summary>
         private Transform CreatePipeline(CinemachineVirtualCamera copyFrom)
         {
             CinemachineComponentBase[] components = null;
@@ -278,11 +279,6 @@ namespace Cinemachine
                 go.transform.parent = transform;
                 go.AddComponent<CinemachinePipeline>();
                 newPipeline = go.transform;
-
-                // If copying, transfer the components
-                if (components != null)
-                    foreach (Component c in components)
-                        ReflectionHelpers.CopyFields(c, go.AddComponent(c.GetType()));
             }
             PreviousStateIsValid = false;
             return newPipeline;

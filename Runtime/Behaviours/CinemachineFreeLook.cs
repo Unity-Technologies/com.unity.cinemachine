@@ -431,17 +431,13 @@ namespace Cinemachine
                 else
                 {
                     // Create a new rig with default components
+                    // Note: copyFrom only supported in Editor, not build
                     GameObject go = new GameObject(RigNames[i]);
                     go.transform.parent = transform;
                     newRigs[i] = go.AddComponent<CinemachineVirtualCamera>();
-                    if (src != null)
-                        ReflectionHelpers.CopyFields(src, newRigs[i]);
-                    else
-                    {
-                        go = newRigs[i].GetComponentOwner().gameObject;
-                        go.AddComponent<CinemachineOrbitalTransposer>();
-                        go.AddComponent<CinemachineComposer>();
-                    }
+                    go = newRigs[i].GetComponentOwner().gameObject;
+                    go.AddComponent<CinemachineOrbitalTransposer>();
+                    go.AddComponent<CinemachineComposer>();
                 }
 
                 // Set up the defaults

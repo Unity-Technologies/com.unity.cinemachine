@@ -4,7 +4,10 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
-    internal static class SerializedPropertyHelper
+    /// <summary>
+    /// Helpers for the editor
+    /// </summary>
+    public static class SerializedPropertyHelper
     {
         /// This is a way to get a field name string in such a manner that the compiler will
         /// generate errors for invalid fields.  Much better than directly using strings.
