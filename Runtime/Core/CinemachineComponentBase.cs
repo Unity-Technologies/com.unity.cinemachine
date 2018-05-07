@@ -45,6 +45,30 @@ namespace Cinemachine
 
         private Transform mCachedFollowTarget;
         private CinemachineVirtualCameraBase mCachedFollowTargetVcam;
+        private CinemachineTargetGroup mCachedFollowTargetGroup;
+
+        void UpdateFollowTargetCache()
+        {
+            mCachedFollowTargetVcam = null;
+            mCachedFollowTargetGroup = null;
+            mCachedFollowTarget = FollowTarget;
+            if (mCachedFollowTarget != null)
+            {
+                mCachedFollowTargetVcam = mCachedFollowTarget.GetComponent<CinemachineVirtualCameraBase>();
+                mCachedFollowTargetGroup = mCachedFollowTarget.GetComponent<CinemachineTargetGroup>();
+            }
+        }
+
+        /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a group</summary>
+        public CinemachineTargetGroup FollowTargetGroup 
+        {
+            get
+            {
+                if (FollowTarget != mCachedFollowTarget)
+                    UpdateFollowTargetCache();
+                return mCachedFollowTargetGroup;
+            }
+        }
 
         /// <summary>Get the position of the Follow target.  Special handling: If the Follow target is
         /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
@@ -54,12 +78,7 @@ namespace Cinemachine
             {
                 Transform target = FollowTarget;
                 if (target != mCachedFollowTarget)
-                {
-                    mCachedFollowTargetVcam = null;
-                    mCachedFollowTarget = target;
-                    if (target != null)
-                        mCachedFollowTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
-                }
+                    UpdateFollowTargetCache();
                 if (mCachedFollowTargetVcam != null)
                     return mCachedFollowTargetVcam.State.FinalPosition;
                 if (target != null)
@@ -92,6 +111,30 @@ namespace Cinemachine
 
         private Transform mCachedLookAtTarget;
         private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
+        private CinemachineTargetGroup mCachedLookAtTargetGroup;
+
+        void UpdateLookAtTargetCache()
+        {
+            mCachedLookAtTargetVcam = null;
+            mCachedLookAtTargetGroup = null;
+            mCachedLookAtTarget = LookAtTarget;
+            if (mCachedLookAtTarget != null)
+            {
+                mCachedLookAtTargetVcam = mCachedLookAtTarget.GetComponent<CinemachineVirtualCameraBase>();
+                mCachedLookAtTargetGroup = mCachedLookAtTarget.GetComponent<CinemachineTargetGroup>();
+            }
+        }
+
+        /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a group</summary>
+        public CinemachineTargetGroup LookAtTargetGroup 
+        { 
+            get
+            {
+                if (LookAtTarget != mCachedLookAtTarget)
+                    UpdateLookAtTargetCache();
+                return mCachedLookAtTargetGroup;
+            }
+        }
 
         /// <summary>Get the position of the LookAt target.  Special handling: If the LookAt target is
         /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
@@ -101,12 +144,7 @@ namespace Cinemachine
             {
                 Transform target = LookAtTarget;
                 if (target != mCachedLookAtTarget)
-                {
-                    mCachedLookAtTargetVcam = null;
-                    mCachedLookAtTarget = target;
-                    if (target != null)
-                        mCachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
-                }
+                    UpdateLookAtTargetCache();
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalPosition;
                 if (target != null)

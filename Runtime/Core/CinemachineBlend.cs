@@ -30,7 +30,7 @@ namespace Cinemachine
         { 
             get 
             { 
-                if (BlendCurve == null || BlendCurve.keys.Length < 2 || IsComplete)
+                if (BlendCurve == null || BlendCurve.length < 2 || IsComplete)
                     return 1;
                 return Mathf.Clamp01(BlendCurve.Evaluate(TimeInBlend / Duration)); 
             } 

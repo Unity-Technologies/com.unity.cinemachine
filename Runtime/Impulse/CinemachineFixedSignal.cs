@@ -37,14 +37,10 @@ namespace Cinemachine
         float AxisDuration(AnimationCurve axis)
         {
             float duration = 0;
-            if (axis != null)
+            if (axis != null && axis.length > 1)
             {
-                var keys = axis.keys;
-                if (keys.Length > 1)
-                {
-                    float start = keys[0].time;
-                    duration = keys[keys.Length-1].time - start;
-                }
+                float start = axis[0].time;
+                duration = axis[axis.length-1].time - start;
             }
             return duration;
         }
@@ -64,10 +60,7 @@ namespace Cinemachine
 
         float AxisValue(AnimationCurve axis, float time)
         {
-            if (axis == null)
-                return 0;
-            var keys = axis.keys;
-            if (keys.Length == 0)
+            if (axis == null || axis.length == 0)
                 return 0;
             return axis.Evaluate(time);
         }

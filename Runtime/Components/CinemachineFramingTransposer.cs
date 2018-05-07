@@ -356,7 +356,7 @@ namespace Cinemachine
                 cameraOffset.z = targetPos.z - cameraMax;
 
             // Adjust for group framing
-            CinemachineTargetGroup group = TargetGroup;
+            CinemachineTargetGroup group = FollowTargetGroup;
             if (group != null && m_GroupFramingMode != FramingMode.None)
                 cameraOffset.z += AdjustCameraDepthAndLensForGroupFraming(
                     group, targetPos.z - cameraOffset.z, ref curState, deltaTime);
@@ -428,18 +428,6 @@ namespace Cinemachine
 
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
         public Matrix4x4 LastBoundsMatrix { get; private set; }
-
-        /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a group</summary>
-        public CinemachineTargetGroup TargetGroup 
-        { 
-            get
-            {
-                Transform follow = FollowTarget;
-                if (follow != null)
-                    return follow.GetComponent<CinemachineTargetGroup>();
-                return null;
-            }
-        }
 
         float AdjustCameraDepthAndLensForGroupFraming(
             CinemachineTargetGroup group, float targetZ, 

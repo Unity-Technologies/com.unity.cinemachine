@@ -73,7 +73,7 @@ namespace Cinemachine.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 curveProp.animationCurveValue = InspectorUtility.NormalizeCurve(curveProp.animationCurveValue);
-                if (curveProp.animationCurveValue.keys.Length < 1)
+                if (curveProp.animationCurveValue.length < 1)
                     curveProp.animationCurveValue = new AnimationCurve();
                 curveProp.serializedObject.ApplyModifiedProperties();
             }

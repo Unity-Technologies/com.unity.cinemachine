@@ -116,9 +116,6 @@ namespace Cinemachine
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is involved, then the event will fire on the first frame of the blend.")]
         public VcamEvent m_CameraActivatedEvent = new VcamEvent();
 
-        /// <summary>Internal support for opaque post-processing module</summary>
-        public Component PostProcessingComponent { get; set; }
-
         /// <summary>
         /// API for the Unity Editor.
         /// Show this camera no matter what.  This is static, and so affects all Cinemachine brains.

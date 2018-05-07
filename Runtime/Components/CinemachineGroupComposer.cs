@@ -108,18 +108,6 @@ namespace Cinemachine
             m_MinimumOrthoSize = Mathf.Max(0.01f, m_MinimumOrthoSize);
             m_MaximumOrthoSize = Mathf.Max(m_MinimumOrthoSize, m_MaximumOrthoSize);
         }
-
-        /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a group</summary>
-        public CinemachineTargetGroup TargetGroup 
-        { 
-            get
-            {
-                Transform lookAt = LookAtTarget;
-                if (lookAt != null)
-                    return lookAt.GetComponent<CinemachineTargetGroup>();
-                return null;
-            }
-        }
         
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>
@@ -128,7 +116,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             // Can't do anything without a group to look at
-            CinemachineTargetGroup group = TargetGroup;
+            CinemachineTargetGroup group = LookAtTargetGroup;
             if (group == null)
             {
                 base.MutateCameraState(ref curState, deltaTime);

@@ -101,7 +101,7 @@ namespace Cinemachine
                 {
                     if (offset < m_AttackTime && m_AttackTime > Epsilon)
                     {
-                        if (m_AttackShape == null || m_AttackShape.keys.Length < 2)
+                        if (m_AttackShape == null || m_AttackShape.length < 2)
                             return Damper.Damp(1, m_AttackTime, offset);
                         return m_AttackShape.Evaluate(offset / m_AttackTime);
                     }
@@ -111,7 +111,7 @@ namespace Cinemachine
                     offset -= m_SustainTime;
                     if (offset < m_DecayTime && m_DecayTime > Epsilon)
                     {
-                        if (m_DecayShape == null || m_DecayShape.keys.Length < 2)
+                        if (m_DecayShape == null || m_DecayShape.length < 2)
                             return 1 - Damper.Damp(1, m_DecayTime, offset);
                         return m_DecayShape.Evaluate(offset / m_DecayTime);
                     }
