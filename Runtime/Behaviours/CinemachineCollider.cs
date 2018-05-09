@@ -53,6 +53,12 @@ namespace Cinemachine
         public float m_DistanceLimit = 0f;
 
         /// <summary>
+        /// Don't take action unless occlusion has lasted at least this long.
+        /// </summary>
+        [Tooltip("Don't take action unless occlusion has lasted at least this long.")]
+        public float m_MinimumOcclusionTime = 0f;
+
+        /// <summary>
         /// Camera will try to maintain this distance from any obstacle.  
         /// Increase this value if you are seeing inside obstacles due to a large 
         /// FOV on the camera.
@@ -71,13 +77,7 @@ namespace Cinemachine
             PreserveCameraHeight,
             /// <summary>In addition to pulling the camera forward, an effort will be made to 
             /// return the camera to its original distance from the target</summary>
-            PreserveCameraDistance,
-#if false // took it out because it's confusing
-            /// <summary>Take the shortest path out of intersecting colliders,
-            /// regardless of LookAt target visibility or position.  Note: Shortest Way Out ignores 
-            /// the Minimum Distance From Target field.</summary>
-            ShortestWayOut
-#endif
+            PreserveCameraDistance
         };
         /// <summary>The way in which the Collider will attempt to preserve sight of the target.</summary>
         [Tooltip("The way in which the Collider will attempt to preserve sight of the target.")]
@@ -128,6 +128,7 @@ namespace Cinemachine
         private void OnValidate()
         {
             m_DistanceLimit = Mathf.Max(0, m_DistanceLimit);
+            m_MinimumOcclusionTime = Mathf.Max(0, m_MinimumOcclusionTime);
             m_CameraRadius = Mathf.Max(0, m_CameraRadius);
             m_MinimumDistanceFromTarget = Mathf.Max(0.01f, m_MinimumDistanceFromTarget);
             m_OptimalTargetDistance = Mathf.Max(0, m_OptimalTargetDistance);
@@ -141,14 +142,17 @@ namespace Cinemachine
         }
 
         /// This must be small but greater than 0 - reduces false results due to precision
-        const float PrecisionSlush = 0.001f;
+        protected const float PrecisionSlush = 0.001f;
 
-        // Per-vcam extra state info
-        class VcamExtraState
+        /// <summary>
+        /// Per-vcam extra state info
+        /// </summary>
+        protected class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
             public float colliderDisplacement;
             public bool targetObscured;
+            public float occlusionStartTime;
             public List<Vector3> debugResolutionPath;
 
             public void AddPointToDebugPath(Vector3 p)
@@ -195,16 +199,28 @@ namespace Cinemachine
                 if (m_AvoidObstacles)
                 {
                     Vector3 displacement = Vector3.zero;
-                    //if (m_Strategy == ResolutionStrategy.ShortestWayOut)
-                    //    displacement = RespectCameraRadius(state.RawPosition);
-                    //else
-                        displacement = PreserveLignOfSight(ref state, ref extra);
+                    displacement = PreserveLignOfSight(ref state, ref extra);
+                    if (m_MinimumOcclusionTime > Epsilon)
+                    {
+                        float now = Time.timeSinceLevelLoad;
+                        if (displacement.sqrMagnitude < Epsilon)
+                            extra.occlusionStartTime = 0;
+                        else
+                        {
+                            if (extra.occlusionStartTime <= 0)
+                                extra.occlusionStartTime = now;
+                            if (now - extra.occlusionStartTime < m_MinimumOcclusionTime)
+                                displacement = extra.m_previousDisplacement;
+                        }
+                    }
                     if (m_Damping > 0 && deltaTime >= 0)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, m_Damping, deltaTime);
                         displacement = extra.m_previousDisplacement + delta;
                     }
+                    if (m_CameraRadius > Epsilon)
+                        displacement += RespectCameraRadius(displacement + state.CorrectedPosition);
                     extra.m_previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
                     extra.colliderDisplacement += displacement.magnitude;
@@ -246,7 +262,13 @@ namespace Cinemachine
             }
         }
 
-        private Vector3 PreserveLignOfSight(ref CameraState state, ref VcamExtraState extra)
+        /// <summary>
+        /// Displace the camera so that target is visible
+        /// </summary>
+        /// <param name="state">current camera state</param>
+        /// <param name="extra">extra state data</param>
+        /// <returns>Camera displacement</returns>
+        protected virtual Vector3 PreserveLignOfSight(ref CameraState state, ref VcamExtraState extra)
         {
             Vector3 displacement = Vector3.zero;
             if (state.HasLookAt)
@@ -286,10 +308,6 @@ namespace Cinemachine
                         }
                     }
                 }
-                if (m_CameraRadius > Epsilon)
-                    pos += RespectCameraRadius(pos);
-                else if (mCameraColliderGameObject != null)
-                    CleanupCameraCollider();
                 displacement = pos - cameraPos;
             }
             return displacement;
@@ -316,7 +334,22 @@ namespace Cinemachine
             return false;
         }
         
-        private Vector3 PushCameraBack(
+        /// <summary>
+        /// Try to restore original camera distance/height after the camera has
+        /// been pulled in front of an obstacle.  This is a recursive algorithm
+        /// that iterates until max iterations is reached, or the camera has been
+        /// pushed back the required amount.
+        /// </summary>
+        /// <param name="currentPos"></param>
+        /// <param name="pushDir"></param>
+        /// <param name="obstacle"></param>
+        /// <param name="lookAtPos"></param>
+        /// <param name="startPlane"></param>
+        /// <param name="targetDistance"></param>
+        /// <param name="iterations"></param>
+        /// <param name="extra"></param>
+        /// <returns>New camera position</returns>
+        protected Vector3 PushCameraBack(
             Vector3 currentPos, Vector3 pushDir, RaycastHit obstacle,
             Vector3 lookAtPos, Plane startPlane, float targetDistance, int iterations,
             ref VcamExtraState extra)
@@ -404,6 +437,8 @@ namespace Cinemachine
                 // Calculate the second normal
                 for (int i = 0; i < numFound; ++i)
                 {
+                    if (m_CornerBuffer[i].collider == null)
+                        continue;
                     if (m_IgnoreTag.Length > 0 && m_CornerBuffer[i].collider.CompareTag(m_IgnoreTag))
                         continue;
                     Type type = m_CornerBuffer[i].collider.GetType();
@@ -510,9 +545,21 @@ namespace Cinemachine
         private Collider[] mColliderBuffer = new Collider[5];
         private SphereCollider mCameraCollider;
         private GameObject mCameraColliderGameObject;
-        private Vector3 RespectCameraRadius(Vector3 cameraPos)
+        /// <summary>
+        /// Make sure the camera is not closer than m_CameraRadius to an obstacle.
+        /// If it is, push it out, taking the shortest path.
+        /// </summary>
+        /// <param name="cameraPos">current camera position</param>
+        /// <returns>Offset to apply to the camera position</returns>
+        protected Vector3 RespectCameraRadius(Vector3 cameraPos)
         {
             Vector3 result = Vector3.zero;
+            if (m_CameraRadius < Epsilon)
+            {
+                if (mCameraColliderGameObject != null)
+                    CleanupCameraCollider();
+                return result;
+            }
             int numObstacles = Physics.OverlapSphereNonAlloc(
                 cameraPos, m_CameraRadius, mColliderBuffer, 
                 m_CollideAgainst, QueryTriggerInteraction.Ignore);

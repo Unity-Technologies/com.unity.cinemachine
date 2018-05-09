@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Focal Length or Named FOV presets for Camera Lens
 - Added support for Physical Camera
 - Collider: now returns TargetIsObscured if the target is offscreen (great for cameras with fixed aim)
+- Collider: added Minimum Occlusion Time setting, to ignore fleeting obstructions
+- Collider: damping will no longer take the camera through obstacles
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview
 - If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera

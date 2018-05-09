@@ -22,11 +22,6 @@ namespace Cinemachine.Editor
             {
                 excluded.Add(FieldPath(x => x.m_MaximumEffort));
             }
-            //else if (Target.m_Strategy == CinemachineCollider.ResolutionStrategy.ShortestWayOut)
-            //{
-            //    excluded.Add(FieldPath(x => x.m_DistanceLimit));
-            //    excluded.Add(FieldPath(x => x.m_MaximumEffort));
-            //}
             return excluded;
         }
 
