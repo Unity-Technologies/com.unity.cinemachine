@@ -275,8 +275,8 @@ namespace Cinemachine
         protected virtual Vector3 PreserveLignOfSight(ref CameraState state, ref VcamExtraState extra)
         {
             Vector3 displacement = Vector3.zero;
-            if (state.HasLookAt && m_CollideAgainst.value != 0 
-                && m_CollideAgainst.value != m_TransparentLayers.value)
+            if (state.HasLookAt && m_CollideAgainst != 0 
+                && m_CollideAgainst != m_TransparentLayers)
             {
                 Vector3 cameraPos = state.CorrectedPosition;
                 Vector3 lookAtPos = state.ReferenceLookAt;
@@ -297,7 +297,8 @@ namespace Cinemachine
                     if (rayLength > Epsilon)
                     {
                         RaycastHit hitInfo;
-                        if (RaycastWithIgnore(ray, out hitInfo, rayLength, m_TransparentLayers.value))
+                        if (RaycastIgnoreTag(ray, out hitInfo, rayLength, 
+                            m_CollideAgainst & ~m_TransparentLayers))
                         {
                             // Pull camera forward in front of obstacle
                             float adjustment = Mathf.Max(0, hitInfo.distance - PrecisionSlush);
@@ -318,16 +319,14 @@ namespace Cinemachine
             return displacement;
         }
 
-        private bool RaycastWithIgnore(
-            Ray ray, out RaycastHit hitInfo, float rayLength,
-            int transparentLayerMask)
+        private bool RaycastIgnoreTag(
+            Ray ray, out RaycastHit hitInfo, float rayLength, int layerMask)
         {
             while (Physics.Raycast(
-                ray, out hitInfo, rayLength, m_CollideAgainst.value, 
+                ray, out hitInfo, rayLength, layerMask, 
                 QueryTriggerInteraction.Ignore))
             {
-                if (m_IgnoreTag.Length == 0 || !hitInfo.collider.CompareTag(m_IgnoreTag)
-                        && ((1 << hitInfo.collider.gameObject.layer) & transparentLayerMask) == 0)
+                if (m_IgnoreTag.Length == 0 || !hitInfo.collider.CompareTag(m_IgnoreTag))
                     return true;
 
                 // Ignore the hit.  Pull ray origin forward in front of obstacle
@@ -378,7 +377,8 @@ namespace Cinemachine
             distance = Mathf.Min(distance, clampedDistance + PrecisionSlush);
 
             RaycastHit hitInfo;
-            if (RaycastWithIgnore(ray, out hitInfo, distance, m_TransparentLayers.value))
+            if (RaycastIgnoreTag(ray, out hitInfo, distance, 
+                    m_CollideAgainst & ~m_TransparentLayers))
             {
                 // We hit something.  Stop there and take a step along that wall.
                 float adjustment = hitInfo.distance - PrecisionSlush;
@@ -400,8 +400,9 @@ namespace Cinemachine
             dir = pos - lookAtPos;
             float d = dir.magnitude;
             RaycastHit hitInfo2;
-            if (d < Epsilon || RaycastWithIgnore(
-                    new Ray(lookAtPos, dir), out hitInfo2, d - PrecisionSlush, m_TransparentLayers.value))
+            if (d < Epsilon || RaycastIgnoreTag(
+                    new Ray(lookAtPos, dir), out hitInfo2, d - PrecisionSlush, 
+                    m_CollideAgainst & ~m_TransparentLayers))
                 return currentPos;
 
             // All clear
@@ -410,7 +411,8 @@ namespace Cinemachine
             distance = GetPushBackDistance(ray, startPlane, targetDistance, lookAtPos);
             if (distance > Epsilon)
             {
-                if (!RaycastWithIgnore(ray, out hitInfo, distance, m_TransparentLayers.value))
+                if (!RaycastIgnoreTag(ray, out hitInfo, distance, 
+                        m_CollideAgainst & ~m_TransparentLayers))
                 {
                     pos = ray.GetPoint(distance); // no obstacles - all good
                     extra.AddPointToDebugPath(pos);
@@ -440,7 +442,7 @@ namespace Cinemachine
             float nearbyDistance = PrecisionSlush * 5;
             int numFound = Physics.SphereCastNonAlloc(
                 pos, nearbyDistance, pushDir.normalized, m_CornerBuffer, 0, 
-                m_CollideAgainst.value, QueryTriggerInteraction.Ignore);
+                m_CollideAgainst & ~m_TransparentLayers, QueryTriggerInteraction.Ignore);
             if (numFound > 1)
             {
                 // Calculate the second normal
@@ -449,8 +451,6 @@ namespace Cinemachine
                     if (m_CornerBuffer[i].collider == null)
                         continue;
                     if (m_IgnoreTag.Length > 0 && m_CornerBuffer[i].collider.CompareTag(m_IgnoreTag))
-                        continue;
-                    if (((1 << m_CornerBuffer[i].collider.gameObject.layer) & m_TransparentLayers.value) == 0)
                         continue;
                     Type type = m_CornerBuffer[i].collider.GetType();
                     if (type == typeof(BoxCollider) 
@@ -566,7 +566,7 @@ namespace Cinemachine
         protected Vector3 RespectCameraRadius(Vector3 cameraDisplacement, ref CameraState state)
         {
             Vector3 result = Vector3.zero;
-            if (m_CameraRadius < Epsilon || m_CollideAgainst.value == 0)
+            if (m_CameraRadius < Epsilon || m_CollideAgainst == 0)
             {
                 if (mCameraColliderGameObject != null)
                     CleanupCameraCollider();
@@ -576,7 +576,7 @@ namespace Cinemachine
             int numObstacles = Physics.OverlapSphereNonAlloc(
                 cameraPos, m_CameraRadius, mColliderBuffer, 
                 m_CollideAgainst, QueryTriggerInteraction.Ignore);
-            if (numObstacles == 0 && state.HasLookAt && m_TransparentLayers.value != 0)
+            if (numObstacles == 0 && state.HasLookAt && m_TransparentLayers != 0)
             {
                 // Make sure the camera position isn't completely inside an obstacle.
                 // OverlapSphereNonAlloc won't catch those.
@@ -587,9 +587,9 @@ namespace Cinemachine
                     dir /= distance;
                     distance -= m_MinimumDistanceFromTarget;
                     RaycastHit hitInfo;
-                    if (RaycastWithIgnore(
-                        new Ray(cameraPos + dir * m_MinimumDistanceFromTarget, dir),
-                            out hitInfo, distance, 0))
+                    if (RaycastIgnoreTag(
+                        new Ray(state.ReferenceLookAt + dir * m_MinimumDistanceFromTarget, dir),
+                            out hitInfo, distance, m_CollideAgainst))
                     {
                         mColliderBuffer[0] = hitInfo.collider;
                         numObstacles = 1;
@@ -648,8 +648,9 @@ namespace Cinemachine
                     return true;
                 Ray ray = new Ray(pos, dir.normalized);
                 RaycastHit hitInfo;
-                if (RaycastWithIgnore(ray, out hitInfo, 
-                        distance - m_MinimumDistanceFromTarget, m_TransparentLayers.value))
+                if (RaycastIgnoreTag(ray, out hitInfo, 
+                        distance - m_MinimumDistanceFromTarget, 
+                        m_CollideAgainst & ~m_TransparentLayers))
                     return true;
             }
             return false;
