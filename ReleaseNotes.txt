@@ -1,4 +1,5 @@
 <size=20><b>Version 2.1.13</b></size>
+
 - Bugfix: Custom Blends "Any to Any" was not working (regression)
 - Bugfix: Composer was sometimes getting wrong aspect if multiple brains with different aspect ratios
 - Bugfix: could not drag vcam transforms if multiple inspectors and one is hidden

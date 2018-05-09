@@ -4,6 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.13] - 2018-05-09
+### Removed dependency on nonexistant Timeline package, minor bugfixes
+- Bugfix: Custom Blends "Any to Any" was not working (regression)
+- Bugfix: Composer was sometimes getting wrong aspect if multiple brains with different aspect ratios
+- Bugfix: could not drag vcam transforms if multiple inspectors and one is hidden
+- Bugfix: Framing Transposer initializes in the wrong place - noticeable if dead zone
+
 ## [2.1.12] - 2018-02-26
 ### Storyboard, Bugfixes and other enhancements.  Also some restructuring for Package Manager
 - Project restructure: Removed Base, Timeline, and PostFX folders from project root.  PostProcessing code must now be manually imported from Cinemachine menu.  No more dependencies on scripting defines.
