@@ -395,7 +395,8 @@ namespace Cinemachine
                     m_ComponentOwner = child;
                     CinemachineComponentBase[] components = child.GetComponents<CinemachineComponentBase>();
                     foreach (CinemachineComponentBase c in components)
-                        list.Add(c);
+                        if (c.enabled)
+                            list.Add(c);
                 }
             }
 
