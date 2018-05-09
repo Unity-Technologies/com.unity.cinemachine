@@ -20,11 +20,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - TrackedDolly: Default up mode sets Up to World Up
 - Added ScreenSpaceAimWhenTargetsDiffer as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
 - Framing Transposer no longer requires LookAt to be null
+- Bugfix: StateDrivenCamera Editor was not finding states if target was OverrideController
+
+## [2.1.13] - 2018-05-09
+### Removed dependency on nonexistant Timeline package, minor bugfixes
 - Bugfix: Custom Blends "Any to Any" was not working (regression)
 - Bugfix: Composer was sometimes getting wrong aspect if multiple brains with different aspect ratios
 - Bugfix: could not drag vcam transforms if multiple inspectors and one is hidden
 - Bugfix: Framing Transposer initializes in the wrong place - noticeable if dead zone
-- Bugfix: StateDrivenCamera Editor was not finding states if target was OverrideController
 
 ## [2.1.12] - 2018-02-26
 ### Storyboard, Bugfixes and other enhancements.  Also some restructuring for Package Manager

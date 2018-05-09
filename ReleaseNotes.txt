@@ -14,11 +14,14 @@
 - TrackedDolly: Default up mode sets Up to World Up
 - Added ScreenSpaceAimWhenTargetsDiffer as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
 - Framing Transposer no longer requires LookAt to be null
+- Bugfix: StateDrivenCamera Editor was not finding states if target was OverrideController
+
+<size=20><b>Version 2.1.13</b></size>
+
 - Bugfix: Custom Blends "Any to Any" was not working (regression)
 - Bugfix: Composer was sometimes getting wrong aspect if multiple brains with different aspect ratios
 - Bugfix: could not drag vcam transforms if multiple inspectors and one is hidden
 - Bugfix: Framing Transposer initializes in the wrong place - noticeable if dead zone
-- Bugfix: StateDrivenCamera Editor was not finding states if target was OverrideController
 
 <size=20><b>Version 2.1.12</b></size>
 
