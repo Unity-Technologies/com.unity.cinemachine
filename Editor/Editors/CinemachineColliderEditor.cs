@@ -17,6 +17,8 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_Strategy));
                 excluded.Add(FieldPath(x => x.m_MaximumEffort));
                 excluded.Add(FieldPath(x => x.m_Damping));
+                excluded.Add(FieldPath(x => x.m_DampingWhenOccluded));
+                excluded.Add(FieldPath(x => x.m_SmoothingTime));
             }
             else if (Target.m_Strategy == CinemachineCollider.ResolutionStrategy.PullCameraForward)
             {

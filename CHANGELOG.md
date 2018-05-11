@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Collider: added Minimum Occlusion Time setting, to ignore fleeting obstructions
 - Collider: added Transparent Layers mask, to specify solid objects that don't obstruct view
 - Collider: damping will no longer take the camera through obstacles
+- Collider: Added separate damping setting for when target is being occluded vs when camera is being returned to its normal position
+- Collider: added Smoothing setting, to reduce camera jumpiness in environements with lots of obstacles
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
 - Added NoiseSettings editor with signal preview
 - If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera
