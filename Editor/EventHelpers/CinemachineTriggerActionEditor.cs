@@ -18,6 +18,8 @@ namespace Cinemachine.Editor
         SerializedProperty[] mRepeatProperties = new SerializedProperty[2];
         GUIContent mRepeatLabel;
         GUIContent[] mRepeatSubLabels = new GUIContent[2];
+
+        GUIStyle mFoldoutStyle;
         
         private void OnEnable()
         {
@@ -28,6 +30,8 @@ namespace Cinemachine.Editor
             mRepeatSubLabels[0] = GUIContent.none;
             mRepeatSubLabels[1] = new GUIContent(
                 mRepeatProperties[1].displayName, mRepeatProperties[1].tooltip);
+
+            mFoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
         }
 
         protected override List<string> GetExcludedPropertiesInInspector()
@@ -35,8 +39,8 @@ namespace Cinemachine.Editor
             List<string> excluded = base.GetExcludedPropertiesInInspector();
             excluded.Add(FieldPath(x => x.m_SkipFirst));
             excluded.Add(FieldPath(x => x.m_Repeating));
-            excluded.Add(FieldPath(x => x.m_EnterAction));
-            excluded.Add(FieldPath(x => x.m_ExitAction));
+            excluded.Add(FieldPath(x => x.m_OnObjectEnter));
+            excluded.Add(FieldPath(x => x.m_OnObjectExit));
             return excluded;
         }
 
@@ -47,21 +51,24 @@ namespace Cinemachine.Editor
             InspectorUtility.MultiPropertyOnLine(
                 EditorGUILayout.GetControlRect(), mRepeatLabel,
                 mRepeatProperties, mRepeatSubLabels);
-            mEnterExpanded = DrawActionSettings(FindProperty(x => x.m_EnterAction), mEnterExpanded);
-            mExitExpanded = DrawActionSettings(FindProperty(x => x.m_ExitAction), mExitExpanded);
+            EditorGUILayout.Space();
+            mEnterExpanded = DrawActionSettings(FindProperty(x => x.m_OnObjectEnter), mEnterExpanded);
+            mExitExpanded = DrawActionSettings(FindProperty(x => x.m_OnObjectExit), mExitExpanded);
         }
 
         bool DrawActionSettings(SerializedProperty property, bool expanded)
         {
             Rect r = EditorGUILayout.GetControlRect();
-            expanded = EditorGUI.Foldout(r, expanded, property.displayName);
+            expanded = EditorGUI.Foldout(r, expanded, property.displayName, mFoldoutStyle);
             if (expanded)
             {
                 SerializedProperty actionProp = property.FindPropertyRelative(() => def.m_Action);
                 EditorGUILayout.PropertyField(actionProp);
 
                 SerializedProperty targetProp = property.FindPropertyRelative(() => def.m_Target);
-                EditorGUILayout.PropertyField(targetProp);
+                bool isCustom = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Custom);
+                if (!isCustom)
+                    EditorGUILayout.PropertyField(targetProp);
 
                 bool isBoost = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.PriorityBoost;
                 if (isBoost)
@@ -83,14 +90,9 @@ namespace Cinemachine.Editor
                         EditorGUILayout.GetControlRect(), null, props, sublabels);
                 }
 
-                SerializedProperty methodProp = property.FindPropertyRelative(() => def.m_MethodName);
-                bool isBroadcast = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Broadcast;
-                if (isBroadcast)
+                if (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Custom)
                 {
-                    EditorGUILayout.PropertyField(methodProp);
-                    string value = methodProp.stringValue.Trim();
-                    if (value.Length == 0)
-                        EditorGUILayout.HelpBox("Supply the name of a method to call. The method will be called in the target object, if it exists", MessageType.Info);
+                    EditorGUILayout.HelpBox("Use the Event() list below to call custom methods", MessageType.Info);
                 }
 
                 if (isBoost)
@@ -119,10 +121,11 @@ namespace Cinemachine.Editor
                     }
                 }
 
-                if (targetProp.objectReferenceValue == null)
+                if (!isCustom && targetProp.objectReferenceValue == null)
                     EditorGUILayout.HelpBox("No action will be taken because target is not valid", MessageType.Info);
 
                 EditorGUILayout.Space();
+                EditorGUILayout.LabelField("This event will be invoked.  Add calls to custom methods here:");
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.m_Event));
             }
             property.serializedObject.ApplyModifiedProperties();
