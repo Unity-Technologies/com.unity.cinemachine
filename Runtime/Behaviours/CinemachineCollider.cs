@@ -628,6 +628,7 @@ namespace Cinemachine
                 return result;
             }
 
+            Vector3 cameraPos2 = cameraPos;
             Vector3 dir = state.HasLookAt ? (cameraPos - state.ReferenceLookAt) : Vector3.zero;
             float distance = dir.magnitude;
             if (distance > Epsilon)
@@ -668,45 +669,42 @@ namespace Cinemachine
                         Collider c = mColliderBuffer[i];
                         if (m_IgnoreTag.Length > 0 && c.CompareTag(m_IgnoreTag))
                             continue;
-                        if (c.Raycast(ray, out hitInfo, distance + m_CameraRadius))
-                            result += (hitInfo.point - cameraPos) - m_CameraRadius * dir;
+                        if (c.Raycast(ray, out hitInfo, distance))
+                            result += (hitInfo.point - cameraPos);
                     }
                 }
-                else
+                cameraPos2 += result;
+                if (mCameraColliderGameObject == null)
                 {
-                    // If no LookAt target, use a static collider to resolve
-                    if (mCameraColliderGameObject == null)
+                    mCameraColliderGameObject = new GameObject("CinemachineCollider Collider");
+                    mCameraColliderGameObject.hideFlags = HideFlags.HideAndDontSave;
+                    mCameraColliderGameObject.transform.position = Vector3.zero;
+                    mCameraColliderGameObject.SetActive(true);
+                    mCameraCollider = mCameraColliderGameObject.AddComponent<SphereCollider>();
+                    var rb = mCameraColliderGameObject.AddComponent<Rigidbody>();
+                    rb.detectCollisions = false;
+                    rb.isKinematic = true;
+                }
+                mCameraCollider.radius = m_CameraRadius;
+                Vector3 offsetDir;
+                float offsetDistance;
+                for (int i = 0; i < numObstacles; ++i)
+                {
+                    Collider c = mColliderBuffer[i];
+                    if (m_IgnoreTag.Length > 0 && c.CompareTag(m_IgnoreTag))
+                        continue;
+                    if (Physics.ComputePenetration(
+                        mCameraCollider, cameraPos2, Quaternion.identity, 
+                        c, c.transform.position, c.transform.rotation,
+                        out offsetDir, out offsetDistance))
                     {
-                        mCameraColliderGameObject = new GameObject("CinemachineCollider Collider");
-                        mCameraColliderGameObject.hideFlags = HideFlags.HideAndDontSave;
-                        mCameraColliderGameObject.transform.position = Vector3.zero;
-                        mCameraColliderGameObject.SetActive(true);
-                        mCameraCollider = mCameraColliderGameObject.AddComponent<SphereCollider>();
-                        var rb = mCameraColliderGameObject.AddComponent<Rigidbody>();
-                        rb.detectCollisions = false;
-                        rb.isKinematic = true;
-                    }
-                    mCameraCollider.radius = m_CameraRadius;
-                    Vector3 offsetDir;
-                    float offsetDistance;
-                    for (int i = 0; i < numObstacles; ++i)
-                    {
-                        Collider c = mColliderBuffer[i];
-                        if (m_IgnoreTag.Length > 0 && c.CompareTag(m_IgnoreTag))
-                            continue;
-                        if (Physics.ComputePenetration(
-                            mCameraCollider, cameraPos, Quaternion.identity, 
-                            c, c.transform.position, c.transform.rotation,
-                            out offsetDir, out offsetDistance))
-                        {
-                            result += offsetDir * offsetDistance;   // naive, but maybe enough
-                        }
+                        result += offsetDir * offsetDistance;   // naive, but maybe enough
                     }
                 }
             }
 
             // Respect the minimum distance from target - push camera back if we have to
-            if (distance > Epsilon && (cameraPos + result - state.ReferenceLookAt).magnitude < m_CameraRadius)
+            if (distance > Epsilon && (cameraPos2 + result - state.ReferenceLookAt).magnitude < m_CameraRadius)
                 result = state.ReferenceLookAt - cameraPos + (dir * m_CameraRadius);
             return result;
         }
