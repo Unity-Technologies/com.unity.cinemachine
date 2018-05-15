@@ -30,8 +30,6 @@ namespace Cinemachine.Editor
             mRepeatSubLabels[0] = GUIContent.none;
             mRepeatSubLabels[1] = new GUIContent(
                 mRepeatProperties[1].displayName, mRepeatProperties[1].tooltip);
-
-            mFoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
         }
 
         protected override List<string> GetExcludedPropertiesInInspector()
@@ -58,6 +56,9 @@ namespace Cinemachine.Editor
 
         bool DrawActionSettings(SerializedProperty property, bool expanded)
         {
+            if (mFoldoutStyle == null)
+                mFoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
+
             Rect r = EditorGUILayout.GetControlRect();
             expanded = EditorGUI.Foldout(r, expanded, property.displayName, mFoldoutStyle);
             if (expanded)

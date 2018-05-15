@@ -98,14 +98,14 @@ namespace Cinemachine
             {
                 m_Action = action;
                 m_Target = null;
-                m_BoostAmount = 10;
+                m_BoostAmount = 0;
                 m_StartTime = 0;
                 m_Mode = TimeMode.FromStart;
                 m_Event = new TriggerEvent();
             }
 
             /// <summary>Invoke the action.  Depending on the mode, different action will
-            /// be performed.  The embedded event will always be invoke, in addition to the
+            /// be performed.  The embedded event will always be invoked, in addition to the
             /// action specified by the Mode.</summary>
             public void Invoke()
             {
@@ -126,12 +126,21 @@ namespace Cinemachine
                                 CinemachineVirtualCameraBase vcam
                                     = targetGameObject.GetComponent<CinemachineVirtualCameraBase>();
                                 if (vcam != null)
+                                {
                                     vcam.Priority += m_BoostAmount;
+                                    vcam.MoveToTopOfPrioritySubqueue();
+                                }
                                 break;
                             }
                         case Mode.Activate:
                             if (targetGameObject != null)
+                            {
                                 targetGameObject.SetActive(true);
+                                CinemachineVirtualCameraBase vcam
+                                    = targetGameObject.GetComponent<CinemachineVirtualCameraBase>();
+                                if (vcam != null)
+                                    vcam.MoveToTopOfPrioritySubqueue();
+                            }
                             break;
                         case Mode.Deactivate:
                             if (targetGameObject != null)
@@ -246,7 +255,8 @@ namespace Cinemachine
             if (!m_ActiveTriggerObjects.Contains(other))
                 return;
             m_ActiveTriggerObjects.Remove(other);
-            m_OnObjectExit.Invoke();
+            if (enabled)
+                m_OnObjectExit.Invoke();
         }
 
         void OnTriggerEnter(Collider other) { InternalDoTriggerEnter(other.gameObject); }

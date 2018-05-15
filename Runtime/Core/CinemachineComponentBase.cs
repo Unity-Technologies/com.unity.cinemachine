@@ -161,12 +161,7 @@ namespace Cinemachine
             {
                 Transform target = LookAtTarget;
                 if (target != mCachedLookAtTarget)
-                {
-                    mCachedLookAtTargetVcam = null;
-                    mCachedLookAtTarget = target;
-                    if (target != null)
-                        mCachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
-                }
+                    UpdateLookAtTargetCache();
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalOrientation;
                 if (target != null)
