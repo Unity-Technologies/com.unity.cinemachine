@@ -571,7 +571,7 @@ namespace Cinemachine
                 return 0;
 
             // If we are close to parallel to the plane, we have to take special action
-            float angle = Mathf.Abs(Vector3.Angle(startPlane.normal, ray.direction) - 90);
+            float angle = Mathf.Abs(UnityVectorExtensions.Angle(startPlane.normal, ray.direction) - 90);
             if (angle < AngleThreshold)
                 distance = Mathf.Lerp(0, distance, angle / AngleThreshold);
             return distance;
@@ -752,12 +752,12 @@ namespace Cinemachine
                 else
                 {
                     float fov = state.Lens.FieldOfView / 2;
-                    float angle = Vector3.Angle(dir.ProjectOntoPlane(Vector3.right), Vector3.forward);
+                    float angle = UnityVectorExtensions.Angle(dir.ProjectOntoPlane(Vector3.right), Vector3.forward);
                     if (angle > fov)
                         return true;
 
                     fov = Mathf.Rad2Deg * Mathf.Atan(Mathf.Tan(fov * Mathf.Deg2Rad) * state.Lens.Aspect);
-                    angle = Vector3.Angle(dir.ProjectOntoPlane(Vector3.up), Vector3.forward);
+                    angle = UnityVectorExtensions.Angle(dir.ProjectOntoPlane(Vector3.up), Vector3.forward);
                     if (angle > fov)
                         return true;
                 }

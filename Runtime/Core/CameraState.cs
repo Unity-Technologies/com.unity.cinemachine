@@ -25,7 +25,7 @@ namespace Cinemachine
         public LensSettings Lens { get; set; }
 
         /// <summary>
-        /// Which way is up.  World space unit vector.
+        /// Which way is up.  World space unit vector.  Must have a length of 1.
         /// </summary>
         public Vector3 ReferenceUp { get; set; }
 

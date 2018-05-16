@@ -383,7 +383,7 @@ namespace Cinemachine
         /// </summary>
         private bool ClampVerticalBounds(ref Rect r, Vector3 dir, Vector3 up, float fov)
         {
-            float angle = Vector3.Angle(dir, up);
+            float angle = UnityVectorExtensions.Angle(dir, up);
             float halfFov = (fov / 2f) + 1; // give it a little extra to accommodate precision errors
             if (angle < halfFov)
             {
