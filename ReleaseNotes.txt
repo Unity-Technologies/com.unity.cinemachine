@@ -1,4 +1,9 @@
-<size=20><b>Version 2.2.0-alpha.1</b></size>
+<size=20><b>Version 2.2.0-preview.2</b></size>
+
+- Impulse example scene: added missing material
+- Added Presets to impulse Signal popup menu
+
+<size=20><b>Version 2.2.0-preview.1</b></size>
 
 - New Cinemachine Impulse module for event-driven camera shakes
 - New Event Helper script CinemachineTriggerAction takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
