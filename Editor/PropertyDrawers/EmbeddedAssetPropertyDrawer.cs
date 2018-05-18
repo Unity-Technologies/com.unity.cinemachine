@@ -3,6 +3,7 @@ using UnityEditor;
 using System;
 using Cinemachine.Utility;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
@@ -142,16 +143,37 @@ namespace Cinemachine.Editor
             EditorGUIUtility.labelWidth += kBoxMargin;
         }
 
-
-        Type[] mAssetTypes = null;
-
-        static Type EmbeddedAssetType(SerializedProperty property)
+        Type EmbeddedAssetType(SerializedProperty property)
         {
             Type type = property.serializedObject.targetObject.GetType();
             var a = property.propertyPath.Split('.');
             for (int i = 0; i < a.Length; ++i)
                 type = type.GetField(a[i]).FieldType;
             return type;
+        }
+
+        Type[] mAssetTypes = null;
+        List<ScriptableObject> mAssetPresets;
+        GUIContent[] mAssetPresetNames;
+
+        void RebuildPresetList()
+        {
+            if (mAssetPresets != null && mAssetPresetNames != null)
+                return;
+
+            mAssetPresets = new List<ScriptableObject>();
+#if UNITY_2018_1_OR_NEWER
+            if (mAssetTypes != null)
+            {
+                for (int i = 0; i < mAssetTypes.Length; ++i)
+                    InspectorUtility.AddAssetsFromPackageSubDirectory(
+                        mAssetTypes[i], mAssetPresets, "Presets/Noise");
+            }
+#endif
+            List<GUIContent> presetNameList = new List<GUIContent>();
+            foreach (var n in mAssetPresets)
+                presetNameList.Add(new GUIContent("Presets/" + n.name));
+            mAssetPresetNames = presetNameList.ToArray();
         }
 
         void AssetFieldWithCreateButton(
@@ -196,6 +218,17 @@ namespace Cinemachine.Editor
                         });
                     menu.AddItem(new GUIContent("Locate"), false, () 
                         => EditorGUIUtility.PingObject(property.objectReferenceValue));
+                }
+
+                RebuildPresetList();
+                int i = 0;
+                foreach (var a in mAssetPresets)
+                {
+                    menu.AddItem(mAssetPresetNames[i++], false, () => 
+                        { 
+                            property.objectReferenceValue = a;
+                            property.serializedObject.ApplyModifiedProperties();
+                        });
                 }
 
                 foreach (var t in mAssetTypes)

@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
             int preset = sNoisePresets.IndexOf((NoiseSettings)property.objectReferenceValue);
             preset = EditorGUI.Popup(rect, label, preset, sNoisePresetNames);
             string labelText = label.text;
-            NoiseSettings newProfile = preset < 0 ? null : sNoisePresets[preset];
+            NoiseSettings newProfile = preset < 0 ? null : sNoisePresets[preset] as NoiseSettings;
             if ((NoiseSettings)property.objectReferenceValue != newProfile)
             {
                 property.objectReferenceValue = newProfile;
@@ -54,7 +54,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        static List<NoiseSettings> sNoisePresets;
+        static List<ScriptableObject> sNoisePresets;
         static GUIContent[] sNoisePresetNames;
         static float sLastPresetRebuildTime = 0;
 
@@ -73,7 +73,8 @@ namespace Cinemachine.Editor
 
             sNoisePresets = FindAssetsByType<NoiseSettings>();
 #if UNITY_2018_1_OR_NEWER
-            AddAssetsFromPackageSubDirectory(sNoisePresets, "Presets/Noise");
+            InspectorUtility.AddAssetsFromPackageSubDirectory(
+                typeof(NoiseSettings), sNoisePresets, "Presets/Noise");
 #endif
             sNoisePresets.Insert(0, null);
             List<GUIContent> presetNameList = new List<GUIContent>();
@@ -83,42 +84,18 @@ namespace Cinemachine.Editor
             sLastPresetRebuildTime = Time.realtimeSinceStartup;
         }
 
-        static List<T> FindAssetsByType<T>() where T : UnityEngine.Object
+        static List<ScriptableObject> FindAssetsByType<T>() where T : UnityEngine.Object
         {
-            List<T> assets = new List<T>();
+            List<ScriptableObject> assets = new List<ScriptableObject>();
             string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T)));
             for (int i = 0; i < guids.Length; i++)
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                ScriptableObject asset = AssetDatabase.LoadAssetAtPath<T>(assetPath) as ScriptableObject;
                 if (asset != null)
                     assets.Add(asset);
             }
             return assets;
-        }
-
-        static void AddAssetsFromPackageSubDirectory<T>(List<T> assets, string path) 
-            where T : UnityEngine.Object
-        {
-            try 
-            {
-                path = "/" + path;
-                var info = new DirectoryInfo(ScriptableObjectUtility.CinemachineInstallPath + path);
-                path = ScriptableObjectUtility.kPackageRoot + path + "/";
-                var fileInfo = info.GetFiles();
-                foreach (var file in fileInfo)
-                {
-                    if (file.Extension != ".asset")
-                        continue;
-                    string name = path + file.Name;
-                    T a = AssetDatabase.LoadAssetAtPath(name, typeof(T)) as T;
-                    if (a != null)
-                        assets.Add(a);
-                }
-            }
-            catch 
-            {
-            }
         }
 
         NoiseSettings CreateProfile(SerializedProperty property, string label, NoiseSettings copyFrom)
