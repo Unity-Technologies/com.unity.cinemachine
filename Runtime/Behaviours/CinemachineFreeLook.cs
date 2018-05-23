@@ -327,25 +327,12 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            bool doUpdate = false;
-            if ((fromCam != null) && (fromCam is CinemachineFreeLook))
-            {
-                CinemachineFreeLook freeLookFrom = fromCam as CinemachineFreeLook;
-                if (freeLookFrom.Follow == Follow)
-                {
-                    m_XAxis.Value = freeLookFrom.m_XAxis.Value;
-                    m_YAxis.Value = freeLookFrom.m_YAxis.Value;
-                    doUpdate = true;
-                }
-            }
             if (m_Transitions.m_InheritPosition && fromCam != null)
             {
-                PreviousStateIsValid = false;
-                transform.position = fromCam.State.CorrectedPosition;
-                doUpdate = true;
-            }
-            if (doUpdate)
-            {
+                transform.position = fromCam.State.FinalPosition;
+                transform.rotation = fromCam.State.FinalOrientation;
+                m_State = PullStateFromVirtualCamera(worldUp, m_Lens);
+                PushSettingsToRigs();
                 PreviousStateIsValid = false;
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
