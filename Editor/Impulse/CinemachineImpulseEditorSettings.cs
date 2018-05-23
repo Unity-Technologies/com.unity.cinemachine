@@ -11,20 +11,20 @@ namespace Cinemachine.Editor
     ///  define and name them, and create masks to filter only the layers you want.
     /// </summary>
     [Serializable]
-    public class CinemachineImpulseSettings : ScriptableObject 
+    public class CinemachineImpulseEditorSettings : ScriptableObject 
     {
-        static CinemachineImpulseSettings _instance = null;
-        public static CinemachineImpulseSettings Instance
+        static CinemachineImpulseEditorSettings _instance = null;
+        public static CinemachineImpulseEditorSettings Instance
         {
             get
             {
                 if (_instance == null)
                     _instance = Resources.FindObjectsOfTypeAll<
-                        CinemachineImpulseSettings>().FirstOrDefault();
+                        CinemachineImpulseEditorSettings>().FirstOrDefault();
                 if (_instance == null)
                 {
-                    _instance = CreateInstance<CinemachineImpulseSettings>();
-                    AssetDatabase.CreateAsset(_instance, "Assets/CinemachineImpulseSettings.asset");
+                    _instance = CreateInstance<CinemachineImpulseEditorSettings>();
+                    AssetDatabase.CreateAsset(_instance, "Assets/CinemachineImpulseEditorSettings.asset");
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }

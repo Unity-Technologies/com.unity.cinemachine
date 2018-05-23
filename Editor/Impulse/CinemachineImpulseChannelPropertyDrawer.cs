@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
 
         void UpdateLayerList()
         {
-            CinemachineImpulseSettings settings = CinemachineImpulseSettings.Instance;
+            CinemachineImpulseEditorSettings settings = CinemachineImpulseEditorSettings.Instance;
             int numLayers = settings.ImpulseChannels == null ? 0 : settings.ImpulseChannels.Length;
             numLayers = Mathf.Min(31, numLayers);
             if (mLayerList == null || mLayerList.Length != numLayers)
@@ -40,7 +40,7 @@ namespace Cinemachine.Editor
 
             rect.x += rect.width + hSpace; rect.width = addWidth; rect.height -= 1;
             if (GUI.Button(rect, mAddLabel))
-                Selection.activeObject = CinemachineImpulseSettings.Instance;
+                Selection.activeObject = CinemachineImpulseEditorSettings.Instance;
         }
     }
 }

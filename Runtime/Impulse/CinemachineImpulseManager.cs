@@ -174,16 +174,28 @@ namespace Cinemachine
             [Tooltip("Raw signal source.  The ouput of this will be scaled to fit in the envelope.")]
             public ISignalSource6D m_SignalSource;
 
-            /// <summary>If true, then duration is infinite.</summary>
-            [Tooltip("If true, then duration is infinite.")]
+            /// <summary>Worldspace origin of the signal.</summary>
+            [Tooltip("Worldspace origin of the signal.")]
             public Vector3 m_Position;
 
-            /// <summary>Radius around the impact pont that has full signal value.  Distance dissipation begins after this distance.</summary>
-            [Tooltip("Radius around the impact pont that has full signal value.  Distance dissipation begins after this distance.")]
+            /// <summary>Radius around the signal origin that has full signal value.  Distance dissipation begins after this distance.</summary>
+            [Tooltip("Radius around the signal origin that has full signal value.  Distance dissipation begins after this distance.")]
             public float m_Radius;
 
-            /// <summary>Channels on which this evvent will broadcast its signal.</summary>
-            [Tooltip("Channels on which this evvent will broadcast its signal.")]
+            /// <summary>How the signal behaves as the listener moves away from the origin.</summary>
+            public enum DirectionMode
+            {
+                /// <summary>Signal direction remains constant everywhere.</summary>
+                Static,
+                /// <summary>Signal direction is rotated in the direction of the listener.</summary>
+                Radial
+            }
+            /// <summary>How the signal direction behaves as the listener moves away from the origin.</summary>
+            [Tooltip("How the signal direction behaves as the listener moves away from the origin.")]
+            public DirectionMode m_DirectionMode = DirectionMode.Static;
+
+            /// <summary>Channels on which this event will broadcast its signal.</summary>
+            [Tooltip("Channels on which this event will broadcast its signal.")]
             public int m_Channel;
 
             /// <summary>How the signal dissipates with distance.</summary>
@@ -260,6 +272,18 @@ namespace Cinemachine
                     m_SignalSource.GetSignal(time, out pos, out rot);
                     pos *= scale;
                     rot = Quaternion.SlerpUnclamped(Quaternion.identity, rot, scale);
+                    if (m_DirectionMode == DirectionMode.Radial && distance > Epsilon)
+                    {
+                        Quaternion q = Quaternion.FromToRotation(Vector3.up, listenerPosition - pos);
+                        if (m_Radius > Epsilon)
+                        {
+                            float t = Mathf.Clamp01(distance / m_Radius);
+                            q = Quaternion.Slerp(
+                                q, Quaternion.identity, Mathf.Cos(Mathf.PI * t / 2));
+                        }
+                        pos = q * pos;
+                        rot = Quaternion.Inverse(q) * rot * q;
+                    }
                     return true;
                 }
                 pos = Vector3.zero;

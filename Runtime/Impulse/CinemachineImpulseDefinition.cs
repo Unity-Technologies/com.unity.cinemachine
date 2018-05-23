@@ -90,6 +90,11 @@ namespace Cinemachine
         [Tooltip("The signal will have full amplitude in this radius surrounding the impact point.  Beyond that it will dissipate with distance.")]
         public float m_ImpactRadius = 1;
 
+        /// <summary>How the signal direction behaves as the listener moves away from the origin.</summary>
+        [Tooltip("How the signal direction behaves as the listener moves away from the origin.")]
+        public CinemachineImpulseManager.ImpulseEvent.DirectionMode m_DirectionMode 
+            = CinemachineImpulseManager.ImpulseEvent.DirectionMode.Static;
+
         /// <summary>
         /// This defines how the signal will dissipate with distance beyond the impact radius.  
         /// </summary>
@@ -131,6 +136,7 @@ namespace Cinemachine
             e.m_Position = position;
             e.m_Radius = m_ImpactRadius;
             e.m_Channel = m_ImpulseChannel;
+            e.m_DirectionMode = m_DirectionMode;
             e.m_DissipationMode = m_DissipationMode;
             e.m_DissipationDistance = m_DissipationDistance;
             CinemachineImpulseManager.Instance.AddImpulseEvent(e);
