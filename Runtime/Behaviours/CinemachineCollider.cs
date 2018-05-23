@@ -169,6 +169,7 @@ namespace Cinemachine
         class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
+            public Vector3 m_previousDisplacementCorrection;
             public float colliderDisplacement;
             public bool targetObscured;
             public float occlusionStartTime;
@@ -272,10 +273,17 @@ namespace Cinemachine
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, damping, deltaTime);
                         displacement = extra.m_previousDisplacement + delta;
-                        displacement += RespectCameraRadius(
-                            state.CorrectedPosition + displacement, ref state);
                     }
                     extra.m_previousDisplacement = displacement;
+                    Vector3 correction = RespectCameraRadius(state.CorrectedPosition + displacement, ref state);
+                    if (damping > 0 && deltaTime >= 0)
+                    {
+                        Vector3 delta = correction - extra.m_previousDisplacementCorrection;
+                        delta = Damper.Damp(delta, damping, deltaTime);
+                        correction = extra.m_previousDisplacementCorrection + delta;
+                    }
+                    displacement += correction;
+                    extra.m_previousDisplacementCorrection = correction;
                     state.PositionCorrection += displacement;
                     extra.colliderDisplacement += displacement.magnitude;
                 }
@@ -340,7 +348,6 @@ namespace Cinemachine
                             targetToCamera.magnitude, m_MaximumEffort, ref extra);
                     }
                 }
-                pos += RespectCameraRadius(pos, ref state);
                 displacement = pos - cameraPos;
 
                 // Apply distance smoothing
@@ -399,17 +406,22 @@ namespace Cinemachine
         private bool RaycastIgnoreTag(
             Ray ray, out RaycastHit hitInfo, float rayLength, int layerMask)
         {
+            float extraDistance = 0;
             while (Physics.Raycast(
                 ray, out hitInfo, rayLength, layerMask, 
                 QueryTriggerInteraction.Ignore))
             {
                 if (m_IgnoreTag.Length == 0 || !hitInfo.collider.CompareTag(m_IgnoreTag))
+                {
+                    hitInfo.distance += extraDistance;
                     return true;
+                }
 
                 // Ignore the hit.  Pull ray origin forward in front of obstacle
                 Ray inverseRay = new Ray(ray.GetPoint(rayLength), -ray.direction);
                 if (!hitInfo.collider.Raycast(inverseRay, out hitInfo, rayLength))
-                    break; // should never happen!
+                    break; 
+                extraDistance += rayLength - (hitInfo.distance - PrecisionSlush);
                 rayLength = hitInfo.distance - PrecisionSlush;
                 if (rayLength < Epsilon)
                     break;
@@ -628,52 +640,36 @@ namespace Cinemachine
                 return result;
             }
 
-            Vector3 cameraPos2 = cameraPos;
             Vector3 dir = state.HasLookAt ? (cameraPos - state.ReferenceLookAt) : Vector3.zero;
+            Ray ray = new Ray();
             float distance = dir.magnitude;
             if (distance > Epsilon)
+            {
                 dir /= distance;
-
+                ray = new Ray(state.ReferenceLookAt, dir);
+            }
             // Pull it out of any intersecting obstacles
+            RaycastHit hitInfo;
             int numObstacles = Physics.OverlapSphereNonAlloc(
                 cameraPos, m_CameraRadius, mColliderBuffer, 
                 m_CollideAgainst, QueryTriggerInteraction.Ignore);
-            if (numObstacles == 0 && distance > Epsilon && m_TransparentLayers != 0)
+            if (numObstacles == 0 && m_TransparentLayers != 0
+                && distance > m_MinimumDistanceFromTarget + Epsilon)
             {
                 // Make sure the camera position isn't completely inside an obstacle.
                 // OverlapSphereNonAlloc won't catch those.
-                if (distance > m_MinimumDistanceFromTarget + Epsilon)
+                float d = distance - m_MinimumDistanceFromTarget;
+                Vector3 targetPos = state.ReferenceLookAt + dir * m_MinimumDistanceFromTarget;
+                if (RaycastIgnoreTag(new Ray(targetPos, dir), out hitInfo, d, m_CollideAgainst))
                 {
-                    float d = distance - m_MinimumDistanceFromTarget;
-                    Vector3 targetPos = state.ReferenceLookAt + dir * m_MinimumDistanceFromTarget;
-                    RaycastHit hitInfo;
-                    if (RaycastIgnoreTag(
-                        new Ray(targetPos, dir), out hitInfo, d, m_CollideAgainst))
-                    {
-                        // Only count it if there's an incoming collision but not an outgoing one
-                        mColliderBuffer[0] = hitInfo.collider;
-                        if (!RaycastIgnoreTag(
-                                new Ray(cameraPos, -dir), out hitInfo, d, m_CollideAgainst))
-                            numObstacles = 1;
-                    }
+                    // Only count it if there's an incoming collision but not an outgoing one
+                    Collider c = hitInfo.collider;
+                    if (!c.Raycast(new Ray(cameraPos, -dir), out hitInfo, d))
+                        mColliderBuffer[numObstacles++] = c;
                 }
             }
-            if (numObstacles > 0)
+            if (numObstacles > 0 && distance == 0 || distance > m_MinimumDistanceFromTarget)
             {
-                if (distance > Epsilon)
-                {
-                    Ray ray = new Ray(state.ReferenceLookAt, dir);
-                    RaycastHit hitInfo = new RaycastHit();
-                    for (int i = 0; i < numObstacles; ++i)
-                    {
-                        Collider c = mColliderBuffer[i];
-                        if (m_IgnoreTag.Length > 0 && c.CompareTag(m_IgnoreTag))
-                            continue;
-                        if (c.Raycast(ray, out hitInfo, distance))
-                            result += (hitInfo.point - cameraPos);
-                    }
-                }
-                cameraPos2 += result;
                 if (mCameraColliderGameObject == null)
                 {
                     mCameraColliderGameObject = new GameObject("CinemachineCollider Collider");
@@ -693,19 +689,28 @@ namespace Cinemachine
                     Collider c = mColliderBuffer[i];
                     if (m_IgnoreTag.Length > 0 && c.CompareTag(m_IgnoreTag))
                         continue;
+                    Vector3 offset = Vector3.zero;
+                    if (distance > m_MinimumDistanceFromTarget && c.Raycast(ray, out hitInfo, distance + m_CameraRadius))
+                        offset = ray.GetPoint(hitInfo.distance) - cameraPos - (dir * PrecisionSlush);
                     if (Physics.ComputePenetration(
-                        mCameraCollider, cameraPos2, Quaternion.identity, 
+                        mCameraCollider, cameraPos + offset, Quaternion.identity, 
                         c, c.transform.position, c.transform.rotation,
                         out offsetDir, out offsetDistance))
                     {
-                        result += offsetDir * offsetDistance;   // naive, but maybe enough
+                        result += (offsetDir * offsetDistance) + offset;   // naive, but maybe enough
                     }
                 }
             }
 
             // Respect the minimum distance from target - push camera back if we have to
-            if (distance > Epsilon && (cameraPos2 + result - state.ReferenceLookAt).magnitude < m_CameraRadius)
-                result = state.ReferenceLookAt - cameraPos + (dir * m_CameraRadius);
+            if (distance > Epsilon)
+            {
+                float minDistance = Mathf.Max(m_MinimumDistanceFromTarget, m_CameraRadius) + PrecisionSlush;
+                Vector3 newOffset = cameraPos + result - state.ReferenceLookAt;
+                if (newOffset.magnitude < minDistance)
+                    result = state.ReferenceLookAt - cameraPos + dir * minDistance;
+            }
+
             return result;
         }
 

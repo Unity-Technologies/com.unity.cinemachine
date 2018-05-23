@@ -258,7 +258,7 @@ namespace Cinemachine
 
         public CinemachineBlend Blend { get; private set; }
 
-        public string Name { get { return "Blend"; }}
+        public string Name { get { return "Mid-blend"; }}
         public string Description { get { return Blend.Description; }}
         public int Priority { get; set; }
         public Transform LookAt { get; set; }
