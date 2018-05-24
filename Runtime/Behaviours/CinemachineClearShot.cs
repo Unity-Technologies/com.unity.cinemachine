@@ -135,7 +135,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineClearShot.InternalUpdateCameraState");
             if (!PreviousStateIsValid)
                 deltaTime = -1;
 
@@ -182,7 +181,6 @@ namespace Cinemachine
 
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>Makes sure the internal child cache is up to date</summary>

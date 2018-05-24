@@ -220,7 +220,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineOrbitalTransposer.MutateCameraState");
             InitPrevFrameStateInfo(ref curState, deltaTime);
 
             // Update the heading
@@ -262,7 +261,6 @@ namespace Cinemachine
                 mHeadingPrevFrame = (m_BindingMode == BindingMode.SimpleFollowWithWorldUp) ? Quaternion.identity : headingRot;
                 mOffsetPrevFrame = offset;
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         static string GetFullName(GameObject current)

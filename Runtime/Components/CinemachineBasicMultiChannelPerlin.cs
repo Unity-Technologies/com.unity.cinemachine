@@ -56,7 +56,6 @@ namespace Cinemachine
             if (!IsValid || deltaTime < 0)
                 return;
 
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBasicMultiChannelPerlin.MutateCameraState");
             if (!mInitialized)
                 Initialize();
 
@@ -66,7 +65,6 @@ namespace Cinemachine
             Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
                     m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
             curState.OrientationCorrection = curState.OrientationCorrection * rotNoise;
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private bool mInitialized = false;

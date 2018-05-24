@@ -232,7 +232,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineMixingCamera.InternalUpdateCameraState");
             CinemachineVirtualCameraBase[] children = ChildCameras;
             LiveChild = null;
             float highestWeight = 0;
@@ -260,7 +259,6 @@ namespace Cinemachine
                 }
             }
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
     }
 }

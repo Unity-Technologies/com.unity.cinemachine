@@ -161,7 +161,6 @@ namespace Cinemachine
             if (!IsValid)
                 return;
 
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineTrackedDolly.MutateCameraState");
             // Get the new ideal path base position
             if (m_AutoDolly.m_Enabled && FollowTarget != null)
             {
@@ -252,7 +251,6 @@ namespace Cinemachine
             curState.RawOrientation = newOrientation;
             if (m_CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
         
         private Quaternion GetCameraOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)

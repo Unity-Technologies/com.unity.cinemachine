@@ -143,7 +143,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBlendListCamera.UpdateCameraState");
             if (!PreviousStateIsValid)
                 deltaTime = -1;
 
@@ -216,7 +215,6 @@ namespace Cinemachine
 
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>Makes sure the internal child cache is up to date</summary>
@@ -295,7 +293,6 @@ namespace Cinemachine
 
         private void AdvanceCurrentInstruction()
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBlendListCamera.AdvanceCurrentInstruction");
             if (m_ChildCameras == null || m_ChildCameras.Length == 0 
                 || mActivationTime < 0 || m_Instructions.Length == 0)
             {
@@ -321,7 +318,6 @@ namespace Cinemachine
                     ++mCurrentInstruction;
                 }
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
     }
 }

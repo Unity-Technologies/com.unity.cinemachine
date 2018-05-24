@@ -248,7 +248,6 @@ namespace Cinemachine
 
         static void StaticBlendingHandler(CinemachineBrain brain)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineStoryboard.StaticBlendingHandler");
             CameraState state = brain.CurrentCameraState;
             int numBlendables = state.NumCustomBlendables;
             for (int i = 0; i < numBlendables; ++i)
@@ -266,7 +265,6 @@ namespace Cinemachine
                         src.PlaceImage(ci, b.m_Weight);
                 }
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
 #if UNITY_EDITOR

@@ -57,8 +57,6 @@ namespace Cinemachine
             if (!IsValid)
                 return;
 
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachinePOV.MutateCameraState");
-
             // Only read joystick when game is playing
             if (deltaTime >= 0 || CinemachineCore.Instance.IsLive(VirtualCamera))
             {
@@ -73,8 +71,6 @@ namespace Cinemachine
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
             rot = rot * Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp);
             curState.RawOrientation = rot;
-
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
     }
 }

@@ -160,24 +160,20 @@ namespace Cinemachine
         /// <summary>Update all the active vcams in the scene, in the correct dependency order.</summary>
         internal void UpdateAllActiveVirtualCameras(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineCore.UpdateAllActiveVirtualCameras");
             int numCameras;
 
             // Update the leaf-most cameras first
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineCore.UpdateAllActiveVirtualCameras.leaf-most");
             for (int i = mChildCameras.Count-1; i >= 0; --i)
             {
                 numCameras = mChildCameras[i].Count;
                 for (int j = 0; j < numCameras; ++j)
                     UpdateVirtualCamera(mChildCameras[i][j], worldUp, deltaTime);
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
 
             // Then all the top-level cameras - in reverse order, so that active cam is updated last
             numCameras = VirtualCameraCount;
             for (int i = numCameras - 1; i >= 0; --i)
                 UpdateVirtualCamera(GetVirtualCamera(i), worldUp, deltaTime);
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>
@@ -187,7 +183,6 @@ namespace Cinemachine
         /// </summary>
         internal bool UpdateVirtualCamera(ICinemachineCamera vcam, Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineCore.UpdateVirtualCamera");
             int now = Time.frameCount;
             UpdateFilter filter = CurrentUpdateFilter;
             bool isSmartUpdate = filter != UpdateFilter.ForcedFixed 
@@ -207,7 +202,6 @@ namespace Cinemachine
             {
                 if (mUpdateStatus.ContainsKey(vcam))
                     mUpdateStatus.Remove(vcam);
-                //UnityEngine.Profiling.Profiler.EndSample();
                 return false; // camera was deleted
             }
             UpdateStatus status;
@@ -248,7 +242,6 @@ namespace Cinemachine
             }
 
             mUpdateStatus[vcam] = status;
-            //UnityEngine.Profiling.Profiler.EndSample();
             return true;
         }
 

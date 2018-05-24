@@ -329,7 +329,6 @@ namespace Cinemachine
             if (!IsValid)
                 return;
 
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFramingTransposer.MutateCameraState");
             Vector3 camPosWorld = m_PreviousCameraPosition;
             Vector3 followTargetPosition = FollowTargetPosition;
             if (!curState.HasLookAt)
@@ -392,7 +391,6 @@ namespace Cinemachine
                     cameraOffset - hard, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
             }
             curState.RawPosition = m_PreviousCameraPosition = localToWorld * (cameraPos + cameraOffset);
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         // Convert from screen coords to normalized orthographic distance coords

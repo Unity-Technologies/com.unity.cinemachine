@@ -268,7 +268,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.InternalUpdateCameraState");
             if (!PreviousStateIsValid)
                 deltaTime = -1;
 
@@ -301,8 +300,6 @@ namespace Cinemachine
                     m_YAxisRecentering.CancelRecentering();
             }
             PushSettingsToRigs();
-                 
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
@@ -443,12 +440,8 @@ namespace Cinemachine
 
         private void UpdateRigCache()
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.UpdateRigCache");
             if (mIsDestroyed)
-            {
-                //UnityEngine.Profiling.Profiler.EndSample();
                 return;
-            }
 
             // Special condition: Did we just get copy/pasted?
             if (m_Rigs != null && m_Rigs.Length == 3 && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
@@ -459,10 +452,7 @@ namespace Cinemachine
 
             // Early out if we're up to date
             if (mOrbitals != null && mOrbitals.Length == 3)
-            {
-                //UnityEngine.Profiling.Profiler.EndSample();
                 return;
-            }
 
             // Locate existing rigs, and recreate them if any are missing
             if (LocateExistingRigs(RigNames, false) != 3)
@@ -484,8 +474,6 @@ namespace Cinemachine
             // Create the blend objects
             mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
             mBlendB = new CinemachineBlend(m_Rigs[2], m_Rigs[1], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
-
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private int LocateExistingRigs(string[] rigNames, bool forceOrbital)
@@ -526,7 +514,6 @@ namespace Cinemachine
 
         void PushSettingsToRigs()
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.PushSettingsToRigs");
             UpdateRigCache();
             for (int i = 0; i < m_Rigs.Length; ++i)
             {
@@ -568,7 +555,6 @@ namespace Cinemachine
                 if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                     m_Rigs[i].SetStateRawPosition(State.RawPosition);
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private float GetYAxisValue()
@@ -579,7 +565,6 @@ namespace Cinemachine
 
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.CalculateNewState");
             CameraState state = PullStateFromVirtualCamera(worldUp, m_Lens);
             m_Lens = state.Lens;
 
@@ -605,7 +590,6 @@ namespace Cinemachine
                     state = mBlendB.State;
                 }
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
             return state;
         }
 
@@ -620,12 +604,8 @@ namespace Cinemachine
         /// supplied t-value</returns>
         public Vector3 GetLocalPositionForCameraFromInput(float t)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.GetLocalPositionForCameraFromInput");
             if (mOrbitals == null)
-            {
-                //UnityEngine.Profiling.Profiler.EndSample();
                 return Vector3.zero;
-            }
             UpdateCachedSpline();
             int n = 1;
             if (t > 0.5f)
@@ -633,7 +613,6 @@ namespace Cinemachine
                 t -= 0.5f;
                 n = 2;
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
             return SplineHelpers.Bezier3(
                 t * 2f, m_CachedKnots[n], m_CachedCtrl1[n], m_CachedCtrl2[n], m_CachedKnots[n+1]);
         }
@@ -645,7 +624,6 @@ namespace Cinemachine
         Vector4[] m_CachedCtrl2;
         void UpdateCachedSpline()
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineFreeLook.UpdateCachedSpline");
             bool cacheIsValid = (m_CachedOrbits != null && m_CachedTension == m_SplineCurvature);
             for (int i = 0; i < 3 && cacheIsValid; ++i)
                 cacheIsValid = (m_CachedOrbits[i].m_Height == m_Orbits[i].m_Height 
@@ -668,7 +646,6 @@ namespace Cinemachine
                     m_CachedOrbits[i] = m_Orbits[i];
                 m_CachedTension = m_SplineCurvature;
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
     }
 }

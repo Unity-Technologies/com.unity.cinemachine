@@ -135,8 +135,6 @@ namespace Cinemachine
             if (currentDistance < Epsilon)
                 return;  // navel-gazing, get outa here
 
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineGroupComposer.MutateCameraState");
-
             // Get the camera axis
             Vector3 fwd = currentOffset.AlmostZero() ? Vector3.forward : currentOffset.normalized;
 
@@ -194,7 +192,6 @@ namespace Cinemachine
 
             // Now compose normally
             base.MutateCameraState(ref curState, deltaTime);
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         float m_prevTargetHeight; // State for damping

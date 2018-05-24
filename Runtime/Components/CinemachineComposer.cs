@@ -194,7 +194,6 @@ namespace Cinemachine
                 return;  // navel-gazing, get outa here
             }
 
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineComposer.MutateCameraState");
             float fov, fovH;
             if (curState.Lens.Orthographic)
             {
@@ -245,7 +244,6 @@ namespace Cinemachine
                 m_LookAtPrevFrame - curState.CorrectedPosition, curState.ReferenceUp);
 
             curState.RawOrientation = m_CameraOrientationPrevFrame;
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>Internal API for the inspector editor</summary>

@@ -132,7 +132,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineTransposer.MutateCameraState");
             InitPrevFrameStateInfo(ref curState, deltaTime);
             if (IsValid)
             {
@@ -143,7 +142,6 @@ namespace Cinemachine
                 curState.RawPosition = pos + orient * offset;
                 curState.ReferenceUp = orient * Vector3.up;
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>This is called to notify the us that a target got warped,

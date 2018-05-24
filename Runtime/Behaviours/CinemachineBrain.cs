@@ -221,7 +221,6 @@ namespace Cinemachine
             ICinemachineCamera camA, ICinemachineCamera camB,
             float weightB, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBrain.SetCameraOverride");
             if (overrideId < 0)
                 overrideId = mNextOverrideId++;
 
@@ -278,7 +277,6 @@ namespace Cinemachine
                     ovr.camera = camB;
                 }
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
             return overrideId;
         }
 
@@ -411,8 +409,8 @@ namespace Cinemachine
                 ProcessActiveCamera(GetEffectiveDeltaTime(false));
             }
         }
-
 #endif
+
         private float GetEffectiveDeltaTime(bool fixedDelta)
         {
             if (SoloCamera != null)
@@ -429,7 +427,6 @@ namespace Cinemachine
 
         private void UpdateVirtualCameras(CinemachineCore.UpdateFilter updateFilter, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBrain.UpdateVirtualCameras");
             CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
 
             // We always update all active virtual cameras 
@@ -446,7 +443,6 @@ namespace Cinemachine
 
             // Restore the filter for general use
             CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Late;
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private void ProcessActiveCamera(float deltaTime)
@@ -459,8 +455,6 @@ namespace Cinemachine
                 mPreviousFrameWasOverride = false;
                 return;
             }
-
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBrain.ProcessActiveCamera");
 
             OverrideStackFrame activeOverride = GetActiveOverride();
             ICinemachineCamera activeCamera = ActiveVirtualCamera;
@@ -564,7 +558,6 @@ namespace Cinemachine
                     }
                 }
             }
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>
@@ -708,7 +701,6 @@ namespace Cinemachine
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
         private void PushStateToUnityCamera(CameraState state, ICinemachineCamera vcam)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineBrain.PushStateToUnityCamera");
             CurrentCameraState = state;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
                 transform.position = state.FinalPosition;
@@ -732,7 +724,6 @@ namespace Cinemachine
             }
             if (CinemachineCore.CameraUpdatedEvent != null)
                 CinemachineCore.CameraUpdatedEvent.Invoke(this);
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         static int msCurrentFrame;

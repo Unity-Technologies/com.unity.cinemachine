@@ -126,7 +126,6 @@ namespace Cinemachine
         /// invoke its pipeline and generate a CameraState for this frame.</summary>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            //UnityEngine.Profiling.Profiler.BeginSample("CinemachineVirtualCamera.InternalUpdateCameraState");
             if (!PreviousStateIsValid)
                 deltaTime = -1;
 
@@ -144,7 +143,6 @@ namespace Cinemachine
                     transform.rotation = State.RawOrientation;
             }
             PreviousStateIsValid = true;
-            //UnityEngine.Profiling.Profiler.EndSample();
         }
 
         /// <summary>Make sure that the pipeline cache is up-to-date.</summary>
