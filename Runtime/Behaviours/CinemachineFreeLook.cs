@@ -42,22 +42,8 @@ namespace Cinemachine
         [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
 
-        [Serializable]
-        public struct TransitionParams
-        {
-            /// <summary>Hint for blending positions to and from this virtual camera</summary>
-            [Tooltip("Hint for blending positions to and from this virtual camera")]
-            [FormerlySerializedAs("m_PositionBlending")]
-            public BlendHint m_BlendHint;
-
-            /// <summary>When enabling this virtual camera, attempt to force the position to be the same as that of the Camera</summary>
-            [Tooltip("When enabling this virtual camera, attempt to force the position to be the same as that of the Camera")]
-            public bool m_InheritPosition;
-
-            /// <summary>This event fires when the virtual camera goes Live</summary>
-            [Tooltip("This event fires when the virtual camera goes Live")]
-            public CinemachineBrain.VcamEvent m_CameraActivated;
-        }
+        /// <summary> Collection of parameters that influence how this virtual camera transitions from 
+        /// other virtual cameras </summary>
         public TransitionParams m_Transitions;
 
         /// <summary>Legacy support</summary>
@@ -327,17 +313,21 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            if (m_Transitions.m_InheritPosition && fromCam != null)
+            if (m_Transitions.m_InheritPosition)
             {
-                transform.position = fromCam.State.FinalPosition;
-                transform.rotation = fromCam.State.FinalOrientation;
-                m_State = PullStateFromVirtualCamera(worldUp, m_Lens);
-                PushSettingsToRigs();
-                PreviousStateIsValid = false;
-                InternalUpdateCameraState(worldUp, deltaTime);
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
+                if (brain != null)
+                {
+                    transform.position = brain.transform.position;
+                    transform.rotation = brain.transform.rotation;
+                    m_State = PullStateFromVirtualCamera(worldUp, m_Lens);
+                    PreviousStateIsValid = false;
+                    PushSettingsToRigs();
+                    InternalUpdateCameraState(worldUp, deltaTime);
+                }
             }
-            if (m_Transitions.m_CameraActivated != null)
-                m_Transitions.m_CameraActivated.Invoke(this);
+            if (m_Transitions.m_OnCameraLive != null)
+                m_Transitions.m_OnCameraLive.Invoke(this);
         }
 
         CameraState m_State = CameraState.Default;          // Current state this frame

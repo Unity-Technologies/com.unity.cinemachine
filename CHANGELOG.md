@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0-preview.3] - 2018-05-23
+### Minor bugfixes and enhancements
+- Impulse: added Direction Mode, to rotate signals in the direction of the listener
+- Collider: stabilization
+- FreeLook: better handling of Inherit Position
+
 ## [2.2.0-preview.2] - 2018-05-18
 ### Minor bugfixes
 - Impulse example scene: add missing material
