@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using System;
 using UnityEngine;
 
@@ -54,10 +55,29 @@ namespace Cinemachine
         {
             get
             {
-                string fromName = (CamA != null) ? "[" + CamA.Name + "]": "(none)";
-                string toName = (CamB != null) ? "[" + CamB.Name + "]" : "(none)";
-                int percent = (int)(BlendWeight * 100f);
-                return string.Format("{0} {1}% from {2}", toName, percent, fromName);
+                var sb = CinemachineDebug.SBFromPool();
+                if (CamB == null)
+                    sb.Append("(none)");
+                else
+                {
+                    sb.Append("[");
+                    sb.Append(CamB.Name);
+                    sb.Append("]");
+                }
+                sb.Append(" ");
+                sb.Append((int)(BlendWeight * 100f));
+                sb.Append("% from ");
+                if (CamA == null)
+                    sb.Append("(none)");
+                else
+                {
+                    sb.Append("[");
+                    sb.Append(CamA.Name);
+                    sb.Append("]");
+                }
+                string text = sb.ToString(); 
+                CinemachineDebug.ReturnToPool(sb); 
+                return text;
             }
         }
 

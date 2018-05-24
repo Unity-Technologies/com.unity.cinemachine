@@ -14,16 +14,11 @@ namespace Cinemachine
     /// to use the virtual camera's Body section.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode] // for OnGUI
     [AddComponentMenu("")] // Don't display in add component menu
     [RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]
     public class CinemachineComposer : CinemachineComponentBase
     {
-        /// <summary>Used by the Inspector Editor to display on-screen guides.</summary>
-        [NoSaveDuringPlay, HideInInspector]
-        public Action OnGUICallback = null;
-
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
         /// when the desired area is not in the tracked object's center</summary>
@@ -140,10 +135,6 @@ namespace Cinemachine
             return pos;
         }
         
-#if UNITY_EDITOR
-        private void OnGUI() { if (OnGUICallback != null) OnGUICallback(); }
-#endif
-
         /// <summary>State information for damping</summary>
         Vector3 m_CameraPosPrevFrame = Vector3.zero;
         Vector3 m_LookAtPrevFrame = Vector3.zero;

@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Cinemachine.Utility
 {
     /// <summary>Manages onscreen positions for Cinemachine debugging output</summary>
-    public class CinemachineGameWindowDebug
+    public class CinemachineDebug
     {
         static HashSet<Object> mClients;
 
@@ -42,6 +43,39 @@ namespace Cinemachine.Utility
                 }
             }
             return new Rect(pos, size);
+        }
+
+        /// <summary>
+        /// Delegate for OnGUI debugging.  
+        /// This will be called by the CinemachineBrain in its OnGUI (editor only)
+        /// </summary>
+        public delegate void OnGUIDelegate();
+
+        /// <summary>
+        /// Delegate for OnGUI debugging.  
+        /// This will be called by the CinemachineBrain in its OnGUI (editor only)
+        /// </summary>
+        public static OnGUIDelegate OnGUIHandlers;
+
+        private static List<StringBuilder> mAvailableStringBuilders;
+
+        /// <summary>Get a preallocated StringBuilder from the pool</summary>
+        public static StringBuilder SBFromPool()
+        {
+            if (mAvailableStringBuilders == null || mAvailableStringBuilders.Count == 0)
+                return new StringBuilder();
+            var sb = mAvailableStringBuilders[mAvailableStringBuilders.Count - 1];
+            mAvailableStringBuilders.RemoveAt(mAvailableStringBuilders.Count - 1);
+            return sb;
+        }
+
+        /// <summary>Return a StringBuilder to the preallocated pool</summary>
+        public static void ReturnToPool(StringBuilder sb)
+        {
+            sb.Length = 0;
+            if (mAvailableStringBuilders == null)
+                mAvailableStringBuilders = new List<StringBuilder>();
+            mAvailableStringBuilders.Add(sb);
         }
     }
 }

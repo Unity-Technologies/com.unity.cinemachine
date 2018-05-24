@@ -4,6 +4,7 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Events;
 using System.Collections;
+using System.Text;
 
 namespace Cinemachine
 {
@@ -309,6 +310,8 @@ namespace Cinemachine
             mOutgoingCameraPreviousFrame = null;
             mPreviousFrameWasOverride = false;
             CinemachineCore.Instance.AddActiveBrain(this);
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 
             // We check in after the physics system has had a chance to move things
             mPhysicsCoroutine = StartCoroutine(AfterPhysics());
@@ -316,6 +319,7 @@ namespace Cinemachine
 
         private void OnDisable()
         {
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineCore.Instance.RemoveActiveBrain(this);
             mActiveBlend = null;
             mActiveCameraPreviousFrame = null;
@@ -330,30 +334,51 @@ namespace Cinemachine
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
         }
 
-#if UNITY_EDITOR
-        private void OnGUI()
+        private void OnGuiHandler()
         {
             if (!m_ShowDebugText)
-                CinemachineGameWindowDebug.ReleaseScreenPos(this);
+                CinemachineDebug.ReleaseScreenPos(this);
             else
             {
                 // Show the active camera and blend
+                var sb = CinemachineDebug.SBFromPool();
                 Color color = GUI.color;
                 ICinemachineCamera vcam = ActiveVirtualCamera;
-                string text = "CM " + gameObject.name + ": ";
+                sb.Length = 0;
+                sb.Append("CM ");
+                sb.Append(gameObject.name);
+                sb.Append(": ");
                 if (SoloCamera != null)
                 {
-                    text += "SOLO ";
+                    sb.Append("SOLO ");
                     GUI.color = GetSoloGUIColor();
                 }
-                if (ActiveBlend == null)
-                    text += (vcam != null ? "[" + vcam.Name + "]" : "(none)");
+                if (ActiveBlend != null)
+                    sb.Append(ActiveBlend.Description);
                 else
-                    text += ActiveBlend.Description;
-                Rect r = CinemachineGameWindowDebug.GetScreenPos(this, text, GUI.skin.box);
+                {
+                    if (vcam == null)
+                        sb.Append("(none)");
+                    else
+                    {
+                        sb.Append("[");
+                        sb.Append(vcam.Name);
+                        sb.Append("]");
+                    }
+                }
+                string text = sb.ToString();
+                Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 GUI.color = color;
+                CinemachineDebug.ReturnToPool(sb);
             }
+        }
+
+#if UNITY_EDITOR
+        private void OnGUI()
+        {
+            if (CinemachineDebug.OnGUIHandlers != null)
+                CinemachineDebug.OnGUIHandlers();
         }
 #endif
 

@@ -28,11 +28,6 @@ namespace Cinemachine
     [SaveDuringPlay]
     public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
-        /// <summary>This is deprecated.  It is here to support the soon-to-be-removed
-        /// Cinemachine Debugger in the Editor.</summary>
-        [HideInInspector, NoSaveDuringPlay]
-        public Action CinemachineGUIDebuggerCallback = null;
-
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         public string[] m_ExcludedPropertiesInInspector = new string[] { "m_Script" };
@@ -344,14 +339,6 @@ namespace Cinemachine
             UpdateVcamPoolStatus();
         }
 
-#if UNITY_EDITOR
-        /// <summary>Support for the deprecated CinemachineDebugger.</summary>
-        protected virtual void OnGUI()
-        {
-            if (CinemachineGUIDebuggerCallback != null)
-                CinemachineGUIDebuggerCallback();
-        }
-#endif
         private bool mSlaveStatusUpdated = false;
         private CinemachineVirtualCameraBase m_parentVcam = null;
 

@@ -168,7 +168,7 @@ namespace Cinemachine.Editor
             {
                 Vector2 d = new Vector2(
                         Event.current.delta.x / screenWidth,
-                        Event.current.delta.y / screenHeight) / 2;
+                        Event.current.delta.y / screenHeight);
 
                 // First snapshot some settings
                 Rect newHard = GetHardGuide();

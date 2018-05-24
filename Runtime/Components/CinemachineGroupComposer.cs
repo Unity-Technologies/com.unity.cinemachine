@@ -13,7 +13,6 @@ namespace Cinemachine
     /// is framed properly.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode] // for OnGUI
     [AddComponentMenu("")] // Don't display in add component menu
     [RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]

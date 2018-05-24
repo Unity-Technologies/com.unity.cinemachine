@@ -18,14 +18,14 @@ namespace Cinemachine.Editor
             mScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
             mScreenGuideEditor.Target = () => { return serializedObject; };
 
-            Target.OnGUICallback += OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGUI;
+            CinemachineDebug.OnGUIHandlers += OnGUI;
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }
 
         protected virtual void OnDisable()
         {
-            if (Target != null)
-                Target.OnGUICallback -= OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGUI;
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }
 
