@@ -97,7 +97,7 @@ namespace Cinemachine
 
         private void OnValidate()
         {
-            m_GroupFramingSize = Mathf.Max(Epsilon, m_GroupFramingSize);
+            m_GroupFramingSize = Mathf.Max(0.001f, m_GroupFramingSize);
             m_MaxDollyIn = Mathf.Max(0, m_MaxDollyIn);
             m_MaxDollyOut = Mathf.Max(0, m_MaxDollyOut);
             m_MinimumDistance = Mathf.Max(0, m_MinimumDistance);
@@ -125,28 +125,71 @@ namespace Cinemachine
             if (!IsValid || !curState.HasLookAt)
             {
                 m_prevTargetHeight = 0;
+                m_prevCameraOffset = Vector3.zero;
                 return;
             }
 
-            curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(group.transform.position);
-            Vector3 currentOffset = TrackedPoint - curState.RawPosition;
+            bool canMoveCamera 
+                = !curState.Lens.Orthographic && m_AdjustmentMode != AdjustmentMode.ZoomOnly;
+
+            // Get the bounding box from camera's POV in view space
+            Vector3 observerPosition = curState.RawPosition;
+            BoundingSphere s = group.Sphere;
+            Vector3 groupCenter = s.position;
+            Vector3 currentOffset = groupCenter - observerPosition;
             float currentDistance = currentOffset.magnitude;
             if (currentDistance < Epsilon)
                 return;  // navel-gazing, get outa here
 
-            // Get the camera axis
-            Vector3 fwd = currentOffset.AlmostZero() ? Vector3.forward : currentOffset.normalized;
-
-            // Get the bounding box from that POV in view space, and find its width
-            Bounds bounds = group.BoundingBox;
-            LastBoundsMatrix = Matrix4x4.TRS(
-                    bounds.center - (fwd * bounds.extents.magnitude),
+            Vector3 fwd = currentOffset / currentDistance;
+            LastBoundsMatrix = Matrix4x4.TRS(observerPosition, 
                     Quaternion.LookRotation(fwd, curState.ReferenceUp), Vector3.one);
-            LastBounds = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
-            float targetHeight = GetTargetHeight(LastBounds);
-            Vector3 targetPos = LastBoundsMatrix.MultiplyPoint3x4(LastBounds.center);
+            Bounds b;
+            if (curState.Lens.Orthographic)
+            {
+                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+                Vector3 sizeDelta = new Vector3(b.center.x, b.center.y, 0);
+                b.size += sizeDelta.Abs() * 2;
+                b.center = new Vector3(0, 0, b.center.z);
+                LastBounds = b;
+            }
+            else
+            {
+                if (canMoveCamera)
+                {
+                    // Get an upper bound on the distance
+                    b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+                    groupCenter = LastBoundsMatrix.MultiplyPoint3x4(b.center);
+
+                    // Now try to get closer
+                    float distance = GetTargetHeight(b) 
+                        / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
+                    Vector3 nearCenter = b.center; nearCenter.z -= b.extents.z;
+                    nearCenter = LastBoundsMatrix.MultiplyPoint3x4(nearCenter);
+                    Vector3 newFwd = (groupCenter - nearCenter).normalized;
+                    if (!newFwd.AlmostZero())
+                        fwd = newFwd;
+                    observerPosition = nearCenter - (fwd * distance);
+                    LastBoundsMatrix = Matrix4x4.TRS(observerPosition, 
+                            Quaternion.LookRotation(fwd, curState.ReferenceUp), Vector3.one);
+                }
+
+                b = GetScreenSpaceGroupBoundingBox(group, LastBoundsMatrix, out fwd);
+                LastBoundsMatrix = Matrix4x4.TRS(observerPosition, 
+                        Quaternion.LookRotation(fwd, curState.ReferenceUp), Vector3.one);
+                LastBounds = b;
+                groupCenter = LastBoundsMatrix.MultiplyPoint3x4(b.center);
+                currentOffset = groupCenter - curState.RawPosition;
+                currentDistance = currentOffset.magnitude;
+            }
+
+            // Adjust bounds for framing size
+            Vector3 extents = b.extents / m_GroupFramingSize;
+            extents.z = Mathf.Min(b.extents.z, extents.z);
+            b.extents = extents;
 
             // Apply damping
+            float targetHeight = GetTargetHeight(b);
             if (deltaTime >= 0)
             {
                 float delta = targetHeight - m_prevTargetHeight;
@@ -156,29 +199,39 @@ namespace Cinemachine
             m_prevTargetHeight = targetHeight;
 
             // Move the camera
-            if (!curState.Lens.Orthographic && m_AdjustmentMode != AdjustmentMode.ZoomOnly)
+            if (canMoveCamera)
             {
                 // What distance would be needed to get the target height, at the current FOV
-                float currentFOV = curState.Lens.FieldOfView;
-                float targetDistance = targetHeight / (2f * Mathf.Tan(currentFOV * Mathf.Deg2Rad / 2f));
+                float depth = b.extents.z;
+                float d = (groupCenter - observerPosition).magnitude;
+                float nearTargetHeight = targetHeight * (d - depth) / d;
+                float targetDistance = nearTargetHeight 
+                    / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
 
-                // target the near surface of the bounding box
-                float cameraDistance = targetDistance + LastBounds.extents.z;
-
-                // Clamp to respect min/max distance settings
-                cameraDistance = Mathf.Clamp(
-                        cameraDistance, currentDistance - m_MaxDollyIn, currentDistance + m_MaxDollyOut);
+                // Clamp to respect min/max distance settings to the near surface of the bounds
+                float cameraDistance = targetDistance;
+                cameraDistance = Mathf.Clamp(cameraDistance, currentDistance - m_MaxDollyIn, currentDistance + m_MaxDollyOut);
+                cameraDistance -= depth;
                 cameraDistance = Mathf.Clamp(cameraDistance, m_MinimumDistance, m_MaximumDistance);
+                cameraDistance += depth;
 
                 // Apply
-                curState.PositionCorrection += targetPos - fwd * cameraDistance - curState.RawPosition;
+                Vector3 newCamOffset 
+                    = (groupCenter - (fwd * (cameraDistance + depth))) - curState.RawPosition;
+                if (deltaTime >= 0)
+                {
+                    Vector3 delta = newCamOffset - m_prevCameraOffset;
+                    delta = Damper.Damp(delta, m_FrameDamping, deltaTime);
+                    newCamOffset = m_prevCameraOffset + delta;
+                }
+                m_prevCameraOffset = newCamOffset;
+                curState.PositionCorrection += newCamOffset;
             }
 
             // Apply zoom
             if (curState.Lens.Orthographic || m_AdjustmentMode != AdjustmentMode.DollyOnly)
             {
-                float nearBoundsDistance = (TrackedPoint - curState.CorrectedPosition).magnitude
-                    - LastBounds.extents.z;
+                float nearBoundsDistance = (groupCenter - curState.CorrectedPosition).magnitude;
                 float currentFOV = 179;
                 if (nearBoundsDistance > Epsilon)
                     currentFOV = 2f * Mathf.Atan(targetHeight / (2 * nearBoundsDistance)) * Mathf.Rad2Deg;
@@ -190,10 +243,13 @@ namespace Cinemachine
             }
 
             // Now compose normally
+            curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(groupCenter);
             base.MutateCameraState(ref curState, deltaTime);
         }
 
-        float m_prevTargetHeight; // State for damping
+        // State for damping
+        float m_prevTargetHeight; 
+        Vector3 m_prevCameraOffset = Vector3.zero;
 
         /// <summary>For editor visulaization of the calculated bounding box of the group</summary>
         public Bounds LastBounds { get; private set; }
@@ -203,19 +259,39 @@ namespace Cinemachine
 
         float GetTargetHeight(Bounds b)
         {
-            float framingSize = Mathf.Max(Epsilon, m_GroupFramingSize);
             switch (m_FramingMode)
             {
                 case FramingMode.Horizontal:
-                    return Mathf.Max(Epsilon, b.size.x )/ (framingSize * VcamState.Lens.Aspect);
+                    return Mathf.Max(Epsilon, b.size.x ) / VcamState.Lens.Aspect;
                 case FramingMode.Vertical:
-                    return Mathf.Max(Epsilon, b.size.y) / framingSize;
+                    return Mathf.Max(Epsilon, b.size.y);
                 default:
                 case FramingMode.HorizontalAndVertical:
                     return Mathf.Max(
-                        Mathf.Max(Epsilon, b.size.x) / (framingSize * VcamState.Lens.Aspect), 
-                        Mathf.Max(Epsilon, b.size.y) / framingSize);
+                        Mathf.Max(Epsilon, b.size.x) / VcamState.Lens.Aspect, 
+                        Mathf.Max(Epsilon, b.size.y));
             }
+        }
+
+        /// <param name="observer">Point of view</param>
+        /// <param name="newFwd">New forward direction to use when interpreting the return value</param>
+        /// <returns>Bounding box in a slightly rotated version of observer, as specified by newFwd</returns>
+        static Bounds GetScreenSpaceGroupBoundingBox(
+            CinemachineTargetGroup group, Matrix4x4 observer, out Vector3 newFwd)
+        {
+            Vector2 minAngles, maxAngles, zRange;
+            group.GetViewSpaceAngularBounds(observer, out minAngles, out maxAngles, out zRange);
+            Vector2 shift = (minAngles + maxAngles) / 2;
+
+            newFwd = Quaternion.identity.ApplyCameraRotation(shift, Vector3.up) * Vector3.forward;
+            newFwd = observer.MultiplyVector(newFwd);
+
+            float d = (zRange.y + zRange.x);
+            Vector2 angles = (maxAngles - shift) * Mathf.Deg2Rad;
+            angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f));
+            return new Bounds(
+                new Vector3(0, 0, d/2), 
+                new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
         }
     }
 }

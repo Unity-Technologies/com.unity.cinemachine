@@ -52,6 +52,16 @@ namespace Cinemachine.Utility
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
 
+        /// <summary>
+        /// Component-wise absolute value
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static Vector3 Abs(this Vector3 v)
+        {
+            return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+        }
+
         /// <summary>Is the vector within Epsilon of zero length?</summary>
         /// <param name="v"></param>
         /// <returns>True if the square magnitude of the vector is within Epsilon of zero</returns>

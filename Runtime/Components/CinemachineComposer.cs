@@ -132,7 +132,7 @@ namespace Cinemachine
             TrackedPoint = (m_LookaheadTime > 0)
                 ? m_Predictor.PredictPosition(m_LookaheadTime) : pos;
 
-            return pos;
+            return TrackedPoint;
         }
         
         /// <summary>State information for damping</summary>

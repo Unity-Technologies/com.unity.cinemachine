@@ -75,7 +75,18 @@ namespace Cinemachine.Editor
                 Bounds b = target.LastBounds;
                 Gizmos.matrix = target.LastBoundsMatrix;
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawWireCube(b.center, b.size);
+
+                if (target.VcamState.Lens.Orthographic)
+                    Gizmos.DrawWireCube(b.center, b.size);
+                else
+                {
+                    float z = b.center.z;
+                    Vector3 e = b.extents;
+                    Gizmos.DrawFrustum(
+                        new Vector3(0, 0, z - e.z), 
+                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2, 
+                        z + e.z, z - e.z, e.x / e.y);
+                }
                 Gizmos.matrix = m;
             }
         }

@@ -81,44 +81,18 @@ namespace Cinemachine
         [Tooltip("The target objects, together with their weights and radii, that will contribute to the group's average position, orientation, and size.")]
         public Target[] m_Targets = new Target[0];
 
-        /// Cache of the last valid radius
-        private float m_lastRadius = 0;
-
         /// <summary>The axis-aligned bounding box of the group, computed using the
         /// targets positions and radii</summary>
-        public Bounds BoundingBox
+        public Bounds BoundingBox { get; private set; }
+
+        /// <summary>The bounding sphere of the group, computed using the
+        /// targets positions and radii</summary>
+        public BoundingSphere Sphere
         {
             get
             {
-                float averageWeight;
-                Vector3 center = CalculateAveragePosition(out averageWeight);
-                bool gotOne = false;
-                Bounds b = new Bounds(center, new Vector3(m_lastRadius*2, m_lastRadius*2, m_lastRadius*2));
-                if (averageWeight > UnityVectorExtensions.Epsilon)
-                {
-                    for (int i = 0; i < m_Targets.Length; ++i)
-                    {
-                        if (m_Targets[i].target != null)
-                        {
-                            float w = m_Targets[i].weight;
-                            if (w < averageWeight - UnityVectorExtensions.Epsilon)
-                                w = w / averageWeight;
-                            else
-                                w = 1;
-                            float d = m_Targets[i].radius * 2 * w;
-                            Vector3 p = Vector3.Lerp(center, m_Targets[i].target.position, w);
-                            Bounds b2 = new Bounds(p, new Vector3(d, d, d));
-                            if (!gotOne)
-                                b = b2;
-                            else
-                                b.Encapsulate(b2);
-                            gotOne = true;
-                        }
-                    }
-                }
-                Vector3 r = b.extents;
-                m_lastRadius = Mathf.Max(r.x, Mathf.Max(r.y, r.z));
-                return b;
+                Bounds b = BoundingBox;
+                return new BoundingSphere(b.center, ((b.max - b.min) / 2).magnitude);
             }
         }
 
@@ -134,42 +108,78 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
-        /// <param name="mView">The frame of reference in which to compute the bounding box</param>
-        /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
-        public Bounds GetViewSpaceBoundingBox(Matrix4x4 mView)
+        /// <summary>
+        /// Get the bounding sphere of a group memebr, with the weight taken into account.
+        /// As the member's weight goes to 0, the position lerps to the group average position.
+        /// </summary>
+        /// <param name="index">Member index</param>
+        /// <returns></returns>
+        public BoundingSphere GetWeightedBoundsForMember(int index)
         {
-            Matrix4x4 inverseView = mView.inverse;
-            float averageWeight;
-            Vector3 center = inverseView.MultiplyPoint3x4(CalculateAveragePosition(out averageWeight));
-            bool gotOne = false;
-            Bounds b = new Bounds(center, new Vector3(m_lastRadius*2, m_lastRadius*2, m_lastRadius*2));
-            if (averageWeight > UnityVectorExtensions.Epsilon)
+            if (index < 0 || index >= m_Targets.Length)
+                return Sphere;
+            return WeightedMemberBounds(m_Targets[index], mAveragePos, mAverageWeight);
+        }
+
+        /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
+        /// <param name="observer">The frame of reference in which to compute the bounding box</param>
+        /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
+        public Bounds GetViewSpaceBoundingBox(Matrix4x4 observer)
+        {
+            Matrix4x4 inverseView = observer.inverse;
+            Bounds b = new Bounds(inverseView.MultiplyPoint3x4(mAveragePos), Vector3.zero);
+            for (int i = 0; i < m_Targets.Length; ++i)
             {
-                for (int i = 0; i < m_Targets.Length; ++i)
-                {
-                    if (m_Targets[i].target != null)
-                    {
-                        float w = m_Targets[i].weight;
-                        if (w < averageWeight - UnityVectorExtensions.Epsilon)
-                            w = w / averageWeight;
-                        else
-                            w = 1;
-                        float d = m_Targets[i].radius * 2;
-                        Vector4 p = inverseView.MultiplyPoint3x4(m_Targets[i].target.position);
-                        p = Vector3.Lerp(center, p, w);
-                        Bounds b2 = new Bounds(p, new Vector3(d, d, d));
-                        if (!gotOne)
-                            b = b2;
-                        else
-                            b.Encapsulate(b2);
-                        gotOne = true;
-                    }
-                }
+                BoundingSphere s = GetWeightedBoundsForMember(i);
+                s.position = inverseView.MultiplyPoint3x4(s.position);
+                b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
             }
-            Vector3 r = b.extents;
-            m_lastRadius = Mathf.Max(r.x, Mathf.Max(r.y, r.z));
             return b;
+        }
+
+        private static BoundingSphere WeightedMemberBounds(Target t, Vector3 avgPos, float avgWeight)
+        {
+            float w = 0;
+            if (t.target != null)
+            {
+                w = Mathf.Max(0, t.weight);
+                if (avgWeight > UnityVectorExtensions.Epsilon && w < avgWeight)
+                    w /= avgWeight;
+                else
+                    w = 1;
+            }
+            return new BoundingSphere(Vector3.Lerp(avgPos, t.target.position, w), t.radius * w);
+        }
+        
+        private float mAverageWeight;
+        private Vector3 mAveragePos;
+
+        void DoUpdate()
+        {
+            if (IsEmpty)
+                return;
+
+            mAveragePos = CalculateAveragePosition(out mAverageWeight);
+            BoundingBox = CalculateBoundingBox(mAveragePos, mAverageWeight);
+
+            switch (m_PositionMode)
+            {
+                case PositionMode.GroupCenter:
+                    transform.position = BoundingBox.center;
+                    break;
+                case PositionMode.GroupAverage:
+                    transform.position = mAveragePos;
+                    break;
+            }
+
+            switch (m_RotationMode)
+            {
+                case RotationMode.Manual:
+                    break;
+                case RotationMode.GroupAverage:
+                    transform.rotation = CalculateAverageOrientation();
+                    break;
+            }
         }
 
         Vector3 CalculateAveragePosition(out float averageWeight)
@@ -187,13 +197,15 @@ namespace Cinemachine
                 }
             }
             if (weight > UnityVectorExtensions.Epsilon)
+            {
                 pos /= weight;
-            if (numTargets == 0)
+                averageWeight = weight / numTargets;
+            }
+            else
             {
                 averageWeight = 0;
-                return transform.position;
+                pos = transform.position;
             }
-            averageWeight = weight / numTargets;
             return pos;
         }
 
@@ -213,56 +225,90 @@ namespace Cinemachine
             return r.Normalized();
         }
 
+        Bounds CalculateBoundingBox(Vector3 avgPos, float averageWeight)
+        {
+            Bounds b = new Bounds(avgPos, Vector3.zero);
+            if (averageWeight > UnityVectorExtensions.Epsilon)
+            {
+                for (int i = 0; i < m_Targets.Length; ++i)
+                {
+                    if (m_Targets[i].target != null)
+                    {
+                        BoundingSphere s = WeightedMemberBounds(m_Targets[i], mAveragePos, mAverageWeight);
+                        b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
+                    }
+                }
+            }
+            return b;
+        }
+
         private void OnValidate()
         {
             for (int i = 0; i < m_Targets.Length; ++i)
             {
-                if (m_Targets[i].weight < 0)
-                    m_Targets[i].weight = 0;
-                if (m_Targets[i].radius < 0)
-                    m_Targets[i].radius = 0;
+                m_Targets[i].weight = Mathf.Max(0, m_Targets[i].weight);
+                m_Targets[i].radius = Mathf.Max(0, m_Targets[i].radius);
             }
         }
 
         void FixedUpdate()
         {
             if (m_UpdateMethod == UpdateMethod.FixedUpdate)
-                UpdateTransform();
+                DoUpdate();
         }
 
         void Update()
         {
             if (!Application.isPlaying || m_UpdateMethod == UpdateMethod.Update)
-                UpdateTransform();
+                DoUpdate();
         }
 
         void LateUpdate()
         {
             if (m_UpdateMethod == UpdateMethod.LateUpdate)
-                UpdateTransform();
+                DoUpdate();
         }
 
-        void UpdateTransform()
+        /// <summary>
+        /// Get the local-space angular bounds of the group, from a spoecific point of view.
+        /// Also returns the z depth range of the members.
+        /// </summary>
+        /// <param name="observer">Point of view from which to calculate, and in whose 
+        /// space the return values are</param>
+        /// <param name="minAngles">The lower bound of the screen angles of the members (degrees)</param>
+        /// <param name="maxAngles">The upper bound of the screen angles of the members (degrees)</param>
+        /// <param name="zRange">The min and max depth values of the members, relative to the observer</param>
+        public void GetViewSpaceAngularBounds(
+            Matrix4x4 observer, out Vector2 minAngles, out Vector2 maxAngles, out Vector2 zRange)
         {
-            if (IsEmpty)
-                return;
-            switch (m_PositionMode)
+            Matrix4x4 inverseView = observer.inverse;
+            minAngles = Vector2.zero;
+            maxAngles = Vector2.zero;
+            zRange = Vector3.zero;
+            for (int i = 0; i < m_Targets.Length; ++i)
             {
-                case PositionMode.GroupCenter:
-                    transform.position = BoundingBox.center;
-                    break;
-                case PositionMode.GroupAverage:
-                    float averageWeight;
-                    transform.position = CalculateAveragePosition(out averageWeight);
-                    break;
-            }
-            switch (m_RotationMode)
-            {
-                case RotationMode.Manual:
-                    break;
-                case RotationMode.GroupAverage:
-                    transform.rotation = CalculateAverageOrientation();
-                    break;
+                BoundingSphere s = GetWeightedBoundsForMember(i);
+                Vector3 p = inverseView.MultiplyPoint3x4(s.position);
+
+                // Add the radius
+                float r = p.magnitude;
+                Vector2 extraA = Vector2.zero;
+                if (r > UnityVectorExtensions.Epsilon && s.radius > UnityVectorExtensions.Epsilon)
+                    extraA = Mathf.Atan2(s.radius, r) * Mathf.Rad2Deg * Vector2.one;
+                Vector2 a = Quaternion.identity.GetCameraRotationToTarget(p, Vector3.up);
+                if (i == 0)
+                {
+                    minAngles = a - extraA;
+                    maxAngles = a + extraA;
+                    zRange = new Vector2(p.z - s.radius, p.z + s.radius);
+                }
+                else
+                {
+                    minAngles = Vector3.Min(minAngles, a - extraA);
+                    maxAngles = Vector3.Max(maxAngles, a + extraA);
+                    zRange.x = Mathf.Min(zRange.x, p.z - s.radius);
+                    zRange.y = Mathf.Max(zRange.y, p.z + s.radius);
+                }
             }
         }
     }
