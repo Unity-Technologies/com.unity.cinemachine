@@ -52,24 +52,24 @@ namespace Cinemachine
         /// This is set every frame by the virtual camera, based on the value found in the 
         /// currently associated Unity camera
         /// </summary>
-        internal bool Orthographic { get; set; }
+        public bool Orthographic { get; set; }
 
         /// <summary>
         /// This is set every frame by the virtual camera, based on the value 
         /// found in the currently associated Unity camera
         /// </summary>
-        internal bool IsPhysicalCamera { get; set; }
+        public bool IsPhysicalCamera { get; set; }
 
         /// <summary>
         /// This is set every frame by the virtual camera, based on the value 
         /// found in the currently associated Unity camera
         /// </summary>
-        internal Vector2 SensorSize { get; set; }
+        public Vector2 SensorSize { get; set; }
 
         /// <summary>
         /// Sensor aspect, not screen aspect.  For nonphysical cameras, this is the same thing.
         /// </summary>
-        internal float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
+        public float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
 
         /// <summary>For physical cameras only: position of the gate relative to the film back</summary>
         public Vector2 LensShift;
