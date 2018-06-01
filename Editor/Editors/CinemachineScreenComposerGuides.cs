@@ -37,7 +37,7 @@ namespace Cinemachine.Editor
             Rect gateRect = outputCamera.pixelRect;
             Rect cameraRect = gateRect;
             float screenWidth = cameraRect.width;
-            float screenHeight = screenWidth / typeof(LensSettings).AccessInternalProperty<float>(lens, "Aspect");
+            float screenHeight = screenWidth / lens.Aspect;
             cameraRect.yMax = Screen.height - cameraRect.yMin;
             cameraRect.yMin = cameraRect.yMax - screenHeight;
             cameraRect.position += new Vector2(0, (gateRect.y - cameraRect.y) / 2);

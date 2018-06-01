@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Reflection;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using System;
 
 namespace Cinemachine.Editor
 {
@@ -121,9 +122,9 @@ namespace Cinemachine.Editor
         void CacheABunchOfStuff(SerializedProperty property)
         {
             object lens = SerializedPropertyHelper.GetPropertyValue(property);
-            IsOrtho = typeof(LensSettings).AccessInternalProperty<bool>(lens, "Orthographic");
-            IsPhysical = typeof(LensSettings).AccessInternalProperty<bool>(lens, "IsPhysicalCamera");
-            SensorSize = typeof(LensSettings).AccessInternalProperty<Vector2>(lens, "SensorSize");
+            IsOrtho = AccessProperty<bool>(typeof(LensSettings), lens, "Orthographic");
+            IsPhysical = AccessProperty<bool>(typeof(LensSettings), lens, "IsPhysicalCamera");
+            SensorSize = AccessProperty<Vector2>(typeof(LensSettings), lens, "SensorSize");
 
             CinemachineLensPresets presets = CinemachineLensPresets.Instance;
             List<GUIContent> options = new List<GUIContent>();
@@ -148,6 +149,24 @@ namespace Cinemachine.Editor
             if (mExpanded)
                 height *= IsPhysical ? 6 : 5;
             return height;
+        }
+
+        static T AccessProperty<T>(Type type, object obj, string memberName)
+        {
+            if (string.IsNullOrEmpty(memberName) || (type == null))
+                return default(T);
+
+            System.Reflection.BindingFlags bindingFlags = System.Reflection.BindingFlags.Public;
+            if (obj != null)
+                bindingFlags |= System.Reflection.BindingFlags.Instance;
+            else
+                bindingFlags |= System.Reflection.BindingFlags.Static;
+
+            PropertyInfo pi = type.GetProperty(memberName, bindingFlags);
+            if ((pi != null) && (pi.PropertyType == typeof(T)))
+                return (T)pi.GetValue(obj, null);
+            else
+                return default(T);
         }
     }
 }

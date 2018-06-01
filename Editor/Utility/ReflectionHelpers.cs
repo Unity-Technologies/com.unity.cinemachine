@@ -147,6 +147,7 @@ namespace Cinemachine.Utility
                 return default(T);
         }
 
+#if false
         /// <summary>Cheater extension to access internal property of an object</summary>
         /// <param name="type">The type of the field</param>
         /// <param name="obj">The object to access</param>
@@ -169,6 +170,7 @@ namespace Cinemachine.Utility
             else
                 return default(T);
         }
+#endif
 
         /// <summary>Get the object owner of a field.  This method processes
         /// the '.' separator to get from the object that owns the compound field
