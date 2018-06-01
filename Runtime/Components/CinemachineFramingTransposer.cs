@@ -347,7 +347,7 @@ namespace Cinemachine
             // Adjust for group framing
             CinemachineTargetGroup group = FollowTargetGroup;
             if (group != null && m_GroupFramingMode != FramingMode.None)
-                cameraOffset += AdjustCameraDepthAndLensForGroupFraming(
+                cameraOffset += AdjustCameraPositionAndLensForGroupFraming(
                     group, targetPos.z - cameraOffset.z, ref curState, deltaTime);
 
             // Move along the XY plane
@@ -417,7 +417,7 @@ namespace Cinemachine
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
         public Matrix4x4 LastBoundsMatrix { get; private set; }
 
-        Vector3 AdjustCameraDepthAndLensForGroupFraming(
+        Vector3 AdjustCameraPositionAndLensForGroupFraming(
             CinemachineTargetGroup group, float initialZ, 
             ref CameraState curState, float deltaTime)
         {
@@ -425,7 +425,7 @@ namespace Cinemachine
 
             bool canMoveCameraInZ
                 = !curState.Lens.Orthographic 
-                && m_AdjustmentMode != AdjustmentMode.ZoomOnly;
+                    && m_AdjustmentMode != AdjustmentMode.ZoomOnly;
 
             // Work in camera-local space
             Vector3 fwd = curState.RawOrientation * Vector3.forward;
@@ -434,34 +434,35 @@ namespace Cinemachine
 
             // Get the bounding box from camera's direction in view space
             Bounds b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+            LastBounds = b;
 
-            // Recenter the camera in x-y
+            // Recenter the camera in x-y, don't touch the depth
             cameraOffset = b.center; 
+            cameraOffset.z = 0;
 
-            Vector3 observerPosition = Vector3.zero; // local space
-            if (curState.Lens.Orthographic)
-                cameraOffset.z = 0;
-            else
+            float firstApproxCameraOffsetZ = 0;
+            if (!curState.Lens.Orthographic)
             {
                 // Now get a more refined bounding box in screen space
-                if (!canMoveCameraInZ)
-                    cameraOffset.z = 0;
-                else
+                if (canMoveCameraInZ)
                 {   
-                    float distance = GetTargetHeight(b) 
-                        / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
-                    cameraOffset.z -= (b.extents.z + distance);
+                    float newZ = GetPositionForNearBounds(
+                        b, GetTargetHeight(b), curState.Lens.FieldOfView, false);
+                    firstApproxCameraOffsetZ = Mathf.Clamp(newZ, -m_MaxDollyOut, m_MaxDollyIn);
+                    cameraOffset.z = firstApproxCameraOffsetZ;
                 }
-                Vector3 worldObserverPos = LastBoundsMatrix.MultiplyPoint3x4(observerPosition + cameraOffset);
-                LastBoundsMatrix = Matrix4x4.TRS(worldObserverPos, curState.RawOrientation, Vector3.one);
+                Vector3 worldObserverPos = LastBoundsMatrix.MultiplyPoint3x4(cameraOffset);
                 Vector3 localPosAdustmentXY;
                 b = GetScreenSpaceGroupBoundingBox(
                     group, ref worldObserverPos, curState.RawOrientation, out localPosAdustmentXY);
                 cameraOffset += localPosAdustmentXY;
                 // worldObserverPos has been adjusted
                 LastBoundsMatrix = Matrix4x4.TRS(worldObserverPos, curState.RawOrientation, Vector3.one);
+                LastBounds = b;
             }
-            LastBounds = b;
+            // Bring it back to local space
+            b.center += cameraOffset;
+            cameraOffset.z = 0;
 
             // Adjust bounds for framing size
             Vector3 extents = b.extents / m_GroupFramingSize;
@@ -481,30 +482,17 @@ namespace Cinemachine
             // Move the camera in Z
             if (canMoveCameraInZ)
             {
-                // What distance would be needed to get the target height, at the current FOV
-                float depth = b.extents.z;
-                float d = b.center.z;
-                float nearTargetHeight = targetHeight * (d - depth) / d;
-                float nearTargetDistance = nearTargetHeight 
-                    / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
-
-                // Clamp to respect min/max distance settings to the near surface of the bounds
-                float cameraDistance = nearTargetDistance;
-                cameraDistance = Mathf.Clamp(cameraDistance, m_MinimumDistance, m_MaximumDistance);
-                cameraDistance += depth;
-
-                // Apply
-                observerPosition.z = b.center.z - cameraDistance;
-                cameraOffset.z += observerPosition.z;
-                float clamped = cameraOffset.z - Mathf.Clamp(cameraOffset.z, -m_MaxDollyIn, m_MaxDollyOut);
-                cameraOffset.z -= clamped;
-                observerPosition.z -= clamped;
+                float newZ = GetPositionForNearBounds(
+                    new Bounds(b.center - new Vector3(0, 0, firstApproxCameraOffsetZ), b.size), 
+                        targetHeight, curState.Lens.FieldOfView, true);
+                newZ += firstApproxCameraOffsetZ;
+                cameraOffset.z = Mathf.Clamp(newZ, -m_MaxDollyOut, m_MaxDollyIn);
             }
 
             // Apply zoom
             if (curState.Lens.Orthographic || m_AdjustmentMode != AdjustmentMode.DollyOnly)
             {
-                float targetDistance = b.center.z - observerPosition.z;
+                float targetDistance = b.center.z - cameraOffset.z;
                 float currentFOV = 179;
                 if (targetDistance > Epsilon)
                     currentFOV = 2f * Mathf.Atan(targetHeight / (2 * targetDistance)) * Mathf.Rad2Deg;
@@ -530,6 +518,26 @@ namespace Cinemachine
                 case FramingMode.HorizontalAndVertical:
                     return Mathf.Max(b.size.x / VcamState.Lens.Aspect, b.size.y);
             }
+        }
+
+        float GetPositionForNearBounds(Bounds b, float targetHeight, float FOV, bool scale)
+        {
+            // What distance would be needed to get the target height, at the current FOV
+            float depth = b.extents.z;
+            float nearTargetHeight = targetHeight;
+            if (scale)
+            {
+                float d = Mathf.Max(b.center.z, depth + 0.1f);
+                nearTargetHeight = targetHeight * (d - depth) / d;
+            }
+            float nearTargetDistance = nearTargetHeight / (2f * Mathf.Tan(FOV * Mathf.Deg2Rad / 2f));
+
+            // Clamp to respect min/max distance settings to the near surface of the bounds
+            float cameraDistance = nearTargetDistance;
+            cameraDistance = Mathf.Clamp(cameraDistance, m_MinimumDistance, m_MaximumDistance);
+            cameraDistance += depth;
+
+            return b.center.z - cameraDistance;
         }
 
         // Pos is adjusted to recenter the box
