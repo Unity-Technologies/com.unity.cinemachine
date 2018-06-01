@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0-preview.4] - 2018-06-01
+### New Group framing algorithm
+- New Group framing algorithm: tighter framing in GroupComposer and FramingTransposer
+- LensSettings Aspect, Orthographic, IsPhysicalCamera, SensorSize properties no longer internal
+
 ## [2.2.0-preview.3] - 2018-05-23
 ### Minor bugfixes and enhancements
 - Impulse: added Direction Mode, to rotate signals in the direction of the listener
@@ -31,6 +36,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added NoiseSettings editor with signal preview
 - If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera
 - TrackedDolly: Default up mode sets Up to World Up
+- Virtual Camera: New Blending section in inspector that gives more control over blending:
+  - Blend Hint provides some control over how the position and rotation are interpolated
+  - Inhert Position checkbox to ensure smooth positional handoff from outgoing camera
+  - OnCameraLive event gets fired when the camera activates.  Useful for custom handlers.
 - Added ScreenSpaceAimWhenTargetsDiffer as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
 - Framing Transposer no longer requires LookAt to be null
 - Bugfix: StateDrivenCamera Editor was not finding states if target was OverrideController
