@@ -277,7 +277,7 @@ namespace Cinemachine
                     rot = Quaternion.SlerpUnclamped(Quaternion.identity, rot, scale);
                     if (m_DirectionMode == DirectionMode.RotateTowardSource && distance > Epsilon)
                     {
-                        Quaternion q = Quaternion.FromToRotation(Vector3.up, listenerPosition - pos);
+                        Quaternion q = Quaternion.FromToRotation(Vector3.up, listenerPosition - m_Position);
                         if (m_Radius > Epsilon)
                         {
                             float t = Mathf.Clamp01(distance / m_Radius);
