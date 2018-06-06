@@ -50,29 +50,29 @@ namespace Cinemachine
         
         private void OnEnable() {} // For the Enabled checkbox
 
-        private void OnCollisionEnter(Collision other)
+        private void OnCollisionEnter(Collision c)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(c.collider, null, c.relativeVelocity);
         }
 
-        private void OnTriggerEnter(Collider other)
+        private void OnTriggerEnter(Collider c)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(c, null, Vector3.zero);
         }
 
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnCollisionEnter2D(Collision2D c)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(null, c.collider, c.relativeVelocity);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D c)
         {
-            GenerateImpactEvent(other.gameObject);
+            GenerateImpactEvent(null, c, Vector3.zero);
         }
 
-        private float GetMassAndVelocity(GameObject other, out Vector3 vel)
+        private float GetMassAndVelocity(Collider other, Collider2D other2d, ref Vector3 vel)
         {
-            vel = Vector3.zero;
+            bool getVelocity = vel == Vector3.zero;
             float mass = 1;
             if (m_ScaleImpactWithMass || m_ScaleImpactWithSpeed || m_UseImpactDirection)
             {
@@ -80,29 +80,33 @@ namespace Cinemachine
                 {
                     if (m_ScaleImpactWithMass)
                         mass *= mRigidBody.mass;
-                    vel -= mRigidBody.velocity;
+                    if (getVelocity)
+                        vel = -mRigidBody.velocity;
                 }
                 else if (mRigidBody2D != null)
                 {
                     if (m_ScaleImpactWithMass)
                         mass *= mRigidBody2D.mass;
-                    Vector3 v = mRigidBody2D.velocity;
-                    vel -= v;
+                    if (getVelocity)
+                        vel = -mRigidBody2D.velocity;
                 }
-                var rb = other.GetComponent<Rigidbody>();
+
+                var rb = other != null ? other.attachedRigidbody : null;
                 if (rb != null)
                 {
                     if (m_ScaleImpactWithMass)
                         mass *= rb.mass;
-                    vel += rb.velocity;
+                    if (getVelocity)
+                        vel += rb.velocity;
                 }
-                else
+
+                var rb2d = other != null ? other.attachedRigidbody : null;
+                if (rb2d != null)
                 {
-                    var rb2d = other.GetComponent<Rigidbody2D>();
-                    if (rb2d != null)
+                    if (m_ScaleImpactWithMass)
+                        mass *= rb2d.mass;
+                    if (getVelocity)
                     {
-                        if (m_ScaleImpactWithMass)
-                            mass *= rb2d.mass;
                         Vector3 v = rb2d.velocity;
                         vel += v;
                     }
@@ -111,24 +115,24 @@ namespace Cinemachine
             return mass;
         }
 
-        private void GenerateImpactEvent(GameObject other)
+        private void GenerateImpactEvent(Collider other, Collider2D other2d, Vector3 vel)
         {
             // Check the filters
             if (!enabled)
                 return;
-            if (((1 << other.layer) & m_LayerMask) == 0)
+            int layer = (other != null) ? other.gameObject.layer : ((other2d != null) ? other2d.gameObject.layer : 0);
+            if (((1 << layer) & m_LayerMask) == 0)
                 return;
             if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
                 return;
 
             // Calculate the signal direction and magnitude
-            Vector3 vel = Vector3.zero;
-            float mass = GetMassAndVelocity(other, out vel);
+            float mass = GetMassAndVelocity(other, other2d, ref vel);
             if (m_ScaleImpactWithSpeed)
                 mass *= vel.magnitude;
             Vector3 dir = Vector3.down;
             if (m_UseImpactDirection && !vel.AlmostZero())
-                dir = vel.normalized;
+                dir = -vel.normalized;
 
             // Fire it off!
             GenerateImpulse(dir * mass);
