@@ -93,7 +93,7 @@ namespace Cinemachine
         /// <summary>How the signal direction behaves as the listener moves away from the origin.</summary>
         [Tooltip("How the signal direction behaves as the listener moves away from the origin.")]
         public CinemachineImpulseManager.ImpulseEvent.DirectionMode m_DirectionMode 
-            = CinemachineImpulseManager.ImpulseEvent.DirectionMode.Static;
+            = CinemachineImpulseManager.ImpulseEvent.DirectionMode.Fixed;
 
         /// <summary>
         /// This defines how the signal will dissipate with distance beyond the impact radius.  
