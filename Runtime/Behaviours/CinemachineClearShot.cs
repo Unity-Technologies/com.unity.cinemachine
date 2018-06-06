@@ -94,9 +94,6 @@ namespace Cinemachine
         /// <summary>The CameraState of the currently live child</summary>
         public override CameraState State { get { return m_State; } }
 
-        /// <summary>Return the live child.</summary>
-        public override ICinemachineCamera LiveChildOrSelf { get { return LiveChild; } }
-
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
@@ -305,7 +302,7 @@ namespace Cinemachine
             for (int i = 0; i < childCameras.Length; ++i)
             {
                 CinemachineVirtualCameraBase vcam = childCameras[i];
-                if (vcam != null && vcam.VirtualCameraGameObject.activeInHierarchy)
+                if (vcam != null && vcam.gameObject.activeInHierarchy)
                 {
                     // Choose the first in the list that is better than the current
                     if (best == null 

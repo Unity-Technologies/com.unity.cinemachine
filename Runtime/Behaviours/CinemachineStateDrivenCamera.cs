@@ -45,10 +45,6 @@ namespace Cinemachine
         [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
         public bool m_ShowDebugText = false;
 
-        /// <summary>Force all child cameras to be enabled.  This is useful if animating them in Timeline, but consumes extra resources.</summary>
-        [Tooltip("Force all child cameras to be enabled.  This is useful if animating them in Timeline, but consumes extra resources")]
-        public bool m_EnableAllChildCameras;
-
         /// <summary>Internal API for the editor.  Do not use this field</summary>
         [SerializeField][HideInInspector][NoSaveDuringPlay]
         internal CinemachineVirtualCameraBase[] m_ChildCameras = null;
@@ -132,9 +128,6 @@ namespace Cinemachine
         /// if the State Driven Camera were active.</summary>
         public ICinemachineCamera LiveChild { set; get; }
 
-        /// <summary>Return the live child.</summary>
-        public override ICinemachineCamera LiveChildOrSelf { get { return LiveChild; } }
-
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
@@ -189,22 +182,10 @@ namespace Cinemachine
 
             UpdateListOfChildren();
             CinemachineVirtualCameraBase best = ChooseCurrentCamera(deltaTime);
-            if (m_ChildCameras != null)
+            if (best != null && !best.gameObject.activeInHierarchy)
             {
-                for (int i = 0; i < m_ChildCameras.Length; ++i)
-                {
-                    CinemachineVirtualCameraBase vcam  = m_ChildCameras[i];
-                    if (vcam != null)
-                    {
-                        bool enableChild = m_EnableAllChildCameras || vcam == best;
-                        if (enableChild != vcam.VirtualCameraGameObject.activeInHierarchy)
-                        {
-                            vcam.gameObject.SetActive(enableChild);
-                            if (enableChild)
-                                vcam.UpdateCameraState(worldUp, deltaTime);
-                        }
-                    }
-                }
+                best.gameObject.SetActive(true);
+                best.UpdateCameraState(worldUp, deltaTime);
             }
 
             ICinemachineCamera previousCam = LiveChild;

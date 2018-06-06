@@ -121,7 +121,7 @@ namespace Cinemachine.Editor
         internal static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
             // Don't draw gizmos on hidden stuff
-            if ((vcam.VirtualCameraGameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
+            if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
                 return;
 
             if (vcam.ParentCamera != null && (selectionType & GizmoType.Active) == 0)

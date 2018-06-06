@@ -132,9 +132,6 @@ namespace Cinemachine
         /// <summary>Not used</summary>
         override public Transform Follow { get; set; }
 
-        /// <summary>Return the live child.</summary>
-        public override ICinemachineCamera LiveChildOrSelf { get { return LiveChild; } }
-
         /// <summary>This is called to notify the vcam that a target got warped,
         /// so that the vcam can update its internal state to make the camera 
         /// also warp seamlessy.</summary>

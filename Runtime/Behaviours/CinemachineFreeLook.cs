@@ -212,23 +212,6 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
-        /// <summary>Returns the rig with the greatest weight</summary>
-        public override ICinemachineCamera LiveChildOrSelf 
-        { 
-            get 
-            { 
-                // Do not update the rig cache here or there will be infinite loop at creation time 
-                if (m_Rigs == null || m_Rigs.Length != 3)
-                    return this;
-                float y = GetYAxisValue();
-                if (y < 0.33f)
-                    return m_Rigs[2];
-                if (y > 0.66f)
-                    return m_Rigs[0];
-                return m_Rigs[1];
-            }
-        }
-
         /// <summary>Check whether the vcam a live child of this camera.  
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
@@ -238,13 +221,11 @@ namespace Cinemachine
             // Do not update the rig cache here or there will be infinite loop at creation time 
             if (m_Rigs == null || m_Rigs.Length != 3)
                 return false;
-
-            float y = GetYAxisValue();
-            if (y < 0.33f)
+            if (vcam == (ICinemachineCamera)m_Rigs[1])
+                return true;
+            if (GetYAxisValue() < 0.5f)
                 return vcam == (ICinemachineCamera)m_Rigs[2];
-            if (y > 0.66f)
-                return vcam == (ICinemachineCamera)m_Rigs[0];
-            return vcam == (ICinemachineCamera)m_Rigs[1]; 
+            return vcam == (ICinemachineCamera)m_Rigs[0];
         }
 
         /// <summary>This is called to notify the vcam that a target got warped,
@@ -498,7 +479,7 @@ namespace Cinemachine
                             if (mOrbitals[i] != null)
                             {
                                 mOrbitals[i].m_HeadingIsSlave = true;
-                                if (i == 0)
+                                if (i == 1)
                                     mOrbitals[i].HeadingUpdater 
                                         = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
                                             => { return orbital.UpdateHeading(deltaTime, up, ref m_XAxis); };
@@ -534,7 +515,12 @@ namespace Cinemachine
                         Follow = m_Rigs[i].Follow;
                 }
                 m_Rigs[i].Follow = null;
-
+                if (!PreviousStateIsValid)
+                {
+                    m_Rigs[i].PreviousStateIsValid = false;
+                    m_Rigs[i].transform.position = transform.position;
+                    m_Rigs[i].transform.rotation = transform.rotation;
+                }
                 // Hide the rigs from prying eyes
                 if (CinemachineCore.sShowHiddenObjects)
                     m_Rigs[i].gameObject.hideFlags

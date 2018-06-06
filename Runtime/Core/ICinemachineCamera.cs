@@ -44,10 +44,6 @@ namespace Cinemachine
         /// </summary>
         GameObject VirtualCameraGameObject { get; }
 
-        /// <summary>For cameras that implement child cameras, return the live child,
-        /// otherwise, just returns self.</summary>
-        ICinemachineCamera LiveChildOrSelf { get; }
-
         /// <summary>
         /// For cameras that implement child cameras, returns the parent vcam, otherwise null.
         /// </summary>

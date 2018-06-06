@@ -670,8 +670,8 @@ namespace Cinemachine
             int numCameras = CinemachineCore.Instance.VirtualCameraCount;
             for (int i = 0; i < numCameras; ++i)
             {
-                ICinemachineCamera cam = CinemachineCore.Instance.GetVirtualCamera(i);
-                GameObject go = cam != null ? cam.VirtualCameraGameObject : null;
+                var cam = CinemachineCore.Instance.GetVirtualCamera(i);
+                GameObject go = cam != null ? cam.gameObject : null;
                 if (go != null && (mask & (1 << go.layer)) != 0)
                     return cam;
             }

@@ -172,11 +172,13 @@ namespace Cinemachine
         public float UpdateHeading(float deltaTime, Vector3 up, ref AxisState axis)
         {
             // Only read joystick when game is playing
-            if (deltaTime >= 0 || CinemachineCore.Instance.IsLive(VirtualCamera))
+            if (deltaTime < 0 || !CinemachineCore.Instance.IsLive(VirtualCamera))
             {
-                if (axis.Update(deltaTime))
-                    m_RecenterToTargetHeading.CancelRecentering();
+                axis.Reset();
+                m_RecenterToTargetHeading.CancelRecentering();
             }
+            else if (axis.Update(deltaTime))
+                m_RecenterToTargetHeading.CancelRecentering();
 
             float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up), deltaTime);
             if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)

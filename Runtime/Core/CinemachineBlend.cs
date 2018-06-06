@@ -254,7 +254,6 @@ namespace Cinemachine
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public GameObject VirtualCameraGameObject { get { return null; } }
-        public ICinemachineCamera LiveChildOrSelf { get { return this; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
         public bool IsLiveChild(ICinemachineCamera vcam) { return false; }
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
@@ -285,7 +284,6 @@ namespace Cinemachine
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public GameObject VirtualCameraGameObject { get { return null; } }
-        public ICinemachineCamera LiveChildOrSelf { get { return Blend.CamB; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
         public bool IsLiveChild(ICinemachineCamera vcam) { return vcam == Blend.CamA || vcam == Blend.CamB; }
         public CameraState CalculateNewState(float deltaTime) { return State; }

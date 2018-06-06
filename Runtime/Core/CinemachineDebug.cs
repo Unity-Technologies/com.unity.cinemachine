@@ -66,13 +66,13 @@ namespace Cinemachine.Utility
                 return new StringBuilder();
             var sb = mAvailableStringBuilders[mAvailableStringBuilders.Count - 1];
             mAvailableStringBuilders.RemoveAt(mAvailableStringBuilders.Count - 1);
+            sb.Length = 0;
             return sb;
         }
 
         /// <summary>Return a StringBuilder to the preallocated pool</summary>
         public static void ReturnToPool(StringBuilder sb)
         {
-            sb.Length = 0;
             if (mAvailableStringBuilders == null)
                 mAvailableStringBuilders = new List<StringBuilder>();
             mAvailableStringBuilders.Add(sb);

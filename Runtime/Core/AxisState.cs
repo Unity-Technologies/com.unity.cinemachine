@@ -101,6 +101,12 @@ namespace Cinemachine
 
         const float Epsilon = UnityVectorExtensions.Epsilon;
 
+        public void Reset()
+        {
+            m_InputAxisValue = 0;
+            mCurrentSpeed = 0;
+        }
+
         /// <summary>
         /// Updates the state of this axis based on the axis defined
         /// by AxisState.m_AxisName
