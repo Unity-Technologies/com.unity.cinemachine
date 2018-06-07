@@ -84,15 +84,6 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Orientation")]
         public TransformNoiseParams[] OrientationNoise = new TransformNoiseParams[0];
 
-        /// <summary>Clones the contents of the other asset into this one</summary>
-        public void CopyFrom(NoiseSettings other)
-        {
-            PositionNoise = new TransformNoiseParams[other.PositionNoise.Length];
-            other.PositionNoise.CopyTo(PositionNoise, 0);
-            OrientationNoise = new TransformNoiseParams[other.OrientationNoise.Length];
-            other.OrientationNoise.CopyTo(OrientationNoise, 0);
-        }
-
         /// <summary>Get the noise signal value at a specific time</summary>
         /// <param name="noiseParams">The parameters that define the noise function</param>
         /// <param name="time">The time at which to sample the noise function</param>
