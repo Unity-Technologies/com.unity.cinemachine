@@ -13,8 +13,8 @@ namespace Cinemachine.Editor
     {
         private static CinemachineLensPresets sInstance = null;
 
-        /// <summary>Get the singleton instance of this object</summary>
-        public static CinemachineLensPresets Instance
+        /// <summary>Get the singleton instance of this object, or null if it doesn't exist</summary>
+        public static CinemachineLensPresets InstanceIfExists
         {
             get
             {
@@ -25,12 +25,27 @@ namespace Cinemachine.Editor
                         sInstance = AssetDatabase.LoadAssetAtPath<CinemachineLensPresets>(
                             AssetDatabase.GUIDToAssetPath(guids[i]));
                 }
-                if (sInstance == null)
+                return sInstance;
+            }
+        }
+
+        /// <summary>Get the singleton instance of this object.  Creates asset if nonexistant</summary>
+        public static CinemachineLensPresets Instance
+        {
+            get
+            {
+                if (InstanceIfExists == null)
                 {
-                    sInstance = CreateInstance<CinemachineLensPresets>();
-                    AssetDatabase.CreateAsset(sInstance, "Assets/CinemachineLensPresets.asset");
-                    AssetDatabase.SaveAssets();
-                    AssetDatabase.Refresh();
+                    string newAssetPath = EditorUtility.SaveFilePanelInProject(
+                            "Create Lens Presets asset", "CinemachineLensPresets", "asset", 
+                            "This editor-only file will contain the lens presets for this project");
+                    if (!string.IsNullOrEmpty(newAssetPath))
+                    {
+                        sInstance = CreateInstance<CinemachineLensPresets>();
+                        AssetDatabase.CreateAsset(sInstance, newAssetPath);
+                        AssetDatabase.SaveAssets();
+                        AssetDatabase.Refresh();
+                    }
                 }
                 return sInstance;
             }

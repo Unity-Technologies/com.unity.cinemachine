@@ -7,22 +7,24 @@ namespace Cinemachine.Editor
     internal sealed class CinemachineImpulseChannelPropertyDrawer : PropertyDrawer
     {
         const float hSpace = 2;
-        GUIContent mAddLabel = new GUIContent("Add...", "Add, remove, or rename channels");
+        GUIContent mAddLabel = new GUIContent("Edit...", "Add, remove, or rename channels");
         string[] mLayerList = null;
-        int mRangeMask;
 
         void UpdateLayerList()
         {
-            CinemachineImpulseEditorSettings settings = CinemachineImpulseEditorSettings.Instance;
-            int numLayers = settings.ImpulseChannels == null ? 0 : settings.ImpulseChannels.Length;
-            numLayers = Mathf.Min(31, numLayers);
+            CinemachineImpulseChannels settings = CinemachineImpulseChannels.InstanceIfExists;
+            int numLayers = 0;
+            if (settings != null && settings.ImpulseChannels != null)
+                numLayers = settings.ImpulseChannels.Length;
+            numLayers = Mathf.Clamp(numLayers, 1, 31);
             if (mLayerList == null || mLayerList.Length != numLayers)
                 mLayerList = new string[numLayers];
-            mRangeMask = 0;
             for (int i = 0; i < numLayers; ++i)
             {
-                mRangeMask |= (1 << i);
-                mLayerList[i] = string.Format("{0}: {1}", i, settings.ImpulseChannels[i]);
+                mLayerList[i] = string.Format(
+                    "{0}: {1}", i, 
+                    (settings == null || settings.ImpulseChannels.Length <= i) 
+                        ? "default" : settings.ImpulseChannels[i]);
             }
         }
 
@@ -31,7 +33,7 @@ namespace Cinemachine.Editor
             UpdateLayerList();
             float addWidth = GUI.skin.button.CalcSize(mAddLabel).x;
             rect.width -= addWidth + hSpace;
-            int value = EditorGUI.MaskField(rect, label, property.intValue & mRangeMask, mLayerList);
+            int value = EditorGUI.MaskField(rect, label, property.intValue, mLayerList);
             if (value != property.intValue)
             {
                 property.intValue  = value;
@@ -40,7 +42,8 @@ namespace Cinemachine.Editor
 
             rect.x += rect.width + hSpace; rect.width = addWidth; rect.height -= 1;
             if (GUI.Button(rect, mAddLabel))
-                Selection.activeObject = CinemachineImpulseEditorSettings.Instance;
+                if (CinemachineImpulseChannels.Instance != null)
+                    Selection.activeObject = CinemachineImpulseChannels.Instance;
         }
     }
 }

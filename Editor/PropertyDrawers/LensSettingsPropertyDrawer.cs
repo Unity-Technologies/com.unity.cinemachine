@@ -58,12 +58,12 @@ namespace Cinemachine.Editor
             EditorGUI.PropertyField(rect, FOVProperty);
             rect.x += rect.width; rect.width = dropdownWidth;
 
-            CinemachineLensPresets presets = CinemachineLensPresets.Instance;
-            int preset = presets.GetMatchingPreset(FOVProperty.floatValue);
+            CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
+            int preset = (presets == null) ? -1 : presets.GetMatchingPreset(FOVProperty.floatValue);
             rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
             int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_PresetOptions);
-            if (selection == m_PresetOptions.Length-1)
-                Selection.activeObject = presets;
+            if (selection == m_PresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
+                Selection.activeObject = presets = CinemachineLensPresets.Instance;
             else if (selection >= 0 && selection < m_PresetOptions.Length-1)
             {
                 FOVProperty.floatValue = presets.m_Presets[selection].m_FieldOfView;
@@ -86,12 +86,12 @@ namespace Cinemachine.Editor
             }
             rect.x += rect.width; rect.width = dropdownWidth;
 
-            CinemachineLensPresets presets = CinemachineLensPresets.Instance;
-            int preset = presets.GetMatchingPhysicalPreset(VerticalFOVToFocalLength(FOVProperty.floatValue));
+            CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
+            int preset = (presets == null) ? -1 : presets.GetMatchingPhysicalPreset(VerticalFOVToFocalLength(FOVProperty.floatValue));
             rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
             int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_PhysicalPresetOptions);
-            if (selection == m_PhysicalPresetOptions.Length-1)
-                Selection.activeObject = presets;
+            if (selection == m_PhysicalPresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
+                Selection.activeObject = presets = CinemachineLensPresets.Instance;
             else if (selection >= 0 && selection < m_PhysicalPresetOptions.Length-1)
             {
                 FOVProperty.floatValue = FocalLengthToVerticalFOV(
@@ -126,16 +126,18 @@ namespace Cinemachine.Editor
             IsPhysical = AccessProperty<bool>(typeof(LensSettings), lens, "IsPhysicalCamera");
             SensorSize = AccessProperty<Vector2>(typeof(LensSettings), lens, "SensorSize");
 
-            CinemachineLensPresets presets = CinemachineLensPresets.Instance;
             List<GUIContent> options = new List<GUIContent>();
-            for (int i = 0; i < presets.m_Presets.Length; ++i)
-                options.Add(new GUIContent(presets.m_Presets[i].m_Name));
+            CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
+            if (presets != null)
+                for (int i = 0; i < presets.m_Presets.Length; ++i)
+                    options.Add(new GUIContent(presets.m_Presets[i].m_Name));
             options.Add(new GUIContent("Edit Presets..."));
             m_PresetOptions = options.ToArray();
 
             options.Clear();
-            for (int i = 0; i < presets.m_PhysicalPresets.Length; ++i)
-                options.Add(new GUIContent(presets.m_PhysicalPresets[i].m_FocalLength.ToString() + "mm"));
+            if (presets != null)
+                for (int i = 0; i < presets.m_PhysicalPresets.Length; ++i)
+                    options.Add(new GUIContent(presets.m_PhysicalPresets[i].m_FocalLength.ToString() + "mm"));
             options.Add(new GUIContent("Edit Presets..."));
             m_PhysicalPresetOptions = options.ToArray();
         }
