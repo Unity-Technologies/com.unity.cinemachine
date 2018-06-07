@@ -26,6 +26,12 @@ namespace Cinemachine
         [Tooltip("Gain to apply to the Impulse signal.  1 is normal strength.  Setting this to 0 completely mutes the signal.")]
         public float m_Gain = 1;
 
+        /// <summary>
+        /// Enable this to perform distance calculation in 2D (ignore Z).
+        /// </summary>
+        [Tooltip("Enable this to perform distance calculation in 2D (ignore Z)")]
+        public bool m_Use2DDistance = false;
+
         // GML todo: add reaction configuration params here
  
         protected override void PostPipelineStageCallback(
@@ -37,7 +43,7 @@ namespace Cinemachine
                 Vector3 impulsePos = Vector3.zero;
                 Quaternion impulseRot = Quaternion.identity;
                 if (CinemachineImpulseManager.Instance.GetImpulseAt(
-                    state.FinalPosition, m_ChannelMask, out impulsePos, out impulseRot))
+                    state.FinalPosition, m_Use2DDistance, m_ChannelMask, out impulsePos, out impulseRot))
                 {
                     state.PositionCorrection += impulsePos * -m_Gain;
                     impulseRot = Quaternion.SlerpUnclamped(Quaternion.identity, impulseRot, -m_Gain);

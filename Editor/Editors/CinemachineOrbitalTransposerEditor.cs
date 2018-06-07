@@ -66,6 +66,7 @@ namespace Cinemachine.Editor
         {
             Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
             Quaternion targetOrientation = Target.GetReferenceOrientation(Target.VcamState.ReferenceUp);
+            targetOrientation = targetOrientation * Quaternion.Euler(0, Target.m_Heading.m_Bias, 0);
             Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
             localOffset.x = 0;
             FindProperty(x => x.m_FollowOffset).vector3Value += localOffset;

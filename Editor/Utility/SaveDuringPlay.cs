@@ -122,6 +122,7 @@ namespace SaveDuringPlay
             bool isLeaf = true;
             if (obj != null
                 && !type.IsSubclassOf(typeof(Component))
+                && !type.IsSubclassOf(typeof(ScriptableObject))
                 && !type.IsSubclassOf(typeof(GameObject)))
             {
                 // Is it an array?
@@ -287,7 +288,7 @@ namespace SaveDuringPlay
                     if (mValues.TryGetValue(fullName, out savedValue)
                         && StringFromLeafObject(value) != savedValue)
                     {
-                        //Debug.Log(mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
+                        //Debug.Log("Put " + mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
                         value = LeafObjectFromString(type, mValues[fullName].Trim(), roots);
                         return true; // changed
                     }
@@ -343,6 +344,10 @@ namespace SaveDuringPlay
                 // Try to find the named game object
                 return GameObject.Find(value);
             }
+            if (type.IsSubclassOf(typeof(ScriptableObject)))
+            {
+                return AssetDatabase.LoadAssetAtPath(value, type);
+            }
             return null;
         }
 
@@ -364,6 +369,10 @@ namespace SaveDuringPlay
                 if (go == null) // GameObject overrides the == operator, so we have to check
                     return string.Empty;
                 return ObjectTreeUtil.GetFullName(go);
+            }
+            if (obj.GetType().IsSubclassOf(typeof(ScriptableObject)))
+            {
+                return AssetDatabase.GetAssetPath(obj as ScriptableObject);
             }
             return obj.ToString();
         }

@@ -168,7 +168,7 @@ namespace Cinemachine
             }
             if (deltaTime < 0)
             {
-                m_PreviousTargetPosition = curState.RawPosition;
+                m_PreviousTargetPosition = FollowTargetPosition;
                 m_PreviousReferenceOrientation = GetReferenceOrientation(curState.ReferenceUp);
             }
         }
@@ -289,7 +289,7 @@ namespace Cinemachine
                         return targetOrientation;
                     case BindingMode.SimpleFollowWithWorldUp:
                     {
-                        Vector3 dir = FollowTarget.position - VcamState.RawPosition;
+                        Vector3 dir = FollowTargetPosition - VcamState.RawPosition;
                         dir = dir.ProjectOntoPlane(worldUp);
                         if (dir.AlmostZero())
                             break;

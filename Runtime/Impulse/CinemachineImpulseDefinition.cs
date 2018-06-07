@@ -88,12 +88,12 @@ namespace Cinemachine
         /// </summary>
         [Header("Spatial Range")]
         [Tooltip("The signal will have full amplitude in this radius surrounding the impact point.  Beyond that it will dissipate with distance.")]
-        public float m_ImpactRadius = 1;
+        public float m_ImpactRadius = 100;
 
         /// <summary>How the signal direction behaves as the listener moves away from the origin.</summary>
         [Tooltip("How the signal direction behaves as the listener moves away from the origin.")]
         public CinemachineImpulseManager.ImpulseEvent.DirectionMode m_DirectionMode 
-            = CinemachineImpulseManager.ImpulseEvent.DirectionMode.Static;
+            = CinemachineImpulseManager.ImpulseEvent.DirectionMode.Fixed;
 
         /// <summary>
         /// This defines how the signal will dissipate with distance beyond the impact radius.  
@@ -106,7 +106,7 @@ namespace Cinemachine
         /// At this distance beyond the impact radius, the signal will have dissipated to zero.  
         /// </summary>
         [Tooltip("At this distance beyond the impact radius, the signal will have dissipated to zero.")]
-        public float m_DissipationDistance = 100;
+        public float m_DissipationDistance = 1000;
 
         /// <summary>Call this from your behaviour's OnValidate to validate the fields here</summary>
         public void OnValidate()
@@ -176,7 +176,7 @@ namespace Cinemachine
                 m_Def.m_RawSignal.GetSignal(time, out pos, out rot);
                 float gain = m_Velocity.magnitude;
                 Vector3 dir = m_Velocity.normalized;
-                gain *= m_Def.m_AmplitudeGain * 0.001f; // Distance unit is mm
+                gain *= m_Def.m_AmplitudeGain;
                 pos *= gain;
                 pos = Quaternion.FromToRotation(Vector3.down, m_Velocity) * pos;
                 rot = Quaternion.SlerpUnclamped(Quaternion.identity, rot, gain);

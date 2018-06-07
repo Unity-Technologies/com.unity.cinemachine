@@ -186,13 +186,13 @@ namespace Cinemachine
             public enum DirectionMode
             {
                 /// <summary>Signal direction remains constant everywhere.</summary>
-                Static,
-                /// <summary>Signal direction is rotated in the direction of the listener.</summary>
-                Radial
+                Fixed,
+                /// <summary>Signal is rotated in the direction of the source.</summary>
+                RotateTowardSource
             }
-            /// <summary>How the signal direction behaves as the listener moves away from the origin.</summary>
-            [Tooltip("How the signal direction behaves as the listener moves away from the origin.")]
-            public DirectionMode m_DirectionMode = DirectionMode.Static;
+            /// <summary>How the signal direction behaves as the listener moves away from the source.</summary>
+            [Tooltip("How the signal direction behaves as the listener moves away from the source.")]
+            public DirectionMode m_DirectionMode = DirectionMode.Fixed;
 
             /// <summary>Channels on which this event will broadcast its signal.</summary>
             [Tooltip("Channels on which this event will broadcast its signal.")]
@@ -259,22 +259,25 @@ namespace Cinemachine
             }
 
             /// <summary>Get the signal that a listener at a given position would perceive</summary>
+            /// <param name="listenerPosition">The listener's position in world space</param>
+            /// <param name="use2D">True if distance calculation should ignore Z</param>
             /// <param name="pos">The position impulse signal</param>
             /// <param name="rot">The rotation impulse signal</param>
             /// <returns>true if non-trivial signal is returned</returns>
-            public bool GetDecayedSignal(Vector3 listenerPosition, out Vector3 pos, out Quaternion rot)
+            public bool GetDecayedSignal(Vector3 listenerPosition, bool use2D, out Vector3 pos, out Quaternion rot)
             {
                 if (m_SignalSource != null)
                 {
                     float time = Time.time - m_StartTime;
-                    float distance = Vector3.Distance(listenerPosition, m_Position);
+                    float distance = use2D ? Vector2.Distance(listenerPosition, m_Position)
+                        : Vector3.Distance(listenerPosition, m_Position);
                     float scale = m_Envelope.GetValueAt(time) * DistanceDecay(distance);
                     m_SignalSource.GetSignal(time, out pos, out rot);
                     pos *= scale;
                     rot = Quaternion.SlerpUnclamped(Quaternion.identity, rot, scale);
-                    if (m_DirectionMode == DirectionMode.Radial && distance > Epsilon)
+                    if (m_DirectionMode == DirectionMode.RotateTowardSource && distance > Epsilon)
                     {
-                        Quaternion q = Quaternion.FromToRotation(Vector3.up, listenerPosition - pos);
+                        Quaternion q = Quaternion.FromToRotation(Vector3.up, listenerPosition - m_Position);
                         if (m_Radius > Epsilon)
                         {
                             float t = Mathf.Clamp01(distance / m_Radius);
@@ -313,12 +316,13 @@ namespace Cinemachine
 
         /// <summary>Get the signal perceived by a listener at a geven location</summary>
         /// <param name="listenerLocation">Where the listener is, in world coords</param>
+        /// <param name="distance2D">True if distance calculation should ignore Z</param>
         /// <param name="channelMask">Only Impulse signals on channels in this mask will be considered</param>
         /// <param name="pos">The combined position impulse signal resulting from all signals active on the specified channels</param>
         /// <param name="rot">The combined rotation impulse signal resulting from all signals active on the specified channels</param>
         /// <returns>true if non-trivial signal is returned</returns>
         public bool GetImpulseAt(
-            Vector3 listenerLocation, int channelMask, 
+            Vector3 listenerLocation, bool distance2D, int channelMask,
             out Vector3 pos, out Quaternion rot)
         {
             bool nontrivialResult = false;
@@ -346,7 +350,7 @@ namespace Cinemachine
                     {
                         Vector3 pos0 = Vector3.zero;
                         Quaternion rot0 = Quaternion.identity;
-                        if (e.GetDecayedSignal(listenerLocation, out pos0, out rot0))
+                        if (e.GetDecayedSignal(listenerLocation, distance2D, out pos0, out rot0))
                         {
                             nontrivialResult = true;
                             pos += pos0;

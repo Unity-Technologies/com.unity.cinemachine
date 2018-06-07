@@ -149,6 +149,7 @@ namespace Cinemachine
         override protected void OnEnable()
         {
             base.OnEnable();
+            m_State = PullStateFromVirtualCamera(Vector3.up, m_Lens);
             InvalidateComponentPipeline();
 
             // Can't add components during OnValidate

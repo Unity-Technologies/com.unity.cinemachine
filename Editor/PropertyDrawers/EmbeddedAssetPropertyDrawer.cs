@@ -203,17 +203,17 @@ namespace Cinemachine.Editor
                         => Selection.activeObject = property.objectReferenceValue);
                     menu.AddItem(new GUIContent("Clone"), false, () => 
                         {
-                            ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
-                            string fromPath = AssetDatabase.GetAssetPath(asset);
-                            string toPath = AssetDatabase.GenerateUniqueAssetPath(fromPath);
-                            if (AssetDatabase.CopyAsset(fromPath, toPath))
+                            ScriptableObject copyFrom = property.objectReferenceValue as ScriptableObject;
+                            if (copyFrom != null)
                             {
-                                asset = AssetDatabase.LoadAssetAtPath(
-                                    toPath, EmbeddedAssetType(property)) as ScriptableObject;
-                                AssetDatabase.SaveAssets();
-                                AssetDatabase.Refresh();
-                                property.objectReferenceValue = asset;
-                                property.serializedObject.ApplyModifiedProperties();
+                                string title = "Create New " + copyFrom.GetType().Name + " asset";
+                                ScriptableObject asset = CreateAsset(
+                                    copyFrom.GetType(), copyFrom, defaultName, title);
+                                if (asset != null)
+                                {
+                                    property.objectReferenceValue = asset;
+                                    property.serializedObject.ApplyModifiedProperties();
+                                }
                             }
                         });
                     menu.AddItem(new GUIContent("Locate"), false, () 
@@ -236,25 +236,36 @@ namespace Cinemachine.Editor
                     menu.AddItem(new GUIContent("New " + InspectorUtility.NicifyClassName(t.Name)), false, () => 
                         { 
                             string title = "Create New " + t.Name + " asset";
-                            ScriptableObject asset = CreateAsset(t, defaultName, title);
-                            AssetDatabase.SaveAssets();
-                            AssetDatabase.Refresh();
-                            property.objectReferenceValue = asset;
-                            property.serializedObject.ApplyModifiedProperties();
+                            ScriptableObject asset = CreateAsset(t, null, defaultName, title);
+                            if (asset != null)
+                            {
+                                property.objectReferenceValue = asset;
+                                property.serializedObject.ApplyModifiedProperties();
+                            }
                         });
                 }
                 menu.ShowAsContext();
             }
         }
 
-        ScriptableObject CreateAsset(Type assetType, string defaultName, string dialogTitle)
+        ScriptableObject CreateAsset(
+            Type assetType, ScriptableObject copyFrom, string defaultName, string dialogTitle)
         {
             ScriptableObject asset = null;
-            string newAssetPath = EditorUtility.SaveFilePanelInProject(
+            string path = EditorUtility.SaveFilePanelInProject(
                     dialogTitle, defaultName, "asset", string.Empty);
-            if (!string.IsNullOrEmpty(newAssetPath))
+            if (!string.IsNullOrEmpty(path))
             {
-                asset = ScriptableObjectUtility.CreateAt(assetType, newAssetPath);
+                if (copyFrom != null)
+                {
+                    string fromPath = AssetDatabase.GetAssetPath(copyFrom);
+                    if (AssetDatabase.CopyAsset(fromPath, path))
+                        asset = AssetDatabase.LoadAssetAtPath(path, assetType) as ScriptableObject;
+                }
+                else
+                {
+                    asset = ScriptableObjectUtility.CreateAt(assetType, path);
+                }
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }

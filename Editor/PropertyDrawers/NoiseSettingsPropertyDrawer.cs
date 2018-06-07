@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using System.IO;
-using UnityEngine.SceneManagement;
 
 namespace Cinemachine.Editor
 {
@@ -34,11 +32,15 @@ namespace Cinemachine.Editor
                         => Selection.activeObject = property.objectReferenceValue);
                     menu.AddItem(new GUIContent("Clone"), false, () => 
                         {
-                            property.objectReferenceValue = CreateProfile(
+                            NoiseSettings pp = CreateProfile(
                                 property, labelText,
                                 (NoiseSettings)property.objectReferenceValue);
-                            property.serializedObject.ApplyModifiedProperties();
-                            InvalidateProfileList();
+                            if (pp != null)
+                            {
+                                property.objectReferenceValue = pp;
+                                property.serializedObject.ApplyModifiedProperties();
+                                InvalidateProfileList();
+                            }
                         });
                     menu.AddItem(new GUIContent("Locate"), false, () 
                         => EditorGUIUtility.PingObject(property.objectReferenceValue));
@@ -46,9 +48,13 @@ namespace Cinemachine.Editor
                 menu.AddItem(new GUIContent("New"), false, () => 
                     { 
                         //Undo.RecordObject(Target, "Change Noise Profile");
-                        property.objectReferenceValue = CreateProfile(property, labelText, null);
-                        property.serializedObject.ApplyModifiedProperties();
-                        InvalidateProfileList();
+                        NoiseSettings pp = CreateProfile(property, labelText, null);
+                        if (pp != null)
+                        {
+                            property.objectReferenceValue = pp;
+                            property.serializedObject.ApplyModifiedProperties();
+                            InvalidateProfileList();
+                        }
                     });
                 menu.ShowAsContext();
             }
@@ -100,29 +106,32 @@ namespace Cinemachine.Editor
 
         NoiseSettings CreateProfile(SerializedProperty property, string label, NoiseSettings copyFrom)
         {
-            var path = string.Empty;
-            var scene = SceneManager.GetActiveScene();
-            if (string.IsNullOrEmpty(scene.path))
-                path = "Assets/";
-            else
+            string path = GetObjectName(property) + " " + label;
+            path = EditorUtility.SaveFilePanelInProject(
+                    "Create Noise Profile asset", path, "asset", 
+                    "This asset will generate a procedural noise signal");
+            if (!string.IsNullOrEmpty(path))
             {
-                var scenePath = Path.GetDirectoryName(scene.path);
-                var extPath = scene.name + "_Profiles";
-                var profilePath = scenePath + "/" + extPath;
-                if (!AssetDatabase.IsValidFolder(profilePath))
-                    AssetDatabase.CreateFolder(scenePath, extPath);
-                path = profilePath + "/";
+                NoiseSettings profile = null;
+                if (copyFrom != null)
+                {
+                    string fromPath = AssetDatabase.GetAssetPath(copyFrom);
+                    if (AssetDatabase.CopyAsset(fromPath, path))
+                    {
+                        profile = AssetDatabase.LoadAssetAtPath(
+                            path, typeof(NoiseSettings)) as NoiseSettings;
+                    }
+                }
+                else
+                {
+                    profile = ScriptableObjectUtility.CreateAt(
+                        typeof(NoiseSettings), path) as NoiseSettings;
+                }
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                return profile;
             }
-
-            var profile = ScriptableObject.CreateInstance<NoiseSettings>();
-            if (copyFrom != null)
-                profile.CopyFrom(copyFrom);
-            path += GetObjectName(property) + " " + label + ".asset";
-            path = AssetDatabase.GenerateUniqueAssetPath(path);
-            AssetDatabase.CreateAsset(profile, path);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            return profile;
+            return null;
         }
 
         static string GetObjectName(SerializedProperty property)
