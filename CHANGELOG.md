@@ -4,6 +4,21 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0-preview.5] - 2018-06-08
+### Experimental performance improvements and bugfixes
+- New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.  NOTE: This is a high-risk experimental feature, which may be removed if it breaks too much stuff.
+- Impulse Direction Mode bugfix - was not calculating direction properly
+- Impulse Listener: added 2D Distance checkbox for ignoring Z in distance calculations
+- CollisionImpulseSource: fixed bug when calculating collision speed
+- Bugfix: SimpleFollow transposers were not initilizing their position correctly at game start
+- Adjusted scale of 6D shake noise asset to use more reasonable units
+- Impulse Signal can now be accurately tested by using it in a vcam as noise
+- SaveDuringPlay bugfix: was not handling asset fields correctly - was sometimes crushing assets
+- Lens Presets and Impulse Channel Definition assets: don't create them unless user tries to edit them.  Prompt user for asset filename and location.
+- Noise Profiles: don't magically create asstes.  Prompt user for filename and location of new or cloned profiles
+- Bugfix when dragging orbital transposer transform: take bias into account
+- Example scenes now include use of CinemachineTriggerAction script.  Fixed broken Impulse example.
+
 ## [2.2.0-preview.4] - 2018-06-01
 ### New Group framing algorithm
 - New Group framing algorithm: tighter framing in GroupComposer and FramingTransposer
