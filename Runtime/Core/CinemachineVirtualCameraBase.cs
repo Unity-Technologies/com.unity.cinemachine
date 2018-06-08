@@ -76,7 +76,7 @@ namespace Cinemachine
         [Tooltip("When the virtual camera is not live, this is how often the virtual camera will be updated.  "
             + "Set this to tune for performance. Most of the time Never is fine, "
             + "unless the virtual camera is doing shot evaluation.")]
-        public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.Always;
+        public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.RoundRobin;
 
         /// <summary>
         /// A delegate to hook into the state calculation pipeline.
@@ -298,16 +298,9 @@ namespace Cinemachine
         }
 
         /// <summary>Maintains the global vcam registry.  Always call the base class implementation.</summary>
-        protected virtual void Awake()
-        {
-            CinemachineCore.Instance.CameraAwakened(this);
-        }
-
-        /// <summary>Maintains the global vcam registry.  Always call the base class implementation.</summary>
         protected virtual void OnDestroy()
         {
             CinemachineCore.Instance.RemoveActiveCamera(this);
-            CinemachineCore.Instance.CameraDestroyed(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
@@ -353,12 +346,14 @@ namespace Cinemachine
             UpdateVcamPoolStatus();    // Add to queue
             if (!CinemachineCore.Instance.IsLive(this))
                 PreviousStateIsValid = false;
+            CinemachineCore.Instance.CameraAwakened(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
         protected virtual void OnDisable()
         {
             UpdateVcamPoolStatus();    // Remove from queue
+            CinemachineCore.Instance.CameraDestroyed(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
@@ -407,16 +402,10 @@ namespace Cinemachine
         private int m_QueuePriority = int.MaxValue;
         private void UpdateVcamPoolStatus()
         {
-            m_QueuePriority = int.MaxValue;
             CinemachineCore.Instance.RemoveActiveCamera(this);
-            if (m_parentVcam == null)
-            {
-                if (isActiveAndEnabled)
-                {
-                    CinemachineCore.Instance.AddActiveCamera(this);
-                    m_QueuePriority = m_Priority;
-                }
-            }
+            if (m_parentVcam == null && isActiveAndEnabled)
+                CinemachineCore.Instance.AddActiveCamera(this);
+            m_QueuePriority = m_Priority;
         }
 
         /// <summary>When multiple virtual cameras have the highest priority, there is

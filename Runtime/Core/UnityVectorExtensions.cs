@@ -73,14 +73,15 @@ namespace Cinemachine.Utility
         /// <summary>Temp hack to bypass bug in 2018.2</summary>
         public static float Angle(Vector3 v1, Vector3 v2)
         {
-            //return Vector3.Angle(v1, v2);
+#if UNITY_2018_2_OR_NEWER
             return Mathf.Acos(Mathf.Clamp(Vector3.Dot(v1.normalized, v2.normalized), -1F, 1F)) * Mathf.Rad2Deg;
+#else
+            return Vector3.Angle(v1, v2);
+#endif
         }
 
-        /// <summary>Temp hack to bypass bug in 2018.2</summary>
         public static float SignedAngle(Vector3 v1, Vector3 v2, Vector3 up)
         {
-            //return Vector3.SignedAngle(v1, v2);
             float angle = Angle(v1, v2);
             if (Mathf.Sign(Vector3.Dot(up, Vector3.Cross(v1, v2))) < 0)
                 return -angle;

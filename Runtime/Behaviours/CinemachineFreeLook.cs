@@ -484,6 +484,7 @@ namespace Cinemachine
                                         = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
                                             => { return orbital.UpdateHeading(deltaTime, up, ref m_XAxis); };
                                 m_Rigs[i] = vcam;
+                                m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
                                 ++rigsFound;
                             }
                         }
@@ -515,6 +516,7 @@ namespace Cinemachine
                         Follow = m_Rigs[i].Follow;
                 }
                 m_Rigs[i].Follow = null;
+                m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
                 if (!PreviousStateIsValid)
                 {
                     m_Rigs[i].PreviousStateIsValid = false;

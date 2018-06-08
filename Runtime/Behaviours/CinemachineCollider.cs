@@ -222,7 +222,7 @@ namespace Cinemachine
                 List<List<Vector3>> list = new List<List<Vector3>>();
                 List<VcamExtraState> extraStates = GetAllExtraStates<VcamExtraState>();
                 foreach (var v in extraStates)
-                    if (v.debugResolutionPath != null)
+                    if (v.debugResolutionPath != null && v.debugResolutionPath.Count > 0)
                         list.Add(v.debugResolutionPath);
                 return list;
             }
@@ -239,7 +239,8 @@ namespace Cinemachine
                 extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = false;
                 extra.colliderDisplacement = 0;
-                extra.debugResolutionPath = null;
+                if (extra.debugResolutionPath != null)
+                    extra.debugResolutionPath.RemoveRange(0, extra.debugResolutionPath.Count);
             }
 
             // Move the body before the Aim is calculated

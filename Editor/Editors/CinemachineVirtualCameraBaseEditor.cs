@@ -165,7 +165,7 @@ namespace Cinemachine.Editor
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             }
             GUI.color = color;
-            if (isSolo)
+            if (isSolo && !Application.isPlaying)
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 
             if (labelWidth > 0)

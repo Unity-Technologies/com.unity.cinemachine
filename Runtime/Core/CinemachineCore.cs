@@ -142,7 +142,7 @@ namespace Cinemachine
         internal void CameraAwakened(CinemachineVirtualCameraBase vcam)
         {
             int parentLevel = 0;
-            for (ICinemachineCamera p = vcam; p != null; p = p.ParentCamera)
+            for (ICinemachineCamera p = vcam.ParentCamera; p != null; p = p.ParentCamera)
                 ++parentLevel;
             while (mAllCameras.Count <= parentLevel)
                 mAllCameras.Add(new List<CinemachineVirtualCameraBase>());
@@ -156,21 +156,29 @@ namespace Cinemachine
                 mAllCameras[i].Remove(vcam);
         }
 
+        CinemachineVirtualCameraBase mRoundRobinVcamLastFrame = null;
+
         /// <summary>Update all the active vcams in the scene, in the correct dependency order.</summary>
         internal void UpdateAllActiveVirtualCameras(Vector3 worldUp, float deltaTime)
         {
+            bool isLateUpdate = CurrentUpdateFilter == UpdateFilter.Late 
+                || CurrentUpdateFilter == UpdateFilter.ForcedLate;
+            bool canUpdateStandby = isLateUpdate || CinemachineBrain.GetSubframeCount() == 1;
+
+            bool didRoundRobinUpdate = false;
+            CinemachineVirtualCameraBase currentRoundRobin = mRoundRobinVcamLastFrame;
+
             // Update the leaf-most cameras first
-            UpdateFilter filter = CurrentUpdateFilter;
             for (int i = mAllCameras.Count-1; i >= 0; --i)
             {
-                int numCameras = mAllCameras[i].Count;
-                for (int j = 0; j < numCameras; ++j)
+                var sublist = mAllCameras[i];
+                for (int j = sublist.Count - 1; j >= 0; --j)
                 {
-                    var vcam = mAllCameras[i][j];
+                    var vcam = sublist[j];
                     if (!IsLive(vcam))
                     {
                         // Don't ever update subframes if not live
-                        if (filter == UpdateFilter.Fixed || filter == UpdateFilter.ForcedFixed)
+                        if (!canUpdateStandby)
                             continue;
 
                         if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Never)
@@ -182,11 +190,31 @@ namespace Cinemachine
                         // Handle round-robin
                         if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.RoundRobin)
                         {
+                            if (currentRoundRobin != null)
+                            {
+                                if (currentRoundRobin == vcam)
+                                    currentRoundRobin = null; // Take the next vcam for round-robin
+                                continue;
+                            }
+                            didRoundRobinUpdate = true;
+                            currentRoundRobin = vcam;
                         }
                     }
-                    UpdateVirtualCamera(vcam, worldUp, deltaTime);
+                    bool updated = UpdateVirtualCamera(vcam, worldUp, deltaTime);
+                    if (canUpdateStandby && vcam == currentRoundRobin)
+                    {
+                        // Did the previous roundrobin go live this frame?
+                        if (!didRoundRobinUpdate)
+                            currentRoundRobin = null; // yes, take the next vcam for round-robin
+                        else if (!updated)
+                            currentRoundRobin = mRoundRobinVcamLastFrame; // We tried to update but it didn't happen - keep the old one for next time
+                    }
                 }
             }
+            // Finally, if the last roundrobin update candidate no longer exists, get rid of it
+            if (canUpdateStandby && !didRoundRobinUpdate)
+                currentRoundRobin = null; // take the first vcam for next round-robin
+            mRoundRobinVcamLastFrame = currentRoundRobin; 
         }
 
         /// <summary>
@@ -194,7 +222,7 @@ namespace Cinemachine
         /// hasn't already been updated this frame.  Always update vcams via this method.
         /// Calling this more than once per frame for the same camera will have no effect.
         /// </summary>
-        internal void UpdateVirtualCamera(
+        internal bool UpdateVirtualCamera(
             CinemachineVirtualCameraBase vcam, Vector3 worldUp, float deltaTime)
         {
             UpdateFilter filter = CurrentUpdateFilter;
@@ -215,7 +243,7 @@ namespace Cinemachine
             {
                 if (mUpdateStatus.ContainsKey(vcam))
                     mUpdateStatus.Remove(vcam);
-                return; // camera was deleted
+                return false; // camera was deleted
             }
             int now = Time.frameCount;
             UpdateStatus status;
@@ -248,7 +276,7 @@ namespace Cinemachine
                 status.preferredUpdate = filter;
                 while (status.lastUpdateSubframe < subframes)
                 {
-//Debug.Log(vcam.Name + ": frame " + Time.frameCount + "." + status.lastUpdateSubframe + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
+//Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "." + status.lastUpdateSubframe + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
                     vcam.InternalUpdateCameraState(worldUp, deltaTime);
                     ++status.lastUpdateSubframe;
                 }
@@ -256,6 +284,7 @@ namespace Cinemachine
             }
 
             mUpdateStatus[vcam] = status;
+            return updateNow;
         }
 
         struct UpdateStatus

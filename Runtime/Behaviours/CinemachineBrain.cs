@@ -95,7 +95,7 @@ namespace Cinemachine
         {
             get
             {
-                if (m_OutputCamera == null)
+                if (m_OutputCamera == null && !Application.isPlaying)
                     m_OutputCamera = GetComponent<Camera>();
                 return m_OutputCamera;
             }
@@ -309,6 +309,7 @@ namespace Cinemachine
             mActiveCameraPreviousFrame = null;
             mOutgoingCameraPreviousFrame = null;
             mPreviousFrameWasOverride = false;
+            m_OutputCamera = GetComponent<Camera>();
             CinemachineCore.Instance.AddActiveBrain(this);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
@@ -665,12 +666,13 @@ namespace Cinemachine
         /// </summary>
         private ICinemachineCamera TopCameraFromPriorityQueue()
         {
+            CinemachineCore core = CinemachineCore.Instance;
             Camera outputCamera = OutputCamera;
             int mask = outputCamera == null ? ~0 : outputCamera.cullingMask;
-            int numCameras = CinemachineCore.Instance.VirtualCameraCount;
+            int numCameras = core.VirtualCameraCount;
             for (int i = 0; i < numCameras; ++i)
             {
-                var cam = CinemachineCore.Instance.GetVirtualCamera(i);
+                var cam = core.GetVirtualCamera(i);
                 GameObject go = cam != null ? cam.gameObject : null;
                 if (go != null && (mask & (1 << go.layer)) != 0)
                     return cam;
