@@ -1,3 +1,8 @@
+<size=20><b>Version 2.2.0-preview.6</b></size>
+
+- Bugfix: Timeline with CM shot was causing jitter in some FixedUpdate situations
+- Bugfix: Multiple brains with heterogeneous update methods were not behaving correctly.  CM will now support this, but you must make sure that the brains have different layer masks.
+
 <size=20><b>Version 2.2.0-preview.5</b></size>
 
 - New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.  NOTE: This is a high-risk experimental feature, which may be removed if it breaks too much stuff.

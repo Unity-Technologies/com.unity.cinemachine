@@ -441,11 +441,14 @@ namespace Cinemachine
         {
             if (SoloCamera != null)
                 return Time.unscaledDeltaTime;
-            OverrideStackFrame activeOverride = GetActiveOverride();
-            if (activeOverride != null)
-                return activeOverride.Expired ? -1 : activeOverride.deltaTime;
+
             if (!Application.isPlaying)
+            {
+                OverrideStackFrame activeOverride = GetActiveOverride();
+                if (activeOverride != null)
+                    return activeOverride.Expired ? -1 : activeOverride.deltaTime;
                 return -1;
+            }
             if (m_IgnoreTimeScale)
                 return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
             return fixedDelta ? Time.fixedDeltaTime * Time.timeScale : Time.deltaTime;
@@ -453,10 +456,11 @@ namespace Cinemachine
 
         private void UpdateVirtualCameras(CinemachineCore.UpdateFilter updateFilter, float deltaTime)
         {
-            CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
-
             // We always update all active virtual cameras 
-            CinemachineCore.Instance.UpdateAllActiveVirtualCameras(DefaultWorldUp, deltaTime);
+            CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
+            Camera camera = OutputCamera;
+            CinemachineCore.Instance.UpdateAllActiveVirtualCameras(
+                camera == null ? -1 : camera.cullingMask, DefaultWorldUp, deltaTime);
 
             // Make sure that the current live cameras get updated this frame.
             // Only cameras that are enabled get automatically updated.
