@@ -149,7 +149,7 @@ namespace Cinemachine
         override protected void OnEnable()
         {
             base.OnEnable();
-            m_State = PullStateFromVirtualCamera(Vector3.up, m_Lens);
+            m_State = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
             InvalidateComponentPipeline();
 
             // Can't add components during OnValidate
@@ -407,8 +407,7 @@ namespace Cinemachine
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
             // Initialize the camera state, in case the game object got moved in the editor
-            CameraState state = PullStateFromVirtualCamera(worldUp, m_Lens);
-            m_Lens = state.Lens;
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
 
             Transform lookAtTarget = LookAt;
             if (lookAtTarget != mCachedLookAtTarget)

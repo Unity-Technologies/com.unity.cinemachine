@@ -5,7 +5,7 @@ using System;
 namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
-    internal sealed class CinemachineSettings
+    public sealed class CinemachineSettings
     {
         public static class CinemachineCoreSettings
         {

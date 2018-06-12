@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Cinemachine.Utility
 {
-    internal static class SplineHelpers
+    public static class SplineHelpers
     {
         public static Vector3 Bezier3(
             float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)

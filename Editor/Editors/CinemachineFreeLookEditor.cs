@@ -54,7 +54,8 @@ namespace Cinemachine
             {
                 Rect rect = EditorGUILayout.GetControlRect(true);
                 SerializedProperty orbit = orbits.GetArrayElementAtIndex(i);
-                InspectorUtility.MultiPropertyOnLine(rect, new GUIContent(CinemachineFreeLook.RigNames[i]),
+                InspectorUtility.MultiPropertyOnLine(rect, 
+                    new GUIContent(CinemachineFreeLook.RigNames[i]),
                     new [] { orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Height), 
                             orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
                     null);

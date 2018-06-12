@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
-    internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
+    public class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
     {
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -100,7 +100,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        internal static void DrawCircleAtPointWithRadius(Vector3 point, Quaternion orient, float radius)
+        public static void DrawCircleAtPointWithRadius(Vector3 point, Quaternion orient, float radius)
         {
             Matrix4x4 prevMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(point, orient, radius * Vector3.one);
