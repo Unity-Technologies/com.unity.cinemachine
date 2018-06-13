@@ -492,9 +492,6 @@ namespace Cinemachine
                 mOutgoingCameraPreviousFrame = null;
             else
             {
-                // If there is an override, we kill the in-game blend
-                if (activeOverride != null)
-                    mActiveBlend = null;
                 CinemachineBlend activeBlend = ActiveBlend;
 
                 // Check for unexpected deletion of the cached mActiveCameraPreviousFrame
@@ -502,7 +499,7 @@ namespace Cinemachine
                     mActiveCameraPreviousFrame = null;
 
                 // Are we transitioning cameras?
-                if (mActiveCameraPreviousFrame != activeCamera)
+                if (!IsSameCamera(mActiveCameraPreviousFrame, activeCamera))
                 {
                     // Do we need to create a game-play blend?
                     if (mActiveCameraPreviousFrame != null
@@ -511,13 +508,13 @@ namespace Cinemachine
                         && deltaTime >= 0)
                     {
                         // Create a blend (will be null if a cut)
-                        activeBlend = CreateBlend(
+                        activeBlend = mActiveBlend = CreateBlend(
                                 mActiveCameraPreviousFrame, activeCamera,
                                 LookupBlend(mActiveCameraPreviousFrame, activeCamera), 
-                                mActiveBlend, deltaTime);
+                                activeBlend, deltaTime);
                     }
                     // Need this check because Timeline override sometimes inverts outgoing and incoming
-                    if (activeCamera != mOutgoingCameraPreviousFrame)
+                    if (!IsSameCamera(activeCamera, mOutgoingCameraPreviousFrame))
                     {
                         // Notify incoming camera of transition
                         activeCamera.OnTransitionFromCamera(mActiveCameraPreviousFrame, DefaultWorldUp, deltaTime);
@@ -535,10 +532,10 @@ namespace Cinemachine
                     // If we're cutting without a blend, or no active cameras
                     // were active last frame, send an event
                     if (activeBlend == null
-                        || (activeBlend.CamA != mActiveCameraPreviousFrame
-                            && activeBlend.CamB != mActiveCameraPreviousFrame
-                            && activeBlend.CamA != mOutgoingCameraPreviousFrame
-                            && activeBlend.CamB != mOutgoingCameraPreviousFrame))
+                        || (!IsSameCamera(activeBlend.CamA, mActiveCameraPreviousFrame)
+                            && !IsSameCamera(activeBlend.CamB, mActiveCameraPreviousFrame)
+                            && !IsSameCamera(activeBlend.CamA, mOutgoingCameraPreviousFrame)
+                            && !IsSameCamera(activeBlend.CamB, mOutgoingCameraPreviousFrame)))
                     {
                         if (m_CameraCutEvent != null)
                             m_CameraCutEvent.Invoke(this);
@@ -546,16 +543,13 @@ namespace Cinemachine
                 }
 
                 // Advance the current blend (if any)
-                if (activeBlend != null)
+                if (mActiveBlend != null)
                 {
-                    if (activeOverride == null)
-                        activeBlend.TimeInBlend += (deltaTime >= 0)
-                            ? deltaTime : activeBlend.Duration;
-                    if (activeBlend.IsComplete)
-                        activeBlend = null;
+                    mActiveBlend.TimeInBlend += (deltaTime >= 0)
+                        ? deltaTime : activeBlend.Duration;
+                    if (mActiveBlend.IsComplete)
+                        mActiveBlend = null;
                 }
-                if (activeOverride == null)
-                    mActiveBlend = activeBlend;
 
                 // Apply the result to the Unity camera
                 CameraState state = activeCamera.State;
@@ -588,6 +582,19 @@ namespace Cinemachine
                     }
                 }
             }
+        }
+
+        private bool IsSameCamera(ICinemachineCamera camA, ICinemachineCamera camB)
+        {
+            if (camA == camB)
+                return true;
+            BlendSourceVirtualCamera bs = camA as BlendSourceVirtualCamera;
+            if (bs != null && bs.Blend.Uses(camB))
+                return true;
+            bs = camB as BlendSourceVirtualCamera;
+            if (bs != null && bs.Blend.Uses(camA))
+                return true;
+            return false;
         }
 
         /// <summary>
