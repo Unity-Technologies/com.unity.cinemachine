@@ -84,6 +84,7 @@ namespace Cinemachine.Timeline
             // Override the Cinemachine brain with our results
             ICinemachineCamera camA = incomingIsB ? clipA.vcam : clipB.vcam;
             ICinemachineCamera camB = incomingIsB ? clipB.vcam : clipA.vcam;
+            float camWeightB = incomingIsB ? clipB.weight : 1 - clipB.weight;
             mBrainOverrideId = mBrain.SetCameraOverride(
                     mBrainOverrideId, camA, camB, camWeightB, GetDeltaTime(info.deltaTime));
         }
