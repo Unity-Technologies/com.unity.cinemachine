@@ -440,7 +440,7 @@ namespace Cinemachine
         protected CinemachineBlend CreateBlend(
             ICinemachineCamera camA, ICinemachineCamera camB, 
             CinemachineBlendDefinition blendDef,
-            CinemachineBlend activeBlend, float deltaTime)
+            CinemachineBlend activeBlend)
         {
             if (blendDef.BlendCurve == null || blendDef.m_Time <= 0 || (camA == null && camB == null))
                 return null;
@@ -449,7 +449,7 @@ namespace Cinemachine
                 if (activeBlend.Uses(camB))
                     camA = new StaticPointVirtualCamera(activeBlend.State, "Mid-Blend");
                 else
-                    camA = new BlendSourceVirtualCamera(activeBlend, deltaTime);
+                    camA = new BlendSourceVirtualCamera(activeBlend);
             }
             else if (camA == null)
                 camA = new StaticPointVirtualCamera(State, "(none)");
