@@ -45,6 +45,11 @@ namespace Cinemachine
         GameObject VirtualCameraGameObject { get; }
 
         /// <summary>
+        /// Will return false if this references a deleted object
+        /// </summary>
+        bool IsValid { get; }
+
+        /// <summary>
         /// For cameras that implement child cameras, returns the parent vcam, otherwise null.
         /// </summary>
         ICinemachineCamera ParentCamera { get; }
