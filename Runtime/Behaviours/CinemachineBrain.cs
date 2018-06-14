@@ -265,6 +265,26 @@ namespace Cinemachine
         }
 #endif
 
+        private float GetEffectiveDeltaTime(bool fixedDelta)
+        {
+            if (SoloCamera != null)
+                return Time.unscaledDeltaTime;
+
+            if (!Application.isPlaying)
+            {
+                for (int i = mFrameStack.Count - 1; i > 0; --i)
+                {
+                    var frame = mFrameStack[i];
+                    if (frame.Active)
+                        return frame.TimeOverrideExpired ? -1 : frame.deltaTimeOverride;
+                }
+                return -1;
+            }
+            if (m_IgnoreTimeScale)
+                return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
+            return fixedDelta ? Time.fixedDeltaTime * Time.timeScale : Time.deltaTime;
+        }
+
         private void UpdateVirtualCameras(CinemachineCore.UpdateFilter updateFilter, float deltaTime)
         {
             // We always update all active virtual cameras 
@@ -304,6 +324,8 @@ namespace Cinemachine
             ICinemachineCamera vcam = blend.CamB;
             while (vcam != null)
             {
+                if (vcam.VirtualCameraGameObject == null)
+                    return null;    // deleted!
                 BlendSourceVirtualCamera bs = vcam as BlendSourceVirtualCamera;
                 if (bs == null)
                     break;
@@ -428,6 +450,34 @@ namespace Cinemachine
             }
         }
 
+        private void ProcessActiveCamera(float deltaTime)
+        {
+            var activeCameraPreviousFrame = ActiveVirtualCamera;
+
+            UpdateFrame0(deltaTime);
+            UpdateCurrentLiveCameras();
+
+            // Make sure all live cameras get updated, in case some of them are deactivated
+            mCurrentLiveCameras.UpdateCameraState(DefaultWorldUp, deltaTime);
+
+            // Has the current camera changed this frame?
+            var activeCamera = ActiveVirtualCamera;
+            if (activeCamera != activeCameraPreviousFrame)
+            {
+                // Notify incoming camera of transition
+                activeCamera.OnTransitionFromCamera(activeCameraPreviousFrame, DefaultWorldUp, deltaTime);
+                if (m_CameraActivatedEvent != null)
+                    m_CameraActivatedEvent.Invoke(activeCamera);
+
+                // If we're cutting without a blend, send an event
+                if (m_CameraCutEvent != null && !IsBlending)
+                    m_CameraCutEvent.Invoke(this);
+            }
+
+            // Apply the result to the Unity camera
+            PushStateToUnityCamera(mCurrentLiveCameras.State);
+        }
+
         private void UpdateFrame0(float deltaTime)
         {
             // Update the in-game frame (frame 0)
@@ -477,14 +527,14 @@ namespace Cinemachine
             }
         }
 
-        private void UpdateCurrentFrameBlend()
+        private void UpdateCurrentLiveCameras()
         {
             // Resolve the current working frame states in the stack
             int lastActive = 0;
             for (int i = 0; i < mFrameStack.Count; ++i)
             {
                 BrainFrame frame = mFrameStack[i];
-                if (frame.Active)
+                if (i == 0 || frame.Active)
                 {
                     frame.workingBlend.CamA = frame.blend.CamA;
                     frame.workingBlend.CamB = frame.blend.CamB;
@@ -523,54 +573,6 @@ namespace Cinemachine
             mCurrentLiveCameras.BlendCurve = workingBlend.BlendCurve;
             mCurrentLiveCameras.Duration = workingBlend.Duration;
             mCurrentLiveCameras.TimeInBlend = workingBlend.TimeInBlend;
-        }
-
-        private void ProcessActiveCamera(float deltaTime)
-        {
-            var activeCameraPreviousFrame = ActiveVirtualCamera;
-
-            UpdateFrame0(deltaTime);
-            UpdateCurrentFrameBlend();
-
-            // Make sure all live cameras get updated, in case some of them are deactivated
-            mCurrentLiveCameras.UpdateCameraState(DefaultWorldUp, deltaTime);
-
-            // Has the current camera changed this frame?
-            var activeCamera = ActiveVirtualCamera;
-            if (activeCamera != activeCameraPreviousFrame)
-            {
-                // Notify incoming camera of transition
-                activeCamera.OnTransitionFromCamera(activeCameraPreviousFrame, DefaultWorldUp, deltaTime);
-                if (m_CameraActivatedEvent != null)
-                    m_CameraActivatedEvent.Invoke(activeCamera);
-
-                // If we're cutting without a blend, send an event
-                if (m_CameraCutEvent != null && !IsBlending)
-                    m_CameraCutEvent.Invoke(this);
-            }
-
-            // Apply the result to the Unity camera
-            PushStateToUnityCamera(mCurrentLiveCameras.State);
-        }
-
-        private float GetEffectiveDeltaTime(bool fixedDelta)
-        {
-            if (SoloCamera != null)
-                return Time.unscaledDeltaTime;
-
-            if (!Application.isPlaying)
-            {
-                for (int i = mFrameStack.Count - 1; i > 0; --i)
-                {
-                    var frame = mFrameStack[i];
-                    if (frame.Active)
-                        return frame.TimeOverrideExpired ? -1 : frame.deltaTimeOverride;
-                }
-                return -1;
-            }
-            if (m_IgnoreTimeScale)
-                return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
-            return fixedDelta ? Time.fixedDeltaTime * Time.timeScale : Time.deltaTime;
         }
 
         /// <summary>
