@@ -274,7 +274,7 @@ namespace Cinemachine
             PreviousStateIsValid = true;
 
             // Set up for next frame
-            bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
+            bool activeCam = (deltaTime >= 0) && CinemachineCore.Instance.IsLive(this);
             if (activeCam)
             {
                 if (m_YAxis.Update(deltaTime))
@@ -535,7 +535,7 @@ namespace Cinemachine
                 mOrbitals[i].m_BindingMode = m_BindingMode;
                 mOrbitals[i].m_Heading = m_Heading;
                 mOrbitals[i].m_XAxis = m_XAxis;
-                mOrbitals[i].m_RecenterToTargetHeading.m_enabled = (i == 0) ? m_RecenterToTargetHeading.m_enabled : false;
+                mOrbitals[i].m_RecenterToTargetHeading.m_enabled = (i == 1) ? m_RecenterToTargetHeading.m_enabled : false;
                 mOrbitals[i].m_RecenterToTargetHeading.m_WaitTime = m_RecenterToTargetHeading.m_WaitTime;
                 mOrbitals[i].m_RecenterToTargetHeading.m_RecenteringTime = m_RecenterToTargetHeading.m_RecenteringTime;
 
