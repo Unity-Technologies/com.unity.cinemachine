@@ -22,6 +22,14 @@ namespace Cinemachine.Timeline
             mPlaying = info.evaluationType == FrameData.EvaluationType.Playback;
         }
 
+        struct ClipInfo
+        {
+            public ICinemachineCamera vcam;
+            public float weight;
+            public double localTime;
+            public double duration;
+        }
+
         public override void ProcessFrame(Playable playable, FrameData info, object playerData)
         {
             base.ProcessFrame(playable, info, playerData);
@@ -40,30 +48,43 @@ namespace Cinemachine.Timeline
             // In the case that the weights don't add up to 1, the outgoing weight
             // will be calculated as the inverse of the incoming weight.
             int activeInputs = 0;
-            ICinemachineCamera camA = null;
-            ICinemachineCamera camB = null;
-            float camWeightB = 1f;
+            ClipInfo clipA = new ClipInfo();
+            ClipInfo clipB = new ClipInfo();
             for (int i = 0; i < playable.GetInputCount(); ++i)
             {
-                CinemachineShotPlayable shot
-                    = ((ScriptPlayable<CinemachineShotPlayable>)playable.GetInput(i)).GetBehaviour();
                 float weight = playable.GetInputWeight(i);
+                var clip = (ScriptPlayable<CinemachineShotPlayable>)playable.GetInput(i);
+                CinemachineShotPlayable shot = clip.GetBehaviour();
                 if (shot != null && shot.IsValid
                     && playable.GetPlayState() == PlayState.Playing
                     && weight > 0.0001f)
                 {
-                    if (shot.VirtualCamera != null)
-                    {
-                        camA = camB;
-                        camWeightB = weight;
-                        camB = shot.VirtualCamera;
-                    }
+                    clipA = clipB;
+                    clipB.vcam = shot.VirtualCamera;
+                    clipB.weight = weight;
+                    clipB.localTime = clip.GetTime();
+                    clipB.duration = clip.GetDuration();
                     if (++activeInputs == 2)
                         break;
                 }
             }
 
+            // Figure out which clip is incoming
+            bool incomingIsB = clipB.weight >= 1 || clipB.localTime < clipB.duration / 2;
+            if (activeInputs == 2)
+            {
+                if (clipB.localTime > clipA.localTime)
+                    incomingIsB = true;
+                else if (clipB.localTime < clipA.localTime)
+                    incomingIsB = false;
+                else 
+                    incomingIsB = clipB.duration >= clipA.duration;
+            }
+
             // Override the Cinemachine brain with our results
+            ICinemachineCamera camA = incomingIsB ? clipA.vcam : clipB.vcam;
+            ICinemachineCamera camB = incomingIsB ? clipB.vcam : clipA.vcam;
+            float camWeightB = incomingIsB ? clipB.weight : 1 - clipB.weight;
             mBrainOverrideId = mBrain.SetCameraOverride(
                     mBrainOverrideId, camA, camB, camWeightB, GetDeltaTime(info.deltaTime));
         }

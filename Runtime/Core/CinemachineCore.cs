@@ -159,7 +159,7 @@ namespace Cinemachine
         CinemachineVirtualCameraBase mRoundRobinVcamLastFrame = null;
 
         /// <summary>Update all the active vcams in the scene, in the correct dependency order.</summary>
-        internal void UpdateAllActiveVirtualCameras(Vector3 worldUp, float deltaTime)
+        internal void UpdateAllActiveVirtualCameras(int layerMask, Vector3 worldUp, float deltaTime)
         {
             bool isLateUpdate = CurrentUpdateFilter == UpdateFilter.Late 
                 || CurrentUpdateFilter == UpdateFilter.ForcedLate;
@@ -174,6 +174,7 @@ namespace Cinemachine
                 var sublist = mAllCameras[i];
                 for (int j = sublist.Count - 1; j >= 0; --j)
                 {
+                    bool doRoundRobinUpdateNow = false;
                     var vcam = sublist[j];
                     if (!IsLive(vcam))
                     {
@@ -196,17 +197,24 @@ namespace Cinemachine
                                     currentRoundRobin = null; // Take the next vcam for round-robin
                                 continue;
                             }
-                            didRoundRobinUpdate = true;
+                            doRoundRobinUpdateNow = true;
                             currentRoundRobin = vcam;
                         }
                     }
+                    // Unless this is a round-robin update, we skip this vcam if it's 
+                    // not on the layer mask
+                    if (!doRoundRobinUpdateNow && ((1 << vcam.gameObject.layer) & layerMask) == 0)
+                        continue;
+
                     bool updated = UpdateVirtualCamera(vcam, worldUp, deltaTime);
                     if (canUpdateStandby && vcam == currentRoundRobin)
                     {
                         // Did the previous roundrobin go live this frame?
-                        if (!didRoundRobinUpdate)
+                        if (!doRoundRobinUpdateNow)
                             currentRoundRobin = null; // yes, take the next vcam for round-robin
-                        else if (!updated)
+                        else if (updated)
+                            didRoundRobinUpdate = true;
+                        else
                             currentRoundRobin = mRoundRobinVcamLastFrame; // We tried to update but it didn't happen - keep the old one for next time
                     }
                 }

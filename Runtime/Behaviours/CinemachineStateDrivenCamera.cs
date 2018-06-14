@@ -197,7 +197,7 @@ namespace Cinemachine
                 // Create a blend (will be null if a cut)
                 mActiveBlend = CreateBlend(
                         previousCam, LiveChild,
-                        LookupBlend(previousCam, LiveChild), mActiveBlend, deltaTime);
+                        LookupBlend(previousCam, LiveChild), mActiveBlend);
 
                 // Notify incoming camera of transition
                 LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);

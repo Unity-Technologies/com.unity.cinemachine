@@ -170,7 +170,7 @@ namespace Cinemachine
                     mActiveBlend = CreateBlend(
                             previousCam, LiveChild,
                             m_Instructions[mCurrentInstruction].m_Blend, 
-                            mActiveBlend, deltaTime);
+                            mActiveBlend);
 
                     // Notify incoming camera of transition
                     LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);

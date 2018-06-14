@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0-preview.6] - 2018-06-12
+### Minor bugfixes
+- Bugfix: Timeline with CM shot was causing jitter in some FixedUpdate situations
+- Bugfix: Multiple brains with heterogeneous update methods were not behaving correctly.  CM will now support this, but you must make sure that the brains have different layer masks.
+
 ## [2.2.0-preview.5] - 2018-06-08
 ### Experimental performance improvements and bugfixes
 - New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.  NOTE: This is a high-risk experimental feature, which may be removed if it breaks too much stuff.
