@@ -77,12 +77,12 @@ namespace Cinemachine
         /// <summary>Camera will not rotate horizontally if the target is within this range of the position</summary>
         [Range(0f, 1f)]
         [Tooltip("Camera will not rotate horizontally if the target is within this range of the position.")]
-        public float m_DeadZoneWidth = 0.1f;
+        public float m_DeadZoneWidth = 0f;
 
         /// <summary>Camera will not rotate vertically if the target is within this range of the position</summary>
         [Range(0f, 1f)]
         [Tooltip("Camera will not rotate vertically if the target is within this range of the position.")]
-        public float m_DeadZoneHeight = 0.1f;
+        public float m_DeadZoneHeight = 0f;
 
         /// <summary>When target is within this region, camera will gradually move to re-align
         /// towards the desired position, depending onm the damping speed</summary>
