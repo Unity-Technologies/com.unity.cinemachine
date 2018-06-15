@@ -458,6 +458,9 @@ namespace Cinemachine
             UpdateCurrentLiveCameras();
 
             // Make sure all live cameras get updated, in case some of them are deactivated
+            var solo = SoloCamera;
+            if (solo != null)
+                solo.UpdateCameraState(DefaultWorldUp, deltaTime);
             mCurrentLiveCameras.UpdateCameraState(DefaultWorldUp, deltaTime);
 
             // Has the current camera changed this frame?
@@ -475,7 +478,7 @@ namespace Cinemachine
             }
 
             // Apply the result to the Unity camera
-            PushStateToUnityCamera(mCurrentLiveCameras.State);
+            PushStateToUnityCamera(solo != null ? solo.State : mCurrentLiveCameras.State);
         }
 
         private void UpdateFrame0(float deltaTime)
@@ -584,6 +587,8 @@ namespace Cinemachine
         /// or part of a blend in progress.</returns>
         public bool IsLive(ICinemachineCamera vcam)
         {
+            if (SoloCamera == vcam)
+                return true;
             if (mCurrentLiveCameras.Uses(vcam))
                 return true;
 

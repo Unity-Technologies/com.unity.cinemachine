@@ -78,6 +78,7 @@ namespace Cinemachine.Utility
             return Mathf.Atan2((v1 - v2).magnitude, (v1 + v2).magnitude) * Mathf.Rad2Deg * 2;
         }
 
+        /// <summary>Much more stable for small angles than Unity's native implementation</summary>
         public static float SignedAngle(Vector3 v1, Vector3 v2, Vector3 up)
         {
             float angle = Angle(v1, v2);

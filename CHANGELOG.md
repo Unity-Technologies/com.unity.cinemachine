@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0-preview.8] - 2018-06-15
+### Regression fix
+- Fixed regression in preview.7: Solo works again
+
 ## [2.2.0-preview.7] - 2018-06-15
 ### More bugfixes
 - Increased stability of vcams with very small FOVs
