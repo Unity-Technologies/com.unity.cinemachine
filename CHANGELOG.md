@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0-preview.7] - 2018-06-15
+### More bugfixes
+- Increased stability of vcams with very small FOVs
+- Added some sample lens presets when a new preset asset is created
+- Composer dead zone now defaults to 0
+- Refactored interaction between timeline and CM brain, to improve handling of edge cases (fogbugz case 1048497)
+- Fixed regression from preview.5: FreeLook X recentering works again
+
 ## [2.2.0-preview.6] - 2018-06-12
 ### Minor bugfixes
 - Bugfix: Timeline with CM shot was causing jitter in some FixedUpdate situations
