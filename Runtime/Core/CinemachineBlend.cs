@@ -45,7 +45,7 @@ namespace Cinemachine
 
         /// <summary>True if the time relative to the start of the blend is greater
         /// than or equal to the blend duration</summary>
-        public bool IsComplete { get { return TimeInBlend >= Duration; } }
+        public bool IsComplete { get { return TimeInBlend >= Duration || !IsValid; } }
 
         /// <summary>Text description of the blend, for debugging</summary>
         public string Description

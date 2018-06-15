@@ -74,7 +74,8 @@ namespace Cinemachine.Utility
         public static float Angle(Vector3 v1, Vector3 v2)
         {
 #if UNITY_2018_2_OR_NEWER
-            return Mathf.Acos(Mathf.Clamp(Vector3.Dot(v1.normalized, v2.normalized), -1F, 1F)) * Mathf.Rad2Deg;
+            float d = v1.magnitude * v2.magnitude;
+            return Mathf.Acos(Mathf.Clamp(Vector3.Dot(v1, v2) / d, -1F, 1F)) * Mathf.Rad2Deg;
 #else
             return Vector3.Angle(v1, v2);
 #endif

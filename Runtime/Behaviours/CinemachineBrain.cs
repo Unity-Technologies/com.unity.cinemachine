@@ -324,7 +324,7 @@ namespace Cinemachine
             ICinemachineCamera vcam = blend.CamB;
             while (vcam != null)
             {
-                if (vcam.VirtualCameraGameObject == null)
+                if (!vcam.IsValid)
                     return null;    // deleted!
                 BlendSourceVirtualCamera bs = vcam as BlendSourceVirtualCamera;
                 if (bs == null)
