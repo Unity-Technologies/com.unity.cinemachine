@@ -1,57 +1,12 @@
-<size=20><b>Version 2.2.0-preview.8</b></size>
-
-- Fixed regression in preview.7: Solo works again
-
-<size=20><b>Version 2.2.0-preview.7</b></size>
-
-- Increased stability of vcams with very small FOVs
-- Added some sample lens presets when a new preset asset is created
-- Composer dead zone now defaults to 0
-- Refactored interaction between timeline and CM brain, to improve handling of edge cases (fogbugz case 1048497)
-- Fixed regression from preview.5: FreeLook X recentering works again
-
-<size=20><b>Version 2.2.0-preview.6</b></size>
-
-- Bugfix: Timeline with CM shot was causing jitter in some FixedUpdate situations
-- Bugfix: Multiple brains with heterogeneous update methods were not behaving correctly.  CM will now support this, but you must make sure that the brains have different layer masks.
-
-<size=20><b>Version 2.2.0-preview.5</b></size>
-
-- New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.  NOTE: This is a high-risk experimental feature, which may be removed if it breaks too much stuff.
-- Impulse Direction Mode bugfix - was not calculating direction properly
-- Impulse Listener: added 2D Distance checkbox for ignoring Z in distance calculations
-- CollisionImpulseSource: fixed bug when calculating collision speed
-- Bugfix: SimpleFollow transposers were not initilizing their position correctly at game start
-- Adjusted scale of 6D shake noise asset to use more reasonable units
-- Impulse Signal can now be accurately tested by using it in a vcam as noise
-- SaveDuringPlay bugfix: was not handling asset fields correctly - was sometimes crushing assets
-- Lens Presets and Impulse Channel Definition assets: don't create them unless user tries to edit them.  Prompt user for asset filename and location.
-- Noise Profiles: don't magically create asstes.  Prompt user for filename and location of new or cloned profiles
-- Bugfix when dragging orbital transposer transform: take bias into account
-- Example scenes now include use of CinemachineTriggerAction script.  Fixed broken Impulse example.
-
-<size=20><b>Version 2.2.0-preview.4</b></size>
-
-- New Group framing algorithm: tighter framing in GroupComposer and FramingTransposer
-- LensSettings Aspect, Orthographic, IsPhysicalCamera, SensorSize properties no longer internal
-
-<size=20><b>Version 2.2.0-preview.3</b></size>
-
-- Impulse: added Direction Mode, to rotate signals in the direction of the listener
-- Collider: stabilization
-- FreeLook: better handling of Inherit Position
-
-<size=20><b>Version 2.2.0-preview.2</b></size>
-
-- Impulse example scene: added missing material
-- Added Presets to impulse Signal popup menu
-
-<size=20><b>Version 2.2.0-preview.1</b></size>
+<size=20><b>Version 2.2.0</b></size>
 
 - New Cinemachine Impulse module for event-driven camera shakes
 - New Event Helper script CinemachineTriggerAction takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
+- New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.  
+- New NoiseSettings editor with signal preview
 - Added Focal Length or Named FOV presets for Camera Lens
-- Added support for Physical Camera
+- Added support for Physical Camera: focal length and Lens Offset
+- New improved Group framing algorithm: tighter group framing in GroupComposer and FramingTransposer
 - Collider: now returns TargetIsObscured if the target is offscreen (great for cameras with fixed aim)
 - Collider: added Minimum Occlusion Time setting, to ignore fleeting obstructions
 - Collider: added Transparent Layers mask, to specify solid objects that don't obstruct view
@@ -59,16 +14,25 @@
 - Collider: Added separate damping setting for when target is being occluded vs when camera is being returned to its normal position
 - Collider: added Smoothing setting, to reduce camera jumpiness in environements with lots of obstacles
 - NoiseSettings: added checkbox for pure sine-wave instead of Perlin wave
-- Added NoiseSettings editor with signal preview
 - If no LookAt target, PostProcessing FocusTracksTarget offset is relative to camera
 - TrackedDolly: Default up mode sets Up to World Up
-- Virtual Camera: New Blending section in inspector that gives more control over blending:
+- Virtual Camera: New Transitions section in inspector that gives more control over blending:
   - Blend Hint provides some control over how the position and rotation are interpolated
-  - Inhert Position checkbox to ensure smooth positional handoff from outgoing camera
+  - Inherit Position checkbox to ensure smooth positional handoff from outgoing camera
   - OnCameraLive event gets fired when the camera activates.  Useful for custom handlers.
 - Added ScreenSpaceAimWhenTargetsDiffer as a vcam blend hint.  This influences what happens when blending between vcams with different LookAt targets
+- Increased stability of vcams with very small FOVs
 - Framing Transposer no longer requires LookAt to be null
+- LensSettings Aspect, Orthographic, IsPhysicalCamera, SensorSize properties no longer internal
+- Noise Profiles: don't magically create assets.  Prompt user for filename and location of new or cloned profiles
+- Refactored interaction between timeline and CM brain, to improve handling of edge cases (fogbugz case 1048497)
 - Bugfix: StateDrivenCamera Editor was not finding states if target was OverrideController
+- Bugfix when dragging orbital transposer transform: take bias into account
+- Bugfix: SaveDuringPlay was not handling asset fields correctly - was sometimes crushing assets
+- Bugfix: SimpleFollow transposers were not initilizing their position correctly at game start
+- Bugfix: Timeline with CM shot was causing jitter in some FixedUpdate situations
+- Bugfix: Multiple brains with heterogeneous update methods were not behaving correctly.  CM will now support this, but you must make sure that the brains have different layer masks.
+- Example scenes now include use of CinemachineTriggerAction script.  
 
 <size=20><b>Version 2.1.13</b></size>
 
