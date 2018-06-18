@@ -77,12 +77,12 @@ namespace Cinemachine
         /// <summary>Camera will not rotate horizontally if the target is within this range of the position</summary>
         [Range(0f, 1f)]
         [Tooltip("Camera will not rotate horizontally if the target is within this range of the position.")]
-        public float m_DeadZoneWidth = 0.1f;
+        public float m_DeadZoneWidth = 0f;
 
         /// <summary>Camera will not rotate vertically if the target is within this range of the position</summary>
         [Range(0f, 1f)]
         [Tooltip("Camera will not rotate vertically if the target is within this range of the position.")]
-        public float m_DeadZoneHeight = 0.1f;
+        public float m_DeadZoneHeight = 0f;
 
         /// <summary>When target is within this region, camera will gradually move to re-align
         /// towards the desired position, depending onm the damping speed</summary>
@@ -290,21 +290,21 @@ namespace Cinemachine
         private Rect ScreenToFOV(Rect rScreen, float fov, float fovH, float aspect)
         {
             Rect r = new Rect(rScreen);
-            Matrix4x4 persp = Matrix4x4.Perspective(fov, aspect, 0.01f, 10000f).inverse;
+            Matrix4x4 persp = Matrix4x4.Perspective(fov, aspect, 0.0001f, 2f).inverse;
 
-            Vector3 p = persp.MultiplyPoint(new Vector3(0, (r.yMin * 2f) - 1f, 0.1f)); p.z = -p.z;
+            Vector3 p = persp.MultiplyPoint(new Vector3(0, (r.yMin * 2f) - 1f, 0.5f)); p.z = -p.z;
             float angle = UnityVectorExtensions.SignedAngle(Vector3.forward, p, Vector3.left);
             r.yMin = ((fov / 2) + angle) / fov;
 
-            p = persp.MultiplyPoint(new Vector3(0, (r.yMax * 2f) - 1f, 0.1f)); p.z = -p.z;
+            p = persp.MultiplyPoint(new Vector3(0, (r.yMax * 2f) - 1f, 0.5f)); p.z = -p.z;
             angle = UnityVectorExtensions.SignedAngle(Vector3.forward, p, Vector3.left);
             r.yMax = ((fov / 2) + angle) / fov;
 
-            p = persp.MultiplyPoint(new Vector3((r.xMin * 2f) - 1f, 0, 0.1f));  p.z = -p.z;
+            p = persp.MultiplyPoint(new Vector3((r.xMin * 2f) - 1f, 0, 0.5f));  p.z = -p.z;
             angle = UnityVectorExtensions.SignedAngle(Vector3.forward, p, Vector3.up);
             r.xMin = ((fovH / 2) + angle) / fovH;
 
-            p = persp.MultiplyPoint(new Vector3((r.xMax * 2f) - 1f, 0, 0.1f));  p.z = -p.z;
+            p = persp.MultiplyPoint(new Vector3((r.xMax * 2f) - 1f, 0, 0.5f));  p.z = -p.z;
             angle = UnityVectorExtensions.SignedAngle(Vector3.forward, p, Vector3.up);
             r.xMax = ((fovH / 2) + angle) / fovH;
             return r;

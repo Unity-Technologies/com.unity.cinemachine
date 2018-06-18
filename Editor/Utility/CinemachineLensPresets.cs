@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
@@ -42,6 +43,14 @@ namespace Cinemachine.Editor
                     if (!string.IsNullOrEmpty(newAssetPath))
                     {
                         sInstance = CreateInstance<CinemachineLensPresets>();
+                        // Create some sample presets
+                        List<Preset> defaults = new List<Preset>();
+                        defaults.Add(new Preset() { m_Name = "21mm", m_FieldOfView = 60f } );
+                        defaults.Add(new Preset() { m_Name = "35mm", m_FieldOfView = 38f } );
+                        defaults.Add(new Preset() { m_Name = "58mm", m_FieldOfView = 23f } );
+                        defaults.Add(new Preset() { m_Name = "80mm", m_FieldOfView = 17f } );
+                        defaults.Add(new Preset() { m_Name = "125mm", m_FieldOfView = 10f } );
+                        sInstance.m_Presets = defaults.ToArray();
                         AssetDatabase.CreateAsset(sInstance, newAssetPath);
                         AssetDatabase.SaveAssets();
                         AssetDatabase.Refresh();

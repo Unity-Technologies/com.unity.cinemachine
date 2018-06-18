@@ -38,14 +38,14 @@ namespace Cinemachine
         }
 
         /// <summary>Validity test for the blend.  True if either camera is defined.</summary>
-        public bool IsValid { get { return (CamA != null || CamB != null); } }
+        public bool IsValid { get { return ((CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid)); } }
 
         /// <summary>Duration in seconds of the blend.</summary>
         public float Duration { get; set; }
 
         /// <summary>True if the time relative to the start of the blend is greater
         /// than or equal to the blend duration</summary>
-        public bool IsComplete { get { return TimeInBlend >= Duration; } }
+        public bool IsComplete { get { return TimeInBlend >= Duration || !IsValid; } }
 
         /// <summary>Text description of the blend, for debugging</summary>
         public string Description
@@ -53,7 +53,7 @@ namespace Cinemachine
             get
             {
                 var sb = CinemachineDebug.SBFromPool();
-                if (CamB == null)
+                if (CamB == null || !CamB.IsValid)
                     sb.Append("(none)");
                 else
                 {
@@ -64,7 +64,7 @@ namespace Cinemachine
                 sb.Append(" ");
                 sb.Append((int)(BlendWeight * 100f));
                 sb.Append("% from ");
-                if (CamA == null)
+                if (CamA == null || !CamA.IsValid)
                     sb.Append("(none)");
                 else
                 {
@@ -118,9 +118,9 @@ namespace Cinemachine
             // Make sure both cameras have been updated (they are not necessarily
             // enabled, and only enabled cameras get updated automatically
             // every frame)
-            if (CamA != null)
+            if (CamA != null && CamA.IsValid)
                 CamA.UpdateCameraState(worldUp, deltaTime);
-            if (CamB != null)
+            if (CamB != null && CamB.IsValid)
                 CamB.UpdateCameraState(worldUp, deltaTime);
         }
 
@@ -129,13 +129,13 @@ namespace Cinemachine
         { 
             get 
             { 
-                if (CamA == null)
+                if (CamA == null || !CamA.IsValid)
                 {
-                    if (CamB == null)
+                    if (CamB == null || !CamB.IsValid)
                         return CameraState.Default;
                     return CamB.State;
                 }
-                if (CamB == null)
+                if (CamB == null || !CamB.IsValid)
                     return CamA.State;
                 return CameraState.Lerp(CamA.State, CamB.State, BlendWeight);
             }
@@ -265,6 +265,7 @@ namespace Cinemachine
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public GameObject VirtualCameraGameObject { get { return null; } }
+        public bool IsValid { get { return true; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
         public bool IsLiveChild(ICinemachineCamera vcam) { return false; }
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
@@ -290,6 +291,7 @@ namespace Cinemachine
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public GameObject VirtualCameraGameObject { get { return null; } }
+        public bool IsValid { get { return Blend != null && Blend.IsValid; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
         public bool IsLiveChild(ICinemachineCamera vcam) { return Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB); }
         public CameraState CalculateNewState(float deltaTime) { return State; }

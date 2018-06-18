@@ -70,16 +70,22 @@ namespace Cinemachine.Utility
             return v.sqrMagnitude < (Epsilon * Epsilon);
         }
 
-        /// <summary>Temp hack to bypass bug in 2018.2</summary>
+        /// <summary>Much more stable for small angles than Unity's native implementation</summary>
         public static float Angle(Vector3 v1, Vector3 v2)
         {
-#if UNITY_2018_2_OR_NEWER
-            return Mathf.Acos(Mathf.Clamp(Vector3.Dot(v1.normalized, v2.normalized), -1F, 1F)) * Mathf.Rad2Deg;
-#else
-            return Vector3.Angle(v1, v2);
+#if false // Maybe this version is better?  to test....
+            float a = v1.magnitude;
+            v1 *= v2.magnitude;
+            v2 *= a;
+            return Mathf.Atan2((v1 - v2).magnitude, (v1 + v2).magnitude) * Mathf.Rad2Deg * 2;
+#else            
+            v1.Normalize();
+            v2.Normalize();
+            return Mathf.Atan2((v1 - v2).magnitude, (v1 + v2).magnitude) * Mathf.Rad2Deg * 2;
 #endif
         }
 
+        /// <summary>Much more stable for small angles than Unity's native implementation</summary>
         public static float SignedAngle(Vector3 v1, Vector3 v2, Vector3 up)
         {
             float angle = Angle(v1, v2);

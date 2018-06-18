@@ -127,6 +127,26 @@ namespace Cinemachine.Editor
             dolly.m_Path = path;
         }
 
+        [MenuItem("Cinemachine/Create Dolly Track with Cart", false, 1)]
+        private static void CreateDollyTrackWithCart()
+        {
+            GameObject go = new GameObject(
+                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"));
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
+            Undo.RegisterCreatedObjectUndo(go, "create track");
+            CinemachineSmoothPath path = Undo.AddComponent<CinemachineSmoothPath>(go);
+            Selection.activeGameObject = go;
+
+            go = new GameObject(GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"));
+            if (SceneView.lastActiveSceneView != null)
+                go.transform.position = SceneView.lastActiveSceneView.pivot;
+            Undo.RegisterCreatedObjectUndo(go, "create cart");
+            CinemachineDollyCart cart = Undo.AddComponent<CinemachineDollyCart>(go);
+            Undo.RecordObject(cart, "create track");
+            cart.m_Path = path;
+        }
+
         [MenuItem("Cinemachine/Create Target Group Camera", false, 1)]
         private static void CreateTargetGroupCamera()
         {
@@ -163,26 +183,6 @@ namespace Cinemachine.Editor
         private static void Create2DCamera()
         {
             InternalCreateVirtualCamera("CM vcam", true, typeof(CinemachineFramingTransposer));
-        }
-
-        [MenuItem("Cinemachine/Create Dolly Track with Cart", false, 1)]
-        private static void CreateDollyTrackWithCart()
-        {
-            GameObject go = new GameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"));
-            if (SceneView.lastActiveSceneView != null)
-                go.transform.position = SceneView.lastActiveSceneView.pivot;
-            Undo.RegisterCreatedObjectUndo(go, "create track");
-            CinemachineSmoothPath path = Undo.AddComponent<CinemachineSmoothPath>(go);
-            Selection.activeGameObject = go;
-
-            go = new GameObject(GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"));
-            if (SceneView.lastActiveSceneView != null)
-                go.transform.position = SceneView.lastActiveSceneView.pivot;
-            Undo.RegisterCreatedObjectUndo(go, "create cart");
-            CinemachineDollyCart cart = Undo.AddComponent<CinemachineDollyCart>(go);
-            Undo.RecordObject(cart, "create track");
-            cart.m_Path = path;
         }
 
         [MenuItem("Cinemachine/Import Example Asset Package")]
