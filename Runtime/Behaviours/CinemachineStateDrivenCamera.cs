@@ -169,6 +169,20 @@ namespace Cinemachine
             base.OnTargetObjectWarped(target, positionDelta);
         }
         
+        /// <summary>Notification that this virtual camera is going live.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        public override void OnTransitionFromCamera(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+        {
+            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            TransitioningFrom = fromCam;
+            InternalUpdateCameraState(worldUp, deltaTime);
+        }
+        
+        ICinemachineCamera TransitioningFrom { get; set; }
+
         /// <summary>Internal use only.  Do not call this method.  
         /// Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
@@ -225,8 +239,12 @@ namespace Cinemachine
                 m_State = mActiveBlend.State;
             }
             else if (LiveChild != null)
+            {
+                if (TransitioningFrom != null)
+                    LiveChild.OnTransitionFromCamera(TransitioningFrom, worldUp, deltaTime);
                 m_State =  LiveChild.State;
-
+            }
+            TransitioningFrom = null;
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
         }

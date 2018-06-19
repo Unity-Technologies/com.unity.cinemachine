@@ -181,8 +181,12 @@ namespace Cinemachine
                 m_State =  mActiveBlend.State;
             }
             else if (LiveChild != null)
+            {
+                if (TransitioningFrom != null)
+                    LiveChild.OnTransitionFromCamera(TransitioningFrom, worldUp, deltaTime);
                 m_State =  LiveChild.State;
-
+            }
+            TransitioningFrom = null;
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
         }
@@ -414,12 +418,15 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            TransitioningFrom = fromCam;
             if (m_RandomizeChoice && mActiveBlend == null)
             {
                 m_RandomizedChilden = null;
                 LiveChild = null;
-                InternalUpdateCameraState(worldUp, deltaTime);
             }
+            InternalUpdateCameraState(worldUp, deltaTime);
         }
+
+        ICinemachineCamera TransitioningFrom { get; set; }
     }
 }

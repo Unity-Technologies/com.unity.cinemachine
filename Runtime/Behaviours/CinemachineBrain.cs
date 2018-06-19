@@ -4,7 +4,6 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Events;
 using System.Collections;
-using System.Text;
 
 namespace Cinemachine
 {
@@ -121,7 +120,16 @@ namespace Cinemachine
         /// API for the Unity Editor.
         /// Show this camera no matter what.  This is static, and so affects all Cinemachine brains.
         /// </summary>
-        public static ICinemachineCamera SoloCamera { get; set; }
+        public static ICinemachineCamera SoloCamera 
+        { 
+            get { return mSoloCamera; } 
+            set 
+            { 
+                if (value != null && !CinemachineCore.Instance.IsLive(value))
+                    value.OnTransitionFromCamera(null, Vector3.up, Time.deltaTime);
+                mSoloCamera = value;
+            }
+        }
 
         /// <summary>API for the Unity Editor.</summary>
         /// <returns>Color used to indicate that a camera is in Solo mode.</returns>
@@ -131,7 +139,7 @@ namespace Cinemachine
         public Vector3 DefaultWorldUp
             { get { return (m_WorldUpOverride != null) ? m_WorldUpOverride.transform.up : Vector3.up; } }
 
-
+        private static ICinemachineCamera mSoloCamera;
         private Coroutine mPhysicsCoroutine;
 
         private void OnEnable()
@@ -219,27 +227,26 @@ namespace Cinemachine
                 yield return mWaitForFixedUpdate;
                 if (m_UpdateMethod == UpdateMethod.SmartUpdate)
                 {
-                    AddSubframe(); // FixedUpdate can be called multiple times per frame
+                    // FixedUpdate can be called multiple times per frame
+                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed); 
                     UpdateVirtualCameras(CinemachineCore.UpdateFilter.Fixed, GetEffectiveDeltaTime(true));
                 }
-                else
+                else if (m_UpdateMethod == UpdateMethod.FixedUpdate)
                 {
-                    if (m_UpdateMethod == UpdateMethod.LateUpdate)
-                        msSubframes = 1;
-                    else
-                    {
-                        AddSubframe(); // FixedUpdate can be called multiple times per frame
-                        UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedFixed, GetEffectiveDeltaTime(true));
-                    }
+                    // FixedUpdate can be called multiple times per frame
+                    UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedFixed, GetEffectiveDeltaTime(true));
                 }
             }
         }
-
+        
         private void LateUpdate()
         {
             float deltaTime = GetEffectiveDeltaTime(false);
             if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+            {
+                UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Normal);
                 UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, deltaTime);
+            }
             else if (m_UpdateMethod == UpdateMethod.LateUpdate)
                 UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedLate, deltaTime);
 
@@ -257,9 +264,6 @@ namespace Cinemachine
             {
                 // Note: this call will cause any screen canvas attached to the camera
                 // to be painted one frame out of sync.  It will only happen in the editor when not playing.
-                float deltaTime = GetEffectiveDeltaTime(false);
-                msSubframes = 1;
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedLate, deltaTime);
                 ProcessActiveCamera(GetEffectiveDeltaTime(false));
             }
         }
@@ -675,29 +679,5 @@ namespace Cinemachine
             if (CinemachineCore.CameraUpdatedEvent != null)
                 CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
-
-        static int msCurrentFrame;
-        static int msFirstBrainObjectId;
-        static int msSubframes;
-        void AddSubframe()
-        {
-            int now = Time.frameCount;
-            if (now == msCurrentFrame)
-            {
-                if (msFirstBrainObjectId == GetInstanceID())
-                    ++msSubframes;
-            }
-            else
-            {
-                msCurrentFrame = now;
-                msFirstBrainObjectId = GetInstanceID();
-                msSubframes = 1;
-            }
-        }
-
-        /// <summary>API for CinemachineCore only: Get the number of subframes to
-        /// update the virtual cameras.</summary>
-        /// <returns>Number of subframes registered by the first brain's FixedUpdate</returns>
-        internal static int GetSubframeCount() { return Math.Max(1, msSubframes); }
     }
 }

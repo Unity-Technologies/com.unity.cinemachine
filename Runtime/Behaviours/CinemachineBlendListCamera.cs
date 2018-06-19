@@ -133,8 +133,11 @@ namespace Cinemachine
             mCurrentInstruction = -1;
             LiveChild = null;
             mActiveBlend = null;
+            TransitioningFrom = fromCam;
             InternalUpdateCameraState(worldUp, deltaTime);
         }
+
+        ICinemachineCamera TransitioningFrom { get; set; }
 
         /// <summary>Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
@@ -164,7 +167,8 @@ namespace Cinemachine
                 LiveChild = best;
 
                 // Are we transitioning cameras?
-                if (previousCam != null && LiveChild != null && previousCam != LiveChild && mCurrentInstruction > 0)
+                if (previousCam != null && LiveChild != null 
+                    && previousCam != LiveChild && mCurrentInstruction > 0)
                 {
                     // Create a blend (will be null if a cut)
                     mActiveBlend = CreateBlend(
@@ -198,9 +202,14 @@ namespace Cinemachine
                 m_State = mActiveBlend.State;
             }
             else if (LiveChild != null)
+            {
+                if (TransitioningFrom != null)
+                    LiveChild.OnTransitionFromCamera(TransitioningFrom, worldUp, deltaTime);
                 m_State =  LiveChild.State;
-
-            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
+            }
+            TransitioningFrom = null;
+            InvokePostPipelineStageCallback(
+                this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
         }
 
