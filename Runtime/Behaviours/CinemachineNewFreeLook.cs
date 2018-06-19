@@ -1,8 +1,5 @@
-#if true
-
 using UnityEngine;
 using Cinemachine.Utility;
-using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -79,30 +76,54 @@ namespace Cinemachine
         /// <summary></summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
         [Range(0f, 1f)]
-        [FormerlySerializedAs("m_SplineTension")]
         public float m_SplineCurvature = 0.2f;
 
+        [SerializeField, HideInInspector]
+        public bool m_CommonLens = true;
+
+        [SerializeField, HideInInspector]
+        public bool[] m_CommonStage = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+
         [Serializable]
-        // GML fixme should be internal
         public struct Rig
         {
             /// <summary>Height relative to target</summary>
             public float m_Height; 
+
             /// <summary>Radius of orbit</summary>
             public float m_Radius; 
-
-            public bool m_CustomLens;
 
             [LensSettingsProperty]
             public LensSettings m_Lens;
 
             [NonSerialized]
-            public List<CinemachineComponentBase> m_Components;
+            internal List<CinemachineComponentBase> m_Components;
+
+            internal void Validate()
+            {
+                if (m_Lens.FieldOfView == 0)
+                    m_Lens = LensSettings.Default;
+                m_Lens.Validate();
+            }
         }
 
         [SerializeField, HideInInspector]
-        // GML fixme should be internal
         public Rig[] m_Rigs = new Rig[3];
+
+        CinemachineNewFreeLook()
+        {
+            // We default to everything common
+            for (int i = 0; i < m_CommonStage.Length; ++i)
+                m_CommonStage[i] = true;
+        }
+
+        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            for (int i = 0; i < 3; ++i)
+                m_Rigs[i].Validate();
+        }
 
         /// <summary>Updates the child rig cache</summary>
         protected override void OnEnable()
@@ -148,7 +169,8 @@ namespace Cinemachine
             {
                 var components = m_Rigs[i].m_Components;
                 for (int j = 0; j < components.Count; ++j)
-                    components[j].OnTargetObjectWarped(target, positionDelta);
+                    if (components[j] != null)
+                        components[j].OnTargetObjectWarped(target, positionDelta);
             }
             base.OnTargetObjectWarped(target, positionDelta);
         }
@@ -205,6 +227,14 @@ namespace Cinemachine
                 m_Transitions.m_OnCameraLive.Invoke(this);
         }
 
+        public CinemachineComponentBase GetRigComponent(int rigIndex, CinemachineCore.Stage stage)
+        {
+            UpdateRigCache();
+            if (rigIndex < 0 || rigIndex > 2)
+                return null;
+            return m_Rigs[rigIndex].m_Components[(int)stage];
+        }
+
         public void InvalidateRigCache()
         {
             for (int i = 0; i < 3; ++i)
@@ -217,40 +247,89 @@ namespace Cinemachine
             for (int i = 0; !rebuild && i < 3; ++i)
             if (m_Rigs[i].m_Components == null)
                 rebuild = true;
-            if (rebuild)
+            if (!rebuild)
+                return;
+
+            for (int i = 0; i < 3; ++i)
+                m_Rigs[i].m_Components = new List<CinemachineComponentBase>();
+            var existing = FindRigComponents(null);
+            foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
             {
-                for (int i = 0; i < 3; ++i)
-                    m_Rigs[i].m_Components = new List<CinemachineComponentBase>();
-                var existing = GetComponents<CinemachineComponentBase>();
-                for (int stage = 0; stage < (int)CinemachineCore.Stage.Finalize; ++stage)
+                int numFound = 0;
+                for (int i = 0; i < existing.Count; ++i)
                 {
-                    int numFound = 0;
-                    for (int i = 0; i < existing.Length && numFound < 3; ++i)
+                    if (existing[i].Stage != stage)
+                        continue;
+
+                    // Co-ordinate the orbitals
+                    var a = existing[i] as CinemachineOrbitalTransposer;
+                    if (a != null)
                     {
-                        if ((int)existing[i].Stage == stage)
-                        {
-                            if (stage == (int)CinemachineCore.Stage.Body)
-                            {
-                                var a = existing[i] as CinemachineOrbitalTransposer;
-                                if (a == null)
-                                    continue; // Only allow orbital transposer in body, ignore others
-                                a.m_HeadingIsSlave = true;
-                            }
-                            m_Rigs[numFound].m_Components.Add(existing[i]);
-                            //GML existing[i].hideFlags |= HideFlags.HideInInspector;
-                            ++numFound;
-                        }
+                        a.m_HeadingIsSlave = true;
+                        if (numFound == 0)
+                            a.HeadingUpdater 
+                                = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => 
+                                { 
+                                    LastHeading = orbital.UpdateHeading(deltaTime, up, ref m_HorizontalAxis);
+                                    return LastHeading;
+                                };
+                        else
+                            a.HeadingUpdater = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
+                                => { return LastHeading; };
                     }
-                    while (numFound < 3)
-                        m_Rigs[numFound++].m_Components.Add(null);
+                    m_Rigs[numFound].m_Components.Add(existing[i]);
+                    //GML existing[i].hideFlags |= HideFlags.HideInInspector;
+                    ++numFound;
                 }
+                while (numFound < 3)
+                    m_Rigs[numFound++].m_Components.Add(null);
             }
         }
-        
+ 
+        private float LastHeading { get; set; }
+
         private float GetVerticalAxisValue()
         {
             float range = m_VerticalAxis.m_MaxValue - m_VerticalAxis.m_MinValue;
             return (range > UnityVectorExtensions.Epsilon) ? m_VerticalAxis.Value / range : 0.5f;
+        }
+
+        internal List<CinemachineComponentBase> FindRigComponents(
+            List<CinemachineComponentBase> invalidComponents)
+        {
+            List<CinemachineComponentBase> validComponents = new List<CinemachineComponentBase>();
+            if (invalidComponents != null)
+                invalidComponents.Clear();
+
+            var existing = GetComponents<CinemachineComponentBase>();
+            foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+            {
+                int numFound = 0;
+                for (int i = 0; i < existing.Length; ++i)
+                {
+                    if (existing[i].Stage != stage)
+                        continue;
+                    if (numFound > (m_CommonStage[(int)stage] ? 0 : 2))
+                    {
+                        if (invalidComponents != null)
+                            invalidComponents.Add(existing[i]);
+                        continue;
+                    }
+                    if (stage == (int)CinemachineCore.Stage.Body)
+                    {
+                        var a = existing[i] as CinemachineOrbitalTransposer;
+                        if (a == null)
+                        {
+                            if (invalidComponents != null)
+                                invalidComponents.Add(existing[i]);
+                            continue; // Only allow orbital transposer in body, ignore others
+                        }
+                    }
+                    validComponents.Add(existing[i]);
+                    ++numFound;
+                }
+            }
+            return validComponents;
         }
 
         /// <summary>
@@ -293,9 +372,9 @@ namespace Cinemachine
                 m_CachedCtrl1 = new Vector4[5];
                 m_CachedCtrl2 = new Vector4[5];
                 m_CachedKnots[1] = new Vector4(0, m_Rigs[2].m_Height, -m_Rigs[2].m_Radius, 0);
-                m_CachedKnots[2] = new Vector4(0, m_Rigs[1].m_Height, -m_Rigs[1].m_Radius, 0);
-                m_CachedKnots[3] = new Vector4(0, m_Rigs[0].m_Height, -m_Rigs[0].m_Radius, 0);
-                m_CachedKnots[0] = Vector4.Lerp(m_CachedKnots[1], Vector4.zero, t);
+                m_CachedKnots[2] = new Vector4(0, m_Rigs[0].m_Height, -m_Rigs[0].m_Radius, 0);
+                m_CachedKnots[3] = new Vector4(0, m_Rigs[1].m_Height, -m_Rigs[1].m_Radius, 0);
+                m_CachedKnots[0] = Vector4.Lerp(m_CachedKnots[0], Vector4.zero, t);
                 m_CachedKnots[4] = Vector4.Lerp(m_CachedKnots[3], Vector4.zero, t);
                 SplineHelpers.ComputeSmoothControlPoints(
                     ref m_CachedKnots, ref m_CachedCtrl1, ref m_CachedCtrl2);
@@ -335,7 +414,7 @@ namespace Cinemachine
             // Blend from the appropriate rigs
             float y = GetVerticalAxisValue();
             Vector3 followOffset = GetLocalPositionForCameraFromInput(y);
-            int otherRig = 0;
+            int otherRig;
             if (y < 0.5f)
             {
                 y = 1 - (y * 2);
@@ -346,6 +425,9 @@ namespace Cinemachine
                 y = (y - 0.5f) * 2f;
                 otherRig = 1;   // top
             }
+
+            if (!m_CommonLens)
+                state.Lens = LensSettings.Lerp(state.Lens, m_Rigs[otherRig].m_Lens, y);
 
             CameraState state1 = state;
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
@@ -369,25 +451,15 @@ namespace Cinemachine
                         state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                     continue;
                 }
+                if (stage == CinemachineCore.Stage.Body)
+                    SyncOrbital(c0 as CinemachineOrbitalTransposer, followOffset, true);
                 c0.MutateCameraState(ref state, deltaTime);
 
                 var c1 = m_Rigs[otherRig].m_Components[(int)stage];
                 if (c1 != null)
                 {
-                    // Special case for the orbital transposer - sync them up
                     if (stage == CinemachineCore.Stage.Body)
-                    {
-                        var a = c0 as CinemachineOrbitalTransposer;
-                        var b = c1 as CinemachineOrbitalTransposer;
-                        if (a != null && b != null)
-                        {
-                            a.m_FollowOffset = b.m_FollowOffset = followOffset;
-                            b.m_BindingMode = a.m_BindingMode = m_BindingMode;
-                            b.m_Heading = a.m_Heading = m_Heading;
-                            b.m_XAxis = a.m_XAxis = m_HorizontalAxis;
-                            b.m_RecenterToTargetHeading.m_enabled = false;
-                        }
-                    }
+                        SyncOrbital(c1 as CinemachineOrbitalTransposer, followOffset, false);
                     c1.MutateCameraState(ref state, deltaTime);
                     switch (stage)
                     {
@@ -411,6 +483,19 @@ namespace Cinemachine
             }
             return state;
         }
+
+        private void SyncOrbital(CinemachineOrbitalTransposer a, Vector3 followOffset, bool mainRig)
+        {
+            if (a != null)
+            {
+                a.m_FollowOffset = followOffset;
+                a.m_BindingMode = m_BindingMode;
+                a.m_Heading = m_Heading;
+                a.m_XAxis = m_HorizontalAxis;
+                a.m_RecenterToTargetHeading = m_HorizontalRecentering;
+                if (!mainRig)
+                    a.m_RecenterToTargetHeading.m_enabled = false;
+            }
+        }
     }
 }
-#endif

@@ -15,7 +15,7 @@ namespace Cinemachine
     /// <seealso cref="NoiseSettings"/>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
-    [RequireComponent(typeof(CinemachinePipeline))]
+    //[RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]
     public class CinemachineBasicMultiChannelPerlin : CinemachineComponentBase
     {

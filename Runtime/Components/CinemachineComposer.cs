@@ -14,8 +14,8 @@ namespace Cinemachine
     /// to use the virtual camera's Body section.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [AddComponentMenu("")] // Don't display in add component menu
-    [RequireComponent(typeof(CinemachinePipeline))]
+    //[AddComponentMenu("")] // Don't display in add component menu
+    //[RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]
     public class CinemachineComposer : CinemachineComponentBase
     {

@@ -2,7 +2,7 @@
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
+using System;
 
 namespace Cinemachine
 {
@@ -12,6 +12,25 @@ namespace Cinemachine
     {
         GUIContent[] mRigNames = new GUIContent[] 
             { new GUIContent("Main Rig"), new GUIContent("Top Rig"), new GUIContent("Bottom Rig") };
+
+        class RigEditor
+        {
+            public CinemachineStageEditor[] mStageEditors =
+                new CinemachineStageEditor[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+
+            public RigEditor(CinemachineNewFreeLook target)
+            {
+                foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+                    mStageEditors[(int)stage] = new CinemachineStageEditor(stage, target.gameObject);
+            }
+
+            public void OnDisable()
+            {
+                foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+                    mStageEditors[(int)stage].Shutdown();
+            }
+        }
+        RigEditor[] mRigEditors = new RigEditor[3];
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -24,15 +43,18 @@ namespace Cinemachine
             return excluded;
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            for (int i = 0; i < mRigEditors.Length; ++i)
+                mRigEditors[i] = new RigEditor(Target);
+        }
+
         protected override void OnDisable()
         {
             base.OnDisable();
-
-            // Must destroy child editors or we get exceptions
-            if (m_editors != null)
-                foreach (UnityEditor.Editor e in m_editors)
-                    if (e != null)
-                        UnityEngine.Object.DestroyImmediate(e);
+            for (int i = 0; i < mRigEditors.Length; ++i)
+                mRigEditors[i].OnDisable();
         }
 
         public override void OnInspectorGUI()
@@ -48,78 +70,107 @@ namespace Cinemachine
             DrawRemainingPropertiesInInspector();
 
             // Rigs
-            UpdateRigEditors();
             SerializedProperty rigs = FindProperty(x => x.m_Rigs);
             for (int i = 0; i < 3; ++i)
             {
-                //if (m_editors[i] == null)
-                //    continue;
                 EditorGUILayout.Separator();
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorGUILayout.LabelField(mRigNames[i], EditorStyles.boldLabel);
-                ++EditorGUI.indentLevel;
-
-                SerializedProperty rig = rigs.GetArrayElementAtIndex(i);
-
-                EditorGUI.BeginChangeCheck();
-                Rect rect = EditorGUILayout.GetControlRect(true);
-                InspectorUtility.MultiPropertyOnLine(rect, 
-                    new GUIContent(mRigNames[i]),
-                    new [] { rig.FindPropertyRelative(() => Target.m_Rigs[i].m_Height), 
-                            rig.FindPropertyRelative(() => Target.m_Rigs[i].m_Radius) },
-                    null);
-                if (EditorGUI.EndChangeCheck())
-                    serializedObject.ApplyModifiedProperties();
-
-                SerializedProperty rigUseLens = rig.FindPropertyRelative(() => Target.m_Rigs[i].m_CustomLens);
-                EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(rigUseLens);
-                if (EditorGUI.EndChangeCheck())
-                    serializedObject.ApplyModifiedProperties();
-
-                EditorGUI.BeginChangeCheck();
-                if (rigUseLens.boolValue)
-                    EditorGUILayout.PropertyField(rig.FindPropertyRelative(() => Target.m_Rigs[i].m_Lens));
-
-                if (EditorGUI.EndChangeCheck())
-                    serializedObject.ApplyModifiedProperties();
-
-                //m_editors[i].OnInspectorGUI();
-
-                --EditorGUI.indentLevel;
-                EditorGUILayout.EndVertical();
+                DrawRigEditor(i, rigs.GetArrayElementAtIndex(i));
             }
 
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
 
-        UnityEditor.Editor[] m_editors;
-
-        //string[] RigNames;
-        //CinemachineVirtualCameraBase[] m_rigs;
-        void UpdateRigEditors()
+        void DrawRigEditor(int rigIndex, SerializedProperty rig)
         {
-#if false
-            RigNames = CinemachineNewFreeLook.RigNames;
-            if (m_rigs == null)
-                m_rigs = new CinemachineVirtualCameraBase[RigNames.Length];
-            if (m_editors == null)
-                m_editors = new UnityEditor.Editor[RigNames.Length];
-            for (int i = 0; i < RigNames.Length; ++i)
+            CinemachineNewFreeLook.Rig def = new CinemachineNewFreeLook.Rig(); // for properties
+
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            EditorGUILayout.LabelField(mRigNames[rigIndex], EditorStyles.boldLabel);
+            ++EditorGUI.indentLevel;
+
+            // Orbit
+            EditorGUI.BeginChangeCheck();
+            Rect rect = EditorGUILayout.GetControlRect(true);
+            InspectorUtility.MultiPropertyOnLine(rect, 
+                new GUIContent("Orbit"),
+                new [] { rig.FindPropertyRelative(() => def.m_Height), 
+                        rig.FindPropertyRelative(() => def.m_Radius) },
+                null);
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
+
+            // Lens
+            SerializedProperty commonLens = FindProperty(x => x.m_CommonLens);
+            Rect rLensLabel = EditorGUILayout.GetControlRect(true, 0);
+            if (rigIndex == 0 || !commonLens.boolValue)
             {
-                CinemachineVirtualCamera rig = Target.GetRig(i);
-                if (rig == null || rig != m_rigs[i])
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(rig.FindPropertyRelative(() => def.m_Lens));
+                if (EditorGUI.EndChangeCheck())
+                    serializedObject.ApplyModifiedProperties();
+            }
+            if (rigIndex == 0)
+            {
+                rLensLabel.height = EditorGUIUtility.singleLineHeight;
+                rLensLabel.y += 1;
+                rLensLabel.width = EditorGUIUtility.labelWidth;
+                bool value = commonLens.boolValue;
+                if (InjectAllRigsToggle(rLensLabel, ref value))
                 {
-                    m_rigs[i] = rig;
-                    if (m_editors[i] != null)
-                        UnityEngine.Object.DestroyImmediate(m_editors[i]);
-                    m_editors[i] = null;
-                    if (rig != null)
-                        CreateCachedEditor(rig, null, ref m_editors[i]);
+                    commonLens.boolValue = value;
+                    serializedObject.ApplyModifiedProperties();
                 }
             }
-#endif
+            
+            // Pipeline Stages
+            SerializedProperty commonStages = FindProperty(x => x.m_CommonStage);
+            foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+            {
+                int stageIndex = (int)stage;
+                if (!mRigEditors[rigIndex].mStageEditors[stageIndex].HasImplementation)
+                    continue;
+                bool isCommon = commonStages.GetArrayElementAtIndex(stageIndex).boolValue;
+                if (rigIndex == 0 || !isCommon)
+                {
+                    CinemachineComponentBase c = Target.GetRigComponent(rigIndex, stage);
+                    CinemachineComponentBase newC 
+                        = mRigEditors[rigIndex].mStageEditors[stageIndex].OnInspectorGUI(c);
+                    if (c != newC)
+                        Target.InvalidateRigCache();
+                }
+                if (rigIndex == 0)
+                {
+                    
+                    Rect r = mRigEditors[rigIndex].mStageEditors[stageIndex].StageLabelRect;
+                    if (InjectAllRigsToggle(r, ref isCommon))
+                    {
+                        commonStages.GetArrayElementAtIndex(stageIndex).boolValue = isCommon;
+                        serializedObject.ApplyModifiedProperties();
+                        Target.InvalidateRigCache();
+                    }
+                }
+            }
+
+            --EditorGUI.indentLevel;
+            EditorGUILayout.EndVertical();
+        }
+
+        GUIContent mAllLabel = new GUIContent("All", "Use this setting for all three rigs");
+
+        // Returns true if value changes
+        private bool InjectAllRigsToggle(Rect r, ref bool value)
+        {
+            float x = GUI.skin.toggle.CalcSize(mAllLabel).x;
+            float labelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = x;
+            x += EditorGUIUtility.singleLineHeight;
+            r.xMin = r.xMax - x;
+            r.width = x; r.height -= 1;
+            bool oldValue = value;
+            value = EditorGUI.ToggleLeft(r, mAllLabel, oldValue);
+            EditorGUIUtility.labelWidth = labelWidth;
+            return (oldValue != value);
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineNewFreeLook))]

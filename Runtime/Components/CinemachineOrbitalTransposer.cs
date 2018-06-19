@@ -25,8 +25,8 @@ namespace Cinemachine
     /// the camera to move to any spot on an orbit around the target.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [AddComponentMenu("")] // Don't display in add component menu
-    [RequireComponent(typeof(CinemachinePipeline))]
+    //[AddComponentMenu("")] // Don't display in add component menu
+    //[RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]
     public class CinemachineOrbitalTransposer : CinemachineTransposer
     {
