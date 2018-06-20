@@ -9,7 +9,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
     internal class UpdateTracker
     {
-        public enum UpdateClock { Normal, Fixed }
+        public enum UpdateClock { Fixed, Late }
 
         class UpdateStatus
         {
@@ -27,7 +27,7 @@ namespace Cinemachine
             {
                 windowStart = currentFrame;
                 lastFrameUpdated = Time.frameCount;
-                PreferredUpdate = UpdateClock.Normal;
+                PreferredUpdate = UpdateClock.Late;
                 lastPos = pos;
             }
 
@@ -36,7 +36,7 @@ namespace Cinemachine
                 if (lastPos == pos)
                     return;
 
-                if (currentClock == UpdateClock.Normal)
+                if (currentClock == UpdateClock.Late)
                     ++numWindowNormalUpdateMoves;
                 else if (lastFrameUpdated != currentFrame) // only count 1 per rendered frame
                     ++numWindowFixedUpdateMoves;
@@ -45,7 +45,7 @@ namespace Cinemachine
                 UpdateClock choice 
                     = (numWindowFixedUpdateMoves > 2 
                         && numWindowFixedUpdateMoves > numWindowNormalUpdateMoves / 2)
-                    ? UpdateClock.Fixed : UpdateClock.Normal;
+                    ? UpdateClock.Fixed : UpdateClock.Late;
                 if (numWindows == 0)
                     PreferredUpdate = choice;
  
@@ -55,7 +55,7 @@ namespace Cinemachine
                     PreferredUpdate = choice;
                     ++numWindows;
                     windowStart = currentFrame;
-                    numWindowNormalUpdateMoves = (PreferredUpdate == UpdateClock.Normal) ? 1 : 0;
+                    numWindowNormalUpdateMoves = (PreferredUpdate == UpdateClock.Late) ? 1 : 0;
                     numWindowFixedUpdateMoves = (PreferredUpdate == UpdateClock.Fixed) ? 1 : 0;
                 }
             }
@@ -97,7 +97,7 @@ namespace Cinemachine
                 status = new UpdateStatus(Time.frameCount, target.localToWorldMatrix);
                 mUpdateStatus.Add(target, status);
             }
-            return UpdateClock.Normal;
+            return UpdateClock.Late;
         }
 
         static float mLastUpdateTime;

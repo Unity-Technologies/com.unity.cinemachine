@@ -159,25 +159,24 @@ namespace Cinemachine
         CinemachineVirtualCameraBase mRoundRobinVcamLastFrame = null;
 
         static float mLastUpdateTime;
-        static UpdateFilter mLastUpdateClock; // Fixed or Late
-        static int FixedFrame { get; set; }
+        static int FixedFrameCount { get; set; } // Current fixed frame count
 
         /// <summary>Update all the active vcams in the scene, in the correct dependency order.</summary>
         internal void UpdateAllActiveVirtualCameras(int layerMask, Vector3 worldUp, float deltaTime)
         {
             // Setup for roundRobin standby updating
             var filter = CurrentUpdateFilter;
-            bool canUpdateStandby = (filter != UpdateFilter.Fixed); // never in smart fixed
+            bool canUpdateStandby = (filter != UpdateFilter.SmartFixed); // never in smart fixed
             bool didRoundRobinUpdate = false;
             CinemachineVirtualCameraBase currentRoundRobin = mRoundRobinVcamLastFrame;
 
-            // Update the physics frame count
+            // Update the fixed frame count
             float now = Time.time;
             if (now != mLastUpdateTime)
             {
                 mLastUpdateTime = now;
-                if (filter == UpdateFilter.Fixed || filter == UpdateFilter.ForcedFixed)
-                    ++FixedFrame;
+                if ((filter & ~UpdateFilter.Smart) == UpdateFilter.Fixed)
+                    ++FixedFrameCount;
             }
 
             // Update the leaf-most cameras first
@@ -245,17 +244,9 @@ namespace Cinemachine
         internal bool UpdateVirtualCamera(
             CinemachineVirtualCameraBase vcam, Vector3 worldUp, float deltaTime)
         {
-            UpdateFilter filter = CurrentUpdateFilter;
-            bool isSmartUpdate = filter != UpdateFilter.ForcedFixed 
-                && filter != UpdateFilter.ForcedLate;
-            bool isSmartLateUpdate = filter == UpdateFilter.Late;
-            if (!isSmartUpdate)
-            {
-                if (filter == UpdateFilter.ForcedFixed)
-                    filter = UpdateFilter.Fixed;
-                if (filter == UpdateFilter.ForcedLate)
-                    filter = UpdateFilter.Late;
-            }
+            bool isSmartUpdate = (CurrentUpdateFilter & UpdateFilter.Smart) == UpdateFilter.Smart;
+            UpdateTracker.UpdateClock updateClock 
+                = (UpdateTracker.UpdateClock)(CurrentUpdateFilter & ~UpdateFilter.Smart);
 
             // If we're in smart update mode and the target moved, then we must examine
             // how the target has been moving recently in order to figure out whether to
@@ -265,14 +256,9 @@ namespace Cinemachine
             {
                 Transform updateTarget = GetUpdateTarget(vcam);
                 if (updateTarget == null)
-                    updateNow = isSmartLateUpdate; // no target
+                    updateNow = (updateClock == UpdateTracker.UpdateClock.Late); // no target
                 else
-                {
-                    var pu = UpdateTracker.GetPreferredUpdate(updateTarget);
-                    updateNow 
-                        = (pu == UpdateTracker.UpdateClock.Normal && filter == UpdateFilter.Late)
-                        || (pu == UpdateTracker.UpdateClock.Fixed && filter == UpdateFilter.Fixed);
-                }
+                    updateNow = UpdateTracker.GetPreferredUpdate(updateTarget) == updateClock;
             }
             if (!updateNow)
                 return false;
@@ -281,35 +267,28 @@ namespace Cinemachine
             if (mUpdateStatus == null)
                 mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
 
-            int now = Time.frameCount;
             UpdateStatus status;
             if (!mUpdateStatus.TryGetValue(vcam, out status))
             {
                 status = new UpdateStatus();
                 mUpdateStatus.Add(vcam, status);
             }
-            if (filter == UpdateFilter.Late)
-            {
-                int frameDelta = now - status.lastUpdateFrame;
-                if (frameDelta == 0)
-                    return false; // already updated
-                if (frameDelta != 1)
-                    deltaTime = -1; // multiple frames - kill the damping
-                status.lastUpdateFrame = now;
-            }
+
+            int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
+                ? Time.frameCount - status.lastUpdateFrame
+                : FixedFrameCount - status.lastUpdateFixedFrame;
+            if (frameDelta == 0)
+                return false; // already updated
+            if (frameDelta != 1)
+                deltaTime = -1; // multiple frames - kill the damping
+            if (updateClock == UpdateTracker.UpdateClock.Late)
+                status.lastUpdateFrame = Time.frameCount;
             else
-            {
-                // Fixed update
-                int frameDelta = FixedFrame - status.lastUpdateFixedFrame;
-                if (frameDelta == 0)
-                    return false; // already updated
-                if (frameDelta != 1)
-                    deltaTime = -1; // multiple frames - kill the damping
-                status.lastUpdateFixedFrame = FixedFrame;
-            }
+                status.lastUpdateFixedFrame = FixedFrameCount;
+
 //Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "/" + status.lastUpdateFixedFrame + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
             vcam.InternalUpdateCameraState(worldUp, deltaTime);
-            status.lastUpdateMode = filter;
+            status.lastUpdateMode = updateClock;
             return true;
         }
 
@@ -317,12 +296,12 @@ namespace Cinemachine
         {
             public int lastUpdateFrame;
             public int lastUpdateFixedFrame;
-            public UpdateFilter lastUpdateMode;
+            public UpdateTracker.UpdateClock lastUpdateMode;
             public UpdateStatus()
             {
                 lastUpdateFrame = -2;
                 lastUpdateFixedFrame = 0;
-                lastUpdateMode = UpdateFilter.Late;
+                lastUpdateMode = UpdateTracker.UpdateClock.Late;
             }
         }
         static Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;
@@ -334,8 +313,16 @@ namespace Cinemachine
         }
 
         /// <summary>Internal use only</summary>
-        internal enum UpdateFilter { Fixed, ForcedFixed, Late, ForcedLate };
+        internal enum UpdateFilter 
+        { 
+            Fixed = UpdateTracker.UpdateClock.Fixed, 
+            Late = UpdateTracker.UpdateClock.Late,
+            Smart = 8, // meant to be or'ed with the others
+            SmartFixed = Smart | Fixed,
+            SmartLate = Smart | Late
+        }
         internal UpdateFilter CurrentUpdateFilter { get; set; }
+
         private static Transform GetUpdateTarget(CinemachineVirtualCameraBase vcam)
         {
             if (vcam == null || vcam.gameObject == null)
@@ -351,11 +338,11 @@ namespace Cinemachine
         }
 
         /// <summary>Internal use only - inspector</summary>
-        internal UpdateFilter GetVcamUpdateStatus(CinemachineVirtualCameraBase vcam)
+        internal UpdateTracker.UpdateClock GetVcamUpdateStatus(CinemachineVirtualCameraBase vcam)
         {
             UpdateStatus status;
             if (mUpdateStatus == null || !mUpdateStatus.TryGetValue(vcam, out status))
-                return UpdateFilter.Late;
+                return UpdateTracker.UpdateClock.Late;
             return status.lastUpdateMode;
         }
 

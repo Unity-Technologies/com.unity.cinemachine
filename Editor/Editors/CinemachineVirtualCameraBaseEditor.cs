@@ -149,11 +149,11 @@ namespace Cinemachine.Editor
 
             float labelWidth = 0;
             GUIContent updateText = GUIContent.none;
-            CinemachineCore.UpdateFilter updateMode = CinemachineCore.Instance.GetVcamUpdateStatus(Target);
+            UpdateTracker.UpdateClock updateMode = CinemachineCore.Instance.GetVcamUpdateStatus(Target);
             if (Application.isPlaying)
             {
                 updateText = new GUIContent(
-                    updateMode < CinemachineCore.UpdateFilter.Late ? " Fixed Update" : " Late Update");
+                    updateMode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update");
                 var textDimensions = GUI.skin.label.CalcSize(updateText);
                 labelWidth = textDimensions.x;
             }

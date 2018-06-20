@@ -224,34 +224,35 @@ namespace Cinemachine
         {
             while (true)
             {
+                // FixedUpdate can be called multiple times per frame
                 yield return mWaitForFixedUpdate;
+                CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
                 if (m_UpdateMethod == UpdateMethod.SmartUpdate)
                 {
-                    // FixedUpdate can be called multiple times per frame
+                    // Track the targets
                     UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed); 
-                    UpdateVirtualCameras(CinemachineCore.UpdateFilter.Fixed, GetEffectiveDeltaTime(true));
+                    filter |= CinemachineCore.UpdateFilter.Smart;
                 }
-                else if (m_UpdateMethod == UpdateMethod.FixedUpdate)
-                {
-                    // FixedUpdate can be called multiple times per frame
-                    UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedFixed, GetEffectiveDeltaTime(true));
-                }
+                UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
             }
         }
         
         private void LateUpdate()
         {
             float deltaTime = GetEffectiveDeltaTime(false);
-            if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+            if (m_UpdateMethod != UpdateMethod.FixedUpdate)
             {
-                UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Normal);
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, deltaTime);
+                CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Late;
+                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                {
+                    // Track the targets
+                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Late);
+                    filter |= CinemachineCore.UpdateFilter.Smart;
+                }
+                UpdateVirtualCameras(filter, deltaTime);
             }
-            else if (m_UpdateMethod == UpdateMethod.LateUpdate)
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedLate, deltaTime);
-
             // Choose the active vcam and apply it to the Unity camera
-            ProcessActiveCamera(GetEffectiveDeltaTime(false));
+            ProcessActiveCamera(deltaTime);
         }
 
 #if UNITY_EDITOR
@@ -307,7 +308,15 @@ namespace Cinemachine
                 activeBlend.UpdateCameraState(DefaultWorldUp, deltaTime);
 
             // Restore the filter for general use
-            CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Late;
+            updateFilter = CinemachineCore.UpdateFilter.Late;
+            if (Application.isPlaying)
+            {
+                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                    updateFilter |= CinemachineCore.UpdateFilter.Smart;
+                else if (m_UpdateMethod == UpdateMethod.FixedUpdate)
+                    updateFilter |= CinemachineCore.UpdateFilter.Fixed;
+            }
+            CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
         }
 
         /// <summary>
