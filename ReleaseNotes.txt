@@ -1,3 +1,8 @@
+<size=20><b>Version 2.2.1</b></size>
+
+- Bugfix: cutting to BlendList vcam somethimes produced a few bad frames
+- Bugfix: smart update tracks the targets more efficiently and correctly
+
 <size=20><b>Version 2.2.0</b></size>
 
 - New Cinemachine Impulse module for event-driven camera shakes
