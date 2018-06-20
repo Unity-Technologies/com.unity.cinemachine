@@ -4,10 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.1] - 2018-06-20
+## [2.2.2] - 2018-06-20
 ### Minor bugfixes
 - Bugfix: cutting to BlendList vcam sometimes produced a few bad frames
-- Bugfix: smart update tracks the targets more efficiently and correctly
+- Bugfix: smart update tracks the targets more efficiently and correctly, and supports RigidBody interpolation (2018.2 and up)
 
 ## [2.2.0] - 2018-06-18
 ### Impulse Module and More

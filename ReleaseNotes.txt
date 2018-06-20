@@ -1,7 +1,7 @@
-<size=20><b>Version 2.2.1</b></size>
+<size=20><b>Version 2.2.2</b></size>
 
 - Bugfix: cutting to BlendList vcam sometimes produced a few bad frames
-- Bugfix: smart update tracks the targets more efficiently and correctly
+- Bugfix: smart update tracks the targets more efficiently and correctly, and supports RigidBody interpolation (2018.2 and up)
 
 <size=20><b>Version 2.2.0</b></size>
 
