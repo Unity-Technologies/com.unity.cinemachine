@@ -226,14 +226,17 @@ namespace Cinemachine
             {
                 // FixedUpdate can be called multiple times per frame
                 yield return mWaitForFixedUpdate;
-                CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
-                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                if (m_UpdateMethod != UpdateMethod.LateUpdate)
                 {
-                    // Track the targets
-                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed); 
-                    filter |= CinemachineCore.UpdateFilter.Smart;
+                CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
+                    if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                    {
+                        // Track the targets
+                        UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed); 
+                        filter |= CinemachineCore.UpdateFilter.Smart;
+                    }
+                    UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
                 }
-                UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
             }
         }
         

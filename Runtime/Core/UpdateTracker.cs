@@ -15,7 +15,7 @@ namespace Cinemachine
         {
             const int kWindowSize = 30;
             int windowStart;
-            int numWindowNormalUpdateMoves;
+            int numWindowLateUpdateMoves;
             int numWindowFixedUpdateMoves;
             int numWindows;
             int lastFrameUpdated;
@@ -37,25 +37,26 @@ namespace Cinemachine
                     return;
 
                 if (currentClock == UpdateClock.Late)
-                    ++numWindowNormalUpdateMoves;
+                    ++numWindowLateUpdateMoves;
                 else if (lastFrameUpdated != currentFrame) // only count 1 per rendered frame
                     ++numWindowFixedUpdateMoves;
                 lastPos = pos;
 
-                UpdateClock choice 
-                    = (numWindowFixedUpdateMoves > 2 
-                        && numWindowFixedUpdateMoves > numWindowNormalUpdateMoves / 2)
-                    ? UpdateClock.Fixed : UpdateClock.Late;
+                UpdateClock choice;
+                if (numWindowFixedUpdateMoves > 3 && numWindowLateUpdateMoves < numWindowFixedUpdateMoves / 3)
+                    choice = UpdateClock.Fixed;
+                else
+                    choice =  UpdateClock.Late;
                 if (numWindows == 0)
                     PreferredUpdate = choice;
  
                 if (windowStart + kWindowSize <= currentFrame)
                 {
-                    //Debug.Log("Window " + numWindows + ": Late=" + numWindowNormalUpdateMoves + ", Fixed=" + numWindowFixedUpdateMoves);
+                    //Debug.Log("Window " + numWindows + ": Late=" + numWindowLateUpdateMoves + ", Fixed=" + numWindowFixedUpdateMoves);
                     PreferredUpdate = choice;
                     ++numWindows;
                     windowStart = currentFrame;
-                    numWindowNormalUpdateMoves = (PreferredUpdate == UpdateClock.Late) ? 1 : 0;
+                    numWindowLateUpdateMoves = (PreferredUpdate == UpdateClock.Late) ? 1 : 0;
                     numWindowFixedUpdateMoves = (PreferredUpdate == UpdateClock.Fixed) ? 1 : 0;
                 }
             }
