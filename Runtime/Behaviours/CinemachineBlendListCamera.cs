@@ -218,6 +218,7 @@ namespace Cinemachine
         {
             base.OnEnable();
             InvalidateListOfChildren();
+            LiveChild = null;
             mActiveBlend = null;
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
