@@ -284,7 +284,7 @@ namespace Cinemachine
 
             /// <summary>This event fires when the virtual camera goes Live</summary>
             [Tooltip("This event fires when the virtual camera goes Live")]
-            public CinemachineBrain.VcamEvent m_OnCameraLive;
+            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
         }
         
         /// <summary>Notification that this virtual camera is going live.

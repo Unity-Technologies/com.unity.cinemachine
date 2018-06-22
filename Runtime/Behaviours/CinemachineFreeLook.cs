@@ -321,7 +321,7 @@ namespace Cinemachine
             else
                 UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
-                m_Transitions.m_OnCameraLive.Invoke(this);
+                m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
 
         CameraState m_State = CameraState.Default;          // Current state this frame

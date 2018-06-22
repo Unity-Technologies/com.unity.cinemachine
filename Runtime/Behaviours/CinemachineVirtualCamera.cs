@@ -511,7 +511,7 @@ namespace Cinemachine
             }
             UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
-                m_Transitions.m_OnCameraLive.Invoke(this);
+                m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
     }
 }

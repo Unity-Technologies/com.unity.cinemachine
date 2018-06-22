@@ -206,24 +206,27 @@ namespace Cinemachine
             LiveChild = best;
 
             // Are we transitioning cameras?
-            if (previousCam != null && LiveChild != null && previousCam != LiveChild)
+            if (previousCam != LiveChild && LiveChild != null)
             {
-                // Create a blend (will be null if a cut)
-                mActiveBlend = CreateBlend(
-                        previousCam, LiveChild,
-                        LookupBlend(previousCam, LiveChild), mActiveBlend);
-
                 // Notify incoming camera of transition
                 LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);
 
-                // Generate Camera Activation event if live
-                CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild);
+                // Generate Camera Activation event in the brain if live
+                CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild, previousCam);
 
-                // If cutting, generate a camera cut event if live
-                if (mActiveBlend == null)
-                    CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                if (previousCam != null)
+                {
+                    // Create a blend (will be null if a cut)
+                    mActiveBlend = CreateBlend(
+                            previousCam, LiveChild,
+                            LookupBlend(previousCam, LiveChild), mActiveBlend);
+
+                    // If cutting, generate a camera cut event if live
+                    if (mActiveBlend == null)
+                        CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                }
             }
-
+            
             // Advance the current blend (if any)
             if (mActiveBlend != null)
             {

@@ -368,7 +368,7 @@ namespace Cinemachine
         /// If the camera is live, then all CinemachineBrains that are showing it will
         /// send an activation event.
         /// </summary>
-        public void GenerateCameraActivationEvent(ICinemachineCamera vcam)
+        public void GenerateCameraActivationEvent(ICinemachineCamera vcam, ICinemachineCamera vcamFrom)
         {
             if (vcam != null)
             {
@@ -376,7 +376,7 @@ namespace Cinemachine
                 {
                     CinemachineBrain b = GetActiveBrain(i);
                     if (b != null && b.IsLive(vcam))
-                        b.m_CameraActivatedEvent.Invoke(vcam);
+                        b.m_CameraActivatedEvent.Invoke(vcam, vcamFrom);
                 }
             }
         }
