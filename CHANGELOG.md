@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.3] - 2018-06-22
+### Some more bugfixes
+- API change: OnCameraLive and CameraActivated events take outgoing vcam also as parameter (may be null)
+- Bugfix: reset BlendList when enabled
+- Regression fix: FreeLook axis values get transferred when similar vcams transition
+
 ## [2.2.2] - 2018-06-20
 ### Minor bugfixes
 - Bugfix: cutting to BlendList vcam sometimes produced a few bad frames

@@ -1,3 +1,9 @@
+<size=20><b>Version 2.2.3</b></size>
+
+- API change: OnCameraLive and CameraActivated events take outgoing vcam also as parameter (may be null)
+- Bugfix: reset BlendList when enabled
+- Regression fix: FreeLook axis values get transferred when similar vcams transition
+
 <size=20><b>Version 2.2.2</b></size>
 
 - Bugfix: cutting to BlendList vcam sometimes produced a few bad frames
