@@ -291,6 +291,18 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            bool forceUpdate = false;
+            if (fromCam != null)
+            {
+                CinemachineFreeLook freeLookFrom = fromCam as CinemachineFreeLook;
+                if (freeLookFrom != null && freeLookFrom.Follow == Follow)
+                {
+                    if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                        m_XAxis.Value = freeLookFrom.m_XAxis.Value;
+                    m_YAxis.Value = freeLookFrom.m_YAxis.Value;
+                    forceUpdate = true;
+                }
+            }
             if (m_Transitions.m_InheritPosition)
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
@@ -301,10 +313,13 @@ namespace Cinemachine
                     m_State = PullStateFromVirtualCamera(worldUp, m_Lens);
                     PreviousStateIsValid = false;
                     PushSettingsToRigs();
-                    InternalUpdateCameraState(worldUp, deltaTime);
+                    forceUpdate = true;
                 }
             }
-            UpdateCameraState(worldUp, deltaTime);
+            if (forceUpdate)
+                InternalUpdateCameraState(worldUp, deltaTime);
+            else
+                UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
                 m_Transitions.m_OnCameraLive.Invoke(this);
         }
