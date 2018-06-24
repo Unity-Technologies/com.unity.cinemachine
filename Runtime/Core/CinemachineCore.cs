@@ -167,7 +167,6 @@ namespace Cinemachine
             // Setup for roundRobin standby updating
             var filter = CurrentUpdateFilter;
             bool canUpdateStandby = (filter != UpdateFilter.SmartFixed); // never in smart fixed
-            bool didRoundRobinUpdate = false;
             CinemachineVirtualCameraBase currentRoundRobin = mRoundRobinVcamLastFrame;
 
             // Update the fixed frame count
@@ -185,55 +184,38 @@ namespace Cinemachine
                 var sublist = mAllCameras[i];
                 for (int j = sublist.Count - 1; j >= 0; --j)
                 {
-                    bool doRoundRobinUpdateNow = false;
                     var vcam = sublist[j];
-                    if (!IsLive(vcam))
+                    if (canUpdateStandby && vcam == mRoundRobinVcamLastFrame)
+                        currentRoundRobin = null; // update the next roundrobin candidate
+                    if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always
+                        || IsLive(vcam))
                     {
-                        // Don't ever update subframes if not live
-                        if (!canUpdateStandby)
-                            continue;
-
-                        if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Never)
-                            continue;
-
-                        if (!vcam.isActiveAndEnabled)
-                            continue;
-
-                        // Handle round-robin
-                        if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.RoundRobin)
-                        {
-                            if (currentRoundRobin != null)
-                            {
-                                if (currentRoundRobin == vcam)
-                                    currentRoundRobin = null; // Take the next vcam for round-robin
-                                continue;
-                            }
-                            doRoundRobinUpdateNow = true;
-                            currentRoundRobin = vcam;
-                        }
+                        // Skip this vcam if it's not on the layer mask
+                        if (((1 << vcam.gameObject.layer) & layerMask) != 0)
+                            UpdateVirtualCamera(vcam, worldUp, deltaTime);
                     }
-                    // Unless this is a round-robin update, we skip this vcam if it's 
-                    // not on the layer mask
-                    if (!doRoundRobinUpdateNow && ((1 << vcam.gameObject.layer) & layerMask) == 0)
-                        continue;
-
-                    bool updated = UpdateVirtualCamera(vcam, worldUp, deltaTime);
-                    if (canUpdateStandby && vcam == currentRoundRobin)
+                    else if (currentRoundRobin == null
+                        && mRoundRobinVcamLastFrame != vcam
+                        && canUpdateStandby
+                        && vcam.m_StandbyUpdate != CinemachineVirtualCameraBase.StandbyUpdateMode.Never
+                        && vcam.isActiveAndEnabled)
                     {
-                        // Did the previous roundrobin go live this frame?
-                        if (!doRoundRobinUpdateNow)
-                            currentRoundRobin = null; // yes, take the next vcam for round-robin
-                        else if (updated)
-                            didRoundRobinUpdate = true;
-                        else
-                            currentRoundRobin = mRoundRobinVcamLastFrame; // We tried to update but it didn't happen - keep the old one for next time
+                        // Do the round-robin update
+                        CurrentUpdateFilter &= ~UpdateFilter.Smart; // force it
+                        UpdateVirtualCamera(vcam, worldUp, deltaTime);
+                        CurrentUpdateFilter = filter;
+                        currentRoundRobin = vcam;
                     }
                 }
             }
-            // Finally, if the last roundrobin update candidate no longer exists, get rid of it
-            if (canUpdateStandby && !didRoundRobinUpdate)
-                currentRoundRobin = null; // take the first vcam for next round-robin
-            mRoundRobinVcamLastFrame = currentRoundRobin; 
+
+            // Did we manage to update a roundrobin?
+            if (canUpdateStandby)
+            {
+                if (currentRoundRobin == mRoundRobinVcamLastFrame)
+                    currentRoundRobin = null; // take the first candidate
+                mRoundRobinVcamLastFrame = currentRoundRobin; 
+            }
         }
 
         /// <summary>
@@ -277,17 +259,15 @@ namespace Cinemachine
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
                 ? Time.frameCount - status.lastUpdateFrame
                 : FixedFrameCount - status.lastUpdateFixedFrame;
-            if (frameDelta == 0)
+            if (frameDelta == 0 && status.lastUpdateMode == updateClock)
                 return false; // already updated
             if (frameDelta != 1)
                 deltaTime = -1; // multiple frames - kill the damping
-            if (updateClock == UpdateTracker.UpdateClock.Late)
-                status.lastUpdateFrame = Time.frameCount;
-            else
-                status.lastUpdateFixedFrame = FixedFrameCount;
 
 //Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "/" + status.lastUpdateFixedFrame + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
             vcam.InternalUpdateCameraState(worldUp, deltaTime);
+            status.lastUpdateFrame = Time.frameCount;
+            status.lastUpdateFixedFrame = FixedFrameCount;
             status.lastUpdateMode = updateClock;
             return true;
         }

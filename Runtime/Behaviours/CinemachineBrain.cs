@@ -228,12 +228,12 @@ namespace Cinemachine
                 yield return mWaitForFixedUpdate;
                 if (m_UpdateMethod != UpdateMethod.LateUpdate)
                 {
-                CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
+                    CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
                     if (m_UpdateMethod == UpdateMethod.SmartUpdate)
                     {
                         // Track the targets
                         UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed); 
-                        filter |= CinemachineCore.UpdateFilter.Smart;
+                        filter = CinemachineCore.UpdateFilter.SmartFixed;
                     }
                     UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
                 }
@@ -250,7 +250,7 @@ namespace Cinemachine
                 {
                     // Track the targets
                     UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Late);
-                    filter |= CinemachineCore.UpdateFilter.Smart;
+                    filter = CinemachineCore.UpdateFilter.SmartLate;
                 }
                 UpdateVirtualCameras(filter, deltaTime);
             }
