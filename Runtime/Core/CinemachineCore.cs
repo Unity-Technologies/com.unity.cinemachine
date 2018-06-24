@@ -238,22 +238,18 @@ namespace Cinemachine
             // If we're in smart update mode and the target moved, then we must examine
             // how the target has been moving recently in order to figure out whether to
             // update now
-            bool updateNow = !isSmartUpdate;
             if (isSmartUpdate)
             {
                 Transform updateTarget = GetUpdateTarget(vcam);
                 if (updateTarget == null)
-                    updateNow = (updateClock == UpdateTracker.UpdateClock.Late); // no target
-                else
-                    updateNow = UpdateTracker.GetPreferredUpdate(updateTarget) == updateClock;
+                    return false;   // vcam deleted
+                if (UpdateTracker.GetPreferredUpdate(updateTarget) != updateClock)
+                    return false;   // wrong clock
             }
-            if (!updateNow)
-                return false;
 
             // Have we already been updated this frame?
             if (mUpdateStatus == null)
                 mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
-
             UpdateStatus status;
             if (!mUpdateStatus.TryGetValue(vcam, out status))
             {
