@@ -158,15 +158,25 @@ namespace Cinemachine
 
         CinemachineVirtualCameraBase mRoundRobinVcamLastFrame = null;
 
+        static float mLastUpdateTime;
+        static int FixedFrameCount { get; set; } // Current fixed frame count
+
         /// <summary>Update all the active vcams in the scene, in the correct dependency order.</summary>
         internal void UpdateAllActiveVirtualCameras(int layerMask, Vector3 worldUp, float deltaTime)
         {
-            bool isLateUpdate = CurrentUpdateFilter == UpdateFilter.Late 
-                || CurrentUpdateFilter == UpdateFilter.ForcedLate;
-            bool canUpdateStandby = isLateUpdate || CinemachineBrain.GetSubframeCount() == 1;
-
-            bool didRoundRobinUpdate = false;
+            // Setup for roundRobin standby updating
+            var filter = CurrentUpdateFilter;
+            bool canUpdateStandby = (filter != UpdateFilter.SmartFixed); // never in smart fixed
             CinemachineVirtualCameraBase currentRoundRobin = mRoundRobinVcamLastFrame;
+
+            // Update the fixed frame count
+            float now = Time.time;
+            if (now != mLastUpdateTime)
+            {
+                mLastUpdateTime = now;
+                if ((filter & ~UpdateFilter.Smart) == UpdateFilter.Fixed)
+                    ++FixedFrameCount;
+            }
 
             // Update the leaf-most cameras first
             for (int i = mAllCameras.Count-1; i >= 0; --i)
@@ -174,55 +184,43 @@ namespace Cinemachine
                 var sublist = mAllCameras[i];
                 for (int j = sublist.Count - 1; j >= 0; --j)
                 {
-                    bool doRoundRobinUpdateNow = false;
                     var vcam = sublist[j];
-                    if (!IsLive(vcam))
+                    if (canUpdateStandby && vcam == mRoundRobinVcamLastFrame)
+                        currentRoundRobin = null; // update the next roundrobin candidate
+                    if (vcam == null)
                     {
-                        // Don't ever update subframes if not live
-                        if (!canUpdateStandby)
-                            continue;
-
-                        if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Never)
-                            continue;
-
-                        if (!vcam.isActiveAndEnabled)
-                            continue;
-
-                        // Handle round-robin
-                        if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.RoundRobin)
-                        {
-                            if (currentRoundRobin != null)
-                            {
-                                if (currentRoundRobin == vcam)
-                                    currentRoundRobin = null; // Take the next vcam for round-robin
-                                continue;
-                            }
-                            doRoundRobinUpdateNow = true;
-                            currentRoundRobin = vcam;
-                        }
+                        sublist.RemoveAt(j);
+                        continue; // deleted
                     }
-                    // Unless this is a round-robin update, we skip this vcam if it's 
-                    // not on the layer mask
-                    if (!doRoundRobinUpdateNow && ((1 << vcam.gameObject.layer) & layerMask) == 0)
-                        continue;
-
-                    bool updated = UpdateVirtualCamera(vcam, worldUp, deltaTime);
-                    if (canUpdateStandby && vcam == currentRoundRobin)
+                    if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always
+                        || IsLive(vcam))
                     {
-                        // Did the previous roundrobin go live this frame?
-                        if (!doRoundRobinUpdateNow)
-                            currentRoundRobin = null; // yes, take the next vcam for round-robin
-                        else if (updated)
-                            didRoundRobinUpdate = true;
-                        else
-                            currentRoundRobin = mRoundRobinVcamLastFrame; // We tried to update but it didn't happen - keep the old one for next time
+                        // Skip this vcam if it's not on the layer mask
+                        if (((1 << vcam.gameObject.layer) & layerMask) != 0)
+                            UpdateVirtualCamera(vcam, worldUp, deltaTime);
+                    }
+                    else if (currentRoundRobin == null
+                        && mRoundRobinVcamLastFrame != vcam
+                        && canUpdateStandby
+                        && vcam.m_StandbyUpdate != CinemachineVirtualCameraBase.StandbyUpdateMode.Never
+                        && vcam.isActiveAndEnabled)
+                    {
+                        // Do the round-robin update
+                        CurrentUpdateFilter &= ~UpdateFilter.Smart; // force it
+                        UpdateVirtualCamera(vcam, worldUp, deltaTime);
+                        CurrentUpdateFilter = filter;
+                        currentRoundRobin = vcam;
                     }
                 }
             }
-            // Finally, if the last roundrobin update candidate no longer exists, get rid of it
-            if (canUpdateStandby && !didRoundRobinUpdate)
-                currentRoundRobin = null; // take the first vcam for next round-robin
-            mRoundRobinVcamLastFrame = currentRoundRobin; 
+
+            // Did we manage to update a roundrobin?
+            if (canUpdateStandby)
+            {
+                if (currentRoundRobin == mRoundRobinVcamLastFrame)
+                    currentRoundRobin = null; // take the first candidate
+                mRoundRobinVcamLastFrame = currentRoundRobin; 
+            }
         }
 
         /// <summary>
@@ -233,163 +231,100 @@ namespace Cinemachine
         internal bool UpdateVirtualCamera(
             CinemachineVirtualCameraBase vcam, Vector3 worldUp, float deltaTime)
         {
-            UpdateFilter filter = CurrentUpdateFilter;
-            bool isSmartUpdate = filter != UpdateFilter.ForcedFixed 
-                && filter != UpdateFilter.ForcedLate;
-            bool isSmartLateUpdate = filter == UpdateFilter.Late;
-            if (!isSmartUpdate)
-            {
-                if (filter == UpdateFilter.ForcedFixed)
-                    filter = UpdateFilter.Fixed;
-                if (filter == UpdateFilter.ForcedLate)
-                    filter = UpdateFilter.Late;
-            }
-
-            if (mUpdateStatus == null)
-                mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
-            if (vcam.gameObject == null)
-            {
-                if (mUpdateStatus.ContainsKey(vcam))
-                    mUpdateStatus.Remove(vcam);
-                return false; // camera was deleted
-            }
-            int now = Time.frameCount;
-            UpdateStatus status;
-            if (!mUpdateStatus.TryGetValue(vcam, out status))
-            {
-                status = new UpdateStatus(now);
-                mUpdateStatus.Add(vcam, status);
-            }
-
-            int subframes = isSmartLateUpdate ? 1 : CinemachineBrain.GetSubframeCount();
-            if (status.lastUpdateFrame != now)
-                status.lastUpdateSubframe = 0;
+            bool isSmartUpdate = (CurrentUpdateFilter & UpdateFilter.Smart) == UpdateFilter.Smart;
+            UpdateTracker.UpdateClock updateClock 
+                = (UpdateTracker.UpdateClock)(CurrentUpdateFilter & ~UpdateFilter.Smart);
 
             // If we're in smart update mode and the target moved, then we must examine
             // how the target has been moving recently in order to figure out whether to
             // update now
-            bool updateNow = !isSmartUpdate;
             if (isSmartUpdate)
             {
-                Matrix4x4 targetPos;
-                if (!GetTargetPosition(vcam, out targetPos))
-                    updateNow = isSmartLateUpdate; // no target
-                else
-                    updateNow = status.ChoosePreferredUpdate(now, targetPos, filter) 
-                        == filter;
+                Transform updateTarget = GetUpdateTarget(vcam);
+                if (updateTarget == null)
+                    return false;   // vcam deleted
+                if (UpdateTracker.GetPreferredUpdate(updateTarget) != updateClock)
+                    return false;   // wrong clock
             }
 
-            if (updateNow)
+            // Have we already been updated this frame?
+            if (mUpdateStatus == null)
+                mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
+            UpdateStatus status;
+            if (!mUpdateStatus.TryGetValue(vcam, out status))
             {
-                status.preferredUpdate = filter;
-                while (status.lastUpdateSubframe < subframes)
-                {
-//Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "." + status.lastUpdateSubframe + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
-                    vcam.InternalUpdateCameraState(worldUp, deltaTime);
-                    ++status.lastUpdateSubframe;
-                }
-                status.lastUpdateFrame = now;
+                status = new UpdateStatus();
+                mUpdateStatus.Add(vcam, status);
             }
 
-            mUpdateStatus[vcam] = status;
-            return updateNow;
-        }
+            int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
+                ? Time.frameCount - status.lastUpdateFrame
+                : FixedFrameCount - status.lastUpdateFixedFrame;
+            if (frameDelta == 0 && status.lastUpdateMode == updateClock)
+                return false; // already updated
+            if (frameDelta != 1)
+                deltaTime = -1; // multiple frames - kill the damping
 
-        struct UpdateStatus
-        {
-            const int kWindowSize = 30;
-
-            public int lastUpdateFrame;
-            public int lastUpdateSubframe;
-
-            public int windowStart;
-            public int numWindowLateUpdateMoves;
-            public int numWindowFixedUpdateMoves;
-            public int numWindows;
-            public UpdateFilter preferredUpdate;
-
-            public Matrix4x4 targetPos;
-
-            public UpdateStatus(int currentFrame)
-            {
-                lastUpdateFrame = -1;
-                lastUpdateSubframe = 0;
-                windowStart = currentFrame;
-                numWindowLateUpdateMoves = 0;
-                numWindowFixedUpdateMoves = 0;
-                numWindows = 0;
-                preferredUpdate = UpdateFilter.Late;
-                targetPos = Matrix4x4.zero;
-            }
-
-            // Important: updateFilter may ONLY be Late or Fixed
-            public UpdateFilter ChoosePreferredUpdate(
-                int currentFrame, Matrix4x4 pos, UpdateFilter updateFilter)
-            {
-                if (targetPos != pos)
-                {
-                    if (updateFilter == UpdateFilter.Late)
-                        ++numWindowLateUpdateMoves;
-                    else if (lastUpdateSubframe == 0)
-                        ++numWindowFixedUpdateMoves;
-                    targetPos = pos;
-                }
-                //Debug.Log("Fixed=" + numWindowFixedUpdateMoves + ", Late=" + numWindowLateUpdateMoves);
-                UpdateFilter choice = preferredUpdate;
-                bool inconsistent = numWindowLateUpdateMoves > 0 && numWindowFixedUpdateMoves > 0;
-                if (inconsistent || numWindowLateUpdateMoves >= numWindowFixedUpdateMoves)
-                    choice = UpdateFilter.Late;
-                else
-                    choice = UpdateFilter.Fixed;
-                if (numWindows == 0)
-                    preferredUpdate = choice;
- 
-                if (windowStart + kWindowSize <= currentFrame)
-                {
-                    preferredUpdate = choice;
-                    ++numWindows;
-                    windowStart = currentFrame;
-                    numWindowLateUpdateMoves = numWindowFixedUpdateMoves = 0;
-                }
-                return preferredUpdate;
-            }
-        }
-        Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;
-
-        /// <summary>Internal use only</summary>
-        internal enum UpdateFilter { Fixed, ForcedFixed, Late, ForcedLate };
-        internal UpdateFilter CurrentUpdateFilter { get; set; }
-        private static bool GetTargetPosition(CinemachineVirtualCameraBase vcam, out Matrix4x4 targetPos)
-        {
-            CinemachineVirtualCameraBase vcamTarget = vcam;
-            if (vcamTarget == null || vcamTarget.gameObject == null)
-            {
-                targetPos = Matrix4x4.identity;
-                return false;
-            }
-            targetPos = vcamTarget.transform.localToWorldMatrix;
-            if (vcamTarget.LookAt != null)
-            {
-                targetPos = vcamTarget.LookAt.localToWorldMatrix;
-                return true;
-            }
-            if (vcamTarget.Follow != null)
-            {
-                targetPos = vcamTarget.Follow.localToWorldMatrix;
-                return true;
-            }
-            // If no target, use the vcam itself
-            targetPos = vcam.transform.localToWorldMatrix;
+//Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "/" + status.lastUpdateFixedFrame + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
+            vcam.InternalUpdateCameraState(worldUp, deltaTime);
+            status.lastUpdateFrame = Time.frameCount;
+            status.lastUpdateFixedFrame = FixedFrameCount;
+            status.lastUpdateMode = updateClock;
             return true;
         }
 
+        class UpdateStatus
+        {
+            public int lastUpdateFrame;
+            public int lastUpdateFixedFrame;
+            public UpdateTracker.UpdateClock lastUpdateMode;
+            public UpdateStatus()
+            {
+                lastUpdateFrame = -2;
+                lastUpdateFixedFrame = 0;
+                lastUpdateMode = UpdateTracker.UpdateClock.Late;
+            }
+        }
+        static Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;
+
+        [RuntimeInitializeOnLoadMethod]
+        static void InitializeModule() 
+        { 
+            mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>(); 
+        }
+
+        /// <summary>Internal use only</summary>
+        internal enum UpdateFilter 
+        { 
+            Fixed = UpdateTracker.UpdateClock.Fixed, 
+            Late = UpdateTracker.UpdateClock.Late,
+            Smart = 8, // meant to be or'ed with the others
+            SmartFixed = Smart | Fixed,
+            SmartLate = Smart | Late
+        }
+        internal UpdateFilter CurrentUpdateFilter { get; set; }
+
+        private static Transform GetUpdateTarget(CinemachineVirtualCameraBase vcam)
+        {
+            if (vcam == null || vcam.gameObject == null)
+                return null;
+            Transform target = vcam.LookAt;
+            if (target != null)
+                return target;
+            target = vcam.Follow;
+            if (target != null)
+                return target;
+            // If no target, use the vcam itself
+            return vcam.transform;
+        }
+
         /// <summary>Internal use only - inspector</summary>
-        internal UpdateFilter GetVcamUpdateStatus(CinemachineVirtualCameraBase vcam)
+        internal UpdateTracker.UpdateClock GetVcamUpdateStatus(CinemachineVirtualCameraBase vcam)
         {
             UpdateStatus status;
             if (mUpdateStatus == null || !mUpdateStatus.TryGetValue(vcam, out status))
-                return UpdateFilter.Late;
-            return status.preferredUpdate;
+                return UpdateTracker.UpdateClock.Late;
+            return status.lastUpdateMode;
         }
 
         /// <summary>
@@ -414,7 +349,7 @@ namespace Cinemachine
         /// If the camera is live, then all CinemachineBrains that are showing it will
         /// send an activation event.
         /// </summary>
-        public void GenerateCameraActivationEvent(ICinemachineCamera vcam)
+        public void GenerateCameraActivationEvent(ICinemachineCamera vcam, ICinemachineCamera vcamFrom)
         {
             if (vcam != null)
             {
@@ -422,7 +357,7 @@ namespace Cinemachine
                 {
                     CinemachineBrain b = GetActiveBrain(i);
                     if (b != null && b.IsLive(vcam))
-                        b.m_CameraActivatedEvent.Invoke(vcam);
+                        b.m_CameraActivatedEvent.Invoke(vcam, vcamFrom);
                 }
             }
         }

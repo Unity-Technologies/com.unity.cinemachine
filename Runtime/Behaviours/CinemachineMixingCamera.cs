@@ -221,6 +221,24 @@ namespace Cinemachine
             m_ChildCameras = list.ToArray();
         }
 
+        /// <summary>Notification that this virtual camera is going live.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        public override void OnTransitionFromCamera(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+        {
+            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            CinemachineVirtualCameraBase[] children = ChildCameras;
+            for (int i = 0; i < MaxCameras && i < children.Length; ++i)
+            {
+                CinemachineVirtualCameraBase vcam = children[i];
+                if (vcam.isActiveAndEnabled && GetWeight(i) > UnityVectorExtensions.Epsilon)
+                    vcam.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            }
+            InternalUpdateCameraState(worldUp, deltaTime);
+        }
+        
         /// <summary>Internal use only.  Do not call this methid.  
         /// Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
@@ -255,7 +273,8 @@ namespace Cinemachine
                     }
                 }
             }
-            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
+            InvokePostPipelineStageCallback(
+                this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }
 }

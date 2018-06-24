@@ -148,22 +148,26 @@ namespace Cinemachine
             LiveChild = ChooseCurrentCamera(worldUp, deltaTime);
 
             // Are we transitioning cameras?
-            if (previousCam != null && LiveChild != null && previousCam != LiveChild)
+            if (previousCam != LiveChild && LiveChild != null)
             {
-                // Create a blend (will be null if a cut)
-                mActiveBlend = CreateBlend(
-                        previousCam, LiveChild,
-                        LookupBlend(previousCam, LiveChild), mActiveBlend);
-
                 // Notify incoming camera of transition
                 LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);
 
-                // Generate Camera Activation event if live
-                CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild);
+                // Generate Camera Activation event in the brain if live
+                CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild, previousCam);
 
-                // If cutting, generate a camera cut event if live
-                if (mActiveBlend == null)
-                    CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                // Are we transitioning cameras?
+                if (previousCam != null)
+                {
+                    // Create a blend (will be null if a cut)
+                    mActiveBlend = CreateBlend(
+                            previousCam, LiveChild,
+                            LookupBlend(previousCam, LiveChild), mActiveBlend);
+
+                    // If cutting, generate a camera cut event if live
+                    if (mActiveBlend == null)
+                        CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                }
             }
 
             // Advance the current blend (if any)
@@ -181,8 +185,12 @@ namespace Cinemachine
                 m_State =  mActiveBlend.State;
             }
             else if (LiveChild != null)
+            {
+                if (TransitioningFrom != null)
+                    LiveChild.OnTransitionFromCamera(TransitioningFrom, worldUp, deltaTime);
                 m_State =  LiveChild.State;
-
+            }
+            TransitioningFrom = null;
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
         }
@@ -414,12 +422,15 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            TransitioningFrom = fromCam;
             if (m_RandomizeChoice && mActiveBlend == null)
             {
                 m_RandomizedChilden = null;
                 LiveChild = null;
-                InternalUpdateCameraState(worldUp, deltaTime);
             }
+            InternalUpdateCameraState(worldUp, deltaTime);
         }
+
+        ICinemachineCamera TransitioningFrom { get; set; }
     }
 }

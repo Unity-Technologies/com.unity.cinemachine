@@ -1,6 +1,6 @@
 # About Cinemachine
 
-Cinemachine is a modular suite of camera tools for Unity which give AAA game quality controls for every camera in your project.  It’s an easy to install plugin which lets you add functionality to cameras you’ve already got, or make new ones with amazing behaviors. 
+Cinemachine is a modular suite of camera tools for Unity which give AAA game quality controls for every camera in your project.  It's an easy to install plugin which lets you add functionality to cameras you've already got, or make new ones with amazing behaviors. 
 
 Cinemachine has been designed to be the entire unified camera system in your project but can be used alongside your existing cameras as well. If you have a bunch of camera stuff working already and just want to use Cinemachine for cutscenes or something specific,  no problem at all. However when you use it across your project it allows you to blend any camera to any other camera in a gameplay-to-cutscene-and-back-seamlessly kind of way.
 
@@ -37,45 +37,45 @@ The Virtual Camera is a shot, a single camera. It has child components which you
 These modules have been designed, re-designed and re-designed again to offer the widest range of possibilities with the least number of controls.  The math driving these camera behaviours is complex and sophisticated, having gone through many different scenarios across all sorts of games.
 
 #### Why Virtual Camera?
-The reason for the ‘virtual’ camera scenario is because Unity renders from the main camera. Out-of-the-box Unity is limited to only one camera being active camera at a time – which makes the blending of two shots effectively impossible. Cinemachine is engineered to solve this and provide a wealth of simple, powerful functionality at the same time, allowing unsurpassed camera behaviors which are fast and easy to setup.
+The reason for the 'virtual' camera scenario is because Unity renders from the main camera. Out-of-the-box Unity is limited to only one camera being active camera at a time - which makes the blending of two shots effectively impossible. Cinemachine is engineered to solve this and provide a wealth of simple, powerful functionality at the same time, allowing unsurpassed camera behaviors which are fast and easy to setup.
 
 ### Cinemachine Brain
 
-This is the central Cinemachine component that does all the magic.  It’s a component attached to the Unity camera and it monitors all the Virtual Cameras in the scene and drives the Unity camera using the shot it likes best. 
+This is the central Cinemachine component that does all the magic.  It's a component attached to the Unity camera and it monitors all the Virtual Cameras in the scene and drives the Unity camera using the shot it likes best. 
 
 What happens is that there is only one Unity Camera.  The brain that gets installed on it is responsioble for positioning and configuring that one camera to be in the right place at the right time, according to the instructions provided by the virtual cameras that the brain is observing.
 
-There’s more info below on how to use these new things.  Don’t forget to check out the example scenes included in Cinemachine/Examples/Scenes, and please visit our user forum at https://forum.unity3d.com/forums/cinemachine.136/
+There's more info below on how to use these new things.  Don't forget to check out the example scenes included in Cinemachine/Examples/Scenes, and please visit our user forum at https://forum.unity3d.com/forums/cinemachine.136/
 
 ## Frequently Asked Questions
 **Do we have to replace our camera system with Cinemachine?** 
 No, Cinemachine can work alongside your existing camera system and you can seamlessly blend back and forth between both systems.   If you wrote some camera tech you love but want Cinemachine for something else, no problem, mix the two together. 
 
-**Isn’t having all these cameras around kind of heavy?**
-No, in fact it’s incredibly light.  Each virtual camera has a super low overhead - make as many as you want.   If you are hypersensitive to performance you can disable all the cameras and just enable the ones you wish to have running at any given moment for extreme performance
+**Isn't having all these cameras around kind of heavy?**
+No, in fact it's incredibly light.  Each virtual camera has a super low overhead - make as many as you want.   If you are hypersensitive to performance you can disable all the cameras and just enable the ones you wish to have running at any given moment for extreme performance
 
 **How does it all work?**
-Cinemachine works a bit like a marionette system for your existing Main Camera.   It doesn’t create any new cameras, only new virtual ones.  The Cinemachine ‘Brain’ component is automatically added to the Main Camera in your scene and Cinemachine works with all its camera blending, priority, mixing magic to deliver a set of transforms to your Main Camera. Because it’s a completely unified system, you can blend from any camera type to any other.  Seamlessly go from an in-game freelook system to a keyframed cutscene camera and back.  Any combination is possible and the options are limitless. 
+Cinemachine works a bit like a marionette system for your existing Main Camera.   It doesn't create any new cameras, only new virtual ones.  The Cinemachine 'Brain' component is automatically added to the Main Camera in your scene and Cinemachine works with all its camera blending, priority, mixing magic to deliver a set of transforms to your Main Camera. Because it's a completely unified system, you can blend from any camera type to any other.  Seamlessly go from an in-game freelook system to a keyframed cutscene camera and back.  Any combination is possible and the options are limitless. 
 
 **Can I really save all my tunings in Play mode?**
-Yes!  Almost everything in Cinemachine saves in play mode so jump in and tune some cameras while the game is running.  When you think about it, it’s really the only way to do it.  We want you to get right into the zone and massage cameras at any point in your game - while you’re in there playing it. 
+Yes!  Almost everything in Cinemachine saves in play mode so jump in and tune some cameras while the game is running.  When you think about it, it's really the only way to do it.  We want you to get right into the zone and massage cameras at any point in your game - while you're in there playing it. 
 
-**Our engineer spent a long time on our camera system and doesn’t want to change it.**
-We hear this a lot. It’s never fun to throw code away but you need to think about the big picture of your project. If you can get up and running really quickly creating and tuning cameras without further bothering your engineer, isn’t that an advantage? It’s doubtful your existing system behaves exactly as desired in every scenario so there’s yet more coding to be done anyway.
+**Our engineer spent a long time on our camera system and doesn't want to change it.**
+We hear this a lot. It's never fun to throw code away but you need to think about the big picture of your project. If you can get up and running really quickly creating and tuning cameras without further bothering your engineer, isn't that an advantage? It's doubtful your existing system behaves exactly as desired in every scenario so there's yet more coding to be done anyway.
 
-Cameras are such a huge part of your project and good cameras can make the difference between an OK game and an amazing one.   Try running Cinemachine next to your existing cameras and see what it’s like.   If that engineer is still reluctant share this idea with them - Rockets eject perfectly great booster sections to get into space.   That camera code helped push you into orbit!  Great scenes are often left on the editing room floor.  Make the decision that’s best for your project.
+Cameras are such a huge part of your project and good cameras can make the difference between an OK game and an amazing one.   Try running Cinemachine next to your existing cameras and see what it's like.   If that engineer is still reluctant share this idea with them - Rockets eject perfectly great booster sections to get into space.   That camera code helped push you into orbit!  Great scenes are often left on the editing room floor.  Make the decision that's best for your project.
 
 **Can I mix between gameplay and cutscene cameras?**
 You can mix between any cameras.   Seamless transitions from gameplay to cutscene and back are as easy as turning on a camera or playing a Timeline with CM clips on it. 
 
 **How do you typically configure the cameras for a project?**
-Instead of one big ball-of-code camera trying to do everything, you make lots of custom vcams for every given moment and turn them on when needed.  Blending or cutting to a new camera is as easy as turning one on.  If the priority is the same or higher, CM will use the new camera and blend to it based on how you’ve defined the default blend or any other blends in the Custom Blends section of the CM ‘Brain’ on the Main Camera.
+Instead of one big ball-of-code camera trying to do everything, you make lots of custom vcams for every given moment and turn them on when needed.  Blending or cutting to a new camera is as easy as turning one on.  If the priority is the same or higher, CM will use the new camera and blend to it based on how you've defined the default blend or any other blends in the Custom Blends section of the CM 'Brain' on the Main Camera.
 
-**I don’t want to drastically change the camera in X scenario, I just want a little tweak**
+**I don't want to drastically change the camera in X scenario, I just want a little tweak**
 Camera changes can be really subtle.  You can duplicate your main camera, only change the FOV or Composition and then blend to that camera just when a player enters a trigger volume. You can turn on vcams with only the subtlest of differences to get exactly the behavior you want in whatever situation.   Projects can have many vcams all with only minor changes, ready and waiting for whatever game scenario demands them. 
 
 **When would I use the State Driven Camera?  Why have so many camera rigs?**
-The SDC makes it super easy to link animations and states to different cameras.  Picture your character’s local-motion system and orbit camera.  It makes your game feel so much more alive when the camera shakes a bit more when your character is running, when the camera pulls back to a larger orbit when they go outside, when the camera gets all close when the character is sneaking around. The SDC allows you to craft the cameras to best suit what your player is doing.  
+The SDC makes it super easy to link animations and states to different cameras.  Picture your character's local-motion system and orbit camera.  It makes your game feel so much more alive when the camera shakes a bit more when your character is running, when the camera pulls back to a larger orbit when they go outside, when the camera gets all close when the character is sneaking around. The SDC allows you to craft the cameras to best suit what your player is doing.  
 
 For example, one project in dev had 20+ different camera rigs all listening to animations and game events.  Stand, walk, sprint, jump, attack, >3 enemies arrive, inside, outside, trigger volumes in particular areas of the map, health <20%, etc. So much control is easily possible.
 
@@ -88,7 +88,7 @@ Cinemachine is by no means limited to the classes and behaviours described here.
 
 ## Basic Virtual Cameras
 
-Each virtual camera is a ‘shot’, or a single camera. You can animate them directly or blend two together to create camera moves. The reason they are ‘virtual’ cameras is to allow for blending, camera selection based on priorities and the ability to have Cinemachine hold multiple cameras in memory with the final product being presented to the current active Unity camera(s) which are rendering. 
+Each virtual camera is a 'shot', or a single camera. You can animate them directly or blend two together to create camera moves. The reason they are 'virtual' cameras is to allow for blending, camera selection based on priorities and the ability to have Cinemachine hold multiple cameras in memory with the final product being presented to the current active Unity camera(s) which are rendering. 
 
 Cinemachine allows you to create an unlimited number of virtual cameras, blend them together with the result being presented to the single Unity camera.   It does all this automatically.
 
@@ -98,7 +98,7 @@ Key components of the Virtual Camera are:
 
 * **Priority**:  The priority of this shot.  Equal or Higher value camera priorities compared to the current camera priority will be activated.  This allows for camera state machine setups where cameras are called based on trigger volumes, animations, health states, etc.  Important cameras will trigger over lower priority ones.
 * **Lens**:  What kind of lens to use for this shot: FOV, clipping planes, and dutch (camera roll).  Post-processing effects can also be included here.
-* **Body**: Where the camera is placed in your scene, and procedural ways to ‘mount’ your camera to any object and move the camera with it.
+* **Body**: Where the camera is placed in your scene, and procedural ways to 'mount' your camera to any object and move the camera with it.
 * **Aim**:  What the camera looks at, and procedural ways to track and compose any subject.
 * Noise:  Procedural Perlin multi-layered noise system for handheld behaviors, shakes, and vibrations.
 * **Extensions**:  These are add-ons to the basic Cinemachine pipeline.  Post-Processing and Collision Avoidance are examples of standard extensions shipped with Cinemachine.  The API is open, so that you can author your own extensions as well.
@@ -154,13 +154,13 @@ This is a CinemachineComponent in the Aim section of the component pipeline.  It
 
 The composer does not change the camera's position.  It will only pan and tilt the camera where it is, in order to get the desired framing.  To move the camera, you have to use the virtual camera's Body section.
 
-The vcam’s LookAt target is the Composer’s target.  Common Composer targets: include bones on a character like the upper spine or head bone, vehicles, or dummy objects which are controlled or animated programmatically. 
+The vcam's LookAt target is the Composer's target.  Common Composer targets: include bones on a character like the upper spine or head bone, vehicles, or dummy objects which are controlled or animated programmatically. 
 
-Once you’ve set the vcam’s LookAt target and are tracking something, you need to define where you’d like it to be on the screen and how aggressively you’d like to camera to track it. The degree of lag, or how tightly the camera follows the subject is defined by the two controls: 
+Once you've set the vcam's LookAt target and are tracking something, you need to define where you'd like it to be on the screen and how aggressively you'd like to camera to track it. The degree of lag, or how tightly the camera follows the subject is defined by the two controls: 
 
-**Horizontal/Vertical Soft Damping:** Setting these values to zero means the camera will hard track the subject and the blue regions above will act as rigid barriers locking the camera movement to keep the target inside those values. Setting the larger will allow the target to ‘squish’ into the blue regions, giving you some really nice camera weight and lag. This is what real camera operators do! The vertical and horizontal values are separated so you can let the camera squish more left to right or follow tighter up and down, etc. 
+**Horizontal/Vertical Soft Damping:** Setting these values to zero means the camera will hard track the subject and the blue regions above will act as rigid barriers locking the camera movement to keep the target inside those values. Setting the larger will allow the target to 'squish' into the blue regions, giving you some really nice camera weight and lag. This is what real camera operators do! The vertical and horizontal values are separated so you can let the camera squish more left to right or follow tighter up and down, etc. 
 
-**SoftZone/DeadZone**: Tune these to define where you want the subject to be onscreen. These controls are incredibly versatile. The blue areas are the ‘squishy’ areas based on how much horizontal/vertical damping you have, and the red areas define the ‘no pass’ limits where the camera will always track the subject. Opening up the soft areas to create a ‘dead zone’ in the middle allows you to make areas of the screen immune to target motion, handy for things like animation cycles where you don’t want the camera to track the target if it moves just a little.
+**SoftZone/DeadZone**: Tune these to define where you want the subject to be onscreen. These controls are incredibly versatile. The blue areas are the 'squishy' areas based on how much horizontal/vertical damping you have, and the red areas define the 'no pass' limits where the camera will always track the subject. Opening up the soft areas to create a 'dead zone' in the middle allows you to make areas of the screen immune to target motion, handy for things like animation cycles where you don't want the camera to track the target if it moves just a little.
 
 ![Composer Screen Guides](images/DoKComposerA.png)
 
@@ -190,19 +190,19 @@ Transposer is a component which mounts a camera to any object. It has a number o
 
 Using Transposer for your camera body motion has advantages: 
 
-* The position tuning is kept, even if the game is running. Tune a regular camera in game mode and the position is lost once you quit, not with Transposer. Tune it up while the game is running and you’re done. 
-* Add damping to the camera - if your camera follows something, the damping values can give you some ‘weight’ to the camera so they feel smoother. 
+* The position tuning is kept, even if the game is running. Tune a regular camera in game mode and the position is lost once you quit, not with Transposer. Tune it up while the game is running and you're done. 
+* Add damping to the camera - if your camera follows something, the damping values can give you some 'weight' to the camera so they feel smoother. 
 * Organization: Put all your cameras in one place, instead of having them hidden under all sorts of assets in your project - you pick their targets vs. put the camera under them in the hierarchy. 
 
-**Follow Offset**: The camera will go to the centre of the object you’re targeting in the Transposer Camera Target, so if you want the camera to be further behind, put in some offsets. We default at -10 so the camera is behind whatever you’re targeting. 
+**Follow Offset**: The camera will go to the centre of the object you're targeting in the Transposer Camera Target, so if you want the camera to be further behind, put in some offsets. We default at -10 so the camera is behind whatever you're targeting. 
 
 **Damping**: Per channel damping which will cause the camera to lag behind the target.  You can control both the position damping, and the orientation damping.
 
-**Binding Mode**: There’s options in the relationship between the camera and the target object. 
+**Binding Mode**: There's options in the relationship between the camera and the target object. 
 
 * *Lock To Target* interprets the camera offset in target-local coords.  As the target rotates, the camera rotates around it to maintain the offset.
 * *Lock to Target With World Up* is the same as the above but it keeps the camera pointing up. Handy if your target flips over. 
-* *Lock to Target On Target Assign* mounts the camera relative to the target’s local coordinate system at the time the camera is initialized. This offset remains constant in world space, and the camera will not rotate along with the target
+* *Lock to Target On Target Assign* mounts the camera relative to the target's local coordinate system at the time the camera is initialized. This offset remains constant in world space, and the camera will not rotate along with the target
 * *World Space* offsets positions the camera relative to the target in world coords no matter what direction the target object is facing. 
 * *Simple Follow with World Up:* this will follow the target at the desired distance and height while moving the camera position as little as possible.  This is quite similar to what a human camera operator would do when instructed to follow a target.
 
@@ -224,19 +224,19 @@ As a part of the Cinemachine Pipeline implementing the Noise stage, this compone
 
 The noise is created by using a predefined noise profile asset.  This defines the shape of the noise over time.  You can scale this in amplitude or in time, to produce a large family of different noises using the same profile.
 
-The Noise is a multi-layered Perlin noise function which is applied after the Composer and adds additional transforms. It has controls for Position and Orientation. You can add as many layers as you want by increasing the profile’s Size value. 
+The Noise is a multi-layered Perlin noise function which is applied after the Composer and adds additional transforms. It has controls for Position and Orientation. You can add as many layers as you want by increasing the profile's Size value. 
 
 Procedural noise is a complex thing to make look real. Convincing hand-held motion is a mixture of low, medium and high frequency wobbles which together combine to create something believable. 
 
-**Position / Orientation Size**: This is how many noise functions you’d like to blend together for the Position or Orientation or both. Mix at least 3 Orientation channels together for some realistic hand-held motion. 
+**Position / Orientation Size**: This is how many noise functions you'd like to blend together for the Position or Orientation or both. Mix at least 3 Orientation channels together for some realistic hand-held motion. 
 
-**Amplitude** defines the amount of noise in degrees. Wider lenses will need larger degree values in order to ‘see’ the shake. Telephoto lenses use smaller values as that small setting appears amplified through narrower FOV lenses. 
+**Amplitude** defines the amount of noise in degrees. Wider lenses will need larger degree values in order to 'see' the shake. Telephoto lenses use smaller values as that small setting appears amplified through narrower FOV lenses. 
 
-**Frequency** defines the speed of the noise in Hz. Typically a ‘low’ frequency value might be around 0.1. Consider that your game is running at 30 or 60hz, so settings higher than that will be ‘on the other side’ of the Nyquest frequency meaning that they will not be directly tracked. A setting of 100 will be higher than what the camera can ‘follow’ as your game is only running at say 60hz. It can look kind of choppy since the camera can’t track something which is sampling faster than what the game is running at. It can also look kind of cool, but rarely. Experiment.  Typically, for most hand-held setups, the low is around 0.1-0.5, the mid maybe .8-1.5 and the high around 3-4. That’s 3-4 shakes back and forth per second. 
+**Frequency** defines the speed of the noise in Hz. Typically a 'low' frequency value might be around 0.1. Consider that your game is running at 30 or 60hz, so settings higher than that will be 'on the other side' of the Nyquest frequency meaning that they will not be directly tracked. A setting of 100 will be higher than what the camera can 'follow' as your game is only running at say 60hz. It can look kind of choppy since the camera can't track something which is sampling faster than what the game is running at. It can also look kind of cool, but rarely. Experiment.  Typically, for most hand-held setups, the low is around 0.1-0.5, the mid maybe .8-1.5 and the high around 3-4. That's 3-4 shakes back and forth per second. 
 
-The most convincing camera shakes are typically done with Orientation noise as that’s where the camera is aiming. Handheld camera operators tend shake more rotationally than they do positionally, but of course feel free to mix in some Position noise, just remember it’s probably best to start with the Orientation. 
+The most convincing camera shakes are typically done with Orientation noise as that's where the camera is aiming. Handheld camera operators tend shake more rotationally than they do positionally, but of course feel free to mix in some Position noise, just remember it's probably best to start with the Orientation. 
 
-We’ve included a number of presets to get you going, under Cinemachine/Examples/Presets/Noise and of course you can add as many of your own as you wish, just right click in the Asset window Create->Cinemachine->Noise, and drag that asset into the Noise Settings window under that Virtual Camera. You can also animate the Noise through the Amplitude Gain and Frequency Gain settings to ramp the effect up and down.
+We've included a number of presets to get you going, under Cinemachine/Examples/Presets/Noise and of course you can add as many of your own as you wish, just right click in the Asset window Create->Cinemachine->Noise, and drag that asset into the Noise Settings window under that Virtual Camera. You can also animate the Noise through the Amplitude Gain and Frequency Gain settings to ramp the effect up and down.
 
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -275,9 +275,9 @@ Contains the behaviour of noise for the noise module for all 3 cardinal axes of 
 
 
 ## Brains and Blending
-The CinemachineBrain is the central Cinemachine component that does all the magic.  It’s a component attached to the Unity camera and it monitors all the Virtual Cameras in the scene and drives the Unity camera using the shot it likes best. 
+The CinemachineBrain is the central Cinemachine component that does all the magic.  It's a component attached to the Unity camera and it monitors all the Virtual Cameras in the scene and drives the Unity camera using the shot it likes best. 
 
-When it’s time to transition from one shot to another, you can choose how this transition is accomplished.  It can be a camera cut, or a Cinemachine blend.  Cinemachine Blends are special: they are not fades, or wipes, or dissolves.  Rather, they are an interpolation of one camera’s settings to another.  Think of a blend more as if one cameraman smoothly passed the camera to another cameraman in a different position, to elegantly transition the shot without a cut.
+When it's time to transition from one shot to another, you can choose how this transition is accomplished.  It can be a camera cut, or a Cinemachine blend.  Cinemachine Blends are special: they are not fades, or wipes, or dissolves.  Rather, they are an interpolation of one camera's settings to another.  Think of a blend more as if one cameraman smoothly passed the camera to another cameraman in a different position, to elegantly transition the shot without a cut.
 
 ### CinemachineBrain
 CinemachineBrain is the link between the Unity Camera and the Cinemachine Virtual Cameras in the scene.  It monitors the priority stack to choose the current Virtual Camera, and blend with another if necessary.  Finally and most importantly, it applies the Virtual Camera state to the attached Unity Camera.
@@ -286,9 +286,9 @@ The CinemachineBrain is also the place where rules for blending between virtual 
 
 The Brain holds the following key settings:
 
-* **Blend Settings**:  This is the array which defines how any shot blends to any other shot.  You can have a 4 second blend from CameraA to CameraB, but a 1 second blend from CameraB back to CameraA.  This is very powerful when used in a state machine type setup.  If a specific blend between two cameras isn’t defined, it uses the Default Blend which by default is a smooth 2-second blend (but you can change this).
+* **Blend Settings**:  This is the array which defines how any shot blends to any other shot.  You can have a 4 second blend from CameraA to CameraB, but a 1 second blend from CameraB back to CameraA.  This is very powerful when used in a state machine type setup.  If a specific blend between two cameras isn't defined, it uses the Default Blend which by default is a smooth 2-second blend (but you can change this).
 
-* **Layer Filter**:  The Brain will only notice those virtual cameras that pass its Unity Camera’s culling mask.  You can set up split-screen environments by assigning different Virtual Cameras to different layers, and using the culling mask to filter them.
+* **Layer Filter**:  The Brain will only notice those virtual cameras that pass its Unity Camera's culling mask.  You can set up split-screen environments by assigning different Virtual Cameras to different layers, and using the culling mask to filter them.
 
 * **Event Dispatching**:  The brain will fire events when the shot changes, in case you need to monitor this.  There in an event for whenever a Virtual Camera goes live, and another event for when the camera cuts (so that temporal post effects can be reset).
 
@@ -321,7 +321,7 @@ The From and To settings are name-based, which means that cameras are found by m
 
 ![Custom Blends Inspector](images/CustomBlends.png)
 
-**Blender supports wildcards** called * * ANY CAMERA * *, which you can use on the input or output of blends so that no matter what camera you’re in, you only have to specify one blend to a particular shot if you always want to blend into or out of that shot the same way. 
+**Blender supports wildcards** called * * ANY CAMERA * *, which you can use on the input or output of blends so that no matter what camera you're in, you only have to specify one blend to a particular shot if you always want to blend into or out of that shot the same way. 
 
 | _Setting_ | _Type_ | _Description_ |
 | --- | --- | --- |
@@ -337,9 +337,9 @@ Container specifying how two specific Cinemachine Virtual Cameras blend together
 | **Blend** | CinemachineBlendDefinition | Blend curve definition. |
 
 ## Follow Cams and Player Input
-In the previous sections of the manual we discussed basic virtual cameras.  They are great for cinematics and composition, but it’s hard to set up a camera that follows in the path of a moving target, and up to now there has been no consideration of cameras that position themselves in response to player input.
+In the previous sections of the manual we discussed basic virtual cameras.  They are great for cinematics and composition, but it's hard to set up a camera that follows in the path of a moving target, and up to now there has been no consideration of cameras that position themselves in response to player input.
 
-Because Cinemachine is a modular system, it’s easy to replace the Transposer in the Body section with a different component - one that considers the velocity of the Follow target, and player input coming from various HIDs.  One such component is the **OrbitalTransposer**.
+Because Cinemachine is a modular system, it's easy to replace the Transposer in the Body section with a different component - one that considers the velocity of the Follow target, and player input coming from various HIDs.  One such component is the **OrbitalTransposer**.
 
 Building on the OrbitalTransposer, the **CinemachineFreeLook** camera is a complex rig that allows the player to position the camera in 2 dimensions: horizontally using the OrbitalTransposer, and vertically using a super-powerful custom blending of 3 interrelated child rigs.
 
@@ -431,7 +431,7 @@ Each child rig can have its own Lens settings, or common shared values can be us
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
 ## Tracked Dolly
-If you need your camera’s position to be confined to a dolly track, this can be done with a combination of a CinemachinePath for the track, and a TrackedDolly for the Body component of the virtual camera.  There is a shortcut for creating this pair in the Cinemachine menu:
+If you need your camera's position to be confined to a dolly track, this can be done with a combination of a CinemachinePath for the track, and a TrackedDolly for the Body component of the virtual camera.  There is a shortcut for creating this pair in the Cinemachine menu:
 
 ![Creating a Tracked Dolly Camera](images/TrackedDollyMenu.png)
 
@@ -520,9 +520,9 @@ The State-Driven Camera is an implementation of a simple yet powerful concept: a
 
 Even better, the blending between shots within the state-driven rig can be customized and tuned to maximize the emotional punch of the transitions.
 
-Using Cinemachine it’s possible to set up world-class 3rd person action adventure camera systems. For example, you can create a unique Free-Look camera for events like this: Stand / Walk, Run, Sprint, etc. Link the appropriate Cinemachine Free-Look camera up to that animation state, so when the animation state is triggered it turns on that Cinemachine camera.  
+Using Cinemachine it's possible to set up world-class 3rd person action adventure camera systems. For example, you can create a unique Free-Look camera for events like this: Stand / Walk, Run, Sprint, etc. Link the appropriate Cinemachine Free-Look camera up to that animation state, so when the animation state is triggered it turns on that Cinemachine camera.  
 
-The idea is to simply blend into the right Free-Look camera for each animation state. Your ‘Sprint’ Free-Look gets in closer, the lens is wider and there is a ton of handheld noise. Boom, you now have a ‘Roadie Run’ camera. This concept has been used to set up a complex camera rig that had over 40 Free-Look cameras for a character’s local-motion and combat system, all set up so quickly and all tuneable in real-time. 
+The idea is to simply blend into the right Free-Look camera for each animation state. Your 'Sprint' Free-Look gets in closer, the lens is wider and there is a ton of handheld noise. Boom, you now have a 'Roadie Run' camera. This concept has been used to set up a complex camera rig that had over 40 Free-Look cameras for a character's local-motion and combat system, all set up so quickly and all tuneable in real-time. 
 
 You first start with an animated target, i.e. something that has an Animator component controlled by a FSM:
 ![](images/SDC1.png)
@@ -599,7 +599,7 @@ An add-on module for Cinemachine Virtual Camera that post-processes the final po
 
 This is less resource-intensive than CinemachineCollider, but it does not perform shot evaluation.
 
-The confiner can operate in 2D or 3D mode.  The mode will influence the kind of bounding shape it will accept.  In 3D mode, the camera’s position in 3D will be confined to the volume.  This will work for 2D games, but you will have to take the depth into account.  In 2D mode, you don’t have to worry about depth.
+The confiner can operate in 2D or 3D mode.  The mode will influence the kind of bounding shape it will accept.  In 3D mode, the camera's position in 3D will be confined to the volume.  This will work for 2D games, but you will have to take the depth into account.  In 2D mode, you don't have to worry about depth.
 
 If your camera is orthographic, there will be an additional option to confine the screen edges, not just the camera point.  This ensures that the entire screen area stays within the bounding shape.
 
@@ -632,7 +632,7 @@ You can also define custom blends between the ClearShot children.
 | **Priority** | Int32 | The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority. |
 
 ## Multiple Target Objects
-If you have multiple LookAt targets and you want to keep them all in the frame, Cinemachine can do this too.  It’s a 2-step process:
+If you have multiple LookAt targets and you want to keep them all in the frame, Cinemachine can do this too.  It's a 2-step process:
 
 1. Define a target group.  This is a list of target objects, each with a weight and radius.  The weight says how important the group member is, and the radius is a rough indication of its physical size.
 2. Create a vcam with a GroupComposer, and assign the LookAt target to the target group.  The GroupComposer will make sure that all group members remain in the frame.
@@ -695,9 +695,9 @@ In addition, if the target is a CinemachineTargetGroup, the behaviour will adjus
 | **Bias Y** | Single | A non-zero bias will move the target position vertically away from the center of the soft zone. |
 
 ## 2D Environments
-Cinemachine supports Orthographic cameras.  When you set the Unity Camera’s style to Orthographic, Cinemachine will adjust to accommodate it.  FOV will be replaced by Orthographic Size in the Lens settings.  Note that settings related to FOV and certain FOV-oriented behaviours such as FollowZoom will not have any effect if the camera is orthographic.
+Cinemachine supports Orthographic cameras.  When you set the Unity Camera's style to Orthographic, Cinemachine will adjust to accommodate it.  FOV will be replaced by Orthographic Size in the Lens settings.  Note that settings related to FOV and certain FOV-oriented behaviours such as FollowZoom will not have any effect if the camera is orthographic.
 
-In orthographic environments, it doesn’t usually make sense to rotate the camera.  Accordingly, Cinemachine has a special transposer that handles framing and composition without rotating the camera.
+In orthographic environments, it doesn't usually make sense to rotate the camera.  Accordingly, Cinemachine has a special transposer that handles framing and composition without rotating the camera.
 
 ![Creating a 2D Camera](images/2DCameraMenu.png)
 
@@ -746,11 +746,11 @@ Although this component was designed for orthographic cameras, it works equally 
 | **Maximum Ortho Size** | Single | If adjusting Orthographic Size, will not set it higher than this. |
 
 ## Post-Processing Stack V1
-If you have Unity’s Post-Processing Stack as an asset in your project (and if you don’t, you should, because this is an amazing tool that gives world-class results), you can easily assign custom post-effects to any shot in your scene, even though it’s a virtual camera and not a real one.
+If you have Unity's Post-Processing Stack as an asset in your project (and if you don't, you should, because this is an amazing tool that gives world-class results), you can easily assign custom post-effects to any shot in your scene, even though it's a virtual camera and not a real one.
 
 This section describes the use of Post Processing stack V1.  If you have Post Processing V2, see the section below.
 
-Just define a Post-Processing profile for your vcam, and connect it by attaching a CinemachinePostFX component to your vcam.  To complete the connection, you will also need a CinemachinePostFX component on the Unity camera, alongside the CinemachineBrain.  That’s all you have to do.  Now, whenever the vcam is activated, its custom Post-Processing profile will be applied to the Unity camera.
+Just define a Post-Processing profile for your vcam, and connect it by attaching a CinemachinePostFX component to your vcam.  To complete the connection, you will also need a CinemachinePostFX component on the Unity camera, alongside the CinemachineBrain.  That's all you have to do.  Now, whenever the vcam is activated, its custom Post-Processing profile will be applied to the Unity camera.
 
 ### CinemachinePostFX
 This behaviour is a liaison between Cinemachine with the Post-Processing v1 module.  You must have the Post-Processing V1 stack asset store package installed in order to use this behaviour.
@@ -775,7 +775,7 @@ If you have Unity's Post Processing Stack V2 package installed, you can add post
 
 Define a Post-Processing profile for your vcam, and connect it by attaching a **CinemachinePostProcessing** extension to your vcam.  To complete the connection, you will also need a PostProcessingLayer component on the Unity camera, alongside the CinemachineBrain.  
 
-That’s all you have to do.  Now, whenever the vcam is activated, its custom Post-Processing profile will be applied to the Unity camera.  If the camera is blending with another vcam, then the blend weight will be applied to the Post Processing effects also.
+That's all you have to do.  Now, whenever the vcam is activated, its custom Post-Processing profile will be applied to the Unity camera.  If the camera is blending with another vcam, then the blend weight will be applied to the Post Processing effects also.
 
 ### CinemachinePostProcessing
 This behaviour is a liaison between Cinemachine with the Post-Processing V2 module. You must have the Post-Processing Stack V2 unity package installed in order to use this behaviour.
@@ -891,7 +891,7 @@ An add-on module for Cinemachine Virtual Camera that places an image in screen s
 | **Split View** | Single | Wipe the image on and off horizontally. |
 
 ### SaveDuringPlay
-Cameras need to be tweaked in context - often that means while the game is playing.  Normally, Unity does not propagate those changes to the scene once play mode is exited.  Cinemachine has implemented a special feature to preserve parameter tweaks made during game play.  It won’t save structural changes (like adding or removing a behaviour), but it will keep the tweaks.  Cinemachine behaviours have a special attribute [SaveDuringPlay] to enable this functionality.  Feel free to use it on your own scripts too if you need it.
+Cameras need to be tweaked in context - often that means while the game is playing.  Normally, Unity does not propagate those changes to the scene once play mode is exited.  Cinemachine has implemented a special feature to preserve parameter tweaks made during game play.  It won't save structural changes (like adding or removing a behaviour), but it will keep the tweaks.  Cinemachine behaviours have a special attribute [SaveDuringPlay] to enable this functionality.  Feel free to use it on your own scripts too if you need it.
 
 It works by scanning the scene after Play exits and applying any changed parameters back to the scene.  This kicks in a second or so after exit.  You can always hit Undo to revert the changes.
 
@@ -916,14 +916,14 @@ The following slides will serve as a brief introduction to get you started.
 ### Top-Down Games
 Cinemachine Virtual Cameras are modeled after human camera operators.  As such, they have a sensitivity to the up/down axis, and will always try to avoid introducing roll into the camera framing - unless you deliberately introduce it via such settings as dutch.  Because of this sensitivity, virtual cameras do not like to look straight up or down for extended periods.  They will do it in passing, but if the LookAt target is often straight up or down, they will not always give the desired results.
 
-If you are building a top-down game, the best practice is to redefine the up direction, for the purposes of the camera.  You do this by setting the World Up Override in the CinemachineBrain to a game object whose local up points in the direction that you want the Camera’s up to normally be.   This will be applied to all virtual cameras connected to that brain.
+If you are building a top-down game, the best practice is to redefine the up direction, for the purposes of the camera.  You do this by setting the World Up Override in the CinemachineBrain to a game object whose local up points in the direction that you want the Camera's up to normally be.   This will be applied to all virtual cameras connected to that brain.
 ### Split-screen
 You can set up a multi-camera split-screen with Cinemachine 2.0:
 
 1. Make 2 Unity Cameras, give each one its own CinemachineBrain, and set up their viewports.
-2. Now make 2 virtual cameras to follow the players. Assign those virtual cameras to different layers. We’ll call them layer A and layer B. 
+2. Now make 2 virtual cameras to follow the players. Assign those virtual cameras to different layers. We'll call them layer A and layer B. 
 3. Go back to the two Unity cameras, and set their culling masks so that one camera sees layer A but not layer B, and the other camera does the opposite. 
-4. That’s it!  Camera A will be driven by virtual cameras on layer A, and camera B will be driven by virtual cameras on layer B. They will do their blending etc independently.
+4. That's it!  Camera A will be driven by virtual cameras on layer A, and camera B will be driven by virtual cameras on layer B. They will do their blending etc independently.
 5. Add as many layers and cameras as you like.
 
 

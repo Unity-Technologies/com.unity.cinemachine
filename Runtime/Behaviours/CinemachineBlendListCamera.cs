@@ -133,8 +133,11 @@ namespace Cinemachine
             mCurrentInstruction = -1;
             LiveChild = null;
             mActiveBlend = null;
+            TransitioningFrom = fromCam;
             InternalUpdateCameraState(worldUp, deltaTime);
         }
+
+        ICinemachineCamera TransitioningFrom { get; set; }
 
         /// <summary>Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
@@ -164,23 +167,26 @@ namespace Cinemachine
                 LiveChild = best;
 
                 // Are we transitioning cameras?
-                if (previousCam != null && LiveChild != null && previousCam != LiveChild && mCurrentInstruction > 0)
+                if (previousCam != LiveChild && LiveChild != null)
                 {
-                    // Create a blend (will be null if a cut)
-                    mActiveBlend = CreateBlend(
-                            previousCam, LiveChild,
-                            m_Instructions[mCurrentInstruction].m_Blend, 
-                            mActiveBlend);
-
                     // Notify incoming camera of transition
                     LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);
 
-                    // Generate Camera Activation event if live
-                    CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild);
+                    // Generate Camera Activation event in the brain if live
+                    CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild, previousCam);
 
-                    // If cutting, generate a camera cut event if live
-                    if (mActiveBlend == null)
-                        CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                    if (previousCam != null && mCurrentInstruction > 0)
+                    {
+                        // Create a blend (will be null if a cut)
+                        mActiveBlend = CreateBlend(
+                                previousCam, LiveChild,
+                                m_Instructions[mCurrentInstruction].m_Blend, 
+                                mActiveBlend);
+
+                        // If cutting, generate a camera cut event if live
+                        if (mActiveBlend == null)
+                            CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                    }
                 }
             }
 
@@ -198,9 +204,14 @@ namespace Cinemachine
                 m_State = mActiveBlend.State;
             }
             else if (LiveChild != null)
+            {
+                if (TransitioningFrom != null)
+                    LiveChild.OnTransitionFromCamera(TransitioningFrom, worldUp, deltaTime);
                 m_State =  LiveChild.State;
-
-            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
+            }
+            TransitioningFrom = null;
+            InvokePostPipelineStageCallback(
+                this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
         }
 
@@ -209,6 +220,7 @@ namespace Cinemachine
         {
             base.OnEnable();
             InvalidateListOfChildren();
+            LiveChild = null;
             mActiveBlend = null;
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;

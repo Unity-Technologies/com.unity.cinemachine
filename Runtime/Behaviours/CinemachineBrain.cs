@@ -4,7 +4,6 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Events;
 using System.Collections;
-using System.Text;
 
 namespace Cinemachine
 {
@@ -106,7 +105,7 @@ namespace Cinemachine
         [Serializable] public class BrainEvent : UnityEvent<CinemachineBrain> {}
 
         /// <summary>Event with a ICinemachineCamera parameter</summary>
-        [Serializable] public class VcamEvent : UnityEvent<ICinemachineCamera> {}
+        [Serializable] public class VcamActivatedEvent : UnityEvent<ICinemachineCamera, ICinemachineCamera> {}
 
         /// <summary>This event will fire whenever a virtual camera goes live and there is no blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live and there is no blend")]
@@ -115,13 +114,22 @@ namespace Cinemachine
         /// <summary>This event will fire whenever a virtual camera goes live.  If a blend is involved, 
         /// then the event will fire on the first frame of the blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is involved, then the event will fire on the first frame of the blend.")]
-        public VcamEvent m_CameraActivatedEvent = new VcamEvent();
+        public VcamActivatedEvent m_CameraActivatedEvent = new VcamActivatedEvent();
 
         /// <summary>
         /// API for the Unity Editor.
         /// Show this camera no matter what.  This is static, and so affects all Cinemachine brains.
         /// </summary>
-        public static ICinemachineCamera SoloCamera { get; set; }
+        public static ICinemachineCamera SoloCamera 
+        { 
+            get { return mSoloCamera; } 
+            set 
+            { 
+                if (value != null && !CinemachineCore.Instance.IsLive(value))
+                    value.OnTransitionFromCamera(null, Vector3.up, Time.deltaTime);
+                mSoloCamera = value;
+            }
+        }
 
         /// <summary>API for the Unity Editor.</summary>
         /// <returns>Color used to indicate that a camera is in Solo mode.</returns>
@@ -131,7 +139,7 @@ namespace Cinemachine
         public Vector3 DefaultWorldUp
             { get { return (m_WorldUpOverride != null) ? m_WorldUpOverride.transform.up : Vector3.up; } }
 
-
+        private static ICinemachineCamera mSoloCamera;
         private Coroutine mPhysicsCoroutine;
 
         private void OnEnable()
@@ -216,35 +224,38 @@ namespace Cinemachine
         {
             while (true)
             {
+                // FixedUpdate can be called multiple times per frame
                 yield return mWaitForFixedUpdate;
-                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                if (m_UpdateMethod != UpdateMethod.LateUpdate)
                 {
-                    AddSubframe(); // FixedUpdate can be called multiple times per frame
-                    UpdateVirtualCameras(CinemachineCore.UpdateFilter.Fixed, GetEffectiveDeltaTime(true));
-                }
-                else
-                {
-                    if (m_UpdateMethod == UpdateMethod.LateUpdate)
-                        msSubframes = 1;
-                    else
+                    CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
+                    if (m_UpdateMethod == UpdateMethod.SmartUpdate)
                     {
-                        AddSubframe(); // FixedUpdate can be called multiple times per frame
-                        UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedFixed, GetEffectiveDeltaTime(true));
+                        // Track the targets
+                        UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed); 
+                        filter = CinemachineCore.UpdateFilter.SmartFixed;
                     }
+                    UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
                 }
             }
         }
-
+        
         private void LateUpdate()
         {
             float deltaTime = GetEffectiveDeltaTime(false);
-            if (m_UpdateMethod == UpdateMethod.SmartUpdate)
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, deltaTime);
-            else if (m_UpdateMethod == UpdateMethod.LateUpdate)
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedLate, deltaTime);
-
+            if (m_UpdateMethod != UpdateMethod.FixedUpdate)
+            {
+                CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Late;
+                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                {
+                    // Track the targets
+                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Late);
+                    filter = CinemachineCore.UpdateFilter.SmartLate;
+                }
+                UpdateVirtualCameras(filter, deltaTime);
+            }
             // Choose the active vcam and apply it to the Unity camera
-            ProcessActiveCamera(GetEffectiveDeltaTime(false));
+            ProcessActiveCamera(deltaTime);
         }
 
 #if UNITY_EDITOR
@@ -257,9 +268,6 @@ namespace Cinemachine
             {
                 // Note: this call will cause any screen canvas attached to the camera
                 // to be painted one frame out of sync.  It will only happen in the editor when not playing.
-                float deltaTime = GetEffectiveDeltaTime(false);
-                msSubframes = 1;
-                UpdateVirtualCameras(CinemachineCore.UpdateFilter.ForcedLate, deltaTime);
                 ProcessActiveCamera(GetEffectiveDeltaTime(false));
             }
         }
@@ -303,7 +311,15 @@ namespace Cinemachine
                 activeBlend.UpdateCameraState(DefaultWorldUp, deltaTime);
 
             // Restore the filter for general use
-            CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Late;
+            updateFilter = CinemachineCore.UpdateFilter.Late;
+            if (Application.isPlaying)
+            {
+                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                    updateFilter |= CinemachineCore.UpdateFilter.Smart;
+                else if (m_UpdateMethod == UpdateMethod.FixedUpdate)
+                    updateFilter |= CinemachineCore.UpdateFilter.Fixed;
+            }
+            CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
         }
 
         /// <summary>
@@ -470,7 +486,7 @@ namespace Cinemachine
                 // Notify incoming camera of transition
                 activeCamera.OnTransitionFromCamera(activeCameraPreviousFrame, DefaultWorldUp, deltaTime);
                 if (m_CameraActivatedEvent != null)
-                    m_CameraActivatedEvent.Invoke(activeCamera);
+                    m_CameraActivatedEvent.Invoke(activeCamera, activeCameraPreviousFrame);
 
                 // If we're cutting without a blend, send an event
                 if (m_CameraCutEvent != null && !IsBlending)
@@ -675,29 +691,5 @@ namespace Cinemachine
             if (CinemachineCore.CameraUpdatedEvent != null)
                 CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
-
-        static int msCurrentFrame;
-        static int msFirstBrainObjectId;
-        static int msSubframes;
-        void AddSubframe()
-        {
-            int now = Time.frameCount;
-            if (now == msCurrentFrame)
-            {
-                if (msFirstBrainObjectId == GetInstanceID())
-                    ++msSubframes;
-            }
-            else
-            {
-                msCurrentFrame = now;
-                msFirstBrainObjectId = GetInstanceID();
-                msSubframes = 1;
-            }
-        }
-
-        /// <summary>API for CinemachineCore only: Get the number of subframes to
-        /// update the virtual cameras.</summary>
-        /// <returns>Number of subframes registered by the first brain's FixedUpdate</returns>
-        internal static int GetSubframeCount() { return Math.Max(1, msSubframes); }
     }
 }
