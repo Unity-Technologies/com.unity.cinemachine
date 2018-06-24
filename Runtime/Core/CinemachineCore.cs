@@ -187,6 +187,11 @@ namespace Cinemachine
                     var vcam = sublist[j];
                     if (canUpdateStandby && vcam == mRoundRobinVcamLastFrame)
                         currentRoundRobin = null; // update the next roundrobin candidate
+                    if (vcam == null)
+                    {
+                        sublist.RemoveAt(j);
+                        continue; // deleted
+                    }
                     if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always
                         || IsLive(vcam))
                     {
