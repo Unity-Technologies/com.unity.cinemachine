@@ -209,6 +209,18 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            bool forceUpdate = false;
+            if (fromCam != null)
+            {
+                CinemachineNewFreeLook freeLookFrom = fromCam as CinemachineNewFreeLook;
+                if (freeLookFrom != null && freeLookFrom.Follow == Follow)
+                {
+                    if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                        m_HorizontalAxis.Value = freeLookFrom.m_HorizontalAxis.Value;
+                    m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
+                    forceUpdate = true;
+                }
+            }
             if (m_Transitions.m_InheritPosition)
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
@@ -220,11 +232,16 @@ namespace Cinemachine
                     m_Rigs[1].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Rigs[0].m_Lens);
                     m_Rigs[2].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Rigs[0].m_Lens);
                     PreviousStateIsValid = false;
+                    forceUpdate = true;
                     InternalUpdateCameraState(worldUp, deltaTime);
                 }
             }
+            if (forceUpdate)
+                InternalUpdateCameraState(worldUp, deltaTime);
+            else
+                UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
-                m_Transitions.m_OnCameraLive.Invoke(this);
+                m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
 
         public CinemachineComponentBase GetRigComponent(int rigIndex, CinemachineCore.Stage stage)
@@ -245,8 +262,13 @@ namespace Cinemachine
         {
             bool rebuild = false;
             for (int i = 0; !rebuild && i < 3; ++i)
-            if (m_Rigs[i].m_Components == null)
-                rebuild = true;
+            {
+                if (m_Rigs[i].m_Components == null)
+                    rebuild = true;
+                else if ((i == 0 || !m_CommonStage[(int)CinemachineCore.Stage.Body])
+                    && m_Rigs[i].m_Components[(int)CinemachineCore.Stage.Body] == null)
+                        rebuild = true;
+            }
             if (!rebuild)
                 return;
 
@@ -264,28 +286,49 @@ namespace Cinemachine
                     // Co-ordinate the orbitals
                     var a = existing[i] as CinemachineOrbitalTransposer;
                     if (a != null)
-                    {
-                        a.m_HeadingIsSlave = true;
-                        if (numFound == 0)
-                            a.HeadingUpdater 
-                                = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => 
-                                { 
-                                    LastHeading = orbital.UpdateHeading(deltaTime, up, ref m_HorizontalAxis);
-                                    return LastHeading;
-                                };
-                        else
-                            a.HeadingUpdater = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
-                                => { return LastHeading; };
-                    }
+                        SetupOrbital(numFound, a);
                     m_Rigs[numFound].m_Components.Add(existing[i]);
                     //GML existing[i].hideFlags |= HideFlags.HideInInspector;
                     ++numFound;
                 }
                 while (numFound < 3)
-                    m_Rigs[numFound++].m_Components.Add(null);
+                {
+                    // Make sure there is orbital in Body
+                    CinemachineComponentBase component = null;
+                    if (stage == CinemachineCore.Stage.Body 
+                        && numFound < (m_CommonStage[(int)stage] ? 1 : 3))
+                    {
+#if UNITY_EDITOR
+                        CinemachineOrbitalTransposer orbital 
+                            = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
+                        UnityEditor.Undo.RecordObject(orbital, "creating rig");
+#else
+                        CinemachineOrbitalTransposer orbital 
+                            = AddComponent<CinemachineOrbitalTranspose>();
+#endif
+                        SetupOrbital(numFound, orbital);
+                        component = orbital;
+                    }
+                    m_Rigs[numFound++].m_Components.Add(component);
+                }
             }
         }
  
+        private void SetupOrbital(int index, CinemachineOrbitalTransposer orbital)
+        {
+            orbital.m_HeadingIsSlave = true;
+            if (index == 0)
+                orbital.HeadingUpdater 
+                    = (CinemachineOrbitalTransposer o, float deltaTime, Vector3 up) => 
+                    { 
+                        LastHeading = o.UpdateHeading(deltaTime, up, ref m_HorizontalAxis);
+                        return LastHeading;
+                    };
+            else
+                orbital.HeadingUpdater = (CinemachineOrbitalTransposer o, float deltaTime, Vector3 up) 
+                    => { return LastHeading; };
+        }
+
         private float LastHeading { get; set; }
 
         private float GetVerticalAxisValue()
@@ -311,15 +354,16 @@ namespace Cinemachine
                         continue;
                     if (numFound > (m_CommonStage[(int)stage] ? 0 : 2))
                     {
+                        existing[i].hideFlags &= ~HideFlags.HideInInspector;
                         if (invalidComponents != null)
                             invalidComponents.Add(existing[i]);
                         continue;
                     }
                     if (stage == (int)CinemachineCore.Stage.Body)
                     {
-                        var a = existing[i] as CinemachineOrbitalTransposer;
-                        if (a == null)
+                        if (existing[i] as CinemachineOrbitalTransposer == null)
                         {
+                            existing[i].hideFlags &= ~HideFlags.HideInInspector;
                             if (invalidComponents != null)
                                 invalidComponents.Add(existing[i]);
                             continue; // Only allow orbital transposer in body, ignore others
