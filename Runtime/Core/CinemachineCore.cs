@@ -228,9 +228,12 @@ namespace Cinemachine
         /// hasn't already been updated this frame.  Always update vcams via this method.
         /// Calling this more than once per frame for the same camera will have no effect.
         /// </summary>
-        internal bool UpdateVirtualCamera(
+        internal void UpdateVirtualCamera(
             CinemachineVirtualCameraBase vcam, Vector3 worldUp, float deltaTime)
         {
+            if (vcam == null)
+                return;
+
             bool isSmartUpdate = (CurrentUpdateFilter & UpdateFilter.Smart) == UpdateFilter.Smart;
             UpdateTracker.UpdateClock updateClock 
                 = (UpdateTracker.UpdateClock)(CurrentUpdateFilter & ~UpdateFilter.Smart);
@@ -242,9 +245,9 @@ namespace Cinemachine
             {
                 Transform updateTarget = GetUpdateTarget(vcam);
                 if (updateTarget == null)
-                    return false;   // vcam deleted
+                    return;   // vcam deleted
                 if (UpdateTracker.GetPreferredUpdate(updateTarget) != updateClock)
-                    return false;   // wrong clock
+                    return;   // wrong clock
             }
 
             // Have we already been updated this frame?
@@ -261,7 +264,7 @@ namespace Cinemachine
                 ? Time.frameCount - status.lastUpdateFrame
                 : FixedFrameCount - status.lastUpdateFixedFrame;
             if (frameDelta == 0 && status.lastUpdateMode == updateClock)
-                return false; // already updated
+                return; // already updated
             if (frameDelta != 1)
                 deltaTime = -1; // multiple frames - kill the damping
 
@@ -270,7 +273,6 @@ namespace Cinemachine
             status.lastUpdateFrame = Time.frameCount;
             status.lastUpdateFixedFrame = FixedFrameCount;
             status.lastUpdateMode = updateClock;
-            return true;
         }
 
         class UpdateStatus
