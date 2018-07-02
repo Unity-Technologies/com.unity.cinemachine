@@ -153,12 +153,6 @@ namespace Cinemachine
             m_OptimalTargetDistance = Mathf.Max(0, m_OptimalTargetDistance);
         }
 
-        /// <summary>Cleanup</summary>
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            CleanupCameraCollider();
-        }
 
         /// This must be small but greater than 0 - reduces false results due to precision
         const float PrecisionSlush = 0.001f;
@@ -629,17 +623,13 @@ namespace Cinemachine
         }
 
         private Collider[] mColliderBuffer = new Collider[5];
-        private SphereCollider mCameraCollider;
-        private GameObject mCameraColliderGameObject;
+        private static SphereCollider mCameraCollider;
+        private static GameObject mCameraColliderGameObject;
         private Vector3 RespectCameraRadius(Vector3 cameraPos, ref CameraState state)
         {
             Vector3 result = Vector3.zero;
             if (m_CameraRadius < Epsilon || m_CollideAgainst == 0)
-            {
-                if (mCameraColliderGameObject != null)
-                    CleanupCameraCollider();
                 return result;
-            }
 
             Vector3 dir = state.HasLookAt ? (cameraPos - state.ReferenceLookAt) : Vector3.zero;
             Ray ray = new Ray();
@@ -678,6 +668,7 @@ namespace Cinemachine
                     mCameraColliderGameObject.transform.position = Vector3.zero;
                     mCameraColliderGameObject.SetActive(true);
                     mCameraCollider = mCameraColliderGameObject.AddComponent<SphereCollider>();
+                    mCameraCollider.isTrigger = true;
                     var rb = mCameraColliderGameObject.AddComponent<Rigidbody>();
                     rb.detectCollisions = false;
                     rb.isKinematic = true;
@@ -713,13 +704,6 @@ namespace Cinemachine
             }
 
             return result;
-        }
-
-        private void CleanupCameraCollider()
-        {
-            RuntimeUtility.DestroyObject(mCameraColliderGameObject);
-            mCameraColliderGameObject = null;
-            mCameraCollider = null;
         }
 
         private bool CheckForTargetObstructions(CameraState state)

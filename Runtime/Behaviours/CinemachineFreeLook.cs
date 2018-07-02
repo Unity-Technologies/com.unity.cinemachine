@@ -443,8 +443,9 @@ namespace Cinemachine
             // Special condition: Did we just get copy/pasted?
             if (m_Rigs != null && m_Rigs.Length == 3 && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
             {
+                var copyFrom = m_Rigs;
                 DestroyRigs();
-                m_Rigs = CreateRigs(m_Rigs);
+                m_Rigs = CreateRigs(copyFrom);
             }
 
             // Early out if we're up to date

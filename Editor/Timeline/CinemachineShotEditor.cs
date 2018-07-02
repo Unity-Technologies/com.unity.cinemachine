@@ -8,7 +8,6 @@ namespace Cinemachine.Timeline
     [CustomEditor(typeof(CinemachineShot))]
     internal sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
     {
-        private SerializedProperty mVirtualCameraProperty = null;
         private static readonly GUIContent kVirtualCameraLabel
             = new GUIContent("Virtual Camera", "The virtual camera to use for this shot");
 
@@ -17,12 +16,6 @@ namespace Cinemachine.Timeline
             List<string> excluded = base.GetExcludedPropertiesInInspector();
             excluded.Add(FieldPath(x => x.VirtualCamera));
             return excluded;
-        }
-
-        private void OnEnable()
-        {
-            if (serializedObject != null)
-                mVirtualCameraProperty = FindProperty(x => x.VirtualCamera);
         }
 
         private void OnDisable()
@@ -38,13 +31,14 @@ namespace Cinemachine.Timeline
         public override void OnInspectorGUI()
         {
             BeginInspector();
+            SerializedProperty vcamProperty = FindProperty(x => x.VirtualCamera);
             EditorGUI.indentLevel = 0; // otherwise subeditor layouts get screwed up
 
             Rect rect;
             CinemachineVirtualCameraBase vcam
-                = mVirtualCameraProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
+                = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
             if (vcam != null)
-                EditorGUILayout.PropertyField(mVirtualCameraProperty, kVirtualCameraLabel);
+                EditorGUILayout.PropertyField(vcamProperty, kVirtualCameraLabel);
             else
             {
                 GUIContent createLabel = new GUIContent("Create");
@@ -53,12 +47,12 @@ namespace Cinemachine.Timeline
                 rect = EditorGUILayout.GetControlRect(true);
                 rect.width -= createSize.x;
 
-                EditorGUI.PropertyField(rect, mVirtualCameraProperty, kVirtualCameraLabel);
+                EditorGUI.PropertyField(rect, vcamProperty, kVirtualCameraLabel);
                 rect.x += rect.width; rect.width = createSize.x;
                 if (GUI.Button(rect, createLabel))
                 {
                     vcam = CinemachineMenu.CreateDefaultVirtualCamera();
-                    mVirtualCameraProperty.exposedReferenceValue = vcam;
+                    vcamProperty.exposedReferenceValue = vcam;
                 }
                 serializedObject.ApplyModifiedProperties();
             }
