@@ -370,6 +370,7 @@ namespace Cinemachine
             }
         }
 
+#if false // We don't seem to need this
         internal int GetInvalidRigComponents(List<CinemachineComponentBase> invalids)
         {
             UpdateRigCache();
@@ -383,6 +384,7 @@ namespace Cinemachine
             }
             return invalids.Count;
         }
+#endif
         
         private void SetupOrbital(int index, CinemachineOrbitalTransposer orbital)
         {
@@ -504,17 +506,12 @@ namespace Cinemachine
             if (m_Rigs[otherRig].m_CustomLens)
                 state.Lens = LensSettings.Lerp(state.Lens, m_Rigs[otherRig].m_Lens, y);
 
-            CameraState state1 = state;
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c0 = m_Rigs[0].m_Components[(int)stage];
-                if (c0 == null)
-                    continue;
-                c0.PrePipelineMutateCameraState(ref state);
-                var c1 = m_Rigs[otherRig].m_Components[(int)stage];
-                if (c1 != null)
-                    c1.PrePipelineMutateCameraState(ref state1);
+                if (c0 != null)
+                    c0.PrePipelineMutateCameraState(ref state);
             }
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
                 stage < CinemachineCore.Stage.Finalize; ++stage)
@@ -524,37 +521,30 @@ namespace Cinemachine
                 {
                     if (stage == CinemachineCore.Stage.Aim)
                         state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
-                    continue;
                 }
-                if (stage == CinemachineCore.Stage.Body)
-                    SyncOrbital(c0 as CinemachineOrbitalTransposer, followOffset, true);
-                c0.MutateCameraState(ref state, deltaTime);
-
+                else
+                {
+                    if (stage == CinemachineCore.Stage.Body)
+                        SyncOrbital(c0 as CinemachineOrbitalTransposer, followOffset, true);
+                    c0.MutateCameraState(ref state, deltaTime);
+                }
                 var c1 = m_Rigs[otherRig].m_Components[(int)stage];
                 if (c1 != null)
                 {
+                    CameraState state1 = state;
+                    for (CinemachineCore.Stage s1 = stage; 
+                        s1 < CinemachineCore.Stage.Finalize; ++s1)
+                    {
+                        var c = m_Rigs[otherRig].m_Components[(int)s1];
+                        if (c != null)
+                            c.PrePipelineMutateCameraState(ref state1);
+                    }
                     if (stage == CinemachineCore.Stage.Body)
                         SyncOrbital(c1 as CinemachineOrbitalTransposer, followOffset, false);
-                    c1.MutateCameraState(ref state, deltaTime);
-                    switch (stage)
-                    {
-                        case CinemachineCore.Stage.Body: 
-                            state.RawPosition = Vector3.Lerp(state.RawPosition, state1.RawPosition, y);
-                            break;
-                        case CinemachineCore.Stage.Aim: 
-                            state.RawOrientation = Quaternion.Slerp(state.RawOrientation, state1.RawOrientation, y);
-                            break;
-                        case CinemachineCore.Stage.Noise: 
-                            state.PositionCorrection = Vector3.Lerp(state.PositionCorrection, state1.PositionCorrection, y);
-                            state.OrientationCorrection = Quaternion.Slerp(state.OrientationCorrection, state1.OrientationCorrection, y);
-                            break;
-                    }
+                    c1.MutateCameraState(ref state1, deltaTime);
+                    state = CameraState.Lerp(state, state1, y);
                 }
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
-                state1.RawPosition = state.RawPosition;
-                state1.RawOrientation = state.RawOrientation;
-                state1.PositionCorrection = state.PositionCorrection;
-                state1.OrientationCorrection = state.OrientationCorrection;
             }
             return state;
         }

@@ -99,6 +99,45 @@ namespace Cinemachine
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
 
+        /// <summary>Special support for FreeLook</summary>
+        public struct BlendableSettings
+        {
+            public Vector3 m_Offset;
+            public Vector3 m_Damping;
+            public Vector3 m_AngularDamping;
+
+            public static BlendableSettings Lerp(BlendableSettings a, BlendableSettings b, float t)
+            {
+                BlendableSettings r = new BlendableSettings();
+                r.m_Offset = Vector3.Lerp(a.m_Offset, b.m_Offset, t);
+                r.m_Damping = Vector3.Lerp(a.m_Damping, b.m_Damping, t);
+                r.m_AngularDamping = Vector3.Lerp(a.m_AngularDamping, b.m_AngularDamping, t);
+                return r;
+            }
+        }
+
+        /// <summary>Special support for FreeLook</summary>
+        public BlendableSettings GetBlendableSettings()
+        {
+            BlendableSettings b = new BlendableSettings();
+            b.m_Offset = m_FollowOffset;
+            b.m_Damping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            b.m_AngularDamping = new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping);
+            return b;
+        }
+
+        /// <summary>Special support for FreeLook</summary>
+        public void SetBlendableSettings(BlendableSettings b)
+        {
+            m_FollowOffset = b.m_Offset;
+            m_XDamping = b.m_Damping.x;
+            m_YDamping = b.m_Damping.y;
+            m_ZDamping = b.m_Damping.z;
+            m_PitchDamping =b.m_AngularDamping.x;
+            m_YawDamping = b.m_AngularDamping.y;
+            m_RollDamping = b.m_AngularDamping.z;
+        }
+
         /// <summary>Derived classes should call this from their OnValidate() implementation</summary>
         protected virtual void OnValidate()
         {

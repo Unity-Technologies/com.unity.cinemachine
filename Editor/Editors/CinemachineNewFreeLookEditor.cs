@@ -174,12 +174,14 @@ namespace Cinemachine
                         var newC = Target.SetRigComponent(rigIndex, oldC.GetType());
                         EditorUtility.CopySerialized(oldC, newC);
                         newC.m_RigIndex = rigIndex;  // set it back because CopySerialized stomped it
+                        GUIUtility.ExitGUI();
                     }
                 }
                 if (!componentWasNull && ed.ComponentSelectionDisabled)
                 {
                     // Just disabled "Customize" - delete the component
                     Target.DestroyRigComponent(rigIndex, stage);
+                    GUIUtility.ExitGUI();
                 }
             }
 

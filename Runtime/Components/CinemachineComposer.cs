@@ -137,6 +137,58 @@ namespace Cinemachine
             return TrackedPoint;
         }
         
+        /// <summary>Special support for FreeLook</summary>
+        public struct BlendableSettings
+        {
+            public Vector3 m_LookAtOffset;
+            public Vector2 m_Damping;
+            public Vector2 m_ScreenPos;
+            public Vector2 m_DeadZone;
+            public Vector2 m_SoftZone;
+            public Vector2 m_Bias;
+
+            public static BlendableSettings Lerp(BlendableSettings a, BlendableSettings b, float t)
+            {
+                BlendableSettings r = new BlendableSettings();
+                r.m_LookAtOffset = Vector3.Lerp(a.m_LookAtOffset, b.m_LookAtOffset, t);
+                r.m_Damping = Vector2.Lerp(a.m_Damping, b.m_Damping, t);
+                r.m_ScreenPos = Vector2.Lerp(a.m_ScreenPos, b.m_ScreenPos, t);
+                r.m_DeadZone = Vector2.Lerp(a.m_DeadZone, b.m_DeadZone, t);
+                r.m_SoftZone = Vector2.Lerp(a.m_SoftZone, b.m_SoftZone, t);
+                r.m_Bias = Vector2.Lerp(a.m_Bias, b.m_Bias, t);
+                return r;
+            }
+        }
+
+        /// <summary>Special support for FreeLook</summary>
+        public BlendableSettings GetBlendableSettings()
+        {
+            BlendableSettings b = new BlendableSettings();
+            b.m_LookAtOffset = m_LookAtOffset;
+            b.m_Damping = new Vector2(m_HorizontalDamping, m_VerticalDamping);
+            b.m_ScreenPos = new Vector2(m_ScreenX, m_ScreenY);
+            b.m_DeadZone = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight);
+            b.m_SoftZone = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight);
+            b.m_Bias = new Vector2(m_BiasX, m_BiasY);
+            return b;
+        }
+
+        /// <summary>Special support for FreeLook</summary>
+        public void SetBlendableSettings(BlendableSettings b)
+        {
+            m_LookAtOffset = b.m_LookAtOffset;
+            m_HorizontalDamping = b.m_Damping.x;
+            m_VerticalDamping = b.m_Damping.y;
+            m_ScreenX = b.m_ScreenPos.x;
+            m_ScreenY = b.m_ScreenPos.y;
+            m_DeadZoneWidth = b.m_DeadZone.x;
+            m_DeadZoneHeight = b.m_DeadZone.y;
+            m_SoftZoneWidth = b.m_SoftZone.x;
+            m_SoftZoneHeight = b.m_SoftZone.y;
+            m_BiasX = b.m_Bias.x;
+            m_BiasY = b.m_Bias.y;
+        }
+
         /// <summary>State information for damping</summary>
         Vector3 m_CameraPosPrevFrame = Vector3.zero;
         Vector3 m_LookAtPrevFrame = Vector3.zero;
