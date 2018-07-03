@@ -1,4 +1,4 @@
-<size=20><b>Version 2.2.5</b></size>
+<size=20><b>Version 2.2.6</b></size>
 
 - Bugfix: fogbugz case 1053595: Cinemachine Collider leaves hidden collider at origin that interferes with scene objects
 - Bugfix: FreeLook Paste Component Values now pastes the CM subcomponents as well
