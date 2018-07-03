@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using Cinemachine.Utility;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -23,7 +24,8 @@ namespace Cinemachine
         /// the Composer tracks. Use this to fine-tune the tracking target position
         /// when the desired area is not in the tracked object's center</summary>
         [Tooltip("Target offset from the target object's center in target-local space. Use this to fine-tune the tracking target position when the desired area is not the tracked object's center.")]
-        public Vector3 m_TrackedObjectOffset = Vector3.zero;
+        [FormerlySerializedAs("m_TrackedObjectOffset")]
+        public Vector3 m_LookAtOffset = Vector3.zero;
 
         /// <summary>This setting will instruct the composer to adjust its target offset based
         /// on the motion of the target.  The composer will look at a point where it estimates
@@ -124,7 +126,7 @@ namespace Cinemachine
         {
             Vector3 pos = lookAt;
             if (LookAtTarget != null)
-                pos += LookAtTargetRotation * m_TrackedObjectOffset;
+                pos += LookAtTargetRotation * m_LookAtOffset;
 
             m_Predictor.IgnoreY = m_LookaheadIgnoreY;
             m_Predictor.Smoothing = m_LookaheadSmoothing;
