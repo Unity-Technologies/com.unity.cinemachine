@@ -182,6 +182,10 @@ namespace Cinemachine
             }
         }
 
+        /// Special for FreeLook and other flat-layout multi-rig vcams
+        [SerializeField] [HideInInspector]
+        internal int m_RigIndex;
+
         /// <summary>Returns true if this object is enabled and set up to produce results.</summary>
         public abstract bool IsValid { get; }
 

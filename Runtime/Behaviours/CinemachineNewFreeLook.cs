@@ -78,12 +78,6 @@ namespace Cinemachine
         [Range(0f, 1f)]
         public float m_SplineCurvature = 0.2f;
 
-        [SerializeField, HideInInspector]
-        public bool m_CommonLens = true;
-
-        [SerializeField, HideInInspector]
-        public bool[] m_CommonStage = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
-
         [Serializable]
         public struct Rig
         {
@@ -92,6 +86,9 @@ namespace Cinemachine
 
             /// <summary>Radius of orbit</summary>
             public float m_Radius; 
+
+            [SerializeField, HideInInspector]
+            public bool m_CustomLens;
 
             [LensSettingsProperty]
             public LensSettings m_Lens;
@@ -109,13 +106,6 @@ namespace Cinemachine
 
         [SerializeField, HideInInspector]
         public Rig[] m_Rigs = new Rig[3];
-
-        CinemachineNewFreeLook()
-        {
-            // We default to everything common
-            for (int i = 0; i < m_CommonStage.Length; ++i)
-                m_CommonStage[i] = true;
-        }
 
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         protected override void OnValidate()
@@ -246,10 +236,79 @@ namespace Cinemachine
 
         public CinemachineComponentBase GetRigComponent(int rigIndex, CinemachineCore.Stage stage)
         {
-            UpdateRigCache();
             if (rigIndex < 0 || rigIndex > 2)
+            {
+                Debug.LogError("CinemachineNewFreeLook.GetRigComponent(): invalid rig index.  Must be 0, 1, or 2");
                 return null;
+            }
+            UpdateRigCache();
             return m_Rigs[rigIndex].m_Components[(int)stage];
+        }
+
+        public CinemachineComponentBase SetRigComponent(int rigIndex, Type type)
+        {
+            if (rigIndex < 0 || rigIndex > 2)
+            {
+                Debug.LogError("CinemachineNewFreeLook.SetRigComponent(): invalid rig index.  Must be 0, 1, or 2");
+                return null;
+            }
+            if (!type.IsSubclassOf(typeof(CinemachineComponentBase)))
+            {
+                Debug.LogError("CinemachineNewFreeLook.SetRigComponent(): invalid type.  Must be subclass of CinemachineComponentBase");
+                return null;
+            }
+            CinemachineComponentBase component;
+
+            UpdateRigCache();
+#if UNITY_EDITOR
+            component = UnityEditor.Undo.AddComponent(gameObject, type) as CinemachineComponentBase;
+            UnityEditor.Undo.RecordObject(component, "SetRigComponent");
+#else
+            component = AddComponent<T>();
+#endif
+            var oldC = m_Rigs[rigIndex].m_Components[(int)component.Stage];
+            if (oldC != null)
+            {
+#if UNITY_EDITOR
+                UnityEditor.Undo.DestroyObjectImmediate(oldC);
+#else
+                UnityEngine.Object.Destroy(oldC);
+#endif
+            }
+            component.m_RigIndex = rigIndex;
+            InvalidateRigCache();
+            return component;
+        }
+
+        public T SetRigComponent<T>(int rigIndex) where T : CinemachineComponentBase
+        {
+            return SetRigComponent(rigIndex, typeof(T)) as T;
+        }
+
+        public void DestroyRigComponent(int rigIndex, CinemachineCore.Stage stage)
+        {
+            if (rigIndex < 0 || rigIndex > 2)
+            {
+                Debug.LogError("CinemachineNewFreeLook.GetRigComponent(): invalid rig index.  Must be 0, 1, or 2");
+                return;
+            }
+            UpdateRigCache();
+            var c = m_Rigs[rigIndex].m_Components[(int)stage];
+            if (c != null)
+            {
+#if UNITY_EDITOR
+                UnityEditor.Undo.DestroyObjectImmediate(c);
+#else
+                UnityEngine.Object.Destroy(c);
+#endif
+            }
+            InvalidateRigCache();
+        }
+
+        public void DestroyRigComponent(CinemachineComponentBase component)
+        {
+            if (component != null)
+                DestroyRigComponent(component.m_RigIndex, component.Stage);
         }
 
         public void InvalidateRigCache()
@@ -265,55 +324,66 @@ namespace Cinemachine
             {
                 if (m_Rigs[i].m_Components == null)
                     rebuild = true;
-                else if ((i == 0 || !m_CommonStage[(int)CinemachineCore.Stage.Body])
-                    && m_Rigs[i].m_Components[(int)CinemachineCore.Stage.Body] == null)
-                        rebuild = true;
+                else if (i == 0 && m_Rigs[i].m_Components[(int)CinemachineCore.Stage.Body] == null)
+                    rebuild = true;
             }
             if (!rebuild)
                 return;
-
+            
+            // Initialize components arrays to nulls everywhere
             for (int i = 0; i < 3; ++i)
-                m_Rigs[i].m_Components = new List<CinemachineComponentBase>();
-            var existing = FindRigComponents(null);
-            foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
             {
-                int numFound = 0;
-                for (int i = 0; i < existing.Count; ++i)
-                {
-                    if (existing[i].Stage != stage)
-                        continue;
+                m_Rigs[i].m_Components = new List<CinemachineComponentBase>();
+                foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+                    m_Rigs[i].m_Components.Add(null);
+            }
 
-                    // Co-ordinate the orbitals
-                    var a = existing[i] as CinemachineOrbitalTransposer;
-                    if (a != null)
-                        SetupOrbital(numFound, a);
-                    m_Rigs[numFound].m_Components.Add(existing[i]);
-                    //GML existing[i].hideFlags |= HideFlags.HideInInspector;
-                    ++numFound;
-                }
-                while (numFound < 3)
+            var existing = GetComponents<CinemachineComponentBase>();
+            for (int i = 0; i < existing.Length; ++i)
+            {
+                var c = existing[i];
+                if (c.m_RigIndex < 0 || c.m_RigIndex > 2 || m_Rigs[c.m_RigIndex].m_Components[(int)c.Stage] != null)
+                    continue;
+                if (existing[i].Stage == CinemachineCore.Stage.Body)
                 {
-                    // Make sure there is orbital in Body
-                    CinemachineComponentBase component = null;
-                    if (stage == CinemachineCore.Stage.Body 
-                        && numFound < (m_CommonStage[(int)stage] ? 1 : 3))
-                    {
-#if UNITY_EDITOR
-                        CinemachineOrbitalTransposer orbital 
-                            = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
-                        UnityEditor.Undo.RecordObject(orbital, "creating rig");
-#else
-                        CinemachineOrbitalTransposer orbital 
-                            = AddComponent<CinemachineOrbitalTranspose>();
-#endif
-                        SetupOrbital(numFound, orbital);
-                        component = orbital;
-                    }
-                    m_Rigs[numFound++].m_Components.Add(component);
+                    if (c is CinemachineOrbitalTransposer)
+                        SetupOrbital(c.m_RigIndex, c as CinemachineOrbitalTransposer);
+                    else
+                        continue;   // only orbital allowed in Body
                 }
+                c.hideFlags |= HideFlags.HideInInspector;
+                m_Rigs[c.m_RigIndex].m_Components[(int)c.Stage] = c;
+            }
+            // Make sure there is at least one orbital in Body
+            if (m_Rigs[0].m_Components[(int)CinemachineCore.Stage.Body] == null)
+            {
+#if UNITY_EDITOR
+                CinemachineOrbitalTransposer orbital 
+                    = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
+                UnityEditor.Undo.RecordObject(orbital, "creating rig");
+#else
+                CinemachineOrbitalTransposer orbital 
+                    = AddComponent<CinemachineOrbitalTranspose>();
+#endif
+                SetupOrbital(0, orbital);
+                m_Rigs[0].m_Components[(int)CinemachineCore.Stage.Body] = orbital;
             }
         }
- 
+
+        internal int GetInvalidRigComponents(List<CinemachineComponentBase> invalids)
+        {
+            UpdateRigCache();
+            invalids.Clear();
+            var existing = GetComponents<CinemachineComponentBase>();
+            for (int i = 0; i < existing.Length; ++i)
+            {
+                var c = existing[i];
+                if (c.m_RigIndex < 0 || c.m_RigIndex > 2 || m_Rigs[c.m_RigIndex].m_Components[(int)c.Stage] != c)
+                    invalids.Add(c);
+            }
+            return invalids.Count;
+        }
+        
         private void SetupOrbital(int index, CinemachineOrbitalTransposer orbital)
         {
             orbital.m_HeadingIsSlave = true;
@@ -335,45 +405,6 @@ namespace Cinemachine
         {
             float range = m_VerticalAxis.m_MaxValue - m_VerticalAxis.m_MinValue;
             return (range > UnityVectorExtensions.Epsilon) ? m_VerticalAxis.Value / range : 0.5f;
-        }
-
-        internal List<CinemachineComponentBase> FindRigComponents(
-            List<CinemachineComponentBase> invalidComponents)
-        {
-            List<CinemachineComponentBase> validComponents = new List<CinemachineComponentBase>();
-            if (invalidComponents != null)
-                invalidComponents.Clear();
-
-            var existing = GetComponents<CinemachineComponentBase>();
-            foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
-            {
-                int numFound = 0;
-                for (int i = 0; i < existing.Length; ++i)
-                {
-                    if (existing[i].Stage != stage)
-                        continue;
-                    if (numFound > (m_CommonStage[(int)stage] ? 0 : 2))
-                    {
-                        existing[i].hideFlags &= ~HideFlags.HideInInspector;
-                        if (invalidComponents != null)
-                            invalidComponents.Add(existing[i]);
-                        continue;
-                    }
-                    if (stage == (int)CinemachineCore.Stage.Body)
-                    {
-                        if (existing[i] as CinemachineOrbitalTransposer == null)
-                        {
-                            existing[i].hideFlags &= ~HideFlags.HideInInspector;
-                            if (invalidComponents != null)
-                                invalidComponents.Add(existing[i]);
-                            continue; // Only allow orbital transposer in body, ignore others
-                        }
-                    }
-                    validComponents.Add(existing[i]);
-                    ++numFound;
-                }
-            }
-            return validComponents;
         }
 
         /// <summary>
@@ -470,7 +501,7 @@ namespace Cinemachine
                 otherRig = 1;   // top
             }
 
-            if (!m_CommonLens)
+            if (m_Rigs[otherRig].m_CustomLens)
                 state.Lens = LensSettings.Lerp(state.Lens, m_Rigs[otherRig].m_Lens, y);
 
             CameraState state1 = state;

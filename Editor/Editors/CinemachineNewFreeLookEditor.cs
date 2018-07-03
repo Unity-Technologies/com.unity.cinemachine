@@ -13,15 +13,31 @@ namespace Cinemachine
         GUIContent[] mRigNames = new GUIContent[] 
             { new GUIContent("Main Rig"), new GUIContent("Top Rig"), new GUIContent("Bottom Rig") };
 
+        GUIContent mAllLensLabel = new GUIContent("Customize", "If unchecked, lens definition for the middle rig will be used");
+
         class RigEditor
         {
+            int mRigIndex;
             public CinemachineStageEditor[] mStageEditors =
                 new CinemachineStageEditor[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
 
-            public RigEditor(CinemachineNewFreeLook target)
+            public RigEditor(CinemachineNewFreeLook target, int rigIndex)
             {
+                mRigIndex = rigIndex;
                 foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
-                    mStageEditors[(int)stage] = new CinemachineStageEditor(stage, target.gameObject);
+                {
+                    var ed = mStageEditors[(int)stage] = new CinemachineStageEditor(stage, target.gameObject);
+                    ed.SetComponent = (type) 
+                        => {
+                            var freeLook = ed.Target.GetComponent<CinemachineNewFreeLook>();
+                            freeLook.SetRigComponent(mRigIndex, type);
+                        };
+                    ed.DestroyComponent = (component) 
+                        => {
+                            var freeLook = ed.Target.GetComponent<CinemachineNewFreeLook>();
+                            freeLook.DestroyRigComponent(component);
+                        };
+                }
             }
 
             public void OnDisable()
@@ -47,7 +63,7 @@ namespace Cinemachine
         {
             base.OnEnable();
             for (int i = 0; i < mRigEditors.Length; ++i)
-                mRigEditors[i] = new RigEditor(Target);
+                mRigEditors[i] = new RigEditor(Target, i);
         }
 
         protected override void OnDisable()
@@ -76,7 +92,7 @@ namespace Cinemachine
                 EditorGUILayout.Separator();
                 DrawRigEditor(i, rigs.GetArrayElementAtIndex(i));
             }
-
+            
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
@@ -84,93 +100,91 @@ namespace Cinemachine
         void DrawRigEditor(int rigIndex, SerializedProperty rig)
         {
             CinemachineNewFreeLook.Rig def = new CinemachineNewFreeLook.Rig(); // for properties
-
             EditorGUILayout.BeginVertical(GUI.skin.box);
-            EditorGUILayout.LabelField(mRigNames[rigIndex], EditorStyles.boldLabel);
-            ++EditorGUI.indentLevel;
 
             // Orbit
             EditorGUI.BeginChangeCheck();
             Rect rect = EditorGUILayout.GetControlRect(true);
             InspectorUtility.MultiPropertyOnLine(rect, 
-                new GUIContent("Orbit"),
+                new GUIContent(mRigNames[rigIndex]),
                 new [] { rig.FindPropertyRelative(() => def.m_Height), 
                         rig.FindPropertyRelative(() => def.m_Radius) },
                 null);
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
 
+            ++EditorGUI.indentLevel;
+
             // Lens
-            SerializedProperty commonLens = FindProperty(x => x.m_CommonLens);
-            Rect rLensLabel = EditorGUILayout.GetControlRect(true, 0);
-            if (rigIndex == 0 || !commonLens.boolValue)
+            SerializedProperty customLens = rig.FindPropertyRelative(() => def.m_CustomLens);
+            Rect rLensLabel = EditorGUILayout.GetControlRect(true, 0); rLensLabel.y += 2;
+            if (rigIndex == 0 || customLens.boolValue)
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(rig.FindPropertyRelative(() => def.m_Lens));
                 if (EditorGUI.EndChangeCheck())
                     serializedObject.ApplyModifiedProperties();
             }
-            if (rigIndex == 0)
+            if (rigIndex != 0)
             {
-                rLensLabel.height = EditorGUIUtility.singleLineHeight;
-                rLensLabel.y += 1;
-                rLensLabel.width = EditorGUIUtility.labelWidth;
-                bool value = commonLens.boolValue;
-                if (InjectAllRigsToggle(rLensLabel, ref value))
+                if (!customLens.boolValue)
                 {
-                    commonLens.boolValue = value;
+                    rLensLabel = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight + 2);
+                    EditorGUI.LabelField(rLensLabel, "Lens");
+                }
+                const float indentOffset = 3; // GML wtf get rid of this
+                rLensLabel.height = EditorGUIUtility.singleLineHeight;
+                float labelWidth = EditorGUIUtility.labelWidth + indentOffset;
+                rLensLabel.x = labelWidth;
+                rLensLabel.width -= labelWidth;
+                bool newValue = EditorGUI.ToggleLeft(rLensLabel, mAllLensLabel, customLens.boolValue);
+                if (newValue != customLens.boolValue)
+                {
+                    customLens.boolValue = newValue;
                     serializedObject.ApplyModifiedProperties();
+                    if (newValue == true)
+                        Target.m_Rigs[rigIndex].m_Lens = Target.m_Rigs[0].m_Lens;
                 }
             }
             
             // Pipeline Stages
-            SerializedProperty commonStages = FindProperty(x => x.m_CommonStage);
             foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
             {
-                int stageIndex = (int)stage;
-                if (!mRigEditors[rigIndex].mStageEditors[stageIndex].HasImplementation)
+                CinemachineComponentBase oldC = Target.GetRigComponent(rigIndex, stage);
+                if (rigIndex > 0 && oldC == null && Target.GetRigComponent(0, stage) == null)
                     continue;
-                bool isCommon = commonStages.GetArrayElementAtIndex(stageIndex).boolValue;
-                if (rigIndex == 0 || !isCommon)
+
+                int stageIndex = (int)stage;
+                var ed = mRigEditors[rigIndex].mStageEditors[stageIndex];
+                if (!ed.HasImplementation)
+                    continue;
+                if (stage == CinemachineCore.Stage.Body)
+                    ed.TypeIsLocked = true;
+                ed.ShowDisabledCheckbox = (rigIndex != 0);
+
+                bool componentWasNull = rigIndex != 0 && oldC == null;
+                ed.ComponentSelectionDisabled = componentWasNull;
+                ed.OnInspectorGUI(oldC); // may destroy oldC
+                if (componentWasNull && !ed.ComponentSelectionDisabled)
                 {
-                    CinemachineComponentBase c = Target.GetRigComponent(rigIndex, stage);
-                    CinemachineComponentBase newC 
-                        = mRigEditors[rigIndex].mStageEditors[stageIndex].OnInspectorGUI(c);
-                    if (c != newC)
-                        Target.InvalidateRigCache();
-                }
-                if (rigIndex == 0)
-                {
-                    
-                    Rect r = mRigEditors[rigIndex].mStageEditors[stageIndex].StageLabelRect;
-                    if (InjectAllRigsToggle(r, ref isCommon))
+                    // Just enabled "Customize" - copy from rig 0 if it exists
+                    oldC = Target.GetRigComponent(0, stage);
+                    if (oldC != null)
                     {
-                        commonStages.GetArrayElementAtIndex(stageIndex).boolValue = isCommon;
-                        serializedObject.ApplyModifiedProperties();
-                        Target.InvalidateRigCache();
+                        var newC = Target.SetRigComponent(rigIndex, oldC.GetType());
+                        EditorUtility.CopySerialized(oldC, newC);
+                        newC.m_RigIndex = rigIndex;  // set it back because CopySerialized stomped it
                     }
+                }
+                if (!componentWasNull && ed.ComponentSelectionDisabled)
+                {
+                    // Just disabled "Customize" - delete the component
+                    Target.DestroyRigComponent(rigIndex, stage);
                 }
             }
 
             --EditorGUI.indentLevel;
             EditorGUILayout.EndVertical();
-        }
-
-        GUIContent mAllLabel = new GUIContent("All", "Use this setting for all three rigs");
-
-        // Returns true if value changes
-        private bool InjectAllRigsToggle(Rect r, ref bool value)
-        {
-            float x = GUI.skin.toggle.CalcSize(mAllLabel).x;
-            float labelWidth = EditorGUIUtility.labelWidth;
-            EditorGUIUtility.labelWidth = x;
-            x += EditorGUIUtility.singleLineHeight;
-            r.xMin = r.xMax - x;
-            r.width = x; r.height -= 1;
-            bool oldValue = value;
-            value = EditorGUI.ToggleLeft(r, mAllLabel, oldValue);
-            EditorGUIUtility.labelWidth = labelWidth;
-            return (oldValue != value);
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineNewFreeLook))]

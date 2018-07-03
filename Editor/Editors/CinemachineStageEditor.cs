@@ -88,13 +88,15 @@ namespace Cinemachine.Editor
         CinemachineCore.Stage mStage;
         CinemachineComponentBase mComponent;
         UnityEditor.Editor mComponentEditor;
-        GameObject mTarget;
+
+        // Target game object
+        public GameObject Target { get; private set; }
 
         // Call this from OnEnable()
         public CinemachineStageEditor(CinemachineCore.Stage stage, GameObject target)
         {
             mStage = stage;
-            mTarget = target;
+            Target = target;
         }
 
         // Call this from OnDisable()
@@ -103,7 +105,7 @@ namespace Cinemachine.Editor
             if (mComponentEditor != null)
                 UnityEngine.Object.DestroyImmediate(mComponentEditor);
             mComponentEditor = null;
-            mTarget = null;
+            Target = null;
             mComponent = null;
         }
 
@@ -116,8 +118,12 @@ namespace Cinemachine.Editor
         // Can the component type be changed by the user?
         public bool TypeIsLocked { get; set; }
 
+        public bool ShowDisabledCheckbox { get; set; }
+        public bool ComponentSelectionDisabled { get; set; }
+        public GUIContent ComponentSelectionDisableLabel { get; set; }
+
         // Call this from Editor's OnInspectorGUI - returns new component if user changes type
-        public CinemachineComponentBase OnInspectorGUI(CinemachineComponentBase component)
+        public void OnInspectorGUI(CinemachineComponentBase component)
         {
             if (component != mComponent)
             {
@@ -131,7 +137,6 @@ namespace Cinemachine.Editor
             mStageSelection = GetPopupIndexForComponent(mComponent);
             mStageError = mComponent  == null ? false : !mComponent.IsValid;
             DrawComponentInspector();
-            return mComponent;
         }
 
         private int GetPopupIndexForComponent(CinemachineComponentBase c)
@@ -145,9 +150,6 @@ namespace Cinemachine.Editor
             }
             return 0; // none
         }
-
-        // Where was the stage label drawn
-        public Rect StageLabelRect { get; private set; }
 
         private void DrawComponentInspector()
         {
@@ -165,73 +167,82 @@ namespace Cinemachine.Editor
             if (mStageError)
                 label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
             float labelWidth = EditorGUIUtility.labelWidth - (indentOffset + EditorGUI.indentLevel * indentSize);
-            Rect r = rect; r.width = labelWidth;
-            StageLabelRect = r;
+            Rect r = rect; r.width = labelWidth; r.x -= indentOffset;
             EditorGUI.LabelField(r, label);
-            r = rect; r.width -= labelWidth; r.x += labelWidth;
-            GUI.enabled = !TypeIsLocked;
-            int newSelection = EditorGUI.Popup(r, mStageSelection, sStageData[index].PopupOptions);
-            GUI.enabled = true;
 
-            Type type = sStageData[index].types[newSelection];
-            if (newSelection != mStageSelection)
+            r = rect; r.width -= labelWidth; r.x += labelWidth;
+            if (ShowDisabledCheckbox)
             {
-                SetComponent(type);
-                if (newSelection != 0)
-                    sStageData[index].IsExpanded = true;
-                return; // let the component editor be recreated
+                if (ComponentSelectionDisabled)
+                {
+                    label = ComponentSelectionDisableLabel;
+                    if (label == null)
+                        label = new GUIContent("Customize"); // GUIContent.none;
+                    ComponentSelectionDisabled = !EditorGUI.ToggleLeft(r, label, !ComponentSelectionDisabled);
+                }
+                else
+                {
+                    ComponentSelectionDisabled 
+                        = !EditorGUI.ToggleLeft(new Rect(r.x, r.y, r.height * 2, r.height), 
+                            GUIContent.none, !ComponentSelectionDisabled);
+                    r.x += r.height; r.width -= r.height;
+                }
             }
 
-            // Draw the embedded editor
-            if (type != null)
+            if (!ComponentSelectionDisabled)
             {
-                Rect stageRect = new Rect(
-                    rect.x - indentOffset, rect.y, rect.width + indentOffset, rect.height);
-                sStageData[index].IsExpanded = EditorGUI.Foldout(
-                        stageRect, sStageData[index].IsExpanded, GUIContent.none);
-                if (sStageData[index].IsExpanded)
+                bool wasEnabled = GUI.enabled;
+                if (TypeIsLocked)
+                    GUI.enabled = false;
+                int newSelection = EditorGUI.Popup(r, mStageSelection, sStageData[index].PopupOptions);
+                GUI.enabled = wasEnabled;
+
+                Type type = sStageData[index].types[newSelection];
+                if (newSelection != mStageSelection)
                 {
-                    // Make the editor for that stage
-                    if (mComponentEditor != null)
+                    if (newSelection == 0)
                     {
-                        ++EditorGUI.indentLevel;
-                        EditorGUILayout.Separator();
-                        mComponentEditor.OnInspectorGUI();
-                        EditorGUILayout.Separator();
-                        --EditorGUI.indentLevel;
+                        if (DestroyComponent != null)
+                            DestroyComponent(mComponent);
+                    }
+                    else
+                    {
+                        sStageData[index].IsExpanded = true;
+                        if (SetComponent != null)
+                            SetComponent(type);
+                    }
+                    mComponent = null;
+                    GUIUtility.ExitGUI();
+                    return; // let the component editor be recreated
+                }
+
+                // Draw the embedded editor
+                if (type != null)
+                {
+                    r = new Rect(rect.x - indentOffset, rect.y, labelWidth, rect.height);
+                    sStageData[index].IsExpanded = EditorGUI.Foldout(
+                            r, sStageData[index].IsExpanded, GUIContent.none);
+                    if (sStageData[index].IsExpanded)
+                    {
+                        // Make the editor for that stage
+                        if (mComponentEditor != null)
+                        {
+                            ++EditorGUI.indentLevel;
+                            EditorGUILayout.Separator();
+                            mComponentEditor.OnInspectorGUI();
+                            EditorGUILayout.Separator();
+                            --EditorGUI.indentLevel;
+                        }
                     }
                 }
             }
             EditorGUILayout.EndVertical();
         }
 
-        void SetComponent(Type type)
-        {
-            Undo.SetCurrentGroupName("Cinemachine Component change");
+        public delegate void DestroyComponentDelegate(CinemachineComponentBase component);
+        public DestroyComponentDelegate DestroyComponent;
 
-            // Get the existing component index
-            int index = -1;
-            Component[] components = mTarget.GetComponents<Component>();
-            if (components != null)
-                for (index = components.Length - 1; index >= 0; --index)
-                    if (components[index] == mComponent)
-                        break;
-
-            // Remove the existing component
-            if (mComponent != null)
-                Undo.DestroyObjectImmediate(mComponent);
-
-            // Add the new one
-            if (type != null)
-            {
-                var b = Undo.AddComponent(mTarget, type);
-                if (index >= 0)
-                {
-                    int numComponents = components != null ? components.Length : 0;
-                    while (--numComponents > index)
-                        UnityEditorInternal.ComponentUtility.MoveComponentDown(b);
-                }
-            }
-        }
+        public delegate void SetComponentDelegate(Type type);
+        public SetComponentDelegate SetComponent;
     }
 }

@@ -19,7 +19,8 @@ namespace Cinemachine.Editor
         {
             float height = EditorGUIUtility.singleLineHeight;
             rect.height = height;
-            mExpanded = EditorGUI.Foldout(rect, mExpanded, label);
+            mExpanded = EditorGUI.Foldout(
+                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), mExpanded, label);
             if (mExpanded)
             {
                 ++EditorGUI.indentLevel;
