@@ -61,7 +61,7 @@ namespace Cinemachine.Editor
                 Target.gameObject.name + " Blends", "asset", string.Empty,
                 "Custom Blends", false);
 
-            mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events");
+            mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events", true);
             if (mEventsExpanded)
             {
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraCutEvent));

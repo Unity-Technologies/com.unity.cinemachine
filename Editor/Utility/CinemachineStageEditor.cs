@@ -228,7 +228,7 @@ namespace Cinemachine.Editor
                 {
                     r = new Rect(rect.x - kBoxMargin, rect.y, labelWidth, rect.height);
                     sStageData[index].IsExpanded = EditorGUI.Foldout(
-                            r, sStageData[index].IsExpanded, GUIContent.none);
+                            r, sStageData[index].IsExpanded, GUIContent.none, true);
                     if (sStageData[index].IsExpanded)
                     {
                         // Make the editor for that stage
