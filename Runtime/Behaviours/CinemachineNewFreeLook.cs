@@ -84,33 +84,153 @@ namespace Cinemachine
         [Serializable]
         public class Rig
         {
-            [SerializeField]
             public bool m_CustomLens;
-
-            [LensSettingsProperty]
             public LensSettings m_Lens;
-
-            [SerializeField]
             public bool m_CustomBody;
-            public CinemachineTransposer.BlendableSettings m_Body;
-
-            [SerializeField]
+            public TransposerSettings m_Body;
             public bool m_CustomAim;
-            public CinemachineComposer.BlendableSettings m_Aim;
-
-            [SerializeField]
+            public ComposerSettings m_Aim;
             public bool m_CustomNoise;
-            public CinemachineBasicMultiChannelPerlin.BlendableSettings m_Noise;
+            public PerlinNoiseSettings m_Noise;
 
-            internal void Validate()
+            public void Validate()
             {
                 if (m_Lens.FieldOfView == 0)
                     m_Lens = LensSettings.Default;
                 m_Lens.Validate();
             }
+
+            /// <summary>Blendable settings for Orbital Transposer</summary>
+            [Serializable] public class TransposerSettings
+            {
+                [Range(0f, 20f)] public float m_XDamping;
+                [Range(0f, 20f)] public float m_YDamping;
+                [Range(0f, 20f)] public float m_ZDamping;
+                [Range(0f, 20f)] public float m_PitchDamping;
+                [Range(0f, 20f)] public float m_YawDamping;
+                [Range(0f, 20f)] public float m_RollDamping;
+
+                internal void Lerp(CinemachineTransposer o, float t)
+                {
+                    o.m_XDamping = Mathf.Lerp(o.m_XDamping, m_XDamping, t);
+                    o.m_YDamping = Mathf.Lerp(o.m_YDamping, m_YDamping, t);
+                    o.m_ZDamping = Mathf.Lerp(o.m_ZDamping, m_ZDamping, t);
+                    o.m_PitchDamping = Mathf.Lerp(o.m_PitchDamping, m_PitchDamping, t);
+                    o.m_YawDamping = Mathf.Lerp(o.m_YawDamping, m_YawDamping, t);
+                    o.m_RollDamping = Mathf.Lerp(o.m_RollDamping, m_RollDamping, t);
+                }
+
+                internal void PullFrom(CinemachineTransposer o)
+                {
+                    m_XDamping = o.m_XDamping;
+                    m_YDamping = o.m_YDamping;
+                    m_ZDamping = o.m_ZDamping;
+                    m_PitchDamping = o.m_PitchDamping;
+                    m_YawDamping = o.m_YawDamping;
+                    m_RollDamping = o.m_RollDamping;
+                }
+
+                internal void PushTo(CinemachineTransposer o)
+                {
+                    o.m_XDamping = m_XDamping;
+                    o.m_YDamping = m_YDamping;
+                    o.m_ZDamping = m_ZDamping;
+                    o.m_PitchDamping =m_PitchDamping;
+                    o.m_YawDamping = m_YawDamping;
+                    o.m_RollDamping = m_RollDamping;
+                }
+            }
+
+            /// <summary>Blendable settings for Composer</summary>
+            [Serializable] public class ComposerSettings
+            {
+                public Vector3 m_LookAtOffset;
+                [Space]
+                [Range(0f, 20)] public float m_HorizontalDamping;
+                [Range(0f, 20)] public float m_VerticalDamping;
+                [Space]
+                [Range(0f, 1f)] public float m_ScreenX;
+                [Range(0f, 1f)] public float m_ScreenY;
+                [Range(0f, 1f)] public float m_DeadZoneWidth;
+                [Range(0f, 1f)] public float m_DeadZoneHeight;
+                [Range(0f, 2f)] public float m_SoftZoneWidth;
+                [Range(0f, 2f)] public float m_SoftZoneHeight;
+                [Range(-0.5f, 0.5f)] public float m_BiasX;
+                [Range(-0.5f, 0.5f)] public float m_BiasY;
+
+                internal void Lerp(CinemachineComposer c, float t)
+                {
+                    c.m_LookAtOffset = Vector3.Lerp(c.m_LookAtOffset, m_LookAtOffset, t);
+                    c.m_HorizontalDamping = Mathf.Lerp(c.m_HorizontalDamping, m_HorizontalDamping, t);
+                    c.m_VerticalDamping = Mathf.Lerp(c.m_VerticalDamping, m_VerticalDamping, t);
+                    c.m_ScreenX = Mathf.Lerp(c.m_ScreenX, m_ScreenX, t);
+                    c.m_ScreenY = Mathf.Lerp(c.m_ScreenY, m_ScreenY, t);
+                    c.m_DeadZoneWidth = Mathf.Lerp(c.m_DeadZoneWidth, m_DeadZoneWidth, t);
+                    c.m_DeadZoneHeight = Mathf.Lerp(c.m_DeadZoneHeight, m_DeadZoneHeight, t);
+                    c.m_SoftZoneWidth = Mathf.Lerp(c.m_SoftZoneWidth, m_SoftZoneWidth, t);
+                    c.m_SoftZoneHeight = Mathf.Lerp(c.m_SoftZoneHeight, m_SoftZoneHeight, t);
+                    c.m_BiasX = Mathf.Lerp(c.m_BiasX, m_BiasX, t);
+                    c.m_BiasY = Mathf.Lerp(c.m_BiasY, m_BiasY, t);
+                }
+
+                internal void PullFrom(CinemachineComposer c)
+                {
+                    m_LookAtOffset = c.m_LookAtOffset;
+                    m_HorizontalDamping = c.m_HorizontalDamping;
+                    m_VerticalDamping = c.m_VerticalDamping;
+                    m_ScreenX = c.m_ScreenX;
+                    m_ScreenY = c.m_ScreenY;
+                    m_DeadZoneWidth = c.m_DeadZoneWidth;
+                    m_DeadZoneHeight = c.m_DeadZoneHeight;
+                    m_SoftZoneWidth = c.m_SoftZoneWidth;
+                    m_SoftZoneHeight = c.m_SoftZoneHeight;
+                    m_BiasX = c.m_BiasX;
+                    m_BiasY = c.m_BiasY;
+                }
+
+                internal void PushTo(CinemachineComposer c)
+                {
+                    c.m_LookAtOffset = m_LookAtOffset;
+                    c.m_HorizontalDamping = m_HorizontalDamping;
+                    c.m_VerticalDamping = m_VerticalDamping;
+                    c.m_ScreenX = m_ScreenX;
+                    c.m_ScreenY = m_ScreenY;
+                    c.m_DeadZoneWidth = m_DeadZoneWidth;
+                    c.m_DeadZoneHeight = m_DeadZoneHeight;
+                    c.m_SoftZoneWidth = m_SoftZoneWidth;
+                    c.m_SoftZoneHeight = m_SoftZoneHeight;
+                    c.m_BiasX = m_BiasX;
+                    c.m_BiasY = m_BiasY;
+                }
+            }
+
+            /// <summary>Blendable settings for CinemachineBasicMultiChannelPerlin</summary>
+            [Serializable] public class PerlinNoiseSettings
+            {
+                public float m_AmplitudeGain;
+                public float m_FrequencyGain;
+
+                internal void Lerp(CinemachineBasicMultiChannelPerlin p, float t)
+                {
+                    p.m_AmplitudeGain = Mathf.Lerp(p.m_AmplitudeGain, m_AmplitudeGain, t);
+                    p.m_FrequencyGain =Mathf.Lerp(p.m_FrequencyGain, m_FrequencyGain, t);
+                }
+
+                internal void PullFrom(CinemachineBasicMultiChannelPerlin p)
+                {
+                    m_AmplitudeGain = p.m_AmplitudeGain;
+                    m_FrequencyGain = p.m_FrequencyGain;
+                }
+
+                internal void PushTo(CinemachineBasicMultiChannelPerlin p)
+                {
+                    p.m_AmplitudeGain = m_AmplitudeGain;
+                    p.m_FrequencyGain = m_FrequencyGain;
+                }
+            }
         }
 
-        [SerializeField, HideInInspector]
+        [SerializeField]
         internal Rig[] m_Rigs = new Rig[2] { new Rig(), new Rig() };
 
         /// <summary>Accessor for rig override settings</summary>
@@ -437,15 +557,12 @@ namespace Cinemachine
             return state;
         }
 
+        // Crazy damn thing for blending components at the source level
         internal class ComponentBlender
         {
-            CinemachineTransposer.BlendableSettings orbitalSaved = new CinemachineTransposer.BlendableSettings();
-            CinemachineComposer.BlendableSettings composerSaved = new CinemachineComposer.BlendableSettings();
-            CinemachineBasicMultiChannelPerlin.BlendableSettings noiseSaved = new CinemachineBasicMultiChannelPerlin.BlendableSettings();
-
-            CinemachineTransposer.BlendableSettings orbitalWorking = new CinemachineTransposer.BlendableSettings();
-            CinemachineComposer.BlendableSettings composerWorking = new CinemachineComposer.BlendableSettings();
-            CinemachineBasicMultiChannelPerlin.BlendableSettings noiseWorking = new CinemachineBasicMultiChannelPerlin.BlendableSettings();
+            Rig.TransposerSettings orbitalSaved = new Rig.TransposerSettings();
+            Rig.ComposerSettings composerSaved = new Rig.ComposerSettings();
+            Rig.PerlinNoiseSettings noiseSaved = new Rig.PerlinNoiseSettings();
 
             public int OtherRig { get; set; }
             public float BlendAmount { get; set; }
@@ -455,8 +572,6 @@ namespace Cinemachine
 
             public void Blend(float y)
             {
-                Vector3 followOffset = mFreeLook.GetLocalPositionForCameraFromInput(y);
-
                 if (y < 0.5f)
                 {
                     BlendAmount = 1 - (y * 2);
@@ -471,30 +586,24 @@ namespace Cinemachine
                 var orbital = mFreeLook.Orbital;
                 if (orbital != null && mFreeLook.m_Rigs[OtherRig].m_CustomBody)
                 {
-                    orbital.GetBlendableSettings(orbitalSaved);
-                    orbital.GetBlendableSettings(orbitalWorking);
-                    orbitalWorking.LerpTo(mFreeLook.m_Rigs[OtherRig].m_Body, BlendAmount);
-                    orbital.SetBlendableSettings(orbitalWorking);
+                    orbitalSaved.PullFrom(orbital);
+                    mFreeLook.m_Rigs[OtherRig].m_Body.Lerp(orbital, BlendAmount);
                 }
                 if (orbital != null)
-                    orbital.m_FollowOffset = followOffset;
+                    orbital.m_FollowOffset = mFreeLook.GetLocalPositionForCameraFromInput(y);
 
                 var composer = mFreeLook.m_Components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                 {
-                    composer.GetBlendableSettings(composerSaved);
-                    composer.GetBlendableSettings(composerWorking);
-                    composerWorking.LerpTo(mFreeLook.m_Rigs[OtherRig].m_Aim, BlendAmount);
-                    composer.SetBlendableSettings(composerWorking);
+                    composerSaved.PullFrom(composer);
+                    mFreeLook.m_Rigs[OtherRig].m_Aim.Lerp(composer, BlendAmount);
                 }
 
                 var noise = mFreeLook.m_Components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
                 if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
                 {
-                    noise.GetBlendableSettings(noiseSaved);
-                    noise.GetBlendableSettings(noiseWorking);
-                    noiseWorking.LerpTo(mFreeLook.m_Rigs[OtherRig].m_Noise, BlendAmount);
-                    noise.SetBlendableSettings(noiseWorking);
+                    noiseSaved.PullFrom(noise);
+                    mFreeLook.m_Rigs[OtherRig].m_Noise.Lerp(noise, BlendAmount);
                 }
             }
 
@@ -502,15 +611,15 @@ namespace Cinemachine
             {
                 var orbital = mFreeLook.Orbital;
                 if (orbital != null && mFreeLook.m_Rigs[OtherRig].m_CustomBody)
-                    orbital.SetBlendableSettings(orbitalSaved);
+                    orbitalSaved.PushTo(orbital);
 
                 var composer = mFreeLook.m_Components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
-                    composer.SetBlendableSettings(composerSaved);
+                    composerSaved.PushTo(composer);
 
                 var noise = mFreeLook.m_Components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
                 if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
-                    noise.SetBlendableSettings(noiseSaved);
+                    noiseSaved.PushTo(noise);
             }
         }
     }

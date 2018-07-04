@@ -100,66 +100,6 @@ namespace Cinemachine
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
 
-        /// <summary>Special support for FreeLook</summary>
-        [Serializable]
-        public class BlendableSettings
-        {
-            public Vector3 m_FollowOffset;
-
-            [Range(0f, 20f)]
-            public float m_XDamping;
-
-            [Range(0f, 20f)]
-            public float m_YDamping;
-
-            [Range(0f, 20f)]
-            public float m_ZDamping;
-
-            [Range(0f, 20f)]
-            public float m_PitchDamping;
-
-            [Range(0f, 20f)]
-            public float m_YawDamping;
-
-            [Range(0f, 20f)]
-            public float m_RollDamping;
-
-            public void LerpTo(BlendableSettings b, float t)
-            {
-                m_FollowOffset = Vector3.Lerp(m_FollowOffset, b.m_FollowOffset, t);
-                m_XDamping = Mathf.Lerp(m_XDamping, b.m_XDamping, t);
-                m_YDamping = Mathf.Lerp(m_YDamping, b.m_YDamping, t);
-                m_ZDamping = Mathf.Lerp(m_ZDamping, b.m_ZDamping, t);
-                m_PitchDamping = Mathf.Lerp(m_PitchDamping, b.m_PitchDamping, t);
-                m_YawDamping = Mathf.Lerp(m_YawDamping, b.m_YawDamping, t);
-                m_RollDamping = Mathf.Lerp(m_RollDamping, b.m_RollDamping, t);
-            }
-        }
-
-        /// <summary>Special support for FreeLook</summary>
-        public void GetBlendableSettings(BlendableSettings b)
-        {
-            b.m_FollowOffset = m_FollowOffset;
-            b.m_XDamping = m_XDamping;
-            b.m_YDamping = m_YDamping;
-            b.m_ZDamping = m_ZDamping;
-            b.m_PitchDamping = m_PitchDamping;
-            b.m_YawDamping = m_YawDamping;
-            b.m_RollDamping = m_RollDamping;
-        }
-
-        /// <summary>Special support for FreeLook</summary>
-        public void SetBlendableSettings(BlendableSettings b)
-        {
-            m_FollowOffset = b.m_FollowOffset;
-            m_XDamping = b.m_XDamping;
-            m_YDamping = b.m_YDamping;
-            m_ZDamping = b.m_ZDamping;
-            m_PitchDamping =b.m_PitchDamping;
-            m_YawDamping = b.m_YawDamping;
-            m_RollDamping = b.m_RollDamping;
-        }
-
         /// <summary>Derived classes should call this from their OnValidate() implementation</summary>
         protected virtual void OnValidate()
         {

@@ -39,35 +39,6 @@ namespace Cinemachine
         [Tooltip("Scale factor to apply to the frequencies defined in the NoiseSettings asset.  1 is normal.  Larger magnitudes will make the noise shake more rapidly.")]
         public float m_FrequencyGain = 1f;
 
-        /// <summary>Special support for FreeLook</summary>
-        [System.Serializable]
-        public class BlendableSettings
-        {
-            public float m_AmplitudeGain;
-            public float m_FrequencyGain;
-
-            public void LerpTo(BlendableSettings b, float t)
-            {
-                m_AmplitudeGain = Mathf.Lerp(m_AmplitudeGain, b.m_AmplitudeGain, t);
-                m_FrequencyGain =Mathf.Lerp(m_FrequencyGain, b.m_FrequencyGain, t);
-            }
-        }
-
-        /// <summary>Special support for FreeLook</summary>
-        public void GetBlendableSettings(BlendableSettings b)
-        {
-            b.m_AmplitudeGain = m_AmplitudeGain;
-            b.m_FrequencyGain = m_FrequencyGain;
-        }
-
-        /// <summary>Special support for FreeLook</summary>
-        public void SetBlendableSettings(BlendableSettings b)
-        {
-            m_AmplitudeGain = b.m_AmplitudeGain;
-            m_FrequencyGain = b.m_FrequencyGain;
-        }
-
-
         /// <summary>True if the component is valid, i.e. it has a noise definition and is enabled.</summary>
         public override bool IsValid { get { return enabled && m_NoiseProfile != null; } }
 

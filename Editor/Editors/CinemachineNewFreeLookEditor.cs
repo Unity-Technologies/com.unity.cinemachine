@@ -2,7 +2,6 @@
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
-using System;
 
 namespace Cinemachine
 {
@@ -20,6 +19,13 @@ namespace Cinemachine
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
 
         CinemachineStageEditor[] m_editors = null;
+
+        protected override List<string> GetExcludedPropertiesInInspector()
+        {
+            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            excluded.Add(FieldPath(x => x.m_Rigs));
+            return excluded;
+        }
 
         protected override void OnEnable()
         {
@@ -145,8 +151,7 @@ namespace Cinemachine
             int index = (int)CinemachineCore.Stage.Finalize; // cheat: use this value for lens
             if (DrawFoldoutPropertyWithEnabledCheckbox(
                 rig.FindPropertyRelative(() => def.m_CustomLens),
-                rig.FindPropertyRelative(() => def.m_Lens), 
-                false))
+                rig.FindPropertyRelative(() => def.m_Lens)))
             {
                 Target.m_Rigs[rigIndex].m_Lens = Target.m_Lens;
             }
@@ -156,11 +161,10 @@ namespace Cinemachine
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomBody),
-                    rig.FindPropertyRelative(() => def.m_Body), 
-                    true))
+                    rig.FindPropertyRelative(() => def.m_Body)))
                 {
-                     (components[index] as CinemachineOrbitalTransposer).GetBlendableSettings(
-                        Target.m_Rigs[rigIndex].m_Body);
+                    Target.m_Rigs[rigIndex].m_Body.PullFrom(
+                        components[index] as CinemachineOrbitalTransposer);
                 }
             }
 
@@ -169,11 +173,10 @@ namespace Cinemachine
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomAim),
-                    rig.FindPropertyRelative(() => def.m_Aim), 
-                    true))
+                    rig.FindPropertyRelative(() => def.m_Aim)))
                 {
-                    (components[index] as CinemachineComposer).GetBlendableSettings(
-                        Target.m_Rigs[rigIndex].m_Aim);
+                    Target.m_Rigs[rigIndex].m_Aim.PullFrom(
+                        components[index] as CinemachineComposer);
                 }
             }
 
@@ -182,16 +185,48 @@ namespace Cinemachine
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomNoise),
-                    rig.FindPropertyRelative(() => def.m_Noise), 
-                    true))
+                    rig.FindPropertyRelative(() => def.m_Noise)))
                 {
-                    (components[index] as CinemachineBasicMultiChannelPerlin).GetBlendableSettings(
-                        Target.m_Rigs[rigIndex].m_Noise);
+                    Target.m_Rigs[rigIndex].m_Noise.PullFrom(
+                        components[index] as CinemachineBasicMultiChannelPerlin);
                 }
             }
             --EditorGUI.indentLevel;
             EditorGUILayout.EndVertical();
             EditorGUIUtility.labelWidth += kBoxMargin;
+        }
+
+        // Returns true if default value should be applied
+        bool DrawFoldoutPropertyWithEnabledCheckbox(
+            SerializedProperty enabledProperty, SerializedProperty property)
+        {
+            GUIContent label = new GUIContent(property.displayName, property.tooltip);
+            Rect rect = EditorGUILayout.GetControlRect(true, 
+                (enabledProperty.boolValue && property.isExpanded)
+                    ? EditorGUI.GetPropertyHeight(property) 
+                        : EditorGUIUtility.singleLineHeight);
+            Rect r = rect; r.height = EditorGUIUtility.singleLineHeight;
+            if (!enabledProperty.boolValue)
+                EditorGUI.LabelField(r, label);
+
+            float labelWidth = EditorGUIUtility.labelWidth;
+            bool newValue = EditorGUI.ToggleLeft(
+                new Rect(labelWidth, r.y, r.width - labelWidth, r.height), 
+                mAllLensLabel, enabledProperty.boolValue);
+            if (newValue != enabledProperty.boolValue)
+            {
+                enabledProperty.boolValue = newValue;
+                enabledProperty.serializedObject.ApplyModifiedProperties();
+                return true;
+            }
+            if (newValue == true)
+            {
+                EditorGUI.BeginChangeCheck();
+                EditorGUI.PropertyField(rect, property, property.isExpanded);
+                if (EditorGUI.EndChangeCheck())
+                    enabledProperty.serializedObject.ApplyModifiedProperties();
+            }
+            return false;
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineNewFreeLook))]
@@ -251,64 +286,6 @@ namespace Cinemachine
                 currPos = nextPos;
             }
             Gizmos.matrix = prevMatrix;
-        }
-
-        // Returns true if default value should be applied
-        bool DrawFoldoutPropertyWithEnabledCheckbox(
-            SerializedProperty enabledProperty, SerializedProperty property,
-            bool goDeep)
-        {
-            const float vSpace = 2;
-            const float kIndentAmount = 15;
-            const float kBoxMargin = 3;
-
-            GUIContent label = new GUIContent(property.displayName, property.tooltip);
-            Rect rect = EditorGUILayout.GetControlRect(true, 
-                (enabledProperty.boolValue && property.isExpanded)
-                    ? EditorGUI.GetPropertyHeight(property) 
-                        : EditorGUIUtility.singleLineHeight);
-            Rect r = rect; r.height = EditorGUIUtility.singleLineHeight;
-            if (!enabledProperty.boolValue)
-                EditorGUI.LabelField(r, label);
-
-            float labelWidth = EditorGUIUtility.labelWidth;
-            bool newValue = EditorGUI.ToggleLeft(
-                new Rect(labelWidth, r.y, r.width - labelWidth, r.height), 
-                mAllLensLabel, enabledProperty.boolValue);
-            if (newValue != enabledProperty.boolValue)
-            {
-                enabledProperty.boolValue = newValue;
-                enabledProperty.serializedObject.ApplyModifiedProperties();
-                return true;
-            }
-            else if (newValue == true)
-            {
-                // Draw property foldout
-                EditorGUI.BeginChangeCheck();
-                if (!goDeep)
-                    EditorGUI.PropertyField(rect, property); // we have a property drawer
-                else
-                {
-                    r.width = labelWidth;
-                    property.isExpanded = EditorGUI.Foldout(r, property.isExpanded, label);
-                    if (property.isExpanded)
-                    {
-                        //property.NextVisible(true);
-                        //var indent = EditorGUI.indentLevel;
-                        do
-                        {
-                            r.y += r.height + vSpace;
-                            r.x += kIndentAmount + kBoxMargin;
-                            r.width -= kIndentAmount + 2 * kBoxMargin;
-                            EditorGUI.PropertyField(r, property);
-                        } while (property.NextVisible(property.isExpanded));
-                        //EditorGUIUtility.labelWidth += kIndentAmount;
-                    }
-                }
-                if (EditorGUI.EndChangeCheck())
-                    enabledProperty.serializedObject.ApplyModifiedProperties();
-            }
-            return false;
         }
     }
 }
