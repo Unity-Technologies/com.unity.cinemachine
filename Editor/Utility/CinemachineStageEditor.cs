@@ -99,6 +99,11 @@ namespace Cinemachine.Editor
             Target = target;
         }
 
+        ~CinemachineStageEditor()
+        {
+            Shutdown();
+        }
+
         // Call this from OnDisable()
         public void Shutdown()
         {
@@ -153,21 +158,23 @@ namespace Cinemachine.Editor
 
         private void DrawComponentInspector()
         {
-            const float indentOffset = 4; // GML wtf get rid of this
+            const float kBoxMargin = 4; // GML wtf get rid of this
             const float indentSize = 15; // GML wtf get rid of this
 
             int index = (int)mStage;
 
             GUIStyle stageBoxStyle = GUI.skin.box;
             EditorGUILayout.BeginVertical(stageBoxStyle);
+            EditorGUIUtility.labelWidth -= kBoxMargin;
+
             Rect rect = EditorGUILayout.GetControlRect(true);
 
             // Don't use PrefixLabel() because it will link the enabled status of field and label
             GUIContent label = new GUIContent(InspectorUtility.NicifyClassName(mStage.ToString()));
             if (mStageError)
                 label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
-            float labelWidth = EditorGUIUtility.labelWidth - (indentOffset + EditorGUI.indentLevel * indentSize);
-            Rect r = rect; r.width = labelWidth; r.x -= indentOffset;
+            float labelWidth = EditorGUIUtility.labelWidth - EditorGUI.indentLevel * indentSize;
+            Rect r = rect; r.width = labelWidth; r.x -= kBoxMargin;
             EditorGUI.LabelField(r, label);
 
             r = rect; r.width -= labelWidth; r.x += labelWidth;
@@ -219,7 +226,7 @@ namespace Cinemachine.Editor
                 // Draw the embedded editor
                 if (type != null)
                 {
-                    r = new Rect(rect.x - indentOffset, rect.y, labelWidth, rect.height);
+                    r = new Rect(rect.x - kBoxMargin, rect.y, labelWidth, rect.height);
                     sStageData[index].IsExpanded = EditorGUI.Foldout(
                             r, sStageData[index].IsExpanded, GUIContent.none);
                     if (sStageData[index].IsExpanded)
@@ -237,6 +244,7 @@ namespace Cinemachine.Editor
                 }
             }
             EditorGUILayout.EndVertical();
+            EditorGUIUtility.labelWidth += kBoxMargin;
         }
 
         public delegate void DestroyComponentDelegate(CinemachineComponentBase component);

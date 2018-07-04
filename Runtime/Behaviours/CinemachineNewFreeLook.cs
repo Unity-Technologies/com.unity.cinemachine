@@ -1,7 +1,6 @@
 using UnityEngine;
 using Cinemachine.Utility;
 using System;
-using System.Collections.Generic;
 
 namespace Cinemachine
 {
@@ -28,6 +27,12 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         public Transform m_Follow = null;
 
+        /// <summary>Specifies the LensSettings of this Virtual Camera.
+        /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
+        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
+        [LensSettingsProperty]
+        public LensSettings m_Lens = LensSettings.Default;
+
         /// <summary> Collection of parameters that influence how this virtual camera transitions from 
         /// other virtual cameras </summary>
         public TransitionParams m_Transitions;
@@ -42,15 +47,7 @@ namespace Cinemachine
         [Tooltip("Controls how automatic recentering of the Vertical axis is accomplished")]
         public AxisState.Recentering m_VerticalRecentering = new AxisState.Recentering(false, 1, 2);
 
-        /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component</summary>
-        [Tooltip("The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component")]
-        [AxisStateProperty]
-        public AxisState m_HorizontalAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
-
-        /// <summary>Controls how automatic recentering of the Horizontal axis is accomplished</summary>
-        [Tooltip("Controls how automatic recentering of the Horizontal axis is accomplished")]
-        public AxisState.Recentering m_HorizontalRecentering = new AxisState.Recentering(false, 1, 2);
-
+#if false
         [Tooltip("The Radial axis.  Value is the base radius of the orbits")]
         [AxisStateProperty]
         public AxisState m_RadialAxis = new AxisState(1, 10, false, true, 2f, 0.2f, 0.1f, "Mouse ScrollWheel", false);
@@ -58,43 +55,52 @@ namespace Cinemachine
         /// <summary>Controls how automatic recentering of the Radial axis is accomplished</summary>
         [Tooltip("Controls how automatic recentering of the Radial axis is accomplished")]
         public AxisState.Recentering m_RadialRecentering = new AxisState.Recentering(false, 1, 2);
-
-        /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
-        [Header("Orbits")]
-        [Tooltip("The coordinate space to use when interpreting the offset from the target.  "
-            + "This is also used to set the camera's Up vector, which will be maintained when aiming the camera.")]
-        public CinemachineOrbitalTransposer.BindingMode m_BindingMode 
-            = CinemachineOrbitalTransposer.BindingMode.SimpleFollowWithWorldUp;
-
-        /// <summary>The definition of Forward.  This defines the meaning of horizontal axis value 0</summary>
-        [OrbitalTransposerHeadingProperty]
-        [Tooltip("The definition of Forward.  This defines the meaning of horizontal axis value 0.")]
-        public CinemachineOrbitalTransposer.Heading m_Heading 
-            = new CinemachineOrbitalTransposer.Heading(
-                CinemachineOrbitalTransposer.Heading.HeadingDefinition.TargetForward, 4, 0);
-
-        /// <summary></summary>
-        [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
-        [Range(0f, 1f)]
-        public float m_SplineCurvature = 0.2f;
-
+#endif
+        /// <summary>Defines the height and radius for an orbit</summary>
         [Serializable]
-        public struct Rig
-        {
+        public struct Orbit 
+        { 
             /// <summary>Height relative to target</summary>
             public float m_Height; 
 
             /// <summary>Radius of orbit</summary>
             public float m_Radius; 
+        }
 
-            [SerializeField, HideInInspector]
+        /// <summary>Order is Top, Middle, Bottom</summary>
+        [HideInInspector]
+        public Orbit[] m_Orbits = new Orbit[3];
+
+        /// <summary></summary>
+        [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
+        [Range(0f, 1f)]
+        [HideInInspector]
+        public float m_SplineCurvature;
+
+        /// <summary>Identifiers for accessing override settings for top and bottom rigs</summary>
+        public enum RigID { Top, Bottom };
+        
+        /// <summary>Override settings for top and bottom rigs</summary>
+        [Serializable]
+        public class Rig
+        {
+            [SerializeField]
             public bool m_CustomLens;
 
             [LensSettingsProperty]
             public LensSettings m_Lens;
 
-            [NonSerialized]
-            internal List<CinemachineComponentBase> m_Components;
+            [SerializeField]
+            public bool m_CustomBody;
+            public CinemachineTransposer.BlendableSettings m_Body;
+
+            [SerializeField]
+            public bool m_CustomAim;
+            public CinemachineComposer.BlendableSettings m_Aim;
+
+            [SerializeField]
+            public bool m_CustomNoise;
+            public CinemachineBasicMultiChannelPerlin.BlendableSettings m_Noise;
 
             internal void Validate()
             {
@@ -105,13 +111,16 @@ namespace Cinemachine
         }
 
         [SerializeField, HideInInspector]
-        public Rig[] m_Rigs = new Rig[3];
+        internal Rig[] m_Rigs = new Rig[2] { new Rig(), new Rig() };
+
+        /// <summary>Accessor for rig override settings</summary>
+        public Rig GetRigSettings(RigID rig) { return m_Rigs[(int)rig]; }
 
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         protected override void OnValidate()
         {
             base.OnValidate();
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < m_Rigs.Length; ++i)
                 m_Rigs[i].Validate();
         }
 
@@ -119,17 +128,17 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            InvalidateRigCache();
+            InvalidateComponentCache();
         }
 
         void Reset()
         {
-            //DestroyRigs(); // GML TODO
+            SetDefault();
         }
 
         /// <summary>The cacmera state, which will be a blend of the child rig states</summary>
         override public CameraState State { get { return m_State; } }
-        CameraState m_State = CameraState.Default;          // Current state this frame
+        CameraState m_State = CameraState.Default; // Current state this frame
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
@@ -154,13 +163,11 @@ namespace Cinemachine
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
         {
-            UpdateRigCache();
-            for (int i = 0; i < 3; ++i)
+            UpdateComponentCache();
+            for (int i = 0; i < m_Components.Length; ++i)
             {
-                var components = m_Rigs[i].m_Components;
-                for (int j = 0; j < components.Count; ++j)
-                    if (components[j] != null)
-                        components[j].OnTargetObjectWarped(target, positionDelta);
+                if (m_Components[i] != null)
+                    m_Components[i].OnTargetObjectWarped(target, positionDelta);
             }
             base.OnTargetObjectWarped(target, positionDelta);
         }
@@ -175,7 +182,7 @@ namespace Cinemachine
             if (!PreviousStateIsValid)
                 deltaTime = -1;
 
-            UpdateRigCache();
+            UpdateComponentCache();
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
@@ -205,9 +212,10 @@ namespace Cinemachine
                 CinemachineNewFreeLook freeLookFrom = fromCam as CinemachineNewFreeLook;
                 if (freeLookFrom != null && freeLookFrom.Follow == Follow)
                 {
-                    if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                        m_HorizontalAxis.Value = freeLookFrom.m_HorizontalAxis.Value;
+                    if (Orbital.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                        Orbital.m_XAxis.Value = freeLookFrom.Orbital.m_XAxis.Value;
                     m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
+                    //m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value;
                     forceUpdate = true;
                 }
             }
@@ -218,9 +226,9 @@ namespace Cinemachine
                 {
                     transform.position = brain.transform.position;
                     transform.rotation = brain.transform.rotation;
-                    m_State = PullStateFromVirtualCamera(worldUp, ref m_Rigs[0].m_Lens);
-                    m_Rigs[1].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Rigs[0].m_Lens);
-                    m_Rigs[2].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Rigs[0].m_Lens);
+                    m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+                    m_Rigs[(int)RigID.Top].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
+                    m_Rigs[(int)RigID.Bottom].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
                     PreviousStateIsValid = false;
                     forceUpdate = true;
                     InternalUpdateCameraState(worldUp, deltaTime);
@@ -234,174 +242,81 @@ namespace Cinemachine
                 m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
 
-        public CinemachineComponentBase GetRigComponent(int rigIndex, CinemachineCore.Stage stage)
-        {
-            if (rigIndex < 0 || rigIndex > 2)
+        // Component Cache - serialized only for copy/paste
+        [SerializeField, HideInInspector, NoSaveDuringPlay]
+        CinemachineComponentBase[] m_Components;
+
+        /// For inspector
+        internal CinemachineComponentBase[] ComponentCache { get { UpdateComponentCache(); return m_Components; } }
+
+        /// Must always have an Orbital Transposer
+        CinemachineOrbitalTransposer Orbital 
+        { 
+            get 
             {
-                Debug.LogError("CinemachineNewFreeLook.GetRigComponent(): invalid rig index.  Must be 0, 1, or 2");
-                return null;
+                UpdateComponentCache();
+                return m_Components[(int)CinemachineCore.Stage.Body] as CinemachineOrbitalTransposer;
             }
-            UpdateRigCache();
-            return m_Rigs[rigIndex].m_Components[(int)stage];
         }
 
-        public CinemachineComponentBase SetRigComponent(int rigIndex, Type type)
+        public void InvalidateComponentCache()
         {
-            if (rigIndex < 0 || rigIndex > 2)
-            {
-                Debug.LogError("CinemachineNewFreeLook.SetRigComponent(): invalid rig index.  Must be 0, 1, or 2");
-                return null;
-            }
-            if (!type.IsSubclassOf(typeof(CinemachineComponentBase)))
-            {
-                Debug.LogError("CinemachineNewFreeLook.SetRigComponent(): invalid type.  Must be subclass of CinemachineComponentBase");
-                return null;
-            }
-            CinemachineComponentBase component;
-
-            UpdateRigCache();
-#if UNITY_EDITOR
-            component = UnityEditor.Undo.AddComponent(gameObject, type) as CinemachineComponentBase;
-            UnityEditor.Undo.RecordObject(component, "SetRigComponent");
-#else
-            component = AddComponent<T>();
-#endif
-            var oldC = m_Rigs[rigIndex].m_Components[(int)component.Stage];
-            if (oldC != null)
-            {
-#if UNITY_EDITOR
-                UnityEditor.Undo.DestroyObjectImmediate(oldC);
-#else
-                UnityEngine.Object.Destroy(oldC);
-#endif
-            }
-            component.m_RigIndex = rigIndex;
-            InvalidateRigCache();
-            return component;
+            m_Components = null;
         }
 
-        public T SetRigComponent<T>(int rigIndex) where T : CinemachineComponentBase
+        void UpdateComponentCache()
         {
-            return SetRigComponent(rigIndex, typeof(T)) as T;
-        }
-
-        public void DestroyRigComponent(int rigIndex, CinemachineCore.Stage stage)
-        {
-            if (rigIndex < 0 || rigIndex > 2)
-            {
-                Debug.LogError("CinemachineNewFreeLook.GetRigComponent(): invalid rig index.  Must be 0, 1, or 2");
+            if (m_Components != null)
                 return;
-            }
-            UpdateRigCache();
-            var c = m_Rigs[rigIndex].m_Components[(int)stage];
-            if (c != null)
-            {
-#if UNITY_EDITOR
-                UnityEditor.Undo.DestroyObjectImmediate(c);
-#else
-                UnityEngine.Object.Destroy(c);
-#endif
-            }
-            InvalidateRigCache();
-        }
 
-        public void DestroyRigComponent(CinemachineComponentBase component)
-        {
-            if (component != null)
-                DestroyRigComponent(component.m_RigIndex, component.Stage);
-        }
+            m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize];
+            m_Components[(int)CinemachineCore.Stage.Body] = GetComponent<CinemachineOrbitalTransposer>();
+            m_Components[(int)CinemachineCore.Stage.Aim] = GetComponent<CinemachineComposer>();
+            m_Components[(int)CinemachineCore.Stage.Noise] = GetComponent<CinemachineBasicMultiChannelPerlin>();
 
-        public void InvalidateRigCache()
-        {
-            for (int i = 0; i < 3; ++i)
-                m_Rigs[i].m_Components = null;
-        }
+            if (Orbital != null)
+                Orbital.HideOffsetInInspector = true;
 
-        void UpdateRigCache()
-        {
-            bool rebuild = false;
-            for (int i = 0; !rebuild && i < 3; ++i)
-            {
-                if (m_Rigs[i].m_Components == null)
-                    rebuild = true;
-                else if (i == 0 && m_Rigs[i].m_Components[(int)CinemachineCore.Stage.Body] == null)
-                    rebuild = true;
-            }
-            if (!rebuild)
-                return;
-            
-            // Initialize components arrays to nulls everywhere
-            for (int i = 0; i < 3; ++i)
-            {
-                m_Rigs[i].m_Components = new List<CinemachineComponentBase>();
-                foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
-                    m_Rigs[i].m_Components.Add(null);
-            }
-
-            var existing = GetComponents<CinemachineComponentBase>();
-            for (int i = 0; i < existing.Length; ++i)
-            {
-                var c = existing[i];
-                if (c.m_RigIndex < 0 || c.m_RigIndex > 2 || m_Rigs[c.m_RigIndex].m_Components[(int)c.Stage] != null)
-                    continue;
-                if (existing[i].Stage == CinemachineCore.Stage.Body)
-                {
-                    if (c is CinemachineOrbitalTransposer)
-                        SetupOrbital(c.m_RigIndex, c as CinemachineOrbitalTransposer);
-                    else
-                        continue;   // only orbital allowed in Body
-                }
-                c.hideFlags |= HideFlags.HideInInspector;
-                m_Rigs[c.m_RigIndex].m_Components[(int)c.Stage] = c;
-            }
-            // Make sure there is at least one orbital in Body
-            if (m_Rigs[0].m_Components[(int)CinemachineCore.Stage.Body] == null)
-            {
-#if UNITY_EDITOR
-                CinemachineOrbitalTransposer orbital 
-                    = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
-                UnityEditor.Undo.RecordObject(orbital, "creating rig");
-#else
-                CinemachineOrbitalTransposer orbital 
-                    = AddComponent<CinemachineOrbitalTranspose>();
-#endif
-                SetupOrbital(0, orbital);
-                m_Rigs[0].m_Components[(int)CinemachineCore.Stage.Body] = orbital;
-            }
+            for (int i = 0; i < m_Components.Length; ++i)
+                if (m_Components[i] != null)
+                    m_Components[i].hideFlags |= HideFlags.HideInInspector;
         }
-
-#if false // We don't seem to need this
-        internal int GetInvalidRigComponents(List<CinemachineComponentBase> invalids)
-        {
-            UpdateRigCache();
-            invalids.Clear();
-            var existing = GetComponents<CinemachineComponentBase>();
-            for (int i = 0; i < existing.Length; ++i)
-            {
-                var c = existing[i];
-                if (c.m_RigIndex < 0 || c.m_RigIndex > 2 || m_Rigs[c.m_RigIndex].m_Components[(int)c.Stage] != c)
-                    invalids.Add(c);
-            }
-            return invalids.Count;
-        }
-#endif
         
-        private void SetupOrbital(int index, CinemachineOrbitalTransposer orbital)
+        void SetDefault()
         {
-            orbital.m_HeadingIsSlave = true;
-            if (index == 0)
-                orbital.HeadingUpdater 
-                    = (CinemachineOrbitalTransposer o, float deltaTime, Vector3 up) => 
-                    { 
-                        LastHeading = o.UpdateHeading(deltaTime, up, ref m_HorizontalAxis);
-                        return LastHeading;
-                    };
-            else
-                orbital.HeadingUpdater = (CinemachineOrbitalTransposer o, float deltaTime, Vector3 up) 
-                    => { return LastHeading; };
-        }
+            var existing = GetComponents<CinemachineComponentBase>();
+            for (int i = 0; i < existing.Length; ++i)
+            {
+#if UNITY_EDITOR
+                UnityEditor.Undo.DestroyObjectImmediate(existing[i]);
+#else
+                UnityEngine.Object.Destroy(existing[i]);
+#endif
+            }
 
-        private float LastHeading { get; set; }
+#if UNITY_EDITOR
+            var orbital = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
+            UnityEditor.Undo.RecordObject(orbital, "creating rig");
+            orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+            UnityEditor.Undo.RecordObject(
+                UnityEditor.Undo.AddComponent<CinemachineComposer>(gameObject), 
+                "creating rig");
+#else
+            gameObject.AddComponent<CinemachineOrbitalTransposer>().m_BindingMode 
+                    = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+            gameObject.AddComponent<CinemachineComposer>();
+#endif
+            InvalidateComponentCache();
+            m_Rigs = new Rig[2] { new Rig(), new Rig() };
+
+            // Default orbits
+            m_Orbits = new Orbit[3];
+            m_Orbits[0].m_Height = 10;  m_Orbits[0].m_Radius = 4;
+            m_Orbits[1].m_Height = 2.5f;  m_Orbits[1].m_Radius = 8;
+            m_Orbits[2].m_Height = -0.5f; m_Orbits[2].m_Radius = 5;
+
+            m_SplineCurvature = 0.5f;
+        }
 
         private float GetVerticalAxisValue()
         {
@@ -440,48 +355,49 @@ namespace Cinemachine
         {
             bool cacheIsValid = (m_CachedOrbits != null && m_CachedTension == m_SplineCurvature);
             for (int i = 0; i < 3 && cacheIsValid; ++i)
-                cacheIsValid = (m_CachedOrbits[i].y == m_Rigs[i].m_Height 
-                    && m_CachedOrbits[i].x == m_Rigs[i].m_Radius);
+                cacheIsValid = (m_CachedOrbits[i].y == m_Orbits[i].m_Height 
+                    && m_CachedOrbits[i].x == m_Orbits[i].m_Radius);
             if (!cacheIsValid)
             {
                 float t = m_SplineCurvature;
                 m_CachedKnots = new Vector4[5];
                 m_CachedCtrl1 = new Vector4[5];
                 m_CachedCtrl2 = new Vector4[5];
-                m_CachedKnots[1] = new Vector4(0, m_Rigs[2].m_Height, -m_Rigs[2].m_Radius, 0);
-                m_CachedKnots[2] = new Vector4(0, m_Rigs[0].m_Height, -m_Rigs[0].m_Radius, 0);
-                m_CachedKnots[3] = new Vector4(0, m_Rigs[1].m_Height, -m_Rigs[1].m_Radius, 0);
+                m_CachedKnots[1] = new Vector4(0, m_Orbits[2].m_Height, -m_Orbits[2].m_Radius, 0);
+                m_CachedKnots[2] = new Vector4(0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius, 0);
+                m_CachedKnots[3] = new Vector4(0, m_Orbits[0].m_Height, -m_Orbits[0].m_Radius, 0);
                 m_CachedKnots[0] = Vector4.Lerp(m_CachedKnots[0], Vector4.zero, t);
                 m_CachedKnots[4] = Vector4.Lerp(m_CachedKnots[3], Vector4.zero, t);
                 SplineHelpers.ComputeSmoothControlPoints(
                     ref m_CachedKnots, ref m_CachedCtrl1, ref m_CachedCtrl2);
                 m_CachedOrbits = new Vector2[3];
                 for (int i = 0; i < 3; ++i)
-                    m_CachedOrbits[i] = new Vector2(m_Rigs[i].m_Radius, m_Rigs[i].m_Height);
+                    m_CachedOrbits[i] = new Vector2(m_Orbits[i].m_Radius, m_Orbits[i].m_Height);
                 m_CachedTension = m_SplineCurvature;
             }
         }
 
+        ComponentBlender mBlender;
+
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Rigs[0].m_Lens);
-            m_Rigs[1].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Rigs[0].m_Lens);
-            m_Rigs[2].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Rigs[0].m_Lens);
+            if (mBlender == null)
+                mBlender = new ComponentBlender(this);
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            m_Rigs[(int)RigID.Top].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
+            m_Rigs[(int)RigID.Bottom].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
 
             // Update our axes
             bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
             if (activeCam)
             {
-                //if (m_HorizontalAxis.Update(deltaTime))
-                //    m_HorizontalRecentering.CancelRecentering();
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalRecentering.CancelRecentering();
-                if (m_RadialAxis.Update(deltaTime))
-                    m_RadialRecentering.CancelRecentering();
+                //if (m_RadialAxis.Update(deltaTime))
+                //    m_RadialRecentering.CancelRecentering();
             }
-            //m_HorizontalRecentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
             m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
-            m_RadialRecentering.DoRecentering(ref m_RadialAxis, deltaTime, 0.5f);
+            //m_RadialRecentering.DoRecentering(ref m_RadialAxis, deltaTime, 0.5f);
 
             // Set the Reference LookAt
             Transform lookAtTarget = LookAt;
@@ -489,77 +405,112 @@ namespace Cinemachine
                 state.ReferenceLookAt = lookAtTarget.position;
 
             // Blend from the appropriate rigs
-            float y = GetVerticalAxisValue();
-            Vector3 followOffset = GetLocalPositionForCameraFromInput(y);
-            int otherRig;
-            if (y < 0.5f)
-            {
-                y = 1 - (y * 2);
-                otherRig = 2;   // bottom
-            }
-            else
-            {
-                y = (y - 0.5f) * 2f;
-                otherRig = 1;   // top
-            }
+            mBlender.Blend(GetVerticalAxisValue());
 
-            if (m_Rigs[otherRig].m_CustomLens)
-                state.Lens = LensSettings.Lerp(state.Lens, m_Rigs[otherRig].m_Lens, y);
+            // Blend the lens
+            if (m_Rigs[mBlender.OtherRig].m_CustomLens)
+                state.Lens = LensSettings.Lerp(
+                    state.Lens, m_Rigs[mBlender.OtherRig].m_Lens, mBlender.BlendAmount);
 
+            // Apply the component pipeline
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
-                var c0 = m_Rigs[0].m_Components[(int)stage];
-                if (c0 != null)
-                    c0.PrePipelineMutateCameraState(ref state);
+                var c = m_Components[(int)stage];
+                if (c != null)
+                    c.PrePipelineMutateCameraState(ref state);
             }
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
-                var c0 = m_Rigs[0].m_Components[(int)stage];
-                if (c0 == null)
-                {
-                    if (stage == CinemachineCore.Stage.Aim)
-                        state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
-                }
-                else
-                {
-                    if (stage == CinemachineCore.Stage.Body)
-                        SyncOrbital(c0 as CinemachineOrbitalTransposer, followOffset, true);
-                    c0.MutateCameraState(ref state, deltaTime);
-                }
-                var c1 = m_Rigs[otherRig].m_Components[(int)stage];
-                if (c1 != null)
-                {
-                    CameraState state1 = state;
-                    for (CinemachineCore.Stage s1 = stage; 
-                        s1 < CinemachineCore.Stage.Finalize; ++s1)
-                    {
-                        var c = m_Rigs[otherRig].m_Components[(int)s1];
-                        if (c != null)
-                            c.PrePipelineMutateCameraState(ref state1);
-                    }
-                    if (stage == CinemachineCore.Stage.Body)
-                        SyncOrbital(c1 as CinemachineOrbitalTransposer, followOffset, false);
-                    c1.MutateCameraState(ref state1, deltaTime);
-                    state = CameraState.Lerp(state, state1, y);
-                }
+                var c = m_Components[(int)stage];
+                if (c != null)
+                    c.MutateCameraState(ref state, deltaTime);
+                else if (stage == CinemachineCore.Stage.Aim)
+                    state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
             }
+
+            // Restore the components
+            mBlender.Restore();
+
             return state;
         }
 
-        private void SyncOrbital(CinemachineOrbitalTransposer a, Vector3 followOffset, bool mainRig)
+        internal class ComponentBlender
         {
-            if (a != null)
+            CinemachineTransposer.BlendableSettings orbitalSaved = new CinemachineTransposer.BlendableSettings();
+            CinemachineComposer.BlendableSettings composerSaved = new CinemachineComposer.BlendableSettings();
+            CinemachineBasicMultiChannelPerlin.BlendableSettings noiseSaved = new CinemachineBasicMultiChannelPerlin.BlendableSettings();
+
+            CinemachineTransposer.BlendableSettings orbitalWorking = new CinemachineTransposer.BlendableSettings();
+            CinemachineComposer.BlendableSettings composerWorking = new CinemachineComposer.BlendableSettings();
+            CinemachineBasicMultiChannelPerlin.BlendableSettings noiseWorking = new CinemachineBasicMultiChannelPerlin.BlendableSettings();
+
+            public int OtherRig { get; set; }
+            public float BlendAmount { get; set; }
+            CinemachineNewFreeLook mFreeLook;
+
+            public ComponentBlender(CinemachineNewFreeLook freeLook) { mFreeLook = freeLook; }
+
+            public void Blend(float y)
             {
-                a.m_FollowOffset = followOffset;
-                a.m_BindingMode = m_BindingMode;
-                a.m_Heading = m_Heading;
-                a.m_XAxis = m_HorizontalAxis;
-                a.m_RecenterToTargetHeading = m_HorizontalRecentering;
-                if (!mainRig)
-                    a.m_RecenterToTargetHeading.m_enabled = false;
+                Vector3 followOffset = mFreeLook.GetLocalPositionForCameraFromInput(y);
+
+                if (y < 0.5f)
+                {
+                    BlendAmount = 1 - (y * 2);
+                    OtherRig = (int)RigID.Bottom;
+                }
+                else
+                {
+                    BlendAmount = (y - 0.5f) * 2f;
+                    OtherRig = (int)RigID.Top;
+                }
+
+                var orbital = mFreeLook.Orbital;
+                if (orbital != null && mFreeLook.m_Rigs[OtherRig].m_CustomBody)
+                {
+                    orbital.GetBlendableSettings(orbitalSaved);
+                    orbital.GetBlendableSettings(orbitalWorking);
+                    orbitalWorking.LerpTo(mFreeLook.m_Rigs[OtherRig].m_Body, BlendAmount);
+                    orbital.SetBlendableSettings(orbitalWorking);
+                }
+                if (orbital != null)
+                    orbital.m_FollowOffset = followOffset;
+
+                var composer = mFreeLook.m_Components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
+                if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
+                {
+                    composer.GetBlendableSettings(composerSaved);
+                    composer.GetBlendableSettings(composerWorking);
+                    composerWorking.LerpTo(mFreeLook.m_Rigs[OtherRig].m_Aim, BlendAmount);
+                    composer.SetBlendableSettings(composerWorking);
+                }
+
+                var noise = mFreeLook.m_Components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
+                if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
+                {
+                    noise.GetBlendableSettings(noiseSaved);
+                    noise.GetBlendableSettings(noiseWorking);
+                    noiseWorking.LerpTo(mFreeLook.m_Rigs[OtherRig].m_Noise, BlendAmount);
+                    noise.SetBlendableSettings(noiseWorking);
+                }
+            }
+
+            public void Restore()
+            {
+                var orbital = mFreeLook.Orbital;
+                if (orbital != null && mFreeLook.m_Rigs[OtherRig].m_CustomBody)
+                    orbital.SetBlendableSettings(orbitalSaved);
+
+                var composer = mFreeLook.m_Components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
+                if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
+                    composer.SetBlendableSettings(composerSaved);
+
+                var noise = mFreeLook.m_Components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
+                if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
+                    noise.SetBlendableSettings(noiseSaved);
             }
         }
     }

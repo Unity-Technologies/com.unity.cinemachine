@@ -138,55 +138,88 @@ namespace Cinemachine
         }
         
         /// <summary>Special support for FreeLook</summary>
-        public struct BlendableSettings
+        [Serializable]
+        public class BlendableSettings
         {
             public Vector3 m_LookAtOffset;
-            public Vector2 m_Damping;
-            public Vector2 m_ScreenPos;
-            public Vector2 m_DeadZone;
-            public Vector2 m_SoftZone;
-            public Vector2 m_Bias;
 
-            public static BlendableSettings Lerp(BlendableSettings a, BlendableSettings b, float t)
+            [Range(0f, 20)]
+            public float m_HorizontalDamping;
+
+            [Range(0f, 20)]
+            public float m_VerticalDamping;
+
+            [Space]
+            [Range(0f, 1f)]
+            public float m_ScreenX;
+
+            [Range(0f, 1f)]
+            public float m_ScreenY;
+
+            [Range(0f, 1f)]
+            public float m_DeadZoneWidth;
+
+            [Range(0f, 1f)]
+            public float m_DeadZoneHeight;
+
+            [Range(0f, 2f)]
+            public float m_SoftZoneWidth;
+
+            [Range(0f, 2f)]
+            public float m_SoftZoneHeight;
+
+            [Range(-0.5f, 0.5f)]
+            public float m_BiasX;
+
+            [Range(-0.5f, 0.5f)]
+            public float m_BiasY;
+
+            public void LerpTo(BlendableSettings b, float t)
             {
-                BlendableSettings r = new BlendableSettings();
-                r.m_LookAtOffset = Vector3.Lerp(a.m_LookAtOffset, b.m_LookAtOffset, t);
-                r.m_Damping = Vector2.Lerp(a.m_Damping, b.m_Damping, t);
-                r.m_ScreenPos = Vector2.Lerp(a.m_ScreenPos, b.m_ScreenPos, t);
-                r.m_DeadZone = Vector2.Lerp(a.m_DeadZone, b.m_DeadZone, t);
-                r.m_SoftZone = Vector2.Lerp(a.m_SoftZone, b.m_SoftZone, t);
-                r.m_Bias = Vector2.Lerp(a.m_Bias, b.m_Bias, t);
-                return r;
+                m_LookAtOffset = Vector3.Lerp(m_LookAtOffset, b.m_LookAtOffset, t);
+                m_HorizontalDamping = Mathf.Lerp(m_HorizontalDamping, b.m_HorizontalDamping, t);
+                m_VerticalDamping = Mathf.Lerp(m_VerticalDamping, b.m_VerticalDamping, t);
+                m_ScreenX = Mathf.Lerp(m_ScreenX, b.m_ScreenX, t);
+                m_ScreenY = Mathf.Lerp(m_ScreenY, b.m_ScreenY, t);
+                m_DeadZoneWidth = Mathf.Lerp(m_DeadZoneWidth, b.m_DeadZoneWidth, t);
+                m_DeadZoneHeight = Mathf.Lerp(m_DeadZoneHeight, b.m_DeadZoneHeight, t);
+                m_SoftZoneWidth = Mathf.Lerp(m_SoftZoneWidth, b.m_SoftZoneWidth, t);
+                m_SoftZoneHeight = Mathf.Lerp(m_SoftZoneHeight, b.m_SoftZoneHeight, t);
+                m_BiasX = Mathf.Lerp(m_BiasX, b.m_BiasX, t);
+                m_BiasY = Mathf.Lerp(m_BiasY, b.m_BiasY, t);
             }
         }
 
         /// <summary>Special support for FreeLook</summary>
-        public BlendableSettings GetBlendableSettings()
+        public void GetBlendableSettings(BlendableSettings b)
         {
-            BlendableSettings b = new BlendableSettings();
             b.m_LookAtOffset = m_LookAtOffset;
-            b.m_Damping = new Vector2(m_HorizontalDamping, m_VerticalDamping);
-            b.m_ScreenPos = new Vector2(m_ScreenX, m_ScreenY);
-            b.m_DeadZone = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight);
-            b.m_SoftZone = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight);
-            b.m_Bias = new Vector2(m_BiasX, m_BiasY);
-            return b;
+            b.m_HorizontalDamping = m_HorizontalDamping;
+            b.m_VerticalDamping = m_VerticalDamping;
+            b.m_ScreenX = m_ScreenX;
+            b.m_ScreenY = m_ScreenY;
+            b.m_DeadZoneWidth = m_DeadZoneWidth;
+            b.m_DeadZoneHeight = m_DeadZoneHeight;
+            b.m_SoftZoneWidth = m_SoftZoneWidth;
+            b.m_SoftZoneHeight = m_SoftZoneHeight;
+            b.m_BiasX = m_BiasX;
+            b.m_BiasY = m_BiasY;
         }
 
         /// <summary>Special support for FreeLook</summary>
         public void SetBlendableSettings(BlendableSettings b)
         {
             m_LookAtOffset = b.m_LookAtOffset;
-            m_HorizontalDamping = b.m_Damping.x;
-            m_VerticalDamping = b.m_Damping.y;
-            m_ScreenX = b.m_ScreenPos.x;
-            m_ScreenY = b.m_ScreenPos.y;
-            m_DeadZoneWidth = b.m_DeadZone.x;
-            m_DeadZoneHeight = b.m_DeadZone.y;
-            m_SoftZoneWidth = b.m_SoftZone.x;
-            m_SoftZoneHeight = b.m_SoftZone.y;
-            m_BiasX = b.m_Bias.x;
-            m_BiasY = b.m_Bias.y;
+            m_HorizontalDamping = b.m_HorizontalDamping;
+            m_VerticalDamping = b.m_VerticalDamping;
+            m_ScreenX = b.m_ScreenX;
+            m_ScreenY = b.m_ScreenY;
+            m_DeadZoneWidth = b.m_DeadZoneWidth;
+            m_DeadZoneHeight = b.m_DeadZoneHeight;
+            m_SoftZoneWidth = b.m_SoftZoneWidth;
+            m_SoftZoneHeight = b.m_SoftZoneHeight;
+            m_BiasX = b.m_BiasX;
+            m_BiasY = b.m_BiasY;
         }
 
         /// <summary>State information for damping</summary>
@@ -242,6 +275,7 @@ namespace Cinemachine
             float fov, fovH;
             if (curState.Lens.Orthographic)
             {
+                // GML TODO: This can be cached
                 // Calculate effective fov - fake it for ortho based on target distance
                 fov = Mathf.Rad2Deg * 2 * Mathf.Atan(curState.Lens.OrthographicSize / targetDistance);
                 fovH = Mathf.Rad2Deg * 2 * Mathf.Atan(
@@ -249,6 +283,7 @@ namespace Cinemachine
             }
             else 
             {
+                // GML TODO: This can be cached
                 fov = curState.Lens.FieldOfView;
                 double radHFOV = 2 * Math.Atan(Math.Tan(fov * Mathf.Deg2Rad / 2) * curState.Lens.Aspect);
                 fovH = (float)(Mathf.Rad2Deg * radHFOV);
@@ -341,6 +376,7 @@ namespace Cinemachine
         }
         
         // Convert from screen coords to normalized FOV angular coords
+        // GML TODO: This can be cached
         private Rect ScreenToFOV(Rect rScreen, float fov, float fovH, float aspect)
         {
             Rect r = new Rect(rScreen);

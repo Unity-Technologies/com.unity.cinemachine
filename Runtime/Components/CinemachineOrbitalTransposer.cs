@@ -107,7 +107,7 @@ namespace Cinemachine
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Heading Control.  The settings here control the behaviour of the camera in response to the player's input.")]
         [AxisStateProperty]
-        public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 2f, 1f, "Mouse X", true);
+        public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
         /// <summary>Legacy support</summary>
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_Radius")] private float m_LegacyRadius = float.MaxValue;
@@ -145,6 +145,9 @@ namespace Cinemachine
         [HideInInspector, NoSaveDuringPlay]
         public bool m_HeadingIsSlave = false;
 
+        /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
+        public bool HideOffsetInInspector { get; set; }
+        
         /// <summary>
         /// Delegate that allows the the m_XAxis object to be replaced with another one.
         /// </summary>
@@ -192,6 +195,7 @@ namespace Cinemachine
 
         private void OnEnable()
         {
+            // GML todo: do we really need this?
             PreviousTarget = null;
             mLastTargetPosition = Vector3.zero;
         }
@@ -260,7 +264,8 @@ namespace Cinemachine
                 orient = orient * headingRot;
                 curState.RawPosition = pos + orient * offset;
 
-                mHeadingPrevFrame = (m_BindingMode == BindingMode.SimpleFollowWithWorldUp) ? Quaternion.identity : headingRot;
+                mHeadingPrevFrame = (m_BindingMode == BindingMode.SimpleFollowWithWorldUp) 
+                    ? Quaternion.identity : headingRot;
                 mOffsetPrevFrame = offset;
             }
         }
@@ -320,117 +325,6 @@ namespace Cinemachine
 
             // If no reliable heading, then stay where we are.
             return currentHeading;
-        }
-
-        class HeadingTracker
-        {
-            struct Item
-            {
-                public Vector3 velocity;
-                public float weight;
-                public float time;
-            };
-            Item[] mHistory;
-            int mTop;
-            int mBottom;
-            int mCount;
-
-            Vector3 mHeadingSum;
-            float mWeightSum = 0;
-            float mWeightTime = 0;
-
-            Vector3 mLastGoodHeading = Vector3.zero;
-
-            public HeadingTracker(int filterSize)
-            {
-                mHistory = new Item[filterSize];
-                float historyHalfLife = filterSize / 5f; // somewhat arbitrarily
-                mDecayExponent = -Mathf.Log(2f) / historyHalfLife;
-                ClearHistory();
-            }
-
-            public int FilterSize { get { return mHistory.Length; } }
-
-            void ClearHistory()
-            {
-                mTop = mBottom = mCount = 0;
-                mWeightSum = 0;
-                mHeadingSum = Vector3.zero;
-            }
-
-            static float mDecayExponent;
-            static float Decay(float time) { return Mathf.Exp(time * mDecayExponent); }
-
-            public void Add(Vector3 velocity)
-            {
-                if (FilterSize == 0)
-                {
-                    mLastGoodHeading = velocity;
-                    return;
-                }
-                float weight = velocity.magnitude;
-                if (weight > UnityVectorExtensions.Epsilon)
-                {
-                    Item item = new Item();
-                    item.velocity = velocity;
-                    item.weight = weight;
-                    item.time = Time.time;
-                    if (mCount == FilterSize)
-                        PopBottom();
-                    ++mCount;
-                    mHistory[mTop] = item;
-                    if (++mTop == FilterSize)
-                        mTop = 0;
-
-                    mWeightSum *= Decay(item.time - mWeightTime);
-                    mWeightTime = item.time;
-                    mWeightSum += weight;
-                    mHeadingSum += item.velocity;
-                }
-            }
-
-            void PopBottom()
-            {
-                if (mCount > 0)
-                {
-                    float time = Time.time;
-                    Item item = mHistory[mBottom];
-                    if (++mBottom == FilterSize)
-                        mBottom = 0;
-                    --mCount;
-
-                    float decay = Decay(time - item.time);
-                    mWeightSum -= item.weight * decay;
-                    mHeadingSum -= item.velocity * decay;
-                    if (mWeightSum <= UnityVectorExtensions.Epsilon || mCount == 0)
-                        ClearHistory();
-                }
-            }
-
-            public void DecayHistory()
-            {
-                float time = Time.time;
-                float decay = Decay(time - mWeightTime);
-                mWeightSum *= decay;
-                mWeightTime = time;
-                if (mWeightSum < UnityVectorExtensions.Epsilon)
-                    ClearHistory();
-                else
-                    mHeadingSum = mHeadingSum * decay;
-            }
-
-            public Vector3 GetReliableHeading()
-            {
-                // Update Last Good Heading
-                if (mWeightSum > UnityVectorExtensions.Epsilon
-                    && (mCount == mHistory.Length || mLastGoodHeading.AlmostZero()))
-                {
-                    Vector3  h = mHeadingSum / mWeightSum;
-                    if (!h.AlmostZero())
-                        mLastGoodHeading = h.normalized;
-                }
-                return mLastGoodHeading;
-            }
         }
     }
 }

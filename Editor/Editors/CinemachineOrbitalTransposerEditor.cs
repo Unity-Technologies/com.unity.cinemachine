@@ -18,6 +18,8 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_XAxis));
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
             }
+            if (Target.HideOffsetInInspector)
+                excluded.Add(FieldPath(x => x.m_FollowOffset));
             switch (Target.m_BindingMode)
             {
                 default:
