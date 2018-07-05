@@ -130,7 +130,7 @@ namespace Cinemachine
                     continue;
                 if (!ed.HasImplementation)
                     continue;
-                if ((CinemachineCore.Stage)i != CinemachineCore.Stage.Noise)
+                if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
                     ed.TypeIsLocked = true;
 
                 ed.OnInspectorGUI(components[i]); // may destroy component
@@ -148,7 +148,6 @@ namespace Cinemachine
 
             ++EditorGUI.indentLevel;
             var components = Target.ComponentCache;
-            int index = (int)CinemachineCore.Stage.Finalize; // cheat: use this value for lens
             if (DrawFoldoutPropertyWithEnabledCheckbox(
                 rig.FindPropertyRelative(() => def.m_CustomLens),
                 rig.FindPropertyRelative(() => def.m_Lens)))
@@ -156,15 +155,15 @@ namespace Cinemachine
                 Target.m_Rigs[rigIndex].m_Lens = Target.m_Lens;
             }
 
-            index = (int)CinemachineCore.Stage.Body;
-            if (components[index] is CinemachineOrbitalTransposer)
+            int index = (int)CinemachineCore.Stage.Body;
+            if (components[index] is CinemachineTransposer)
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomBody),
                     rig.FindPropertyRelative(() => def.m_Body)))
                 {
                     Target.m_Rigs[rigIndex].m_Body.PullFrom(
-                        components[index] as CinemachineOrbitalTransposer);
+                        components[index] as CinemachineTransposer);
                 }
             }
 
@@ -250,16 +249,22 @@ namespace Cinemachine
                 if (brain != null)
                     up = brain.DefaultWorldUp;
 
-                var middleRig = vcam.GetComponent<CinemachineOrbitalTransposer>();
+                var middleRig = vcam.GetComponent<CinemachineTransposer>();
                 if (middleRig != null)
                 {
                     Quaternion orient = middleRig.GetReferenceOrientation(up);
                     up = orient * Vector3.up;
-                    float rotation = middleRig.m_XAxis.Value + middleRig.m_Heading.m_Bias;
-                    orient = Quaternion.AngleAxis(rotation, up) * orient;
-
+                    var orbital = middleRig as CinemachineOrbitalTransposer;
+                    if (orbital != null)
+                    {
+                        float rotation = orbital.m_XAxis.Value + orbital.m_Heading.m_Bias;
+                        orient = Quaternion.AngleAxis(rotation, up) * orient;
+                    }
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
                         pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
+                    if (orbital == null)
+                        CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                            pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
                         pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
 

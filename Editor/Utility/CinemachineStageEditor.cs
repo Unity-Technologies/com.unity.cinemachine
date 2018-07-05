@@ -133,7 +133,10 @@ namespace Cinemachine.Editor
             if (component != mComponent)
             {
                 if (mComponentEditor != null)
+                {
+                    mComponentEditor.ResetTarget();
                     UnityEngine.Object.DestroyImmediate(mComponentEditor);
+                }
                 mComponentEditor = null;
                 mComponent = component;
             }
@@ -207,12 +210,12 @@ namespace Cinemachine.Editor
                 Type type = sStageData[index].types[newSelection];
                 if (newSelection != mStageSelection)
                 {
-                    if (newSelection == 0)
+                    if (mComponent != null)
                     {
                         if (DestroyComponent != null)
                             DestroyComponent(mComponent);
                     }
-                    else
+                    if (newSelection != 0)
                     {
                         sStageData[index].IsExpanded = true;
                         if (SetComponent != null)

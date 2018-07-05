@@ -100,7 +100,7 @@ namespace Cinemachine
                 m_Lens.Validate();
             }
 
-            /// <summary>Blendable settings for Orbital Transposer</summary>
+            /// <summary>Blendable settings for Transposer Transposer</summary>
             [Serializable] public class TransposerSettings
             {
                 [Range(0f, 20f)] public float m_XDamping;
@@ -332,8 +332,13 @@ namespace Cinemachine
                 CinemachineNewFreeLook freeLookFrom = fromCam as CinemachineNewFreeLook;
                 if (freeLookFrom != null && freeLookFrom.Follow == Follow)
                 {
-                    if (Orbital.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                        Orbital.m_XAxis.Value = freeLookFrom.Orbital.m_XAxis.Value;
+                    var orbital = Transposer as CinemachineOrbitalTransposer;
+                    if (orbital.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                    {
+                        var src = freeLookFrom.Transposer as CinemachineOrbitalTransposer;
+                        if (src != null)
+                            orbital.m_XAxis.Value = src.m_XAxis.Value;
+                    }
                     m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
                     //m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value;
                     forceUpdate = true;
@@ -376,13 +381,13 @@ namespace Cinemachine
             }
         }
 
-        /// Must always have an Orbital Transposer
-        CinemachineOrbitalTransposer Orbital 
+        /// Easy access to the transposer
+        CinemachineTransposer Transposer 
         { 
             get 
             {
                 UpdateComponentCache();
-                return m_Components[(int)CinemachineCore.Stage.Body] as CinemachineOrbitalTransposer;
+                return m_Components[(int)CinemachineCore.Stage.Body] as CinemachineTransposer;
             }
         }
 
@@ -404,40 +409,22 @@ namespace Cinemachine
             {
                 var copyFrom = m_Components;
                 DestroyComponents();
-                foreach (CinemachineComponentBase c in copyFrom)
-                {
-                    if (c != null)
-                    {
-                        Type type = c.GetType();
-                        var copy = UnityEditor.Undo.AddComponent(gameObject, type);
-                        UnityEditor.Undo.RecordObject(copy, "copying pipeline");
-
-                        System.Reflection.BindingFlags bindingAttr 
-                            = System.Reflection.BindingFlags.Public 
-                            | System.Reflection.BindingFlags.NonPublic 
-                            | System.Reflection.BindingFlags.Instance;
-
-                        System.Reflection.FieldInfo[] fields = type.GetFields(bindingAttr);
-                        for (int i = 0; i < fields.Length; ++i)
-                            if (!fields[i].IsStatic)
-                                fields[i].SetValue(copy, fields[i].GetValue(c));
-                    }
-                }
+                CopyComponents(copyFrom);
             }
 #endif
             if (m_Components != null && m_ComponentCacheIsValid)
                 return;
 
             m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize];
-            m_Components[(int)CinemachineCore.Stage.Body] = GetComponent<CinemachineOrbitalTransposer>();
-            m_Components[(int)CinemachineCore.Stage.Aim] = GetComponent<CinemachineComposer>();
-            m_Components[(int)CinemachineCore.Stage.Noise] = GetComponent<CinemachineBasicMultiChannelPerlin>();
+            var existing = GetComponents<CinemachineComponentBase>();
+            for (int i = 0; existing != null && i < existing.Length; ++i)
+                m_Components[(int)existing[i].Stage] = existing[i];
 
-            var orbital = m_Components[(int)CinemachineCore.Stage.Body] as CinemachineOrbitalTransposer;
-            if (orbital != null)
+            var transposer = m_Components[(int)CinemachineCore.Stage.Body] as CinemachineTransposer;
+            if (transposer != null)
             {
-                orbital.HideOffsetInInspector = true;
-                orbital.m_FollowOffset = new Vector3(
+                transposer.HideOffsetInInspector = true;
+                transposer.m_FollowOffset = new Vector3(
                     0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
             }
             for (int i = 0; i < m_Components.Length; ++i)
@@ -461,6 +448,31 @@ namespace Cinemachine
             InvalidateComponentCache();
         }
         
+#if UNITY_EDITOR
+        void CopyComponents(CinemachineComponentBase[] copyFrom)
+        {
+            foreach (CinemachineComponentBase c in copyFrom)
+            {
+                if (c != null)
+                {
+                    Type type = c.GetType();
+                    var copy = UnityEditor.Undo.AddComponent(gameObject, type);
+                    UnityEditor.Undo.RecordObject(copy, "copying pipeline");
+
+                    System.Reflection.BindingFlags bindingAttr 
+                        = System.Reflection.BindingFlags.Public 
+                        | System.Reflection.BindingFlags.NonPublic 
+                        | System.Reflection.BindingFlags.Instance;
+
+                    System.Reflection.FieldInfo[] fields = type.GetFields(bindingAttr);
+                    for (int i = 0; i < fields.Length; ++i)
+                        if (!fields[i].IsStatic)
+                            fields[i].SetValue(copy, fields[i].GetValue(c));
+                }
+            }
+        }
+#endif
+            
         void SetDefault()
         {
             DestroyComponents();
@@ -633,7 +645,7 @@ namespace Cinemachine
                     OtherRig = (int)RigID.Top;
                 }
 
-                var orbital = mFreeLook.Orbital;
+                var orbital = mFreeLook.Transposer;
                 if (orbital != null && mFreeLook.m_Rigs[OtherRig].m_CustomBody)
                 {
                     orbitalSaved.PullFrom(orbital);
@@ -659,7 +671,7 @@ namespace Cinemachine
 
             public void Restore()
             {
-                var orbital = mFreeLook.Orbital;
+                var orbital = mFreeLook.Transposer;
                 if (orbital != null && mFreeLook.m_Rigs[OtherRig].m_CustomBody)
                     orbitalSaved.PushTo(orbital);
                 if (orbital != null)
