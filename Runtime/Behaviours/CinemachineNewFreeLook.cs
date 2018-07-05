@@ -38,16 +38,14 @@ namespace Cinemachine
         public TransitionParams m_Transitions;
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
-        [Header("Axis Control")]
         [Tooltip("The Vertical axis.  Value is 0..1.  0.5 is the middle rig.  Chooses how to blend the child rigs")]
         [AxisStateProperty]
         public AxisState m_VerticalAxis = new AxisState(0, 1, false, true, 2f, 0.2f, 0.1f, "Mouse Y", false);
 
-#if false
         [Tooltip("The Radial axis.  Value is the base radius of the orbits")]
         [AxisStateProperty]
-        public AxisState m_RadialAxis = new AxisState(1, 10, false, true, 2f, 0.2f, 0.1f, "Mouse ScrollWheel", false);
-#endif
+        public AxisState m_RadialAxis = new AxisState(1, 1, false, false, 2f, 0.2f, 0.1f, "Mouse ScrollWheel", false);
+
         /// <summary>Defines the height and radius for an orbit</summary>
         [Serializable]
         public struct Orbit 
@@ -239,7 +237,7 @@ namespace Cinemachine
         private void Awake()
         {
             m_VerticalAxis.HasRecentering = true;
-            //m_RadialAxis.HasRecentering = true;
+            m_RadialAxis.HasRecentering = true;
         }
 
         /// <summary>Updates the child rig cache</summary>
@@ -338,7 +336,7 @@ namespace Cinemachine
                             orbital.m_XAxis.Value = src.m_XAxis.Value;
                     }
                     m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
-                    //m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value;
+                    m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value;
                     forceUpdate = true;
                 }
             }
@@ -528,10 +526,12 @@ namespace Cinemachine
                 t -= 0.5f;
                 n = 2;
             }
-            return SplineHelpers.Bezier3(
+            Vector3 pos = SplineHelpers.Bezier3(
                 t * 2f, m_CachedKnots[n], m_CachedCtrl1[n], m_CachedCtrl2[n], m_CachedKnots[n+1]);
+            pos *= Mathf.Max(0, m_RadialAxis.Value);
+            return pos;
         }
-                
+
         Vector2[] m_CachedOrbits;
         float m_CachedTension;
         Vector4[] m_CachedKnots;
@@ -579,18 +579,18 @@ namespace Cinemachine
             {
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalAxis.m_Recentering.CancelRecentering();
-                //if (m_RadialAxis.Update(deltaTime))
-                //    m_RadialAxis.m_Recentering.CancelRecentering();
+                if (m_RadialAxis.Update(deltaTime))
+                    m_RadialAxis.m_Recentering.CancelRecentering();
             }
             m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
-            //m_RadialAxis.m_Recentering.DoRecentering(ref m_RadialAxis, deltaTime, 0.5f);
+            m_RadialAxis.m_Recentering.DoRecentering(ref m_RadialAxis, deltaTime, 0.5f);
 
             // Set the Reference LookAt
             Transform lookAtTarget = LookAt;
             if (lookAtTarget != null)
                 state.ReferenceLookAt = lookAtTarget.position;
 
-            // Blend from the appropriate rigs
+            // Blend from the appropriate rigs according to the vertical axis (0...1)
             mBlender.Blend(GetVerticalAxisValue());
 
             // Blend the lens

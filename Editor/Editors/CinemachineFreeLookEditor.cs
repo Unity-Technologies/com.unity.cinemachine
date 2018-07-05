@@ -185,11 +185,11 @@ namespace Cinemachine
             Matrix4x4 prevMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(atPos, orient, Vector3.one);
 
-            const int kNumStepsPerPair = 30;
+            const int kNumSteps = 20;
             Vector3 currPos = vcam.GetLocalPositionForCameraFromInput(0f);
-            for (int i = 1; i < kNumStepsPerPair + 1; ++i)
+            for (int i = 1; i < kNumSteps + 1; ++i)
             {
-                float t = (float)i / (float)kNumStepsPerPair;
+                float t = (float)i / (float)kNumSteps;
                 Vector3 nextPos = vcam.GetLocalPositionForCameraFromInput(t);
                 Gizmos.DrawLine(currPos, nextPos);
                 currPos = nextPos;

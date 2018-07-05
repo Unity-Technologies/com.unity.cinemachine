@@ -252,6 +252,7 @@ namespace Cinemachine
                 var middleRig = vcam.GetComponent<CinemachineTransposer>();
                 if (middleRig != null)
                 {
+                    float scale = vcam.m_RadialAxis.Value;
                     Quaternion orient = middleRig.GetReferenceOrientation(up);
                     up = orient * Vector3.up;
                     var orbital = middleRig as CinemachineOrbitalTransposer;
@@ -261,12 +262,14 @@ namespace Cinemachine
                         orient = Quaternion.AngleAxis(rotation, up) * orient;
                     }
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
-                    if (orbital == null)
-                        CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                            pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
+                        pos + up * vcam.m_Orbits[0].m_Height * scale, 
+                        orient, vcam.m_Orbits[0].m_Radius * scale);
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
+                        pos + up * vcam.m_Orbits[1].m_Height * scale, 
+                        orient, vcam.m_Orbits[1].m_Radius * scale);
+                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                        pos + up * vcam.m_Orbits[2].m_Height * scale, 
+                        orient, vcam.m_Orbits[2].m_Radius * scale);
 
                     DrawCameraPath(pos, orient, vcam);
                 }
@@ -280,11 +283,11 @@ namespace Cinemachine
             Matrix4x4 prevMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(atPos, orient, Vector3.one);
 
-            const int numSteps = 20;
+            const int kNumSteps = 20;
             Vector3 currPos = vcam.GetLocalPositionForCameraFromInput(0f);
-            for (int i = 1; i < numSteps + 1; ++i)
+            for (int i = 1; i < kNumSteps + 1; ++i)
             {
-                float t = (float)i / (float)numSteps;
+                float t = (float)i / (float)kNumSteps;
                 Vector3 nextPos = vcam.GetLocalPositionForCameraFromInput(t);
                 Gizmos.DrawLine(currPos, nextPos);
                 currPos = nextPos;
