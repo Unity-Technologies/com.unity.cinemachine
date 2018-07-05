@@ -2,6 +2,7 @@
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -18,59 +19,27 @@ namespace Cinemachine
         GUIContent mAllLensLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
 
-        VcamStageEditor[] m_editors = null;
+        VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
             List<string> excluded = base.GetExcludedPropertiesInInspector();
-            excluded.Add(FieldPath(x => x.m_Rigs));
+            excluded.Add(FieldPath(x => x.m_Rigs)); // can't use HideInInspector for this
+            excluded.Add(FieldPath(x => x.m_Orbits));
+            excluded.Add(FieldPath(x => x.m_SplineCurvature));
             return excluded;
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_editors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
-            if (Target == null)
-                return;
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
-                stage < CinemachineCore.Stage.Finalize; ++stage)
-            {
-                var ed = new VcamStageEditor(stage, Target.gameObject);
-                m_editors[(int)stage] = ed;
-                ed.SetComponent = (type) 
-                    => {
-                        var vcam = Target.GetComponent<CinemachineNewFreeLook>();
-                        Undo.RecordObject(Undo.AddComponent(Target.gameObject, type), "Set CM Component");
-                        vcam.InvalidateComponentCache();
-                    };
-                ed.DestroyComponent = (component) 
-                    => {
-                        var vcam = Target.GetComponent<CinemachineNewFreeLook>();
-                        Undo.DestroyObjectImmediate(component);
-                        vcam.InvalidateComponentCache();
-                    };
-            }
+            mPipelineSet.CreateSubeditors(this);
         }
 
         protected override void OnDisable()
         {
-            OnDestroy();
+            mPipelineSet.Shutdown();
             base.OnDisable();
-        }
-
-        void OnDestroy()
-        {
-            if (m_editors != null)
-            {
-                for (int i = 0; i < m_editors.Length; ++i)
-                {
-                    if (m_editors[i] != null)
-                        m_editors[i].Shutdown();
-                    m_editors[i] = null;
-                }
-                m_editors = null;
-            }
         }
 
         public override void OnInspectorGUI()
@@ -101,10 +70,21 @@ namespace Cinemachine
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
 
-            // CM Components
+            // Pipeline Stages
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Main Rig", EditorStyles.boldLabel);
-            DrawSubeditors();
+            var components = Target.ComponentCache;
+            for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
+            {
+                var ed = mPipelineSet.m_subeditors[i];
+                if (ed == null)
+                    continue;
+                if (!ed.HasImplementation)
+                    continue;
+                if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
+                    ed.TypeIsLocked = true;
+                ed.OnInspectorGUI(components[i]); // may destroy component
+            }
 
             // Rigs
             EditorGUILayout.Space();
@@ -119,24 +99,51 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-        void DrawSubeditors()
+        Vector3 mPreviousPosition; // for position dragging
+        private void OnSceneGUI()
         {
-            // Pipeline Stages
-            var components = Target.ComponentCache;
-            for (int i = 0; i < m_editors.Length; ++i)
+            if (!Target.UserIsDragging)
+                mPreviousPosition = Target.transform.position;
+            if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
+                && Event.current.type == EventType.MouseDrag)
             {
-                var ed = m_editors[i];
-                if (ed == null)
-                    continue;
-                if (!ed.HasImplementation)
-                    continue;
-                if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
-                    ed.TypeIsLocked = true;
+                // User might be dragging our position handle
+                Target.UserIsDragging = true;
+                Vector3 delta = Target.transform.position - mPreviousPosition;
+                if (!delta.AlmostZero())
+                {
+                    mPipelineSet.OnPositionDragged(delta);
+                    mPreviousPosition = Target.transform.position;
 
-                ed.OnInspectorGUI(components[i]); // may destroy component
+                    // Adjust the rigs height and scale
+                    Transform follow = Target.Follow;
+                    if (follow != null)
+                    {
+                        Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
+                        Vector3 up = Target.State.ReferenceUp;
+                        float heightDelta = Vector3.Dot(up, delta);
+
+                        Vector3 fwd = (Target.State.FinalPosition - follow.position).normalized;
+                        float oldRadius = Target.GetLocalPositionForCameraFromInput(
+                            Target.m_VerticalAxis.Value).magnitude;
+                        float newRadius = Mathf.Max(0.01f, oldRadius + Vector3.Dot(fwd, delta));
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            Target.m_Orbits[i].m_Height += heightDelta;
+                            if (oldRadius > 0.001f)
+                                Target.m_Orbits[i].m_Radius *= newRadius / oldRadius;
+                        }
+                    }
+                }
+            }
+            else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
+            {
+                // We're not dragging anything now, but we were
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                Target.UserIsDragging = false;
             }
         }
-
+        
         void DrawRigEditor(int rigIndex, SerializedProperty rig)
         {
             const float kBoxMargin = 3;

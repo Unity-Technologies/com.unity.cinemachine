@@ -2,7 +2,6 @@
 using UnityEditor;
 using Cinemachine.Editor;
 using Cinemachine.Utility;
-using System.Reflection;
 
 namespace Cinemachine
 {
@@ -62,7 +61,7 @@ namespace Cinemachine
                 Vector3 delta = Target.transform.position - mPreviousPosition;
                 if (!delta.AlmostZero())
                 {
-                    OnPositionDragged(delta);
+                    mPipelineSet.OnPositionDragged(delta);
                     mPreviousPosition = Target.transform.position;
                 }
             }
@@ -71,23 +70,6 @@ namespace Cinemachine
                 // We're not dragging anything now, but we were
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
                 Target.UserIsDragging = false;
-            }
-        }
-
-        // Pass the dragged event down to the CM component editors
-        void OnPositionDragged(Vector3 delta)
-        {
-            foreach (var e in mPipelineSet.m_subeditors)
-            {
-                if (e != null && e.ComponentEditor != null)
-                {
-                    MethodInfo mi = e.ComponentEditor.GetType().GetMethod("OnVcamPositionDragged"
-                        , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                    if (mi != null && e.ComponentEditor.target != null)
-                    {
-                        mi.Invoke(e.ComponentEditor, new object[] { delta } );
-                    }
-                }
             }
         }
     }

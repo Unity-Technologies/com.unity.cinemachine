@@ -51,9 +51,11 @@ namespace Cinemachine
             DestroyComponents();
         }
 
-        /// <summary>The cacmera state, which will be a blend of the child rig states</summary>
+        /// <summary>The camera state, which will be a blend of the child rig states</summary>
         override public CameraState State { get { return m_State; } }
-        CameraState m_State = CameraState.Default; // Current state this frame
+
+        /// <summary>The camera state, which will be a blend of the child rig states</summary>
+        protected CameraState m_State = CameraState.Default; 
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
@@ -171,7 +173,7 @@ namespace Cinemachine
             }
         }
 
-        private CameraState InvokeComponentPipeline(
+        protected CameraState InvokeComponentPipeline(
             ref CameraState state, Vector3 worldUp, float deltaTime)
         {
             UpdateComponentCache();
@@ -254,9 +256,15 @@ namespace Cinemachine
                         m_Components[i].hideFlags |= HideFlags.HideInInspector;
                 }
             }
+            OnComponentCacheUpdated();
         }
 
-        void DestroyComponents()
+        /// <summary>Notification that the component cache has just been update,
+        /// in case a subclass needs to do something extra</summary>
+        protected virtual void OnComponentCacheUpdated() {}
+
+        /// <summary>Destroy all the CinmachineComponentBase components</summary>
+        protected void DestroyComponents()
         {
             var existing = GetComponents<CinemachineComponentBase>();
             for (int i = 0; i < existing.Length; ++i)

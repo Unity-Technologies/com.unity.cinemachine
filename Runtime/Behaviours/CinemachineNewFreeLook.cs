@@ -15,28 +15,8 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineNewFreeLook")]
-    public class CinemachineNewFreeLook : CinemachineVirtualCameraBase
+    public class CinemachineNewFreeLook : CinemachineNewVcam
     {
-        /// <summary>Object for the camera children to look at (the aim target)</summary>
-        [Tooltip("Object for the camera children to look at (the aim target).")]
-        [NoSaveDuringPlay]
-        public Transform m_LookAt = null;
-
-        /// <summary>Object for the camera children wants to move with (the body target)</summary>
-        [Tooltip("Object for the camera children wants to move with (the body target).")]
-        [NoSaveDuringPlay]
-        public Transform m_Follow = null;
-
-        /// <summary>Specifies the LensSettings of this Virtual Camera.
-        /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
-        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
-        [LensSettingsProperty]
-        public LensSettings m_Lens = LensSettings.Default;
-
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from 
-        /// other virtual cameras </summary>
-        public TransitionParams m_Transitions;
-
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Tooltip("The Vertical axis.  Value is 0..1.  0.5 is the middle rig.  Chooses how to blend the child rigs")]
         [AxisStateProperty]
@@ -58,13 +38,11 @@ namespace Cinemachine
         }
 
         /// <summary>Order is Top, Middle, Bottom</summary>
-        [HideInInspector]
         public Orbit[] m_Orbits = new Orbit[3];
 
         /// <summary></summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
         [Range(0f, 1f)]
-        [HideInInspector]
         public float m_SplineCurvature;
 
         /// <summary>Identifiers for accessing override settings for top and bottom rigs</summary>
@@ -226,6 +204,12 @@ namespace Cinemachine
         /// <summary>Accessor for rig override settings</summary>
         public Rig GetRigSettings(RigID rig) { return m_Rigs[(int)rig]; }
 
+        /// Easy access to the transposer (may be null)
+        CinemachineTransposer Transposer 
+        { 
+            get { return ComponentCache[(int)CinemachineCore.Stage.Body] as CinemachineTransposer; } 
+        }
+        
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         protected override void OnValidate()
         {
@@ -237,249 +221,15 @@ namespace Cinemachine
         private void Awake()
         {
             m_VerticalAxis.HasRecentering = true;
-            m_RadialAxis.HasRecentering = true;
-        }
-
-        /// <summary>Updates the child rig cache</summary>
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            InvalidateComponentCache();
+            m_RadialAxis.HasRecentering = false;
         }
 
         void Reset()
         {
-            SetDefault();
-        }
-
-        /// <summary>The cacmera state, which will be a blend of the child rig states</summary>
-        override public CameraState State { get { return m_State; } }
-        CameraState m_State = CameraState.Default; // Current state this frame
-
-        /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
-        /// is non-null and no specific LookAt defined for this camera</summary>
-        override public Transform LookAt
-        {
-            get { return ResolveLookAt(m_LookAt); }
-            set { m_LookAt = value; }
-        }
-
-        /// <summary>Get the current Follow target.  Returns parent's Follow if parent
-        /// is non-null and no specific Follow defined for this camera</summary>
-        override public Transform Follow
-        {
-            get { return ResolveFollow(m_Follow); }
-            set { m_Follow = value; }
-        }
-
-        /// <summary>This is called to notify the vcam that a target got warped,
-        /// so that the vcam can update its internal state to make the camera 
-        /// also warp seamlessy.</summary>
-        /// <param name="target">The object that was warped</param>
-        /// <param name="positionDelta">The amount the target's position changed</param>
-        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
-        {
-            UpdateComponentCache();
-            for (int i = 0; i < m_Components.Length; ++i)
-            {
-                if (m_Components[i] != null)
-                    m_Components[i].OnTargetObjectWarped(target, positionDelta);
-            }
-            base.OnTargetObjectWarped(target, positionDelta);
-        }
-
-        /// <summary>Internal use only.  Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  All 3 child rigs are updated,
-        /// and a blend calculated, depending on the value of the Y axis.</summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
-        {
-            if (!PreviousStateIsValid)
-                deltaTime = -1;
-
-            UpdateComponentCache();
-
-            // Update the current state by invoking the component pipeline
-            m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
-
-            // Push the raw position back to the game object's transform, so it
-            // moves along with the camera.  Leave the orientation alone, because it
-            // screws up camera dragging when there is a LookAt behaviour.
-            if (Follow != null)
-                transform.position = State.RawPosition;
-
-            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
-            PreviousStateIsValid = true;
-        }
-
-        /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        public override void OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
-        {
-            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            bool forceUpdate = false;
-            if (fromCam != null)
-            {
-                CinemachineNewFreeLook freeLookFrom = fromCam as CinemachineNewFreeLook;
-                if (freeLookFrom != null && freeLookFrom.Follow == Follow)
-                {
-                    var orbital = Transposer as CinemachineOrbitalTransposer;
-                    if (orbital.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                    {
-                        var src = freeLookFrom.Transposer as CinemachineOrbitalTransposer;
-                        if (src != null)
-                            orbital.m_XAxis.Value = src.m_XAxis.Value;
-                    }
-                    m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
-                    m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value;
-                    forceUpdate = true;
-                }
-            }
-            if (m_Transitions.m_InheritPosition)
-            {
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
-                if (brain != null)
-                {
-                    transform.position = brain.transform.position;
-                    transform.rotation = brain.transform.rotation;
-                    m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
-                    m_Rigs[(int)RigID.Top].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
-                    m_Rigs[(int)RigID.Bottom].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
-                    PreviousStateIsValid = false;
-                    forceUpdate = true;
-                    InternalUpdateCameraState(worldUp, deltaTime);
-                }
-            }
-            if (forceUpdate)
-                InternalUpdateCameraState(worldUp, deltaTime);
-            else
-                UpdateCameraState(worldUp, deltaTime);
-            if (m_Transitions.m_OnCameraLive != null)
-                m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
-        }
-
-        // Component Cache - serialized only for copy/paste
-        [SerializeField, HideInInspector, NoSaveDuringPlay]
-        CinemachineComponentBase[] m_Components;
-
-        /// For inspector
-        internal CinemachineComponentBase[] ComponentCache 
-        { 
-            get 
-            { 
-                UpdateComponentCache(); 
-                return m_Components; 
-            }
-        }
-
-        /// Easy access to the transposer
-        CinemachineTransposer Transposer 
-        { 
-            get 
-            {
-                UpdateComponentCache();
-                return m_Components[(int)CinemachineCore.Stage.Body] as CinemachineTransposer;
-            }
-        }
-
-        bool m_ComponentCacheIsValid;
-        public void InvalidateComponentCache()
-        {
-            m_Components = null; 
-            m_ComponentCacheIsValid = false;
-        }
-
-        void UpdateComponentCache()
-        {
-#if UNITY_EDITOR
-            // Special case: if we have serialized in with some other game object's 
-            // components, then we have just been pasted so we should clone them
-            if (m_Components != null && m_Components.Length > 0
-                && m_Components[(int)CinemachineCore.Stage.Body] != null
-                && m_Components[(int)CinemachineCore.Stage.Body].gameObject != gameObject)
-            {
-                var copyFrom = m_Components;
-                DestroyComponents();
-                CopyComponents(copyFrom);
-            }
-#endif
-            if (m_Components != null && m_ComponentCacheIsValid)
-                return;
-
-            m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize];
-            var existing = GetComponents<CinemachineComponentBase>();
-            for (int i = 0; existing != null && i < existing.Length; ++i)
-                m_Components[(int)existing[i].Stage] = existing[i];
-
-            var transposer = m_Components[(int)CinemachineCore.Stage.Body] as CinemachineTransposer;
-            if (transposer != null)
-            {
-                transposer.HideOffsetInInspector = true;
-                transposer.m_FollowOffset = new Vector3(
-                    0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
-            }
-            for (int i = 0; i < m_Components.Length; ++i)
-            {
-                if (m_Components[i] != null)
-                {
-                    if (CinemachineCore.sShowHiddenObjects)
-                        m_Components[i].hideFlags &= ~HideFlags.HideInInspector;
-                    else
-                        m_Components[i].hideFlags |= HideFlags.HideInInspector;
-                }
-            }
-            m_ComponentCacheIsValid = true;
-        }
-
-        void DestroyComponents()
-        {
-            var existing = GetComponents<CinemachineComponentBase>();
-            for (int i = 0; i < existing.Length; ++i)
-            {
-#if UNITY_EDITOR
-                UnityEditor.Undo.DestroyObjectImmediate(existing[i]);
-#else
-                UnityEngine.Object.Destroy(existing[i]);
-#endif
-            }
-            InvalidateComponentCache();
-        }
-        
-#if UNITY_EDITOR
-        void CopyComponents(CinemachineComponentBase[] copyFrom)
-        {
-            foreach (CinemachineComponentBase c in copyFrom)
-            {
-                if (c != null)
-                {
-                    Type type = c.GetType();
-                    var copy = UnityEditor.Undo.AddComponent(gameObject, type);
-                    UnityEditor.Undo.RecordObject(copy, "copying pipeline");
-
-                    System.Reflection.BindingFlags bindingAttr 
-                        = System.Reflection.BindingFlags.Public 
-                        | System.Reflection.BindingFlags.NonPublic 
-                        | System.Reflection.BindingFlags.Instance;
-
-                    System.Reflection.FieldInfo[] fields = type.GetFields(bindingAttr);
-                    for (int i = 0; i < fields.Length; ++i)
-                        if (!fields[i].IsStatic)
-                            fields[i].SetValue(copy, fields[i].GetValue(c));
-                }
-            }
-        }
-#endif
-            
-        void SetDefault()
-        {
             DestroyComponents();
 #if UNITY_EDITOR
             var orbital = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
+            orbital.HideOffsetInInspector = true;
             UnityEditor.Undo.RecordObject(orbital, "creating rig");
             orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
             UnityEditor.Undo.RecordObject(
@@ -502,6 +252,103 @@ namespace Cinemachine
             m_SplineCurvature = 0.5f;
         }
 
+        /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        public override void OnTransitionFromCamera(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+        {
+            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            if (fromCam != null)
+            {
+                CinemachineNewFreeLook freeLookFrom = fromCam as CinemachineNewFreeLook;
+                if (freeLookFrom != null && freeLookFrom.Follow == Follow)
+                {
+                    var orbital = Transposer as CinemachineOrbitalTransposer;
+                    if (orbital.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                    {
+                        var src = freeLookFrom.Transposer as CinemachineOrbitalTransposer;
+                        if (src != null)
+                            orbital.m_XAxis.Value = src.m_XAxis.Value;
+                    }
+                    m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
+                    m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value;
+                    InternalUpdateCameraState(worldUp, deltaTime);
+                }
+            }
+        }
+
+        /// <summary>Internal use only.  Called by CinemachineCore at designated update time
+        /// so the vcam can position itself and track its targets.  All 3 child rigs are updated,
+        /// and a blend calculated, depending on the value of the Y axis.</summary>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
+        override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
+        {
+            if (!PreviousStateIsValid)
+                deltaTime = -1;
+
+            // Initialize the camera state, in case the game object got moved in the editor
+            m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            m_Rigs[(int)RigID.Top].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
+            m_Rigs[(int)RigID.Bottom].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
+
+            // Update our axes
+            bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
+            if (activeCam)
+            {
+                if (m_VerticalAxis.Update(deltaTime))
+                    m_VerticalAxis.m_Recentering.CancelRecentering();
+                m_RadialAxis.Update(deltaTime);
+            }
+            m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
+
+            // Blend the components
+            if (mBlender == null)
+                mBlender = new ComponentBlender(this);
+            mBlender.Blend(GetVerticalAxisValue());
+
+            // Blend the lens
+            if (m_Rigs[mBlender.OtherRig].m_CustomLens)
+                m_State.Lens = LensSettings.Lerp(
+                    m_State.Lens, m_Rigs[mBlender.OtherRig].m_Lens, mBlender.BlendAmount);
+
+            // Do our stuff
+            SetReferenceLookAtTargetInState(ref m_State);
+            InvokeComponentPipeline(ref m_State, worldUp, deltaTime);
+            ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
+
+            // Restore the components
+            mBlender.Restore();
+
+            // Push the raw position back to the game object's transform, so it
+            // moves along with the camera.
+            if (!UserIsDragging)
+            {
+                if (Follow != null)
+                    transform.position = State.RawPosition;
+                if (LookAt != null)
+                    transform.rotation = State.RawOrientation;
+            }
+            // Signal that it's all done
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
+            PreviousStateIsValid = true;
+        }
+
+        ComponentBlender mBlender;
+
+        protected override void OnComponentCacheUpdated()
+        {
+            var transposer = Transposer;
+            if (transposer != null)
+            {
+                transposer.HideOffsetInInspector = true;
+                transposer.m_FollowOffset = new Vector3(
+                    0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
+            }
+        }
+        
         private float GetVerticalAxisValue()
         {
             float range = m_VerticalAxis.m_MaxValue - m_VerticalAxis.m_MinValue;
@@ -563,66 +410,6 @@ namespace Cinemachine
             }
         }
 
-        ComponentBlender mBlender;
-
-        private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
-        {
-            if (mBlender == null)
-                mBlender = new ComponentBlender(this);
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
-            m_Rigs[(int)RigID.Top].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
-            m_Rigs[(int)RigID.Bottom].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
-
-            // Update our axes
-            bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
-            if (activeCam)
-            {
-                if (m_VerticalAxis.Update(deltaTime))
-                    m_VerticalAxis.m_Recentering.CancelRecentering();
-                if (m_RadialAxis.Update(deltaTime))
-                    m_RadialAxis.m_Recentering.CancelRecentering();
-            }
-            m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
-            m_RadialAxis.m_Recentering.DoRecentering(ref m_RadialAxis, deltaTime, 0.5f);
-
-            // Set the Reference LookAt
-            Transform lookAtTarget = LookAt;
-            if (lookAtTarget != null)
-                state.ReferenceLookAt = lookAtTarget.position;
-
-            // Blend from the appropriate rigs according to the vertical axis (0...1)
-            mBlender.Blend(GetVerticalAxisValue());
-
-            // Blend the lens
-            if (m_Rigs[mBlender.OtherRig].m_CustomLens)
-                state.Lens = LensSettings.Lerp(
-                    state.Lens, m_Rigs[mBlender.OtherRig].m_Lens, mBlender.BlendAmount);
-
-            // Apply the component pipeline
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
-                stage < CinemachineCore.Stage.Finalize; ++stage)
-            {
-                var c = m_Components[(int)stage];
-                if (c != null)
-                    c.PrePipelineMutateCameraState(ref state);
-            }
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
-                stage < CinemachineCore.Stage.Finalize; ++stage)
-            {
-                var c = m_Components[(int)stage];
-                if (c != null)
-                    c.MutateCameraState(ref state, deltaTime);
-                else if (stage == CinemachineCore.Stage.Aim)
-                    state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
-                InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
-            }
-
-            // Restore the components
-            mBlender.Restore();
-
-            return state;
-        }
-
         // Crazy damn thing for blending components at the source level
         internal class ComponentBlender
         {
@@ -658,14 +445,15 @@ namespace Cinemachine
                 if (orbital != null)
                     orbital.m_FollowOffset = mFreeLook.GetLocalPositionForCameraFromInput(y);
 
-                var composer = mFreeLook.m_Components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
+                var components = mFreeLook.ComponentCache;
+                var composer = components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                 {
                     composerSaved.PullFrom(composer);
                     mFreeLook.m_Rigs[OtherRig].m_Aim.Lerp(composer, BlendAmount);
                 }
 
-                var noise = mFreeLook.m_Components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
+                var noise = components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
                 if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
                 {
                     noiseSaved.PullFrom(noise);
@@ -681,11 +469,12 @@ namespace Cinemachine
                 if (orbital != null)
                     orbital.m_FollowOffset = new Vector3(
                         0, mFreeLook.m_Orbits[1].m_Height, -mFreeLook.m_Orbits[1].m_Radius);
-                var composer = mFreeLook.m_Components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
+                var components = mFreeLook.ComponentCache;
+                var composer = components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                     composerSaved.PushTo(composer);
 
-                var noise = mFreeLook.m_Components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
+                var noise = components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
                 if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
                     noiseSaved.PushTo(noise);
             }
@@ -693,15 +482,3 @@ namespace Cinemachine
     }
 }
 
-#if false
-void GML_TODO()
-{
-            var transposer = m_Components[(int)CinemachineCore.Stage.Body] as CinemachineTransposer;
-            if (transposer != null)
-            {
-                transposer.HideOffsetInInspector = true;
-                transposer.m_FollowOffset = new Vector3(
-                    0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
-            }
-}
-#endif

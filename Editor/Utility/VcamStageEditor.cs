@@ -3,6 +3,7 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using System.Reflection;
 
 namespace Cinemachine.Editor
 {
@@ -224,6 +225,19 @@ namespace Cinemachine.Editor
             EditorGUIUtility.labelWidth += kBoxMargin;
         }
 
+        public void OnPositionDragged(Vector3 delta)
+        {
+            if (mComponentEditor != null)
+            {
+                MethodInfo mi = mComponentEditor.GetType().GetMethod("OnVcamPositionDragged"
+                    , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                if (mi != null && mComponentEditor.target != null)
+                {
+                    mi.Invoke(mComponentEditor, new object[] { delta } );
+                }
+            }
+        }
+
         public delegate void DestroyComponentDelegate(CinemachineComponentBase component);
         public DestroyComponentDelegate DestroyComponent;
 
@@ -284,6 +298,14 @@ namespace Cinemachine.Editor
                 m_subeditors = null;
             }
             mParentEditor = null;
+        }
+
+        // Pass the dragged event down to the CM component editors
+        public void OnPositionDragged(Vector3 delta)
+        {
+            foreach (var e in m_subeditors)
+                if (e != null)
+                    e.OnPositionDragged(delta);
         }
     }
 }

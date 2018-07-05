@@ -41,7 +41,7 @@ namespace Cinemachine.Editor
         /// Called "magically" by the vcam editor, so don't change the signature.
         public void OnVcamPositionDragged(Vector3 delta)
         {
-            Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
+            Undo.RegisterCompleteObjectUndo(Target, "Camera drag"); // GML do we need this?
             Quaternion targetOrientation = Target.m_Path.EvaluateOrientationAtUnit(
                 Target.m_PathPosition, Target.m_PositionUnits);
             Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
