@@ -280,7 +280,8 @@ namespace Cinemachine.Editor
                         var vcam = mParentEditor.target as CinemachineNewVcam;
                         if (vcam != null)
                         {
-                            Undo.RecordObject(Undo.AddComponent(vcam.gameObject, type), "Set CM Component");
+                            var c = Undo.AddComponent(vcam.gameObject, type);
+                            c.hideFlags |= HideFlags.HideInInspector;
                             vcam.InvalidateComponentCache();
                         }
                     };
