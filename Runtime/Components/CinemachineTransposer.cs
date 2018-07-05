@@ -106,6 +106,9 @@ namespace Cinemachine
             m_FollowOffset = EffectiveOffset;
         }
         
+        /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
+        public bool HideOffsetInInspector { get; set; }
+        
         /// <summary>Get the target offset, with sanitization</summary>
         public Vector3 EffectiveOffset 
         { 

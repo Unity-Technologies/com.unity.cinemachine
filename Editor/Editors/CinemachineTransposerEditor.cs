@@ -35,6 +35,8 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     break;
             }
+            if (Target.HideOffsetInInspector)
+                excluded.Add(FieldPath(x => x.m_FollowOffset));
             return excluded;
         }
 

@@ -145,9 +145,6 @@ namespace Cinemachine
         [HideInInspector, NoSaveDuringPlay]
         public bool m_HeadingIsSlave = false;
 
-        /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
-        public bool HideOffsetInInspector { get; set; }
-        
         /// <summary>
         /// Delegate that allows the the m_XAxis object to be replaced with another one.
         /// </summary>

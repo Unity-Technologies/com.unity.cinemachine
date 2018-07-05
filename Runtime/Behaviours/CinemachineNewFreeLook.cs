@@ -367,7 +367,14 @@ namespace Cinemachine
         CinemachineComponentBase[] m_Components;
 
         /// For inspector
-        internal CinemachineComponentBase[] ComponentCache { get { UpdateComponentCache(); return m_Components; } }
+        internal CinemachineComponentBase[] ComponentCache 
+        { 
+            get 
+            { 
+                UpdateComponentCache(); 
+                return m_Components; 
+            }
+        }
 
         /// Must always have an Orbital Transposer
         CinemachineOrbitalTransposer Orbital 
@@ -379,14 +386,46 @@ namespace Cinemachine
             }
         }
 
+        bool m_ComponentCacheIsValid;
         public void InvalidateComponentCache()
         {
-            m_Components = null;
+            m_Components = null; 
+            m_ComponentCacheIsValid = false;
         }
 
         void UpdateComponentCache()
         {
-            if (m_Components != null)
+#if UNITY_EDITOR
+            // Special case: if we have serialized in with some other game object's 
+            // components, then we have just been pasted so we should clone them
+            if (m_Components != null && m_Components.Length > 0
+                && m_Components[(int)CinemachineCore.Stage.Body] != null
+                && m_Components[(int)CinemachineCore.Stage.Body].gameObject != gameObject)
+            {
+                var copyFrom = m_Components;
+                DestroyComponents();
+                foreach (CinemachineComponentBase c in copyFrom)
+                {
+                    if (c != null)
+                    {
+                        Type type = c.GetType();
+                        var copy = UnityEditor.Undo.AddComponent(gameObject, type);
+                        UnityEditor.Undo.RecordObject(copy, "copying pipeline");
+
+                        System.Reflection.BindingFlags bindingAttr 
+                            = System.Reflection.BindingFlags.Public 
+                            | System.Reflection.BindingFlags.NonPublic 
+                            | System.Reflection.BindingFlags.Instance;
+
+                        System.Reflection.FieldInfo[] fields = type.GetFields(bindingAttr);
+                        for (int i = 0; i < fields.Length; ++i)
+                            if (!fields[i].IsStatic)
+                                fields[i].SetValue(copy, fields[i].GetValue(c));
+                    }
+                }
+            }
+#endif
+            if (m_Components != null && m_ComponentCacheIsValid)
                 return;
 
             m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize];
@@ -394,15 +433,21 @@ namespace Cinemachine
             m_Components[(int)CinemachineCore.Stage.Aim] = GetComponent<CinemachineComposer>();
             m_Components[(int)CinemachineCore.Stage.Noise] = GetComponent<CinemachineBasicMultiChannelPerlin>();
 
-            if (Orbital != null)
-                Orbital.HideOffsetInInspector = true;
-
+            var orbital = m_Components[(int)CinemachineCore.Stage.Body] as CinemachineOrbitalTransposer;
+            if (orbital != null)
+            {
+                orbital.HideOffsetInInspector = true;
+                orbital.m_FollowOffset = new Vector3(
+                    0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
+            }
             for (int i = 0; i < m_Components.Length; ++i)
                 if (m_Components[i] != null)
                     m_Components[i].hideFlags |= HideFlags.HideInInspector;
+
+            m_ComponentCacheIsValid = true;
         }
-        
-        void SetDefault()
+
+        void DestroyComponents()
         {
             var existing = GetComponents<CinemachineComponentBase>();
             for (int i = 0; i < existing.Length; ++i)
@@ -413,7 +458,12 @@ namespace Cinemachine
                 UnityEngine.Object.Destroy(existing[i]);
 #endif
             }
-
+            InvalidateComponentCache();
+        }
+        
+        void SetDefault()
+        {
+            DestroyComponents();
 #if UNITY_EDITOR
             var orbital = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
             UnityEditor.Undo.RecordObject(orbital, "creating rig");
@@ -612,7 +662,9 @@ namespace Cinemachine
                 var orbital = mFreeLook.Orbital;
                 if (orbital != null && mFreeLook.m_Rigs[OtherRig].m_CustomBody)
                     orbitalSaved.PushTo(orbital);
-
+                if (orbital != null)
+                    orbital.m_FollowOffset = new Vector3(
+                        0, mFreeLook.m_Orbits[1].m_Height, -mFreeLook.m_Orbits[1].m_Radius);
                 var composer = mFreeLook.m_Components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                     composerSaved.PushTo(composer);

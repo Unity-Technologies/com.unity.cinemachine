@@ -217,6 +217,7 @@ namespace Cinemachine
             {
                 enabledProperty.boolValue = newValue;
                 enabledProperty.serializedObject.ApplyModifiedProperties();
+                property.isExpanded = newValue;
                 return true;
             }
             if (newValue == true)
@@ -259,8 +260,6 @@ namespace Cinemachine
 
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
                         pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
-                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
                         pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
 

@@ -2,7 +2,6 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
-using UnityEngine.Events;
 
 namespace Cinemachine
 {
