@@ -123,10 +123,6 @@ namespace Cinemachine.Editor
         // Can the component type be changed by the user?
         public bool TypeIsLocked { get; set; }
 
-        public bool ShowDisabledCheckbox { get; set; }
-        public bool ComponentSelectionDisabled { get; set; }
-        public GUIContent ComponentSelectionDisableLabel { get; set; }
-
         // Call this from Editor's OnInspectorGUI - returns new component if user changes type
         public void OnInspectorGUI(CinemachineComponentBase component)
         {
@@ -166,8 +162,7 @@ namespace Cinemachine.Editor
 
             int index = (int)mStage;
 
-            GUIStyle stageBoxStyle = GUI.skin.box;
-            EditorGUILayout.BeginVertical(stageBoxStyle);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUIUtility.labelWidth -= kBoxMargin;
 
             Rect rect = EditorGUILayout.GetControlRect(true);
@@ -181,68 +176,47 @@ namespace Cinemachine.Editor
             EditorGUI.LabelField(r, label);
 
             r = rect; r.width -= labelWidth; r.x += labelWidth;
-            if (ShowDisabledCheckbox)
+            bool wasEnabled = GUI.enabled;
+            if (TypeIsLocked)
+                GUI.enabled = false;
+            int newSelection = EditorGUI.Popup(r, mStageSelection, sStageData[index].PopupOptions);
+            GUI.enabled = wasEnabled;
+
+            Type type = sStageData[index].types[newSelection];
+            if (newSelection != mStageSelection)
             {
-                if (ComponentSelectionDisabled)
+                if (mComponent != null)
                 {
-                    label = ComponentSelectionDisableLabel;
-                    if (label == null)
-                        label = new GUIContent("Customize"); // GUIContent.none;
-                    ComponentSelectionDisabled = !EditorGUI.ToggleLeft(r, label, !ComponentSelectionDisabled);
+                    if (DestroyComponent != null)
+                        DestroyComponent(mComponent);
                 }
-                else
+                if (newSelection != 0)
                 {
-                    ComponentSelectionDisabled 
-                        = !EditorGUI.ToggleLeft(new Rect(r.x, r.y, r.height * 2, r.height), 
-                            GUIContent.none, !ComponentSelectionDisabled);
-                    r.x += r.height; r.width -= r.height;
+                    sStageData[index].IsExpanded = true;
+                    if (SetComponent != null)
+                        SetComponent(type);
                 }
+                mComponent = null;
+                GUIUtility.ExitGUI();
+                return; // let the component editor be recreated
             }
 
-            if (!ComponentSelectionDisabled)
+            // Draw the embedded editor
+            if (type != null)
             {
-                bool wasEnabled = GUI.enabled;
-                if (TypeIsLocked)
-                    GUI.enabled = false;
-                int newSelection = EditorGUI.Popup(r, mStageSelection, sStageData[index].PopupOptions);
-                GUI.enabled = wasEnabled;
-
-                Type type = sStageData[index].types[newSelection];
-                if (newSelection != mStageSelection)
+                r = new Rect(rect.x - kBoxMargin, rect.y, labelWidth, rect.height);
+                sStageData[index].IsExpanded = EditorGUI.Foldout(
+                        r, sStageData[index].IsExpanded, GUIContent.none, true);
+                if (sStageData[index].IsExpanded)
                 {
-                    if (mComponent != null)
+                    // Make the editor for that stage
+                    if (mComponentEditor != null)
                     {
-                        if (DestroyComponent != null)
-                            DestroyComponent(mComponent);
-                    }
-                    if (newSelection != 0)
-                    {
-                        sStageData[index].IsExpanded = true;
-                        if (SetComponent != null)
-                            SetComponent(type);
-                    }
-                    mComponent = null;
-                    GUIUtility.ExitGUI();
-                    return; // let the component editor be recreated
-                }
-
-                // Draw the embedded editor
-                if (type != null)
-                {
-                    r = new Rect(rect.x - kBoxMargin, rect.y, labelWidth, rect.height);
-                    sStageData[index].IsExpanded = EditorGUI.Foldout(
-                            r, sStageData[index].IsExpanded, GUIContent.none, true);
-                    if (sStageData[index].IsExpanded)
-                    {
-                        // Make the editor for that stage
-                        if (mComponentEditor != null)
-                        {
-                            ++EditorGUI.indentLevel;
-                            EditorGUILayout.Separator();
-                            mComponentEditor.OnInspectorGUI();
-                            EditorGUILayout.Separator();
-                            --EditorGUI.indentLevel;
-                        }
+                        ++EditorGUI.indentLevel;
+                        EditorGUILayout.Separator();
+                        mComponentEditor.OnInspectorGUI();
+                        EditorGUILayout.Separator();
+                        --EditorGUI.indentLevel;
                     }
                 }
             }
