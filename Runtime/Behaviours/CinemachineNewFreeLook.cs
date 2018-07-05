@@ -692,3 +692,16 @@ namespace Cinemachine
         }
     }
 }
+
+#if false
+void GML_TODO()
+{
+            var transposer = m_Components[(int)CinemachineCore.Stage.Body] as CinemachineTransposer;
+            if (transposer != null)
+            {
+                transposer.HideOffsetInInspector = true;
+                transposer.m_FollowOffset = new Vector3(
+                    0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
+            }
+}
+#endif

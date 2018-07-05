@@ -40,15 +40,15 @@ namespace Cinemachine
                 m_editors[(int)stage] = ed;
                 ed.SetComponent = (type) 
                     => {
-                        var freeLook = Target.GetComponent<CinemachineNewFreeLook>();
-                        Undo.RecordObject(Undo.AddComponent(Target.gameObject, type), "SetFreeLookComponent");
-                        freeLook.InvalidateComponentCache();
+                        var vcam = Target.GetComponent<CinemachineNewFreeLook>();
+                        Undo.RecordObject(Undo.AddComponent(Target.gameObject, type), "Set CM Component");
+                        vcam.InvalidateComponentCache();
                     };
                 ed.DestroyComponent = (component) 
                     => {
-                        var freeLook = Target.GetComponent<CinemachineNewFreeLook>();
+                        var vcam = Target.GetComponent<CinemachineNewFreeLook>();
                         Undo.DestroyObjectImmediate(component);
-                        freeLook.InvalidateComponentCache();
+                        vcam.InvalidateComponentCache();
                     };
             }
         }

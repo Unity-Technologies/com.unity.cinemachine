@@ -256,4 +256,59 @@ namespace Cinemachine.Editor
         public delegate void SetComponentDelegate(Type type);
         public SetComponentDelegate SetComponent;
     }
+
+    internal class VcamPipelineStageSubeditorSet
+    {
+        public CinemachineStageEditor[] m_subeditors;
+
+        UnityEditor.Editor mParentEditor;
+
+        public void CreateSubeditors(UnityEditor.Editor parentEditor)
+        {
+            mParentEditor = parentEditor;
+            m_subeditors = new CinemachineStageEditor[(int)CinemachineCore.Stage.Finalize];
+            CinemachineNewVcam owner = mParentEditor == null ? null : mParentEditor.target as CinemachineNewVcam;
+            if (owner == null)
+                return;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
+                stage < CinemachineCore.Stage.Finalize; ++stage)
+            {
+                var ed = new CinemachineStageEditor(stage, owner.gameObject);
+                m_subeditors[(int)stage] = ed;
+                ed.SetComponent = (type) 
+                    => {
+                        var vcam = mParentEditor.target as CinemachineNewVcam;
+                        if (vcam != null)
+                        {
+                            Undo.RecordObject(Undo.AddComponent(vcam.gameObject, type), "Set CM Component");
+                            vcam.InvalidateComponentCache();
+                        }
+                    };
+                ed.DestroyComponent = (component) 
+                    => {
+                        var vcam = mParentEditor.target as CinemachineNewVcam;
+                        if (vcam != null)
+                        {
+                            Undo.DestroyObjectImmediate(component);
+                            vcam.InvalidateComponentCache();
+                        }
+                    };
+            }
+        }
+
+        public void Shutdown()
+        {
+            if (m_subeditors != null)
+            {
+                for (int i = 0; i < m_subeditors.Length; ++i)
+                {
+                    if (m_subeditors[i] != null)
+                        m_subeditors[i].Shutdown();
+                    m_subeditors[i] = null;
+                }
+                m_subeditors = null;
+            }
+            mParentEditor = null;
+        }
+    }
 }
