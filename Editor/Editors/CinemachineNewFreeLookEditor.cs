@@ -18,7 +18,7 @@ namespace Cinemachine
         GUIContent mAllLensLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
 
-        CinemachineStageEditor[] m_editors = null;
+        VcamStageEditor[] m_editors = null;
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -30,13 +30,13 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_editors = new CinemachineStageEditor[(int)CinemachineCore.Stage.Finalize];
+            m_editors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
             if (Target == null)
                 return;
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
-                var ed = new CinemachineStageEditor(stage, Target.gameObject);
+                var ed = new VcamStageEditor(stage, Target.gameObject);
                 m_editors[(int)stage] = ed;
                 ed.SetComponent = (type) 
                     => {

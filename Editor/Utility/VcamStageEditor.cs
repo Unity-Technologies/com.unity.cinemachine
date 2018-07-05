@@ -6,7 +6,7 @@ using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
-    internal class CinemachineStageEditor 
+    internal class VcamStageEditor 
     {
         // Static state and caches - Call UpdateStaticData() to refresh this
         struct StageData
@@ -93,13 +93,13 @@ namespace Cinemachine.Editor
         public GameObject Target { get; private set; }
 
         // Call this from OnEnable()
-        public CinemachineStageEditor(CinemachineCore.Stage stage, GameObject target)
+        public VcamStageEditor(CinemachineCore.Stage stage, GameObject target)
         {
             mStage = stage;
             Target = target;
         }
 
-        ~CinemachineStageEditor()
+        ~VcamStageEditor()
         {
             Shutdown();
         }
@@ -259,21 +259,21 @@ namespace Cinemachine.Editor
 
     internal class VcamPipelineStageSubeditorSet
     {
-        public CinemachineStageEditor[] m_subeditors;
+        public VcamStageEditor[] m_subeditors;
 
         UnityEditor.Editor mParentEditor;
 
         public void CreateSubeditors(UnityEditor.Editor parentEditor)
         {
             mParentEditor = parentEditor;
-            m_subeditors = new CinemachineStageEditor[(int)CinemachineCore.Stage.Finalize];
+            m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
             CinemachineNewVcam owner = mParentEditor == null ? null : mParentEditor.target as CinemachineNewVcam;
             if (owner == null)
                 return;
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
-                var ed = new CinemachineStageEditor(stage, owner.gameObject);
+                var ed = new VcamStageEditor(stage, owner.gameObject);
                 m_subeditors[(int)stage] = ed;
                 ed.SetComponent = (type) 
                     => {
