@@ -44,7 +44,7 @@ namespace Cinemachine
 
         [Tooltip("The Radial axis.  Value is the base radius of the orbits")]
         [AxisStateProperty]
-        public AxisState m_RadialAxis = new AxisState(1, 1, false, false, 2f, 0.2f, 0.1f, "Mouse ScrollWheel", false);
+        public AxisState m_RadialAxis = new AxisState(1, 1, false, false, 100, 0f, 0f, "Mouse ScrollWheel", false);
 
         /// <summary>Defines the height and radius for an orbit</summary>
         [Serializable]
