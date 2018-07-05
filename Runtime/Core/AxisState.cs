@@ -66,6 +66,10 @@ namespace Cinemachine
         [Tooltip("If checked, then the axis will wrap around at the min/max values, forming a loop")]
         public bool m_Wrap;
 
+        /// <summary>Automatic recentering.  Valid only if HasRecentering is true</summary>
+        [Tooltip("Automatic recentering to at-rest position")]
+        public Recentering m_Recentering;
+
         private float mCurrentSpeed;
 
         /// <summary>Constructor with specific values</summary>
@@ -78,6 +82,9 @@ namespace Cinemachine
             m_MaxValue = maxValue;
             m_Wrap = wrap;
             ValueRangeLocked = rangeLocked;
+
+            HasRecentering = false;
+            m_Recentering = new Recentering(false, 1, 2);
 
             m_MaxSpeed = maxSpeed;
             m_AccelTime = accelTime;
@@ -206,6 +213,9 @@ namespace Cinemachine
         /// <summary>Value range is locked, i.e. not adjustable by the user (used by editor)</summary>
         public bool ValueRangeLocked { get; set; }
 
+        /// <summary>True if the Recentering member is valid (bcak-compatibility support:
+        /// old versions had recentering in a separate structure)</summary>
+        public bool HasRecentering { get; set; }
 
         /// <summary>Helper for automatic axis recentering</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -214,25 +224,27 @@ namespace Cinemachine
         {
             /// <summary>If checked, will enable automatic recentering of the
             /// axis. If FALSE, recenting is disabled.</summary>
+            [FormerlySerializedAs("m_enabled")]
             [Tooltip("If checked, will enable automatic recentering of the axis. If unchecked, recenting is disabled.")]
-            public bool m_enabled;
+            public bool m_Enabled;
 
             /// <summary>If no input has been detected, the camera will wait
             /// this long in seconds before moving its heading to the default heading.</summary>
             [FormerlySerializedAs("m_WaitTime")]
             [Tooltip("If no user input has been detected on the axis, the axis will wait this long in seconds before recentering.")]
-            public float m_WaitTime;
+            public float m_Wait;
 
-            /// <summary>Maximum angular speed of recentering.  Will accelerate into and decelerate out of this</summary>
-            [Tooltip("Maximum angular speed of recentering.  Will accelerate into and decelerate out of this.")]
-            public float m_RecenteringTime;
+            /// <summary>How long it takes to reach destination once recentering has started</summary>
+            [Tooltip("How long it takes to reach destination once recentering has started.")]
+            [FormerlySerializedAs("m_RecenteringTime")]
+            public float m_Time;
 
             /// <summary>Constructor with specific field values</summary>
-            public Recentering(bool enabled, float recenterWaitTime,  float recenteringSpeed)
+            public Recentering(bool enabled, float recenterWaitTime,  float recenteringTim)
             {
-                m_enabled = enabled;
-                m_WaitTime = recenterWaitTime;
-                m_RecenteringTime = recenteringSpeed;
+                m_Enabled = enabled;
+                m_Wait = recenterWaitTime;
+                m_Time = recenteringTim;
                 mLastAxisInputTime = 0;
                 mRecenteringVelocity = 0;
                 m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
@@ -241,8 +253,8 @@ namespace Cinemachine
             /// <summary>Call this from OnValidate()</summary>
             public void Validate()
             {
-                m_WaitTime = Mathf.Max(0, m_WaitTime);
-                m_RecenteringTime = Mathf.Max(0, m_RecenteringTime);
+                m_Wait = Mathf.Max(0, m_Wait);
+                m_Time = Mathf.Max(0, m_Time);
             }
 
             // Internal state
@@ -256,10 +268,10 @@ namespace Cinemachine
                 mRecenteringVelocity = 0;
             }
 
-            /// <summary>Bring the axis back to the cenetered state.</summary>
+            /// <summary>Bring the axis back to the centered state.</summary>
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
-                if (!m_enabled)
+                if (!m_Enabled)
                     return;
 
                 if (deltaTime < 0)
@@ -267,10 +279,10 @@ namespace Cinemachine
                     CancelRecentering();
                     axis.Value = recenterTarget;
                 }
-                else if (Time.time > (mLastAxisInputTime + m_WaitTime))
+                else if (Time.time > (mLastAxisInputTime + m_Wait))
                 {
                     // Scale value determined heuristically, to account for accel/decel
-                    float recenterTime = m_RecenteringTime / 3f;
+                    float recenterTime = m_Time / 3f;
                     if (recenterTime <= deltaTime)
                         axis.Value = recenterTarget;
                     else

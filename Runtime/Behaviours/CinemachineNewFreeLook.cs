@@ -43,18 +43,10 @@ namespace Cinemachine
         [AxisStateProperty]
         public AxisState m_VerticalAxis = new AxisState(0, 1, false, true, 2f, 0.2f, 0.1f, "Mouse Y", false);
 
-        /// <summary>Controls how automatic recentering of the Vertical axis is accomplished</summary>
-        [Tooltip("Controls how automatic recentering of the Vertical axis is accomplished")]
-        public AxisState.Recentering m_VerticalRecentering = new AxisState.Recentering(false, 1, 2);
-
 #if false
         [Tooltip("The Radial axis.  Value is the base radius of the orbits")]
         [AxisStateProperty]
         public AxisState m_RadialAxis = new AxisState(1, 10, false, true, 2f, 0.2f, 0.1f, "Mouse ScrollWheel", false);
-
-        /// <summary>Controls how automatic recentering of the Radial axis is accomplished</summary>
-        [Tooltip("Controls how automatic recentering of the Radial axis is accomplished")]
-        public AxisState.Recentering m_RadialRecentering = new AxisState.Recentering(false, 1, 2);
 #endif
         /// <summary>Defines the height and radius for an orbit</summary>
         [Serializable]
@@ -244,6 +236,12 @@ namespace Cinemachine
                 m_Rigs[i].Validate();
         }
 
+        private void Awake()
+        {
+            m_VerticalAxis.HasRecentering = true;
+            //m_RadialAxis.HasRecentering = true;
+        }
+
         /// <summary>Updates the child rig cache</summary>
         protected override void OnEnable()
         {
@@ -428,9 +426,15 @@ namespace Cinemachine
                     0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
             }
             for (int i = 0; i < m_Components.Length; ++i)
+            {
                 if (m_Components[i] != null)
-                    m_Components[i].hideFlags |= HideFlags.HideInInspector;
-
+                {
+                    if (CinemachineCore.sShowHiddenObjects)
+                        m_Components[i].hideFlags &= ~HideFlags.HideInInspector;
+                    else
+                        m_Components[i].hideFlags |= HideFlags.HideInInspector;
+                }
+            }
             m_ComponentCacheIsValid = true;
         }
 
@@ -574,12 +578,12 @@ namespace Cinemachine
             if (activeCam)
             {
                 if (m_VerticalAxis.Update(deltaTime))
-                    m_VerticalRecentering.CancelRecentering();
+                    m_VerticalAxis.m_Recentering.CancelRecentering();
                 //if (m_RadialAxis.Update(deltaTime))
-                //    m_RadialRecentering.CancelRecentering();
+                //    m_RadialAxis.m_Recentering.CancelRecentering();
             }
-            m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
-            //m_RadialRecentering.DoRecentering(ref m_RadialAxis, deltaTime, 0.5f);
+            m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
+            //m_RadialAxis.m_Recentering.DoRecentering(ref m_RadialAxis, deltaTime, 0.5f);
 
             // Set the Reference LookAt
             Transform lookAtTarget = LookAt;
