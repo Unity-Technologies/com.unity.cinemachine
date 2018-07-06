@@ -323,12 +323,15 @@ namespace Cinemachine
             Vector3 followTargetPosition = FollowTargetPosition;
             if (!curState.HasLookAt)
                 curState.ReferenceLookAt = followTargetPosition;
-            m_Predictor.IgnoreY = m_LookaheadIgnoreY;
-            m_Predictor.Smoothing = m_LookaheadSmoothing;
-            m_Predictor.AddPosition(followTargetPosition);
-            TrackedPoint = (m_LookaheadTime > 0) 
-                ? m_Predictor.PredictPosition(m_LookaheadTime) : followTargetPosition;
-
+            if (m_LookaheadTime < Epsilon)
+                TrackedPoint = followTargetPosition;
+            else
+            {
+                m_Predictor.IgnoreY = m_LookaheadIgnoreY;
+                m_Predictor.Smoothing = m_LookaheadSmoothing;
+                m_Predictor.AddPosition(followTargetPosition);
+                TrackedPoint = m_Predictor.PredictPosition(m_LookaheadTime);
+            }
             // Work in camera-local space
             Quaternion localToWorld = curState.RawOrientation;
             Quaternion worldToLocal = Quaternion.Inverse(localToWorld);

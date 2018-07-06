@@ -128,12 +128,15 @@ namespace Cinemachine
             if (LookAtTarget != null)
                 pos += LookAtTargetRotation * m_LookAtOffset;
 
-            m_Predictor.IgnoreY = m_LookaheadIgnoreY;
-            m_Predictor.Smoothing = m_LookaheadSmoothing;
-            m_Predictor.AddPosition(pos);
-            TrackedPoint = (m_LookaheadTime > 0)
-                ? m_Predictor.PredictPosition(m_LookaheadTime) : pos;
-
+            if (m_LookaheadTime < Epsilon)
+                TrackedPoint = pos;
+            else
+            {
+                m_Predictor.IgnoreY = m_LookaheadIgnoreY;
+                m_Predictor.Smoothing = m_LookaheadSmoothing;
+                m_Predictor.AddPosition(pos);
+                TrackedPoint = m_Predictor.PredictPosition(m_LookaheadTime);
+            }
             return TrackedPoint;
         }
         
