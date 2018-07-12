@@ -49,7 +49,6 @@ namespace Cinemachine
 
         /// <summary>If checked, then the raw value of the input axis will be inverted 
         /// before it is used.</summary>
-        [NoSaveDuringPlay]
         [FormerlySerializedAs("m_InvertAxis")]
         [Tooltip("If checked, then the raw value of the input axis will be inverted before it is used")]
         public bool m_InvertInput;

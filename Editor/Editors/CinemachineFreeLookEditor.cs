@@ -162,19 +162,22 @@ namespace Cinemachine
                     up = brain.DefaultWorldUp;
 
                 var MiddleRig = vcam.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                Quaternion orient = MiddleRig.GetReferenceOrientation(up);
-                up = orient * Vector3.up;
-                float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_Bias;
-                orient = Quaternion.AngleAxis(rotation, up) * orient;
+                if (MiddleRig != null)
+                {
+                    Quaternion orient = MiddleRig.GetReferenceOrientation(up);
+                    up = orient * Vector3.up;
+                    float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_Bias;
+                    orient = Quaternion.AngleAxis(rotation, up) * orient;
 
-                CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
-                CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
-                CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
+                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                        pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
+                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                        pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
+                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                        pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
 
-                DrawCameraPath(pos, orient, vcam);
+                    DrawCameraPath(pos, orient, vcam);
+                }
             }
 
             Gizmos.color = originalGizmoColour;

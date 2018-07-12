@@ -15,6 +15,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineNewFreeLook")]
+    [SaveDuringPlay]
     public class CinemachineNewFreeLook : CinemachineNewVcam
     {
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
@@ -202,7 +203,7 @@ namespace Cinemachine
         internal Rig[] m_Rigs = new Rig[2] { new Rig(), new Rig() };
 
         /// <summary>Accessor for rig override settings</summary>
-        public Rig GetRigSettings(RigID rig) { return m_Rigs[(int)rig]; }
+        public Rig RigSettings(RigID rig) { return m_Rigs[(int)rig]; }
 
         /// Easy access to the transposer (may be null)
         CinemachineTransposer Transposer 
@@ -273,7 +274,7 @@ namespace Cinemachine
                             orbital.m_XAxis.Value = src.m_XAxis.Value;
                     }
                     m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
-                    m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value;
+                    //m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value; // not a great idea
                     InternalUpdateCameraState(worldUp, deltaTime);
                 }
             }
