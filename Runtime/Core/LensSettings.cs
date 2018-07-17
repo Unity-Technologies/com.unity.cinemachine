@@ -109,7 +109,8 @@ namespace Cinemachine
                 SensorSize = new Vector2(camera.aspect, 1f);
 #if UNITY_2018_2_OR_NEWER
                 IsPhysicalCamera = camera.usePhysicalProperties;
-                SensorSize = camera.sensorSize;
+                if (IsPhysicalCamera)
+                    SensorSize = camera.sensorSize;
 #endif
             }
         }
