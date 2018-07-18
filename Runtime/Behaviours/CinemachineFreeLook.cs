@@ -16,6 +16,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
+    //[Obsolete("This class is deprecated.  Please use CinemachineNewFreeLook instead", false)]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>

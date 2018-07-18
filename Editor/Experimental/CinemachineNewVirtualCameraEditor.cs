@@ -5,9 +5,9 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
-    [CustomEditor(typeof(CinemachineNewVcam))]
-    sealed class CinemachineNewVcamEditor 
-        : CinemachineVirtualCameraBaseEditor<CinemachineNewVcam>
+    [CustomEditor(typeof(CinemachineNewVirtualCamera))]
+    sealed class CinemachineNewVirtualCameraEditor 
+        : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
     {
         VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
 

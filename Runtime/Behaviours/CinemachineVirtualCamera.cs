@@ -54,6 +54,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
+    //[Obsolete("This class is deprecated.  Please use CinemachineNewVirtualCamera instead", false)]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera wants to look at (the Aim target).

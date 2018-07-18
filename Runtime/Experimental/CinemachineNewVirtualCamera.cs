@@ -13,8 +13,8 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
-    [AddComponentMenu("Cinemachine/CinemachineNewVcam")]
-    public class CinemachineNewVcam : CinemachineVirtualCameraBase
+    [AddComponentMenu("Cinemachine/CinemachineNewVirtualCamera")]
+    public class CinemachineNewVirtualCamera : CinemachineVirtualCameraBase
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]

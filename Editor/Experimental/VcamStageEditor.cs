@@ -255,7 +255,8 @@ namespace Cinemachine.Editor
         {
             mParentEditor = parentEditor;
             m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
-            CinemachineNewVcam owner = mParentEditor == null ? null : mParentEditor.target as CinemachineNewVcam;
+            CinemachineNewVirtualCamera owner = mParentEditor == null 
+                ? null : mParentEditor.target as CinemachineNewVirtualCamera;
             if (owner == null)
                 return;
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
@@ -265,7 +266,7 @@ namespace Cinemachine.Editor
                 m_subeditors[(int)stage] = ed;
                 ed.SetComponent = (type) 
                     => {
-                        var vcam = mParentEditor.target as CinemachineNewVcam;
+                        var vcam = mParentEditor.target as CinemachineNewVirtualCamera;
                         if (vcam != null)
                         {
                             var c = Undo.AddComponent(vcam.gameObject, type);
@@ -275,7 +276,7 @@ namespace Cinemachine.Editor
                     };
                 ed.DestroyComponent = (component) 
                     => {
-                        var vcam = mParentEditor.target as CinemachineNewVcam;
+                        var vcam = mParentEditor.target as CinemachineNewVirtualCamera;
                         if (vcam != null)
                         {
                             Undo.DestroyObjectImmediate(component);

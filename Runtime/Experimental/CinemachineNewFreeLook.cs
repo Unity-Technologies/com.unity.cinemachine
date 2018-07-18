@@ -16,7 +16,7 @@ namespace Cinemachine
     [ExecuteInEditMode, DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineNewFreeLook")]
     [SaveDuringPlay]
-    public class CinemachineNewFreeLook : CinemachineNewVcam
+    public class CinemachineNewFreeLook : CinemachineNewVirtualCamera
     {
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Tooltip("The Vertical axis.  Value is 0..1.  0.5 is the middle rig.  Chooses how to blend the child rigs")]
@@ -230,17 +230,14 @@ namespace Cinemachine
             DestroyComponents();
 #if UNITY_EDITOR
             var orbital = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
-            orbital.HideOffsetInInspector = true;
-            UnityEditor.Undo.RecordObject(orbital, "creating rig");
-            orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
-            UnityEditor.Undo.RecordObject(
-                UnityEditor.Undo.AddComponent<CinemachineComposer>(gameObject), 
-                "creating rig");
+            UnityEditor.Undo.AddComponent<CinemachineComposer>(gameObject);
 #else
-            gameObject.AddComponent<CinemachineOrbitalTransposer>().m_BindingMode 
-                    = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+            var orbital = gameObject.AddComponent<CinemachineOrbitalTransposer>();
             gameObject.AddComponent<CinemachineComposer>();
 #endif
+            orbital.HideOffsetInInspector = true;
+            orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+
             InvalidateComponentCache();
             m_Rigs = new Rig[2] { new Rig(), new Rig() };
 
