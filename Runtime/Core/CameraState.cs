@@ -130,7 +130,9 @@ namespace Cinemachine
             /// <summary>Radial blend when the LookAt target changes(if any)</summary>
             RadialAimBlend = 16,
             /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
-            IgnoreLookAtTarget = 32
+            IgnoreLookAtTarget = 32,
+            /// <summary>This state does not affect the lens</summary>
+            NoLens = 64,
         }
 
         /// <summary>
@@ -274,19 +276,30 @@ namespace Cinemachine
             float adjustedT = t;
 
             CameraState state = new CameraState();
-            state.Lens = LensSettings.Lerp(stateA.Lens, stateB.Lens, t);
-            state.ReferenceUp = Vector3.Slerp(stateA.ReferenceUp, stateB.ReferenceUp, t);
-            state.ShotQuality = Mathf.Lerp(stateA.ShotQuality, stateB.ShotQuality, t);
 
             // Combine the blend hints intelligently
             if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoPosition) != 0)
                 state.BlendHint |= BlendHintValue.NoPosition;
             if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
                 state.BlendHint |= BlendHintValue.NoOrientation;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoLens) != 0)
+                state.BlendHint |= BlendHintValue.NoLens;
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.SphericalPositionBlend) != 0)
                 state.BlendHint |= BlendHintValue.SphericalPositionBlend;
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.CylindricalPositionBlend) != 0)
                 state.BlendHint |= BlendHintValue.CylindricalPositionBlend;
+
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0)
+                state.Lens = LensSettings.Lerp(stateA.Lens, stateB.Lens, t);
+            else if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoLens) == 0)
+            {
+                if ((stateA.BlendHint & BlendHintValue.NoLens) != 0)
+                    state.Lens = stateB.Lens;
+                else
+                    state.Lens = stateA.Lens;
+            }
+            state.ReferenceUp = Vector3.Slerp(stateA.ReferenceUp, stateB.ReferenceUp, t);
+            state.ShotQuality = Mathf.Lerp(stateA.ShotQuality, stateB.ShotQuality, t);
 
             state.PositionCorrection = ApplyPosBlendHint(
                 stateA.PositionCorrection, stateA.BlendHint,
@@ -308,7 +321,8 @@ namespace Cinemachine
                 // Re-interpolate FOV to preserve target composition, if possible
                 float fovA = stateA.Lens.FieldOfView;
                 float fovB = stateB.Lens.FieldOfView;
-                if (!state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
+                if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0
+                    && !state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
                 {
                     LensSettings lens = state.Lens;
                     lens.FieldOfView = InterpolateFOV(
