@@ -204,30 +204,32 @@ namespace Cinemachine
                 // What distance would be needed to get the target height, at the current FOV
                 float depth = b.extents.z;
                 float d = (groupCenter - observerPosition).magnitude;
-                float nearTargetHeight = targetHeight * (d - depth) / d;
-                float targetDistance = nearTargetHeight 
-                    / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
-
-                // Clamp to respect min/max distance settings to the near surface of the bounds
-                float cameraDistance = targetDistance;
-                cameraDistance = Mathf.Clamp(cameraDistance, currentDistance - m_MaxDollyIn, currentDistance + m_MaxDollyOut);
-                cameraDistance -= depth;
-                cameraDistance = Mathf.Clamp(cameraDistance, m_MinimumDistance, m_MaximumDistance);
-                cameraDistance += depth;
-
-                // Apply
-                Vector3 newCamOffset 
-                    = (groupCenter - (fwd * (cameraDistance + depth))) - curState.RawPosition;
-                if (deltaTime >= 0)
+                if (d > Epsilon * 10)
                 {
-                    Vector3 delta = newCamOffset - m_prevCameraOffset;
-                    delta = Damper.Damp(delta, m_FrameDamping, deltaTime);
-                    newCamOffset = m_prevCameraOffset + delta;
-                }
-                m_prevCameraOffset = newCamOffset;
-                curState.PositionCorrection += newCamOffset;
-            }
+                    float nearTargetHeight = targetHeight * (d - depth) / d;
+                    float targetDistance = nearTargetHeight 
+                        / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
 
+                    // Clamp to respect min/max distance settings to the near surface of the bounds
+                    float cameraDistance = targetDistance;
+                    cameraDistance = Mathf.Clamp(cameraDistance, currentDistance - m_MaxDollyIn, currentDistance + m_MaxDollyOut);
+                    cameraDistance -= depth;
+                    cameraDistance = Mathf.Clamp(cameraDistance, m_MinimumDistance, m_MaximumDistance);
+                    cameraDistance += depth;
+
+                    // Apply
+                    Vector3 newCamOffset 
+                        = (groupCenter - (fwd * (cameraDistance + depth))) - curState.RawPosition;
+                    if (deltaTime >= 0)
+                    {
+                        Vector3 delta = newCamOffset - m_prevCameraOffset;
+                        delta = Damper.Damp(delta, m_FrameDamping, deltaTime);
+                        newCamOffset = m_prevCameraOffset + delta;
+                    }
+                    m_prevCameraOffset = newCamOffset;
+                    curState.PositionCorrection += newCamOffset;
+                }
+            }
             // Apply zoom
             if (curState.Lens.Orthographic || m_AdjustmentMode != AdjustmentMode.DollyOnly)
             {
