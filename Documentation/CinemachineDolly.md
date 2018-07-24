@@ -1,6 +1,6 @@
 # Using dolly paths
 
-A dolly path is an array of waypoints in a Scene. Use a dolly path to specify a fixed course to position or animate a Virtual Camera. Use the [Tracked Dolly](CinemachineBodyTrackedDolly) algorithm to use a dolly path with your Virtual Camera.
+A dolly path is an array of waypoints in a Scene. Use a dolly path to specify a fixed course to position or animate a Virtual Camera. Use the [Tracked Dolly](CinemachineBodyTrackedDolly.html) algorithm to use a dolly path with your Virtual Camera.
 
 ![Editing a dolly path in the Scene view](images/CinemachinePathScene.png)
 
@@ -8,9 +8,9 @@ A dolly path is an array of waypoints in a Scene. Use a dolly path to specify a 
 
 Cinemachine provides two types of dolly paths:
 
-* [Path](CinemachinePath): Each waypoint has a position, tangent, and roll. Use Path for finer control of the track’s position between waypoints. Animating a VIrtual Camera along a Path might cause jerky motion along waypoints when tangents don’t allow a smooth transition to and from the waypoint.
+* [Path](CinemachinePath.html): Each waypoint has a position, tangent, and roll. Use Path for finer control of the track’s position between waypoints. Animating a VIrtual Camera along a Path might cause jerky motion along waypoints when tangents don’t allow a smooth transition to and from the waypoint.
 
-* [Smooth Path](CinemachineSmoothPath): Each waypoint has a position and roll. Cinemachine uses Bezier interpolation between the waypoints. Smooth Path gives you less control over the position of the path but animation along the path is always smooth and continuous.
+* [Smooth Path](CinemachineSmoothPath.html): Each waypoint has a position and roll. Cinemachine uses Bezier interpolation between the waypoints. Smooth Path gives you less control over the position of the path but animation along the path is always smooth and continuous.
 
 To create a Virtual Camera with a dolly path:
 

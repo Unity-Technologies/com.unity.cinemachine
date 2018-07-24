@@ -8,7 +8,7 @@ This algorithm first moves the camera along the camera Z axis until the __Follow
 
 **Note**: To use __Framing Transposer__, the __Look At__ property must be empty.
 
-If the __Follow__ target is a [Target Group](CinemachineTargetGroup), then additional properties are available to frame the entire group.
+If the __Follow__ target is a [Target Group](CinemachineTargetGroup.html), then additional properties are available to frame the entire group.
 
 ## Properties
 
@@ -31,7 +31,7 @@ If the __Follow__ target is a [Target Group](CinemachineTargetGroup), then addit
 | __Soft Zone Height__ || When the target is in this range, move the camera vertically to frame the target in the dead zone. The Damping properties affect the rate of the camera movement.  |
 | __Bias X__ || Moves the target position horizontally away from the center of the soft zone. |
 | __Bias Y__ || Moves the target position vertically away from the center of the soft zone. |
-| __Group Framing Mode__ || Available when Follow specifies a [Target Group](CinemachineTargetGroup). Specifies the screen dimensions to consider when framing.  |
+| __Group Framing Mode__ || Available when Follow specifies a [Target Group](CinemachineTargetGroup.html). Specifies the screen dimensions to consider when framing.  |
 | | _Horizontal_ | Consider only the horizontal dimension. Ignore vertical framing. |
 | | _Vertical_ | Consider only the vertical dimension. Ignore horizontal framing. |
 | | _Horizontal And Vertical_ | Use the larger of the horizontal and vertical dimensions to get the best fit. |

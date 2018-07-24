@@ -1,6 +1,6 @@
 # Tracked Dolly
 
-This Virtual Camera __Body__ algorithm restricts the Virtual Camera to move along a predefined [path](CinemachineDolly). Use the __Path Position__ property to specify where to put the Virtual Camera on the path.
+This Virtual Camera __Body__ algorithm restricts the Virtual Camera to move along a predefined [path](CinemachineDolly.html). Use the __Path Position__ property to specify where to put the Virtual Camera on the path.
 
 Use __Auto-Dolly__ mode to move the Virtual Camera to a position on the path that is closest to the __Follow__ target. When enabled, __Auto-Dolly__ automatically animates the position of the Virtual Camera to the position on the path that’s closest to the target.
 
@@ -10,7 +10,7 @@ Use __Auto-Dolly__ mode to move the Virtual Camera to a position on the path tha
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
-| __Path__ || The path that the camera moves along. This property must refer to a  [Cinemachine Path](CinemachinePath) or [Cinemachine Smooth Path](CinemachineSmoothPath). |
+| __Path__ || The path that the camera moves along. This property must refer to a  [Cinemachine Path](CinemachinePath.html) or [Cinemachine Smooth Path](CinemachineSmoothPath.html). |
 | __Path Position__ || The position along the path to place the camera. Animate this property directly or enable Auto-Dolly. The value is in the units specified by Position Units. |
 | __Position Units__ || The unit of measure for Path Position.  |
 | | _Path Units_ | Use waypoints along the path. The value 0 represents the first waypoint on the path, 1 is the second waypoint, and so on. |

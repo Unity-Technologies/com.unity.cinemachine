@@ -4,7 +4,7 @@ Use Noise properties in a Virtual Camera to simulate camera shake. Cinemachine i
 
 ![Choosing the Basic Multi Channel Perlin component to add camera noise](images/CinemachineBasicMultiChannelPerlin.png)
 
-The Basic Multi Channel Perlin component applies a noise profile. A noise profile is an Asset that defines the behavior of noise over time. Cinemachine includes a few noise profile assets. You can [edit these and create your own](CinemachineNoiseProfiles).
+The Basic Multi Channel Perlin component applies a noise profile. A noise profile is an Asset that defines the behavior of noise over time. Cinemachine includes a few noise profile assets. You can [edit these and create your own](CinemachineNoiseProfiles.html).
 
 To apply noise:
 
@@ -12,7 +12,7 @@ To apply noise:
 
 2. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), use the  __Noise__ drop-down menu to choose __Basic Multi Channel Perlin__.
 
-3. In __Noise Profile__, choose an existing profile asset or [create your own profile](CinemachineNoiseProfiles).
+3. In __Noise Profile__, choose an existing profile asset or [create your own profile](CinemachineNoiseProfiles.html).
 
 4. Use __Amplitude Gain__ and __Frequency Gain__ to fine-tune the noise.
 

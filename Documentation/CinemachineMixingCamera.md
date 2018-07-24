@@ -24,7 +24,7 @@ To create a Mixing Camera:
 |:---|:---|
 | __Solo__ | Toggles whether or not the Mixing Camera is temporarily live. Use this property to get immediate visual feedback in the [Game view](https://docs.unity3d.com/Manual/GameView.html) to adjust the Virtual Camera. |
 | __Game Window Guides__ | Toggles the visibility of compositional guides in the Game view. This property applies to all Virtual Cameras. |
-| __Save During Play__ | Check to [apply the changes while in Play mode](CinemachineSavingDuringPlay).  Use this feature to fine-tune a Virtual Camera without having to remember which properties to copy and paste. This property applies to all Virtual Cameras. |
+| __Save During Play__ | Check to [apply the changes while in Play mode](CinemachineSavingDuringPlay.html).  Use this feature to fine-tune a Virtual Camera without having to remember which properties to copy and paste. This property applies to all Virtual Cameras. |
 | __Priority__ | The importance of this Mixing Camera for choosing the next shot. A higher value indicates a higher priority. Cinemachine Brain chooses the next live Virtual Camera from all Virtual Cameras that are activated and have the same or higher priority as the current live Virtual Camera. This property has no effect when using a Virtual Camera with Timeline. |
 | __Child Camera Weights__ | The weight of the Virtual Camera. Each child Virtual Camera has a corresponding Weight property. |
 | __Mix Result__ | A graphical representation of the weights of the child Virtual Cameras. The light part of the bar of each child camera represents the proportion of its contribution to the final position of the Mixing Camera. When the bar is completely dark, the camera makes no contribution to the position of the Mixing Camera. |

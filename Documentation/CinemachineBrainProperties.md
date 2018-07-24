@@ -1,20 +1,20 @@
 # Setting Cinemachine Brain properties
 
-The Cinemachine Brain is a component in the Unity camera itself. Cinemachine Brain monitors all activated Virtual Cameras in the Scene. It chooses the next Virtual Camera to control the Unity camera. It also controls the [cut or blend](CinemachineBlending) from the current Virtual Camera to the next.
+The Cinemachine Brain is a component in the Unity camera itself. Cinemachine Brain monitors all activated Virtual Cameras in the Scene. It chooses the next Virtual Camera to control the Unity camera. It also controls the [cut or blend](CinemachineBlending.html) from the current Virtual Camera to the next.
 
 To add a Cinemachine Brain component to a Unity camera, do __one__ of the following:
 
-* [Add a Virtual Camera](CinemachineSetUpVCam), or other Cinemachine object, to your Scene. Unity adds a Cinemachine Brain component to the Unity camera for you if there isn’t one already.
+* [Add a Virtual Camera](CinemachineSetUpVCam.html), or other Cinemachine object, to your Scene. Unity adds a Cinemachine Brain component to the Unity camera for you if there isn’t one already.
 
 * [Add](https://docs.unity3d.com/Manual/UsingComponents.html) a Cinemachine Brain component to the Unity camera yourself.
 
-**Tip**: You can also control Virtual Cameras from [Timeline](CinemachineTimeline). Timeline overrides the decisions that Cinemachine Brain makes.
+**Tip**: You can also control Virtual Cameras from [Timeline](CinemachineTimeline.html). Timeline overrides the decisions that Cinemachine Brain makes.
 
 Cinemachine Brain holds the following key properties:
 
 * __Blend Settings__: A list that defines how to blend from one Virtual Camera to another.  For example, add an item to the list for a 4 second blend from vcam1 to vcam2 then add another item for a 1 second blend from vcam2 back to vcam1. If a blend between two cameras isn’t defined, Cinemachine Brain uses its default blend.
 
-* __Layer Filter__:  Cinemachine Brain uses only those Virtual Cameras that pass the culling mask of the Unity camera.  You can set up [split-screen environments](CinemachineMultipleCameras) by using the culling mask to filter layers.
+* __Layer Filter__:  Cinemachine Brain uses only those Virtual Cameras that pass the culling mask of the Unity camera.  You can set up [split-screen environments](CinemachineMultipleCameras.html) by using the culling mask to filter layers.
 
 * __Event Dispatching__:  Cinemachine Brain fires events when it changes shot. It fires an event when a Virtual Camera goes live. It also fires an event when it cuts from one Virtual Camera to another. Use the latter event to reset temporal post effects.
 
@@ -42,7 +42,7 @@ Cinemachine Brain holds the following key properties:
 | | _Linear_ | Linear blend. Mechanical-looking. |
 | | _Custom_ | Custom blend curve. Draw a curve. |
 | __Custom Blends__ || The asset that contains custom settings for blends between specific Virtual Cameras in your Scene. |
-| __Create Asset__ || Create an asset containing a [list of custom blends](CinemachineBlending) between Virtual Cameras.  |
+| __Create Asset__ || Create an asset containing a [list of custom blends](CinemachineBlending.html) between Virtual Cameras.  |
 | __Camera Cut Event__ || This event fires when a Virtual Camera goes live and there is no blend.  |
 | __Camera Activated Event__ || This event fires when a Virtual Camera goes live. If a blend is involved, then the event fires on the first frame of the blend. |
 

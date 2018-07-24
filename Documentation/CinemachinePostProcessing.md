@@ -1,6 +1,6 @@
 # Cinemachine and Postprocessing
 
-Use the Cinemachine Post Processing [extension](CinemachineVirtualCameraExtensions) to attach a Postprocessing V2 profile to a Virtual Camera.
+Use the Cinemachine Post Processing [extension](CinemachineVirtualCameraExtensions.html) to attach a Postprocessing V2 profile to a Virtual Camera.
 
 **Note**: Unity recommends using Postprocessing V2 instead of Postprocessing V1.
 

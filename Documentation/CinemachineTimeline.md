@@ -2,9 +2,9 @@
 
 Use [Timeline](https://docs.unity3d.com/Manual/TimelineSection.html) to activate, deactivate, and blend between Virtual Cameras. In Timeline, combine Cinemachine with other GameObjects and assets to interactively implement and tune rich cutscenes, even interactive ones.
 
-**Tip**: For simple shot sequences, use a [Cinemachine Blend List Camera](CinemachineBlendListCamera) instead of Timeline.
+**Tip**: For simple shot sequences, use a [Cinemachine Blend List Camera](CinemachineBlendListCamera.html) instead of Timeline.
 
-Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrainProperties). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the Virtual Camera with the highest Priority setting.
+Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrainProperties.html). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the Virtual Camera with the highest Priority setting.
 
 You control Virtual Cameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip comprises a Virtual Camera to activate then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
 
@@ -40,7 +40,7 @@ To add Cinemachine Shot Clips to a Cinemachine Track:
 
 3. In the Timeline editor, adjust the order, duration, cutting, and blending of the shot clip.
 
-4. [Adjust the properties of the Virtual Camera](CinemachineVirtualCamera) to place it in the Scene and specify what to aim at or follow.
+4. [Adjust the properties of the Virtual Camera](CinemachineVirtualCamera.html) to place it in the Scene and specify what to aim at or follow.
 
 5. To animate properties of the Virtual Camera, create an [Animation Track](https://docs.unity3d.com/Manual/TimelineAnimationTrackProperties.html) for it and animate as you would any other GameObject.
 

@@ -1,6 +1,6 @@
 # Cinemachine Collider
 
-__Cinemachine Collider__ is an [extension](CinemachineVirtualCameraExtensions) for the Cinemachine Virtual Camera. It post-processes the final position of the Virtual Camera to attempt to preserve the line of sight with the __Look At__ target of the Virtual Camera. It does this by moving away from the GameObjects that obstruct the view.
+__Cinemachine Collider__ is an [extension](CinemachineVirtualCameraExtensions.html) for the Cinemachine Virtual Camera. It post-processes the final position of the Virtual Camera to attempt to preserve the line of sight with the __Look At__ target of the Virtual Camera. It does this by moving away from the GameObjects that obstruct the view.
 
 Add a Cinemachine Collider extension to a Cinemachine Virtual Camera to do any of the following tasks:
 
@@ -8,7 +8,7 @@ Add a Cinemachine Collider extension to a Cinemachine Virtual Camera to do any o
 
 * Place the camera in front of obstacles that come between the Virtual Camera and its __Look At__ target.
 
-* Evaluate shot quality. __Shot quality__ is a measure of the distance of the Virtual Camera from its ideal position, the distance of the Virtual Camera to its target, and the obstacles that block the view of the target. Other modules use shot quality, including [Clear Shot](CinemachineClearShot).
+* Evaluate shot quality. __Shot quality__ is a measure of the distance of the Virtual Camera from its ideal position, the distance of the Virtual Camera to its target, and the obstacles that block the view of the target. Other modules use shot quality, including [Clear Shot](CinemachineClearShot.html).
 
 The Collider uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script-PhysicsRaycaster.html). Therefore, Cinemachine Collider requires that potential obstacles have [collider](https://docs.unity3d.com/Manual/CollidersOverview.html) volumes. There is a performance cost for this requirement. If this cost is prohibitive in your game, consider implementing this functionality in a different way, such as a Cinemachine Confiner.
 
