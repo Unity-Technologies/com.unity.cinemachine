@@ -70,8 +70,8 @@ namespace Cinemachine
 
             // If we have a transform parent, then apply POV in the local space of the parent
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
-            Transform parent = transform.parent;
-            if (transform.parent != null)
+            Transform parent = VirtualCamera.transform.parent;
+            if (parent != null)
                 rot = parent.rotation * rot;
             else
                 rot = rot * Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp);
