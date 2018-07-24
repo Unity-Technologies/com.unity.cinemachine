@@ -140,15 +140,17 @@ namespace Cinemachine
         private static BoundingSphere WeightedMemberBounds(Target t, Vector3 avgPos, float avgWeight)
         {
             float w = 0;
+            Vector3 pos = avgPos;
             if (t.target != null)
             {
+                pos = t.target.position;
                 w = Mathf.Max(0, t.weight);
                 if (avgWeight > UnityVectorExtensions.Epsilon && w < avgWeight)
                     w /= avgWeight;
                 else
                     w = 1;
             }
-            return new BoundingSphere(Vector3.Lerp(avgPos, t.target.position, w), t.radius * w);
+            return new BoundingSphere(Vector3.Lerp(avgPos, pos, w), t.radius * w);
         }
         
         private float mAverageWeight;
