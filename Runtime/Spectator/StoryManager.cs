@@ -79,14 +79,19 @@ namespace Spectator
             // Subject (character, or object, or ?) 
             public Subject ThreadSubject { get; set; }
 
-            // Interest level - Controlled by the dev, to focus on a specific thread he judges relevant 
-            public int IntrinsicInterestLevel { get; set; }
+            // Interest level - Controlled by the dev, to focus on a specific thread he judges relevant.
+            // This is used as part of the weighting algorithm when calculating urgency
+            public float IntrinsicInterestLevel { get; set; }
 
-            // Action (walk, run, shoot, idle, etc) 
+            // Action (walk, run, shoot, idle, death, fight, enter, talk, etc)
             public int ThreadAction { get; set; }
 
-            // Event (death, fight, enter, talk, etc)
-            public int ThreadSubaction { get; set; }
+            // Emotional color.  The precice meanings of the axes are chosen by the dev.
+            // One possibility:
+            //  x - Stress/Calm axis (tension)
+            //  y - Fear/Confidence axis (control)
+            //  z - Rage/Joy axis (attitude)
+            public Vector3 Emotion { get; set; }
 
             // Time when last on-screen
             public float TimeLastSeenStart { get; set; }
