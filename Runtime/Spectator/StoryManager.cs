@@ -83,8 +83,8 @@ namespace Spectator
             // This is used as part of the weighting algorithm when calculating urgency
             public float IntrinsicInterestLevel { get; set; }
 
-            // Action (walk, run, shoot, idle, death, fight, enter, talk, etc)
-            public int ThreadAction { get; set; }
+            // Interest level based on Action (walk, run, shoot, idle, death, fight, enter, talk, etc)
+            public float ThreadAction { get; set; }
 
             // Emotional color.  The precice meanings of the axes are chosen by the dev.
             // One possibility:
