@@ -148,7 +148,10 @@ namespace Cinemachine.Editor
             Type type = property.serializedObject.targetObject.GetType();
             var a = property.propertyPath.Split('.');
             for (int i = 0; i < a.Length; ++i)
-                type = type.GetField(a[i]).FieldType;
+                type = type.GetField(a[i], 
+                    System.Reflection.BindingFlags.Public 
+                    | System.Reflection.BindingFlags.NonPublic
+                    | System.Reflection.BindingFlags.Instance).FieldType;
             return type;
         }
 
