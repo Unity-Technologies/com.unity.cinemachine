@@ -12,7 +12,7 @@ Cinemachine works well with other Unity tools, acting as a powerful complement t
 
 ## Requirements
 
-Cinemachine has no external dependencies. Just install it and start using it. If you are also using the Post Processing Stack (version 2), then adapter modules are provided - protected by `ifdef` directives which auto-define if the presence of the Post Processing Stack is detected.
+Cinemachine has no external dependencies. Just install it and start using it. If you are also using the Post Processing Stack (version 2), then you need to install the Cinemachine PostProcessing Adapter Package from the Cinemachine menu. This installs code that connects the two packages and enables virtual cameras to have Post Processing profiles.
 
 This Cinemachine version 2.2 is compatible with the following versions of the Unity Editor:
 

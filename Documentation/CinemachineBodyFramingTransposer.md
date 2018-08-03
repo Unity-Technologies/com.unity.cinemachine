@@ -14,7 +14,7 @@ If the __Follow__ target is a [Target Group](CinemachineTargetGroup.html), then 
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
-| __Lookahead Time__ || Adjusts the offset of the Virtual Camera from the Follow target based on the motion of the target. Cinemachine estimates the point where the target will be this many seconds into the future. This feature is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter. If the camera jitters unacceptably when the target is in motion, turn down this property, or animate the target more smoothly. |
+| __Lookahead Time__ || Adjusts the offset of the Virtual Camera from the Follow target based on the motion of the target. Cinemachine estimates the point where the target will be this many seconds into the future. This feature is sensitive to noisy animation and can amplify the noise, resulting in undesirable camera jitter. If the camera jitters unacceptably when the target is in motion, turn down this property, or animate the target more smoothly. |
 | __Lookahead Smoothing__ || The smoothness of the lookahead algorithm. Larger values smooth out jittery predictions and increase prediction lag. |
 | __Lookahead Ignore Y__ || If checked, ignore movement along the Y axis for lookahead calculations. |
 | __X Damping__ || How responsively the camera tries to maintain the offset in the x-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  Using different settings per axis can yield a wide range of camera behaviors. |

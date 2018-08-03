@@ -1,13 +1,10 @@
-# Cinemachine Follow Zoom
+# Cinemachine External Camera
 
-This Cinemachine [extension](CinemachineVirtualCameraExtensions.html) adjusts the FOV of the lens to keep the target object at a constant size on the screen, regardless of camera and target position.
+This component will expose a non-cinemachine camera to the cinemachine system, allowing it to participate in blends.  Just add it as a component alongside an existing Unity Camera component.  You will need to take steps (e.g. disabling the Camera component) to ensure that the Camera does not fight with the main Cinemachine Camera.  This component is deprecated in favour of using a normal CinemachineVirtualCamera with Do Nothing in both Aim and Body.  
 
 ## Properties:
 
 | **Property:** | **Function:** |
 |:---|:---|
-| __Width__ | The shot width to maintain, in world units, at target distance. The FOV will be adjusted so that an object of this size, at target distance, will fill the screen. |
-| __Damping__ | Increase this value to soften the responsiveness of the follow-zoom. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  |
-| __Min FOV__ | Lower limit for the FOV that this behavior generates. |
-| __Max FOV__ | Upper limit for the FOV that this behavior generates. |
-
+| __Look At__ | The object that the camera is looking at, if defined.  This can be empty, but setting this will improve the quality of the blends to and from this camera. |
+| __Blend Hint__ | Hint for blending positions to and from this camera.  |

@@ -30,7 +30,7 @@ One Virtual Camera has control of the Unity camera at any point in time. This is
 
 ## Cinemachine Brain
 
-The Cinemachine Brain is a component in the Unity Camera itself. Cinemachine Brain monitors all activated Virtual Cameras in the Scene. To specify the next live Virtual Camera, you [activate or deactivate](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) the desired Virtual Camera. Cinemachine Brain then chooses the most recently activated Virtual Camera with the same or higher priority as the live Virtual Camera.  It performs a cut or blend between the previous and new Virtual Cameras.
+The Cinemachine Brain is a component in the Unity Camera itself. Cinemachine Brain monitors all active Virtual Cameras in the Scene. To specify the next live Virtual Camera, you [activate or deactivate](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) the desired Virtual Camera's game object. Cinemachine Brain then chooses the most recently activated Virtual Camera with the same or higher priority as the live Virtual Camera.  It performs a cut or blend between the previous and new Virtual Cameras.
 
 **Tip**: Use Cinemachine Brain to respond to dynamic game events in real time. It allows your game logic to control the camera by manipulating priorities. This is particularly useful for live gameplay, where action isn’t always predictable. Use [Timeline](CinemachineTimeline.html) to choreograph cameras in predictable situations, like cutscenes. Timeline overrides the Cinemachine Brain priority system to give you precise, to-the-frame camera control.
 
@@ -47,20 +47,20 @@ Cinemachine includes a variety of procedural algorithms to control moving and ai
 
 The __Body__ properties offer the following procedural algorithms for moving the Virtual Camera in a Scene:
 
-* __Transposer__: Move in a fixed relationship to the __Follow__ target.
+* __Transposer__: Move in a fixed relationship to the __Follow__ target, with optional damping.
 * __Do Nothing__: Do not move the Virtual Camera.
-* __Framing Transposer__: Move in a fixed screen-space relationship to the __Follow__ target.
+* __Framing Transposer__: Move in a fixed screen-space relationship to the __Follow__ target, with optional damping.
 * __Orbital Transposer__: Move in a variable relationship to the __Follow__ target, optionally accepting player input.
 * __Tracked Dolly__: Move along a predefined path.
 * __Hard Lock to Target__: Use the same position at the __Follow__ target.
 
 The __Aim__ properties offer the following procedural algorithms for rotating a Virtual Camera to face the __Look At__ target:
 
-* __Composer__: Keep the __Look At__ target in the camera frame.
+* __Composer__: Keep the __Look At__ target in the camera frame, with compositional constraints.
 * __Group Composer__: Keep multiple __Look At__ targets in the camera frame.
 * __Do Nothing__: Do not rotate the Virtual Camera.
 * __POV__: Rotate the Virtual Camera based on the user’s input.
-* __Same As Follow Target__: Set the camera’s rotation to the rotation of the __Look At__ target.
+* __Same As Follow Target__: Set the camera’s rotation to the rotation of the __Follow__ target.
 * __Hard Look At__: Keep the __Look At__ target in the center of the camera frame.
 
 
@@ -70,9 +70,9 @@ The [__Framing Transposer__](CinemachineBodyFramingTransposer.html), [__Composer
 
 * __Dead zone__: The area of the frame that Cinemachine keeps the target in.
 
-* __Soft zone__: The region of the camera frame that Cinemachine allows the target to enter while tracking.
+* __Soft zone__: If the target enters this region of the frame, the camera will re-orient to put it back in the dead zone.  It will do this slowly or quickly, according to the time specified in the Damping settings.
 
-* __Screen__: Positions the soft and dead zones in the camera’s view.
+* __Screen__: The screen position of the center of the dead zone.  0.5 is the center of the screen.
 
 * __Damping__: Simulates the lag that a real camera operator introduces while operating a heavy physical camera. Damping specifies quickly or slowly the camera reacts when the target enters the __soft zone__ while the camera tracks the target. Use small numbers to simulate a more responsive camera, rapidly moving or aiming the camera to keep the target in the __dead zone__. Larger numbers simulate heavier cameras, The larger the value, the more Cinemachine allows the target to enter the soft zone.
 
@@ -82,7 +82,7 @@ The __Game Window Guides__ gives an interactive, visual indication of these area
 
 The clear area indicates the __dead zone__. The blue-tinted area indicates the __soft zone__. The position of the soft and dead zones indicates the __screen__ position. The red-tinted area indicates the __no pass__ area, which the target never enters. The yellow square indicates the target.
 
-Adjust these areas to get a wide range of camera behaviors. To do this, drag their edges in the Game view or edit their properties in the Inspector window. For example, use larger damping values to simulate a larger, heavier camera, or enlarge the __soft zone__ and __dead zone__ to create an area in the middle of the camera frame that is immune to target motion. Use this behavior for things like animation cycles, where you don’t want the camera to track the target if it moves just a little.
+Adjust these areas to get a wide range of camera behaviors. To do this, drag their edges in the Game view or edit their properties in the Inspector window. For example, use larger damping values to simulate a larger, heavier camera, or enlarge the __soft zone__ and __dead zone__ to create an area in the middle of the camera frame that is immune to target motion. Use this feature for things like animation cycles, where you don’t want the camera to track the target if it moves just a little.
 
 ## Using noise to simulate camera shake
 

@@ -1,6 +1,6 @@
 # Setting Cinemachine Brain properties
 
-The Cinemachine Brain is a component in the Unity camera itself. Cinemachine Brain monitors all activated Virtual Cameras in the Scene. It chooses the next Virtual Camera to control the Unity camera. It also controls the [cut or blend](CinemachineBlending.html) from the current Virtual Camera to the next.
+The Cinemachine Brain is a component in the Unity camera itself. Cinemachine Brain monitors all active Virtual Cameras in the Scene. It chooses the next Virtual Camera to control the Unity camera. It also controls the [cut or blend](CinemachineBlending.html) from the current Virtual Camera to the next.
 
 To add a Cinemachine Brain component to a Unity camera, do __one__ of the following:
 
@@ -31,7 +31,7 @@ Cinemachine Brain holds the following key properties:
 | __Update Method__ || When to update the position and rotation of the Virtual Cameras.  |
 | | _Fixed Update_ | Synchronize Virtual Camera update with the Physics module, in FixedUpdate. |
 | | _Late Update_ | In MonoBehaviour LateUpdate. |
-| | _Smart Update_ | Update according to how the target is updated. This is the recommended setting. |
+| | _Smart Update_ | Update each virtual camera according to how its target is updated. This is the recommended setting. |
 | __Default Blend__ || The blend to use when you haven’t explicitly defined a blend between two Virtual Cameras. |
 | | _Cut_ | Zero-length blend. |
 | | _Ease In Out_ | S-shaped curve, giving a gentle and smooth transition. |
@@ -40,7 +40,7 @@ Cinemachine Brain holds the following key properties:
 | | _Hard In_ | Easy out of the outgoing, and hard into the incoming. |
 | | _Hard Out_ | Hard out of the outgoing, and easy into the incoming. |
 | | _Linear_ | Linear blend. Mechanical-looking. |
-| | _Custom_ | Custom blend curve. Draw a curve. |
+| | _Custom_ | Custom blend curve. Draw the curve you want. |
 | __Custom Blends__ || The asset that contains custom settings for blends between specific Virtual Cameras in your Scene. |
 | __Create Asset__ || Create an asset containing a [list of custom blends](CinemachineBlending.html) between Virtual Cameras.  |
 | __Camera Cut Event__ || This event fires when a Virtual Camera goes live and there is no blend.  |

@@ -1,6 +1,6 @@
 # Blending between Virtual Cameras
 
-Use blending properties to specify how the Cinemachine Brain component performs a blend between cameras.
+Use blending properties to specify how the Cinemachine Brain component performs a blend between virtual cameras.
 
 A Cinemachine blend is not a fade, wipe, or dissolve. Rather, Cinemachine Brain performs a smooth animation of the position, rotation, and other settings of the Unity camera from one Virtual Camera to the next.
 
@@ -26,7 +26,7 @@ Use the name \*\*ANY CAMERA\*\* to blend from or to any Virtual Camera.
 | | _Hard In_ | Ease out of the outgoing Virtual Camera, and accelerate into the incoming Virtual Camera. |
 | | _Hard Out_ | Accelerate out of the outgoing Virtual Camera, and ease into the incoming Virtual Camera. |
 | | _Linear_ | Linear blend. mechanical-looking. |
-| | _Custom_ | Custom blend curve. Allows you to draw a curve to specify its blending behavior. |
+| | _Custom_ | Custom blend curve. Allows you to draw a custom blend curve. |
 | __Time__ || Duration (in seconds) of the blend. |
 
 
