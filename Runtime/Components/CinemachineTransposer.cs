@@ -258,7 +258,7 @@ namespace Cinemachine
         }
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
-        public Vector3 GeTargetCameraPosition(Vector3 worldUp)
+        public Vector3 GetTargetCameraPosition(Vector3 worldUp)
         {
             if (!IsValid)
                 return Vector3.zero;
