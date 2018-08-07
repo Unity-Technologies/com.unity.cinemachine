@@ -327,6 +327,7 @@ namespace Cinemachine.Editor
                 wp.tangent = newPos - wp.position;
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             }
         }
 
@@ -346,6 +347,7 @@ namespace Cinemachine.Editor
                 wp.position = pos;
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             }
         }
 
