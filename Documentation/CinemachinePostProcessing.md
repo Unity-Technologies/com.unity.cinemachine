@@ -16,13 +16,13 @@ To set up project to use Post Processing V2 with Cinemachine:
 
 3. Select your Unity camera with Cinemachine Brain in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view.
 
-4. [Add the component](https://docs.unity3d.com/Manual/UsingComponents.html) named __Post-Process Layer__.
+4. [Add the component](https://docs.unity3d.com/Manual/UsingComponents.html) named __Post-Process Layer__.  This will anble Post Process profiles to affect the Camera.
 
 To add a Post Process profile to a Virtual Camera
 
 3. Select your Virtual Camera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
 
-4. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), choose __Add Extension > CinemachinePostProcessing__.
+4. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), choose __Add Extension > CinemachinePostProcessing__, then configre the Profile asset to have the effects you want when this virtual camera is live.
 
 ## Properties:
 

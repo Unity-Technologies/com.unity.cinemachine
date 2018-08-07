@@ -14,7 +14,7 @@ __Orbital Transposer __optionally automatically re-centers the camera.  When __R
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
-| __Binding Mode__ || The coordinate space to use when interpreting the offset of the Virtual Camera from the Follow target. This property also sets the camera’s up vector for aiming the camera. |
+| __Binding Mode__ || The coordinate space to use when interpreting the offset of the Virtual Camera from the Follow target. |
 | | _Lock To Target On Assign_ | The target’s local frame at the moment when the Virtual Camera was activated, or when the target was assigned. |
 | | _Lock To Target With World Up_ | The target’s local frame, with the tilt and roll reset to zero. |
 | | _Lock To Target No Roll_ | The target’s local frame, with the roll reset to zero. |
@@ -29,9 +29,9 @@ __Orbital Transposer __optionally automatically re-centers the camera.  When __R
 | __Pitch Damping__ || How responsively the camera tries to track the target rotation’s x angle. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. Available when Binding Mode is Lock to Target No Roll or Lock to Target. |
 | __Roll Damping__ || How responsively the camera tries to track the target rotation’s z angle. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. Available when Binding Mode is Lock to Target.  |
 | __Heading__ || Specifies how to calculate the heading of the Follow target. |
-| | _Definition_ | Choose Position Delta to calculate heading based on the difference in the position of the target from the last update and the current frame. Choose Velocity to use the velocity of the [Rigidbody](https://docs.unity3d.com/Manual/class-Rigidbody.html) of the target. If the target has no Rigidbody component, revert to Position Delta. Choose Target Forward to use the euler y angle of the transform of the target. Choose World Forward to use a constant world-space heading. |
+| | _Definition_ | Choose Position Delta to calculate heading based on the difference in the position of the target from the last update and the current frame. Choose Velocity to use the velocity of the [Rigidbody](https://docs.unity3d.com/Manual/class-Rigidbody.html) of the target. If the target has no Rigidbody component, reverts to Position Delta. Choose Target Forward to use the target's local Forward axis as the heading. Choose World Forward to use a constant world-space Forward as heading. |
 | | _Velocity Filter Strength_ | Controls the smoothing of the velocity when using Position Delta or Velocity in Definition. |
-| | _Bias_ | Angular offset in the orbit to place the camera, relative to the heading. Measured in degrees. |
+| | _Bias_ | Angular offset in the orbit to place the camera, relative to the heading. Measured in degrees. An axis value of 0 will put the camera here. |
 | __Recenter To Target Heading__ || Controls automatic recentering when the player gives no input. |
 | | _Enabled_ | Check to enable automatic recentering. |
 | | _Wait Time_ | If no user input has been detected on the axis, the camera waits this long in seconds before recentering. |

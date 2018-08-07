@@ -8,7 +8,8 @@ Mixing Camera manages up to eight child Virtual Cameras. In the Mixing Camera co
 
 To create a Mixing Camera:
 
-1. In the Unity menu, choose __Cinemachine > Create Mixing Camera__.A new Mixing Camera appears in the [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window. By default, Unity also adds two Virtual Cameras as children of the Mixing Camera.
+1. In the Unity menu, choose __Cinemachine > Create Mixing Camera__.
+A new Mixing Camera appears in the [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window. By default, Unity also adds two Virtual Cameras as children of the Mixing Camera.
 
 2. Adjust the children Virtual Cameras.
 
@@ -26,7 +27,7 @@ To create a Mixing Camera:
 | __Game Window Guides__ | Toggles the visibility of compositional guides in the Game view. This property applies to all Virtual Cameras. |
 | __Save During Play__ | Check to [apply the changes while in Play mode](CinemachineSavingDuringPlay.html).  Use this feature to fine-tune a Virtual Camera without having to remember which properties to copy and paste. This property applies to all Virtual Cameras. |
 | __Priority__ | The importance of this Mixing Camera for choosing the next shot. A higher value indicates a higher priority. Cinemachine Brain chooses the next live Virtual Camera from all Virtual Cameras that are activated and have the same or higher priority as the current live Virtual Camera. This property has no effect when using a Virtual Camera with Timeline. |
-| __Child Camera Weights__ | The weight of the Virtual Camera. Each child Virtual Camera has a corresponding Weight property. |
+| __Child Camera Weights__ | The weight of the Virtual Camera. Each child Virtual Camera has a corresponding Weight property. Note that setting one camera's weight to 1 does not put the other weights to zero.  The contribution of any individual camera is its weight divided by the sum of all the child weights. |
 | __Mix Result__ | A graphical representation of the weights of the child Virtual Cameras. The light part of the bar of each child camera represents the proportion of its contribution to the final position of the Mixing Camera. When the bar is completely dark, the camera makes no contribution to the position of the Mixing Camera. |
 
 

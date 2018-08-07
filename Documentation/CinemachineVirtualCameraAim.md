@@ -12,7 +12,7 @@ Use the Aim properties to specify how to rotate the Virtual Camera. To change th
 
 * [__POV__](CinemachineAimPOV.html): Rotate the Virtual Camera based on the user’s input.
 
-* [__Same As Follow Target__](CinemachineAimSameAsFollow.html): Set the camera’s rotation to the rotation of the __Look At__ target.
+* [__Same As Follow Target__](CinemachineAimSameAsFollow.html): Set the camera’s rotation to the rotation of the __Follow__ target.
 
 * [__Hard Look At__](CinemachineAimHardLook.html): Keep the __Look At__ target in the center of the camera frame.
 

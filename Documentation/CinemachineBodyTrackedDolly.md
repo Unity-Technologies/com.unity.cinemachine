@@ -4,7 +4,7 @@ This Virtual Camera __Body__ algorithm restricts the Virtual Camera to move alon
 
 Use __Auto-Dolly__ mode to move the Virtual Camera to a position on the path that is closest to the __Follow__ target. When enabled, __Auto-Dolly__ automatically animates the position of the Virtual Camera to the position on the path that’s closest to the target.
 
-**Tip**: Choose your path shapes with care when using Auto-Dolly mode. This becomes problematic on paths that form an arc around some point.  For example, consider a perfectly circular path with the __Follow__ target at the center. The closest point on the path becomes unstable because all points on the circular path are equally close to the target. Moving the __Follow__ target small distances can cause the camera to move large distances on the track.
+**Tip**: Choose your path shapes with care when using Auto-Dolly mode. This becomes problematic on paths that form an arc around some point.  As an extreme example, consider a perfectly circular path with the __Follow__ target at the center. The closest point on the path becomes unstable because all points on the circular path are equally close to the target. In this situation, moving the __Follow__ target small distances can cause the camera to move large distances on the track.
 
 ## Properties:
 
@@ -24,8 +24,8 @@ Use __Auto-Dolly__ mode to move the Virtual Camera to a position on the path tha
 | | _Default_ | Do not modify the up direction of the Virtual Camera. Instead, use the World Up Override property in Cinemachine Brain. |
 | | _Path_ | Use the path’s up vector at the current point. |
 | | _Path No Roll_ | Use the path’s up vector at the current point, but with the roll set to zero. |
-| | _Follow Target_ | Use the up vector from the Follow target’s up vector. |
-| | _Follow Target No Roll_ | Use the up vector from the Follow target’s up vector, but with the roll zeroed out. |
+| | _Follow Target_ | Use the up vector from the Follow target’s transform. |
+| | _Follow Target No Roll_ | Use the up vector from the Follow target’s transform, but with the roll zeroed out. |
 | __Pitch Damping__ || How responsively the camera tracks the target rotation’s x angle. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  |
 | __Yaw Damping__ || How responsively the camera tracks the target rotation’s y angle. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  |
 | __Roll Damping__ || How responsively the camera tracks the target rotation’s z angle. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  |

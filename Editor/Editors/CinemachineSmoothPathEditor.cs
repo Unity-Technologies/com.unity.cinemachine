@@ -217,6 +217,7 @@ namespace Cinemachine.Editor
                 wp.position = pos;
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             }
         }
 

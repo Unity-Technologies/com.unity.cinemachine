@@ -30,10 +30,10 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. |
 | | _Dutch_ | Dutch angle. Tilts the Unity camera on the Z axis, in degrees. This property is unique to the Virtual Camera; there is no counterpart property in the Unity camera. |
 | __Transitions__ ||  |
-| | _Blend Hint_ | How to blend to and from the Free Look camera. Use None for default linear interpolation of position and aim. Use Spherical Position to blend spherically about the Look At position, linearly blending between Look At targets. Use Cylindrical Position to blend in a cylindrical path around the Look At target and interpolate linearly on the vertical axis. Use Screen Space Aim When Targets Differ for a standard linear position blend, with radial blend between Look At targets. |
+| | _Blend Hint_ | How to blend to and from the Free Look camera. Use None for default linear interpolation of position and aim. Use Spherical Position to blend spherically about the Look At position, linearly blending between Look At targets. Use Cylindrical Position to blend in a cylindrical path around the Look At target and interpolate linearly on the vertical axis. Use Screen Space Aim When Targets Differ for a standard linear position blend, with screen-space angular blend between differing Look At targets. |
 | | _Inherit Position_ | When this virtual camera goes Live, attempt to force the position to be the same as the current position of the Unity Camera, allowing the virtual camera to apply its damping to accomplish the blend |
 | | _Camera Activated_ | This event is invoked when the Virtual Camera becomes live.  Attach custom handlers here if you need them. |
-| __Y Axis, X Axis__ || The vertical and horizontal axes for blending between rigs. For Y Axis choose a Value between 0 and 1 to blend between the Top, Middle, and Bottom rigs. The value 0.5 represents the middle rig.  For X Axis, enter a Value between -180 and 180 to pass to the Orbital Transposer algorithm. |
+| __Y Axis, X Axis__ || The vertical and horizontal axes for blending between rigs. For Y Axis the Value range is 0 to 1 and represents the blend position between the Top, Middle, and Bottom rigs. The value 0.5 represents the middle rig.  For X Axis, the Value is the angular deviation (in degrees) of the camera from directly behind the target. |
 | | _Max Speed_ | The maximum speed of this axis in units/second. |
 | | _Accel Time_ | The amount of time in seconds to accelerate to Max Speed. |
 | | _Decel Time_ | The amount of time in seconds to decelerate to zero. |
@@ -45,7 +45,7 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | | _Wait Time_ | When no user input has been detected on the axis, the camera waits this long in seconds before recentering. |
 | | _Recentering Time_ | Maximum angular speed of recentering. Accelerates into and decelerates out of the centered position. |
 | __Orbits__ || Properties for defining the Top, Middle, and Bottom rigs.  |
-| __Binding Mode__ || The coordinate space to use to interpret the offset from the target. Also sets the up vector. Cinemachine keeps the camera oriented in the up direction while aiming. These modes do incredibly different things, so try them out and one should work well for whatever your requirements are. For example, for a "Door Cam or “Hood Cam" in a car racing game, use Local Space Locked To Target. |
+| __Binding Mode__ || The coordinate space to use to interpret the offset from the target. Also sets the up vector. Cinemachine keeps the camera oriented in the up direction while aiming. These modes do incredibly different things, so try them out and one should work well for whatever your requirements are. |
 | | _Lock To Target On Assign_ | The target’s local frame at the moment when the Virtual Camera was activated, or when the target was assigned. |
 | | _Lock To Target With World Up_ | The target’s local frame, with the tilt and roll reset to zero. |
 | | _Lock To Target No Roll_ | The target’s local frame, with the roll reset to zero. |

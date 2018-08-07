@@ -27,13 +27,13 @@ For example, if your game runs at 60 frames/second and you set a frequency to 10
 | __Animated__ || Check to show a moving representation of an example of the noise profile in the graph. This property is for editing noise profiles; it does not affect the noise profile asset. |
 | __Position Noise__ || A graphical representation of all noise layers for all axes for camera movement.  |
 | __Position X__, __Position Y__, __Position Z__ || The layers of noise for each axis to apply to camera movement. Each axis has a graphical representation of its layers. Each layer has properties for Frequency, Amplitude, and optional Perlin noise. Click + or - to add and remove layers, respectively.  |
-| | _Frequency_ | The repetition of the wave in the noise layer, in Hz. |
-| | _Amplitude_ | The strength of the wave in the noise layer, in distance units. |
-| | _Non-random wave if checked_ | Check to remove the Perlin noise from the noise layer. Without Perlin noise, Cinemachine uses a regular sine wave. Uncheck to apply Perlin noise to the layer. |
-| __Rotation Noise__ || A graphical representation of all noise layers for all axes for camera rotation.  |
+| | _Frequency_ | The frequency of the wave in the noise layer, in Hz. |
+| | _Amplitude_ | The amplitude (height) of the wave in the noise layer, in distance units. |
+| | _Non-random wave if checked_ | Check to remove the Perlin noise from the noise layer. Without Perlin noise, Cinemachine uses a regular sine wave. Uncheck to apply Perlin noise to the layer, randomizing both the frequency and the amplitude while remaining in the neighbourhood of the selected values. |
+| __Rotation Noise__ || A graphical representation of all noise layers for all axes for camera rotation. |
 | __Rotation X__, __Rotation Y__, __Rotation Z__ || The layers of noise for each axis to apply to camera rotation. Each layer has properties for Frequency, Amplitude, and optional Perlin Noise. Click + or - to add and remove layers, respectively.  |
-| | _Frequency_ | The repetition of the noise layer, in Hz. |
-| | _Amplitude_ | The strength of the wave in the noise layer, in degrees. |
-| | _Non-random wave if checked_ | Check to remove the Perlin noise from the noise layer. Without Perlin noise, Cinemachine uses a regular sine wave. Uncheck to include random Perlin noise variation to both the frequency and amplitude. |
+| | _Frequency_ | The frequency of the wave in the noise layer, in Hz. |
+| | _Amplitude_ | The amplitude (height) of the wave in the noise layer, in degrees. |
+| | _Non-random wave if checked_ | Check to remove the Perlin noise from the noise layer. Without Perlin noise, Cinemachine uses a regular sine wave. Uncheck to include random Perlin noise variation, randomizing both the frequency and the amplitude while remaining in the neighbourhood of the selected values. |
 
 

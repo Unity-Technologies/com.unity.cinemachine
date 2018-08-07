@@ -12,12 +12,12 @@ This Virtual Camera __Aim__ algorithm rotates the camera to face the __Look At__
 | __Lookahead Ignore Y__ | Toggle to ignore movement along the Y axis for lookahead calculations. |
 | __Horizontal Damping__ | How responsively the camera follows the target in the screen-horizontal direction. Use small numbers for more responsive, rapid rotation of the camera to keep the target in the dead zone. Use larger numbers for a more heavy, slowly-responding camera.  |
 | __Vertical Damping__ | How responsively the camera follows the target in the screen-vertical direction. Use different vertical and horizontal settings to give a wide range of camera behaviors. |
-| __Screen X__ | Horizontal screen position for the soft and dead zones. The camera rotates so that the target appears here. |
+| __Screen X__ | Horizontal screen position for the center of the dead zone. The camera rotates so that the target appears here. |
 | __Screen Y__ | Vertical screen position for target, The camera rotates so that the target appears here. |
 | __Dead Zone Width__ | The width of the screen region within which the camera ignores any movement of the target.  If the target is positioned anywhere within this region, the Virtual Camera does not update its rotation. This is useful for ignoring minor target movement.  |
 | __Dead Zone Height__ | The height of the screen region within which the camera ignores any movement of the target.  If the target is positioned anywhere within this region, the Virtual Camera does not update its rotation. This is useful for ignoring minor target movement. |
-| __Soft Zone Width__ | The width of the screen region that the camera horizontally rotates to, before eventually rotating so that the target reappears in the dead zone. This property has no effect when Horizontal Damping is 0. |
-| __Soft Zone Height__ | The height of the screen region that the camera vertically rotates to, before eventually rotating so that the target reappears in the deadzone. This property has no effect when Vertical Damping is 0. |
+| __Soft Zone Width__ | The width of the soft zone.  If the target appears in this region of the screen, the camera will rotate to push it back out to the dead zone, in the time specified by the Horizontal Damping setting. |
+| __Soft Zone Height__ | The height of the soft zone.  If the target appears in this region of the screen, the camera will rotate to push it back out to the dead zone, in the time specified by the Vertical Damping setting. |
 | __Bias X__ | Positions the soft zone horizontally, relative to the dead zone. |
 | __Bias Y__ | Positions the soft zone vertically, relative to the dead zone. |
 

@@ -4,13 +4,13 @@ The Cinemacine Virtual Camera is a component that you add to an empty GameObject
 
 Use the __Aim__, __Body__, and __Noise__ properties to specify how the Virtual Camera animates position, rotation, and other properties. The Virtual Camera applies these settings to the Unity Camera when [Cinemachine Brain](CinemachineBrainProperties.html) or [Timeline](CinemachineTimeline.html) transfers control of the Unity camera to the Virtual Camera.
 
-Cinemachine Brain assigns one of these states to each Virtual Camera:
+At any time, each Virtual Camera may be in one of these states:
 
-* __Live__: The Virtual Camera actively controls the Unity camera that has a Cinemachine Brain. When a Cinemachine Brain blends from one Virtual Camera to the next, both Virtual Cameras are live. When the blend is complete, there is only one live Virtual Camera.
+* __Live__: The Virtual Camera actively controls a Unity camera that has a Cinemachine Brain. When a Cinemachine Brain blends from one Virtual Camera to the next, both Virtual Cameras are live. When the blend is complete, there is only one live Virtual Camera.
 
 * __Standby__: The Virtual Camera doesn’t control the Unity camera. However, it still follows and aims at its targets, and updates at every frame. A Virtual Camera in this state is activated and has a priority that is the same as or lower than the live Virtual Camera.
 
-* __Disabled__: The Virtual Camera doesn’t control the Unity camera and doesn’t actively follow or aim at its targets. A Virtual Camera in this state doesn’t consume processing power. To disable a Virtual Camera, deactivate it. The Virtual Camera is present but disabled in the Scene. However, you can still activate the Virtual Camera from Timeline.
+* __Disabled__: The Virtual Camera doesn’t control the Unity camera and doesn’t actively follow or aim at its targets. A Virtual Camera in this state doesn’t consume processing power. To disable a Virtual Camera, deactivate its game object. The Virtual Camera is present but disabled in the Scene. However, even though the game object is deactivated, the virtual camera can still control the Unity camera if the virtual camera is participating in a blend, or if it is invoked by Timeline.
 
 ![Virtual Camera properties](images/CinemachineVCamProperties.png)
 

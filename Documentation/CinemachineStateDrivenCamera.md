@@ -1,6 +1,6 @@
 # Cinemachine State-Driven Camera
 
-The __Cinemachine State-Driven Camera__ component activates a child Virtual Camera when an animation target changes states. For example, consider your avatar’s local-motion system and orbit camera.  Your game feels more alive to the player when the camera shakes more as your avatar runs. When the avatar walks, blend to a Virtual Camera with more damping.
+The __Cinemachine State-Driven Camera__ component activates a child Virtual Camera when an animation target changes states. For example, consider your avatar’s local-motion system and orbit camera.  Your game feels more alive to the player when the camera shakes more as your avatar runs. When the avatar walks, blend for example to a Virtual Camera with more damping.
 
 ![State-Driven camera with three child Virtual Cameras (red)](images/CinemachineStateDrivenChildren.png)
 
@@ -8,9 +8,9 @@ The animation target for a State-Driven Camera is a GameObject with an [Animator
 
 Assign normal __Look At__ and __Follow__ targets to each child Virtual Camera. If a child Virtual Camera has no __Look At__ or __Follow__ target, State-Driven camera uses its own, respective targets.
 
-State-Driven Camera has a list that assigns child Virtual Cameras to animation states. You can specify more than one Virtual Camera per state. In this case, State-Driven camera chooses the child Virtual Camera with the highest priority. You can define default and custom blends between the State-Driven children.
+State-Driven Camera has a list that assigns child Virtual Cameras to animation states. You can define default and custom blends between the State-Driven children.
 
-In the Inspector, the State-Driven camera lists its Virtual Camera children. Use this list to add and delete children Virtual Cameras, and assign priorities.
+In the Inspector, the State-Driven camera lists its Virtual Camera children. Use this list to add and delete child Virtual Cameras, and assign priorities.
 
 ![Properties for Cinemachine State-Driven camera](images/CinemachineStateDrivenCamera.png)
 
@@ -18,7 +18,7 @@ To create a State-Driven camera:
 
 1. Set up the animation target GameObject to [control it with an Animator Controller](https://docs.unity3d.com/Manual/AnimatorControllers.html).
 
-2. In the Unity menu, choose __Cinemachine > Create State-Driven Camera__.<br/>A new  State-Driven camera appears in the hierarchy with a new child Virtual Camera.
+2. In the Unity menu, choose __Cinemachine > Create State-Driven Camera__.<br/>A new State-Driven camera appears in the hierarchy with a new child Virtual Camera.
 
 3. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), assign the animation target you created in step 1 to the Animated Target property.
 
@@ -35,11 +35,10 @@ To create a State-Driven camera:
 | __Save During Play__ | Check to [apply the changes while in Play mode](CinemachineSavingDuringPlay.html).  Use this feature to fine-tune a Virtual Camera without having to remember which properties to copy and paste. This property applies to all Virtual Cameras. |
 | __Priority__ | The importance of this State-Driven camera for choosing the next shot. A higher value indicates a higher priority. This property has no effect when using a State-Driven camera with Timeline. |
 | __Look At__ | The default target GameObject that the children Virtual Camera move with. The State-Driven camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
-| __Follow__ | The target GameObject to aim the Unity camera at. The State-Driven camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
+| __Follow__ | The default target GameObject to aim the Unity camera at. The State-Driven camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
 | __Animated Target__ | The GameObject that contains the Animator Controller. The State-Drive camera reacts to the animation state changes from this GameObject. |
 | __Layer__ | The animation layer to observe in the Animated Target. |
-| __Show Debug Text__ | Check to display a textual summary of the live Virtual Camera and blend in the view. |
-| __Enable All Child Cameras__ | Check to activate all child cameras. This is useful if animating them in Timeline, but consumes extra resources. |
+| __Show Debug Text__ | Check to display a textual summary of the live Virtual Camera and blend in the game view. |
 | __Default Blend__ | The blend which is used if you don’t explicitly define a blend between two Virtual Cameras. |
 | __Custom Blends__ | The asset which contains custom settings for specific child blends. |
 | __State__ | The list of animation state assignments for child Virtual Cameras.  |

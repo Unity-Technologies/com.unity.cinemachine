@@ -76,7 +76,7 @@ namespace Cinemachine.Editor
                 if (brain != null)
                     up = brain.DefaultWorldUp;
                 Vector3 targetPos = target.FollowTargetPosition;
-                Vector3 desiredPos = target.GeTargetCameraPosition(up);
+                Vector3 desiredPos = target.GetTargetCameraPosition(up);
                 Gizmos.DrawLine(targetPos, desiredPos);
                 //Gizmos.DrawWireSphere(desiredPos, HandleUtility.GetHandleSize(desiredPos) / 20);
                 Gizmos.color = originalGizmoColour;

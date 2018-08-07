@@ -6,7 +6,7 @@ Use [Timeline](https://docs.unity3d.com/Manual/TimelineSection.html) to activate
 
 Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrainProperties.html). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the Virtual Camera with the highest Priority setting.
 
-You control Virtual Cameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip comprises a Virtual Camera to activate then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
+You control Virtual Cameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip points to a Virtual Camera to activate then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
 
 To cut between two Virtual Cameras, place the clips next to each other. To blend between two Virtual Cameras, overlap the clips.
 

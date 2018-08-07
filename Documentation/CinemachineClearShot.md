@@ -16,7 +16,7 @@ You can also define custom blends between the ClearShot children.
 |:---|:---|
 | __Look At__ | The default target GameObject that the children Virtual Camera move with. The Clear Shot camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
 | __Follow__ | The target GameObject to aim the Unity camera at. The Clear Shot camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
-| __Show Debug Text__ | Check to display a textual summary of the live Virtual Camera and blend in the view. |
+| __Show Debug Text__ | Check to display a textual summary of the live Virtual Camera and blend in the Game view. |
 | __Activate After__ | Wait this many seconds before activating a new child camera. |
 | __Min Duration__ | An active camera must be active for at least this many seconds, unless a higher-priority camera becomes active. |
 | __Randomize Choice__ | Check to choose a random camera if multiple cameras have equal shot quality. Uncheck to use the order of the child Virtual Cameras and their priorities. |
