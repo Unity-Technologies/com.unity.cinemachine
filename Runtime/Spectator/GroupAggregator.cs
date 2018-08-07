@@ -39,13 +39,53 @@ namespace Spectator
             mGroupLookup.TryGetValue(subject, out g);
             return g;
         }
-        /*
-        public Group CreateGroup(StoryManager.Subject subject)
+
+        List<CinemachineTargetGroup> mGroupRecycleBin = new List<CinemachineTargetGroup>();
+
+        public Group CreateGroup(StoryManager.Subject subject, float radius)
         {
-            GameObject go = new GameObject(subject.m_Transform.name);
-            var cmTargetGroup = go.AddComponent<CinemachineFreeLook>();
+            CinemachineTargetGroup cmTargetGroup = null;
+            if (mGroupRecycleBin.Count > 0)
+            {
+                cmTargetGroup = mGroupRecycleBin[0];
+                mGroupRecycleBin.RemoveAt(0);
+                cmTargetGroup.gameObject.name = subject.m_Transform.name;
+            }
+            else
+            {
+                GameObject go = new GameObject(subject.m_Transform.name);
+                cmTargetGroup = go.AddComponent<CinemachineTargetGroup>();
+            }
+            cmTargetGroup.m_Targets = 
+            AddTargetGroupMember(cmTargetGroup, subject, radius);
 
         }
-        */
+
+        static void AddTargetGroupMember(
+            CinemachineTargetGroup g, StoryManager.Subject subject, float radius)
+        {
+            int numTargets = 0;
+            var targets = g.m_Targets;
+            if (targets != null)
+            {
+                numTargets = targets.Length;
+                for (int i = 0; i < numTargets; ++i)
+                {
+                    if (targets[i].target == subject.m_Transform)
+                    {
+                        targets[i].radius = radius;
+                        g.m_Targets = targets;
+                        return;
+                    }
+                }
+            }
+            var newTargets = new CinemachineTargetGroup.Target[numTargets + 1];
+            if (numTargets > 0)
+                targets.CopyTo(newTargets, 0);
+            newTargets[numTargets].target = subject.m_Transform;
+            newTargets[numTargets].weight = 1;
+            newTargets[numTargets].radius = radius;
+            g.m_Targets = newTargets;
+        }
     }
 }
