@@ -484,7 +484,8 @@ namespace Cinemachine
             if (activeCamera != activeCameraPreviousFrame)
             {
                 // Notify incoming camera of transition
-                activeCamera.OnTransitionFromCamera(activeCameraPreviousFrame, DefaultWorldUp, deltaTime);
+                if (activeCamera != null)
+                    activeCamera.OnTransitionFromCamera(activeCameraPreviousFrame, DefaultWorldUp, deltaTime);
                 if (m_CameraActivatedEvent != null)
                     m_CameraActivatedEvent.Invoke(activeCamera, activeCameraPreviousFrame);
 
