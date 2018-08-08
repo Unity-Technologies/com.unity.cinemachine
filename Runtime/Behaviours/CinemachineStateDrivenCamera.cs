@@ -35,10 +35,12 @@ namespace Cinemachine
         /// <summary>The state machine whose state changes will drive this camera's choice of active child</summary>
         [Space]
         [Tooltip("The state machine whose state changes will drive this camera's choice of active child")]
+        [NoSaveDuringPlay]
         public Animator m_AnimatedTarget;
 
         /// <summary>Which layer in the target FSM to observe</summary>
         [Tooltip("Which layer in the target state machine to observe")]
+        [NoSaveDuringPlay]
         public int m_LayerIndex;
 
         /// <summary>When enabled, the current camera and blend will be indicated in the game window, for debugging</summary>

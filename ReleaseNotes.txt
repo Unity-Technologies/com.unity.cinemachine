@@ -1,3 +1,13 @@
+<size=20><b>Version 2.2.8-preview.1</b></size>
+
+- Updated documentation (corrections)
+- Dolly Cart: added support for LateUpdate
+- State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
+- Path editor: make sure game view gets updated when a path waypoint is dragged in the scene view
+- Bugfix: allow impulse definition to be a non-public field (property drawer was complaining)
+- Bugfix: added null check for when there is no active virtual camera
+
+
 <size=20><b>Version 2.2.7</b></size>
 
 - Bugfix: fogbugz case 1053595: Cinemachine Collider leaves hidden collider at origin that interferes with scene objects
