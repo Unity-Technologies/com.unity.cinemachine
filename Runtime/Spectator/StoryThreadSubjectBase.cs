@@ -24,30 +24,26 @@ namespace Spectator
     /// 
     public abstract class StoryThreadSubjectBase : MonoBehaviour 
     {
-        StoryManager.Subject mSubject;
-
-	    protected void Start() 
-        {
-            mSubject = new StoryManager.Subject(transform);
-	    }
+        public float m_Radius;
+        protected StoryManager.StoryThread m_StoryThread;
 
         protected void OnEnable()
         {
-            StoryManager.Instance.CreateStoryThread(mSubject);
+            m_StoryThread = StoryManager.Instance.CreateStoryThread(transform, name, m_Radius);
         }
 
         protected void OnDisable()
         {
-            StoryManager.Instance.DestroyStoryThread(mSubject);
+            StoryManager.Instance.DestroyStoryThread(transform);
+            m_StoryThread = null;
         }
 
         protected void Update() 
         {
             // Calculate interest level and push it to story thread
-            var th = StoryManager.Instance.GetStoryThread(mSubject);
-            if (th != null)
+            if (m_StoryThread != null)
             {
-                th.InterestLevel = ComputeInterest(th.InterestLevel);
+                m_StoryThread.InterestLevel = ComputeInterest(m_StoryThread.InterestLevel);
             }
 	    }
 
@@ -57,5 +53,4 @@ namespace Spectator
         // Value is arbitrary, and can be a function of anything you want.
         abstract protected float ComputeInterest(float currentInterestLevel);
     }
-
 }

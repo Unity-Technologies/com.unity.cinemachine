@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 namespace Spectator
 {
@@ -14,7 +15,7 @@ namespace Spectator
     /// - Tweaking parameters may include time slice granularity and perhaps other 
     ///     ways to guard against hysteresis
     ///     
-    public class StoryManager 
+    public class StoryManager : MonoBehaviour
     {
         private static StoryManager sInstance = null;
 
@@ -24,17 +25,8 @@ namespace Spectator
             get
             {
                 if (sInstance == null)
-                    sInstance = new StoryManager();
+                    sInstance = FindObjectsOfType<StoryManager>()[0];
                 return sInstance;
-            }
-        }
-
-        public class Subject 
-        {
-            public Transform m_Transform;
-            public Subject(Transform t)
-            {
-                m_Transform = t;
             }
         }
 
@@ -42,8 +34,20 @@ namespace Spectator
 
         public class StoryThread
         {
+            private Transform m_Transform;
+            private CinemachineTargetGroup m_TargetGroup;
+
+            internal StoryThread(Transform transform, CinemachineTargetGroup group)
+            {
+                m_Transform = transform;
+                m_TargetGroup = group;
+            }
+
             // Subject (character, or object, or ?) 
-            public Subject ThreadSubject { get; set; }
+            public Transform ThreadSubject { get { return m_Transform; } }
+
+            // All subjects have a wrapper TargetGroup, if they are not already a target group
+            public CinemachineTargetGroup TargetGroup { get { return m_TargetGroup; } }
 
             // Interest level - Controlled by the dev, to focus on a specific thread he judges relevant.
             // This is used as part of the weighting algorithm when calculating urgency
@@ -74,33 +78,64 @@ namespace Spectator
         public int NumThreads { get { return mThreads.Count; } }
         public StoryThread GetThread(int index) { return mThreads[index]; }
 
-        Dictionary<Subject, StoryThread> mThreadLookup = new Dictionary<Subject, StoryThread>();
+        Dictionary<Transform, StoryThread> mThreadLookup = new Dictionary<Transform, StoryThread>();
+        List<CinemachineTargetGroup> mGroupRecycleBin = new List<CinemachineTargetGroup>();
 
-        public StoryThread CreateStoryThread(Subject s)
+        public StoryThread CreateStoryThread(Transform t, string name, float radius)
         {
-            StoryThread th = new StoryThread { ThreadSubject = s };
-            mThreadLookup[s] = th;
+            CinemachineTargetGroup group = null;
+            if (t != null)
+                group = t.GetComponent<CinemachineTargetGroup>();
+            if (group == null)
+            {
+                // Create a wrapper group
+                if (mGroupRecycleBin.Count > 0)
+                {
+                    group = mGroupRecycleBin[0];
+                    mGroupRecycleBin.RemoveAt(0);
+                    group.gameObject.name = name;
+                    group.gameObject.SetActive(true);
+                }
+                else
+                {
+                    GameObject go = new GameObject(name);
+                    go.transform.SetParent(this.transform);
+                    group = go.AddComponent<CinemachineTargetGroup>();
+                }
+                group.m_Targets = null;
+                if (t != null)
+                {
+                    group.m_Targets = new CinemachineTargetGroup.Target[1];
+                    group.m_Targets[0].target = t;
+                    group.m_Targets[0].weight = 1;
+                    group.m_Targets[0].radius = radius;
+                }
+            }
+            StoryThread th = new StoryThread(t, group);
+            mThreadLookup[t] = th;
             mThreads.Add(th);
             return th;
         }
 
-        public void DestroyStoryThread(Subject s)
+        public void DestroyStoryThread(Transform t)
         {
             StoryThread th;
-            if (mThreadLookup.TryGetValue(s, out th))
+            if (mThreadLookup.TryGetValue(t, out th))
             {
-                mThreadLookup.Remove(s);
+                mThreadLookup.Remove(t);
                 mThreads.Remove(th);
+                // Recycle the target group
+                th.TargetGroup.gameObject.SetActive(false);
+                mGroupRecycleBin.Add(th.TargetGroup);
             }
             if (LiveThread == th)
                 LiveThread = null;
         }
 
-        public StoryThread GetStoryThread(Subject s)
+        public StoryThread LookupStoryThread(Transform t)
         {
             StoryThread th;
-            if (!mThreadLookup.TryGetValue(s, out th))
-                th = CreateStoryThread(s);
+            mThreadLookup.TryGetValue(t, out th);
             return th;
         }
 

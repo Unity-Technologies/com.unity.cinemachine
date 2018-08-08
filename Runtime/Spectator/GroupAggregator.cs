@@ -5,13 +5,13 @@ using Cinemachine;
 
 namespace Spectator
 {
-    /// Group Aggregator
+    /// ThreadGroup Aggregator
     /// 
     /// - Dynamically creates and destroys groups
     /// - Each story thread has a target group, containing the item of interest.  
     ///     By default the target group will contain a single object - the item of interest 
     ///     that created the thread
-    /// - Group aggregator dynamically creates and destroys groups based on 
+    /// - ThreadGroup aggregator dynamically creates and destroys groups based on 
     ///     proximity (player + enemy, groups of players, groups of enemies, etc).
     /// - New story threads are then created for the new groups.  
     ///     Interest level of the new threads is an aggregate of the interest levels of the members
@@ -21,46 +21,45 @@ namespace Spectator
     {   
         public float m_proximityThreshold = 5;
         public float m_updateTimeStep = 2;
-        public Transform m_Root;
 
-        public class Group
+        StoryManager m_StoryManager;
+
+        public class ThreadGroup
         {
-            public CinemachineTargetGroup m_TargetGroup;
-            public List<Group> m_Parents;
-            public List<Group> m_Children;
+            StoryManager.StoryThread m_StoryThread;
+
+            public ThreadGroup(StoryManager.StoryThread th) { m_StoryThread = th; }
+            public StoryManager.StoryThread StoryThread { get { return m_StoryThread; } }
+            public List<StoryManager.StoryThread> m_Parents = new List<StoryManager.StoryThread>();
+            public List<StoryManager.StoryThread> m_Children = new List<StoryManager.StoryThread>();
         }
-        Dictionary<StoryManager.Subject, Group> mGroupLookup;
-        
-        public Group GetGroup(StoryManager.Subject subject)
+        Dictionary<StoryManager.StoryThread, ThreadGroup> mGroupLookup = new Dictionary<StoryManager.StoryThread, ThreadGroup>();
+
+        private void Start()
         {
-            Group g;
-            if (mGroupLookup == null)
-                mGroupLookup = new Dictionary<StoryManager.Subject, Group>();
+            m_StoryManager = GetComponent<StoryManager>();
+        }
+
+        public ThreadGroup LookupGroup(StoryManager.StoryThread subject)
+        {
+            ThreadGroup g = null;
             mGroupLookup.TryGetValue(subject, out g);
             return g;
         }
 
-        List<CinemachineTargetGroup> mGroupRecycleBin = new List<CinemachineTargetGroup>();
-
-        public Group CreateGroup(StoryManager.Subject subject, float radius)
+        public ThreadGroup CreateGroup(string name)
         {
-            CinemachineTargetGroup cmTargetGroup = null;
-            if (mGroupRecycleBin.Count > 0)
-            {
-                cmTargetGroup = mGroupRecycleBin[0];
-                mGroupRecycleBin.RemoveAt(0);
-                cmTargetGroup.gameObject.name = subject.m_Transform.name;
-            }
-            else
-            {
-                GameObject go = new GameObject(subject.m_Transform.name);
-                cmTargetGroup = go.AddComponent<CinemachineTargetGroup>();
-            }
-            cmTargetGroup.m_Targets = 
-            AddTargetGroupMember(cmTargetGroup, subject, radius);
-
+            ThreadGroup g = new ThreadGroup(m_StoryManager.CreateStoryThread(null, name, 0));
+            mGroupLookup[g.StoryThread] = g;
+            return g;
         }
 
+        public void DestroyGroup(ThreadGroup g)
+        {
+            mGroupLookup.Remove(g.StoryThread);
+            // todo: Disconnect parents and children
+        }
+/*
         static void AddTargetGroupMember(
             CinemachineTargetGroup g, StoryManager.Subject subject, float radius)
         {
@@ -87,5 +86,6 @@ namespace Spectator
             newTargets[numTargets].radius = radius;
             g.m_Targets = newTargets;
         }
+*/
     }
 }
