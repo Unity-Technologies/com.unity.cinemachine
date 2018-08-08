@@ -256,7 +256,13 @@ namespace Cinemachine
                 mRecenteringVelocity = 0;
             }
 
-            /// <summary>Bring the axis back to the cenetered state.</summary>
+            /// <summary>Skip the wait time and start recentering now (only if enabled).</summary>
+            public void RecenterNow()
+            {
+                mLastAxisInputTime = 0;
+            }
+
+            /// <summary>Bring the axis back to the cenetered state (only if enabled).</summary>
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
                 if (!m_enabled)
