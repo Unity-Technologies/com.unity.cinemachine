@@ -20,11 +20,13 @@ namespace Cinemachine
             int numWindows;
             int lastFrameUpdated;
             Matrix4x4 lastPos;
+            string name;
 
             public UpdateClock PreferredUpdate { get; private set; }
 
-            public UpdateStatus(int currentFrame, Matrix4x4 pos)
+            public UpdateStatus(string targetName, int currentFrame, Matrix4x4 pos)
             {
+                name = targetName;
                 windowStart = currentFrame;
                 lastFrameUpdated = Time.frameCount;
                 PreferredUpdate = UpdateClock.Late;
@@ -52,7 +54,7 @@ namespace Cinemachine
  
                 if (windowStart + kWindowSize <= currentFrame)
                 {
-                    //Debug.Log("Window " + numWindows + ": Late=" + numWindowLateUpdateMoves + ", Fixed=" + numWindowFixedUpdateMoves);
+                    //Debug.Log(name + ": Window " + numWindows + ": Late=" + numWindowLateUpdateMoves + ", Fixed=" + numWindowFixedUpdateMoves);
                     PreferredUpdate = choice;
                     ++numWindows;
                     windowStart = currentFrame;
@@ -95,7 +97,7 @@ namespace Cinemachine
                     return status.PreferredUpdate;
 
                 // Add the target to the registry
-                status = new UpdateStatus(Time.frameCount, target.localToWorldMatrix);
+                status = new UpdateStatus(target.name, Time.frameCount, target.localToWorldMatrix);
                 mUpdateStatus.Add(target, status);
             }
             return UpdateClock.Late;
