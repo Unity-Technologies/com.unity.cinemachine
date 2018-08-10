@@ -100,7 +100,7 @@ namespace Cinemachine
                         vel += rb.velocity;
                 }
 
-                var rb2d = other != null ? other.attachedRigidbody : null;
+                var rb2d = other2d != null ? other2d.attachedRigidbody : null;
                 if (rb2d != null)
                 {
                     if (m_ScaleImpactWithMass)
