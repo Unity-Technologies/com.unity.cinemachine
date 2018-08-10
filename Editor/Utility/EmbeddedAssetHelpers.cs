@@ -85,7 +85,7 @@ namespace Cinemachine.Editor
                     Rect foldoutRect = new Rect(
                         rect.x - kIndentOffset, rect.y, rect.width + kIndentOffset, rect.height);
                     property.isExpanded = EditorGUI.Foldout(
-                        foldoutRect, property.isExpanded, GUIContent.none);
+                        foldoutRect, property.isExpanded, GUIContent.none, true);
 
                     UnityEditor.VersionControl.Asset targetAsset
                         = UnityEditor.VersionControl.Provider.GetAssetByPath(

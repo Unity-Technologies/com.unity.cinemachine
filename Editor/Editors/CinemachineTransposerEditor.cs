@@ -35,6 +35,8 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     break;
             }
+            if (Target.HideOffsetInInspector)
+                excluded.Add(FieldPath(x => x.m_FollowOffset));
             return excluded;
         }
 
@@ -52,7 +54,7 @@ namespace Cinemachine.Editor
         /// Called "magically" by the vcam editor, so don't change the signature.
         public void OnVcamPositionDragged(Vector3 delta)
         {
-            Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
+            Undo.RegisterCompleteObjectUndo(Target, "Camera drag"); // GML do we need this?
             Quaternion targetOrientation = Target.GetReferenceOrientation(Target.VcamState.ReferenceUp);
             Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
             FindProperty(x => x.m_FollowOffset).vector3Value += localOffset;
@@ -64,7 +66,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
         static void DrawTransposerGizmos(CinemachineTransposer target, GizmoType selectionType)
         {
-            if (target.IsValid)
+            if (target.IsValid  & !target.HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)

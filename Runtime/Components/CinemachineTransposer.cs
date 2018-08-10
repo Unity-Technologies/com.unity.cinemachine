@@ -1,3 +1,4 @@
+using System;
 using Cinemachine.Utility;
 using UnityEngine;
 
@@ -14,7 +15,6 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
-    [RequireComponent(typeof(CinemachinePipeline))]
     [SaveDuringPlay]
     public class CinemachineTransposer : CinemachineComponentBase
     {
@@ -104,6 +104,9 @@ namespace Cinemachine
         {
             m_FollowOffset = EffectiveOffset;
         }
+        
+        /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
+        public bool HideOffsetInInspector { get; set; }
         
         /// <summary>Get the target offset, with sanitization</summary>
         public Vector3 EffectiveOffset 

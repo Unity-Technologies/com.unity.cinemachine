@@ -68,7 +68,7 @@ namespace Cinemachine.Editor
                         "When editing the path, if waypoint position and tangent coincide, dragging will apply preferentially to the tangent"),
                     mPreferHandleSelection);
 
-            mWaypointsExpanded = EditorGUILayout.Foldout(mWaypointsExpanded, "Path Details");
+            mWaypointsExpanded = EditorGUILayout.Foldout(mWaypointsExpanded, "Path Details", true);
             if (mWaypointsExpanded)
             {
                 EditorGUI.BeginChangeCheck();

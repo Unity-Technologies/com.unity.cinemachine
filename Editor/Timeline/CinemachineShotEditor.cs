@@ -66,15 +66,13 @@ namespace Cinemachine.Timeline
         void DrawSubeditors(CinemachineVirtualCameraBase vcam)
         {
             // Create an editor for each of the cinemachine virtual cam and its components
-            GUIStyle foldoutStyle;
-            foldoutStyle = EditorStyles.foldout;
-            foldoutStyle.fontStyle = FontStyle.Bold;
+            GUIStyle foldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
             UpdateComponentEditors(vcam);
             if (m_editors != null)
             {
                 foreach (UnityEditor.Editor e in m_editors)
                 {
-                    if (e == null || e.target == null)
+                    if (e == null || e.target == null || (e.target.hideFlags & HideFlags.HideInInspector) != 0)
                         continue;
 
                     // Separator line - how do you make a thinner one?

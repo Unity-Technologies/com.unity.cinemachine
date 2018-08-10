@@ -87,7 +87,7 @@ namespace Cinemachine.Editor
             for (int i = 0; i < mPosChannels.Length; ++i)
             {
                 r = EditorGUILayout.GetControlRect();
-                mPosExpanded[i] = EditorGUI.Foldout(r, mPosExpanded[i], mPoslabels[i]);
+                mPosExpanded[i] = EditorGUI.Foldout(r, mPosExpanded[i], mPoslabels[i], true);
                 if (mPosExpanded[i])
                 {
                     r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);
@@ -109,7 +109,7 @@ namespace Cinemachine.Editor
             for (int i = 0; i < mPosChannels.Length; ++i)
             {
                 r = EditorGUILayout.GetControlRect();
-                mRotExpanded[i] = EditorGUI.Foldout(r, mRotExpanded[i], mRotlabels[i]);
+                mRotExpanded[i] = EditorGUI.Foldout(r, mRotExpanded[i], mRotlabels[i], true);
                 if (mRotExpanded[i])
                 {
                     r = EditorGUILayout.GetControlRect(true, mPreviewHeight * EditorGUIUtility.singleLineHeight);

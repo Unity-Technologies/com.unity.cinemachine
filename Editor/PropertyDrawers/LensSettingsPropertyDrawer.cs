@@ -11,7 +11,6 @@ namespace Cinemachine.Editor
     internal sealed class LensSettingsPropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;
-        static bool mExpanded = true;
         LensSettings def = new LensSettings(); // to access name strings
         GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
 
@@ -19,8 +18,10 @@ namespace Cinemachine.Editor
         {
             float height = EditorGUIUtility.singleLineHeight;
             rect.height = height;
-            mExpanded = EditorGUI.Foldout(rect, mExpanded, label);
-            if (mExpanded)
+            property.isExpanded = EditorGUI.Foldout(
+                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), 
+                property.isExpanded, label, true);
+            if (property.isExpanded)
             {
                 ++EditorGUI.indentLevel;
                 rect.y += height + vSpace;
@@ -148,9 +149,9 @@ namespace Cinemachine.Editor
             CacheABunchOfStuff(property);
 
             float height = EditorGUIUtility.singleLineHeight + vSpace;
-            if (mExpanded)
+            if (property.isExpanded)
                 height *= IsPhysical ? 6 : 5;
-            return height;
+            return height - vSpace;
         }
 
         static T AccessProperty<T>(Type type, object obj, string memberName)

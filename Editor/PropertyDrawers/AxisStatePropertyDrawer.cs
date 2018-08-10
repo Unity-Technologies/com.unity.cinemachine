@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
         {
             float height = EditorGUIUtility.singleLineHeight;
             rect.height = height;
-            mExpanded = EditorGUI.Foldout(rect, mExpanded, label);
+            mExpanded = EditorGUI.Foldout(rect, mExpanded, label, true);
             if (mExpanded)
             {
                 ++EditorGUI.indentLevel;
@@ -37,10 +37,27 @@ namespace Cinemachine.Editor
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_MaxSpeed));
 
                 rect.y += height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_AccelTime));
+                InspectorUtility.MultiPropertyOnLine(
+                    rect, null,
+                    new [] { property.FindPropertyRelative(() => def.m_AccelTime), 
+                            property.FindPropertyRelative(() => def.m_DecelTime)}, 
+                    new [] { GUIContent.none, null });
 
-                rect.y += height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_DecelTime));
+                if (HasRecentering(property))
+                {
+                    var rDef = new AxisState.Recentering();
+                    var recentering = property.FindPropertyRelative(() => def.m_Recentering);
+                    rect.y += height + vSpace;
+                    InspectorUtility.MultiPropertyOnLine(
+                        rect, new GUIContent(recentering.displayName, recentering.tooltip),
+                        new [] { 
+                                recentering.FindPropertyRelative(() => rDef.m_enabled),
+                                recentering.FindPropertyRelative(() => rDef.m_WaitTime),  
+                                recentering.FindPropertyRelative(() => rDef.m_RecenteringTime)},
+                        new [] { new GUIContent(""),
+                                new GUIContent("Wait"), 
+                                new GUIContent("Time")} );
+                }
 
                 rect.y += height + vSpace;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_InputAxisName));
@@ -59,18 +76,35 @@ namespace Cinemachine.Editor
         {
             float height = EditorGUIUtility.singleLineHeight + vSpace;
             if (mExpanded)
-                height *= ValueRangeIsLocked(property) ? 7 : 8;
-            return height;
+            {
+                int lines = 6;
+                if (!ValueRangeIsLocked(property))
+                    ++lines;
+                if (HasRecentering(property))
+                    ++lines;
+                height *= lines;
+            }
+            return height - vSpace;
         }
 
         bool ValueRangeIsLocked(SerializedProperty property)
         {
-            bool locked = false;
+            bool value = false;
             PropertyInfo pi = typeof(AxisState).GetProperty(
                 "ValueRangeLocked", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             if (pi != null)
-                locked = bool.Equals(true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
-            return locked;
+                value = bool.Equals(true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
+            return value;
+        }
+
+        bool HasRecentering(SerializedProperty property)
+        {
+            bool value = false;
+            PropertyInfo pi = typeof(AxisState).GetProperty(
+                "HasRecentering", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (pi != null)
+                value = bool.Equals(true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
+            return value;
         }
     }
 }

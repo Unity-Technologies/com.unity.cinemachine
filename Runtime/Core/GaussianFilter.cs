@@ -8,7 +8,7 @@ namespace Cinemachine.Utility
         protected T[] mData;
         protected float[] mKernel;
         protected float mKernelSum;
-        protected int mCurrentPos;
+        protected int mCurrentPos = -1;
 
         public float Sigma { get; private set; }   // Filter strength: bigger numbers are stronger.  0.5 is minimal.
         public int KernelSize { get { return mKernel.Length; } }
@@ -35,18 +35,18 @@ namespace Cinemachine.Utility
         public GaussianWindow1d(float sigma, int maxKernelRadius = 10)
         {
             GenerateKernel(sigma, maxKernelRadius);
-            mCurrentPos = 0;
+            mData = new T[KernelSize];
+            mCurrentPos = -1;
         }
 
-        public void Reset() { mData = null; }
+        public void Reset() { mCurrentPos = -1; }
 
-        public bool IsEmpty() { return mData == null; }
+        public bool IsEmpty() { return mCurrentPos < 0; }
 
         public void AddValue(T v)
         {
-            if (mData == null)
+            if (mCurrentPos < 0)
             {
-                mData = new T[KernelSize];
                 for (int i = 0; i < KernelSize; ++i)
                     mData[i] = v;
                 mCurrentPos = Mathf.Min(1, KernelSize-1);

@@ -7,7 +7,7 @@ using System.IO;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBrain))]
-    internal sealed class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
+    public sealed class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         bool mEventsExpanded = false;
@@ -61,7 +61,7 @@ namespace Cinemachine.Editor
                 Target.gameObject.name + " Blends", "asset", string.Empty,
                 "Custom Blends", false);
 
-            mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events");
+            mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events", true);
             if (mEventsExpanded)
             {
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraCutEvent));
@@ -118,7 +118,7 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineVirtualCameraBase))]
-        internal static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
+        public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
             // Don't draw gizmos on hidden stuff
             if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)

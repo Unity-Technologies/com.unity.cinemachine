@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
             ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
             if (asset != null && !hasCustomEditor)
             {
-                mExpanded = EditorGUI.Foldout(rect, mExpanded, GUIContent.none);
+                mExpanded = EditorGUI.Foldout(rect, mExpanded, GUIContent.none, true);
                 if (mExpanded)
                 {
                     rect.y += rect.height + kBoxMargin + vSpace;
