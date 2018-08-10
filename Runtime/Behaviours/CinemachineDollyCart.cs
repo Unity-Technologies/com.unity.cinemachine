@@ -9,7 +9,6 @@ namespace Cinemachine
     /// Cinemachine Virtual Cameras.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode]
     public class CinemachineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>
@@ -48,13 +47,14 @@ namespace Cinemachine
         void FixedUpdate()
         {
             if (m_UpdateMethod == UpdateMethod.FixedUpdate)
-                SetCartPosition(m_Position += m_Speed * Time.deltaTime);
+                SetCartPosition(m_Position + m_Speed * Time.deltaTime);
         }
 
         void Update()
         {
+            float speed = Application.isPlaying ? m_Speed : 0;
             if (m_UpdateMethod == UpdateMethod.Update)
-                SetCartPosition(m_Position += m_Speed * Time.deltaTime);
+                SetCartPosition(m_Position + speed * Time.deltaTime);
         }
 
         void LateUpdate()
@@ -62,7 +62,7 @@ namespace Cinemachine
             if (!Application.isPlaying)
                 SetCartPosition(m_Position);
             else if (m_UpdateMethod == UpdateMethod.LateUpdate)
-                SetCartPosition(m_Position += m_Speed * Time.deltaTime);
+                SetCartPosition(m_Position + m_Speed * Time.deltaTime);
         }
 
         void SetCartPosition(float distanceAlongPath)
