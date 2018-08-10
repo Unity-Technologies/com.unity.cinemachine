@@ -1,6 +1,7 @@
 <size=20><b>Version 2.2.8-preview.1</b></size>
 
 - Updated documentation (corrections)
+- Experimental damping algorithm: attempt to reduce sensitivity to variable framerate
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)

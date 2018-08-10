@@ -92,9 +92,9 @@ namespace Cinemachine.Utility
         }
 
         // Exponential decay: decay a given quantity opver a period of time
-        static float Decay(float initial, float decayConstant, float deltaTime)
+        static float DecayedRemainder(float initial, float decayConstant, float deltaTime)
         {
-            return initial /  Mathf.Exp(decayConstant * deltaTime);
+            return initial / Mathf.Exp(decayConstant * deltaTime);
         }
 
         /// <summary>Standard residual</summary>
@@ -114,8 +114,22 @@ namespace Cinemachine.Utility
                 return initial;
             if (deltaTime < Epsilon)
                 return 0;
-            return initial - Decay(
-                initial, DecayConstant(dampTime, kNegligibleResidual), deltaTime);
+            float k = DecayConstant(dampTime, kNegligibleResidual);
+#if CINEMACHINE_NAIVE_DAMPING
+            return initial - DecayedRemainder(initial, k, deltaTime);
+#else
+            // Try to reduce damage caused by frametime variability
+            float step = Time.fixedDeltaTime;
+            int numSteps = Mathf.FloorToInt(deltaTime / step);
+            float vel = initial * step / deltaTime;
+            float r = 0;
+            for (int i = 0; i < numSteps; ++i)
+                r = DecayedRemainder(r + vel, k, step);
+            float d = deltaTime - (step * numSteps);
+            if (d > Epsilon)
+                r = Mathf.Lerp(r, DecayedRemainder(r + vel, k, step), d / step);
+            return initial - r;
+#endif
         }
 
         /// <summary>Get a damped version of a quantity.  This is the portion of the

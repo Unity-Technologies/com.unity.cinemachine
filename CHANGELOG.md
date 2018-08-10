@@ -4,6 +4,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.8-preview.1] - 2018-08-10
+### Damping experiment
+- Updated documentation (corrections)
+- Experimental damping algorithm: attempt to reduce sensitivity to variable framerate
+- Dolly Cart: added support for LateUpdate
+- State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
+- Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
+- Path editor: make sure game view gets updated when a path waypoint is dragged in the scene view
+- Bugfix: allow impulse definition to be a non-public field (property drawer was complaining)
+- Bugfix: added null check for when there is no active virtual camera
+
 ## [2.2.7] - 2018-07-24
 ### Mostly bugfixes
 - Bugfix: fogbugz case 1053595: Cinemachine Collider leaves hidden collider at origin that interferes with scene objects
