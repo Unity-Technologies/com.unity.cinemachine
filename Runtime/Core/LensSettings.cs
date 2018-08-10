@@ -86,18 +86,46 @@ namespace Cinemachine
             if (fromCamera != null)
             {
                 lens.FieldOfView = fromCamera.fieldOfView;
-                lens.SensorSize = new Vector2(fromCamera.aspect, 1f);
-                lens.Orthographic = fromCamera.orthographic;
-#if UNITY_2018_2_OR_NEWER
-                lens.IsPhysicalCamera = fromCamera.usePhysicalProperties;
-                lens.SensorSize = fromCamera.sensorSize;
-                lens.LensShift = fromCamera.lensShift;
-#endif
                 lens.OrthographicSize = fromCamera.orthographicSize;
                 lens.NearClipPlane = fromCamera.nearClipPlane;
                 lens.FarClipPlane = fromCamera.farClipPlane;
+#if UNITY_2018_2_OR_NEWER
+                lens.LensShift = fromCamera.lensShift;
+#endif
+                lens.SnapshotCameraReadOnlyProperties(fromCamera);
             }
             return lens;
+        }
+
+        /// <summary>
+        /// Snapshot the properties that are read-only in the Camera
+        /// </summary>
+        /// <param name="camera">The Camera from which we will take the info</param>
+        public void SnapshotCameraReadOnlyProperties(Camera camera)
+        {
+            if (camera != null)
+            {
+                Orthographic = camera.orthographic;
+                SensorSize = new Vector2(camera.aspect, 1f);
+#if UNITY_2018_2_OR_NEWER
+                IsPhysicalCamera = camera.usePhysicalProperties;
+                if (IsPhysicalCamera)
+                    SensorSize = camera.sensorSize;
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Snapshot the properties that are read-only in the Camera
+        /// </summary>
+        /// <param name="lens">The LensSettings from which we will take the info</param>
+        public void SnapshotCameraReadOnlyProperties(ref LensSettings lens)
+        {
+            Orthographic = lens.Orthographic;
+            SensorSize = lens.SensorSize;
+#if UNITY_2018_2_OR_NEWER
+            IsPhysicalCamera = lens.IsPhysicalCamera;
+#endif
         }
 
         /// <summary>

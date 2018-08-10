@@ -17,7 +17,9 @@ namespace Cinemachine
             get
             {
                 if (m_vcamOwner == null)
-                    m_vcamOwner = gameObject.transform.parent.gameObject.GetComponent<CinemachineVirtualCameraBase>();
+                    m_vcamOwner = GetComponent<CinemachineVirtualCameraBase>();
+                if (m_vcamOwner == null && transform.parent != null)
+                    m_vcamOwner = transform.parent.GetComponent<CinemachineVirtualCameraBase>();
                 return m_vcamOwner;
             }
         }

@@ -48,6 +48,9 @@ namespace Cinemachine.Editor
 
         protected virtual void OnGUI()
         {
+            if (Target == null)
+                return;
+
             // Draw the camera guides
             if (!Target.IsValid || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 return;

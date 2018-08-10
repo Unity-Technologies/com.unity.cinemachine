@@ -2,7 +2,6 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
-using UnityEngine.Events;
 
 namespace Cinemachine
 {
@@ -310,7 +309,7 @@ namespace Cinemachine
                 {
                     transform.position = brain.transform.position;
                     transform.rotation = brain.transform.rotation;
-                    m_State = PullStateFromVirtualCamera(worldUp, m_Lens);
+                    m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
                     PreviousStateIsValid = false;
                     PushSettingsToRigs();
                     forceUpdate = true;
@@ -570,8 +569,7 @@ namespace Cinemachine
 
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
-            CameraState state = PullStateFromVirtualCamera(worldUp, m_Lens);
-            m_Lens = state.Lens;
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
 
             m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 

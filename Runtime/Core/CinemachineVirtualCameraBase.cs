@@ -215,10 +215,10 @@ namespace Cinemachine
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public virtual bool IsLiveChild(ICinemachineCamera vcam) { return false; }
 
-        /// <summary>Get the LookAt target for the Aim component in the CinemachinePipeline.</summary>
+        /// <summary>Get the LookAt target for the Aim component in the Cinemachine pipeline.</summary>
         public abstract Transform LookAt { get; set; }
 
-        /// <summary>Get the Follow target for the Body component in the CinemachinePipeline.</summary>
+        /// <summary>Get the Follow target for the Body component in the Cinemachine pipeline.</summary>
         public abstract Transform Follow { get; set; }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
@@ -464,28 +464,17 @@ namespace Cinemachine
         /// <param name="worldUp">Current World Up direction, as provided by the brain</param>
         /// <param name="lens">Lens settings to serve as base, will be combined with lens from brain, if any</param>
         /// <returns></returns>
-        protected CameraState PullStateFromVirtualCamera(Vector3 worldUp, LensSettings lens)
+        protected CameraState PullStateFromVirtualCamera(Vector3 worldUp, ref LensSettings lens)
         {
             CameraState state = CameraState.Default;
             state.RawPosition = transform.position;
             state.RawOrientation = transform.rotation;
             state.ReferenceUp = worldUp;
 
-            lens.Orthographic = false;
-            lens.IsPhysicalCamera = false;
-            lens.SensorSize = Vector2.one;
-
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
             if (brain != null)
-            {
-                lens.Orthographic = brain.OutputCamera.orthographic;
-                lens.SensorSize = new Vector2(brain.OutputCamera.aspect, 1f);
-#if UNITY_2018_2_OR_NEWER
-                lens.IsPhysicalCamera = brain.OutputCamera.usePhysicalProperties;
-                if (lens.IsPhysicalCamera)
-                    lens.SensorSize = brain.OutputCamera.sensorSize;
-#endif
-            }
+                lens.SnapshotCameraReadOnlyProperties(brain.OutputCamera);
+
             state.Lens = lens;
             return state;
         }

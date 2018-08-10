@@ -49,7 +49,6 @@ namespace Cinemachine
 
         /// <summary>If checked, then the raw value of the input axis will be inverted 
         /// before it is used.</summary>
-        [NoSaveDuringPlay]
         [FormerlySerializedAs("m_InvertAxis")]
         [Tooltip("If checked, then the raw value of the input axis will be inverted before it is used")]
         public bool m_InvertInput;
@@ -66,6 +65,10 @@ namespace Cinemachine
         [Tooltip("If checked, then the axis will wrap around at the min/max values, forming a loop")]
         public bool m_Wrap;
 
+        /// <summary>Automatic recentering.  Valid only if HasRecentering is true</summary>
+        [Tooltip("Automatic recentering to at-rest position")]
+        public Recentering m_Recentering;
+
         private float mCurrentSpeed;
 
         /// <summary>Constructor with specific values</summary>
@@ -78,6 +81,9 @@ namespace Cinemachine
             m_MaxValue = maxValue;
             m_Wrap = wrap;
             ValueRangeLocked = rangeLocked;
+
+            HasRecentering = false;
+            m_Recentering = new Recentering(false, 1, 2);
 
             m_MaxSpeed = maxSpeed;
             m_AccelTime = accelTime;
@@ -206,6 +212,9 @@ namespace Cinemachine
         /// <summary>Value range is locked, i.e. not adjustable by the user (used by editor)</summary>
         public bool ValueRangeLocked { get; set; }
 
+        /// <summary>True if the Recentering member is valid (bcak-compatibility support:
+        /// old versions had recentering in a separate structure)</summary>
+        public bool HasRecentering { get; set; }
 
         /// <summary>Helper for automatic axis recentering</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -219,20 +228,19 @@ namespace Cinemachine
 
             /// <summary>If no input has been detected, the camera will wait
             /// this long in seconds before moving its heading to the default heading.</summary>
-            [FormerlySerializedAs("m_WaitTime")]
             [Tooltip("If no user input has been detected on the axis, the axis will wait this long in seconds before recentering.")]
             public float m_WaitTime;
 
-            /// <summary>Maximum angular speed of recentering.  Will accelerate into and decelerate out of this</summary>
-            [Tooltip("Maximum angular speed of recentering.  Will accelerate into and decelerate out of this.")]
+            /// <summary>How long it takes to reach destination once recentering has started</summary>
+            [Tooltip("How long it takes to reach destination once recentering has started.")]
             public float m_RecenteringTime;
 
             /// <summary>Constructor with specific field values</summary>
-            public Recentering(bool enabled, float recenterWaitTime,  float recenteringSpeed)
+            public Recentering(bool enabled, float waitTime,  float recenteringTime)
             {
                 m_enabled = enabled;
-                m_WaitTime = recenterWaitTime;
-                m_RecenteringTime = recenteringSpeed;
+                m_WaitTime = waitTime;
+                m_RecenteringTime = recenteringTime;
                 mLastAxisInputTime = 0;
                 mRecenteringVelocity = 0;
                 m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;

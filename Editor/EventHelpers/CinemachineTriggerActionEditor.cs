@@ -60,7 +60,7 @@ namespace Cinemachine.Editor
                 mFoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
 
             Rect r = EditorGUILayout.GetControlRect();
-            expanded = EditorGUI.Foldout(r, expanded, property.displayName, mFoldoutStyle);
+            expanded = EditorGUI.Foldout(r, expanded, property.displayName, true, mFoldoutStyle);
             if (expanded)
             {
                 SerializedProperty actionProp = property.FindPropertyRelative(() => def.m_Action);

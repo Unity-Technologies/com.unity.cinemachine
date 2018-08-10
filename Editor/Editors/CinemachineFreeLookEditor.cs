@@ -54,7 +54,8 @@ namespace Cinemachine
             {
                 Rect rect = EditorGUILayout.GetControlRect(true);
                 SerializedProperty orbit = orbits.GetArrayElementAtIndex(i);
-                InspectorUtility.MultiPropertyOnLine(rect, new GUIContent(CinemachineFreeLook.RigNames[i]),
+                InspectorUtility.MultiPropertyOnLine(rect, 
+                    new GUIContent(CinemachineFreeLook.RigNames[i]),
                     new [] { orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Height), 
                             orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
                     null);
@@ -161,19 +162,22 @@ namespace Cinemachine
                     up = brain.DefaultWorldUp;
 
                 var MiddleRig = vcam.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                Quaternion orient = MiddleRig.GetReferenceOrientation(up);
-                up = orient * Vector3.up;
-                float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_Bias;
-                orient = Quaternion.AngleAxis(rotation, up) * orient;
+                if (MiddleRig != null)
+                {
+                    Quaternion orient = MiddleRig.GetReferenceOrientation(up);
+                    up = orient * Vector3.up;
+                    float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_Bias;
+                    orient = Quaternion.AngleAxis(rotation, up) * orient;
 
-                CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
-                CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
-                CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
+                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                        pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
+                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                        pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
+                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+                        pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
 
-                DrawCameraPath(pos, orient, vcam);
+                    DrawCameraPath(pos, orient, vcam);
+                }
             }
 
             Gizmos.color = originalGizmoColour;
@@ -184,11 +188,11 @@ namespace Cinemachine
             Matrix4x4 prevMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(atPos, orient, Vector3.one);
 
-            const int kNumStepsPerPair = 30;
+            const int kNumSteps = 20;
             Vector3 currPos = vcam.GetLocalPositionForCameraFromInput(0f);
-            for (int i = 1; i < kNumStepsPerPair + 1; ++i)
+            for (int i = 1; i < kNumSteps + 1; ++i)
             {
-                float t = (float)i / (float)kNumStepsPerPair;
+                float t = (float)i / (float)kNumSteps;
                 Vector3 nextPos = vcam.GetLocalPositionForCameraFromInput(t);
                 Gizmos.DrawLine(currPos, nextPos);
                 currPos = nextPos;
