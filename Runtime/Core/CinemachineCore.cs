@@ -13,7 +13,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20170927;
 
         /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.2.6";
+        public static readonly string kVersionString = "2.2.8";
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
