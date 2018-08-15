@@ -1,3 +1,5 @@
+//#define DEBUG_LOG_NAME
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -20,13 +22,19 @@ namespace Cinemachine
             int numWindows;
             int lastFrameUpdated;
             Matrix4x4 lastPos;
+#if DEBUG_LOG_NAME
             string name;
-
+#endif
             public UpdateClock PreferredUpdate { get; private set; }
 
+#if DEBUG_LOG_NAME
             public UpdateStatus(string targetName, int currentFrame, Matrix4x4 pos)
             {
                 name = targetName;
+#else
+            public UpdateStatus(int currentFrame, Matrix4x4 pos)
+            {
+#endif
                 windowStart = currentFrame;
                 lastFrameUpdated = Time.frameCount;
                 PreferredUpdate = UpdateClock.Late;
@@ -54,7 +62,9 @@ namespace Cinemachine
  
                 if (windowStart + kWindowSize <= currentFrame)
                 {
-                    //Debug.Log(name + ": Window " + numWindows + ": Late=" + numWindowLateUpdateMoves + ", Fixed=" + numWindowFixedUpdateMoves);
+#if DEBUG_LOG_NAME
+                    Debug.Log(name + ": Window " + numWindows + ": Late=" + numWindowLateUpdateMoves + ", Fixed=" + numWindowFixedUpdateMoves);
+#endif
                     PreferredUpdate = choice;
                     ++numWindows;
                     windowStart = currentFrame;
@@ -97,7 +107,11 @@ namespace Cinemachine
                     return status.PreferredUpdate;
 
                 // Add the target to the registry
+#if DEBUG_LOG_NAME
                 status = new UpdateStatus(target.name, Time.frameCount, target.localToWorldMatrix);
+#else
+                status = new UpdateStatus(Time.frameCount, target.localToWorldMatrix);
+#endif
                 mUpdateStatus.Add(target, status);
             }
             return UpdateClock.Late;

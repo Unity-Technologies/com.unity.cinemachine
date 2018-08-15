@@ -75,11 +75,9 @@ namespace Cinemachine
                 return;
 
             if (m_ShowImage)
-            {
                 state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
-                if (m_MuteCamera)
-                    state.BlendHint |= CameraState.BlendHintValue.NoTransform;
-            }
+            if (m_MuteCamera)
+                state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
 
         protected override void ConnectToVcam(bool connect)
