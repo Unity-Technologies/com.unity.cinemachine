@@ -29,12 +29,13 @@ namespace Spectator
 
         protected void OnEnable()
         {
-            m_StoryThread = StoryManager.Instance.CreateStoryThread(transform, name, m_Radius);
+            m_StoryThread = StoryManager.Instance.CreateStoryThread(name);
+            m_StoryThread.TargetGroup.AddMember(transform, 1, m_Radius);
         }
 
         protected void OnDisable()
         {
-            StoryManager.Instance.DestroyStoryThread(transform);
+            StoryManager.Instance.DestroyStoryThread(m_StoryThread);
             m_StoryThread = null;
         }
 

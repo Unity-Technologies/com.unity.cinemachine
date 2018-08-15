@@ -30,21 +30,20 @@ namespace Spectator
             }
         }
 
+        /// <summary>If a thread becomes live, it must stay on at least this long.  
+        /// Prevents hysteresis.</summary> 
+        public float m_MinimumThreadTime;
+
         public delegate float UrgencyComputer(StoryThread thread);
 
         public class StoryThread
         {
-            private Transform m_Transform;
             private CinemachineTargetGroup m_TargetGroup;
 
-            internal StoryThread(Transform transform, CinemachineTargetGroup group)
+            internal StoryThread(CinemachineTargetGroup group)
             {
-                m_Transform = transform;
                 m_TargetGroup = group;
             }
-
-            // Subject (character, or object, or ?) 
-            public Transform ThreadSubject { get { return m_Transform; } }
 
             // All subjects have a wrapper TargetGroup, if they are not already a target group
             public CinemachineTargetGroup TargetGroup { get { return m_TargetGroup; } }
@@ -78,64 +77,53 @@ namespace Spectator
         public int NumThreads { get { return mThreads.Count; } }
         public StoryThread GetThread(int index) { return mThreads[index]; }
 
-        Dictionary<Transform, StoryThread> mThreadLookup = new Dictionary<Transform, StoryThread>();
+        Dictionary<CinemachineTargetGroup, StoryThread> mThreadLookup 
+            = new Dictionary<CinemachineTargetGroup, StoryThread>();
         List<CinemachineTargetGroup> mGroupRecycleBin = new List<CinemachineTargetGroup>();
 
-        public StoryThread CreateStoryThread(Transform t, string name, float radius)
+        public StoryThread CreateStoryThread(string name)
         {
+            // Create wrapper group for targets
             CinemachineTargetGroup group = null;
-            if (t != null)
-                group = t.GetComponent<CinemachineTargetGroup>();
-            if (group == null)
+            if (mGroupRecycleBin.Count > 0)
             {
-                // Create a wrapper group
-                if (mGroupRecycleBin.Count > 0)
-                {
-                    group = mGroupRecycleBin[0];
-                    mGroupRecycleBin.RemoveAt(0);
-                    group.gameObject.name = name;
-                    group.gameObject.SetActive(true);
-                }
-                else
-                {
-                    GameObject go = new GameObject(name);
-                    go.transform.SetParent(this.transform);
-                    group = go.AddComponent<CinemachineTargetGroup>();
-                }
-                group.m_Targets = null;
-                if (t != null)
-                {
-                    group.m_Targets = new CinemachineTargetGroup.Target[1];
-                    group.m_Targets[0].target = t;
-                    group.m_Targets[0].weight = 1;
-                    group.m_Targets[0].radius = radius;
-                }
+                group = mGroupRecycleBin[0];
+                mGroupRecycleBin.RemoveAt(0);
+                group.gameObject.name = name;
+                group.gameObject.SetActive(true);
             }
-            StoryThread th = new StoryThread(t, group);
-            mThreadLookup[t] = th;
+            else
+            {
+                GameObject go = new GameObject(name);
+                go.transform.SetParent(this.transform);
+                group = go.AddComponent<CinemachineTargetGroup>();
+            }
+
+            StoryThread th = new StoryThread(group);
+            mThreadLookup[group] = th;
             mThreads.Add(th);
             return th;
         }
 
-        public void DestroyStoryThread(Transform t)
+        public void DestroyStoryThread(StoryThread th)
         {
-            StoryThread th;
-            if (mThreadLookup.TryGetValue(t, out th))
+            if (th != null)
             {
-                mThreadLookup.Remove(t);
+                mThreadLookup.Remove(th.TargetGroup);
                 mThreads.Remove(th);
                 // Recycle the target group
                 th.TargetGroup.gameObject.SetActive(false);
                 mGroupRecycleBin.Add(th.TargetGroup);
+                th.TargetGroup.m_Targets = null;
             }
             if (LiveThread == th)
                 LiveThread = null;
         }
 
-        public StoryThread LookupStoryThread(Transform t)
+        public StoryThread LookupStoryThread(CinemachineTargetGroup group)
         {
             StoryThread th;
-            mThreadLookup.TryGetValue(t, out th);
+            mThreadLookup.TryGetValue(group, out th);
             return th;
         }
 
@@ -145,25 +133,37 @@ namespace Spectator
             mThreads.Sort((x, y) => x.Urgency.CompareTo(y.Urgency)); 
         }
 
-        // The current Live thread, set every frame by Update().
-        public StoryThread LiveThread { get; private set; }
+        // The current Live thread, must be set every frame.
+        public StoryThread LiveThread
+        {
+            get { return m_LiveThread; }
+            set
+            {
+                float now = Time.time;
+                if (value != m_LiveThread)
+                {
+                    if (m_LiveThread != null)
+                        m_LiveThread.TimeLastSeenStop = now;
+                    if (value != null)
+                        value.TimeLastSeenStart = value.TimeLastSeenStop = now;
+                    m_LiveThread = value;
+                }
+            }
+        }
+        private StoryThread m_LiveThread;
 
-        // Call this every frame with the current live story thread
-        public void Update(StoryThread liveThread)
+        void Update()
         {
             float now = Time.time;
-            if (liveThread != LiveThread)
-            {
-                liveThread.TimeLastSeenStart = now;
-                if (LiveThread != null)
-                    LiveThread.TimeLastSeenStop = now;
-                LiveThread = liveThread;
-            }
-            liveThread.TimeLastSeenStop = now;
+            if (LiveThread != null)
+                LiveThread.TimeLastSeenStop = now;
 
-            // Recompute the urgencies
+            // Recompute the urgencies, using the installed urgency calculator
             for (int i = 0; i < mThreads.Count; ++i)
                 mThreads[i].Urgency = mUrgencyComputer(mThreads[i]);
+
+            // Sort the threads by urgency
+            mThreads.Sort((x, y) => x.Urgency.CompareTo(y.Urgency)); 
         }
 
         public UrgencyComputer mUrgencyComputer = DefaultUrgencyComputer;

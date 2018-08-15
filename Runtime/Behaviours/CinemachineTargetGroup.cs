@@ -108,6 +108,51 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>Add a member to the group</summary>
+        public void AddMember(Transform t, float weight, float radius)
+        {
+            int index = 0;
+            if (m_Targets == null)
+                m_Targets = new Target[1];
+            else
+            {
+                index = m_Targets.Length;
+                var oldTargets = m_Targets;
+                m_Targets = new Target[index + 1];
+                Array.Copy(oldTargets, m_Targets, index);
+            }
+            m_Targets[index].target = t;
+            m_Targets[index].weight = weight;
+            m_Targets[index].radius = radius;
+        }
+
+        /// <summary>Remove a member from the group</summary>
+        public void RemoveMember(Transform t)
+        {
+            int index = FindMember(t);
+            if (index >= 0)
+            {
+                var oldTargets = m_Targets;
+                m_Targets = new Target[m_Targets.Length - 1];
+                if (index > 0)
+                    Array.Copy(oldTargets, m_Targets, index);
+                if (index < m_Targets.Length - 1)
+                    Array.Copy(oldTargets, index + 1, m_Targets, index, m_Targets.Length - index - 1);
+            }
+        }
+
+        /// <summary>Locate a member's index in the group. Returns -1 if not a member</summary>
+        public int FindMember(Transform t)
+        {
+            if (m_Targets != null)
+            {
+                for (int i = m_Targets.Length-1; i >= 0; --i)
+                    if (m_Targets[i].target == t)
+                        return i;
+            }
+            return -1;
+        }
+
         /// <summary>
         /// Get the bounding sphere of a group memebr, with the weight taken into account.
         /// As the member's weight goes to 0, the position lerps to the group average position.
