@@ -77,8 +77,8 @@ namespace Spectator
         public int NumThreads { get { return mThreads.Count; } }
         public StoryThread GetThread(int index) { return mThreads[index]; }
 
-        Dictionary<CinemachineTargetGroup, StoryThread> mThreadLookup 
-            = new Dictionary<CinemachineTargetGroup, StoryThread>();
+        Dictionary<Transform, StoryThread> mThreadLookup 
+            = new Dictionary<Transform, StoryThread>();
         List<CinemachineTargetGroup> mGroupRecycleBin = new List<CinemachineTargetGroup>();
 
         public StoryThread CreateStoryThread(string name)
@@ -100,7 +100,7 @@ namespace Spectator
             }
 
             StoryThread th = new StoryThread(group);
-            mThreadLookup[group] = th;
+            mThreadLookup[group.transform] = th;
             mThreads.Add(th);
             return th;
         }
@@ -109,7 +109,7 @@ namespace Spectator
         {
             if (th != null)
             {
-                mThreadLookup.Remove(th.TargetGroup);
+                mThreadLookup.Remove(th.TargetGroup.transform);
                 mThreads.Remove(th);
                 // Recycle the target group
                 th.TargetGroup.gameObject.SetActive(false);
@@ -120,7 +120,7 @@ namespace Spectator
                 LiveThread = null;
         }
 
-        public StoryThread LookupStoryThread(CinemachineTargetGroup group)
+        public StoryThread LookupStoryThread(Transform group)
         {
             StoryThread th;
             mThreadLookup.TryGetValue(group, out th);
