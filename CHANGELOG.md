@@ -4,12 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.8-preview.2] - 2018-08-10
-### Bugfixes, ooptimizations, and some experimental stuff
+## [2.2.8-preview.3] - 2018-08-20
+### Bugfixes, optimizations, and some experimental stuff
 - Updated documentation (corrections)
 - Optimization: position predictor is more efficient
 - Optimization: Composer caches some calculations 
-- Experimental damping algorithm: attempt to reduce sensitivity to variable framerate
+- Optional experimental damping algorithm: attempt to reduce sensitivity to variable framerate
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: allow impulse definition to be a non-public field (property drawer was complaining)
 - Bugfix: added null check for when there is no active virtual camera
 - Bugfix: CollisionImpulseSource typo in detection of 2D collider
+- Bugfix: PasteComponentValues to prefab vcams and FreeLooks were corrupting scene and prefabs
+- Bugfix: Timeline mixer was glitching for single frames at the end of blends
+- Bugfix: Added OnTransitionFromCamera() to POV and OrbitalTransposer, to transition axes
 
 ## [2.2.7] - 2018-07-24
 ### Mostly bugfixes
