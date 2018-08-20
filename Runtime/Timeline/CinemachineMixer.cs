@@ -57,7 +57,7 @@ namespace Cinemachine.Timeline
                 CinemachineShotPlayable shot = clip.GetBehaviour();
                 if (shot != null && shot.IsValid
                     && playable.GetPlayState() == PlayState.Playing
-                    && weight > 0.0001f)
+                    && weight > 0)
                 {
                     clipA = clipB;
                     clipB.vcam = shot.VirtualCamera;
