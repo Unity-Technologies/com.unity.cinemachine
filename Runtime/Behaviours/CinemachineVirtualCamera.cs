@@ -358,14 +358,20 @@ namespace Cinemachine
         [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;   // serialized to handle copy/paste
         void UpdateComponentPipeline()
         {
+            bool isPrefab = gameObject.scene.name == null;
+
             // Did we just get copy/pasted?
-            if (m_ComponentOwner != null && m_ComponentOwner.parent != transform)
+            if (!isPrefab  // can't paste to a prefab
+                && m_ComponentOwner != null && m_ComponentOwner.parent != transform)
             {
                 CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
                     ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : null;
                 DestroyPipeline();
                 m_ComponentOwner = CreatePipeline(copyFrom);
             }
+
+            if (isPrefab && m_ComponentOwner != null)
+                SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
 
             // Early out if we're up-to-date
             if (m_ComponentOwner != null && m_ComponentPipeline != null)
@@ -386,20 +392,29 @@ namespace Cinemachine
             }
 
             // Make sure we have a pipeline owner
-            if (m_ComponentOwner == null)
+            if (m_ComponentOwner == null && !isPrefab)
                 m_ComponentOwner = CreatePipeline(null);
 
             // Make sure the pipeline stays hidden, even through prefab
-            if (CinemachineCore.sShowHiddenObjects)
-                m_ComponentOwner.gameObject.hideFlags
-                    &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
-            else
-                m_ComponentOwner.gameObject.hideFlags
-                    |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+            if (m_ComponentOwner != null)
+                SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
+            if (m_ComponentOwner != null && m_ComponentOwner.gameObject != null)
+            {
+                // Sort the pipeline
+                list.Sort((c1, c2) => (int)c1.Stage - (int)c2.Stage);
+                m_ComponentPipeline = list.ToArray();
+            }
+        }
 
-            // Sort the pipeline
-            list.Sort((c1, c2) => (int)c1.Stage - (int)c2.Stage);
-            m_ComponentPipeline = list.ToArray();
+        static internal void SetFlagsForHiddenChild(GameObject child)
+        {
+            if (child != null)
+            {
+                if (CinemachineCore.sShowHiddenObjects)
+                    child.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+                else
+                    child.hideFlags |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+            }
         }
 
         private Transform mCachedLookAtTarget;

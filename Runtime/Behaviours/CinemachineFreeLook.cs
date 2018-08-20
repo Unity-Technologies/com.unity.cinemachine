@@ -439,20 +439,28 @@ namespace Cinemachine
             if (mIsDestroyed)
                 return;
 
+            bool isPrefab = gameObject.scene.name == null;
+
             // Special condition: Did we just get copy/pasted?
-            if (m_Rigs != null && m_Rigs.Length == 3 && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
+            if (!isPrefab   // can't paste to a prefab
+                && m_Rigs != null && m_Rigs.Length == 3 
+                && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
             {
                 var copyFrom = m_Rigs;
                 DestroyRigs();
                 m_Rigs = CreateRigs(copyFrom);
             }
 
+            for (int i = 0; isPrefab && m_Rigs != null && i < 3; ++i)
+                if (m_Rigs[i] != null)
+                    CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
+
             // Early out if we're up to date
             if (mOrbitals != null && mOrbitals.Length == 3)
                 return;
 
             // Locate existing rigs, and recreate them if any are missing
-            if (LocateExistingRigs(RigNames, false) != 3)
+            if (LocateExistingRigs(RigNames, false) != 3 && !isPrefab)
             {
                 DestroyRigs();
                 m_Rigs = CreateRigs(null);
@@ -540,12 +548,7 @@ namespace Cinemachine
                     m_Rigs[i].transform.rotation = transform.rotation;
                 }
                 // Hide the rigs from prying eyes
-                if (CinemachineCore.sShowHiddenObjects)
-                    m_Rigs[i].gameObject.hideFlags
-                        &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
-                else
-                    m_Rigs[i].gameObject.hideFlags
-                        |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+                CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 
                 mOrbitals[i].m_FollowOffset = GetLocalPositionForCameraFromInput(GetYAxisValue());
                 mOrbitals[i].m_BindingMode = m_BindingMode;
