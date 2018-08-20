@@ -7,6 +7,7 @@
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
+- Added NoLens blend hint, to leave camera Lens settings alone
 - Path editor: make sure game view gets updated when a path waypoint is dragged in the scene view
 - Bugfix: allow impulse definition to be a non-public field (property drawer was complaining)
 - Bugfix: added null check for when there is no active virtual camera
