@@ -37,8 +37,8 @@ namespace Spectator
 
         Dictionary<StoryManager.StoryThread, AggregatedGroup> mGroupLookup 
             = new Dictionary<StoryManager.StoryThread, AggregatedGroup>();
-        Dictionary<CinemachineTargetGroup, AggregatedGroup> mGroupMemberLookup
-            = new Dictionary<CinemachineTargetGroup, AggregatedGroup>();
+        Dictionary<CinemachineTargetGroup, List<AggregatedGroup> > mGroupMemberLookup
+            = new Dictionary<CinemachineTargetGroup, List<AggregatedGroup> >();
 
         private void Start()
         {
@@ -72,7 +72,12 @@ namespace Spectator
                 if (mGroupLookup.TryGetValue(ag.m_Children[i], out child))
                     child.m_Parents.Remove(ag.StoryThread);
                 else
-                    mGroupMemberLookup.Remove(ag.StoryThread.TargetGroup);
+                {
+                    var list = mGroupMemberLookup[ag.StoryThread.TargetGroup];
+                    list.Remove(ag);
+                    if (list.Count == 0)
+                        mGroupMemberLookup.Remove(ag.StoryThread.TargetGroup);
+                }
             }
             ag.m_Children.Clear();
 
@@ -91,60 +96,21 @@ namespace Spectator
             }
             else
             {
-                mGroupMemberLookup[member.TargetGroup] = ag;
+                List<AggregatedGroup> list;
+                if (!mGroupMemberLookup.TryGetValue(member.TargetGroup, out list))
+                    list = mGroupMemberLookup[member.TargetGroup] = new List<AggregatedGroup>();
+                list.Add(ag);
             }
             ag.StoryThread.TargetGroup.AddMember(
                 member.TargetGroup.transform, 1, member.TargetGroup.Sphere.radius);
         }
 
-        // Todo: make this automatic within CinemachineTargetGroup
-        private void UpdateGroupRadii(AggregatedGroup ag)
-        {
-            for (int i = 0; i < ag.m_Children.Count; ++i)
-            {
-                int index = ag.StoryThread.TargetGroup.FindMember(
-                    ag.m_Children[i].TargetGroup.transform);
-                if (index >= 0)
-                    ag.StoryThread.TargetGroup.m_Targets[index].radius 
-                        = ag.m_Children[i].TargetGroup.Sphere.radius;
-            }
-        }
-
-        private bool GroupIsTooBig(AggregatedGroup ag)
-        {
-            float r = ag.StoryThread.TargetGroup.Sphere.radius;
-            if (r > m_proximityThreshold + m_proximitySlush)
-                return true;
-            return false;
-        }
-
-        private void UpdateGroupInterestLevel(AggregatedGroup ag)
-        {
-            // Group interest level is just the sum of the members
-            float interest = 0;
-            var targets = ag.StoryThread.TargetGroup.m_Targets;
-            for (int i = 0; i < targets.Length; ++i)
-            {
-                var th = m_StoryManager.LookupStoryThread(targets[i].target);
-                if (th != null)
-                    interest += th.InterestLevel;
-            }
-            // Significantly less interesting if too big
-            if (GroupIsTooBig(ag))
-                interest /= 2;
-            ag.StoryThread.InterestLevel = interest;
-        }
-
-        private void CreateGroupsIfCloseEnough(AggregatedGroup ag, List<AggregatedGroup> newGroups)
-        {
-            // GML todo
-            // AggregatedGroup ag = new AggregatedGroup(m_StoryManager.CreateStoryThread(name));
-            // newGroups.Add(ag);
-        }
-
         List<AggregatedGroup> mScratchList = new List<AggregatedGroup>();
         private void Update()
         {
+            if (m_StoryManager == null)
+                return;
+
             // Update radii
             var it = mGroupLookup.GetEnumerator();
             while (it.MoveNext())
@@ -180,6 +146,89 @@ namespace Spectator
             {
                 var ag = it.Current.Value;
                 UpdateGroupInterestLevel(ag);
+            }
+        }
+
+        // Todo: make this automatic within CinemachineTargetGroup
+        private void UpdateGroupRadii(AggregatedGroup ag)
+        {
+            for (int i = 0; i < ag.m_Children.Count; ++i)
+            {
+                int index = ag.StoryThread.TargetGroup.FindMember(
+                    ag.m_Children[i].TargetGroup.transform);
+                if (index >= 0)
+                    ag.StoryThread.TargetGroup.m_Targets[index].radius 
+                        = ag.m_Children[i].TargetGroup.Sphere.radius;
+            }
+        }
+
+        private bool GroupIsTooBig(AggregatedGroup ag)
+        {
+            float r = ag.StoryThread.TargetGroup.Sphere.radius;
+            if (r > m_proximityThreshold + m_proximitySlush)
+                return true;
+            return false;
+        }
+
+        private bool GroupsAreCloseEnough(AggregatedGroup ag1, AggregatedGroup ag2)
+        {
+            float r1 = ag1.StoryThread.TargetGroup.Sphere.radius;
+            float r2 = ag2.StoryThread.TargetGroup.Sphere.radius;
+            if (r > m_proximityThreshold + m_proximitySlush)
+                return true;
+            return false;
+        }
+
+        private void UpdateGroupInterestLevel(AggregatedGroup ag)
+        {
+            // Group interest level is just the sum of the members
+            float interest = 0;
+            var targets = ag.StoryThread.TargetGroup.m_Targets;
+            for (int i = 0; i < targets.Length; ++i)
+            {
+                var th = m_StoryManager.LookupStoryThread(targets[i].target);
+                if (th != null)
+                    interest += th.InterestLevel;
+            }
+            // Significantly less interesting if too big
+            if (GroupIsTooBig(ag))
+                interest /= 2;
+            ag.StoryThread.InterestLevel = interest;
+        }
+
+        private bool ThreadsAreGrouped(StoryManager.StoryThread th1, StoryManager.StoryThread th2)
+        {
+            List<AggregatedGroup> list1, list2;
+            if (mGroupMemberLookup.TryGetValue(th1.TargetGroup, out list1)
+                && mGroupMemberLookup.TryGetValue(th2.TargetGroup, out list2))
+            {
+                for (int i1 = 0; i1 < list1.Count; ++i1)
+                {
+                    var ag1 = list1[i1];
+                    for (int i2 = 0; i2 < list2.Count; ++i2)
+                        if (ag1 == list2[i2])
+                            return true;
+                }
+            }
+            return false;
+        }
+
+        private void CreateGroupsIfCloseEnough(AggregatedGroup ag, List<AggregatedGroup> newGroups)
+        {
+            // GML todo
+            // AggregatedGroup ag = new AggregatedGroup(m_StoryManager.CreateStoryThread(name));
+            // newGroups.Add(ag);
+            int numThreads = m_StoryManager.NumThreads;
+            for (int i1 = 0; i1 < numThreads; ++i1)
+            {
+                var th1 = m_StoryManager.GetThread(i1);
+                for (int i2 = i1 + 1; i2 < numThreads; ++i2)
+                {
+                    var th2 = m_StoryManager.GetThread(i2);
+                    if (!ThreadsAreGrouped(th1, th2))
+                    {
+                    }
+                }
             }
         }
     }
