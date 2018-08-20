@@ -73,9 +73,9 @@ namespace Cinemachine.Timeline
             bool incomingIsB = clipB.weight >= 1 || clipB.localTime < clipB.duration / 2;
             if (activeInputs == 2)
             {
-                if (clipB.localTime > clipA.localTime)
+                if (clipB.localTime < clipA.localTime)
                     incomingIsB = true;
-                else if (clipB.localTime < clipA.localTime)
+                else if (clipB.localTime > clipA.localTime)
                     incomingIsB = false;
                 else 
                     incomingIsB = clipB.duration >= clipA.duration;
