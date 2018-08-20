@@ -288,7 +288,7 @@ namespace Cinemachine
         }
         
         /// <summary>Notification that this virtual camera is going live.
-        /// Base class implementationmust be called by any overridden method.</summary>
+        /// Base class implementation must be called by any overridden method.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>

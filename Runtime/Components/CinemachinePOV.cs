@@ -76,5 +76,28 @@ namespace Cinemachine
                 rot = rot * Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp);
             curState.RawOrientation = rot;
         }
+
+        /// <summary>Notification that this virtual camera is going live.
+        /// Base class implementation does nothing.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <returns>True if the vcam should do an internal update as a result of this call</returns>
+        public override bool OnTransitionFromCamera(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+        { 
+            CinemachineVirtualCamera vcamFrom = fromCam as CinemachineVirtualCamera;
+            if (vcamFrom != null)
+            {
+                var src = vcamFrom.GetCinemachineComponent<CinemachinePOV>();
+                if (src != null)
+                {
+                    m_HorizontalAxis.Value = src.m_HorizontalAxis.Value;
+                    m_VerticalAxis.Value = src.m_VerticalAxis.Value;
+                }
+                return true;
+            }
+            return false; 
+        }
     }
 }

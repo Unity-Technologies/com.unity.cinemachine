@@ -197,6 +197,15 @@ namespace Cinemachine
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public abstract void MutateCameraState(ref CameraState curState, float deltaTime);
+        
+        /// <summary>Notification that this virtual camera is going live.
+        /// Base class implementation does nothing.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <returns>True if the vcam should do an internal update as a result of this call</returns>
+        public virtual bool OnTransitionFromCamera(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) { return false; }
 
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera 

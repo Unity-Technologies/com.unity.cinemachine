@@ -269,13 +269,7 @@ namespace Cinemachine
                 CinemachineNewFreeLook freeLookFrom = fromCam as CinemachineNewFreeLook;
                 if (freeLookFrom != null && freeLookFrom.Follow == Follow)
                 {
-                    var orbital = Transposer as CinemachineOrbitalTransposer;
-                    if (orbital.m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                    {
-                        var src = freeLookFrom.Transposer as CinemachineOrbitalTransposer;
-                        if (src != null)
-                            orbital.m_XAxis.Value = src.m_XAxis.Value;
-                    }
+                    // Note: horixontal axis already taken care of by base class
                     m_VerticalAxis.Value = freeLookFrom.m_VerticalAxis.Value;
                     //m_RadialAxis.Value = freeLookFrom.m_RadialAxis.Value; // not a great idea
                     InternalUpdateCameraState(worldUp, deltaTime);

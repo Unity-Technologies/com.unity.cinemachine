@@ -497,6 +497,8 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            bool forceUpdate = false;
+
             if (m_Transitions.m_InheritPosition)
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
@@ -505,10 +507,20 @@ namespace Cinemachine
                     transform.position = brain.transform.position;
                     transform.rotation = brain.transform.rotation;
                     PreviousStateIsValid = false;
-                    InternalUpdateCameraState(worldUp, deltaTime);
+                    forceUpdate = true;
                 }
             }
-            UpdateCameraState(worldUp, deltaTime);
+            UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
+            if (m_ComponentPipeline != null)
+            {
+                for (int i = 0; i < m_ComponentPipeline.Length; ++i)
+                    if (m_ComponentPipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime))
+                        forceUpdate = true;
+            }
+            if (forceUpdate)
+                InternalUpdateCameraState(worldUp, deltaTime);
+            else
+                UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
                 m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
