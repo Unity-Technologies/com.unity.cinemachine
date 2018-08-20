@@ -20,7 +20,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteInEditMode, DisallowMultipleComponent]
-    [AddComponentMenu("CinemachineNewFreeLook")]
+    [AddComponentMenu("Cinemachine/CinemachineNewFreeLook")]
     [SaveDuringPlay]
     public class CinemachineNewFreeLook : CinemachineNewVirtualCamera
     {
