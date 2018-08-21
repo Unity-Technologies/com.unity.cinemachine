@@ -9,6 +9,7 @@ namespace Cinemachine
     /// Cinemachine Virtual Cameras.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
+    [ExecuteInEditMode]
     public class CinemachineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>
