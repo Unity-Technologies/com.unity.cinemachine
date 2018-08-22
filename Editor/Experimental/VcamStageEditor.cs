@@ -43,7 +43,7 @@ namespace Cinemachine.Editor
 
                 // Get all ICinemachineComponents
                 var allTypes
-                    = ReflectionHelpers.GetTypesInAllLoadedAssemblies(
+                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                             (Type t) => t.IsSubclassOf(typeof(CinemachineComponentBase)));
 
                 // GML todo: use class attribute instead

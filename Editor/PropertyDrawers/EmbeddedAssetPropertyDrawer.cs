@@ -185,7 +185,7 @@ namespace Cinemachine.Editor
             // Collect all the eligible asset types
             Type type = EmbeddedAssetType(property);
             if (mAssetTypes == null)
-                mAssetTypes = ReflectionHelpers.GetTypesInAllLoadedAssemblies(
+                mAssetTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                     (Type t) => t.IsSubclassOf(type)).ToArray();
 
             float iconSize = r.height + 4;

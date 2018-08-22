@@ -34,7 +34,7 @@ namespace Cinemachine.Editor
                 exts.Add(null);
                 names.Add("(select)");
                 var allExtensions
-                    = ReflectionHelpers.GetTypesInAllLoadedAssemblies(
+                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                             (Type t) => t.IsSubclassOf(typeof(CinemachineExtension)));
                 foreach (Type t in allExtensions)
                 {

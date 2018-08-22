@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using System.Reflection;
+using System.Linq;
 
 namespace Cinemachine.Editor
 {
@@ -287,7 +288,7 @@ namespace Cinemachine.Editor
 
             // Get all ICinemachineComponents
             var allTypes
-                = ReflectionHelpers.GetTypesInAllLoadedAssemblies(
+                = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                         (Type t) => t.IsSubclassOf(typeof(CinemachineComponentBase)));
 
             // Create a temp game object so we can instance behaviours
@@ -395,40 +396,47 @@ namespace Cinemachine.Editor
             static CollectGizmoDrawers()
             {
                 m_GizmoDrawers = new Dictionary<Type, MethodInfo>();
+                string definedIn = typeof(CinemachineComponentBase).Assembly.GetName().Name;
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 foreach (Assembly assembly in assemblies)
                 {
-                    try 
+                    // Note that we have to call GetName().Name.  Just GetName() will not work.  
+                    if ((!assembly.GlobalAssemblyCache) 
+                        && ((assembly.GetName().Name == definedIn) 
+                            || assembly.GetReferencedAssemblies().Any(a => a.Name == definedIn)))
                     {
-                        foreach (var type in assembly.GetTypes())
+                        try 
                         {
-                            try 
+                            foreach (var type in assembly.GetTypes())
                             {
-                                bool added = false;
-                                foreach (var method in type.GetMethods(
-                                             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+                                try 
                                 {
-                                    if (added)
-                                        break;
-                                    if (!method.IsStatic)
-                                        continue;
-                                    var attributes = method.GetCustomAttributes(typeof(DrawGizmo), true) as DrawGizmo[];
-                                    foreach (var a in attributes)
+                                    bool added = false;
+                                    foreach (var method in type.GetMethods(
+                                                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
                                     {
-                                        if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType))
-                                        {
-                                            m_GizmoDrawers.Add(a.drawnType, method);
-                                            added = true;
+                                        if (added)
                                             break;
+                                        if (!method.IsStatic)
+                                            continue;
+                                        var attributes = method.GetCustomAttributes(typeof(DrawGizmo), true) as DrawGizmo[];
+                                        foreach (var a in attributes)
+                                        {
+                                            if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType))
+                                            {
+                                                m_GizmoDrawers.Add(a.drawnType, method);
+                                                added = true;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
+                                catch (System.Exception) {} // Just skip uncooperative types
                             }
-                            catch (System.Exception) {} // Just skip uncooperative types
                         }
+                        catch (System.Exception) {} // Just skip uncooperative assemblies
                     }
-                    catch (System.Exception) {} // Just skip uncooperative assemblies
-               }
+                }
             }
             public static Dictionary<Type, MethodInfo> m_GizmoDrawers;
         }
@@ -441,7 +449,10 @@ namespace Cinemachine.Editor
             {
                 MethodInfo method;
                 if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
-                    method.Invoke(null, new object[] { c, selectionType });
+                {
+                    if (method != null)
+                        method.Invoke(null, new object[] { c, selectionType });
+                }
             }
         }
     }
