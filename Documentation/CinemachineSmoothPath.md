@@ -5,7 +5,7 @@ A __Cinemachine Smooth Path__ is a component that defines a world-space path, co
 ## Properties:
 
 | **Property:** || **Function:** |
-|:---|:---|
+|:---|:---|:---|
 | __Resolution__ || Path samples per waypoint. Cinemachine uses this value to calculate path distances. |
 | __Looped__ || If checked, then the path ends are joined to form a continuous loop. |
 | __Waypoints__ || The waypoints that define the path. They are interpolated using a bezier curve. |
