@@ -62,9 +62,9 @@ namespace Cinemachine.Utility
         /// <summary>Get a type from a name</summary>
         /// <param name="typeName">The name of the type to search for</param>
         /// <returns>The type matching the name, or null if not found</returns>
-        public static Type GetTypeInAllLoadedAssemblies(string typeName)
+        public static Type GetTypeInAllDependentAssemblies(string typeName)
         {
-            foreach (Type type in GetTypesInAllLoadedAssemblies(t => t.Name == typeName))
+            foreach (Type type in GetTypesInAllDependentAssemblies(t => t.Name == typeName))
                 return type;
             return null;
         }
@@ -72,18 +72,27 @@ namespace Cinemachine.Utility
         /// <summary>Search all assemblies for all types that match a predicate</summary>
         /// <param name="predicate">The type to look for</param>
         /// <returns>A list of types found in the assembly that inherit from the predicate</returns>
-        public static IEnumerable<Type> GetTypesInAllLoadedAssemblies(Predicate<Type> predicate)
+        public static IEnumerable<Type> GetTypesInAllDependentAssemblies(Predicate<Type> predicate)
         {
-            Assembly[] assemblies = System.AppDomain.CurrentDomain.GetAssemblies();
             List<Type> foundTypes = new List<Type>(100);
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            string definedIn = typeof(CinemachineComponentBase).Assembly.GetName().Name;
             foreach (Assembly assembly in assemblies)
             {
-                foreach (Type foundType in GetTypesInAssembly(assembly, predicate))
-                    foundTypes.Add(foundType);
+                // Note that we have to call GetName().Name.  Just GetName() will not work.  
+                if ((!assembly.GlobalAssemblyCache) 
+                    && ((assembly.GetName().Name == definedIn) 
+                        || assembly.GetReferencedAssemblies().Any(a => a.Name == definedIn)))
+                try
+                {
+                    foreach (Type foundType in GetTypesInAssembly(assembly, predicate))
+                        foundTypes.Add(foundType);
+                }
+                catch (Exception) {} // Just skip uncooperative assemblies
             }
             return foundTypes;
         }
-
+#if false
         /// <summary>call GetTypesInAssembly() for all assemblies that match a predicate</summary>
         /// <param name="assemblyPredicate">Which assemblies to search</param>
         /// <param name="predicate">What type to look for</param>
@@ -123,7 +132,7 @@ namespace Cinemachine.Utility
             }
             return false;
         }
-
+#endif
         /// <summary>Cheater extension to access internal field of an object</summary>
         /// <param name="type">The type of the field</param>
         /// <param name="obj">The object to access</param>

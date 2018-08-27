@@ -507,8 +507,10 @@ namespace Cinemachine
             var outGoingCamera = frame.blend.CamB;
             if (activeCamera != outGoingCamera)
             {
+
                 // Do we need to create a game-play blend?
-                if (activeCamera != null && outGoingCamera != null && deltaTime >= 0)
+                if ((UnityEngine.Object)activeCamera != null
+                    && (UnityEngine.Object)outGoingCamera != null && deltaTime >= 0)
                 {
                     // Create a blend (curve will be null if a cut)
                     var blendDef = LookupBlend(outGoingCamera, activeCamera);
