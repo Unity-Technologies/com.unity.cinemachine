@@ -1,4 +1,4 @@
-<size=20><b>Version 2.2.8-preview.4</b></size>
+<size=20><b>Version 2.2.8-preview.5</b></size>
 
 - Updated documentation (corrections)
 - Optimization: position predictor is more efficient
