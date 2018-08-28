@@ -103,16 +103,12 @@ namespace Cinemachine
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
-            if (m_Transitions.m_InheritPosition)
+            if (m_Transitions.m_InheritPosition && fromCam != null)
             {
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
-                if (brain != null)
-                {
-                    transform.position = brain.transform.position;
-                    transform.rotation = brain.transform.rotation;
-                    PreviousStateIsValid = false;
-                    forceUpdate = true;
-                }
+                transform.position = fromCam.State.RawPosition;
+                //transform.rotation = fromCam.State.RawOrientation;
+                PreviousStateIsValid = false;
+                forceUpdate = true;
             }
             UpdateComponentCache();
             for (int i = 0; i < m_Components.Length; ++i)

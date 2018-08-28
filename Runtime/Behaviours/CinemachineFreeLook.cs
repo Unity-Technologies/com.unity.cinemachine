@@ -308,7 +308,7 @@ namespace Cinemachine
                 if (brain != null)
                 {
                     transform.position = brain.transform.position;
-                    transform.rotation = brain.transform.rotation;
+                    //transform.rotation = brain.transform.rotation;
                     m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
                     PreviousStateIsValid = false;
                     PushSettingsToRigs();
