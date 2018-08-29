@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -18,7 +19,7 @@ namespace Cinemachine
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
         [AxisStateProperty]
-        public AxisState m_VerticalAxis = new AxisState(-90, 90, false, false, 300f, 0.1f, 0.1f, "Mouse Y", true);
+        public AxisState m_VerticalAxis = new AxisState(-70, 70, false, false, 300f, 0.1f, 0.1f, "Mouse Y", true);
 
         /// <summary>Controls how automatic recentering of the Vertical axis is accomplished</summary>
         [Tooltip("Controls how automatic recentering of the Vertical axis is accomplished")]
@@ -57,7 +58,7 @@ namespace Cinemachine
                 return;
 
             // Only read joystick when game is playing
-            if (deltaTime >= 0 || CinemachineCore.Instance.IsLive(VirtualCamera))
+            if (deltaTime >= 0 && CinemachineCore.Instance.IsLive(VirtualCamera))
             {
                 if (m_HorizontalAxis.Update(deltaTime))
                     m_HorizontalRecentering.CancelRecentering();
@@ -86,15 +87,29 @@ namespace Cinemachine
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         { 
-            CinemachineVirtualCamera vcamFrom = fromCam as CinemachineVirtualCamera;
-            if (vcamFrom != null)
+            if (fromCam != null)
             {
-                var src = vcamFrom.GetCinemachineComponent<CinemachinePOV>();
-                if (src != null)
-                {
-                    m_HorizontalAxis.Value = src.m_HorizontalAxis.Value;
-                    m_VerticalAxis.Value = src.m_VerticalAxis.Value;
-                }
+                Vector3 up = VcamState.ReferenceUp;
+                Quaternion targetRot = fromCam.State.RawOrientation;
+                Vector3 fwd = Vector3.forward;
+                Transform parent = VirtualCamera.transform.parent;
+                if (parent != null)
+                    fwd = parent.rotation * fwd;
+
+                m_HorizontalAxis.Value = 0;
+                m_HorizontalAxis.Reset();
+                Vector3 targetFwd = targetRot * Vector3.forward;
+                Vector3 a = fwd.ProjectOntoPlane(up);
+                Vector3 b = targetFwd.ProjectOntoPlane(up);
+                if (!a.AlmostZero() && !b.AlmostZero())
+                    m_HorizontalAxis.Value = Vector3.SignedAngle(a, b, up);
+
+                m_VerticalAxis.Value = 0;
+                m_VerticalAxis.Reset();
+                fwd = Quaternion.AngleAxis(m_HorizontalAxis.Value, up) * fwd;
+                Vector3 right = Vector3.Cross(up, fwd);
+                if (!right.AlmostZero())
+                    m_VerticalAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
                 return true;
             }
             return false; 
