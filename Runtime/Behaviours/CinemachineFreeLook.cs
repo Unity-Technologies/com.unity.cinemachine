@@ -291,29 +291,19 @@ namespace Cinemachine
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
-            if (fromCam != null)
+            if (fromCam != null && m_Transitions.m_InheritPosition)
             {
-                CinemachineFreeLook freeLookFrom = fromCam as CinemachineFreeLook;
-                if (freeLookFrom != null && freeLookFrom.Follow == Follow)
-                {
-                    if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                        m_XAxis.Value = freeLookFrom.m_XAxis.Value;
-                    m_YAxis.Value = freeLookFrom.m_YAxis.Value;
-                    forceUpdate = true;
-                }
-            }
-            if (m_Transitions.m_InheritPosition)
-            {
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
-                if (brain != null)
-                {
-                    transform.position = brain.transform.position;
-                    //transform.rotation = brain.transform.rotation;
-                    m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
-                    PreviousStateIsValid = false;
-                    PushSettingsToRigs();
-                    forceUpdate = true;
-                }
+                var cameraPos = fromCam.State.RawPosition;
+                UpdateRigCache();
+                if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                    m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(cameraPos, worldUp);
+                m_YAxis.Value = GetYAxisClosestValue(cameraPos, worldUp);
+
+                transform.position = cameraPos;
+                m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+                PreviousStateIsValid = false;
+                PushSettingsToRigs();
+                forceUpdate = true;
             }
             if (forceUpdate)
                 InternalUpdateCameraState(worldUp, deltaTime);
@@ -321,6 +311,54 @@ namespace Cinemachine
                 UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
                 m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
+        }
+
+        float GetYAxisClosestValue(Vector3 cameraPos, Vector3 up)
+        {
+            if (Follow != null)
+            {
+                // Rotate the camera pos to the back
+                Quaternion q = Quaternion.FromToRotation(up, Vector3.up);
+                Vector3 dir = q * (cameraPos - Follow.position);
+                Vector3 flatDir = dir; flatDir.y = 0;
+                if (!flatDir.AlmostZero())
+                {
+                    float angle = Vector3.SignedAngle(flatDir, Vector3.back, Vector3.up);
+                    dir = Quaternion.AngleAxis(angle, Vector3.up) * dir;
+                }
+                // Sample the spline in a few places, find the 2 closest, and lerp
+                int i0 = 0, i1 = 0;
+                float a0 = 0, a1 = 0;
+                const int NumSamples = 5;
+                float step = 1f / (NumSamples-1);
+                for (int i = 0; i < NumSamples; ++i)
+                {
+                    float a = Vector3.SignedAngle(
+                        dir, GetLocalPositionForCameraFromInput(i * step), Vector3.right);
+                    if (i == 0)
+                        a0 = a1 = a;
+                    else
+                    {
+                        if (Mathf.Abs(a) < Mathf.Abs(a0))
+                        {
+                            a1 = a0;
+                            i1 = i0;
+                            a0 = a;
+                            i0 = i;
+                        }
+                        else if (Mathf.Abs(a) < Mathf.Abs(a1))
+                        {
+                            a1 = a;
+                            i1 = i;
+                        }
+                    }
+                }
+                if (Mathf.Sign(a0) == Mathf.Sign(a1))
+                    return i0 * step;
+                float t = Mathf.Abs(a0) / (Mathf.Abs(a0) + Mathf.Abs(a1));
+                return Mathf.Lerp(i0 * step, i1 * step, t);
+            }
+            return m_YAxis.Value; // stay conservative
         }
 
         CameraState m_State = CameraState.Default;          // Current state this frame

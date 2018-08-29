@@ -226,20 +226,43 @@ namespace Cinemachine
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         { 
-            CinemachineVirtualCamera vcamFrom = fromCam as CinemachineVirtualCamera;
-            if (vcamFrom != null && vcamFrom.Follow == FollowTarget)
+            if (fromCam != null && fromCam.Follow == FollowTarget
+                && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
             {
-                var src = vcamFrom.GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                if (src != null
-                    && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
-                    && src.m_BindingMode == m_BindingMode)
-                {
-                    m_XAxis.Value = src.m_XAxis.Value;
-                }
+                m_XAxis.Value = GetAxisClosestValue(fromCam.State.RawPosition, worldUp);
                 return true;
             }
             return false; 
         }
+
+        /// <summary>
+        /// What axis value would we need to get as close as possible to the desired cameraPos?
+        /// </summary>
+        /// <param name="cameraPos">camera position we would like to approximate</param>
+        /// <param name="up">world up</param>
+        /// <returns>The best value to put into the X axis, to approximate the desired camera pos</returns>
+        public float GetAxisClosestValue(Vector3 cameraPos, Vector3 up)
+        {
+            Quaternion orient = GetReferenceOrientation(up);
+            Vector3 fwd = (orient * Vector3.forward).ProjectOntoPlane(up);
+            if (!fwd.AlmostZero() && FollowTarget != null)
+            {
+                // Get the base camera placement
+                float heading = 0;
+                if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+                    heading += m_Heading.m_Bias;
+                orient = orient *  Quaternion.AngleAxis(heading, up);
+                Vector3 targetPos = FollowTargetPosition;
+                Vector3 pos = targetPos + orient * EffectiveOffset;
+
+                Vector3 a = (pos - targetPos).ProjectOntoPlane(up);
+                Vector3 b = (cameraPos - targetPos).ProjectOntoPlane(up);
+                return Vector3.SignedAngle(a, b, up);
+            }
+            return LastHeading; // Can't calculate, stay conservative
+        }
+
+        float LastHeading { get; set; }
 
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
@@ -256,7 +279,8 @@ namespace Cinemachine
                 mLastTargetPosition = (PreviousTarget == null) ? Vector3.zero : PreviousTarget.position;
                 mHeadingTracker = null;
             }
-            float heading = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
+            LastHeading = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
+            float heading = LastHeading;
 
             if (IsValid)
             {
