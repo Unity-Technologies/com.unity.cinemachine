@@ -525,7 +525,8 @@ namespace Cinemachine
             if (m_ComponentPipeline != null)
             {
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
-                    if (m_ComponentPipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime))
+                    if (m_ComponentPipeline[i].OnTransitionFromCamera(
+                            fromCam, worldUp, deltaTime, ref m_Transitions))
                         forceUpdate = true;
             }
             if (forceUpdate)
