@@ -164,17 +164,21 @@ namespace Spectator
 
         private bool GroupIsTooBig(AggregatedGroup ag)
         {
-            float r = ag.StoryThread.TargetGroup.Sphere.radius;
-            if (r > m_proximityThreshold + m_proximitySlush)
+            var targets = ag.StoryThread.TargetGroup.m_Targets;
+            if (targets.Length != 2)
+                return true;
+            var p1 = targets[0].target.position;
+            var p2 = targets[1].target.position;
+            if (Vector3.Distance(p1, p2) > m_proximityThreshold + m_proximitySlush)
                 return true;
             return false;
         }
 
         private bool GroupsAreCloseEnough(AggregatedGroup ag1, AggregatedGroup ag2)
         {
-            float r1 = ag1.StoryThread.TargetGroup.Sphere.radius;
-            float r2 = ag2.StoryThread.TargetGroup.Sphere.radius;
-            if (r > m_proximityThreshold + m_proximitySlush)
+            var p1 = ag1.StoryThread.TargetGroup.transform.position;
+            var p2 = ag2.StoryThread.TargetGroup.transform.position;
+            if (Vector3.Distance(p1, p2) < m_proximityThreshold)
                 return true;
             return false;
         }
