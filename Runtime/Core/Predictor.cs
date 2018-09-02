@@ -119,6 +119,8 @@ namespace Cinemachine.Utility
 #if CINEMACHINE_EXPERIMENTAL_DAMPING
             // Try to reduce damage caused by frametime variability
             float step = Time.fixedDeltaTime;
+            if (deltaTime != step)
+                step /= 5;
             int numSteps = Mathf.FloorToInt(deltaTime / step);
             float vel = initial * step / deltaTime;
             float r = 0;
