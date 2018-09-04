@@ -207,7 +207,7 @@ namespace Cinemachine.Editor
                     (CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom) =>
                     {
                         // Create a new pipeline
-                        GameObject go =  new GameObject(name);
+                        GameObject go =  InspectorUtility.CreateGameObject(name);
                         Undo.RegisterCreatedObjectUndo(go, "created pipeline");
                         Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
                         Undo.AddComponent<CinemachinePipeline>(go);

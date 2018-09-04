@@ -119,7 +119,7 @@ namespace Cinemachine
                     = (CinemachineFreeLook vcam, string name, CinemachineVirtualCamera copyFrom) =>
                     {
                         // Create a new rig with default components
-                        GameObject go = new GameObject(name);
+                        GameObject go = InspectorUtility.CreateGameObject(name);
                         Undo.RegisterCreatedObjectUndo(go, "created rig");
                         Undo.SetTransformParent(go.transform, vcam.transform, "parenting rig");
                         CinemachineVirtualCamera rig = Undo.AddComponent<CinemachineVirtualCamera>(go);

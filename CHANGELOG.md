@@ -4,23 +4,25 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.8-preview.5] - 2018-08-28
+## [2.2.8-preview.6] - 2018-09-04
 ### Bugfixes, optimizations, and some experimental stuff
-- Updated documentation (corrections)
 - Optimization: position predictor is more efficient
 - Optimization: Composer caches some calculations 
-- Optional experimental damping algorithm: attempt to reduce sensitivity to variable framerate
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
 - Added NoLens blend hint, to leave camera Lens settings alone
 - Path editor: make sure game view gets updated when a path waypoint is dragged in the scene view
+- Updated documentation (corrections)
+- Upgrade: added support for nested prefabs in Unity 2018.3 (fogbugz 1077395)
+- Experimental: Optional new damping algorithm: attempt to reduce sensitivity to variable framerate
+- Experimental: Optional new extra-efficient versions of vcam and FreeLook (not back-compatible)
 - Bugfix: allow impulse definition to be a non-public field (property drawer was complaining)
 - Bugfix: added null check for when there is no active virtual camera
 - Bugfix: CollisionImpulseSource typo in detection of 2D collider
 - Bugfix: PasteComponentValues to prefab vcams and FreeLooks were corrupting scene and prefabs
 - Bugfix: Timeline mixer was glitching for single frames at the end of blends
-- Bugfix: Added OnTransitionFromCamera() to POV and OrbitalTransposer, to transition axes
+- Bugfix: Added OnTransitionFromCamera() to POV and OrbitalTransposer, to transition axes intelligently
 
 ## [2.2.7] - 2018-07-24
 ### Mostly bugfixes
