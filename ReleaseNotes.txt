@@ -1,4 +1,4 @@
-<size=20><b>Version 2.2.8-preview.6</b></size>
+<size=20><b>Version 2.2.8-preview.7</b></size>
 
 - Optimization: position predictor is more efficient
 - Optimization: Composer caches some calculations 
@@ -17,6 +17,7 @@
 - Bugfix: PasteComponentValues to prefab vcams and FreeLooks were corrupting scene and prefabs
 - Bugfix: Timeline mixer was glitching for single frames at the end of blends
 - Bugfix: Added OnTransitionFromCamera() to POV and OrbitalTransposer, to transition axes intelligently
+- Regression fix: if no active vcam, don't set the Camera's transform
 
 <size=20><b>Version 2.2.7</b></size>
 

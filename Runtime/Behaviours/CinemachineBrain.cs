@@ -1,9 +1,9 @@
+using Cinemachine.Utility;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Cinemachine.Utility;
 using UnityEngine.Events;
-using System.Collections;
 
 namespace Cinemachine
 {
@@ -477,24 +477,27 @@ namespace Cinemachine
         ICinemachineCamera mActiveCameraPreviousFrame;
         private void ProcessActiveCamera(float deltaTime)
         {
-            // Has the current camera changed this frame?
             var activeCamera = ActiveVirtualCamera;
-            if (activeCamera != mActiveCameraPreviousFrame)
+            if (activeCamera != null)
             {
-                // Notify incoming camera of transition
-                if (activeCamera != null)
-                    activeCamera.OnTransitionFromCamera(mActiveCameraPreviousFrame, DefaultWorldUp, deltaTime);
-                if (m_CameraActivatedEvent != null)
-                    m_CameraActivatedEvent.Invoke(activeCamera, mActiveCameraPreviousFrame);
+                // Has the current camera changed this frame?
+                if (activeCamera != mActiveCameraPreviousFrame)
+                {
+                    // Notify incoming camera of transition
+                    activeCamera.OnTransitionFromCamera(
+                        mActiveCameraPreviousFrame, DefaultWorldUp, deltaTime);
+                    if (m_CameraActivatedEvent != null)
+                        m_CameraActivatedEvent.Invoke(activeCamera, mActiveCameraPreviousFrame);
 
-                // If we're cutting without a blend, send an event
-                if (m_CameraCutEvent != null && !IsBlending)
-                    m_CameraCutEvent.Invoke(this);
+                    // If we're cutting without a blend, send an event
+                    if (m_CameraCutEvent != null && !IsBlending)
+                        m_CameraCutEvent.Invoke(this);
+                }
+                // Apply the vcam state to the Unity camera
+                PushStateToUnityCamera(
+                    SoloCamera != null ? SoloCamera.State : mCurrentLiveCameras.State);
             }
-            mActiveCameraPreviousFrame = ActiveVirtualCamera;
-
-            // Apply the result to the Unity camera
-            PushStateToUnityCamera(SoloCamera != null ? SoloCamera.State : mCurrentLiveCameras.State);
+            mActiveCameraPreviousFrame = activeCamera;
         }
 
         private void UpdateFrame0(float deltaTime)

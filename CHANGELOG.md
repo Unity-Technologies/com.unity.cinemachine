@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.8-preview.6] - 2018-09-04
+## [2.2.8-preview.7] - 2018-09-05
 ### Bugfixes, optimizations, and some experimental stuff
 - Optimization: position predictor is more efficient
 - Optimization: Composer caches some calculations 
@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: PasteComponentValues to prefab vcams and FreeLooks were corrupting scene and prefabs
 - Bugfix: Timeline mixer was glitching for single frames at the end of blends
 - Bugfix: Added OnTransitionFromCamera() to POV and OrbitalTransposer, to transition axes intelligently
+- Regression fix: if no active vcam, don't set the Camera's transform
 
 ## [2.2.7] - 2018-07-24
 ### Mostly bugfixes
