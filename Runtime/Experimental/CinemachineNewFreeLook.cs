@@ -284,10 +284,12 @@ namespace Cinemachine
                     float angle = Vector3.SignedAngle(flatDir, Vector3.back, Vector3.up);
                     dir = Quaternion.AngleAxis(angle, Vector3.up) * dir;
                 }
+                dir.x = 0;
+
                 // Sample the spline in a few places, find the 2 closest, and lerp
                 int i0 = 0, i1 = 0;
                 float a0 = 0, a1 = 0;
-                const int NumSamples = 5;
+                const int NumSamples = 13;
                 float step = 1f / (NumSamples-1);
                 for (int i = 0; i < NumSamples; ++i)
                 {
@@ -316,7 +318,7 @@ namespace Cinemachine
                 float t = Mathf.Abs(a0) / (Mathf.Abs(a0) + Mathf.Abs(a1));
                 return Mathf.Lerp(i0 * step, i1 * step, t);
             }
-            return m_VerticalAxis.Value; // stay conservative
+            return m_YAxis.Value; // stay conservative
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
