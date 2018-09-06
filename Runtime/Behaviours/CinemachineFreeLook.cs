@@ -326,10 +326,12 @@ namespace Cinemachine
                     float angle = Vector3.SignedAngle(flatDir, Vector3.back, Vector3.up);
                     dir = Quaternion.AngleAxis(angle, Vector3.up) * dir;
                 }
+                dir.x = 0;
+
                 // Sample the spline in a few places, find the 2 closest, and lerp
                 int i0 = 0, i1 = 0;
                 float a0 = 0, a1 = 0;
-                const int NumSamples = 5;
+                const int NumSamples = 13;
                 float step = 1f / (NumSamples-1);
                 for (int i = 0; i < NumSamples; ++i)
                 {
