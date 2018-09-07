@@ -1,58 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Spectator;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
 public class CinemachineStoryThreadTesterWindow : EditorWindow
 {
-    [Serializable]
-    public class StoryThread
-    {
-        public string Name;
 
-        // Interest level - Controlled by the dev, to focus on a specific thread he judges relevant.
-        // This is used as part of the weighting algorithm when calculating urgency
-        public float InterestLevel;
-
-
-        public float RateModifier = 1;
-
-        // Time when last on-screen
-        public float TimeLastSeenStart;
-        public float TimeLastSeenStop;
-
-        public float UrgencyDerivative;
-
-        // Last on-screen duration
-        public float LastOnScreenDuration { get { return TimeLastSeenStop - TimeLastSeenStart; } }
-
-        // Urgency - decays while on-screen, increases otherwise.
-        // Events and action states influence this heavily.
-        // The Urgency evolution function is non-trivial and is configurable
-        public float Urgency;
-
-        public float InterestAccumulator;
-    }
-
-    private enum ImportanceMode
-    {
-        Linear = 0,
-        Logarithmic10 = 1,
-        Logarithmic2 = 2,
-    }
+    StoryManager mStoryManager;
 
     ReorderableList mThreadEditList;
-    public List<StoryThread> mThreads = new List<StoryThread>();
+    public List<StoryManager.StoryThread> mThreads = new List<StoryManager.StoryThread>();
 
     GUIStyle mHelpBoxStyle;
-    int mActiveThreadIndex = -1;
-    int mHighestUrgencyIndex = -1;
     bool mSimulating;
-    float mThreadHysteresisSeconds = 3f;
-    ImportanceMode mDecayUrgencyeMode = ImportanceMode.Logarithmic10;
-    ImportanceMode mGrowUrgencyMode = ImportanceMode.Logarithmic10;
 
     GUIContent mUrgencyHeader;
     GUIContent mLastActiveHeader;
@@ -73,88 +36,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
 
     private void OnEnable()
     {
-        mThreadEditList = new ReorderableList(mThreads, typeof(StoryThread), false, true, true, true);
-        mThreadEditList.drawHeaderCallback += delegate(Rect rect)
-        {
-            EditorGUI.LabelField(rect, "Threads");
-        };
-        mThreadEditList.onAddCallback += list =>
-        {
-            mThreads.Add(new StoryThread()
-            {
-                Name = "New thread",
-                InterestLevel = 1,
-                Urgency = 0,
-                RateModifier = 1f,
-                TimeLastSeenStart = -1,
-                TimeLastSeenStop = -1
-            });
-        };
 
-        mThreadEditList.elementHeightCallback += index => mThreadEditList.elementHeight * 2f;
-
-        mThreadEditList.drawElementBackgroundCallback += (rect, index, active, focused) => {
-            if (active)
-            {
-                GUI.color = Color.cyan;
-                GUI.Box(rect, string.Empty);
-            }
-            else if (index % 2 == 0)
-            {
-                GUI.Box(rect, "");
-            }
-
-            GUI.color = Color.white;
-        };
-
-
-        mThreadEditList.drawElementCallback += (rect, index, active, focused) =>
-        {
-            float height = mThreadEditList.elementHeight;
-            rect.height = height;
-
-            GUIStyle lableStyle = GUI.skin.label;
-
-            StoryThread thread = mThreads[index];
-
-            float labelMin, labelMax;
-            const string kLabelForName = "Name";
-            const float kLabelPadding = 16f;
-            lableStyle.CalcMinMaxWidth(new GUIContent(kLabelForName), out labelMin, out labelMax);
-            labelMax += kLabelPadding;
-
-            float oldWidth = rect.width;
-
-            Rect labelRect = rect;
-            labelRect.width = labelMax;
-            EditorGUI.LabelField(labelRect, kLabelForName);
-
-            rect.xMin = labelMax;
-            rect.width = oldWidth - labelMax;
-            thread.Name = EditorGUI.TextField(rect, thread.Name);
-
-            const float kIndentSize = 20f;
-
-            oldWidth -= kIndentSize;
-            rect.xMin = kIndentSize;
-            rect.width = oldWidth;
-            rect.yMin += height;
-            rect.height = height;
-
-            const string kLabelForGrowth = "Growth Rate";
-            lableStyle.CalcMinMaxWidth(new GUIContent(kLabelForGrowth), out labelMin, out labelMax);
-            labelMax += kLabelPadding;
-
-            oldWidth = rect.width;
-
-            labelRect = rect;
-            labelRect.width = labelMax;
-            EditorGUI.LabelField(labelRect, kLabelForGrowth);
-
-            rect.xMin = labelMax + kIndentSize;
-            rect.width = oldWidth - labelMax;
-            thread.RateModifier = EditorGUI.FloatField(rect, thread.RateModifier);
-        };
     }
 
     private void OnGUI()
@@ -177,6 +59,23 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
         }
 
 
+        EditorGUI.BeginChangeCheck();
+        mStoryManager = EditorGUILayout.ObjectField("Story Manager", mStoryManager, typeof(StoryManager), true) as StoryManager;
+        if (EditorGUI.EndChangeCheck())
+        {
+            RebuildReorderableList();
+        }
+
+        if (mStoryManager == null)
+        {
+            return;
+        }
+
+        if (mThreadEditList == null)
+        {
+            RebuildReorderableList();
+        }
+
         EditorGUILayout.LabelField("Edit initial threads");
         GUI.enabled = !mSimulating;
         mThreadEditList.DoLayoutList();
@@ -184,14 +83,13 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
 
         if (!mSimulating && GUILayout.Button("Start Simulation"))
         {
+            mStoryManager.LiveThread = null;
             foreach (var thread in mThreads)
             {
                 thread.Urgency = thread.InterestLevel;
                 thread.TimeLastSeenStart = -1;
                 thread.TimeLastSeenStop = -1;
             }
-
-            SetActiveThread(mThreads.OrderByDescending(t => t.Urgency).First());
             mSimulating = true;
         }
         else if (mSimulating && GUILayout.Button("Stop simulation"))
@@ -280,9 +178,9 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
             GUI.color = Color.white;
         }
 
-        mThreadHysteresisSeconds = EditorGUILayout.Slider("Min story time (sec)", mThreadHysteresisSeconds, 0.5f, 10f);
-        mDecayUrgencyeMode = (ImportanceMode)EditorGUILayout.EnumPopup(mDecayTypeHeader, mDecayUrgencyeMode);
-        mGrowUrgencyMode = (ImportanceMode)EditorGUILayout.EnumPopup(mGrowTypeHeader, mGrowUrgencyMode);
+        mStoryManager.m_MinimumThreadTime = EditorGUILayout.Slider("Min story time (sec)", mStoryManager.m_MinimumThreadTime, 0.5f, 10f);
+        mStoryManager.DecayUrgencyeMode = (StoryManager.ImportanceMode)EditorGUILayout.EnumPopup(mDecayTypeHeader, mStoryManager.DecayUrgencyeMode);
+        mStoryManager.GrowUrgencyMode = (StoryManager.ImportanceMode)EditorGUILayout.EnumPopup(mGrowTypeHeader, mStoryManager.GrowUrgencyMode);
 
         using (new GUILayout.VerticalScope(GUI.skin.box))
         {
@@ -290,30 +188,15 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
         }
     }
 
-    private void SetActiveThread(StoryThread toThread)
+    private Color GetThreadGUIColour(StoryManager.StoryThread thread)
     {
-        if (mActiveThreadIndex != -1)
-        {
-            mThreads[mActiveThreadIndex].TimeLastSeenStop = (float)EditorApplication.timeSinceStartup;
-            //Decay here based on temporal importance: if this one generated a lot of interest so reduce its interest level but not completely
-            mThreads[mActiveThreadIndex].Urgency = Mathf.Max(mThreads[mActiveThreadIndex].Urgency, Mathf.Log10(mThreads[mActiveThreadIndex].InterestLevel));
-        }
-
-        mActiveThreadIndex = mThreads.IndexOf(toThread);
-        toThread.TimeLastSeenStart = (float)EditorApplication.timeSinceStartup;
-    }
-
-    private Color GetThreadGUIColour(StoryThread thread)
-    {
-        int threadIdx = mThreads.IndexOf(thread);
-
         Color guiColour = Color.white;
 
-        if (threadIdx == mActiveThreadIndex)
+        if (thread == mStoryManager.LiveThread)
         {
             guiColour = Color.green;
         }
-        else if (threadIdx == mHighestUrgencyIndex)
+        else if (thread == mStoryManager.NextLiveThread)
         {
             guiColour = Color.yellow;
         }
@@ -321,90 +204,118 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
         return guiColour;
     }
 
-    private void DecayStoryThreadUrgency(StoryThread thread, float deltaTime)
-    {
-        switch (mDecayUrgencyeMode)
-        {
-            case ImportanceMode.Logarithmic10:
-                thread.Urgency = thread.Urgency - deltaTime * 1f / Mathf.Log10(thread.InterestLevel + 2f);
-                break;
-
-            case ImportanceMode.Logarithmic2:
-                thread.Urgency = thread.Urgency - deltaTime * 1f / Mathf.Log(thread.InterestLevel + 2f);
-                break;
-
-            case ImportanceMode.Linear:
-                thread.Urgency = thread.Urgency - deltaTime * 1f / thread.InterestLevel;
-                break;
-        }
-
-        thread.Urgency = Mathf.Max(0f, thread.Urgency);
-    }
-
-    private void GrowStoryThreadUrgency(StoryThread thread, float deltaTime)
-    {
-        float urgencyDelta = 0f;
-        switch (mGrowUrgencyMode)
-        {
-            case ImportanceMode.Logarithmic10:
-                urgencyDelta = Mathf.Log10(thread.InterestLevel + 1f) * deltaTime;
-                break;
-
-            case ImportanceMode.Logarithmic2:
-                urgencyDelta = Mathf.Log(thread.InterestLevel + 1f) * deltaTime;
-                break;
-
-            case ImportanceMode.Linear:
-                urgencyDelta = thread.InterestLevel * deltaTime;
-                break;
-        }
-
-        thread.Urgency += urgencyDelta * thread.RateModifier;
-    }
-
-
     private void Update()
     {
+        if (Application.isPlaying)
+        {
+            Repaint();
+            return;
+        }
+
         if (mSimulating)
         {
             Repaint();
-            float deltaTime = Time.deltaTime;
-            if (mActiveThreadIndex != -1)
-            {
-                StoryThread thread = mThreads[mActiveThreadIndex];
-                thread.TimeLastSeenStop = (float)EditorApplication.timeSinceStartup;
-
-                if (thread.LastOnScreenDuration > mThreadHysteresisSeconds)
-                {
-                    StoryThread nextThreadCandidate = mThreads.OrderByDescending(t => t.Urgency).First();
-                    if (nextThreadCandidate != thread)
-                    {
-                        SetActiveThread(nextThreadCandidate);
-                    }
-                }
-            }
-
-
-            for (int i = 0; i < mThreads.Count; ++i)
-            {
-                StoryThread thread = mThreads[i];
-                float startUrgency = thread.Urgency;
-
-                if (i == mActiveThreadIndex)
-                {
-                    DecayStoryThreadUrgency(thread, deltaTime);
-                }
-                else
-                {
-                    GrowStoryThreadUrgency(thread, deltaTime);
-                }
-
-                thread.UrgencyDerivative = (thread.Urgency - startUrgency) / deltaTime;
-            }
-
-            StoryThread activeThread = mActiveThreadIndex != -1 ? mThreads[mActiveThreadIndex] : null;
-            mHighestUrgencyIndex = mThreads.IndexOf(mThreads.OrderByDescending(t => (activeThread == t && activeThread.LastOnScreenDuration > mThreadHysteresisSeconds) ? 0 : t.Urgency).First());
+            mStoryManager.TickStoryManagerExternal();
         }
+    }
+
+    private void RebuildReorderableList()
+    {
+        mThreads.Clear();
+
+        for (int i = 0; i < mStoryManager.NumThreads; ++i)
+        {
+            mThreads.Add(mStoryManager.GetThread(i));
+        }
+
+        mThreadEditList = new ReorderableList(mThreads, typeof(StoryManager.StoryThread), false, true, true, true);
+        mThreadEditList.drawHeaderCallback += delegate(Rect rect)
+        {
+            EditorGUI.LabelField(rect, "Threads");
+        };
+        mThreadEditList.onAddCallback += list =>
+        {
+            StoryManager.StoryThread newThread = mStoryManager.CreateStoryThread("New Thread");
+            newThread.InterestLevel = 1;
+            newThread.Urgency = 0;
+            newThread.TimeLastSeenStart = -1;
+            newThread.TimeLastSeenStop = -1;
+            newThread.RateModifier = 1f;
+            mThreads.Add(newThread);
+        };
+
+        mThreadEditList.onRemoveCallback += delegate(ReorderableList list)
+        {
+            StoryManager.StoryThread thread = mThreads[list.index];
+            mThreads.RemoveAt(list.index);
+
+            mStoryManager.DestroyStoryThread(thread);
+        };
+
+        mThreadEditList.elementHeightCallback += index => mThreadEditList.elementHeight * 2f;
+
+        mThreadEditList.drawElementBackgroundCallback += (rect, index, active, focused) => {
+            if (active)
+            {
+                GUI.color = Color.cyan;
+                GUI.Box(rect, string.Empty);
+            }
+            else if (index % 2 == 0)
+            {
+                GUI.Box(rect, "");
+            }
+
+            GUI.color = Color.white;
+        };
+
+
+        mThreadEditList.drawElementCallback += (rect, index, active, focused) =>
+        {
+            float height = mThreadEditList.elementHeight;
+            rect.height = height;
+
+            GUIStyle lableStyle = GUI.skin.label;
+
+            StoryManager.StoryThread thread = mThreads[index];
+
+            float labelMin, labelMax;
+            const string kLabelForName = "Name";
+            const float kLabelPadding = 16f;
+            lableStyle.CalcMinMaxWidth(new GUIContent(kLabelForName), out labelMin, out labelMax);
+            labelMax += kLabelPadding;
+
+            float oldWidth = rect.width;
+
+            Rect labelRect = rect;
+            labelRect.width = labelMax;
+            EditorGUI.LabelField(labelRect, kLabelForName);
+
+            rect.xMin = labelMax;
+            rect.width = oldWidth - labelMax;
+            thread.Name = EditorGUI.TextField(rect, thread.Name);
+
+            const float kIndentSize = 20f;
+
+            oldWidth -= kIndentSize;
+            rect.xMin = kIndentSize;
+            rect.width = oldWidth;
+            rect.yMin += height;
+            rect.height = height;
+
+            const string kLabelForGrowth = "Growth Rate";
+            lableStyle.CalcMinMaxWidth(new GUIContent(kLabelForGrowth), out labelMin, out labelMax);
+            labelMax += kLabelPadding;
+
+            oldWidth = rect.width;
+
+            labelRect = rect;
+            labelRect.width = labelMax;
+            EditorGUI.LabelField(labelRect, kLabelForGrowth);
+
+            rect.xMin = labelMax + kIndentSize;
+            rect.width = oldWidth - labelMax;
+            thread.RateModifier = EditorGUI.FloatField(rect, thread.RateModifier);
+        };
     }
 }
 
