@@ -87,6 +87,9 @@ namespace Spectator
             public float UrgencyDerivative { get; set; }
 
             public float UrgencyGrowthStrength { get; set; }
+
+            // Extra data for use by client
+            public object ClientData { get; set; }
         }
 
         // Each thread follows a subject
@@ -172,7 +175,9 @@ namespace Spectator
             return th;
         }
 
-        // Sort the threads by urgency
+        /// <summary>Sum of all urgencies.  Used for computing normalized urgencies</summary>
+        public float SumOfAllUrgencies { get; private set; }
+
         public void SortThreadsByUrgency()
         {
             mThreads.Sort((x, y) => y.Urgency.CompareTo(x.Urgency));
@@ -180,10 +185,10 @@ namespace Spectator
 
         internal void TickStoryManagerExternal()
         {
-            Update();
+            InternalUpdate();
         }
 
-        void Update()
+        internal void InternalUpdate()
         {
             StoryThread liveThread = LiveThread;
             if (liveThread != null)
@@ -192,6 +197,10 @@ namespace Spectator
             // Recompute the urgencies, using the installed urgency calculator
             mUrgencyComputer(this);
             SortThreadsByUrgency();
+
+            SumOfAllUrgencies = 0;
+            for (int i = 0; i < mThreads.Count; ++i)
+                SumOfAllUrgencies += mThreads[i].Urgency;
         }
 
         // Default urgency compute function
