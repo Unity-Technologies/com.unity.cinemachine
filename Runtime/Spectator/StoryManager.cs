@@ -39,28 +39,26 @@ namespace Spectator
 
         /// <summary>If a thread becomes live, it must stay on at least this long.
         /// Prevents hysteresis.</summary>
-        public float m_MinimumThreadTime;
+        public float m_MinimumThreadTime = 3;
 
-        public delegate float UrgencyComputer(StoryThread thread, bool isActiveThread);
+        public delegate void UrgencyComputer(StoryManager storyManager);
 
         public class StoryThread
         {
             public string Name
             {
-                get { return m_TargetGroup.name; }
-                set { m_TargetGroup.name = value; }
+                get { return TargetGroup.name; }
+                set { TargetGroup.name = value; }
             }
-
-            private CinemachineTargetGroup m_TargetGroup;
 
             internal StoryThread(CinemachineTargetGroup group)
             {
-                m_TargetGroup = group;
-                RateModifier = 1f;
+                TargetGroup = group;
+                UrgencyGrowthStrength = 1f;
             }
 
             // All subjects have a wrapper TargetGroup, if they are not already a target group
-            public CinemachineTargetGroup TargetGroup { get { return m_TargetGroup; } }
+            public CinemachineTargetGroup TargetGroup { get; private set; }
 
             // Interest level - Controlled by the dev, to focus on a specific thread he judges relevant.
             // This is used as part of the weighting algorithm when calculating urgency
@@ -80,13 +78,15 @@ namespace Spectator
             // Last on-screen duration
             public float LastOnScreenDuration { get { return TimeLastSeenStop - TimeLastSeenStart; } }
 
+            public float TimeUrgency { get; set; }
+
             // Urgency - decays while on-screen, increases otherwise.
             // Events and action states influence this heavily.
             // The Urgency evolution function is non-trivial and is configurable
             public float Urgency { get; set; }
             public float UrgencyDerivative { get; set; }
 
-            public float RateModifier { get; set; }
+            public float UrgencyGrowthStrength { get; set; }
         }
 
         // Each thread follows a subject
@@ -108,18 +108,10 @@ namespace Spectator
                     if (value != null)
                         value.TimeLastSeenStart = value.TimeLastSeenStop = now;
                     m_LiveThread = value;
-
-                    mLiveThreadIndex = mThreads.IndexOf(m_LiveThread);
-                    mNextLiveThreadIndex = -1;
                 }
             }
         }
         private StoryThread m_LiveThread;
-
-        public StoryThread NextLiveThread
-        {
-            get { return ((mNextLiveThreadIndex != -1) && (mNextLiveThreadIndex < mThreads.Count)) ? mThreads[mNextLiveThreadIndex] : null; }
-        }
 
         public ImportanceMode DecayUrgencyeMode = ImportanceMode.Logarithmic10;
         public ImportanceMode GrowUrgencyMode = ImportanceMode.Logarithmic10;
@@ -130,10 +122,8 @@ namespace Spectator
             = new Dictionary<Transform, StoryThread>();
         List<CinemachineTargetGroup> mGroupRecycleBin = new List<CinemachineTargetGroup>();
 
-        int mNextLiveThreadIndex = -1;
-        int mLiveThreadIndex = -1;
-
-        private static readonly CinemachineTargetGroup.Target[] sEmptyTargetsArray = new CinemachineTargetGroup.Target[0];
+        private static readonly CinemachineTargetGroup.Target[] sEmptyTargetsArray 
+            = new CinemachineTargetGroup.Target[0];
 
         public StoryThread CreateStoryThread(string name)
         {
@@ -151,6 +141,7 @@ namespace Spectator
                 GameObject go = new GameObject(name);
                 go.transform.SetParent(this.transform);
                 group = go.AddComponent<CinemachineTargetGroup>();
+                group.m_Targets = sEmptyTargetsArray;
             }
 
             StoryThread th = new StoryThread(group);
@@ -181,10 +172,10 @@ namespace Spectator
             return th;
         }
 
-        // Sort the threads by urgency, using the installed urgency calculator
-        public void SortThreads()
+        // Sort the threads by urgency
+        public void SortThreadsByUrgency()
         {
-            mThreads.Sort((x, y) => x.Urgency.CompareTo(y.Urgency));
+            mThreads.Sort((x, y) => y.Urgency.CompareTo(x.Urgency));
         }
 
         internal void TickStoryManagerExternal()
@@ -194,96 +185,77 @@ namespace Spectator
 
         void Update()
         {
-            float now = Time.time;
-            float dt = Time.deltaTime;
-
             StoryThread liveThread = LiveThread;
             if (liveThread != null)
-            {
-                liveThread.TimeLastSeenStop = now;
-            }
+                liveThread.TimeLastSeenStop = Time.time;
 
             // Recompute the urgencies, using the installed urgency calculator
-            float highestUrgencySeen = float.MinValue;
-            mNextLiveThreadIndex = -1;
-
-            for (int i = 0; i < mThreads.Count; ++i)
-            {
-                StoryThread thread = mThreads[i];
-                float startUrgency = thread.Urgency;
-                thread.Urgency = mUrgencyComputer(thread, thread == LiveThread);
-                thread.UrgencyDerivative = (thread.Urgency - startUrgency) / dt;
-
-                if ((thread.Urgency > highestUrgencySeen) && (i != mLiveThreadIndex))
-                {
-                    mNextLiveThreadIndex = i;
-                    highestUrgencySeen = thread.Urgency;
-                }
-            }
-
-            if (((liveThread == null) && (mNextLiveThreadIndex != -1)) ||
-                ((mNextLiveThreadIndex != mLiveThreadIndex) && (liveThread.LastOnScreenDuration > m_MinimumThreadTime)))
-            {
-                LiveThread = mThreads[mNextLiveThreadIndex];
-            }
+            mUrgencyComputer(this);
+            SortThreadsByUrgency();
         }
 
         // Default urgency compute function
-        public static float DefaultUrgencyComputer(StoryThread st, bool isActiveThread)
+        public static void DefaultUrgencyComputer(StoryManager storyManager)
         {
-            float newUrgency = 0f;
-            if (isActiveThread)
+            float dt = Time.deltaTime;
+            float currentLiveTime = storyManager.m_MinimumThreadTime;
+            if (storyManager.LiveThread != null)
+                currentLiveTime = storyManager.LiveThread.LastOnScreenDuration;
+            for (int i = 0; i < storyManager.mThreads.Count; ++i)
             {
-                newUrgency = DefaultDecayStoryThreadUrgency(st, Time.deltaTime, Instance.DecayUrgencyeMode);
+                StoryThread st = storyManager.mThreads[i];
+                float startUrgency = st.Urgency;
+                if (currentLiveTime >= storyManager.m_MinimumThreadTime)
+                {
+                    float timeBasedUrgencyScale = (st == storyManager.LiveThread)
+                        ? DefaultDecayStoryThreadUrgency(st, dt, Instance.DecayUrgencyeMode)
+                        : DefaultGrowStoryThreadUrgency(st, dt, Instance.GrowUrgencyMode);
+                
+                    st.Urgency = timeBasedUrgencyScale;
+                }
+                st.UrgencyDerivative = (st.Urgency - startUrgency) / dt;
             }
-            else
-            {
-                newUrgency = DefaultGrowStoryThreadUrgency(st, Time.deltaTime, Instance.GrowUrgencyMode);
-            }
-            return newUrgency;
         }
 
-
-        private static float DefaultDecayStoryThreadUrgency(StoryThread thread, float deltaTime, ImportanceMode decayMode)
+        private static float DefaultDecayStoryThreadUrgency(StoryThread st, float deltaTime, ImportanceMode decayMode)
         {
             float newUrgency = 0f;
             switch (decayMode)
             {
                 case ImportanceMode.Logarithmic10:
-                    newUrgency = thread.Urgency - deltaTime * 1f / Mathf.Log10(thread.InterestLevel + 2f);
+                    newUrgency = st.Urgency - deltaTime * 1f / Mathf.Log10(st.InterestLevel + 2f);
                     break;
 
                 case ImportanceMode.Logarithmic2:
-                    newUrgency = thread.Urgency - deltaTime * 1f / Mathf.Log(thread.InterestLevel + 2f);
+                    newUrgency = st.Urgency - deltaTime * 1f / Mathf.Log(st.InterestLevel + 2f);
                     break;
 
                 case ImportanceMode.Linear:
-                    newUrgency = thread.Urgency - deltaTime * 1f / thread.InterestLevel;
+                    newUrgency = st.Urgency - deltaTime * 1f / st.InterestLevel;
                     break;
             }
-
-            return Mathf.Max(0f, newUrgency);
+            return Mathf.Max(0f, newUrgency);        
         }
 
-        private static float DefaultGrowStoryThreadUrgency(StoryThread thread, float deltaTime, ImportanceMode growMode)
+        private static float DefaultGrowStoryThreadUrgency(StoryThread st, float deltaTime, ImportanceMode growMode)
         {
             float urgencyDelta = 0f;
             switch (growMode)
             {
                 case ImportanceMode.Logarithmic10:
-                    urgencyDelta = Mathf.Log10(thread.InterestLevel + 1f) * deltaTime;
+                    urgencyDelta = Mathf.Log10(st.InterestLevel + 1f) * deltaTime;
                     break;
 
                 case ImportanceMode.Logarithmic2:
-                    urgencyDelta = Mathf.Log(thread.InterestLevel + 1f) * deltaTime;
+                    urgencyDelta = Mathf.Log(st.InterestLevel + 1f) * deltaTime;
                     break;
 
                 case ImportanceMode.Linear:
-                    urgencyDelta = thread.InterestLevel * deltaTime;
+                    urgencyDelta = st.InterestLevel * deltaTime;
                     break;
             }
 
-            return thread.Urgency + urgencyDelta * thread.RateModifier;
+            return st.Urgency + urgencyDelta * st.UrgencyGrowthStrength;
         }
     }
 
