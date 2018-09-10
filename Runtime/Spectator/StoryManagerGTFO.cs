@@ -41,7 +41,10 @@ namespace Spectator
 
         GameObject GameObjectFromThread(StoryManager.StoryThread th)
         {
-            return (th.TargetGroup.m_Targets[0].target.gameObject);
+            var tr = th.TargetObject;
+            if (tr == null)
+                return null;
+            return tr.gameObject;
         }
 
         StoryManager.StoryThread LookupThread(GameObject go)
@@ -64,8 +67,9 @@ namespace Spectator
                 if (th == null)
                 {
                     // Create the thread
-                    th = StoryManager.Instance.CreateStoryThread(newObjects[i].name);
+                    th = StoryManager.Instance.CreateStoryThread(newObjects[i].transform);
                     th.ClientData = new ThreadClientData();
+                    th.InterestLevel = 1;
                     mThreadLookup[newObjects[i]] = th;
                 }
                 // Update the thread
@@ -82,7 +86,7 @@ namespace Spectator
                 if (cd == null || cd.m_ValidityTimestamp != now)
                 {
                     // Don't prune if live and onscreen for too short a time
-                    if (StoryManager.Instance.LiveThread != th 
+                    if (!StoryManager.Instance.ThreadIsLive(th) 
                             || th.LastOnScreenDuration >= StoryManager.Instance.m_MinimumThreadTime)
                         StoryManager.Instance.DestroyStoryThread(th);
                 }
@@ -147,7 +151,7 @@ namespace Spectator
             {
                 // Create the camera point object and target group
                 cp = new CameraPoint() { m_cameraPoint = cameraPoint };
-                GameObject go = new GameObject(cameraPoint.name);
+                GameObject go = new GameObject(cameraPoint.name + cameraPoint.GetInstanceID());
                 go.transform.SetParent(this.transform);
                 cp.m_TargetGroup = go.AddComponent<CinemachineTargetGroup>();
                 cp.m_TargetGroup.m_Targets = new CinemachineTargetGroup.Target[numTargets];
@@ -256,6 +260,7 @@ namespace Spectator
         void AssessShotQuality(CameraPoint cp)
         {
             // We get score for every visible target, weighted by normalized urgency and target distance
+            cp.m_shotQuality = 0;
             Vector3 pos = cp.m_cameraPoint.transform.position;
             for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
             {
@@ -264,7 +269,10 @@ namespace Spectator
                     var th = LookupThread(cp.m_TargetGroup.m_Targets[i].target.gameObject);
                     if (th != null)
                     {
-                        float quality = th.Urgency / StoryManager.Instance.SumOfAllUrgencies;
+                        float quality = th.Urgency;
+                        float urgencySum = StoryManager.Instance.SumOfAllUrgencies;
+                        if (urgencySum > UnityVectorExtensions.Epsilon)
+                            quality /= urgencySum;
 
                         // Boost quality if target is close to optimal nearness
                         float nearnessBoost = 0;
@@ -293,7 +301,6 @@ namespace Spectator
                     }
                 }
             }
-
         }
     }
 }

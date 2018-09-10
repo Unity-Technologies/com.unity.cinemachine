@@ -94,7 +94,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
 
         if (!mSimulating && GUILayout.Button("Start Simulation"))
         {
-            mStoryManager.LiveThread = null;
+            mStoryManager.LiveThreads = null;
             foreach (var thread in mThreads)
             {
                 thread.TimeLastSeenStart = -1;
@@ -178,7 +178,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
 
     private Color GetThreadGUIColour(StoryManager.StoryThread thread)
     {
-        if (thread == mStoryManager.LiveThread)
+        if (mStoryManager.ThreadIsLive(thread))
             return Color.green;
         if (mStoryManager.NumThreads > 1 && thread == mStoryManager.GetThread(1))
             return Color.yellow;
@@ -196,9 +196,9 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
         if (mSimulating)
         {
             Repaint();
-            mStoryManager.TickStoryManagerExternal();
+            mStoryManager.TickStoryManager();
             if (mStoryManager.NumThreads > 0)
-                mStoryManager.LiveThread = mStoryManager.GetThread(0);
+                mStoryManager.LiveThreads = new List<StoryManager.StoryThread> { mStoryManager.GetThread(0) };
         }
     }
 
@@ -211,7 +211,8 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
         };
         mThreadEditList.onAddCallback += list =>
         {
-            StoryManager.StoryThread newThread = mStoryManager.CreateStoryThread("Thread " + mThreads.Count);
+            StoryManager.StoryThread newThread = mStoryManager.CreateStoryThread(
+                new GameObject("Thread " + mThreads.Count).transform);
             newThread.InterestLevel = 1;
             newThread.Urgency = 0;
             newThread.TimeLastSeenStart = -1;
@@ -222,6 +223,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
         mThreadEditList.onRemoveCallback += delegate(ReorderableList list)
         {
             StoryManager.StoryThread thread = mSortedThreads[list.index];
+            Cinemachine.RuntimeUtility.DestroyObject(thread.TargetObject.gameObject);
             mStoryManager.DestroyStoryThread(thread);
         };
 

@@ -39,7 +39,7 @@ namespace Spectator
 
         /// <summary>If a thread becomes live, it must stay on at least this long.
         /// Prevents hysteresis.</summary>
-        public float m_MinimumThreadTime = 3;
+        public float m_MinimumThreadTime = 1;
 
         public delegate void UrgencyComputer(StoryManager storyManager);
 
@@ -47,18 +47,18 @@ namespace Spectator
         {
             public string Name
             {
-                get { return TargetGroup.name; }
-                set { TargetGroup.name = value; }
+                get { return TargetObject.name; }
+                set { TargetObject.name = value; }
             }
 
-            internal StoryThread(CinemachineTargetGroup group)
+            internal StoryThread(Transform target)
             {
-                TargetGroup = group;
+                TargetObject = target;
                 UrgencyGrowthStrength = 1f;
             }
 
-            // All subjects have a wrapper TargetGroup, if they are not already a target group
-            public CinemachineTargetGroup TargetGroup { get; private set; }
+            // All subjects have a wrapper TargetObject, if they are not already a target group
+            public Transform TargetObject { get; private set; }
 
             // Interest level - Controlled by the dev, to focus on a specific thread he judges relevant.
             // This is used as part of the weighting algorithm when calculating urgency
@@ -97,58 +97,42 @@ namespace Spectator
         public int NumThreads { get { return mThreads.Count; } }
         public StoryThread GetThread(int index) { return mThreads[index]; }
 
-        // The current Live thread, must be set every frame.
-        public StoryThread LiveThread
+        List<StoryThread> mLiveThreads = new List<StoryThread>();
+
+        // The current Live threads, must be set every frame.
+        public List<StoryThread> LiveThreads
         {
-            get { return m_LiveThread; }
+            get { return mLiveThreads; }
             set
             {
                 float now = Time.time;
-                if (value != m_LiveThread)
+                for (int i = mLiveThreads.Count-1; i >= 0; --i)
+                    mLiveThreads[i].TimeLastSeenStop = now;
+                mLiveThreads.Clear();
+                if (value != null)
                 {
-                    if (m_LiveThread != null)
-                        m_LiveThread.TimeLastSeenStop = now;
-                    if (value != null)
-                        value.TimeLastSeenStart = value.TimeLastSeenStop = now;
-                    m_LiveThread = value;
+                    for (int i = 0; i < value.Count; ++i)
+                    {
+                        mLiveThreads.Add(value[i]);
+                        if (value[i].TimeLastSeenStop != now)
+                            value[i].TimeLastSeenStart = value[i].TimeLastSeenStop = now;
+                    }
                 }
             }
         }
-        private StoryThread m_LiveThread;
+        public bool ThreadIsLive(StoryThread th) { return mLiveThreads.Contains(th); }
 
         public ImportanceMode DecayUrgencyeMode = ImportanceMode.Logarithmic10;
         public ImportanceMode GrowUrgencyMode = ImportanceMode.Logarithmic10;
 
         public UrgencyComputer mUrgencyComputer = DefaultUrgencyComputer;
 
-        Dictionary<Transform, StoryThread> mThreadLookup
-            = new Dictionary<Transform, StoryThread>();
-        List<CinemachineTargetGroup> mGroupRecycleBin = new List<CinemachineTargetGroup>();
+        Dictionary<Transform, StoryThread> mThreadLookup = new Dictionary<Transform, StoryThread>();
 
-        private static readonly CinemachineTargetGroup.Target[] sEmptyTargetsArray 
-            = new CinemachineTargetGroup.Target[0];
-
-        public StoryThread CreateStoryThread(string name)
+        public StoryThread CreateStoryThread(Transform target)
         {
-            // Create wrapper group for targets
-            CinemachineTargetGroup group = null;
-            if (mGroupRecycleBin.Count > 0)
-            {
-                group = mGroupRecycleBin[0];
-                mGroupRecycleBin.RemoveAt(0);
-                group.gameObject.name = name;
-                group.gameObject.SetActive(true);
-            }
-            else
-            {
-                GameObject go = new GameObject(name);
-                go.transform.SetParent(this.transform);
-                group = go.AddComponent<CinemachineTargetGroup>();
-                group.m_Targets = sEmptyTargetsArray;
-            }
-
-            StoryThread th = new StoryThread(group);
-            mThreadLookup[group.transform] = th;
+            StoryThread th = new StoryThread(target);
+            mThreadLookup[target] = th;
             mThreads.Add(th);
             return th;
         }
@@ -157,15 +141,11 @@ namespace Spectator
         {
             if (th != null)
             {
-                mThreadLookup.Remove(th.TargetGroup.transform);
+                mThreadLookup.Remove(th.TargetObject.transform);
                 mThreads.Remove(th);
-                // Recycle the target group
-                th.TargetGroup.gameObject.SetActive(false);
-                mGroupRecycleBin.Add(th.TargetGroup);
-                th.TargetGroup.m_Targets = sEmptyTargetsArray;
             }
-            if (LiveThread == th)
-                LiveThread = null;
+            if (mLiveThreads.Contains(th))
+                mLiveThreads.Remove(th);
         }
 
         public StoryThread LookupStoryThread(Transform group)
@@ -183,16 +163,15 @@ namespace Spectator
             mThreads.Sort((x, y) => y.Urgency.CompareTo(x.Urgency));
         }
 
-        public void TickStoryManagerExternal()
+        public void TickStoryManager()
         {
             InternalUpdate();
         }
 
         internal void InternalUpdate()
         {
-            StoryThread liveThread = LiveThread;
-            if (liveThread != null)
-                liveThread.TimeLastSeenStop = Time.time;
+            for (int i = mLiveThreads.Count-1; i >= 0; --i)
+                mLiveThreads[i].TimeLastSeenStop = Time.time;
 
             // Recompute the urgencies, using the installed urgency calculator
             mUrgencyComputer(this);
@@ -208,15 +187,15 @@ namespace Spectator
         {
             float dt = Time.deltaTime;
             float currentLiveTime = storyManager.m_MinimumThreadTime;
-            if (storyManager.LiveThread != null)
-                currentLiveTime = storyManager.LiveThread.LastOnScreenDuration;
+            for (int i = storyManager.LiveThreads.Count-1; i >= 0; --i)
+                currentLiveTime += storyManager.LiveThreads[i].LastOnScreenDuration;
             for (int i = 0; i < storyManager.mThreads.Count; ++i)
             {
                 StoryThread st = storyManager.mThreads[i];
                 float startUrgency = st.Urgency;
                 if (currentLiveTime >= storyManager.m_MinimumThreadTime)
                 {
-                    float timeBasedUrgencyScale = (st == storyManager.LiveThread)
+                    float timeBasedUrgencyScale = storyManager.ThreadIsLive(st)
                         ? DefaultDecayStoryThreadUrgency(st, dt, Instance.DecayUrgencyeMode)
                         : DefaultGrowStoryThreadUrgency(st, dt, Instance.GrowUrgencyMode);
                 
@@ -226,7 +205,8 @@ namespace Spectator
             }
         }
 
-        private static float DefaultDecayStoryThreadUrgency(StoryThread st, float deltaTime, ImportanceMode decayMode)
+        private static float DefaultDecayStoryThreadUrgency(
+            StoryThread st, float deltaTime, ImportanceMode decayMode)
         {
             float newUrgency = 0f;
             switch (decayMode)
@@ -246,7 +226,8 @@ namespace Spectator
             return Mathf.Max(0f, newUrgency);        
         }
 
-        private static float DefaultGrowStoryThreadUrgency(StoryThread st, float deltaTime, ImportanceMode growMode)
+        private static float DefaultGrowStoryThreadUrgency(
+            StoryThread st, float deltaTime, ImportanceMode growMode)
         {
             float urgencyDelta = 0f;
             switch (growMode)

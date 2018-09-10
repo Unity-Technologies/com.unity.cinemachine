@@ -19,6 +19,7 @@ namespace Spectator
     /// 
     public class GroupAggregator : MonoBehaviour
     {   
+#if false
         public float m_proximityThreshold = 5;
         public float m_proximitySlush = 1;
         public float m_updateTimeStep = 2;
@@ -235,5 +236,6 @@ namespace Spectator
                 }
             }
         }
+#endif
     }
 }

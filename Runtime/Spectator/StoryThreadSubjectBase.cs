@@ -24,13 +24,11 @@ namespace Spectator
     /// 
     public abstract class StoryThreadSubjectBase : MonoBehaviour 
     {
-        public float m_Radius;
         protected StoryManager.StoryThread m_StoryThread;
 
         protected void OnEnable()
         {
-            m_StoryThread = StoryManager.Instance.CreateStoryThread(name);
-            m_StoryThread.TargetGroup.AddMember(transform, 1, m_Radius);
+            m_StoryThread = StoryManager.Instance.CreateStoryThread(transform);
         }
 
         protected void OnDisable()

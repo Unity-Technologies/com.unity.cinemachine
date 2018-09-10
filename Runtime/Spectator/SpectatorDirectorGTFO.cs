@@ -53,7 +53,7 @@ namespace Spectator
                     return "(none)";
                 var sb = CinemachineDebug.SBFromPool();
                 sb.Append("["); sb.Append(vcam.Name); 
-                StoryManagerGTFO.CameraPoint cp = LiveCameraPoint();
+                StoryManagerGTFO.CameraPoint cp = LiveCameraPoint;
                 if (cp != null)
                     sb.Append("cp=" + cp.m_TargetGroup.name + ", q=" + cp.m_shotQuality); 
                 sb.Append("]");
@@ -283,17 +283,20 @@ namespace Spectator
         float mPendingActivationTime = 0;
         StoryManagerGTFO.CameraPoint mPendingCameraPoint;
         
-        StoryManagerGTFO.CameraPoint LiveCameraPoint()
+        StoryManagerGTFO.CameraPoint LiveCameraPoint
         {
-            StoryManagerGTFO.CameraPoint cp = null;
-            if (LiveChild != null && LiveChild.Follow != null)
-                cp = StoryManagerGTFO.Instance.LookupCameraPoint(LiveChild.Follow.gameObject);
-            return cp;
+            get
+            {
+                StoryManagerGTFO.CameraPoint cp = null;
+                if (LiveChild != null && LiveChild.Follow != null)
+                    cp = StoryManagerGTFO.Instance.LookupCameraPoint(LiveChild.Follow.gameObject);
+                return cp;
+            }
         }
 
         StoryManagerGTFO.CameraPoint ChooseCurrentCameraPoint(float deltaTime)
         {
-            StoryManagerGTFO.CameraPoint liveCP = LiveCameraPoint();
+            StoryManagerGTFO.CameraPoint liveCP = LiveCameraPoint;
             StoryManagerGTFO.CameraPoint best = ChooseBestCameraPoint();
             float now = Time.time;
             if (mActivationTime != 0)
@@ -402,5 +405,26 @@ namespace Spectator
         }
 
         ICinemachineCamera TransitioningFrom { get; set; }
+
+        List<StoryManager.StoryThread> mLiveThreads = new List<StoryManager.StoryThread>();
+        public List<StoryManager.StoryThread> LiveThreads 
+        {
+            get
+            {
+                mLiveThreads.Clear();
+                var cp = LiveCameraPoint;
+                for (int i = 0; cp != null && i < cp.m_TargetGroup.m_Targets.Length; ++i)
+                {
+                    if (cp.m_TargetGroup.m_Targets[i].target != null && cp.m_TargetGroup.m_Targets[i].weight > 0)
+                    {
+                        var th = StoryManager.Instance.LookupStoryThread(cp.m_TargetGroup.m_Targets[i].target);
+                        if (th != null)
+                            mLiveThreads.Add(th);
+                    }
+                }
+                return mLiveThreads;
+            }
+        }
+
     }
 }
