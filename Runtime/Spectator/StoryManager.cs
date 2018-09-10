@@ -183,7 +183,7 @@ namespace Spectator
             mThreads.Sort((x, y) => y.Urgency.CompareTo(x.Urgency));
         }
 
-        internal void TickStoryManagerExternal()
+        public void TickStoryManagerExternal()
         {
             InternalUpdate();
         }

@@ -75,7 +75,7 @@ namespace Spectator
 
             // Prune stale threads
             int numThreads = StoryManager.Instance.NumThreads;
-            for (int i = StoryManager.Instance.NumThreads; i >= 0; --i)
+            for (int i = StoryManager.Instance.NumThreads-1; i >= 0; --i)
             {
                 var th = StoryManager.Instance.GetThread(i);
                 var cd = th.ClientData as ThreadClientData;
@@ -187,7 +187,8 @@ namespace Spectator
                 }
                 else
                 {
-                    RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target.gameObject);
+                    if (cp.m_TargetGroup.m_Targets[i].target != null)
+                        RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target.gameObject);
                     cp.m_TargetGroup.m_Targets[i].weight = 0;
                     cp.m_TargetGroup.m_Targets[i].target = null;
                 }
@@ -215,7 +216,8 @@ namespace Spectator
                         && cp.m_TargetGroup.gameObject.activeSelf)
                     {
                         for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
-                            RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target.gameObject);
+                            if (cp.m_TargetGroup.m_Targets[i].target != null)
+                                RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target.gameObject);
                         cp.m_TargetGroup.gameObject.SetActive(false);
                         cp.m_shotQuality = 0;
                     }
