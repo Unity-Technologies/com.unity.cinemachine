@@ -126,7 +126,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
                 foreach (var thread in mThreads)
                 {
                     GUI.color = GetThreadGUIColour(thread);
-                    GUILayout.Label(thread.Urgency.ToString("0.0"));
+                    GUILayout.Label(thread.Urgency.ToString("0.000"));
                 }
             }
 
@@ -137,7 +137,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
                 foreach (var thread in mThreads)
                 {
                     GUI.color = GetThreadGUIColour(thread);
-                    GUILayout.Label(thread.TimeLastSeenStart.ToString("0.0"));
+                    GUILayout.Label(thread.TimeLastSeenStart.ToString("0.000"));
                 }
             }
 
@@ -148,7 +148,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
                 foreach (var thread in mThreads)
                 {
                     GUI.color = GetThreadGUIColour(thread);
-                    GUILayout.Label(thread.LastOnScreenDuration.ToString("0.0"));
+                    GUILayout.Label(thread.LastOnScreenDuration.ToString("0.000"));
                 }
             }
 
@@ -159,7 +159,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
                 foreach (var thread in mThreads)
                 {
                     GUI.color = GetThreadGUIColour(thread);
-                    GUILayout.Label(thread.UrgencyDerivative.ToString("00.00"));
+                    GUILayout.Label(thread.UrgencyDerivative.ToString("00.000"));
                 }
             }
 
@@ -172,7 +172,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
 
         using (new GUILayout.VerticalScope(GUI.skin.box))
         {
-            GUILayout.Label("<b>LEGEND</b>\n<color=yellow>YELLOW</color>: Queued camera\n<color=#00FF00>GREEN</color>: Active Camera", mHelpBoxStyle);
+            GUILayout.Label("<b>LEGEND</b>\n<color=#00FF00>GREEN</color>: Active Thread", mHelpBoxStyle);
         }
     }
 
@@ -180,8 +180,6 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
     {
         if (mStoryManager.ThreadIsLive(thread))
             return Color.green;
-        if (mStoryManager.NumThreads > 1 && thread == mStoryManager.GetThread(1))
-            return Color.yellow;
         return Color.white;
     }
 

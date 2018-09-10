@@ -141,17 +141,17 @@ namespace Spectator
         {
             if (th != null)
             {
-                mThreadLookup.Remove(th.TargetObject.transform);
+                mThreadLookup.Remove(th.TargetObject);
                 mThreads.Remove(th);
             }
             if (mLiveThreads.Contains(th))
                 mLiveThreads.Remove(th);
         }
 
-        public StoryThread LookupStoryThread(Transform group)
+        public StoryThread LookupStoryThread(Transform target)
         {
-            StoryThread th;
-            mThreadLookup.TryGetValue(group, out th);
+            StoryThread th = null;
+            mThreadLookup.TryGetValue(target, out th);
             return th;
         }
 
@@ -165,13 +165,9 @@ namespace Spectator
 
         public void TickStoryManager()
         {
-            InternalUpdate();
-        }
-
-        internal void InternalUpdate()
-        {
+            float now = Time.time;
             for (int i = mLiveThreads.Count-1; i >= 0; --i)
-                mLiveThreads[i].TimeLastSeenStop = Time.time;
+                mLiveThreads[i].TimeLastSeenStop = now;
 
             // Recompute the urgencies, using the installed urgency calculator
             mUrgencyComputer(this);

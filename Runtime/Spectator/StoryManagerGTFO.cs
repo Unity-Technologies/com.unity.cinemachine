@@ -30,8 +30,8 @@ namespace Spectator
         // Section 1 - Story Thread Management
 
         List<StoryManager.StoryThread> mThreadList = new List<StoryManager.StoryThread>();
-        Dictionary<GameObject, StoryManager.StoryThread> mThreadLookup 
-            = new Dictionary<GameObject, StoryManager.StoryThread>();
+        Dictionary<Transform, StoryManager.StoryThread> mThreadLookup 
+            = new Dictionary<Transform, StoryManager.StoryThread>();
 
         public class ThreadClientData
         {
@@ -39,24 +39,16 @@ namespace Spectator
             public List<CameraPoint> m_CameraPoints = new List<CameraPoint>();
         }
 
-        GameObject GameObjectFromThread(StoryManager.StoryThread th)
-        {
-            var tr = th.TargetObject;
-            if (tr == null)
-                return null;
-            return tr.gameObject;
-        }
-
-        StoryManager.StoryThread LookupThread(GameObject go)
+        StoryManager.StoryThread LookupThread(Transform target)
         {
             StoryManager.StoryThread st = null;
-            if (go != null)
-                mThreadLookup.TryGetValue(go, out st);
+            if (target != null)
+                mThreadLookup.TryGetValue(target, out st);
             return st;
         }
 
         /// <summary>Call this to set the current list of interesting objects</summary> 
-        public void SetInterestingObjects(List<GameObject> newObjects)
+        public void SetInterestingObjects(List<Transform> newObjects)
         {
             float now = Time.time;
             
@@ -67,7 +59,7 @@ namespace Spectator
                 if (th == null)
                 {
                     // Create the thread
-                    th = StoryManager.Instance.CreateStoryThread(newObjects[i].transform);
+                    th = StoryManager.Instance.CreateStoryThread(newObjects[i]);
                     th.ClientData = new ThreadClientData();
                     th.InterestLevel = 1;
                     mThreadLookup[newObjects[i]] = th;
@@ -93,10 +85,10 @@ namespace Spectator
             }
         }
 
-        /// <summary>Call this to set the interest level of a current gameObject</summary> 
-        public bool SetInterestLevel(GameObject go, float interest)
+        /// <summary>Call this to set the interest level of a current target</summary> 
+        public bool SetInterestLevel(Transform target, float interest)
         {
-            var th = LookupThread(go);
+            var th = LookupThread(target);
             if (th == null)
                 return false;
             th.InterestLevel = interest;
@@ -114,19 +106,18 @@ namespace Spectator
         public class CameraPoint
         {
             public float m_validityTimestamp;
-            public GameObject m_cameraPoint;
+            public Transform m_cameraPoint;
             public CinemachineTargetGroup m_TargetGroup;
             public float m_shotQuality;
         }
 
-        Dictionary<GameObject, CameraPoint> mCameraPointLookup 
-            = new Dictionary<GameObject, CameraPoint>();
+        Dictionary<Transform, CameraPoint> mCameraPointLookup = new Dictionary<Transform, CameraPoint>();
 
-        public CameraPoint LookupCameraPoint(GameObject go)
+        public CameraPoint LookupCameraPoint(Transform target)
         {
             CameraPoint cp = null;
-            if (go != null)
-                mCameraPointLookup.TryGetValue(go, out cp);
+            if (target != null)
+                mCameraPointLookup.TryGetValue(target, out cp);
             return cp;
         }
 
@@ -134,9 +125,9 @@ namespace Spectator
 
         /// <summary>Call this to set camera point visibility data</summary>
         public void SetCameraObjectVisibility(
-            GameObject cameraPoint,
-            GameObject centerTarget,        // what the camera is looking at (may be null)
-            List<GameObject> visibleTargets) // fixed-length, entries can be null
+            Transform cameraPoint,
+            Transform centerTarget,        // what the camera is looking at (may be null)
+            List<Transform> visibleTargets) // fixed-length, entries can be null
         {
             // Disable the target groups that are no longer valid
             float timestamp = Time.time;
@@ -152,10 +143,10 @@ namespace Spectator
                 // Create the camera point object and target group
                 cp = new CameraPoint() { m_cameraPoint = cameraPoint };
                 GameObject go = new GameObject(cameraPoint.name + cameraPoint.GetInstanceID());
+                mCameraPointLookup[cameraPoint] = cp;
                 go.transform.SetParent(this.transform);
                 cp.m_TargetGroup = go.AddComponent<CinemachineTargetGroup>();
                 cp.m_TargetGroup.m_Targets = new CinemachineTargetGroup.Target[numTargets];
-                mCameraPointLookup[cameraPoint] = cp;
             }
 
             // Get camera forward
@@ -176,7 +167,7 @@ namespace Spectator
                 if (i < numTargets && visibleTargets[i] != null)
                 {
                     // Get the actual angle from the camera - does it fit into our FOV?
-                    Vector3 dir = visibleTargets[i].transform.position - pos;
+                    Vector3 dir = visibleTargets[i].position - pos;
                     float angle = UnityVectorExtensions.Angle(fwd, dir);
                     if (angle < m_FovFilter / 2)
                         isValid = true;
@@ -184,15 +175,14 @@ namespace Spectator
                 if (isValid)
                 {
                     cp.m_TargetGroup.m_Targets[i].weight = 1;
-                    cp.m_TargetGroup.m_Targets[i].target = visibleTargets[i].transform;
+                    cp.m_TargetGroup.m_Targets[i].target = visibleTargets[i];
                     cp.m_TargetGroup.m_Targets[i].radius = m_TargetObjectRadius;
-                    AddReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target.gameObject);
+                    AddReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
                     gotOne = true;
                 }
                 else
                 {
-                    if (cp.m_TargetGroup.m_Targets[i].target != null)
-                        RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target.gameObject);
+                    RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
                     cp.m_TargetGroup.m_Targets[i].weight = 0;
                     cp.m_TargetGroup.m_Targets[i].target = null;
                 }
@@ -210,44 +200,46 @@ namespace Spectator
         public void DisableStaleGroups(float timestamp)
         {
             // Disable the target groups that are no longer valid
-            if (mLastValidityTimestamp != timestamp)
+            var it = mCameraPointLookup.GetEnumerator();
+            while (it.MoveNext())
             {
-                var it = mCameraPointLookup.GetEnumerator();
-                while (it.MoveNext())
+                var cp = it.Current.Value;
+                if (cp.m_validityTimestamp != timestamp 
+                    && cp.m_TargetGroup.gameObject.activeSelf)
                 {
-                    var cp = it.Current.Value;
-                    if (cp.m_validityTimestamp != mLastValidityTimestamp 
-                        && cp.m_TargetGroup.gameObject.activeSelf)
-                    {
-                        for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
-                            if (cp.m_TargetGroup.m_Targets[i].target != null)
-                                RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target.gameObject);
-                        cp.m_TargetGroup.gameObject.SetActive(false);
-                        cp.m_shotQuality = 0;
-                    }
+                    for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
+                        RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
+                    cp.m_TargetGroup.gameObject.SetActive(false);
+                    cp.m_shotQuality = 0;
                 }
             }
         }
 
-        void AddReferenceInThread(CameraPoint cp, GameObject target)
+        void AddReferenceInThread(CameraPoint cp, Transform target)
         {
-            var th = LookupThread(target);
-            if (th != null)
+            if (target != null)
             {
-                var cd = th.ClientData as ThreadClientData;
-                if (cd != null && !cd.m_CameraPoints.Contains(cp))
-                    cd.m_CameraPoints.Add(cp);
+                var th = LookupThread(target);
+                if (th != null)
+                {
+                    var cd = th.ClientData as ThreadClientData;
+                    if (cd != null && !cd.m_CameraPoints.Contains(cp))
+                        cd.m_CameraPoints.Add(cp);
+                }
             }
         }
 
-        void RemoveReferenceInThread(CameraPoint cp, GameObject target)
+        void RemoveReferenceInThread(CameraPoint cp, Transform target)
         {
-            var th = LookupThread(target);
-            if (th != null)
+            if (target != null)
             {
-                var cd = th.ClientData as ThreadClientData;
-                if (cd != null)
-                    cd.m_CameraPoints.Remove(cp);
+                var th = LookupThread(target);
+                if (th != null)
+                {
+                    var cd = th.ClientData as ThreadClientData;
+                    if (cd != null)
+                        cd.m_CameraPoints.Remove(cp);
+                }
             }
         }
 
@@ -261,18 +253,18 @@ namespace Spectator
         {
             // We get score for every visible target, weighted by normalized urgency and target distance
             cp.m_shotQuality = 0;
-            Vector3 pos = cp.m_cameraPoint.transform.position;
+            Vector3 pos = cp.m_cameraPoint.position;
             for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
             {
-                if (cp.m_TargetGroup.m_Targets[i].weight > 0)
+                if (cp.m_TargetGroup.m_Targets[i].weight > 0 && cp.m_TargetGroup.m_Targets[i].target != null)
                 {
-                    var th = LookupThread(cp.m_TargetGroup.m_Targets[i].target.gameObject);
+                    var th = LookupThread(cp.m_TargetGroup.m_Targets[i].target);
                     if (th != null)
                     {
                         float quality = th.Urgency;
                         float urgencySum = StoryManager.Instance.SumOfAllUrgencies;
                         if (urgencySum > UnityVectorExtensions.Epsilon)
-                            quality /= urgencySum;
+                            quality /= urgencySum; // normalized
 
                         // Boost quality if target is close to optimal nearness
                         float nearnessBoost = 0;

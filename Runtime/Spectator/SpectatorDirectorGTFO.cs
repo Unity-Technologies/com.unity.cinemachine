@@ -268,10 +268,10 @@ namespace Spectator
                 if (cp != null)
                 {
                     // Set the vcam's target to the target group
-                    if (best.LookAt != cp.m_TargetGroup || best.Follow != cp.m_cameraPoint.transform)
+                    if (best.LookAt != cp.m_TargetGroup || best.Follow != cp.m_cameraPoint)
                     {
                         best.LookAt = cp.m_TargetGroup.transform;
-                        best.Follow = cp.m_cameraPoint.transform;
+                        best.Follow = cp.m_cameraPoint;
                         CinemachineCore.Instance.GenerateCameraCutEvent(best); // GML hack
                     }
                 }
@@ -289,7 +289,7 @@ namespace Spectator
             {
                 StoryManagerGTFO.CameraPoint cp = null;
                 if (LiveChild != null && LiveChild.Follow != null)
-                    cp = StoryManagerGTFO.Instance.LookupCameraPoint(LiveChild.Follow.gameObject);
+                    cp = StoryManagerGTFO.Instance.LookupCameraPoint(LiveChild.Follow);
                 return cp;
             }
         }
