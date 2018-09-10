@@ -146,6 +146,7 @@ namespace Spectator
                 mCameraPointLookup[cameraPoint] = cp;
                 go.transform.SetParent(this.transform);
                 cp.m_TargetGroup = go.AddComponent<CinemachineTargetGroup>();
+                cp.m_TargetGroup.m_UpdateMethod = CinemachineTargetGroup.UpdateMethod.LateUpdate;
                 cp.m_TargetGroup.m_Targets = new CinemachineTargetGroup.Target[numTargets];
             }
 
