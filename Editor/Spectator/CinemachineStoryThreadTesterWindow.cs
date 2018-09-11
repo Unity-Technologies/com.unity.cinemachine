@@ -22,7 +22,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
     GUIContent mLastActiveHeader;
     GUIContent mDurationHeader;
     GUIContent mDeltaHeader;
-    GUIContent mInterestHeader;
+    //GUIContent mInterestHeader;
     GUIContent mDecayTypeHeader;
     GUIContent mGrowTypeHeader;
 
@@ -58,7 +58,7 @@ public class CinemachineStoryThreadTesterWindow : EditorWindow
             mLastActiveHeader = new GUIContent("Last Active", "The absolute time this thread was last active at.");
             mDurationHeader = new GUIContent("Duration", "The duration in seconds this thread was last active for.");
             mDeltaHeader = new GUIContent("Delta", "The rate by which the urgency is changing. A measure of growth or decay based on the state of the thread.");
-            mInterestHeader = new GUIContent("Interest", "Interest level - Controlled by the dev, to focus on a specific thread he judges relevant.");
+            //mInterestHeader = new GUIContent("Interest", "Interest level - Controlled by the dev, to focus on a specific thread he judges relevant.");
             mDecayTypeHeader = new GUIContent("Decay type", "The mode by which to decay urgency when active. This decay should be balanced to ensure urgency does not float over time.");
             mGrowTypeHeader = new GUIContent("Grow type", "The mode by which to decay urgency when active. This growth should be balanced to ensure urgency does not float over time.");
 
