@@ -55,7 +55,7 @@ namespace Spectator
                 sb.Append("["); sb.Append(vcam.Name); 
                 StoryManagerGTFO.CameraPoint cp = LiveCameraPoint;
                 if (cp != null)
-                    sb.Append("cp=" + cp.m_TargetGroup.name + ", q=" + cp.m_shotQuality); 
+                    sb.Append(" cp=" + cp.m_TargetGroup.name + ", q=" + cp.m_shotQuality); 
                 sb.Append("]");
                 string text = sb.ToString(); 
                 CinemachineDebug.ReturnToPool(sb); 
@@ -79,24 +79,24 @@ namespace Spectator
                 || (mActiveBlend != null && (vcam == mActiveBlend.CamA || vcam == mActiveBlend.CamB));
         }
 
-        /// <summary>Not used</summary>
+        /// <summary>Used Internally Only</summary>
         override public Transform LookAt { get; set; }
 
-        /// <summary>Not used</summary>
-        override public Transform Follow { get; set; }
-
-        /// <summary>This is called to notify the vcam that a target got warped,
-        /// so that the vcam can update its internal state to make the camera 
-        /// also warp seamlessy.</summary>
-        /// <param name="target">The object that was warped</param>
-        /// <param name="positionDelta">The amount the target's position changed</param>
-        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
-        {
-            UpdateListOfChildren();
-            foreach (var vcam in m_ChildCameras)
-                vcam.OnTargetObjectWarped(target, positionDelta);
-            base.OnTargetObjectWarped(target, positionDelta);
+        /// <summary>Used Internally Only</summary>
+        override public Transform Follow 
+        { 
+            get
+            {
+                if (mFakeFollowTarget == null)
+                {
+                    mFakeFollowTarget = new GameObject("SpectatorFakeFollowTarget").transform;
+                    mFakeFollowTarget.gameObject.hideFlags = HideFlags.DontSave;
+                }
+                return mFakeFollowTarget;
+            }
+            set {} // do nothing
         }
+        private Transform mFakeFollowTarget;
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
@@ -175,6 +175,9 @@ namespace Spectator
         {
             base.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            if (mFakeFollowTarget != null)
+                RuntimeUtility.DestroyObject(mFakeFollowTarget);
+            mFakeFollowTarget = null;
         }
 
         /// <summary>Makes sure the internal child cache is up to date</summary>
@@ -237,7 +240,7 @@ namespace Spectator
             mActiveBlend = null;
         }
 
-        private ICinemachineCamera ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
+        private CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
         {
             if (m_ChildCameras == null || m_ChildCameras.Length == 0)
             {
@@ -247,52 +250,60 @@ namespace Spectator
 
             if (LiveChild != null && !LiveChild.VirtualCameraGameObject.activeSelf)
                 LiveChild = null;
-            ICinemachineCamera best = LiveChild;
-            for (int i = 0; i < m_ChildCameras.Length; ++i)
+            CinemachineVirtualCameraBase best = LiveChild as CinemachineVirtualCameraBase;
+
+            // Choose current target group
+            StoryManagerGTFO.CameraPoint cp = ChooseCurrentCameraPoint(deltaTime);
+            if (cp != null)
             {
-                CinemachineVirtualCameraBase vcam = m_ChildCameras[i];
-                if (vcam != null && vcam.gameObject.activeInHierarchy)
+                // Choose the first in the list that matches the desired camera type
+                for (int i = 0; i < m_ChildCameras.Length; ++i)
                 {
-                    // Choose the first in the list that is better than the current
-                    if (best == null || vcam.Priority > best.Priority)
+                    CinemachineVirtualCameraBase vcam = m_ChildCameras[i];
+                    if (vcam != null && vcam.gameObject.activeInHierarchy)
                     {
-                        best = vcam;
+                        if (best == null)
+                            best = vcam;
+
+                        // GML Note: we're abusing Priority to hold the type
+                        int camType = Mathf.RoundToInt(vcam.Priority);
+                        if (camType == cp.m_cameraType)
+                        {
+                            best = vcam;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (best != null)
-            {
-                // Choose current target group
-                StoryManagerGTFO.CameraPoint cp = ChooseCurrentCameraPoint(deltaTime);
-                if (cp != null)
+                // Set the vcam's target to the target group
+                if (best != null)
                 {
-                    // Set the vcam's target to the target group
-                    if (best.LookAt != cp.m_TargetGroup || best.Follow != cp.m_cameraPoint)
+                    bool isCut = LiveCameraPoint != cp || best != LiveChild as CinemachineVirtualCameraBase;
+                    LiveCameraPoint = cp;
+                    Follow.position = cp.m_cameraPos;
+                    if (isCut)
                     {
                         best.LookAt = cp.m_TargetGroup.transform;
-                        best.Follow = cp.m_cameraPoint;
-                        CinemachineCore.Instance.GenerateCameraCutEvent(best); // GML hack
+                        best.Follow = Follow;
+                        best.PreviousStateIsValid = false;
+
+                        // GML debug
+                        if (Time.time - mLastCut < m_MinDuration)
+                            Debug.Log("Illegal Cut to " + cp.m_TargetGroup.name + " after " + (Time.time - mLastCut));
+                        mLastCut = Time.time;
+                        CinemachineCore.Instance.GenerateCameraCutEvent(best);
                     }
                 }
             }
             return best;
         }
 
+        float mLastCut = 0;
         float mActivationTime = 0;
         float mPendingActivationTime = 0;
         StoryManagerGTFO.CameraPoint mPendingCameraPoint;
         
-        StoryManagerGTFO.CameraPoint LiveCameraPoint
-        {
-            get
-            {
-                StoryManagerGTFO.CameraPoint cp = null;
-                if (LiveChild != null && LiveChild.Follow != null)
-                    cp = StoryManagerGTFO.Instance.LookupCameraPoint(LiveChild.Follow);
-                return cp;
-            }
-        }
+        StoryManagerGTFO.CameraPoint LiveCameraPoint { get; set; }
 
         StoryManagerGTFO.CameraPoint ChooseCurrentCameraPoint(float deltaTime)
         {

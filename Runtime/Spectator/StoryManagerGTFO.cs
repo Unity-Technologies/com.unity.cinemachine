@@ -35,7 +35,6 @@ namespace Spectator
 
         public class ThreadClientData
         {
-            public float m_ValidityTimestamp;
             public List<CameraPoint> m_CameraPoints = new List<CameraPoint>();
         }
 
@@ -47,45 +46,37 @@ namespace Spectator
             return st;
         }
 
-        /// <summary>Call this to set the current list of interesting objects</summary> 
-        public void SetInterestingObjects(List<Transform> newObjects)
+        /// <summary>Add items to the current list of interesting objects</summary> 
+        public void CreateInterestingObjects(List<Transform> objects)
         {
-            float now = Time.time;
-            
-            int numGiven = newObjects.Count;
+            int numGiven = objects.Count;
             for (int i = 0; i < numGiven; ++i)
             {
-                var th = LookupThread(newObjects[i]);
+                var th = LookupThread(objects[i]);
                 if (th == null)
                 {
                     // Create the thread
-                    th = StoryManager.Instance.CreateStoryThread(newObjects[i]);
+                    th = StoryManager.Instance.CreateStoryThread(objects[i]);
                     th.ClientData = new ThreadClientData();
                     th.InterestLevel = 1;
-                    mThreadLookup[newObjects[i]] = th;
-                }
-                // Update the thread
-                var cd = th.ClientData as ThreadClientData;
-                cd.m_ValidityTimestamp = now;
-            }
-
-            // Prune stale threads
-            int numThreads = StoryManager.Instance.NumThreads;
-            for (int i = StoryManager.Instance.NumThreads-1; i >= 0; --i)
-            {
-                var th = StoryManager.Instance.GetThread(i);
-                var cd = th.ClientData as ThreadClientData;
-                if (cd == null || cd.m_ValidityTimestamp != now)
-                {
-                    // Don't prune if live and onscreen for too short a time
-                    if (!StoryManager.Instance.ThreadIsLive(th) 
-                            || th.LastOnScreenDuration >= StoryManager.Instance.m_MinimumThreadTime)
-                        StoryManager.Instance.DestroyStoryThread(th);
+                    mThreadLookup[objects[i]] = th;
                 }
             }
         }
 
-        /// <summary>Call this to set the interest level of a current target</summary> 
+        /// <summary>Remove items from the current list of interesting objects</summary> 
+        public void DestroyInterestingObjects(List<Transform> objects)
+        {
+            int numGiven = objects.Count;
+            for (int i = 0; i < numGiven; ++i)
+            {
+                var th = LookupThread(objects[i]);
+                if (th != null)
+                    StoryManager.Instance.DestroyStoryThread(th);
+            }
+        }
+
+        /// <summary>Set the interest level of an interesting object</summary> 
         public bool SetInterestLevel(Transform target, float interest)
         {
             var th = LookupThread(target);
@@ -101,117 +92,193 @@ namespace Spectator
         [Range(0, 10)]
         public float m_TargetObjectRadius = 0.25f;
         [Range(1, 160)]
-        public float m_FovFilter = 30;
+        public float m_FovFilter = 40;
 
         public class CameraPoint
         {
-            public float m_validityTimestamp;
-            public Transform m_cameraPoint;
+            public int m_CPID;                  // Camera point ID, unique to this point
+            public int m_cameraType;            // from an enum
+            public int m_nodeID;                // used by GTFO to locate camera point
+            public Vector3 m_cameraPos;
+            public Vector3 m_cameraFwd;         // used if dynamic target is null
+            public Transform m_dynamicTarget;   // may be null
+
             public CinemachineTargetGroup m_TargetGroup;
             public float m_shotQuality;
+
+            public float m_lastActiveTime;
         }
 
-        Dictionary<Transform, CameraPoint> mCameraPointLookup = new Dictionary<Transform, CameraPoint>();
+        Dictionary<int, CameraPoint> mCameraPointLookup = new Dictionary<int, CameraPoint>();
+        List<CameraPoint> mActiveCameraPoints = new List<CameraPoint>();
+        List<CameraPoint> mCameraPointRecycleBin = new List<CameraPoint>();
 
-        public CameraPoint LookupCameraPoint(Transform target)
+        public CameraPoint LookupCameraPoint(int cpid)
         {
             CameraPoint cp = null;
-            if (target != null)
-                mCameraPointLookup.TryGetValue(target, out cp);
+            mCameraPointLookup.TryGetValue(cpid, out cp);
             return cp;
         }
 
-        float mLastValidityTimestamp;
-
-        /// <summary>Call this to set camera point visibility data</summary>
-        public void SetCameraObjectVisibility(
-            Transform cameraPoint,
-            Transform centerTarget,        // what the camera is looking at (may be null)
-            List<Transform> visibleTargets) // fixed-length, entries can be null
+        public void CreateCameraPoint(int cpid, int cameraType, Transform target)
         {
-            // Disable the target groups that are no longer valid
-            float timestamp = Time.time;
-            if (mLastValidityTimestamp != timestamp)
-                DisableStaleGroups(mLastValidityTimestamp);
-            mLastValidityTimestamp = timestamp;
-
-            // Update our target groups
-            int numTargets = visibleTargets.Count;
-            CameraPoint cp = LookupCameraPoint(cameraPoint);
+            CameraPoint cp = LookupCameraPoint(cpid);
+            if (cp == null)
+            {
+                int index = mCameraPointRecycleBin.Count - 1;
+                if (index >= 0)
+                {
+                    cp = mCameraPointRecycleBin[index];
+                    mCameraPointRecycleBin.RemoveAt(index);
+                    mActiveCameraPoints.Add(cp);
+                }
+            }
             if (cp == null)
             {
                 // Create the camera point object and target group
-                cp = new CameraPoint() { m_cameraPoint = cameraPoint };
-                GameObject go = new GameObject(cameraPoint.name + cameraPoint.GetInstanceID());
-                mCameraPointLookup[cameraPoint] = cp;
+                cp = new CameraPoint();
+                GameObject go = new GameObject();
                 go.transform.SetParent(this.transform);
                 cp.m_TargetGroup = go.AddComponent<CinemachineTargetGroup>();
                 cp.m_TargetGroup.m_UpdateMethod = CinemachineTargetGroup.UpdateMethod.LateUpdate;
-                cp.m_TargetGroup.m_Targets = new CinemachineTargetGroup.Target[numTargets];
+                cp.m_TargetGroup.m_Targets = new CinemachineTargetGroup.Target[1];
+                mActiveCameraPoints.Add(cp);
             }
+            mCameraPointLookup[cpid] = cp;
+            cp.m_CPID = cpid;
+            cp.m_cameraType = cameraType;
+            cp.m_dynamicTarget = target;
+            cp.m_TargetGroup.name = cpid.ToString();    // GML debugging
+            cp.m_TargetGroup.gameObject.SetActive(true);
+        }
 
-            // Get camera forward
-            Vector3 pos = cameraPoint.transform.position;
-            Vector3 fwd = cameraPoint.transform.forward;
-            if (centerTarget != null)
-                fwd = centerTarget.transform.position - pos;
-            if (fwd.AlmostZero())
-                fwd = cameraPoint.transform.forward; // degenerate
-
-            // Update the targets
-            bool gotOne = false;
-            if (cp.m_TargetGroup.m_Targets.Length < visibleTargets.Count)
-                cp.m_TargetGroup.m_Targets = new CinemachineTargetGroup.Target[numTargets];
-            for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
+        public void DestroyCameraPoint(int cpid)
+        {
+            CameraPoint cp = LookupCameraPoint(cpid);
+            if (cp != null)
             {
-                bool isValid = false;
-                if (i < numTargets && visibleTargets[i] != null)
-                {
-                    // Get the actual angle from the camera - does it fit into our FOV?
-                    Vector3 dir = visibleTargets[i].position - pos;
-                    float angle = UnityVectorExtensions.Angle(fwd, dir);
-                    if (angle < m_FovFilter / 2)
-                        isValid = true;
-                }
-                if (isValid)
-                {
-                    cp.m_TargetGroup.m_Targets[i].weight = 1;
-                    cp.m_TargetGroup.m_Targets[i].target = visibleTargets[i];
-                    cp.m_TargetGroup.m_Targets[i].radius = m_TargetObjectRadius;
-                    AddReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
-                    gotOne = true;
-                }
-                else
+                mCameraPointLookup.Remove(cpid);
+                mCameraPointRecycleBin.Insert(0, cp); // GML slow
+                mActiveCameraPoints.Remove(cp);
+                cp.m_TargetGroup.gameObject.SetActive(false);
+
+                for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
                 {
                     RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
                     cp.m_TargetGroup.m_Targets[i].weight = 0;
                     cp.m_TargetGroup.m_Targets[i].target = null;
                 }
-
-            }
-            // Make sure a non-empty group is active
-            if (gotOne)
-            {
-                cp.m_TargetGroup.gameObject.SetActive(true);
-                cp.m_validityTimestamp = timestamp;
-                AssessShotQuality(cp);
             }
         }
 
-        public void DisableStaleGroups(float timestamp)
+        public void SetCameraPoint(int cpid, Vector3 position, Vector3 fwd, int nodeId)
+        {
+            CameraPoint cp = LookupCameraPoint(cpid);
+            if (cp != null)
+            {
+                cp.m_cameraPos = position;
+                cp.m_cameraFwd = fwd;
+                cp.m_nodeID = nodeId;
+            }
+        }
+
+        // Debugging
+        public void SetCameraPointName(int cpid, string name)
+        {
+            CameraPoint cp = LookupCameraPoint(cpid);
+            if (cp != null)
+            {
+                cp.m_TargetGroup.name = name;
+            }
+        }
+
+        private float mLastCameraPointUpdateTime = 0;
+
+        /// <summary>Set camera point visibility data</summary>
+        public void SetCameraPointObjectVisibility(
+            int cpid, List<Transform> visibleTargets) // fixed-length, entries can be null
+        {
+            // GML temp
+            float now = Time.time;
+            if (mLastCameraPointUpdateTime != now)
+                PruneStaleCameraPoints(mLastCameraPointUpdateTime);
+            mLastCameraPointUpdateTime = now;
+
+            CameraPoint cp = LookupCameraPoint(cpid);
+            if (cp != null)
+            {
+                cp.m_lastActiveTime = now;
+
+                // Get camera forward
+                Vector3 pos = cp.m_cameraPos;
+                Vector3 fwd = cp.m_cameraFwd;
+                if (cp.m_dynamicTarget != null)
+                    fwd = (cp.m_dynamicTarget.position - pos).normalized;
+                if (fwd.AlmostZero())
+                    fwd = cp.m_cameraFwd; // degenerate
+
+                // Update the targets
+                int numTargets = visibleTargets.Count;
+                bool gotOne = false;
+                if (cp.m_TargetGroup.m_Targets.Length < visibleTargets.Count)
+                    cp.m_TargetGroup.m_Targets = new CinemachineTargetGroup.Target[numTargets];
+                for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
+                {
+                    bool isValid = false;
+                    if (i < numTargets && visibleTargets[i] != null)
+                    {
+                        // Get the actual angle from the camera - does it fit into our FOV?
+                        Vector3 dir = visibleTargets[i].position - pos;
+                        float angle = UnityVectorExtensions.Angle(fwd, dir);
+                        if (angle < m_FovFilter / 2)
+                            isValid = true;
+                    }
+                    if (isValid)
+                    {
+                        cp.m_TargetGroup.m_Targets[i].weight = 1;
+                        cp.m_TargetGroup.m_Targets[i].target = visibleTargets[i];
+                        cp.m_TargetGroup.m_Targets[i].radius = m_TargetObjectRadius;
+                        AddReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
+                        gotOne = true;
+                    }
+                    else
+                    {
+                        RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
+                        cp.m_TargetGroup.m_Targets[i].weight = 0;
+                        cp.m_TargetGroup.m_Targets[i].target = null;
+                    }
+                }
+                // Make sure a non-empty group is active
+                cp.m_TargetGroup.gameObject.SetActive(gotOne);
+                AssessShotQuality(cp);
+            }
+            // Temp here to clean up stale ones (should be in Update())
+            RemoveStaleCameraPoint();
+        }
+
+        // GML temp
+        public void PruneStaleCameraPoints(float timestamp)
         {
             // Disable the target groups that are no longer valid
-            var it = mCameraPointLookup.GetEnumerator();
-            while (it.MoveNext())
+            for (int i = mActiveCameraPoints.Count-1; i>= 0; --i)
             {
-                var cp = it.Current.Value;
-                if (cp.m_validityTimestamp != timestamp 
-                    && cp.m_TargetGroup.gameObject.activeSelf)
+                if (mActiveCameraPoints[i].m_lastActiveTime != timestamp)
+                    DestroyCameraPoint(mActiveCameraPoints[i].m_CPID);
+            }
+        }
+
+        int mLastIndexCheckForStaleness = 0;
+        void RemoveStaleCameraPoint()
+        {
+            int numActive = mActiveCameraPoints.Count;
+            if (numActive > 0)
+            {
+                if (++mLastIndexCheckForStaleness >= numActive)
+                    mLastIndexCheckForStaleness = 0;
+                if (mActiveCameraPoints[mLastIndexCheckForStaleness].m_lastActiveTime < Time.time - 10)
                 {
-                    for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
-                        RemoveReferenceInThread(cp, cp.m_TargetGroup.m_Targets[i].target);
-                    cp.m_TargetGroup.gameObject.SetActive(false);
-                    cp.m_shotQuality = 0;
+                    DestroyCameraPoint(mActiveCameraPoints[mLastIndexCheckForStaleness].m_CPID);
+                    --mLastIndexCheckForStaleness;
                 }
             }
         }
@@ -254,7 +321,7 @@ namespace Spectator
         {
             // We get score for every visible target, weighted by normalized urgency and target distance
             cp.m_shotQuality = 0;
-            Vector3 pos = cp.m_cameraPoint.position;
+            Vector3 pos = cp.m_cameraPos;
             for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
             {
                 if (cp.m_TargetGroup.m_Targets[i].weight > 0 && cp.m_TargetGroup.m_Targets[i].target != null)
