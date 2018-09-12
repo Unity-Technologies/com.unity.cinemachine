@@ -201,7 +201,7 @@ namespace Cinemachine
         private float mAverageWeight;
         private Vector3 mAveragePos;
 
-        void DoUpdate()
+        public void DoUpdate()
         {
             if (IsEmpty)
                 return;
@@ -331,7 +331,7 @@ namespace Cinemachine
             Matrix4x4 inverseView = observer.inverse;
             minAngles = Vector2.zero;
             maxAngles = Vector2.zero;
-            zRange = Vector3.zero;
+            zRange.x = zRange.y = inverseView.MultiplyPoint3x4(transform.position).magnitude;
             for (int i = 0; i < m_Targets.Length; ++i)
             {
                 BoundingSphere s = GetWeightedBoundsForMember(i);

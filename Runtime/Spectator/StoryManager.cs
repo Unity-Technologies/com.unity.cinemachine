@@ -15,15 +15,9 @@ namespace Spectator
     /// - Tweaking parameters may include time slice granularity and perhaps other
     ///     ways to guard against hysteresis
     ///
+    [AddComponentMenu("Cinemachine/Spectator/StoryManager")]
     public class StoryManager : MonoBehaviour
     {
-        public enum ImportanceMode
-        {
-            Linear = 0,
-            Logarithmic10 = 1,
-            Logarithmic2 = 2,
-        }
-
         private static StoryManager sInstance = null;
 
         /// <summary>Get the singleton instance</summary>
@@ -32,9 +26,20 @@ namespace Spectator
             get
             {
                 if (sInstance == null)
-                    sInstance = FindObjectsOfType<StoryManager>()[0];
+                {
+                    var a = FindObjectsOfType<StoryManager>();
+                    if (a != null && a.Length > 0)
+                        sInstance = a[0];
+                }
                 return sInstance;
             }
+        }
+
+        public enum ImportanceMode
+        {
+            Linear = 0,
+            Logarithmic10 = 1,
+            Logarithmic2 = 2,
         }
 
         /// <summary>If a thread becomes live, it must stay on at least this long.
@@ -89,6 +94,7 @@ namespace Spectator
             public float UrgencyGrowthStrength { get; set; }
 
             // Extra data for use by client
+            public List<Cinematographer.CameraPointIndex> m_cameraPoints = new List<Cinematographer.CameraPointIndex>();
             public object ClientData { get; set; }
         }
 
@@ -131,7 +137,7 @@ namespace Spectator
 
         public StoryThread CreateStoryThread(Transform target)
         {
-            StoryThread th = new StoryThread(target);
+            StoryThread th = new StoryThread(target) { InterestLevel = 1 };
             mThreadLookup[target] = th;
             mThreads.Add(th);
             return th;
@@ -143,9 +149,9 @@ namespace Spectator
             {
                 mThreadLookup.Remove(th.TargetObject);
                 mThreads.Remove(th);
+                if (mLiveThreads.Contains(th))
+                    mLiveThreads.Remove(th);
             }
-            if (mLiveThreads.Contains(th))
-                mLiveThreads.Remove(th);
         }
 
         public StoryThread LookupStoryThread(Transform target)
@@ -155,10 +161,43 @@ namespace Spectator
             return th;
         }
 
+        public void CreateStoryThreads(List<Transform> objects)
+        {
+            for (int i = 0; i < objects.Count; ++i)
+            {
+                var th = LookupStoryThread(objects[i]);
+                if (th == null)
+                {
+                    // Create the thread
+                    th = CreateStoryThread(objects[i]);
+                    th.InterestLevel = 1;
+                }
+            }
+        }
+
+        public void DestroyStoryThreads(List<Transform> objects)
+        {
+            for (int i = 0; i < objects.Count; ++i)
+            {
+                var th = LookupStoryThread(objects[i]);
+                if (th != null)
+                    DestroyStoryThread(th);
+            }
+        }
+
+        public bool SetStoryThreadInterestLevel(Transform target, float interest)
+        {
+            var th = LookupStoryThread(target);
+            if (th == null)
+                return false;
+            th.InterestLevel = interest;
+            return true;
+        }
+
         /// <summary>Sum of all urgencies.  Used for computing normalized urgencies</summary>
         public float SumOfAllUrgencies { get; private set; }
 
-        public void SortThreadsByUrgency()
+        void SortThreadsByUrgency()
         {
             mThreads.Sort((x, y) => y.Urgency.CompareTo(x.Urgency));
         }

@@ -47,6 +47,11 @@ namespace Spectator
             }
 
             public void Clear() { cameraPoint = null; fovIndex = 0; }
+
+            // Debugging
+            public string Name { get { return cameraPoint.m_TargetGroup.name; } }
+            public int CameraTyep { get { return cameraPoint.m_cameraType; } }
+            public float FOV { get { return cameraPoint.m_fovData[fovIndex].fov; } }
         }
 
         Dictionary<int, CameraPoint> mCameraPointLookup = new Dictionary<int, CameraPoint>();
@@ -111,43 +116,6 @@ namespace Spectator
                 mActiveCameraPoints.Remove(cp);
             }
         }
-
-        void DeactivateCameraPoint(CameraPoint cp)
-        {
-            cp.m_TargetGroup.gameObject.SetActive(false);
-            for (int i = 0; i < cp.m_fovData.Length; ++i)
-            {
-                cp.m_fovData[i].fov = m_fovFilters[i];
-                cp.m_fovData[i].shotQuality = 0;
-                for (int j = 0; j < cp.m_fovData[i].targets.Count; ++j)
-                {
-                    RemoveReferenceInThread(cp.m_fovData[i].targets[j].target, cp, i);
-                    cp.m_fovData[j].targets.Clear();
-                }
-            }
-            for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
-            {
-                cp.m_TargetGroup.m_Targets[i].target = null;
-                cp.m_TargetGroup.m_Targets[i].weight = 0;
-            }
-        }
-
-        // GML temp
-        void PruneStaleCameraPoints(float timestamp)
-        {
-            // Disable the target groups that are no longer valid
-            for (int i = mActiveCameraPoints.Count-1; i >= 0; --i)
-            {
-                CameraPoint cp = mActiveCameraPoints[i];
-                if (cp.m_lastActiveTime < timestamp)
-                {
-                    DeactivateCameraPoint(cp);
-                    // If it's been quite long enough, trash it
-                    if (timestamp - cp.m_lastActiveTime > 5)
-                        DestroyCameraPoint(cp.m_CPID);
-                }
-            }
-        }
         
         public void SetCameraPoint(int cpid, Vector3 position, Vector3 fwd, int nodeId)
         {
@@ -185,17 +153,6 @@ namespace Spectator
             {
                 cp.m_lastActiveTime = now;
 
-                // Get camera forward
-                Vector3 pos = cp.m_cameraPos;
-                Vector3 fwd = cp.m_cameraFwd;
-                if (cp.m_dynamicTarget != null)
-                    fwd = (cp.m_dynamicTarget.position - pos).normalized;
-                if (fwd.AlmostZero())
-                    fwd = cp.m_cameraFwd; // degenerate
-
-                // Update the targets
-                bool gotOne = false;
-
                 // GML this is really bad - find some way to make this efficient, 
                 // TODO: only do delta instead of this brute force
                 for (int i = 0; i < cp.m_fovData.Length; ++i)
@@ -204,6 +161,24 @@ namespace Spectator
                         RemoveReferenceInThread(cp.m_fovData[i].targets[j].target, cp, i);
                     cp.m_fovData[i].targets.Clear();
                 }
+                
+                // Get camera forward
+                Vector3 pos = cp.m_cameraPos;
+                Vector3 fwd = Vector3.zero;
+                if (cp.m_dynamicTarget != null)
+                    fwd = (cp.m_dynamicTarget.position - pos).normalized;
+                if (fwd.AlmostZero())
+                {
+#if false
+                    fwd = cp.m_cameraFwd; // degenerate
+#else
+                    // Hack: Use group average position because the cam fwds weren't set properly
+                    fwd = InventCameraForward(cp, visibleTargets);
+#endif
+                }
+
+                // Update the targets
+                bool gotOne = false;
 
                 int numTargets = visibleTargets.Count;
                 for (int i = 0; i < numTargets; ++i)
@@ -211,7 +186,7 @@ namespace Spectator
                     if (visibleTargets[i] != null)
                     {
                         // Get the actual angle from the camera - does it fit into our FOV?
-                        Vector3 dir = visibleTargets[i].position - pos;
+                        Vector3 dir = (visibleTargets[i].position - pos).normalized;
                         float angle = UnityVectorExtensions.Angle(fwd, dir);
                         for (int j = 0; j < cp.m_fovData.Length; ++j)
                         {
@@ -229,6 +204,83 @@ namespace Spectator
                 cp.m_TargetGroup.gameObject.SetActive(gotOne);
                 AssessShotQuality(cp);
             }
+        }
+
+        void DeactivateCameraPoint(CameraPoint cp)
+        {
+            cp.m_TargetGroup.gameObject.SetActive(false);
+            for (int i = 0; i < cp.m_fovData.Length; ++i)
+            {
+                cp.m_fovData[i].fov = m_fovFilters[i];
+                cp.m_fovData[i].shotQuality = 0;
+                for (int j = 0; j < cp.m_fovData[i].targets.Count; ++j)
+                {
+                    RemoveReferenceInThread(cp.m_fovData[i].targets[j].target, cp, i);
+                    cp.m_fovData[i].targets.Clear();
+                }
+            }
+            for (int i = 0; i < cp.m_TargetGroup.m_Targets.Length; ++i)
+            {
+                cp.m_TargetGroup.m_Targets[i].target = null;
+                cp.m_TargetGroup.m_Targets[i].weight = 0;
+            }
+        }
+
+        // GML temp
+        void PruneStaleCameraPoints(float timestamp)
+        {
+            // Disable the target groups that are no longer valid
+            for (int i = mActiveCameraPoints.Count-1; i >= 0; --i)
+            {
+                CameraPoint cp = mActiveCameraPoints[i];
+                if (cp.m_lastActiveTime < timestamp)
+                {
+                    DeactivateCameraPoint(cp);
+                    // If it's been quite long enough, trash it
+                    if (timestamp - cp.m_lastActiveTime > 5)
+                        DestroyCameraPoint(cp.m_CPID);
+                }
+            }
+        }
+
+        // GML Hack: Use group average position because the cam fwds weren't set properly
+        Vector3 InventCameraForward(CameraPoint cp, List<Transform> visibleTargets)
+        {
+            Vector3 pos = cp.m_cameraPos;
+            Vector3 fwd = Vector3.forward;
+            int numFound = 0;
+            for (int i = 0; i < visibleTargets.Count; ++i)
+            {
+                if (visibleTargets[i] != null)
+                {
+                    fwd += visibleTargets[i].position;
+                    ++numFound;
+                }
+            }
+            if (numFound > 0)
+            {
+                fwd /= numFound;
+                fwd = (fwd - pos).normalized;
+/*
+                Vector3 center = fwd;
+                float best = 0;
+                for (int i = 0; i < visibleTargets.Count; ++i) 
+                {
+                    if (visibleTargets[i] != null)
+                    {
+                        // Get the actual angle from the camera - does it fit into our FOV?
+                        Vector3 dir = (visibleTargets[i].position - pos).normalized;
+                        float dot = Vector3.Dot(center, dir);
+                        if (dot > best)
+                        {
+                            best = dot;
+                            fwd = dir;
+                        }
+                    }
+                }
+*/
+            }
+            return fwd;
         }
 
         void AddReferenceInThread(Transform target, CameraPoint cp, int index)
@@ -252,7 +304,9 @@ namespace Spectator
                 if (th != null)
                 {
                     var item = new CameraPointIndex { cameraPoint = cp, fovIndex = index };
-                    th.m_cameraPoints.Remove(item);
+                    for (int i = th.m_cameraPoints.Count-1; i >= 0; --i)
+                        if (th.m_cameraPoints[i].SameAs(ref item))
+                            th.m_cameraPoints.RemoveAt(i);
                 }
             }
         }
