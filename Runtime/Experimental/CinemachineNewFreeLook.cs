@@ -318,7 +318,7 @@ namespace Cinemachine
                 float t = Mathf.Abs(a0) / (Mathf.Abs(a0) + Mathf.Abs(a1));
                 return Mathf.Lerp(i0 * step, i1 * step, t);
             }
-            return m_YAxis.Value; // stay conservative
+            return m_VerticalAxis.Value; // stay conservative
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
