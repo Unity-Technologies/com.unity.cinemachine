@@ -35,6 +35,7 @@ namespace Spectator
             }
         }
 
+        public SpectatorTuningConstants m_TuningConstants;
         public enum ImportanceMode
         {
             Linear = 0,
@@ -79,23 +80,45 @@ namespace Spectator
             // Time when last on-screen
             public float TimeLastSeenStart { get; set; }
             public float TimeLastSeenStop { get; set; }
-
-            // Last on-screen duration
             public float LastOnScreenDuration { get { return TimeLastSeenStop - TimeLastSeenStart; } }
-
-            public float TimeUrgency { get; set; }
 
             // Urgency - decays while on-screen, increases otherwise.
             // Events and action states influence this heavily.
             // The Urgency evolution function is non-trivial and is configurable
             public float Urgency { get; set; }
             public float UrgencyDerivative { get; set; }
-
             public float UrgencyGrowthStrength { get; set; }
 
-            // Extra data for use by client
             public List<Cinematographer.CameraPointIndex> m_cameraPoints = new List<Cinematographer.CameraPointIndex>();
+
+            // Extra data for use by client
             public object ClientData { get; set; }
+
+            List<VolatileWeight> m_InterestItems = new List<VolatileWeight>();
+
+            public void AddInterest(VolatileWeight w)
+            {
+                for (int i = 0; i < m_InterestItems.Count; ++i)
+                {
+                    if (m_InterestItems[i].id == w.id)
+                    {
+                        m_InterestItems[i] = w;
+                        return;
+                    }
+                    m_InterestItems.Add(w);
+                }
+            }
+
+            // Called by StoryManager - decays the items and sums them
+            internal void UpdateInterestLevel(float deltaTime)
+            {
+                InterestLevel = 0;
+                for (int i = 0; i < m_InterestItems.Count; ++i)
+                    InterestLevel += m_InterestItems[i].Decay(deltaTime);
+            }
+
+            // Decays while not live
+            internal VolatileWeight m_satisfaction;
         }
 
         // Each thread follows a subject
@@ -111,6 +134,21 @@ namespace Spectator
             get { return mLiveThreads; }
             set
             {
+                if (value != null)
+                {
+                    for (int i = 0; i < value.Count; ++i)
+                    {
+                        var th = value[i];
+                        if (!mLiveThreads.Contains(th))
+                            th.AddInterest(new VolatileWeight() 
+                                { 
+                                    id = SpectatorTuningConstants.WeightID.NewThreadBoost,
+                                    amount = m_TuningConstants.NewThreadBoostAmount,
+                                    decayTime = m_TuningConstants.NewThreadBoostDecayTime
+                                });
+                    }
+                }
+
                 float now = Time.time;
                 for (int i = mLiveThreads.Count-1; i >= 0; --i)
                     mLiveThreads[i].TimeLastSeenStop = now;
@@ -127,6 +165,7 @@ namespace Spectator
             }
         }
         public bool ThreadIsLive(StoryThread th) { return mLiveThreads.Contains(th); }
+
 
         public ImportanceMode DecayUrgencyeMode = ImportanceMode.Logarithmic10;
         public ImportanceMode GrowUrgencyMode = ImportanceMode.Logarithmic10;
@@ -217,6 +256,37 @@ namespace Spectator
                 SumOfAllUrgencies += mThreads[i].Urgency;
         }
 
+#if false
+        // Default urgency compute function
+        public static void DefaultUrgencyComputer(StoryManager storyManager)
+        {
+            float dt = Time.deltaTime;
+            float interestSum = 0;
+            for (int i = 0; i < storyManager.mThreads.Count; ++i)
+            {
+                StoryThread th = storyManager.mThreads[i];
+                th.UpdateInterestLevel(dt);
+                interestSum += th.InterestLevel;
+            }
+            for (int i = 0; i < storyManager.mThreads.Count; ++i)
+            {
+                float starvationBoost = 0;
+                StoryThread th = storyManager.mThreads[i];
+                if (storyManager.ThreadIsLive(th))
+                    th.m_satisfaction.amount = storyManager.m_TuningConstants.ThreadStarvationBoostAmount;
+                else
+                {
+                    float scale = interestSum / Mathf.Max(0.001f, th.InterestLevel);
+                    th.m_satisfaction.decayTime = scale * storyManager.m_TuningConstants.NewThreadBoostDecayTime;
+                    starvationBoost = storyManager.m_TuningConstants.ThreadStarvationBoostAmount - th.m_satisfaction.Decay(dt);
+                }
+
+                float startUrgency = th.Urgency;
+                th.Urgency = th.InterestLevel + th.m_satisfaction.amount;
+                th.UrgencyDerivative = (th.Urgency - startUrgency) / dt;
+            }
+        }
+#else
         // Default urgency compute function
         public static void DefaultUrgencyComputer(StoryManager storyManager)
         {
@@ -282,6 +352,6 @@ namespace Spectator
 
             return st.Urgency + urgencyDelta * st.UrgencyGrowthStrength;
         }
+#endif
     }
-
 }

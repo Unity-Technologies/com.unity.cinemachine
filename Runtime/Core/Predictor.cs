@@ -91,8 +91,8 @@ namespace Cinemachine.Utility
             return Mathf.Log(1f / residual) / time;
         }
 
-        // Exponential decay: decay a given quantity opver a period of time
-        static float DecayedRemainder(float initial, float decayConstant, float deltaTime)
+        /// <summary>Exponential decay: decay a given quantity opver a period of time</summary>
+        public static float DecayedRemainder(float initial, float decayConstant, float deltaTime)
         {
             return initial / Mathf.Exp(decayConstant * deltaTime);
         }

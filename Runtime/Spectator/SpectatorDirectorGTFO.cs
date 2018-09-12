@@ -338,6 +338,8 @@ namespace Spectator
         Cinematographer.CameraPointIndex mPendingCameraPoint;
         Cinematographer.CameraPointIndex mLiveCameraPoint;
 
+        public Cinematographer.CameraPoint LiveCameraPoint { get { return mPendingCameraPoint.cameraPoint; } }
+
         Cinematographer.CameraPointIndex ChooseCurrentCameraPoint(float deltaTime)
         {
             Cinematographer.CameraPointIndex liveCP = mLiveCameraPoint;

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
+
 public class CinemachineStoryThreadTesterWindow : EditorWindow
 {
 
