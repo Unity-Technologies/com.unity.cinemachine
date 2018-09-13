@@ -14,6 +14,9 @@ namespace Spectator
         [Range(1, 160)]
         public float[] m_fovFilters = new float[3] { 10, 30, 60 };
 
+        public bool m_ComputCameraDirectionFromTargetAverage;
+
+        // This needs to get renamed to SpectatorShot
         public class CameraPoint
         {
             public int m_CPID;                  // Camera point ID, unique to this point
@@ -28,7 +31,6 @@ namespace Spectator
             public struct FovData
             {
                 public float fov;
-                public float shotQuality;
                 public List<CinemachineTargetGroup.Target> targets;
             }
             public FovData[] m_fovData;
@@ -86,7 +88,6 @@ namespace Spectator
                 for (int i = 0; i < cp.m_fovData.Length; ++i)
                 {
                     cp.m_fovData[i].fov = m_fovFilters[i];
-                    cp.m_fovData[i].shotQuality = 0;
                     cp.m_fovData[i].targets = new List<CinemachineTargetGroup.Target>();
                 }
                 GameObject go = new GameObject();
@@ -169,12 +170,11 @@ namespace Spectator
                     fwd = (cp.m_dynamicTarget.position - pos).normalized;
                 if (fwd.AlmostZero())
                 {
-#if false
-                    fwd = cp.m_cameraFwd; // degenerate
-#else
                     // Hack: Use group average position because the cam fwds weren't set properly
-                    fwd = InventCameraForward(cp, visibleTargets);
-#endif
+                    if (m_ComputCameraDirectionFromTargetAverage)
+                        fwd = InventCameraForward(cp, visibleTargets);
+                    else
+                        fwd = cp.m_cameraFwd; // degenerate
                 }
 
                 // Update the targets
@@ -202,7 +202,6 @@ namespace Spectator
                 }
                 // Make sure a non-empty group is active
                 cp.m_TargetGroup.gameObject.SetActive(gotOne);
-                AssessShotQuality(cp);
             }
         }
 
@@ -212,7 +211,6 @@ namespace Spectator
             for (int i = 0; i < cp.m_fovData.Length; ++i)
             {
                 cp.m_fovData[i].fov = m_fovFilters[i];
-                cp.m_fovData[i].shotQuality = 0;
                 for (int j = 0; j < cp.m_fovData[i].targets.Count; ++j)
                 {
                     RemoveReferenceInThread(cp.m_fovData[i].targets[j].target, cp, i);
@@ -233,10 +231,10 @@ namespace Spectator
             for (int i = mActiveCameraPoints.Count-1; i >= 0; --i)
             {
                 CameraPoint cp = mActiveCameraPoints[i];
-                if (cp.m_lastActiveTime < timestamp)
+                if (cp.m_lastActiveTime < timestamp - 0.2f)
                 {
                     DeactivateCameraPoint(cp);
-                    // If it's been quite long enough, trash it
+                    // If it's been quiet long enough, trash it
                     if (timestamp - cp.m_lastActiveTime > 5)
                         DestroyCameraPoint(cp.m_CPID);
                 }
@@ -261,24 +259,6 @@ namespace Spectator
             {
                 fwd /= numFound;
                 fwd = (fwd - pos).normalized;
-/*
-                Vector3 center = fwd;
-                float best = 0;
-                for (int i = 0; i < visibleTargets.Count; ++i) 
-                {
-                    if (visibleTargets[i] != null)
-                    {
-                        // Get the actual angle from the camera - does it fit into our FOV?
-                        Vector3 dir = (visibleTargets[i].position - pos).normalized;
-                        float dot = Vector3.Dot(center, dir);
-                        if (dot > best)
-                        {
-                            best = dot;
-                            fwd = dir;
-                        }
-                    }
-                }
-*/
             }
             return fwd;
         }
@@ -309,65 +289,6 @@ namespace Spectator
                             th.m_cameraPoints.RemoveAt(i);
                 }
             }
-        }
-
-        // Shot Quality
-
-        [Header("Shot Evaluation")]
-        [Tooltip("If greater than zero, a higher score will be given to shots when the target is closer to this distance.  Set this to zero to disable this feature.")]
-        public float m_OptimalTargetDistance = 0;
-
-        void AssessShotQuality(CameraPoint cp)
-        {
-            // We get score for every visible target, weighted by normalized urgency and target distance
-            float urgencySum = StoryManager.Instance.SumOfAllUrgencies;
-            for (int i = 0; i < cp.m_fovData.Length; ++i)
-            {
-                cp.m_fovData[i].shotQuality = 0;
-                for (int j = 0; j < cp.m_fovData[i].targets.Count; ++j)
-                {
-                    var t = cp.m_fovData[i].targets[j];
-                    if (t.weight > 0 && t.target != null)
-                    {
-                        var th = StoryManager.Instance.LookupStoryThread(t.target);
-                        if (th != null)
-                        {
-                            float quality = th.Urgency;
-                            if (urgencySum > UnityVectorExtensions.Epsilon)
-                                quality /= urgencySum; // normalized
-                            
-                            quality *= GetQualityBoostForTargetDistance(t.target.position, cp.m_cameraPos);
-                            cp.m_fovData[i].shotQuality += quality;
-                        }
-                    }
-                }
-            }
-        }
-
-        float GetQualityBoostForTargetDistance(Vector3 targetPos, Vector3 cameraPos)
-        {
-            // Boost quality if target is close to optimal nearness
-            float nearnessBoost = 0;
-            const float kMaxNearBoost = 0.2f;
-            if (m_OptimalTargetDistance > 0)
-            {
-                float distance = Vector3.Magnitude(targetPos - cameraPos);
-                if (distance <= m_OptimalTargetDistance)
-                {
-                    float threshold = m_OptimalTargetDistance / 2;
-                    if (distance >= threshold)
-                        nearnessBoost = kMaxNearBoost * (distance - threshold)
-                            / (m_OptimalTargetDistance - threshold);
-                }
-                else
-                {
-                    distance -= m_OptimalTargetDistance;
-                    float threshold = m_OptimalTargetDistance * 3;
-                    if (distance < threshold)
-                        nearnessBoost = kMaxNearBoost * (1f - (distance / threshold));
-                }
-            }
-            return 1f + nearnessBoost;
         }
     }
 }

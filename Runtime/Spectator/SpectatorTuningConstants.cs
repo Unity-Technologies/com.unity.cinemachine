@@ -36,5 +36,7 @@ namespace Spectator
         public float CameraLensSelectionBoost = 500;
         public float PlayerSelectionBoost = 1000;
         public float SelectionDecayTime = 0.2f;
+
+        public float OptimalTargetDistanceMultiplier = 0.2f;
     }
 }

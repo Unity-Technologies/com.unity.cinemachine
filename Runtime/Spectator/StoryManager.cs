@@ -94,31 +94,21 @@ namespace Spectator
             // Extra data for use by client
             public object ClientData { get; set; }
 
-            List<VolatileWeight> m_InterestItems = new List<VolatileWeight>();
+            VolatileWeightSet m_InterestItems = new VolatileWeightSet();
 
-            public void AddInterest(VolatileWeight w)
+            public void AddInterest(VolatileWeight w) 
             {
-                for (int i = 0; i < m_InterestItems.Count; ++i)
-                {
-                    if (m_InterestItems[i].id == w.id)
-                    {
-                        m_InterestItems[i] = w;
-                        return;
-                    }
-                    m_InterestItems.Add(w);
-                }
+                m_InterestItems.SetWeight(w); 
             }
 
             // Called by StoryManager - decays the items and sums them
             internal void UpdateInterestLevel(float deltaTime)
             {
-                InterestLevel = 0;
-                for (int i = 0; i < m_InterestItems.Count; ++i)
-                    InterestLevel += m_InterestItems[i].Decay(deltaTime);
+                InterestLevel = m_InterestItems.Decay(deltaTime);
             }
 
             // Decays while not live
-            internal VolatileWeight m_satisfaction;
+            internal VolatileWeight m_satisfaction = new VolatileWeight();
         }
 
         // Each thread follows a subject
@@ -256,7 +246,7 @@ namespace Spectator
                 SumOfAllUrgencies += mThreads[i].Urgency;
         }
 
-#if false
+#if true
         // Default urgency compute function
         public static void DefaultUrgencyComputer(StoryManager storyManager)
         {
@@ -282,7 +272,7 @@ namespace Spectator
                 }
 
                 float startUrgency = th.Urgency;
-                th.Urgency = th.InterestLevel + th.m_satisfaction.amount;
+                th.Urgency = th.InterestLevel + starvationBoost;
                 th.UrgencyDerivative = (th.Urgency - startUrgency) / dt;
             }
         }

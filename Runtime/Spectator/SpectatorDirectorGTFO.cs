@@ -17,16 +17,16 @@ namespace Spectator
 
         public float m_MinimumShotQuality = 0.2f;
 
-        public enum LensMode { Auto = 0, Narrow = 10, Medium = 30, Wide = 60 };
+        public enum LensMode { Auto = -1, Narrow = 0, Medium = 1, Wide = 2 };
         public LensMode m_LensMode = LensMode.Auto;
 
-        public enum CameraMode { Auto = -1, Static = 0, Roaming = 1 };
+        public enum CameraMode { Auto = -1, Static = 0, Roaming = 1, Head = 2 };
         public CameraMode m_CameraMode = CameraMode.Auto;
 
 
         /// <summary>Internal API for the editor.  Do not use this filed.</summary>
         [SerializeField, HideInInspector, NoSaveDuringPlay]
-        internal CinemachineVirtualCameraBase[] m_ChildCameras = null;
+        internal CinemachineVirtualCameraBase[] m_childCameras = null;
 
         /// <summary>Wait this many seconds before activating a new child camera</summary>
         [Tooltip("Wait this many seconds before activating a new child camera")]
@@ -60,13 +60,13 @@ namespace Spectator
                     return "(none)";
                 var sb = CinemachineDebug.SBFromPool();
                 sb.Append("["); sb.Append(vcam.Name); 
-                Cinematographer.CameraPointIndex cp = mLiveCameraPoint;
-                if (cp.cameraPoint != null)
+                Cinematographer.CameraPointIndex cpi = mLiveCameraPoint;
+                if (cpi.cameraPoint != null)
                 {
-                    sb.Append(" " + cp.cameraPoint.m_TargetGroup.name 
-                        + ", L = " + cp.cameraPoint.m_fovData[cp.fovIndex].fov
-                        + ", Q = " + cp.cameraPoint.m_fovData[cp.fovIndex].shotQuality
-                        + ", T = " + cp.cameraPoint.m_TargetGroup.m_Targets.Length); 
+                    sb.Append(" " + cpi.cameraPoint.m_TargetGroup.name 
+                        + ", L = " + cpi.cameraPoint.m_fovData[cpi.fovIndex].fov
+                        + ", Q = " + CurrentShotQuality
+                        + ", T = " + cpi.cameraPoint.m_TargetGroup.m_Targets.Length); 
                 }
                 sb.Append("]");
                 string text = sb.ToString(); 
@@ -75,6 +75,27 @@ namespace Spectator
             }
         }
         
+        // Warning: this is slow, don't use it
+        float CurrentShotQuality
+        {
+            get
+            {
+                float q = -1;
+                UpdateListOfChildren();
+                var currentVcam = LiveChild as CinemachineVirtualCameraBase;
+                for (int i = 0; i < m_childCameras.Length; ++i)
+                {
+                    if (m_childCameras[i] == currentVcam)
+                    {
+                        if (m_qualityEvaluators[i] != null)
+                            q = m_qualityEvaluators[i].AssessShotQuality(
+                                mLiveCameraPoint, (int)m_CameraMode, (int)m_LensMode);
+                        break;
+                    }
+                }
+                return q;
+            }
+        }
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the ClearShot camera were active.</summary>
         public ICinemachineCamera LiveChild { set; get; }
@@ -123,7 +144,8 @@ namespace Spectator
             // Choose the best camera
             UpdateListOfChildren();
             ICinemachineCamera previousCam = LiveChild;
-            LiveChild = ChooseCurrentCamera(worldUp, deltaTime);
+            bool isCut;
+            LiveChild = ChooseCurrentCamera(worldUp, deltaTime, out isCut);
 
             // Are we transitioning cameras?
             if (previousCam != LiveChild && LiveChild != null)
@@ -144,9 +166,11 @@ namespace Spectator
 
                     // If cutting, generate a camera cut event if live
                     if (mActiveBlend == null)
-                        CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                        isCut = true;
                 }
             }
+            if (isCut)
+                CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
 
             // Advance the current blend (if any)
             if (mActiveBlend != null)
@@ -188,7 +212,7 @@ namespace Spectator
             base.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (mFakeFollowTarget != null)
-                RuntimeUtility.DestroyObject(mFakeFollowTarget);
+                RuntimeUtility.DestroyObject(mFakeFollowTarget.gameObject);
             mFakeFollowTarget = null;
         }
 
@@ -222,112 +246,79 @@ namespace Spectator
         /// <summary>The list of child cameras.  These are just the immediate children in the hierarchy.</summary>
         public CinemachineVirtualCameraBase[] ChildCameras
         { 
-            get { UpdateListOfChildren(); return m_ChildCameras; }
+            get { UpdateListOfChildren(); return m_childCameras; }
         }
+
+        SpectatorShotQualityEvaluator[] m_qualityEvaluators = null;
 
         private CinemachineBlend mActiveBlend = null;
 
         void InvalidateListOfChildren()
         { 
-            m_ChildCameras = null; 
+            m_childCameras = null; 
             LiveChild = null; 
         }
        
         void UpdateListOfChildren()
         {
-            if (m_ChildCameras != null)
+            if (m_childCameras != null)
                 return;
 
             List<CinemachineVirtualCameraBase> list = new List<CinemachineVirtualCameraBase>();
+            List<SpectatorShotQualityEvaluator> evalList = new List<SpectatorShotQualityEvaluator>();
             CinemachineVirtualCameraBase[] kids = GetComponentsInChildren<CinemachineVirtualCameraBase>(true);
             foreach (CinemachineVirtualCameraBase k in kids)
+            {
                 if (k.transform.parent == transform)
+                {
                     list.Add(k);
-            m_ChildCameras = list.ToArray();
+                    evalList.Add(k.GetComponent<SpectatorShotQualityEvaluator>());
+                }
+            }
+            m_childCameras = list.ToArray();
+            m_qualityEvaluators = evalList.ToArray();
 
             // Zap the cached current instructions
             mActivationTime = mPendingActivationTime = 0;
             mPendingCameraPoint.Clear();
+            mLiveCameraPoint.Clear();
             LiveChild = null;
             mActiveBlend = null;
         }
 
-        private CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
+        private CinemachineVirtualCameraBase ChooseCurrentCamera(
+            Vector3 worldUp, float deltaTime, out bool isCut)
         {
-            if (m_ChildCameras == null || m_ChildCameras.Length == 0)
-            {
-                mActivationTime = 0;
-                return null;
-            }
-
-            if (LiveChild != null && !LiveChild.VirtualCameraGameObject.activeSelf)
-                LiveChild = null;
-            CinemachineVirtualCameraBase best = LiveChild as CinemachineVirtualCameraBase;
-
             // Choose current target group
+            isCut = false;
             Cinematographer.CameraPointIndex cpi = ChooseCurrentCameraPoint(deltaTime);
-            if (cpi.cameraPoint != null)
+            Cinematographer.CameraPoint cp = cpi.cameraPoint;
+            int vcamIndex = ChooseMatchingVcam(cpi);
+
+            isCut = !cpi.SameAs(ref mLiveCameraPoint);
+            mLiveCameraPoint = cpi;
+
+            if (cp == null || vcamIndex < 0)
+                return LiveChild as CinemachineVirtualCameraBase;
+
+            // Track the camera point 
+            Follow.position = cp.m_cameraPos;
+            cp.m_TargetGroup.m_Targets = cp.m_fovData[cpi.fovIndex].targets.ToArray();
+            cp.m_TargetGroup.DoUpdate();
+
+            // Set the vcam's target to the target group
+            CinemachineVirtualCameraBase best = m_childCameras[vcamIndex];
+            best.LookAt = cp.m_TargetGroup.transform;
+            best.Follow = Follow;
+            if (isCut)
             {
-                Cinematographer.CameraPoint cp = cpi.cameraPoint;
-                bool isCut = !cpi.SameAs(ref mLiveCameraPoint);
-                if (isCut)
-                {
-                    mLiveCameraPoint = cpi;
+                best.PreviousStateIsValid = false;
+                best.InternalUpdateCameraState(worldUp, deltaTime);
 
-                    // Choose the first in the list that matches the desired camera type
-                    for (int i = 0; i < m_ChildCameras.Length; ++i)
-                    {
-                        CinemachineVirtualCameraBase vcam = m_ChildCameras[i];
-                        if (vcam != null && vcam.gameObject.activeInHierarchy)
-                        {
-                            if (best == null)
-                                best = vcam;
-
-                            // GML Note: we're abusing Priority to hold the type
-                            int vcamType = Mathf.RoundToInt(vcam.Priority);
-                            int bestType = Mathf.RoundToInt(best.Priority);
-                            if (vcamType == cp.m_cameraType)
-                            {
-                                if (bestType != vcamType)
-                                    best = vcam;
-                                else
-                                {
-                                    // If the cam's fov is closer, take it
-                                    float fov = cp.m_fovData[cpi.fovIndex].fov;
-                                    float dA = vcam.State.Lens.FieldOfView - fov;
-                                    var v = vcam as CinemachineVirtualCamera; // GML hack
-                                    if (v != null) 
-                                        dA = v.m_Lens.FieldOfView - fov;
-                                    float dB = best.State.Lens.FieldOfView - fov;
-                                    v = best as CinemachineVirtualCamera; // GML hack
-                                    if (v != null) 
-                                        dB = v.m_Lens.FieldOfView - fov;
-                                    if (Mathf.Abs(dA) < Mathf.Abs(dB) || bestType != vcamType)
-                                        best = vcam;
-                                }
-                            }
-                        }
-                    }
-
-                    // Set the vcam's target to the target group
-                    if (best != null)
-                    {
-                        best.LookAt = cp.m_TargetGroup.transform;
-                        best.Follow = Follow;
-                        best.PreviousStateIsValid = false;
-
-                        // GML debug
-                        if (Time.time - mLastCut < m_MinDuration)
-                            Debug.Log("Early Cut to " + cp.m_TargetGroup.name + " after " + (Time.time - mLastCut));
-                        mLastCut = Time.time;
-                        CinemachineCore.Instance.GenerateCameraCutEvent(best);
-                    }
-                }
-
-                // Track the camera point 
-                Follow.position = cp.m_cameraPos;
-                cp.m_TargetGroup.m_Targets = cp.m_fovData[cpi.fovIndex].targets.ToArray();
-                cp.m_TargetGroup.DoUpdate();
+                // GML debug
+                if (Time.time - mLastCut < m_MinDuration)
+                    Debug.Log("Early Cut to " + cp.m_TargetGroup.name + " after " + (Time.time - mLastCut));
+                mLastCut = Time.time;
             }
             return best;
         }
@@ -338,13 +329,14 @@ namespace Spectator
         Cinematographer.CameraPointIndex mPendingCameraPoint;
         Cinematographer.CameraPointIndex mLiveCameraPoint;
 
-        public Cinematographer.CameraPoint LiveCameraPoint { get { return mPendingCameraPoint.cameraPoint; } }
+        public Cinematographer.CameraPoint LiveCameraPoint { get { return mLiveCameraPoint.cameraPoint; } }
 
         Cinematographer.CameraPointIndex ChooseCurrentCameraPoint(float deltaTime)
         {
+            float now = Time.time;
             Cinematographer.CameraPointIndex liveCP = mLiveCameraPoint;
             Cinematographer.CameraPointIndex best = ChooseBestCameraPoint();
-            float now = Time.time;
+
             // Is the current camera point still valid?
             if (liveCP.cameraPoint == null || !liveCP.cameraPoint.m_TargetGroup.gameObject.activeSelf)
                 mActivationTime = 0;
@@ -395,59 +387,96 @@ namespace Spectator
                 }
             }
             // Activate now
-            mActivationTime = now;
+            if (best.cameraPoint == null)
+                mActivationTime = 0;
+            else
+                mActivationTime = now;
             return best;
         }
 
-        public float m_PreferredFovBoost = 4;
-        public float m_PreferredCameraTypeBoost = 4;
-        
+        // Iterate the threads in urgency order, and take the best shot we find
         Cinematographer.CameraPointIndex ChooseBestCameraPoint()
         {
-            Cinematographer.CameraPointIndex result = new Cinematographer.CameraPointIndex();
+            float q = 0;
+            int vcamIndex = -1;
+            Cinematographer.CameraPointIndex cpi = new Cinematographer.CameraPointIndex();
             for (int i = 0; i < StoryManager.Instance.NumThreads; ++i)
             {
                 var th = StoryManager.Instance.GetThread(i);
                 for (int j = 0; j < th.m_cameraPoints.Count; ++j)
                 {
-                    if (!th.m_cameraPoints[j].cameraPoint.m_TargetGroup.gameObject.activeSelf)
+                    Cinematographer.CameraPointIndex cpiB = th.m_cameraPoints[j];
+                    if (!cpiB.cameraPoint.m_TargetGroup.gameObject.activeSelf || cpi.SameAs(ref cpiB))
                         continue;
-                    if (result.cameraPoint == null)
-                        result = th.m_cameraPoints[j];
-                    else
-                        result = ChooseBetterCameraPoint(result, th.m_cameraPoints[j]);
+                    int vcamIndexB = ChooseMatchingVcam(cpiB);
+                    if (vcamIndexB < 0 || m_qualityEvaluators[vcamIndexB] == null)
+                        continue;
+                    float qB = m_qualityEvaluators[vcamIndexB].AssessShotQuality(
+                        cpiB, (int)m_CameraMode, (int)m_LensMode);
+                    bool takeIt = (cpi.cameraPoint == null);
+                    if (cpi.cameraPoint == null || qB > q)
+                    {
+                        cpi = cpiB;
+                        vcamIndex = vcamIndexB;
+                        q = qB;
+                    }
                 }
-                if (result.cameraPoint != null && result.cameraPoint.m_fovData[result.fovIndex].shotQuality >= m_MinimumShotQuality)
+                if (cpi.cameraPoint != null && q >= m_MinimumShotQuality)
                     break; // good enough!
             }
-            return result;
+            return cpi;
         }
 
-        Cinematographer.CameraPointIndex ChooseBetterCameraPoint(
-            Cinematographer.CameraPointIndex cpiA,
-            Cinematographer.CameraPointIndex cpiB)
+        int ChooseMatchingVcam(Cinematographer.CameraPointIndex cpi)
         {
-            float qA = cpiA.cameraPoint.m_fovData[cpiA.fovIndex].shotQuality;
-            float qB = cpiB.cameraPoint.m_fovData[cpiB.fovIndex].shotQuality;
+            // This is the default, if we don't find anything better
+            int best = -1;
+            for (int i = 0; best < 0 && i < m_childCameras.Length; ++i)
+                if (m_childCameras[i].gameObject.activeSelf && m_childCameras[i].enabled)
+                    best = i;
 
-            if (cpiA.cameraPoint.m_cameraType == (int)m_CameraMode)
-                qA += m_PreferredCameraTypeBoost;
-            if (cpiB.cameraPoint.m_cameraType == (int)m_CameraMode)
-                qB += m_PreferredCameraTypeBoost;
-
-            if ((float)m_LensMode > 0)
+            // Choose the first in the list that matches the desired camera type
+            if (best >= 0 && cpi.cameraPoint != null)
             {
-                float dA = Mathf.Abs(cpiA.cameraPoint.m_fovData[cpiA.fovIndex].fov - (float)m_LensMode);
-                float dB = Mathf.Abs(cpiB.cameraPoint.m_fovData[cpiB.fovIndex].fov - (float)m_LensMode);
-                if (dA < dB)
-                    qA += m_PreferredFovBoost;
-                else if (dA > dB)
-                    qB += m_PreferredFovBoost;
+                Cinematographer.CameraPoint cp = cpi.cameraPoint;
+                for (int i = 0; i < m_childCameras.Length; ++i)
+                {
+                    CinemachineVirtualCameraBase vcam = m_childCameras[i];
+                    if (vcam == null || !vcam.gameObject.activeSelf || !vcam.enabled)
+                        continue;
+                    if (m_qualityEvaluators[i] == null)
+                        continue;
+
+                    int vcamType = m_qualityEvaluators[i].m_cameraType;
+                    int bestType = m_qualityEvaluators[best].m_cameraType;
+                    if (vcamType == cp.m_cameraType)
+                    {
+                        if (m_qualityEvaluators[i].m_hasZoomLens)
+                            return i; // no need to check the lens at all
+                        if (bestType != vcamType)
+                            best = i; // best so far - no need to check the lens
+                        else
+                        {
+                            // If this vcam's fov is closer, take it
+                            float fov = cp.m_fovData[cpi.fovIndex].fov;
+                            float dA = vcam.State.Lens.FieldOfView - fov;
+                            var v = vcam as CinemachineVirtualCamera; // GML hack
+                            if (v != null) 
+                                dA = v.m_Lens.FieldOfView - fov;
+
+                            CinemachineVirtualCameraBase bestVcam = m_childCameras[best];
+                            float dB = bestVcam.State.Lens.FieldOfView - fov;
+                            v = bestVcam as CinemachineVirtualCamera; // GML hack
+                            if (v != null) 
+                                dB = v.m_Lens.FieldOfView - fov;
+                            if (Mathf.Abs(dA) < Mathf.Abs(dB))
+                                best = i; // best so far
+                        }
+                    }
+                }
             }
-            if (qB > qA)
-                return cpiB;
-            return cpiA;
-        } 
+            return best;
+        }
 
         private CinemachineBlendDefinition LookupBlend(
             ICinemachineCamera fromKey, ICinemachineCamera toKey)

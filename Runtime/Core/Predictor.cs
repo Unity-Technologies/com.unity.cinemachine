@@ -84,21 +84,13 @@ namespace Cinemachine.Utility
     public static class Damper
     {
         const float Epsilon = UnityVectorExtensions.Epsilon;
-
-        // Get the decay constant that would leave a given residual after a given time
-        static float DecayConstant(float time, float residual)
-        {
-            return Mathf.Log(1f / residual) / time;
-        }
+        const float kDecayConstant = 4.60517018599f; // Log(1/0.01) where 0.01 = negligible residual
 
         /// <summary>Exponential decay: decay a given quantity opver a period of time</summary>
         public static float DecayedRemainder(float initial, float decayConstant, float deltaTime)
         {
             return initial / Mathf.Exp(decayConstant * deltaTime);
         }
-
-        /// <summary>Standard residual</summary>
-        public const float kNegligibleResidual = 0.01f;
 
         /// <summary>Get a damped version of a quantity.  This is the portion of the
         /// quantity that will take effect over the given time.</summary>
@@ -114,7 +106,7 @@ namespace Cinemachine.Utility
                 return initial;
             if (deltaTime < Epsilon)
                 return 0;
-            float k = DecayConstant(dampTime, kNegligibleResidual);
+            float k = kDecayConstant / dampTime;  // negligible residual after dampTime
 
 #if CINEMACHINE_EXPERIMENTAL_DAMPING
             // Try to reduce damage caused by frametime variability
