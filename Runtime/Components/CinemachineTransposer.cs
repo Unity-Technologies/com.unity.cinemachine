@@ -190,6 +190,12 @@ namespace Cinemachine
             Quaternion dampedOrientation = targetOrientation;
             if (deltaTime >= 0)
             {
+#if false // Experiment: damping without Eulers... one setting for all 3 of pitch/roll/yaw
+                float t = Damper.Damp(1, AngularDamping.magnitude, deltaTime);
+                dampedOrientation = UnityQuaternionExtensions.SlerpWithReferenceUp(
+                    m_PreviousReferenceOrientation, targetOrientation, t, 
+                    m_PreviousReferenceOrientation * Vector3.up);
+#else
                 Vector3 relative = (Quaternion.Inverse(m_PreviousReferenceOrientation) 
                     * targetOrientation).eulerAngles;
                 for (int i = 0; i < 3; ++i)
@@ -197,6 +203,7 @@ namespace Cinemachine
                         relative[i] -= 360;
                 relative = Damper.Damp(relative, AngularDamping, deltaTime);
                 dampedOrientation = m_PreviousReferenceOrientation * Quaternion.Euler(relative);
+#endif
             }
             m_PreviousReferenceOrientation = dampedOrientation;
 
