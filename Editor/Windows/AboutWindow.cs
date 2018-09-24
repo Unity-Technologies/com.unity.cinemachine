@@ -28,7 +28,7 @@ namespace Cinemachine.Editor
 
         private void OnEnable()
         {
-            string path = ScriptableObjectUtility.CinemachineInstallPath + "/ReleaseNotes.txt";
+            string path = ScriptableObjectUtility.CinemachineInstallPath + "/Extras~/ReleaseNotes.txt";
             try
             {
                 StreamReader reader = new StreamReader(path); 
@@ -104,15 +104,6 @@ namespace Cinemachine.Editor
                 if (GUILayout.Button("<b>Rate it!</b>\nUnity Asset Store", mButtonStyle))
                 {
                     Application.OpenURL("https://www.assetstore.unity3d.com/en/#!/content/79898");
-                }
-
-                if (GUILayout.Button("<b>Documentation</b>\nRead it", mButtonStyle))
-                {
-                    string filename = ScriptableObjectUtility.CinemachineInstallPath 
-                        + "/CinemachineUserManual.pdf";
-                    if (!File.Exists(filename))
-                        Debug.LogError("Missing file " + filename);
-                    Application.OpenURL("file://" + filename);
                 }
             }
 
