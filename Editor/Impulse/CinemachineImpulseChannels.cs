@@ -13,14 +13,16 @@ namespace Cinemachine.Editor
     public class CinemachineImpulseChannels : ScriptableObject 
     {
         static CinemachineImpulseChannels sInstance = null;
+        private static bool alreadySearched = false;
 
         /// <summary>Get the singleton instance of this object, or null if it doesn't exist</summary>
         public static CinemachineImpulseChannels InstanceIfExists
         {
             get
             {
-                if (sInstance == null)
+                if (!alreadySearched)
                 {
+                    alreadySearched = true;
                     var guids = AssetDatabase.FindAssets("t:CinemachineImpulseChannels");
                     for (int i = 0; i < guids.Length && sInstance == null; ++i)
                         sInstance = AssetDatabase.LoadAssetAtPath<CinemachineImpulseChannels>(
