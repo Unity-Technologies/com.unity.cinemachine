@@ -510,7 +510,6 @@ namespace Cinemachine
             var outGoingCamera = frame.blend.CamB;
             if (activeCamera != outGoingCamera)
             {
-
                 // Do we need to create a game-play blend?
                 if ((UnityEngine.Object)activeCamera != null
                     && (UnityEngine.Object)outGoingCamera != null && deltaTime >= 0)

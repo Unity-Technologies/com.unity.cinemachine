@@ -81,6 +81,23 @@ namespace Cinemachine
         [Tooltip("How aggressively the camera tries to maintain the offset in the Z-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
         public float m_ZDamping = 1f;
 
+        /// <summary>How to calculate the angular damping for the target orientation</summary>
+        public enum AngularDampingMode
+        {
+            /// <summary>Use Euler angles to specify damping values.  
+            /// Subject to gimbal-lock fwhen pitch is steep.</summary>
+            Euler,
+            /// <summary>
+            /// Use quaternions to calculate angular damping.  
+            /// No per-channel control, but not susceptible to gimbal-lock</summary>
+            Quaternion
+        }
+
+        /// <summary>How to calculate the angular damping for the target orientation.
+        /// Use Quaternion if you expect the target to take on very steep pitches, which would
+        /// be subject to gimbal lock if Eulers are used.</summary>
+        public AngularDampingMode m_AngularDampingMode = AngularDampingMode.Euler;
+
         /// <summary>How aggressively the camera tries to track the target rotation's X angle.  
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
@@ -98,6 +115,12 @@ namespace Cinemachine
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
+
+        /// <summary>How aggressively the camera tries to track the target's orientation.  
+        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
+        [Range(0f, 20f)]
+        [Tooltip("How aggressively the camera tries to track the target's orientation.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        public float m_AngularDamping = 0f;
 
         /// <summary>Derived classes should call this from their OnValidate() implementation</summary>
         protected virtual void OnValidate()
@@ -190,20 +213,22 @@ namespace Cinemachine
             Quaternion dampedOrientation = targetOrientation;
             if (deltaTime >= 0)
             {
-#if false // Experiment: damping without Eulers... one setting for all 3 of pitch/roll/yaw
-                float t = Damper.Damp(1, AngularDamping.magnitude, deltaTime);
-                dampedOrientation = UnityQuaternionExtensions.SlerpWithReferenceUp(
-                    m_PreviousReferenceOrientation, targetOrientation, t, 
-                    m_PreviousReferenceOrientation * Vector3.up);
-#else
-                Vector3 relative = (Quaternion.Inverse(m_PreviousReferenceOrientation) 
-                    * targetOrientation).eulerAngles;
-                for (int i = 0; i < 3; ++i)
-                    if (relative[i] > 180)
-                        relative[i] -= 360;
-                relative = Damper.Damp(relative, AngularDamping, deltaTime);
-                dampedOrientation = m_PreviousReferenceOrientation * Quaternion.Euler(relative);
-#endif
+                if (m_AngularDampingMode == AngularDampingMode.Quaternion)
+                {
+                    float t = Damper.Damp(1, m_AngularDamping, deltaTime);
+                    dampedOrientation = Quaternion.Slerp(
+                        m_PreviousReferenceOrientation, targetOrientation, t);
+                }
+                else
+                {
+                    Vector3 relative = (Quaternion.Inverse(m_PreviousReferenceOrientation) 
+                        * targetOrientation).eulerAngles;
+                    for (int i = 0; i < 3; ++i)
+                        if (relative[i] > 180)
+                            relative[i] -= 360;
+                    relative = Damper.Damp(relative, AngularDamping, deltaTime);
+                    dampedOrientation = m_PreviousReferenceOrientation * Quaternion.Euler(relative);
+                }
             }
             m_PreviousReferenceOrientation = dampedOrientation;
 

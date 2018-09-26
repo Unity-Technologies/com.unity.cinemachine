@@ -1,13 +1,15 @@
-<size=20><b>Version 2.2.8-preview.7</b></size>
+<size=20><b>Version 2.2.8-preview.8</b></size>
 
 - Optimization: position predictor is more efficient
 - Optimization: Composer caches some calculations 
+- Timeline: play/pause doesn't kick out the timeline vcam
+- Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
 - Added NoLens blend hint, to leave camera Lens settings alone
 - Path editor: make sure game view gets updated when a path waypoint is dragged in the scene view
-- Updated documentation (corrections)
+- Updated documentation (corrections, and relocation to prevent importing)
 - Upgrade: added support for nested prefabs in Unity 2018.3 (fogbugz 1077395)
 - Experimental: Optional new damping algorithm: attempt to reduce sensitivity to variable framerate
 - Experimental: Optional new extra-efficient versions of vcam and FreeLook (not back-compatible)
@@ -18,6 +20,7 @@
 - Bugfix: Timeline mixer was glitching for single frames at the end of blends
 - Bugfix: Added OnTransitionFromCamera() to POV and OrbitalTransposer, to transition axes intelligently
 - Regression fix: if no active vcam, don't set the Camera's transform
+
 
 <size=20><b>Version 2.2.7</b></size>
 
