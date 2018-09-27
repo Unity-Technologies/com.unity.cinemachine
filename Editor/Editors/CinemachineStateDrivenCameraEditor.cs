@@ -181,18 +181,19 @@ namespace Cinemachine.Editor
                 for (int i = 0; i < states.Length; i++)
                 {
                     AnimatorState state = states[i].state;
-                    int hash = AddState(hashPrefix + state.name, parentHash, displayPrefix + state.name);
+                    int hash = AddState(Animator.StringToHash(hashPrefix + state.name), 
+                        parentHash, displayPrefix + state.name);
 
                     // Also process clips as pseudo-states, if more than 1 is present.
                     // Since they don't have hashes, we can manufacture some.
-                    List<string> clips = CollectClipNames(state.motion);
+                    var clips = CollectClips(state.motion);
                     if (clips.Count > 1)
                     {
                         string substatePrefix = displayPrefix + state.name + ".";
-                        foreach (string name in clips)
+                        foreach (AnimationClip c in clips)
                             AddState(
-                                CinemachineStateDrivenCamera.CreateFakeHashName(hash, name),
-                                hash, substatePrefix + name);
+                                CinemachineStateDrivenCamera.CreateFakeHash(hash, c),
+                                hash, substatePrefix + c.name);
                     }
                 }
 
@@ -201,30 +202,29 @@ namespace Cinemachine.Editor
                 {
                     string name = hashPrefix + child.stateMachine.name;
                     string displayName = displayPrefix + child.stateMachine.name;
-                    int hash = AddState(name, parentHash, displayName);
+                    int hash = AddState(Animator.StringToHash(name), parentHash, displayName);
                     CollectStatesFromFSM(child.stateMachine, name + ".", hash, displayName + ".");
                 }
             }
 
-            List<string> CollectClipNames(Motion motion)
+            List<AnimationClip> CollectClips(Motion motion)
             {
-                List<string> names = new List<string>();
+                var clips = new List<AnimationClip>();
                 AnimationClip clip = motion as AnimationClip;
                 if (clip != null)
-                    names.Add(clip.name);
+                    clips.Add(clip);
                 BlendTree tree = motion as BlendTree;
                 if (tree != null)
                 {
                     ChildMotion[] children = tree.children;
                     foreach (var child in children)
-                        names.AddRange(CollectClipNames(child.motion));
+                        clips.AddRange(CollectClips(child.motion));
                 }
-                return names;
+                return clips;
             }
 
-            int AddState(string hashName, int parentHash, string displayName)
+            int AddState(int hash, int parentHash, string displayName)
             {
-                int hash = Animator.StringToHash(hashName);
                 if (parentHash != 0)
                     mStateParentLookup[hash] = parentHash;
                 mStateIndexLookup[hash] = mStates.Count;

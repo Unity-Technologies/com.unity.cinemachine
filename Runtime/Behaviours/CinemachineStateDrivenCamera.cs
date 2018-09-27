@@ -303,8 +303,32 @@ namespace Cinemachine
         /// <summary>API for the inspector editor.  Animation module does not have hashes
         /// for state parents, so we have to invent them in order to implement nested state
         /// handling</summary>
-        public static string CreateFakeHashName(int parentHash, string stateName)
-            { return parentHash.ToString() + "_" + stateName; }
+        public static int CreateFakeHash(int parentHash, AnimationClip clip)
+        { 
+            return Animator.StringToHash(parentHash.ToString() + "_" + clip.name); 
+        }
+
+        // Avoid garbage string manipulations at runtime
+        struct HashPair { public int parentHash; public int hash; }
+        Dictionary<AnimationClip, List<HashPair>> mHashCache;
+        int LookupFakeHash(int parentHash, AnimationClip clip)
+        { 
+            if (mHashCache == null)
+                mHashCache = new Dictionary<AnimationClip, List<HashPair>>();
+            List<HashPair> list = null;
+            if (!mHashCache.TryGetValue(clip, out list))
+            {
+                list = new List<HashPair>();
+                mHashCache[clip] = list;
+            }
+            for (int i = 0; i < list.Count; ++i)
+                if (list[i].parentHash == parentHash)
+                    return list[i].hash;
+            int newHash = CreateFakeHash(parentHash, clip);
+            list.Add(new HashPair() { parentHash = parentHash, hash = newHash });
+            return newHash;
+        }
+
 
         float mActivationTime = 0;
         Instruction mActiveInstruction;
@@ -483,7 +507,7 @@ namespace Cinemachine
 
                 // Use its hash
                 if (bestClip >= 0 && clips[bestClip].weight > 0)
-                    hash = Animator.StringToHash(CreateFakeHashName(hash, clips[bestClip].clip.name));
+                    hash = LookupFakeHash(hash, clips[bestClip].clip);
             }
             return hash;
         }
