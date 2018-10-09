@@ -120,11 +120,23 @@ namespace Cinemachine
             // Check the filters
             if (!enabled)
                 return;
-            int layer = (other != null) ? other.gameObject.layer : ((other2d != null) ? other2d.gameObject.layer : 0);
-            if (((1 << layer) & m_LayerMask) == 0)
-                return;
-            if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
-                return;
+
+            if (other != null)
+            {
+                int layer = other.gameObject.layer;
+                if (((1 << layer) & m_LayerMask) == 0)
+                    return;
+                if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
+                    return;
+            }
+            else if (other2d != null)
+            {
+                int layer = other2d.gameObject.layer;
+                if (((1 << layer) & m_LayerMask) == 0)
+                    return;
+                if (m_IgnoreTag.Length != 0 && other2d.CompareTag(m_IgnoreTag))
+                    return;
+            }
 
             // Calculate the signal direction and magnitude
             float mass = GetMassAndVelocity(other, other2d, ref vel);
