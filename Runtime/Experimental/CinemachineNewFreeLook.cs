@@ -19,7 +19,12 @@ namespace Cinemachine
     /// these settings are interpolated to give the final camera position and state.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     [AddComponentMenu("Cinemachine/CinemachineNewFreeLook")]
     [SaveDuringPlay]
     public class CinemachineNewFreeLook : CinemachineNewVirtualCamera

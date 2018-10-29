@@ -13,7 +13,12 @@ namespace Cinemachine
     /// Timeline cannot animate array elements.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
     public class CinemachineMixingCamera : CinemachineVirtualCameraBase
     {

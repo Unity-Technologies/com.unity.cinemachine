@@ -9,9 +9,13 @@ namespace Cinemachine
     /// regardless of camera and target position.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     public class CinemachineFollowZoom : CinemachineExtension
     {
         /// <summary>The shot width to maintain, in world units, at target distance.

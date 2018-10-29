@@ -7,10 +7,14 @@ namespace Cinemachine
     /// the final position of the virtual camera.  It listens for CinemachineImpulse
     /// signals on the specified channels, and moves the camera in response to them.
     /// </summary>
-    [ExecuteInEditMode]
     [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     public class CinemachineImpulseListener : CinemachineExtension
     {
         /// <summary>

@@ -22,7 +22,12 @@ namespace Cinemachine
     /// You can also define custom blends between the ClearShot children.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     [AddComponentMenu("Cinemachine/CinemachineClearShot")]
     public class CinemachineClearShot : CinemachineVirtualCameraBase
     {

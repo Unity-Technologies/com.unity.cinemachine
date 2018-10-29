@@ -11,9 +11,13 @@ namespace Cinemachine
     /// camera's position to the volume specified in the Bounding Volume field.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     public class CinemachineConfiner : CinemachineExtension
     {
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>

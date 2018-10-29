@@ -13,7 +13,12 @@ namespace Cinemachine
     /// The last camera is held indefinitely.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     [AddComponentMenu("Cinemachine/CinemachineBlendListCamera")]
     public class CinemachineBlendListCamera : CinemachineVirtualCameraBase
     {

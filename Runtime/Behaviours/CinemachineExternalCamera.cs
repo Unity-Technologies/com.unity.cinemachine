@@ -10,8 +10,13 @@ namespace Cinemachine
     /// Just add it as a component alongside an existing Unity Camera component.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [RequireComponent(typeof(Camera)), DisallowMultipleComponent, ExecuteInEditMode]
+    [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineExternalCamera")]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera is looking at.</summary>

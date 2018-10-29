@@ -8,10 +8,14 @@ namespace Cinemachine
     /// An add-on module for Cinemachine Virtual Camera that places an image in screen space 
     /// over the camera's output.
     /// </summary>
-    [ExecuteInEditMode]
     [SaveDuringPlay]
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     public class CinemachineStoryboard : CinemachineExtension
     {
         [Tooltip("If checked, the specified image will be displayed as an overlay over the virtual camera's output")]

@@ -13,7 +13,11 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachineTargetGroup")]
     [SaveDuringPlay]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
     [ExecuteInEditMode]
+#endif
     public class CinemachineTargetGroup : MonoBehaviour
     {
         /// <summary>Holds the information that represents a member of the group</summary>

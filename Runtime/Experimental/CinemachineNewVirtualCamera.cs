@@ -12,7 +12,12 @@ namespace Cinemachine
     ///
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-    [ExecuteInEditMode, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     [AddComponentMenu("Cinemachine/CinemachineNewVirtualCamera")]
     public class CinemachineNewVirtualCamera : CinemachineVirtualCameraBase
     {

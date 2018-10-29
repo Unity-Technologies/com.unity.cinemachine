@@ -22,7 +22,12 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
-    [ExecuteInEditMode, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
+#if UNITY_2019_1_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     [AddComponentMenu("Cinemachine/CinemachineBrain")]
     [SaveDuringPlay]
     public class CinemachineBrain : MonoBehaviour
