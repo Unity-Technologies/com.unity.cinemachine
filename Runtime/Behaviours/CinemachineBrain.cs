@@ -23,7 +23,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
 #else
     [ExecuteInEditMode]

@@ -12,7 +12,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineExternalCamera")]
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
 #else
     [ExecuteInEditMode]

@@ -9,7 +9,7 @@ namespace Cinemachine
     /// Cinemachine Virtual Cameras.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
 #else
     [ExecuteInEditMode]
