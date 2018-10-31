@@ -59,7 +59,7 @@ namespace Cinemachine
         /// <summary>This is a way for the Body component to bypass aim damping,
         /// useful for when the body need to rotate its point of view, but does not
         /// want interference from the aim damping</summary>
-        internal Vector3 PositionDampingBypass { get; set; }
+        public Vector3 PositionDampingBypass { get; set; }
 
         /// <summary>
         /// Subjective estimation of how "good" the shot is.
