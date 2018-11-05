@@ -448,9 +448,9 @@ namespace Cinemachine
                 return null;
             if (activeBlend != null)
             {
-                if (activeBlend.Uses(camB))
-                    camA = new StaticPointVirtualCamera(activeBlend.State, "Mid-Blend");
-                else
+//                if (activeBlend.Uses(camB))
+//                    camA = new StaticPointVirtualCamera(activeBlend.State, "Mid-Blend");
+//                else
                     camA = new BlendSourceVirtualCamera(activeBlend);
             }
             else if (camA == null)

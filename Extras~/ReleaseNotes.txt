@@ -1,4 +1,4 @@
-<size=20><b>Version 2.2.8-preview.10</b></size>
+<size=20><b>Version 2.2.8-preview.11</b></size>
 
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Dolly Cart: added support for LateUpdate
