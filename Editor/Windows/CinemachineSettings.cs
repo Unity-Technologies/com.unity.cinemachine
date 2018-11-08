@@ -224,22 +224,33 @@ namespace Cinemachine.Editor
             }
         }
 
-        //private static readonly GUIContent sCoreShowHiddenObjectsToggle = new GUIContent("Show Hidden Objects", "If checked, Cinemachine hidden objects will be shown in the inspector.  This might be necessary to repair broken script mappings when upgrading from a pre-release version");
-        private static readonly GUIContent sCoreActiveGizmosColour = new GUIContent("Active Virtual Camera", "The colour for the active virtual camera's gizmos");
-        private static readonly GUIContent sCoreInactiveGizmosColour = new GUIContent("Inactive Virtual Camera", "The colour for all inactive virtual camera gizmos");
-
-        private static readonly GUIContent sComposerOverlayOpacity = new GUIContent("Overlay Opacity", "The alpha of the composer's overlay when a virtual camera is selected with composer module enabled");
-        private static readonly GUIContent sComposerHardBoundsOverlay = new GUIContent("Hard Bounds Overlay", "The colour of the composer overlay's hard bounds region");
-        private static readonly GUIContent sComposerSoftBoundsOverlay = new GUIContent("Soft Bounds Overlay", "The colour of the composer overlay's soft bounds region");
-        private static readonly GUIContent sComposerTargetOverlay = new GUIContent("Composer Target", "The colour of the composer overlay's target");
-        private static readonly GUIContent sComposerTargetOverlayPixels = new GUIContent("Composer Target Size(px)", "The size of the composer overlay's target box in pixels");
+        class Styles {
+            //private static readonly GUIContent sCoreShowHiddenObjectsToggle = new GUIContent("Show Hidden Objects", "If checked, Cinemachine hidden objects will be shown in the inspector.  This might be necessary to repair broken script mappings when upgrading from a pre-release version");
+            public static readonly GUIContent sCoreActiveGizmosColour = new GUIContent("Active Virtual Camera", "The colour for the active virtual camera's gizmos");
+            public static readonly GUIContent sCoreInactiveGizmosColour = new GUIContent("Inactive Virtual Camera", "The colour for all inactive virtual camera gizmos");
+            public static readonly GUIContent sComposerOverlayOpacity = new GUIContent("Overlay Opacity", "The alpha of the composer's overlay when a virtual camera is selected with composer module enabled");
+            public static readonly GUIContent sComposerHardBoundsOverlay = new GUIContent("Hard Bounds Overlay", "The colour of the composer overlay's hard bounds region");
+            public static readonly GUIContent sComposerSoftBoundsOverlay = new GUIContent("Soft Bounds Overlay", "The colour of the composer overlay's soft bounds region");
+            public static readonly GUIContent sComposerTargetOverlay = new GUIContent("Composer Target", "The colour of the composer overlay's target");
+            public static readonly GUIContent sComposerTargetOverlayPixels = new GUIContent("Composer Target Size(px)", "The size of the composer overlay's target box in pixels");
+        }
 
         private const string kCinemachineHeaderPath = "cinemachine_header.tif";
         private const string kCinemachineDocURL = @"http://www.cinemachineimagery.com/documentation/";
 
         private static Vector2 sScrollPosition = Vector2.zero;
 
+#if UNITY_2019_1_OR_NEWER
+        [SettingsProvider]
+        static SettingsProvider CreateProjectSettingsProvider()
+        {
+            var provider = new SettingsProvider("Preferences/Cinemachine", SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
+            provider.guiHandler = (sarchContext) => OnGUI();
+            return provider;
+        }
+#else
         [PreferenceItem("Cinemachine")]
+#endif
         private static void OnGUI()
         {
             if (CinemachineHeader != null)
@@ -268,7 +279,7 @@ namespace Cinemachine.Editor
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                Color newActiveGizmoColour = EditorGUILayout.ColorField(sCoreActiveGizmosColour, CinemachineCoreSettings.ActiveGizmoColour);
+                Color newActiveGizmoColour = EditorGUILayout.ColorField(Styles.sCoreActiveGizmosColour, CinemachineCoreSettings.ActiveGizmoColour);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -284,7 +295,7 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                Color newInactiveGizmoColour = EditorGUILayout.ColorField(sCoreInactiveGizmosColour, CinemachineCoreSettings.InactiveGizmoColour);
+                Color newInactiveGizmoColour = EditorGUILayout.ColorField(Styles.sCoreInactiveGizmosColour, CinemachineCoreSettings.InactiveGizmoColour);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -307,7 +318,7 @@ namespace Cinemachine.Editor
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
 
-                float overlayOpacity = EditorGUILayout.Slider(sComposerOverlayOpacity, ComposerSettings.OverlayOpacity, 0f, 1f);
+                float overlayOpacity = EditorGUILayout.Slider(Styles.sComposerOverlayOpacity, ComposerSettings.OverlayOpacity, 0f, 1f);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -322,7 +333,7 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                Color newHardEdgeColor = EditorGUILayout.ColorField(sComposerHardBoundsOverlay, ComposerSettings.HardBoundsOverlayColour);
+                Color newHardEdgeColor = EditorGUILayout.ColorField(Styles.sComposerHardBoundsOverlay, ComposerSettings.HardBoundsOverlayColour);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -337,7 +348,7 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                Color newSoftEdgeColor = EditorGUILayout.ColorField(sComposerSoftBoundsOverlay, ComposerSettings.SoftBoundsOverlayColour);
+                Color newSoftEdgeColor = EditorGUILayout.ColorField(Styles.sComposerSoftBoundsOverlay, ComposerSettings.SoftBoundsOverlayColour);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -352,7 +363,7 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                Color newTargetColour = EditorGUILayout.ColorField(sComposerTargetOverlay, ComposerSettings.TargetColour);
+                Color newTargetColour = EditorGUILayout.ColorField(Styles.sComposerTargetOverlay, ComposerSettings.TargetColour);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -366,7 +377,7 @@ namespace Cinemachine.Editor
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUI.BeginChangeCheck();
-                float targetSide = EditorGUILayout.FloatField(sComposerTargetOverlayPixels, ComposerSettings.TargetSize);
+                float targetSide = EditorGUILayout.FloatField(Styles.sComposerTargetOverlayPixels, ComposerSettings.TargetSize);
 
                 if (EditorGUI.EndChangeCheck())
                 {
