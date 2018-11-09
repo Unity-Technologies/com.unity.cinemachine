@@ -1,7 +1,8 @@
-<size=20><b>Version 2.2.8-preview.12</b></size>
+<size=20><b>Version 2.2.8-preview.13</b></size>
 
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Framing Transposer and Group Transposer: added Naive group framing modes
+- Added ConemachineCameraOffset extension, to offset the camera a fixed distance at the end of the pipeline
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
