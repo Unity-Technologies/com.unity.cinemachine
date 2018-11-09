@@ -31,7 +31,13 @@ namespace Cinemachine
             /// <summary>Consider only the vertical dimension.  Horizontal framing is ignored.</summary>
             Vertical,
             /// <summary>The larger of the horizontal and vertical dimensions will dominate, to get the best fit.</summary>
-            HorizontalAndVertical
+            HorizontalAndVertical,
+            /// <summary>Consider only the horizontal dimension using a more naive algorithm.  Vertical framing is ignored.</summary>
+            NaiveHorizontal,
+            /// <summary>Consider only the vertical dimension using a more naive algorithm.  Horizontal framing is ignored.</summary>
+            NaiveVertical,
+            /// <summary>Using a more naive algorithm, the larger of the horizontal and vertical dimensions will dominate, to get the best fit.</summary>
+            NaiveHorizontalAndVertical
         };
 
         /// <summary>What screen dimensions to consider when framing</summary>
@@ -107,6 +113,16 @@ namespace Cinemachine
             m_MaximumOrthoSize = Mathf.Max(m_MinimumOrthoSize, m_MaximumOrthoSize);
         }
         
+        // State for damping
+        float m_prevTargetHeight; 
+        Vector3 m_prevCameraOffset = Vector3.zero;
+
+        /// <summary>For editor visulaization of the calculated bounding box of the group</summary>
+        public Bounds LastBounds { get; private set; }
+
+        /// <summary>For editor visualization of the calculated bounding box of the group</summary>
+        public Matrix4x4 LastBoundsMatrix { get; private set; }
+
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for calculating damping.  If less than
@@ -128,8 +144,16 @@ namespace Cinemachine
                 return;
             }
 
-            bool canMoveCamera 
-                = !curState.Lens.Orthographic && m_AdjustmentMode != AdjustmentMode.ZoomOnly;
+            // Support for lagacy framing mode
+            if (m_FramingMode == FramingMode.NaiveHorizontal
+                || m_FramingMode == FramingMode.NaiveVertical
+                || m_FramingMode == FramingMode.NaiveHorizontalAndVertical)
+            {
+                NaiveMutateCameraState(ref curState, deltaTime, group);
+                return;
+            }
+
+            bool canMoveCamera = !curState.Lens.Orthographic && m_AdjustmentMode != AdjustmentMode.ZoomOnly;
 
             // Get the bounding box from camera's POV in view space
             Vector3 observerPosition = curState.RawPosition;
@@ -248,16 +272,6 @@ namespace Cinemachine
             base.MutateCameraState(ref curState, deltaTime);
         }
 
-        // State for damping
-        float m_prevTargetHeight; 
-        Vector3 m_prevCameraOffset = Vector3.zero;
-
-        /// <summary>For editor visulaization of the calculated bounding box of the group</summary>
-        public Bounds LastBounds { get; private set; }
-
-        /// <summary>For editor visualization of the calculated bounding box of the group</summary>
-        public Matrix4x4 LastBoundsMatrix { get; private set; }
-
         float GetTargetHeight(Bounds b)
         {
             switch (m_FramingMode)
@@ -273,7 +287,7 @@ namespace Cinemachine
                         Mathf.Max(Epsilon, b.size.y));
             }
         }
-
+        
         /// <param name="observer">Point of view</param>
         /// <param name="newFwd">New forward direction to use when interpreting the return value</param>
         /// <returns>Bounding box in a slightly rotated version of observer, as specified by newFwd</returns>
@@ -294,5 +308,91 @@ namespace Cinemachine
                 new Vector3(0, 0, d/2), 
                 new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
         }
+
+
+        /// <summary>Support for legacy framing mode</summary>
+        void NaiveMutateCameraState(ref CameraState curState, float deltaTime, CinemachineTargetGroup group)
+        {
+            curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(group.transform.position);
+            Vector3 currentOffset = TrackedPoint - curState.RawPosition;
+            float currentDistance = currentOffset.magnitude;
+            if (currentDistance < Epsilon)
+                return;  // navel-gazing, get outa here
+
+            // Get the camera axis
+            Vector3 fwd = currentOffset.AlmostZero() ? Vector3.forward : currentOffset.normalized;
+
+            // Get the bounding box from that POV in view space, and find its width
+            Bounds bounds = group.BoundingBox;
+            LastBoundsMatrix = Matrix4x4.TRS(
+                    bounds.center - (fwd * bounds.extents.magnitude),
+                    Quaternion.LookRotation(fwd, curState.ReferenceUp), Vector3.one);
+            LastBounds = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+            float targetHeight = GetTargetHeight(LastBounds);
+            Vector3 targetPos = LastBoundsMatrix.MultiplyPoint3x4(LastBounds.center);
+
+            // Apply damping
+            if (deltaTime >= 0)
+            {
+                float delta = targetHeight - m_prevTargetHeight;
+                delta = Damper.Damp(delta, m_FrameDamping, deltaTime);
+                targetHeight = m_prevTargetHeight + delta;
+            }
+            m_prevTargetHeight = targetHeight;
+
+            // Move the camera
+            if (!curState.Lens.Orthographic && m_AdjustmentMode != AdjustmentMode.ZoomOnly)
+            {
+                // What distance would be needed to get the target height, at the current FOV
+                float currentFOV = curState.Lens.FieldOfView;
+                float targetDistance = targetHeight / (2f * Mathf.Tan(currentFOV * Mathf.Deg2Rad / 2f));
+
+                // target the near surface of the bounding box
+                float cameraDistance = targetDistance + LastBounds.extents.z;
+
+                // Clamp to respect min/max distance settings
+                cameraDistance = Mathf.Clamp(
+                        cameraDistance, currentDistance - m_MaxDollyIn, currentDistance + m_MaxDollyOut);
+                cameraDistance = Mathf.Clamp(cameraDistance, m_MinimumDistance, m_MaximumDistance);
+
+                // Apply
+                curState.PositionCorrection += targetPos - fwd * cameraDistance - curState.RawPosition;
+            }
+
+            // Apply zoom
+            if (curState.Lens.Orthographic || m_AdjustmentMode != AdjustmentMode.DollyOnly)
+            {
+                float nearBoundsDistance = (TrackedPoint - curState.CorrectedPosition).magnitude
+                    - LastBounds.extents.z;
+                float currentFOV = 179;
+                if (nearBoundsDistance > Epsilon)
+                    currentFOV = 2f * Mathf.Atan(targetHeight / (2 * nearBoundsDistance)) * Mathf.Rad2Deg;
+
+                LensSettings lens = curState.Lens;
+                lens.FieldOfView = Mathf.Clamp(currentFOV, m_MinimumFOV, m_MaximumFOV);
+                lens.OrthographicSize = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
+                curState.Lens = lens;
+            }
+
+            // Now compose normally
+            base.MutateCameraState(ref curState, deltaTime);
+        }
+        
+        float NaiveGetTargetHeight(Bounds b)
+        {
+            float framingSize = Mathf.Max(Epsilon, m_GroupFramingSize);
+            switch (m_FramingMode)
+            {
+                case FramingMode.NaiveHorizontal:
+                    return Mathf.Max(Epsilon, b.size.x )/ (framingSize * VcamState.Lens.Aspect);
+                case FramingMode.NaiveVertical:
+                    return Mathf.Max(Epsilon, b.size.y) / framingSize;
+                default:
+                case FramingMode.NaiveHorizontalAndVertical:
+                    return Mathf.Max(
+                        Mathf.Max(Epsilon, b.size.x) / (framingSize * VcamState.Lens.Aspect), 
+                        Mathf.Max(Epsilon, b.size.y) / framingSize);
+            }
+        }    
     }
 }
