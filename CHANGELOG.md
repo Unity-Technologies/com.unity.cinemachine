@@ -4,9 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.8-preview.10] - 2018-10-31
+## [2.2.8-preview.12] - 2018-11-09
 ### Bugfixes, optimizations, and some experimental stuff
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
+- Framing Transposer and Group Transposer: added Naive group framing modes
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
