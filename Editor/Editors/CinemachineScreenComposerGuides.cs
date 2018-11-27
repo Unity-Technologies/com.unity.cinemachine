@@ -4,7 +4,7 @@ using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
-    internal class CinemachineScreenComposerGuides
+    public class CinemachineScreenComposerGuides
     {
         public delegate Rect RectGetter();
         public delegate void RectSetter(Rect r);

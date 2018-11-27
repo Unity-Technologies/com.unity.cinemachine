@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Cinemachine.Utility
 {
-    internal class PositionPredictor
+    public class PositionPredictor
     {
         Vector3 m_Position;
 
@@ -99,6 +99,7 @@ namespace Cinemachine.Utility
 
         /// <summary>Standard residual</summary>
         public const float kNegligibleResidual = 0.01f;
+        const float kLogNegligibleResidual = -4.605170186f; // == math.Log(kNegligibleResidual=0.01f);
 
         /// <summary>Get a damped version of a quantity.  This is the portion of the
         /// quantity that will take effect over the given time.</summary>
@@ -114,7 +115,7 @@ namespace Cinemachine.Utility
                 return initial;
             if (deltaTime < Epsilon)
                 return 0;
-            float k = DecayConstant(dampTime, kNegligibleResidual);
+            float k = -kLogNegligibleResidual / dampTime; //DecayConstant(dampTime, kNegligibleResidual);
 
 #if CINEMACHINE_EXPERIMENTAL_DAMPING
             // Try to reduce damage caused by frametime variability
@@ -123,15 +124,16 @@ namespace Cinemachine.Utility
                 step /= 5;
             int numSteps = Mathf.FloorToInt(deltaTime / step);
             float vel = initial * step / deltaTime;
+            float decayConstant = Mathf.Exp(-k * step);
             float r = 0;
             for (int i = 0; i < numSteps; ++i)
-                r = DecayedRemainder(r + vel, k, step);
+                r = (r + vel) * decayConstant;
             float d = deltaTime - (step * numSteps);
             if (d > Epsilon)
-                r = Mathf.Lerp(r, DecayedRemainder(r + vel, k, step), d / step);
+                r = Mathf.Lerp(r, (r + vel) * decayConstant, d / step);
             return initial - r;
 #else
-            return initial - DecayedRemainder(initial, k, deltaTime);
+            return initial * (1 - Mathf.Exp(-k * deltaTime));
 #endif
         }
 
