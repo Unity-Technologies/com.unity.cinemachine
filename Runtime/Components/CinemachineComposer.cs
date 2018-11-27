@@ -106,6 +106,10 @@ namespace Cinemachine
         [Tooltip("A non-zero bias will move the target position vertically away from the center of the soft zone.")]
         public float m_BiasY = 0f;
 
+        /// <summary>Force target to center of screen when this camera activates.  If false, will clamp target to the edges of the dead zone</summary>
+        [Tooltip("Force target to center of screen when this camera activates.  If false, will clamp target to the edges of the dead zone")]
+        public bool m_CenterOnActivate = true;
+
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled && LookAtTarget != null; } }
 
@@ -195,7 +199,9 @@ namespace Cinemachine
             if (deltaTime < 0)
             {
                 // No damping, just snap to central bounds, skipping the soft zone
-                Rect rect = new Rect(mCache.mFovSoftGuideRect.center, Vector2.zero); // Force to center
+                Rect rect = mCache.mFovSoftGuideRect;
+                if (m_CenterOnActivate)
+                    rect = new Rect(rect.center, Vector2.zero); // Force to center
                 RotateToScreenBounds(ref curState, rect, ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
             }
             else

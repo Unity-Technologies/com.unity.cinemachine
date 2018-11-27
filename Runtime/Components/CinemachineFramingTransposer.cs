@@ -134,6 +134,10 @@ namespace Cinemachine
         [Tooltip("A non-zero bias will move the target position vertically away from the center of the soft zone.")]
         public float m_BiasY = 0f;
 
+        /// <summary>Force target to center of screen when this camera activates.  If false, will clamp target to the edges of the dead zone</summary>
+        [Tooltip("Force target to center of screen when this camera activates.  If false, will clamp target to the edges of the dead zone")]
+        public bool m_CenterOnActivate = true;
+
         /// <summary>What screen dimensions to consider when framing</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum FramingMode
@@ -411,7 +415,9 @@ namespace Cinemachine
             if (deltaTime < 0)
             {
                 // No damping or hard bounds, just snap to central bounds, skipping the soft zone
-                Rect rect = new Rect(softGuideOrtho.center, Vector2.zero); // Force to center
+                Rect rect = softGuideOrtho;
+                if (m_CenterOnActivate)
+                    rect = new Rect(rect.center, Vector2.zero); // Force to center
                 cameraOffset += OrthoOffsetToScreenBounds(targetPos, rect);
             }
             else

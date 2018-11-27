@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.8-preview.13] - 2018-11-09
+## [2.2.8-preview.14] - 2018-11-27
 ### Bugfixes, optimizations, and some experimental stuff
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Framing Transposer and Group Transposer: added Naive group framing modes
@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
 - Added NoLens blend hint, to leave camera Lens settings alone
+- Added Composer.CenterOnActivate option, to disable automatic centering in dead zone when vcam is activated
 - Updated documentation (corrections, and relocation to prevent importing)
 - Upgrade: added support for nested prefabs in Unity 2018.3 (fogbugz 1077395)
 - Optimization: position predictor is more efficient
