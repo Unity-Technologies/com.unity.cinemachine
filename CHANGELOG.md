@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.3.0-preview.1] - 2018-11-27
 ### Support for Unity 2019.1
 - Added dependency on new unity.timeline
+- Added conditional dependence on PostProcessingV2
+- No copying CM gizmo into assets folder
 
 ## [2.2.8-preview.14] - 2018-11-27
 ### Bugfixes, optimizations, and some experimental stuff

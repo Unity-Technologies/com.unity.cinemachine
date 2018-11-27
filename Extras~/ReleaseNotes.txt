@@ -1,7 +1,8 @@
 <size=20><b>Version 2.3.0-preview.1</b></size>
 
 - Added dependency on new unity.timeline
-
+- Added conditional dependence on PostProcessingV2
+- No copying CM gizmo into assets folder
 
 <size=20><b>Version 2.2.8-preview.13</b></size>
 
