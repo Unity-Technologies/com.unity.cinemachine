@@ -1,12 +1,18 @@
 {
     "name": "com.unity.cinemachine.editor",
     "references": [
-        "Cinemachine"
+        "Cinemachine",
+        "Unity.Timeline"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
 }
