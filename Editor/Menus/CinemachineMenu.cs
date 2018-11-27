@@ -196,17 +196,6 @@ namespace Cinemachine.Editor
                 AssetDatabase.ImportPackage(pkgFile, true);
         }
 
-        [MenuItem("Cinemachine/Import Post Processing V2 Adapter Asset Package")]
-        private static void ImportPostProcessingV2Package()
-        {
-            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath 
-                + "/Extras~/CinemachinePostProcessingV2.unitypackage";
-            if (!File.Exists(pkgFile))
-                Debug.LogError("Missing file " + pkgFile);
-            else
-                AssetDatabase.ImportPackage(pkgFile, true);
-        }
-
         /// <summary>
         /// Create a default Virtual Camera, with standard components
         /// </summary>

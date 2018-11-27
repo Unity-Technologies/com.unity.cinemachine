@@ -2,7 +2,9 @@
     "name": "com.unity.cinemachine.editor",
     "references": [
         "Cinemachine",
-        "Unity.Timeline"
+        "Unity.Timeline",
+        "Unity.Postprocessing.Runtime",
+        "Unity.Postprocessing.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
@@ -14,5 +16,16 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [
+        {
+            "name": "com.unity.postprocessing",
+            "expression": "2.1.0",
+            "define": "CINEMACHINE_POST_PROCESSING_V2"
+        },
+        {
+            "name": "com.unity.timeline",
+            "expression": "0.0.0",
+            "define": "CINEMACHINE_TIMELINE"
+        }
+    ]
 }
