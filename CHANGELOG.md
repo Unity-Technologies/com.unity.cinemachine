@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added conditional dependence on PostProcessingV2
 - No copying CM gizmo into assets folder
 
-## [2.2.8-preview.14] - 2018-11-27
+## [2.2.8-preview.15] - 2018-11-29
 ### Bugfixes, optimizations, and some experimental stuff
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Framing Transposer and Group Transposer: added Naive group framing modes
@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Experimental: Optional new extra-efficient versions of vcam and FreeLook (not back-compatible)
 - Timeline: play/pause doesn't kick out the timeline vcam
 - Path editor: make sure game view gets updated when a path waypoint is dragged in the scene view
+- Composer guides are shown even if Camera is attached to a renderTexture
 - Bugfix: allow impulse definition to be a non-public field (property drawer was complaining)
 - Bugfix: added null check for when there is no active virtual camera
 - Bugfix: CollisionImpulseSource typo in detection of 2D collider
