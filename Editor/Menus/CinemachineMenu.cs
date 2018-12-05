@@ -39,11 +39,10 @@ namespace Cinemachine.Editor
         {
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineFreeLook), "CM FreeLook"));
+                    GenerateUniqueObjectName(typeof(CinemachineFreeLook), "CM FreeLook"), 
+                    typeof(CinemachineFreeLook));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
-            Undo.RegisterCreatedObjectUndo(go, "create FreeLook");
-            Undo.AddComponent<CinemachineFreeLook>(go);
             Selection.activeGameObject = go;
         }
 
@@ -52,11 +51,12 @@ namespace Cinemachine.Editor
         {
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineBlendListCamera), "CM BlendListCamera"));
+                    GenerateUniqueObjectName(typeof(CinemachineBlendListCamera), "CM BlendListCamera"),
+                    typeof(CinemachineBlendListCamera));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create Blend List camera");
-            var vcam = Undo.AddComponent<CinemachineBlendListCamera>(go);
+            var vcam = go.GetComponent<CinemachineBlendListCamera>();
             Selection.activeGameObject = go;
 
             // Give it a couple of children
@@ -80,11 +80,11 @@ namespace Cinemachine.Editor
         {
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineStateDrivenCamera), "CM StateDrivenCamera"));
+                    GenerateUniqueObjectName(typeof(CinemachineStateDrivenCamera), "CM StateDrivenCamera"),
+                    typeof(CinemachineStateDrivenCamera));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create state driven camera");
-            Undo.AddComponent<CinemachineStateDrivenCamera>(go);
             Selection.activeGameObject = go;
 
             // Give it a child
@@ -96,11 +96,11 @@ namespace Cinemachine.Editor
         {
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineClearShot), "CM ClearShot"));
+                    GenerateUniqueObjectName(typeof(CinemachineClearShot), "CM ClearShot"),
+                    typeof(CinemachineClearShot));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create ClearShot camera");
-            Undo.AddComponent<CinemachineClearShot>(go);
             Selection.activeGameObject = go;
 
             // Give it a child
@@ -117,11 +117,12 @@ namespace Cinemachine.Editor
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"));
+                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
+                    typeof(CinemachineSmoothPath));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            CinemachineSmoothPath path = Undo.AddComponent<CinemachineSmoothPath>(go);
+            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
             var dolly = vcam.GetCinemachineComponent<CinemachineTrackedDolly>();
             Undo.RecordObject(dolly, "create track");
             dolly.m_Path = path;
@@ -131,18 +132,21 @@ namespace Cinemachine.Editor
         private static void CreateDollyTrackWithCart()
         {
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"));
+                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
+                    typeof(CinemachineSmoothPath));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            CinemachineSmoothPath path = Undo.AddComponent<CinemachineSmoothPath>(go);
+            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
             Selection.activeGameObject = go;
 
-            go = InspectorUtility.CreateGameObject(GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"));
+            go = InspectorUtility.CreateGameObject(
+                GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"),
+                typeof(CinemachineDollyCart));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create cart");
-            CinemachineDollyCart cart = Undo.AddComponent<CinemachineDollyCart>(go);
+            CinemachineDollyCart cart = go.GetComponent<CinemachineDollyCart>();
             Undo.RecordObject(cart, "create track");
             cart.m_Path = path;
         }
@@ -167,11 +171,11 @@ namespace Cinemachine.Editor
         {
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineMixingCamera), "CM MixingCamera"));
+                    GenerateUniqueObjectName(typeof(CinemachineMixingCamera), "CM MixingCamera"),
+                    typeof(CinemachineMixingCamera));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create MixingCamera camera");
-            Undo.AddComponent<CinemachineMixingCamera>(go);
             Selection.activeGameObject = go;
 
             // Give it a couple of children
@@ -225,11 +229,12 @@ namespace Cinemachine.Editor
             // Create a new virtual camera
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineVirtualCamera), name));
+                    GenerateUniqueObjectName(typeof(CinemachineVirtualCamera), name),
+                    typeof(CinemachineVirtualCamera));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create " + name);
-            CinemachineVirtualCamera vcam = Undo.AddComponent<CinemachineVirtualCamera>(go);
+            CinemachineVirtualCamera vcam = go.GetComponent<CinemachineVirtualCamera>();
             GameObject componentOwner = vcam.GetComponentOwner().gameObject;
             foreach (Type t in components)
                 Undo.AddComponent(componentOwner, t);
