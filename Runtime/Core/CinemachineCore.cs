@@ -263,7 +263,7 @@ namespace Cinemachine
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
                 ? Time.frameCount - status.lastUpdateFrame
                 : FixedFrameCount - status.lastUpdateFixedFrame;
-            if (frameDelta == 0 && status.lastUpdateMode == updateClock)
+            if (deltaTime >= 0 && frameDelta == 0 && status.lastUpdateMode == updateClock)
                 return; // already updated
             if (frameDelta != 1)
                 deltaTime = -1; // multiple frames - kill the damping
