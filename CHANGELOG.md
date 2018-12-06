@@ -4,10 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.8-preview.15] - 2018-11-29
+## [2.2.8-preview.15] - 2018-12-06
 ### Bugfixes, optimizations, and some experimental stuff
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
-- Framing Transposer and Group Transposer: added Naive group framing modes
+- Framing Transposer and Group Transposer: group composing bugfixes, respect min/max limits
 - Added ConemachineCameraOffset extension, to offset the camera a fixed distance at the end of the pipeline
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
