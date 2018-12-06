@@ -92,7 +92,7 @@ namespace Cinemachine
 
         /// <summary>If adjusting Orthographic Size, will not set it higher than this</summary>
         [Tooltip("If adjusting Orthographic Size, will not set it higher than this.")]
-        public float m_MaximumOrthoSize = 100;
+        public float m_MaximumOrthoSize = 5000;
 
         private void OnValidate()
         {
@@ -178,11 +178,12 @@ namespace Cinemachine
 
             // Adjust bounds for framing size, and get target height
             float boundsDepth = b.extents.z;
-            b.extents /= m_GroupFramingSize;
-            float targetHeight = GetTargetHeight(b);
+            float targetHeight = GetTargetHeight(b.size / m_GroupFramingSize);
 
             if (isOrthographic)
             {
+                targetHeight = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
+
                 // ApplyDamping
                 if (deltaTime >= 0)
                     targetHeight = m_prevFOV + Damper.Damp(targetHeight - m_prevFOV, m_FrameDamping, deltaTime);
@@ -194,7 +195,7 @@ namespace Cinemachine
             }
             else
             {
-                // Adjust height for perspective - w want the height at the near surface
+                // Adjust height for perspective - we want the height at the near surface
                 float z = b.center.z;
                 if (z > boundsDepth)
                     targetHeight = Mathf.Lerp(0, targetHeight, (z - boundsDepth) / z);
@@ -202,7 +203,7 @@ namespace Cinemachine
                 // Move the camera
                 if (canMoveCamera)
                 {
-                    // What distance from near edge would be needed to get the near edge to be the adjusted
+                    // What distance from near edge would be needed to get the adjusted
                     // target height, at the current FOV
                     float targetDistance = boundsDepth 
                         + targetHeight / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
@@ -251,19 +252,19 @@ namespace Cinemachine
             base.MutateCameraState(ref curState, deltaTime);
         }
 
-        float GetTargetHeight(Bounds b)
+        float GetTargetHeight(Vector2 boundsSize)
         {
             switch (m_FramingMode)
             {
                 case FramingMode.Horizontal:
-                    return Mathf.Max(Epsilon, b.size.x ) / VcamState.Lens.Aspect;
+                    return Mathf.Max(Epsilon, boundsSize.x ) / VcamState.Lens.Aspect;
                 case FramingMode.Vertical:
-                    return Mathf.Max(Epsilon, b.size.y);
+                    return Mathf.Max(Epsilon, boundsSize.y);
                 default:
                 case FramingMode.HorizontalAndVertical:
                     return Mathf.Max(
-                        Mathf.Max(Epsilon, b.size.x) / VcamState.Lens.Aspect, 
-                        Mathf.Max(Epsilon, b.size.y));
+                        Mathf.Max(Epsilon, boundsSize.x) / VcamState.Lens.Aspect, 
+                        Mathf.Max(Epsilon, boundsSize.y));
             }
         }
         
