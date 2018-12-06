@@ -80,12 +80,38 @@ namespace Cinemachine.Editor
                     Gizmos.DrawWireCube(b.center, b.size);
                 else
                 {
+#if true // until Gizmos.DrawFrustum gets fixed properly
+                    float z = b.center.z;
+                    float e = b.extents.z;
+                    if (z > e)
+                    {
+                        Bounds b0 = b;
+                        b0.extents = Vector2.Lerp(Vector2.zero, b0.extents, (z - e) / z);
+                        b0.center -= new Vector3(0, 0, e);
+                        Bounds b1 = b;
+                        b1.extents = Vector2.LerpUnclamped(Vector2.zero, b1.extents, (z + e) / z);
+                        b1.center += new Vector3(0, 0, e);
+                        Gizmos.DrawWireCube(b0.center, b0.size);
+                        Gizmos.DrawWireCube(b1.center, b1.size);
+
+                        Vector3 e0 = b0.extents;
+                        Vector3 e1 = b1.extents;
+                        Gizmos.DrawLine(b0.center - e0, b1.center - e1);
+                        Gizmos.DrawLine(b0.center + e0, b1.center + e1);
+                        e0.y = -e0.y; 
+                        e1.y = -e1.y; 
+                        Gizmos.DrawLine(b0.center - e0, b1.center - e1);
+                        Gizmos.DrawLine(b0.center + e0, b1.center + e1);
+                    }
+
+#else
                     float z = b.center.z;
                     Vector3 e = b.extents;
                     Gizmos.DrawFrustum(
                         new Vector3(0, 0, z - e.z), 
-                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2, 
+                        Mathf.Atan2(e.y, z - e.z) * Mathf.Rad2Deg * 2, 
                         z + e.z, z - e.z, e.x / e.y);
+#endif
                 }
                 Gizmos.matrix = m;
             }
