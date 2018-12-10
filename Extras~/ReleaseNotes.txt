@@ -1,13 +1,13 @@
-<size=20><b>Version 2.3.0-preview.1</b></size>
+<size=20><b>Version 2.3.0-preview.2</b></size>
 
 - Added dependency on new unity.timeline
 - Added conditional dependence on PostProcessingV2
 - No copying CM gizmo into assets folder
 
-<size=20><b>Version 2.2.8-preview.15</b></size>
+<size=20><b>Version 2.2.8-preview.16</b></size>
 
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
-- Framing Transposer and Group Transposer: added Naive group framing modes
+- Framing Transposer and Group Transposer: group composing bugfixes, respect min/max limits
 - Added ConemachineCameraOffset extension, to offset the camera a fixed distance at the end of the pipeline
 - Dolly Cart: added support for LateUpdate
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
