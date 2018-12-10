@@ -526,7 +526,8 @@ namespace Cinemachine
             if (!curState.Lens.Orthographic)
             {
                 // Parallax might change bounds - refine
-                cameraPos = groupCenter - fwd * (m_CameraDistance + boundsDepth);
+                float d = (Quaternion.Inverse(curState.RawOrientation) * (groupCenter - cameraPos)).z;
+                cameraPos = groupCenter - fwd * (Mathf.Max(d, boundsDepth) + boundsDepth);
 
                 // Will adjust cameraPos 
                 b = GetScreenSpaceGroupBoundingBox(group, ref cameraPos, curState.RawOrientation);
