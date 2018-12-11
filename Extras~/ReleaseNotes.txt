@@ -1,4 +1,4 @@
-<size=20><b>Version 2.2.8-preview.16</b></size>
+<size=20><b>Version 2.2.8</b></size>
 
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Framing Transposer and Group Transposer: group composing bugfixes, respect min/max limits
