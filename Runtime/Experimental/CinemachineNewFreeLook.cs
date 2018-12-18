@@ -40,13 +40,13 @@ namespace Cinemachine
 
         /// <summary>Defines the height and radius for an orbit</summary>
         [Serializable]
-        public struct Orbit 
-        { 
+        public struct Orbit
+        {
             /// <summary>Height relative to target</summary>
-            public float m_Height; 
+            public float m_Height;
 
             /// <summary>Radius of orbit</summary>
-            public float m_Radius; 
+            public float m_Radius;
         }
 
         /// <summary>Order is Top, Middle, Bottom</summary>
@@ -59,7 +59,7 @@ namespace Cinemachine
 
         /// <summary>Identifiers for accessing override settings for top and bottom rigs</summary>
         public enum RigID { Top, Bottom };
-        
+
         /// <summary>Override settings for top and bottom rigs</summary>
         [Serializable]
         public class Rig
@@ -217,11 +217,11 @@ namespace Cinemachine
         public Rig RigSettings(RigID rig) { return m_Rigs[(int)rig]; }
 
         /// Easy access to the transposer (may be null)
-        CinemachineTransposer Transposer 
-        { 
-            get { return ComponentCache[(int)CinemachineCore.Stage.Body] as CinemachineTransposer; } 
+        CinemachineTransposer Transposer
+        {
+            get { return ComponentCache[(int)CinemachineCore.Stage.Body] as CinemachineTransposer; }
         }
-        
+
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         protected override void OnValidate()
         {
@@ -266,13 +266,22 @@ namespace Cinemachine
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public override void OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             if (fromCam != null && m_Transitions.m_InheritPosition)
             {
                 // Note: horizontal axis already taken care of by base class
-                m_VerticalAxis.Value = GetYAxisClosestValue(fromCam.State.RawPosition, worldUp);
+                var cameraPos = fromCam.State.RawPosition;
+
+                // Special handling for FreeLook: get an undamped outgoing position
+                if (fromCam is CinemachineNewFreeLook)
+                {
+                    var orbital = (fromCam as CinemachineNewFreeLook).Transposer;
+                    if (orbital != null)
+                        cameraPos = orbital.GetTargetCameraPosition(worldUp);
+                }
+                m_VerticalAxis.Value = GetYAxisClosestValue(cameraPos, worldUp);
             }
         }
 
@@ -395,7 +404,7 @@ namespace Cinemachine
                     0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
             }
         }
-        
+
         private float GetVerticalAxisValue()
         {
             float range = m_VerticalAxis.m_MaxValue - m_VerticalAxis.m_MinValue;
@@ -435,7 +444,7 @@ namespace Cinemachine
         {
             bool cacheIsValid = (m_CachedOrbits != null && m_CachedTension == m_SplineCurvature);
             for (int i = 0; i < 3 && cacheIsValid; ++i)
-                cacheIsValid = (m_CachedOrbits[i].y == m_Orbits[i].m_Height 
+                cacheIsValid = (m_CachedOrbits[i].y == m_Orbits[i].m_Height
                     && m_CachedOrbits[i].x == m_Orbits[i].m_Radius);
             if (!cacheIsValid)
             {

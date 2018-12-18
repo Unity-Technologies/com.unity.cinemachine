@@ -38,21 +38,21 @@ namespace Cinemachine
         [FormerlySerializedAs("m_UseCommonLensSetting")]
         public bool m_CommonLens = true;
 
-        /// <summary>Specifies the lens properties of this Virtual Camera.  
-        /// This generally mirrors the Unity Camera's lens settings, and will be used to drive 
+        /// <summary>Specifies the lens properties of this Virtual Camera.
+        /// This generally mirrors the Unity Camera's lens settings, and will be used to drive
         /// the Unity camera when the vcam is active</summary>
         [FormerlySerializedAs("m_LensAttributes")]
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active")]
         [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
 
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from 
+        /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
         public TransitionParams m_Transitions;
 
         /// <summary>Legacy support</summary>
-        [SerializeField] [HideInInspector] 
-        [FormerlySerializedAs("m_BlendHint")] 
+        [SerializeField] [HideInInspector]
+        [FormerlySerializedAs("m_BlendHint")]
         [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
@@ -73,7 +73,7 @@ namespace Cinemachine
         /// <summary>The definition of Forward.  Camera will follow behind</summary>
         [OrbitalTransposerHeadingProperty]
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
-        public CinemachineOrbitalTransposer.Heading m_Heading 
+        public CinemachineOrbitalTransposer.Heading m_Heading
             = new CinemachineOrbitalTransposer.Heading(
                 CinemachineOrbitalTransposer.Heading.HeadingDefinition.TargetForward, 4, 0);
 
@@ -84,7 +84,7 @@ namespace Cinemachine
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Header("Orbits")]
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also used to set the camera's Up vector, which will be maintained when aiming the camera.")]
-        public CinemachineOrbitalTransposer.BindingMode m_BindingMode 
+        public CinemachineOrbitalTransposer.BindingMode m_BindingMode
             = CinemachineOrbitalTransposer.BindingMode.SimpleFollowWithWorldUp;
 
         /// <summary></summary>
@@ -95,20 +95,20 @@ namespace Cinemachine
 
         /// <summary>Defines the height and radius of the Rig orbit</summary>
         [Serializable]
-        public struct Orbit 
-        { 
+        public struct Orbit
+        {
             /// <summary>Height relative to target</summary>
-            public float m_Height; 
+            public float m_Height;
             /// <summary>Radius of orbit</summary>
-            public float m_Radius; 
+            public float m_Radius;
             /// <summary>Constructor with specific values</summary>
             public Orbit(float h, float r) { m_Height = h; m_Radius = r; }
         }
 
         /// <summary>The radius and height of the three orbiting rigs</summary>
         [Tooltip("The radius and height of the three orbiting rigs.")]
-        public Orbit[] m_Orbits = new Orbit[3] 
-        { 
+        public Orbit[] m_Orbits = new Orbit[3]
+        {
             // These are the default orbits
             new Orbit(4.5f, 1.75f),
             new Orbit(2.5f, 3f),
@@ -116,7 +116,7 @@ namespace Cinemachine
         };
 
         // Legacy support
-        [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeadingBias")] 
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeadingBias")]
         private float m_LegacyHeadingBias = float.MaxValue;
         bool mUseLegacyRigDefinitions = false;
 
@@ -152,10 +152,10 @@ namespace Cinemachine
         /// <summary>Get a child rig</summary>
         /// <param name="i">Rig index.  Can be 0, 1, or 2</param>
         /// <returns>The rig, or null if index is bad.</returns>
-        public CinemachineVirtualCamera GetRig(int i) 
-        { 
-            UpdateRigCache();  
-            return (i < 0 || i > 2) ? null : m_Rigs[i]; 
+        public CinemachineVirtualCamera GetRig(int i)
+        {
+            UpdateRigCache();
+            return (i < 0 || i > 2) ? null : m_Rigs[i];
         }
 
         /// <summary>Names of the 3 child rigs</summary>
@@ -216,13 +216,13 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
-        /// <summary>Check whether the vcam a live child of this camera.  
+        /// <summary>Check whether the vcam a live child of this camera.
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam) 
+        public override bool IsLiveChild(ICinemachineCamera vcam)
         {
-            // Do not update the rig cache here or there will be infinite loop at creation time 
+            // Do not update the rig cache here or there will be infinite loop at creation time
             if (m_Rigs == null || m_Rigs.Length != 3)
                 return false;
             if (vcam == (ICinemachineCamera)m_Rigs[1])
@@ -233,7 +233,7 @@ namespace Cinemachine
         }
 
         /// <summary>This is called to notify the vcam that a target got warped,
-        /// so that the vcam can update its internal state to make the camera 
+        /// so that the vcam can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -292,13 +292,22 @@ namespace Cinemachine
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public override void OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
             if (fromCam != null && m_Transitions.m_InheritPosition)
             {
                 var cameraPos = fromCam.State.RawPosition;
+
+                // Special handling for FreeLook: get an undamped outgoing position
+                if (fromCam is CinemachineFreeLook)
+                {
+                    var flFrom = (fromCam as CinemachineFreeLook);
+                    var orbital = flFrom.mOrbitals != null ? flFrom.mOrbitals[1] : null;
+                    if (orbital != null)
+                        cameraPos = orbital.GetTargetCameraPosition(worldUp);
+                }
                 UpdateRigCache();
                 if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                     m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(cameraPos, worldUp);
@@ -371,7 +380,7 @@ namespace Cinemachine
         CameraState m_State = CameraState.Default;          // Current state this frame
 
         /// Serialized in order to support copy/paste
-        [SerializeField][HideInInspector][NoSaveDuringPlay] private CinemachineVirtualCamera[] m_Rigs 
+        [SerializeField][HideInInspector][NoSaveDuringPlay] private CinemachineVirtualCamera[] m_Rigs
             = new CinemachineVirtualCamera[3];
 
         void InvalidateRigCache() { mOrbitals = null; }
@@ -488,7 +497,7 @@ namespace Cinemachine
 
 #if UNITY_EDITOR
             // Special condition: Did we just get copy/pasted?
-            if (m_Rigs != null && m_Rigs.Length == 3 
+            if (m_Rigs != null && m_Rigs.Length == 3
                 && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
             {
                 isPrefab = gameObject.scene.name == null; // causes a small GC alloc
@@ -520,7 +529,7 @@ namespace Cinemachine
             foreach (var rig in m_Rigs)
             {
                 // Configure the UI
-                rig.m_ExcludedPropertiesInInspector = m_CommonLens 
+                rig.m_ExcludedPropertiesInInspector = m_CommonLens
                     ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
                     : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
                 rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
@@ -554,8 +563,8 @@ namespace Cinemachine
                             {
                                 mOrbitals[i].m_HeadingIsSlave = true;
                                 if (i == 1)
-                                    mOrbitals[i].HeadingUpdater 
-                                        = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
+                                    mOrbitals[i].HeadingUpdater
+                                        = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
                                             => { return orbital.UpdateHeading(deltaTime, up, ref m_XAxis); };
                                 m_Rigs[i] = vcam;
                                 m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
@@ -579,7 +588,7 @@ namespace Cinemachine
                 if (m_CommonLens)
                     m_Rigs[i].m_Lens = m_Lens;
 
-                // If we just deserialized from a legacy version, 
+                // If we just deserialized from a legacy version,
                 // pull the orbits and targets from the rigs
                 if (mUseLegacyRigDefinitions)
                 {
@@ -672,7 +681,7 @@ namespace Cinemachine
             return SplineHelpers.Bezier3(
                 t * 2f, m_CachedKnots[n], m_CachedCtrl1[n], m_CachedCtrl2[n], m_CachedKnots[n+1]);
         }
-                
+
         Orbit[] m_CachedOrbits;
         float m_CachedTension;
         Vector4[] m_CachedKnots;
@@ -682,7 +691,7 @@ namespace Cinemachine
         {
             bool cacheIsValid = (m_CachedOrbits != null && m_CachedTension == m_SplineCurvature);
             for (int i = 0; i < 3 && cacheIsValid; ++i)
-                cacheIsValid = (m_CachedOrbits[i].m_Height == m_Orbits[i].m_Height 
+                cacheIsValid = (m_CachedOrbits[i].m_Height == m_Orbits[i].m_Height
                     && m_CachedOrbits[i].m_Radius == m_Orbits[i].m_Radius);
             if (!cacheIsValid)
             {
