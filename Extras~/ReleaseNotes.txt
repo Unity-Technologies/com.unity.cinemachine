@@ -1,4 +1,10 @@
-<size=20><b>Version 2.2.8-preview.16</b></size>
+<size=20><b>Version 2.2.9-preview.1</b></size>
+
+- FreeLook: if inherit position from similar FreeLooks, bypass damping
+- Timline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
+
+
+<size=20><b>Version 2.2.8</b></size>
 
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Framing Transposer and Group Transposer: group composing bugfixes, respect min/max limits
@@ -10,7 +16,7 @@
 - Updated documentation (corrections, and relocation to prevent importing)
 - Upgrade: added support for nested prefabs in Unity 2018.3 (fogbugz 1077395)
 - Optimization: position predictor is more efficient
-- Optimization: Composer caches some calculations 
+- Optimization: Composer caches some calculations
 - Optimization: Fix editor slowdown when Lens Presets asset is missing
 - Experimental: Optional new damping algorithm: attempt to reduce sensitivity to variable framerate
 - Experimental: Optional new extra-efficient versions of vcam and FreeLook (not back-compatible)
@@ -43,7 +49,7 @@
 
 - New Cinemachine Impulse module for event-driven camera shakes
 - New Event Helper script CinemachineTriggerAction takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
-- New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.  
+- New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.
 - New NoiseSettings editor with signal preview
 - Added Focal Length or Named FOV presets for Camera Lens
 - Added support for Physical Camera: focal length and Lens Offset
@@ -73,7 +79,7 @@
 - Bugfix: SimpleFollow transposers were not initilizing their position correctly at game start
 - Bugfix: Timeline with CM shot was causing jitter in some FixedUpdate situations
 - Bugfix: Multiple brains with heterogeneous update methods were not behaving correctly.  CM will now support this, but you must make sure that the brains have different layer masks.
-- Example scenes now include use of CinemachineTriggerAction script.  
+- Example scenes now include use of CinemachineTriggerAction script.
 
 <size=20><b>Version 2.1.13</b></size>
 
