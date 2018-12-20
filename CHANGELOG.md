@@ -4,13 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.3.0-preview.2] - 2018-12-10
+## [2.3.0] - 2018-12-20
 ### Support for Unity 2019.1
 - Added dependency on new unity.timeline
 - Added conditional dependence on PostProcessingV2
 - No copying CM gizmo into assets folder
+- FreeLook: if inherit position from similar FreeLooks, bypass damping 
+- Timline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
 
-## [2.2.8-preview.16] - 2018-12-10
+## [2.2.8] - 2018-12-10
 ### Bugfixes, optimizations, and some experimental stuff
 - Transposer: added Angular Damping Mode, to support quaternion calculations in gimbal-lock situations
 - Framing Transposer and Group Transposer: group composing bugfixes, respect min/max limits
