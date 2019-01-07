@@ -1,4 +1,4 @@
-#if true || CINEMACHINE_TIMELINE
+#if CINEMACHINE_TIMELINE
 
 using UnityEngine;
 using UnityEngine.Playables;
@@ -79,7 +79,7 @@ namespace Cinemachine.Timeline
                     incomingIsB = true;
                 else if (clipB.localTime > clipA.localTime)
                     incomingIsB = false;
-                else 
+                else
                     incomingIsB = clipB.duration >= clipA.duration;
             }
 
@@ -100,7 +100,7 @@ namespace Cinemachine.Timeline
                     mLastOverrideFrame = -1;
                 float time = Time.realtimeSinceStartup;
                 deltaTime = Time.unscaledDeltaTime;
-                if (!Application.isPlaying 
+                if (!Application.isPlaying
                     && (mLastOverrideFrame < 0 || time - mLastOverrideFrame > Time.maximumDeltaTime))
                 {
                     deltaTime = -1;

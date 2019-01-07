@@ -3,6 +3,7 @@
     "references": [
         "Cinemachine",
         "Unity.Timeline",
+        "Unity.Timeline.Editor",
         "Unity.Postprocessing.Runtime",
         "Unity.Postprocessing.Editor"
     ],
@@ -24,7 +25,7 @@
         },
         {
             "name": "com.unity.timeline",
-            "expression": "0.0.0",
+            "expression": "0.0.0-builtin",
             "define": "CINEMACHINE_TIMELINE"
         }
     ]

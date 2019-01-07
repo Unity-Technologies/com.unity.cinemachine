@@ -1,10 +1,16 @@
+<size=20><b>Version 2.3.1</b></size>
+
+- Added timeline dependency
+- OnTargetObjectWarped no longer generates garbage
+
+
 <size=20><b>Version 2.3.0</b></size>
 
 - Added dependency on new unity.timeline
 - Added conditional dependence on PostProcessingV2
 - No copying CM gizmo into assets folder
 - FreeLook: if inherit position from similar FreeLooks, bypass damping
-- Timline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
+- Timeline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
 
 
 <size=20><b>Version 2.2.8</b></size>

@@ -1,4 +1,4 @@
-#if true || CINEMACHINE_TIMELINE
+#if CINEMACHINE_TIMELINE
 
 using UnityEngine;
 using UnityEngine.Playables;

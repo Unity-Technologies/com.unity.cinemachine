@@ -17,6 +17,11 @@
             "name": "com.unity.postprocessing",
             "expression": "2.1.0",
             "define": "CINEMACHINE_POST_PROCESSING_V2"
+        },
+        {
+            "name": "com.unity.timeline",
+            "expression": "0.0.0-builtin",
+            "define": "CINEMACHINE_TIMELINE"
         }
     ]
 }
