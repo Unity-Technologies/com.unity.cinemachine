@@ -37,10 +37,10 @@ namespace Cinemachine
         public CinemachineCore.Stage[] m_LockStageInInspector;
 
         /// <summary>Version that was last streamed, for upgrading legacy</summary>
-        public int ValidatingStreamVersion 
-        { 
+        public int ValidatingStreamVersion
+        {
             get { return m_OnValidateCalled ? m_ValidatingStreamVersion : CinemachineCore.kStreamingVersion; }
-            private set { m_ValidatingStreamVersion = value; } 
+            private set { m_ValidatingStreamVersion = value; }
         }
         private int m_ValidatingStreamVersion = 0;
         private bool m_OnValidateCalled = false;
@@ -64,13 +64,13 @@ namespace Cinemachine
             Never,
             /// <summary>Update the virtual camera every frame, even when it is not Live</summary>
             Always,
-            /// <summary>Update the virtual camera occasionally, the exact frequency depends 
+            /// <summary>Update the virtual camera occasionally, the exact frequency depends
             /// on how many other virtual cameras are in Standby</summary>
             RoundRobin
         };
-        
-        /// <summary>When the virtual camera is not live, this is how often the virtual camera will 
-        /// be updated.  Set this to tune for performance. Most of the time Never is fine, unless 
+
+        /// <summary>When the virtual camera is not live, this is how often the virtual camera will
+        /// be updated.  Set this to tune for performance. Most of the time Never is fine, unless
         /// the virtual camera is doing shot evaluation.
         /// </summary>
         [Tooltip("When the virtual camera is not live, this is how often the virtual camera will be updated.  "
@@ -166,18 +166,18 @@ namespace Cinemachine
             {
                 default:
                     break;
-                case BlendHint.SphericalPosition: 
-                    state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend; 
+                case BlendHint.SphericalPosition:
+                    state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend;
                     break;
-                case BlendHint.CylindricalPosition: 
-                    state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend; 
+                case BlendHint.CylindricalPosition:
+                    state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend;
                     break;
-                case BlendHint.ScreenSpaceAimWhenTargetsDiffer: 
-                    state.BlendHint |= CameraState.BlendHintValue.RadialAimBlend; 
+                case BlendHint.ScreenSpaceAimWhenTargetsDiffer:
+                    state.BlendHint |= CameraState.BlendHintValue.RadialAimBlend;
                     break;
             }
         }
-        
+
         /// <summary>The GameObject owner of the Virtual Camera behaviour.</summary>
         public GameObject VirtualCameraGameObject
         {
@@ -209,7 +209,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Check whether the vcam a live child of this camera.  
+        /// <summary>Check whether the vcam a live child of this camera.
         /// This base class implementation always returns false.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
@@ -222,8 +222,8 @@ namespace Cinemachine
         public abstract Transform Follow { get; set; }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
-        public bool PreviousStateIsValid 
-        { 
+        public bool PreviousStateIsValid
+        {
             get
             {
                 if (LookAt != m_previousLookAtTarget)
@@ -260,15 +260,15 @@ namespace Cinemachine
             CinemachineCore.Instance.UpdateVirtualCamera(this, worldUp, deltaTime);
         }
 
-        /// <summary>Internal use only.  Do not call this method.  
+        /// <summary>Internal use only.  Do not call this method.
         /// Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  
+        /// so the vcam can position itself and track its targets.
         /// Do not call this method.  Let the framework do it at the appropriate time</summary>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public abstract void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
 
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from 
+        /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
         [Serializable]
         public struct TransitionParams
@@ -286,14 +286,14 @@ namespace Cinemachine
             [Tooltip("This event fires when the virtual camera goes Live")]
             public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
         }
-        
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation must be called by any overridden method.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public virtual void OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             if (!gameObject.activeInHierarchy)
                 PreviousStateIsValid = false;
@@ -319,7 +319,7 @@ namespace Cinemachine
         {
         }
 
-        /// <summary>Enforce bounds for fields, when changed in inspector.  
+        /// <summary>Enforce bounds for fields, when changed in inspector.
         /// Call base class implementation at the beginning of overridden method.
         /// After base method is called, ValidatingStreamVersion will be valid.</summary>
         protected virtual void OnValidate()
@@ -411,12 +411,12 @@ namespace Cinemachine
         }
 
         /// <summary>When multiple virtual cameras have the highest priority, there is
-        /// sometimes the need to push one to the top, making it the current Live camera if 
-        /// it shares the highest priority in the queue with its peers.  
-        /// 
-        /// This happens automatically when a 
-        /// new vcam is enabled: the most recent one goes to the top of the priority subqueue.  
-        /// Use this method to push a vcam to the top of its priority peers.  
+        /// sometimes the need to push one to the top, making it the current Live camera if
+        /// it shares the highest priority in the queue with its peers.
+        ///
+        /// This happens automatically when a
+        /// new vcam is enabled: the most recent one goes to the top of the priority subqueue.
+        /// Use this method to push a vcam to the top of its priority peers.
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
         public void MoveToTopOfPrioritySubqueue()
         {
@@ -424,23 +424,24 @@ namespace Cinemachine
         }
 
         /// <summary>This is called to notify the component that a target got warped,
-        /// so that the component can update its internal state to make the camera 
+        /// so that the component can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
-        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
+        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
         {
-            // Locate all extensions and inform them
-            var extensions = GetComponents<CinemachineExtension>();
-            if (extensions != null)
-                for (int i = 0; i < extensions.Length; ++i)
-                    extensions[i].OnTargetObjectWarped(target, positionDelta);
+            // inform the extensions
+            if (mExtensions != null)
+            {
+                for (int i = 0; i < mExtensions.Count; ++i)
+                    mExtensions[i].OnTargetObjectWarped(target, positionDelta);
+            }
         }
 
-        /// <summary>Create a blend between 2 virtual cameras, taking into account 
+        /// <summary>Create a blend between 2 virtual cameras, taking into account
         /// any existing active blend.</summary>
         protected CinemachineBlend CreateBlend(
-            ICinemachineCamera camA, ICinemachineCamera camB, 
+            ICinemachineCamera camA, ICinemachineCamera camB,
             CinemachineBlendDefinition blendDef,
             CinemachineBlend activeBlend)
         {
@@ -456,7 +457,7 @@ namespace Cinemachine
             else if (camA == null)
                 camA = new StaticPointVirtualCamera(State, "(none)");
             return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
-        }    
+        }
 
         /// <summary>
         /// Create a camera state based on the current transform of this vcam

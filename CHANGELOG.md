@@ -4,10 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.9-preview.1] - 2018-12-18
+## [2.2.9-preview.2] - 2019-01-07
 ### Bugfixes
 - FreeLook: if inherit position from similar FreeLooks, bypass damping 
 - Timline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
+- OnTargetObjectWarped no longer generates garbage
 
 ## [2.2.8] - 2018-12-10
 ### Bugfixes, optimizations, and some experimental stuff

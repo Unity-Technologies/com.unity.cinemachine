@@ -1,7 +1,8 @@
-<size=20><b>Version 2.2.9-preview.1</b></size>
+<size=20><b>Version 2.2.9-preview.2</b></size>
 
 - FreeLook: if inherit position from similar FreeLooks, bypass damping
 - Timline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
+- OnTargetObjectWarped no longer generates garbage
 
 
 <size=20><b>Version 2.2.8</b></size>
