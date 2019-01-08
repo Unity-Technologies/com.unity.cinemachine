@@ -1,4 +1,4 @@
-#if CINEMACHINE_TIMELINE
+#if true || CINEMACHINE_TIMELINE
 
 using System;
 using UnityEngine;
