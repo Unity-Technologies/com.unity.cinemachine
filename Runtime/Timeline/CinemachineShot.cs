@@ -1,17 +1,12 @@
-#if true || CINEMACHINE_TIMELINE
+#if CINEMACHINE_TIMELINE
 
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using Cinemachine;
 
-namespace Cinemachine.Timeline
-{
-    internal sealed class CinemachineShotPlayable : PlayableBehaviour
-    {
-        public CinemachineVirtualCameraBase VirtualCamera;
-        public bool IsValid { get { return VirtualCamera != null; } }
-    }
-
+//namespace Cinemachine.Timeline
+//{
     /// <summary>
     /// Internal use only.  Not part of the public API.
     /// </summary>
@@ -41,5 +36,5 @@ namespace Cinemachine.Timeline
             driver.AddFromName<Camera>("far clip plane");
         }
     }
-}
+//}
 #endif

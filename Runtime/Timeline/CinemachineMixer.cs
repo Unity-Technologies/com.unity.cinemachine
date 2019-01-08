@@ -1,10 +1,11 @@
-#if true || CINEMACHINE_TIMELINE
+#if CINEMACHINE_TIMELINE
 
 using UnityEngine;
 using UnityEngine.Playables;
+using Cinemachine;
 
-namespace Cinemachine.Timeline
-{
+//namespace Cinemachine.Timeline
+//{
     internal sealed class CinemachineMixer : PlayableBehaviour
     {
         // The brain that this track controls
@@ -110,5 +111,5 @@ namespace Cinemachine.Timeline
             return deltaTime;
         }
     }
-}
+//}
 #endif
