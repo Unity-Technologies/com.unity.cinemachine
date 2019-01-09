@@ -4,7 +4,7 @@ using System;
 namespace Cinemachine
 {
     /// <summary>
-    /// Describes the FOV and clip planes for a camera.  This generally mirrors the Unity Camera's 
+    /// Describes the FOV and clip planes for a camera.  This generally mirrors the Unity Camera's
     /// lens settings, and will be used to drive the Unity camera when the vcam is active.
     /// </summary>
     [Serializable]
@@ -13,7 +13,7 @@ namespace Cinemachine
     {
         /// <summary>Default Lens Settings</summary>
         public static LensSettings Default = new LensSettings(40f, 10f, 0.1f, 5000f, 0);
-        
+
         /// <summary>
         /// This is the camera view in vertical degrees. For cinematic people, a 50mm lens
         /// on a super-35mm sensor would equal a 19.6 degree FOV
@@ -23,7 +23,7 @@ namespace Cinemachine
         public float FieldOfView;
 
         /// <summary>
-        /// When using an orthographic camera, this defines the height, in world 
+        /// When using an orthographic camera, this defines the height, in world
         /// co-ordinates, of the camera view.
         /// </summary>
         [Tooltip("When using an orthographic camera, this defines the half-height, in world coordinates, of the camera view.")]
@@ -49,19 +49,19 @@ namespace Cinemachine
         public float Dutch;
 
         /// <summary>
-        /// This is set every frame by the virtual camera, based on the value found in the 
+        /// This is set every frame by the virtual camera, based on the value found in the
         /// currently associated Unity camera
         /// </summary>
         public bool Orthographic { get; set; }
 
         /// <summary>
-        /// This is set every frame by the virtual camera, based on the value 
+        /// This is set every frame by the virtual camera, based on the value
         /// found in the currently associated Unity camera
         /// </summary>
         public bool IsPhysicalCamera { get; set; }
 
         /// <summary>
-        /// This is set every frame by the virtual camera, based on the value 
+        /// This is set every frame by the virtual camera, based on the value
         /// found in the currently associated Unity camera
         /// </summary>
         public Vector2 SensorSize { get; set; }
@@ -75,10 +75,10 @@ namespace Cinemachine
         public Vector2 LensShift;
 
         /// <summary>
-        /// Creates a new LensSettings, copying the values from the 
+        /// Creates a new LensSettings, copying the values from the
         /// supplied Camera
         /// </summary>
-        /// <param name="fromCamera">The Camera from which the FoV, near 
+        /// <param name="fromCamera">The Camera from which the FoV, near
         /// and far clip planes will be copied.</param>
 	    public static LensSettings FromCamera(Camera fromCamera)
         {
@@ -135,7 +135,7 @@ namespace Cinemachine
         /// <param name="orthographicSize">If orthographic, this is the half-height of the screen</param>
         /// <param name="nearClip">The near clip plane</param>
         /// <param name="farClip">The far clip plane</param>
-        /// <param name="dutch">Camera roll, in degrees.  This is applied at the end 
+        /// <param name="dutch">Camera roll, in degrees.  This is applied at the end
         /// after shot composition.</param>
         public LensSettings(
             float fov, float orthographicSize,
@@ -174,7 +174,7 @@ namespace Cinemachine
         /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>
         public void Validate()
         {
-            NearClipPlane = Mathf.Max(NearClipPlane, 0.01f);
+            NearClipPlane = Mathf.Max(NearClipPlane, Orthographic ? 0 : 0.01f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.01f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.1f, 179f);
         }
