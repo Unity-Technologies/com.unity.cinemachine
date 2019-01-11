@@ -5,39 +5,25 @@ Use this file to outline the test strategy for this package.
 ## UX Owner: [*Joel Fortin*]
 
 ## Testing coverage done on this package:
-Cinemachine 2.2 test status
--	Timeline and CinemachineTrack
---	Tested mid-blending when we start a timeline during a blend that is happening on the game camera
---	Tested mid-blending on stacked Cinemachine tracks
--	New StandBy updated mode
---	Performance profiling validated with ~100 cameras in the scene (all in StandBy state). Always reproduces the legacy behavior
---	None mode is seemless when transitioning to another standby camera and improve the performance
--- 	Round Robin actually update one camera per frame and shows a significant performance improvement
---	Also tested current example scenes we have to regression
-**Note:** About the Round Robin mode … it exists only because camera like ClearShot needs to be updated in order to find its best shot possible. With the Round Robin mode though, we may notice a small jerky effect since the child cameras aren’t evaluating the shot on every frame. Ideally, I found that using the Always update mode is the best way to go for clear shot. Making us wonder the usefulness of the Round Robin update mode.
--	Impulse Source component
---	Tested Collision Impulse Source on an object collider with ImpulseSource extension on a VCam (game camera)
---	Tested Impulse Source on a character colliding with an object have a Trigger Impulse script on it … still having the game camera to use the ImpulseSource extension
---	Tested Impulse API to Generate a signal continuously while a target stays in a trigger
---	Tested new 2D spacial range to validate the Z distance from the camera is ignored
---	Tested when both “Scale with Mass” and “Scale with Speed” activated to make sure the result is correct
--	New visual in  the Noise asset inspector
---	Functional Testing on the settings expose
--	Noise profile and Lens preset asset options tested
---	Cloning those asset from the inspector now pop up a save as dialog for more deterministic workflow
---	Also tested that cloning an asset does allow the user to save directly in the package directory cache which is read only
--	Various Regression check on existing example scenes
+/*Cinemachine 2.3.0 test status*/
 
+**Overall Test pass**
+This version is a Cinemachine 2.2.8 port to Unity 2019.1 in almost its integrity. Basic testing has been done on that version to make sure the Example scene are still working. 
 
-Bugs found (and fixed in .preview8) during testing
--	Solo Mode broken
--	Having Simple Follow on a camera always starts the game snapping the camera to a position like if it didn’t have bias or set offset
--	Orbital Transposer gizmo in the scene view, using transform gizmo is scaling the orbit ignoring the bias value set
--	LensSettings preset file location needs to be deterministic (set by the user)
--	X Recentering on FreeLook doesn’t work anymore
--	Y Axis Input field on FreeLook report errors in the console as we type the input string
--	Impulse Source Gain value must be ridiculously high for the user to see an actual noise when triggered
--	Impulse Source spacial range needs to behave differently when in 2D mode
--	User is able to clone an Impulse definition asset directly in the package cache which is read only
--	Starting a timeline in mid-blending is causing a cut on the shot when the timeline begins. (Bug Found by users)
+The only thing that was added to that version is :
 
+- Gizmos folder is not created automatically in the Assets folder anymore, it is now part of the package and leaves the Assets folder clean. TESTED
+- A dependendy on the Timeline package has been added. Since Timeline is now a package, installing Cinemachine was logging a lot of errors in the console. TESTED
+
+**Important Note**
+
+- Cinemachine 2.3.0 is the only version that supported by Unity 2019.1
+- Using older version of Cinemachine in 2019.1 will report error in the console because of the Timeline dependency
+- Cinemachine 2.3.0 should not be visible from the package list in 2018.3
+- Cinemachine 2.2.8 and older shouldn't be visible from the package list in 2019.1 either
+- Old projects saved in previous version will report errors in the console, an automatic update mechanism is being developped for fix this.
+- Various optimization accross different components
+
+**Minor issue that still need to be fixed**
+
+- Cinemachine logo doesn't appear beside the Main Camera logo when a Brain is created. (Only appens on fresh new project, as soon as we enter in Play mode, the logo will appear in the hierarchy as it should) (Logged as --> https://fogbugz.unity3d.com/f/cases/1109688/)

@@ -6,20 +6,20 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a CinemachineComponent in the the Body section of the component pipeline. 
-    /// Its job is to position the camera in a variable relationship to a the vcam's 
+    /// This is a CinemachineComponent in the the Body section of the component pipeline.
+    /// Its job is to position the camera in a variable relationship to a the vcam's
     /// Follow target object, with offsets and damping.
-    /// 
+    ///
     /// This component is typically used to implement a camera that follows its target.
-    /// It can accept player input from an input device, which allows the player to 
-    /// dynamically control the relationship between the camera and the target, 
+    /// It can accept player input from an input device, which allows the player to
+    /// dynamically control the relationship between the camera and the target,
     /// for example with a joystick.
-    /// 
+    ///
     /// The OrbitalTransposer introduces the concept of __Heading__, which is the direction
-    /// in which the target is moving, and the OrbitalTransposer will attempt to position 
+    /// in which the target is moving, and the OrbitalTransposer will attempt to position
     /// the camera in relationship to the heading, which is by default directly behind the target.
     /// You can control the default relationship by adjusting the Heading Bias setting.
-    /// 
+    ///
     /// If you attach an input controller to the OrbitalTransposer, then the player can also
     /// control the way the camera positions itself in relation to the target heading.  This allows
     /// the camera to move to any spot on an orbit around the target.
@@ -115,7 +115,7 @@ namespace Cinemachine
         protected override void OnValidate()
         {
             // Upgrade after a legacy deserialize
-            if (m_LegacyRadius != float.MaxValue 
+            if (m_LegacyRadius != float.MaxValue
                 && m_LegacyHeightOffset != float.MaxValue
                 && m_LegacyHeadingBias != float.MaxValue)
             {
@@ -152,12 +152,12 @@ namespace Cinemachine
 
         /// <summary>
         /// Delegate that allows the the XAxis object to be replaced with another one.
-        /// To use it, just call orbital.UpdateHeading() with a reference to a 
+        /// To use it, just call orbital.UpdateHeading() with a reference to a
         /// private AxisState object, and that AxisState object will be updated and
         /// used to calculate the heading.
         /// </summary>
-        internal UpdateHeadingDelegate HeadingUpdater 
-            = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) 
+        internal UpdateHeadingDelegate HeadingUpdater
+            = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
                 => { return orbital.UpdateHeading(deltaTime, up, ref orbital.m_XAxis); };
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace Cinemachine
         private Vector3 mOffsetPrevFrame = Vector3.zero;
 
         /// <summary>This is called to notify the us that a target got warped,
-        /// so that we can update its internal state to make the camera 
+        /// so that we can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -216,7 +216,7 @@ namespace Cinemachine
                 mLastTargetPosition += positionDelta;
             }
         }
-        
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
@@ -225,8 +225,8 @@ namespace Cinemachine
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams) 
-        { 
+            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+        {
             if (fromCam != null && fromCam.Follow == FollowTarget
                 && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
                 && transitionParams.m_InheritPosition)
@@ -234,7 +234,7 @@ namespace Cinemachine
                 m_XAxis.Value = GetAxisClosestValue(fromCam.State.RawPosition, worldUp);
                 return true;
             }
-            return false; 
+            return false;
         }
 
         /// <summary>
@@ -310,10 +310,25 @@ namespace Cinemachine
                 orient = orient * headingRot;
                 curState.RawPosition = pos + orient * offset;
 
-                mHeadingPrevFrame = (m_BindingMode == BindingMode.SimpleFollowWithWorldUp) 
+                mHeadingPrevFrame = (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
                     ? Quaternion.identity : headingRot;
                 mOffsetPrevFrame = offset;
             }
+        }
+
+        /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
+        public override Vector3 GetTargetCameraPosition(Vector3 worldUp)
+        {
+            if (!IsValid)
+                return Vector3.zero;
+            float heading = LastHeading;
+            if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+                heading += m_Heading.m_Bias;
+            Quaternion orient = Quaternion.AngleAxis(heading, Vector3.up);
+            orient = GetReferenceOrientation(worldUp) * orient;
+            var pos = orient * EffectiveOffset;
+            pos += mLastTargetPosition;
+            return pos;
         }
 
         static string GetFullName(GameObject current)
