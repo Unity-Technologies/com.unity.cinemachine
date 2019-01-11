@@ -5,12 +5,12 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a CinemachineComponent in the Body section of the component pipeline. 
-    /// Its job is to position the camera in a fixed relationship to the vcam's Follow 
+    /// This is a CinemachineComponent in the Body section of the component pipeline.
+    /// Its job is to position the camera in a fixed relationship to the vcam's Follow
     /// target object, with offsets and damping.
-    /// 
-    /// The Tansposer will only change the camera's position in space.  It will not 
-    /// re-orient or otherwise aim the camera.  To to that, you need to instruct 
+    ///
+    /// The Tansposer will only change the camera's position in space.  It will not
+    /// re-orient or otherwise aim the camera.  To to that, you need to instruct
     /// the vcam in the Aim section of its pipeline.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -84,11 +84,11 @@ namespace Cinemachine
         /// <summary>How to calculate the angular damping for the target orientation</summary>
         public enum AngularDampingMode
         {
-            /// <summary>Use Euler angles to specify damping values.  
+            /// <summary>Use Euler angles to specify damping values.
             /// Subject to gimbal-lock fwhen pitch is steep.</summary>
             Euler,
             /// <summary>
-            /// Use quaternions to calculate angular damping.  
+            /// Use quaternions to calculate angular damping.
             /// No per-channel control, but not susceptible to gimbal-lock</summary>
             Quaternion
         }
@@ -98,25 +98,25 @@ namespace Cinemachine
         /// be subject to gimbal lock if Eulers are used.</summary>
         public AngularDampingMode m_AngularDampingMode = AngularDampingMode.Euler;
 
-        /// <summary>How aggressively the camera tries to track the target rotation's X angle.  
+        /// <summary>How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_PitchDamping = 0;
 
-        /// <summary>How aggressively the camera tries to track the target rotation's Y angle.  
+        /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_YawDamping = 0;
 
-        /// <summary>How aggressively the camera tries to track the target rotation's Z angle.  
+        /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
 
-        /// <summary>How aggressively the camera tries to track the target's orientation.  
+        /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target's orientation.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
@@ -127,25 +127,25 @@ namespace Cinemachine
         {
             m_FollowOffset = EffectiveOffset;
         }
-        
+
         /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
         public bool HideOffsetInInspector { get; set; }
-        
+
         /// <summary>Get the target offset, with sanitization</summary>
-        public Vector3 EffectiveOffset 
-        { 
-            get 
-            { 
-                Vector3 offset = m_FollowOffset; 
+        public Vector3 EffectiveOffset
+        {
+            get
+            {
+                Vector3 offset = m_FollowOffset;
                 if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
                 {
                     offset.x = 0;
                     offset.z = -Mathf.Abs(offset.z);
                 }
                 return offset;
-            } 
+            }
         }
-        
+
         /// <summary>True if component is enabled and has a valid Follow target</summary>
         public override bool IsValid { get { return enabled && FollowTarget != null; } }
 
@@ -171,7 +171,7 @@ namespace Cinemachine
         }
 
         /// <summary>This is called to notify the us that a target got warped,
-        /// so that we can update its internal state to make the camera 
+        /// so that we can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -181,7 +181,7 @@ namespace Cinemachine
             if (target == FollowTarget)
                 m_PreviousTargetPosition += positionDelta;
         }
-        
+
         /// <summary>Initializes the state for previous frame if appropriate.</summary>
         protected void InitPrevFrameStateInfo(
             ref CameraState curState, float deltaTime)
@@ -189,7 +189,7 @@ namespace Cinemachine
             if (m_previousTarget != FollowTarget || deltaTime < 0)
             {
                 m_previousTarget = FollowTarget;
-                m_targetOrientationOnAssign 
+                m_targetOrientationOnAssign
                     = (m_previousTarget == null) ? Quaternion.identity : FollowTargetRotation;
             }
             if (deltaTime < 0)
@@ -221,7 +221,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Vector3 relative = (Quaternion.Inverse(m_PreviousReferenceOrientation) 
+                    Vector3 relative = (Quaternion.Inverse(m_PreviousReferenceOrientation)
                         * targetOrientation).eulerAngles;
                     for (int i = 0; i < 3; ++i)
                         if (relative[i] > 180)
@@ -257,16 +257,16 @@ namespace Cinemachine
         /// </summary>
         protected Vector3 Damping
         {
-            get 
-            { 
+            get
+            {
                 switch (m_BindingMode)
                 {
                     case BindingMode.SimpleFollowWithWorldUp:
-                        return new Vector3(0, m_YDamping, m_ZDamping); 
+                        return new Vector3(0, m_YDamping, m_ZDamping);
                     default:
-                        return new Vector3(m_XDamping, m_YDamping, m_ZDamping); 
+                        return new Vector3(m_XDamping, m_YDamping, m_ZDamping);
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -274,26 +274,26 @@ namespace Cinemachine
         /// </summary>
         protected Vector3 AngularDamping
         {
-            get 
-            { 
+            get
+            {
                 switch (m_BindingMode)
                 {
                     case BindingMode.LockToTargetNoRoll:
-                        return new Vector3(m_PitchDamping, m_YawDamping, 0); 
+                        return new Vector3(m_PitchDamping, m_YawDamping, 0);
                     case BindingMode.LockToTargetWithWorldUp:
-                        return new Vector3(0, m_YawDamping, 0); 
+                        return new Vector3(0, m_YawDamping, 0);
                     case BindingMode.LockToTargetOnAssign:
                     case BindingMode.WorldSpace:
                     case BindingMode.SimpleFollowWithWorldUp:
                         return Vector3.zero;
                     default:
-                        return new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping); 
+                        return new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping);
                 }
-            } 
+            }
         }
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
-        public Vector3 GetTargetCameraPosition(Vector3 worldUp)
+        public virtual Vector3 GetTargetCameraPosition(Vector3 worldUp)
         {
             if (!IsValid)
                 return Vector3.zero;
@@ -334,7 +334,7 @@ namespace Cinemachine
                         break;
                 }
             }
-            return Quaternion.identity; 
+            return Quaternion.identity;
         }
 
         static Quaternion Uppify(Quaternion q, Vector3 up)
