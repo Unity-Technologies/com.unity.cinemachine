@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Timeline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
 - OnTargetObjectWarped no longer generates garbage
 - Orthographic cameras allow a Near Clip of 0
+- Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 
 ## [2.2.8] - 2018-12-10
 ### Bugfixes, optimizations, and some experimental stuff
