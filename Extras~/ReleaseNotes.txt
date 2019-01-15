@@ -1,7 +1,8 @@
-<size=20><b>Version 2.3.4-preview.1</b></size>
+<size=20><b>Version 2.3.4-preview.2</b></size>
 
 - FreeLook: inherit position bugfix
 - Orthographic cameras allow a Near Clip of 0
+- Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 
 
 <size=20><b>Version 2.3.3</b></size>
