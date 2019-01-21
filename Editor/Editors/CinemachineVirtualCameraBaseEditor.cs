@@ -10,7 +10,7 @@ namespace Cinemachine.Editor
     /// Base class for virtual camera editors.
     /// Handles drawing the header and the basic properties.
     /// </summary>
-    public class CinemachineVirtualCameraBaseEditor<T> 
+    public class CinemachineVirtualCameraBaseEditor<T>
         : BaseEditor<T> where T : CinemachineVirtualCameraBase
     {
         static Type[] sExtensionTypes;  // First entry is null
@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
                 names.Add("(select)");
                 var allExtensions
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => t.IsSubclassOf(typeof(CinemachineExtension)));
+                            (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t));
                 foreach (Type t in allExtensions)
                 {
                     exts.Add(t);
@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
                 if (Target.ParentCamera == null || Target.ParentCamera.Follow == null)
                     EditorGUILayout.PropertyField(followTarget);
                 else
-                    EditorGUILayout.PropertyField(followTarget, 
+                    EditorGUILayout.PropertyField(followTarget,
                         new GUIContent(followTarget.displayName + " Override"));
                 ExcludeProperty(followTarget.name);
             }
@@ -93,7 +93,7 @@ namespace Cinemachine.Editor
                 if (Target.ParentCamera == null || Target.ParentCamera.LookAt == null)
                     EditorGUILayout.PropertyField(lookAtTarget);
                 else
-                    EditorGUILayout.PropertyField(lookAtTarget, 
+                    EditorGUILayout.PropertyField(lookAtTarget,
                         new GUIContent(lookAtTarget.displayName + " Override"));
                 ExcludeProperty(lookAtTarget.name);
             }
@@ -128,7 +128,7 @@ namespace Cinemachine.Editor
             CameraState state = Target.State;
             if (state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero())
                 EditorGUILayout.HelpBox(
-                    "The camera is positioned on the same point at which it is trying to look.", 
+                    "The camera is positioned on the same point at which it is trying to look.",
                     MessageType.Warning);
 
             // Active status and Solo button
@@ -180,23 +180,23 @@ namespace Cinemachine.Editor
 
         protected void DrawGlobalControlsInInspector()
         {
-            CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides 
+            CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides
                 = EditorGUILayout.Toggle(
                     new GUIContent(
-                        "Game Window Guides", 
-                        "Enable the display of overlays in the Game window.  You can adjust colours and opacity in Edit/Preferences/Cinemachine."), 
+                        "Game Window Guides",
+                        "Enable the display of overlays in the Game window.  You can adjust colours and opacity in Edit/Preferences/Cinemachine."),
                     CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides);
 
-            SaveDuringPlay.SaveDuringPlay.Enabled 
+            SaveDuringPlay.SaveDuringPlay.Enabled
                 = EditorGUILayout.Toggle(
                     new GUIContent(
-                        "Save During Play", 
-                        "If checked, Virtual Camera settings changes made during Play Mode will be propagated back to the scene when Play Mode is exited."), 
+                        "Save During Play",
+                        "If checked, Virtual Camera settings changes made during Play Mode will be propagated back to the scene when Play Mode is exited."),
                     SaveDuringPlay.SaveDuringPlay.Enabled);
 
             if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(
-                    " Virtual Camera settings changes made during Play Mode will be propagated back to the scene when Play Mode is exited.", 
+                    " Virtual Camera settings changes made during Play Mode will be propagated back to the scene when Play Mode is exited.",
                     MessageType.Info);
         }
     }

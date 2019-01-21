@@ -61,7 +61,7 @@ namespace SaveDuringPlay
         }
 
         /// <summary>Finds all the root objects in a scene, active or not</summary>
-        public static GameObject[] FindAllRootObjectsInScene() 
+        public static GameObject[] FindAllRootObjectsInScene()
         {
             return UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
         }
@@ -121,9 +121,9 @@ namespace SaveDuringPlay
             // Check if it's a complex type
             bool isLeaf = true;
             if (obj != null
-                && !type.IsSubclassOf(typeof(Component))
-                && !type.IsSubclassOf(typeof(ScriptableObject))
-                && !type.IsSubclassOf(typeof(GameObject)))
+                && !typeof(Component).IsAssignableFrom(type)
+                && !typeof(ScriptableObject).IsAssignableFrom(type)
+                && !typeof(GameObject).IsAssignableFrom(type))
             {
                 // Is it an array?
                 if (type.IsArray)
@@ -264,8 +264,8 @@ namespace SaveDuringPlay
             scanner.ScanFields(go);
         }
 
-        public GameObject FindSavedGameObject(GameObject[] roots) 
-        { 
+        public GameObject FindSavedGameObject(GameObject[] roots)
+        {
             return ObjectTreeUtil.FindObjectFromFullName(mObjectFullPath, roots);
         }
         public string ObjetFullPath { get { return mObjectFullPath; } }
@@ -333,18 +333,18 @@ namespace SaveDuringPlay
                 return Int32.Parse(value);
             if (type == typeof(UInt32))
                 return UInt32.Parse(value);
-            if (type.IsSubclassOf(typeof(Component)))
+            if (typeof(Component).IsAssignableFrom(type))
             {
                 // Try to find the named game object
                 GameObject go = ObjectTreeUtil.FindObjectFromFullName(value, roots);
                 return (go != null) ? go.GetComponent(type) : null;
             }
-            if (type.IsSubclassOf(typeof(GameObject)))
+            if (typeof(GameObject).IsAssignableFrom(type))
             {
                 // Try to find the named game object
                 return GameObject.Find(value);
             }
-            if (type.IsSubclassOf(typeof(ScriptableObject)))
+            if (typeof(ScriptableObject).IsAssignableFrom(type))
             {
                 return AssetDatabase.LoadAssetAtPath(value, type);
             }
@@ -356,21 +356,21 @@ namespace SaveDuringPlay
             if (obj == null)
                 return string.Empty;
 
-            if (obj.GetType().IsSubclassOf(typeof(Component)))
+            if (typeof(Component).IsAssignableFrom(obj.GetType()))
             {
                 Component c = (Component)obj;
                 if (c == null) // Component overrides the == operator, so we have to check
                     return string.Empty;
                 return ObjectTreeUtil.GetFullName(c.gameObject);
             }
-            if (obj.GetType().IsSubclassOf(typeof(GameObject)))
+            if (typeof(GameObject).IsAssignableFrom(obj.GetType()))
             {
                 GameObject go = (GameObject)obj;
                 if (go == null) // GameObject overrides the == operator, so we have to check
                     return string.Empty;
                 return ObjectTreeUtil.GetFullName(go);
             }
-            if (obj.GetType().IsSubclassOf(typeof(ScriptableObject)))
+            if (typeof(ScriptableObject).IsAssignableFrom(obj.GetType()))
             {
                 return AssetDatabase.GetAssetPath(obj as ScriptableObject);
             }
@@ -482,7 +482,7 @@ namespace SaveDuringPlay
                 {
                     if (attr.GetType().Name.Contains("SaveDuringPlay"))
                     {
-                        //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save"); 
+                        //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
                         objects.Add(b.transform);
                         break;
                     }

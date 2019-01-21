@@ -16,7 +16,7 @@ namespace Cinemachine.Editor
         float HelpBoxHeight { get { return EditorGUIUtility.singleLineHeight * 2.5f; } }
         bool mExpanded = false;
 
-        bool WarnIfNull 
+        bool WarnIfNull
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Cinemachine.Editor
                     EditorGUI.HelpBox(
                         new Rect(rect.x, rect.y, rect.width, HelpBoxHeight),
                         "This is a shared asset.\n"
-                            + "Changes made here will apply to all users of this asset", 
+                            + "Changes made here will apply to all users of this asset",
                         MessageType.Info);
 
                     rect.y += HelpBoxHeight + kBoxMargin;
@@ -148,8 +148,8 @@ namespace Cinemachine.Editor
             Type type = property.serializedObject.targetObject.GetType();
             var a = property.propertyPath.Split('.');
             for (int i = 0; i < a.Length; ++i)
-                type = type.GetField(a[i], 
-                    System.Reflection.BindingFlags.Public 
+                type = type.GetField(a[i],
+                    System.Reflection.BindingFlags.Public
                     | System.Reflection.BindingFlags.NonPublic
                     | System.Reflection.BindingFlags.Instance).FieldType;
             return type;
@@ -186,7 +186,7 @@ namespace Cinemachine.Editor
             Type type = EmbeddedAssetType(property);
             if (mAssetTypes == null)
                 mAssetTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                    (Type t) => t.IsSubclassOf(type)).ToArray();
+                    (Type t) => type.IsAssignableFrom(t) && !t.IsAbstract).ToArray();
 
             float iconSize = r.height + 4;
             r.width -= iconSize;
@@ -202,9 +202,9 @@ namespace Cinemachine.Editor
                 GenericMenu menu = new GenericMenu();
                 if (property.objectReferenceValue != null)
                 {
-                    menu.AddItem(new GUIContent("Edit"), false, () 
+                    menu.AddItem(new GUIContent("Edit"), false, ()
                         => Selection.activeObject = property.objectReferenceValue);
-                    menu.AddItem(new GUIContent("Clone"), false, () => 
+                    menu.AddItem(new GUIContent("Clone"), false, () =>
                         {
                             ScriptableObject copyFrom = property.objectReferenceValue as ScriptableObject;
                             if (copyFrom != null)
@@ -219,7 +219,7 @@ namespace Cinemachine.Editor
                                 }
                             }
                         });
-                    menu.AddItem(new GUIContent("Locate"), false, () 
+                    menu.AddItem(new GUIContent("Locate"), false, ()
                         => EditorGUIUtility.PingObject(property.objectReferenceValue));
                 }
 
@@ -227,8 +227,8 @@ namespace Cinemachine.Editor
                 int i = 0;
                 foreach (var a in mAssetPresets)
                 {
-                    menu.AddItem(mAssetPresetNames[i++], false, () => 
-                        { 
+                    menu.AddItem(mAssetPresetNames[i++], false, () =>
+                        {
                             property.objectReferenceValue = a;
                             property.serializedObject.ApplyModifiedProperties();
                         });
@@ -236,8 +236,8 @@ namespace Cinemachine.Editor
 
                 foreach (var t in mAssetTypes)
                 {
-                    menu.AddItem(new GUIContent("New " + InspectorUtility.NicifyClassName(t.Name)), false, () => 
-                        { 
+                    menu.AddItem(new GUIContent("New " + InspectorUtility.NicifyClassName(t.Name)), false, () =>
+                        {
                             string title = "Create New " + t.Name + " asset";
                             ScriptableObject asset = CreateAsset(t, null, defaultName, title);
                             if (asset != null)

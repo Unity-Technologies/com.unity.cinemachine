@@ -9,14 +9,14 @@ using System.Linq;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVirtualCamera))]
-    internal class CinemachineVirtualCameraEditor 
+    internal class CinemachineVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {
         // Static state and caches - Call UpdateStaticData() to refresh this
         struct StageData
         {
             string ExpandedKey { get { return "CNMCN_Core_Vcam_Expanded_" + Name; } }
-            public bool IsExpanded 
+            public bool IsExpanded
             {
                 get { return EditorPrefs.GetBool(ExpandedKey, false); }
                 set { EditorPrefs.SetBool(ExpandedKey, value); }
@@ -289,7 +289,7 @@ namespace Cinemachine.Editor
             // Get all ICinemachineComponents
             var allTypes
                 = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                        (Type t) => t.IsSubclassOf(typeof(CinemachineComponentBase)));
+                        (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
 
             // Create a temp game object so we can instance behaviours
             GameObject go = new GameObject("Cinemachine Temp Object");
@@ -400,16 +400,16 @@ namespace Cinemachine.Editor
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 foreach (Assembly assembly in assemblies)
                 {
-                    // Note that we have to call GetName().Name.  Just GetName() will not work.  
-                    if ((!assembly.GlobalAssemblyCache) 
-                        && ((assembly.GetName().Name == definedIn) 
+                    // Note that we have to call GetName().Name.  Just GetName() will not work.
+                    if ((!assembly.GlobalAssemblyCache)
+                        && ((assembly.GetName().Name == definedIn)
                             || assembly.GetReferencedAssemblies().Any(a => a.Name == definedIn)))
                     {
-                        try 
+                        try
                         {
                             foreach (var type in assembly.GetTypes())
                             {
-                                try 
+                                try
                                 {
                                     bool added = false;
                                     foreach (var method in type.GetMethods(
@@ -422,7 +422,7 @@ namespace Cinemachine.Editor
                                         var attributes = method.GetCustomAttributes(typeof(DrawGizmo), true) as DrawGizmo[];
                                         foreach (var a in attributes)
                                         {
-                                            if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType))
+                                            if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType) && !a.drawnType.IsAbstract)
                                             {
                                                 m_GizmoDrawers.Add(a.drawnType, method);
                                                 added = true;
