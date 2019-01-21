@@ -4,13 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.9-preview.2] - 2019-01-07
+## [2.2.9-preview.3] - 2019-01-00
 ### Bugfixes
 - FreeLook: if inherit position from similar FreeLooks, bypass damping 
 - Timeline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
 - OnTargetObjectWarped no longer generates garbage
 - Orthographic cameras allow a Near Clip of 0
 - Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
+- Bugfix: use IsAssignableFrom instead of IsSubclass in several places
 
 ## [2.2.8] - 2018-12-10
 ### Bugfixes, optimizations, and some experimental stuff
