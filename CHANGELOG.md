@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Orthographic cameras allow a Near Clip of 0
 - Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 - Bugfix: use IsAssignableFrom instead of IsSubclass in several places
+- Bugfix: when interrupting a blend in progress, Cut was not respected
 
 ## [2.3.3] - 2019-01-08
 ### Temporary patch to get around a Unity bug in conditional dependencies
