@@ -262,6 +262,22 @@ namespace Cinemachine
                         }
                     }
 
+                    // Apply distance smoothing
+                    if (m_SmoothingTime > Epsilon)
+                    {
+                        Vector3 pos = state.CorrectedPosition + displacement;
+                        Vector3 dir = pos - state.ReferenceLookAt;
+                        float distance = dir.magnitude;
+                        if (distance > Epsilon)
+                        {
+                            dir /= distance;
+                            if (!displacement.AlmostZero())
+                                extra.UpdateDistanceSmoothing(distance, m_SmoothingTime);
+                            distance = extra.ApplyDistanceSmoothing(distance, m_SmoothingTime);
+                            displacement += (state.ReferenceLookAt + dir * distance) - pos;
+                        }
+                    }
+
                     float damping = m_Damping;
                     if (displacement.AlmostZero())
                         extra.ResetDistanceSmoothing(m_SmoothingTime);
@@ -348,21 +364,6 @@ namespace Cinemachine
                     }
                 }
                 displacement = pos - cameraPos;
-
-                // Apply distance smoothing
-                if (m_SmoothingTime > Epsilon)
-                {
-                    Vector3 dir = pos - lookAtPos;
-                    float distance = dir.magnitude;
-                    if (distance > Epsilon)
-                    {
-                        dir /= distance;
-                        if (!displacement.AlmostZero())
-                            extra.UpdateDistanceSmoothing(distance, m_SmoothingTime);
-                        distance = extra.ApplyDistanceSmoothing(distance, m_SmoothingTime);
-                        displacement += (state.ReferenceLookAt + dir * distance) - pos;
-                    }
-                }
             }
             return displacement;
         }
