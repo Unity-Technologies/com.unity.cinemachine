@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 - Bugfix: use IsAssignableFrom instead of IsSubclass in several places
 - Bugfix: when interrupting a blend in progress, Cut was not respected
-
+- Bugfix: collider minimum occlusion time and smoothing time interaction
 
 ## [2.2.8] - 2018-12-10
 ### Bugfixes, optimizations, and some experimental stuff

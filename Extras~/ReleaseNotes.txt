@@ -7,6 +7,7 @@
 - Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 - Bugfix: use IsAssignableFrom instead of IsSubclass in several places
 - Bugfix: when interrupting a blend in progress, Cut was not respected
+- Bugfix: collider minimum occlusion time and smoothing time interaction
 
 
 <size=20><b>Version 2.2.8</b></size>
