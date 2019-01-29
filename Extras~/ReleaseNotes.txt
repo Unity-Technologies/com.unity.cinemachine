@@ -6,6 +6,7 @@
 - Bugfix: use IsAssignableFrom instead of IsSubclass in several places
 - Bugfix: when interrupting a blend in progress, Cut was not respected
 - Bugfix: collider minimum occlusion time and smoothing time interaction
+- Bugfix: TargetGroup.RemoveMember error (fogbugz 1119028)
 
 
 <size=20><b>Version 2.3.3</b></size>
