@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Timeline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
 - OnTargetObjectWarped no longer generates garbage
 - Orthographic cameras allow a Near Clip of 0
+- Timeline won't auto-create CM brains when something dragged onto it
 - Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 - Bugfix: use IsAssignableFrom instead of IsSubclass in several places
 - Bugfix: when interrupting a blend in progress, Cut was not respected
