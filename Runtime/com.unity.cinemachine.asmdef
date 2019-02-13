@@ -2,7 +2,9 @@
     "name": "Cinemachine",
     "references": [
         "GUID:f06555f75b070af458a003d92f9efb00",
-        "GUID:d60799ab2a985554ea1a39cd38695018"
+        "GUID:d60799ab2a985554ea1a39cd38695018",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95",
+        "GUID:457756d89b35d2941b3e7b37b4ece6f1"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
@@ -22,6 +24,11 @@
             "name": "com.unity.timeline",
             "expression": "0.0.0-builtin",
             "define": "CINEMACHINE_TIMELINE"
+        },
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "5.3.1",
+            "define": "CINEMACHINE_POST_PROCESSING_V3"
         }
     ]
 }

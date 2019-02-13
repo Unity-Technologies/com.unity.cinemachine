@@ -1,14 +1,13 @@
-﻿#if CINEMACHINE_POST_PROCESSING_V2
-
+﻿#if true || CINEMACHINE_POST_PROCESSING_V3
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.Rendering;
+using UnityEngine.Experimental.Rendering.HDPipeline;
 
 namespace Cinemachine.PostFX
 {
     /// <summary>
-    /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
-    /// have the Post-Processing V2 stack asset store package installed in order to use this behaviour.
+    /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
     ///
     /// As a component on the Virtual Camera, it holds
     /// a Post-Processing Profile asset that will be applied to the Unity camera whenever
@@ -25,7 +24,7 @@ namespace Cinemachine.PostFX
 #endif
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
-    public class CinemachinePostProcessing : CinemachineExtension
+    public class CinemachineVolumeSettings : CinemachineExtension
     {
         [Tooltip("If checked, then the Focus Distance will be set to the distance between the camera and the LookAt target.  Requires DepthOfField effect in the Profile")]
         public bool m_FocusTracksTarget;
@@ -34,14 +33,14 @@ namespace Cinemachine.PostFX
         public float m_FocusOffset;
 
         [Tooltip("This Post-Processing profile will be applied whenever this virtual camera is live")]
-        public PostProcessProfile m_Profile;
+        public VolumeProfile m_Profile;
 
         bool mCachedProfileIsInvalid = true;
-        PostProcessProfile mProfileCopy;
-        public PostProcessProfile Profile { get { return mProfileCopy != null ? mProfileCopy : m_Profile; } }
+        VolumeProfile mProfileCopy;
+        public VolumeProfile Profile { get { return mProfileCopy != null ? mProfileCopy : m_Profile; } }
 
         /// <summary>True if the profile is enabled and nontrivial</summary>
-        public bool IsValid { get { return m_Profile != null && m_Profile.settings.Count > 0; } }
+        public bool IsValid { get { return m_Profile != null && m_Profile.components.Count > 0; } }
 
         /// <summary>Called by the editor when the shared asset has been edited</summary>
         public void InvalidateCachedProfile() { mCachedProfileIsInvalid = true; }
@@ -49,13 +48,13 @@ namespace Cinemachine.PostFX
         void CreateProfileCopy()
         {
             DestroyProfileCopy();
-            PostProcessProfile profile = ScriptableObject.CreateInstance<PostProcessProfile>();
+            VolumeProfile profile = ScriptableObject.CreateInstance<VolumeProfile>();
             if (m_Profile != null)
             {
-                foreach (var item in m_Profile.settings)
+                foreach (var item in m_Profile.components)
                 {
                     var itemCopy = Instantiate(item);
-                    profile.settings.Add(itemCopy);
+                    profile.components.Add(itemCopy);
                 }
             }
             mProfileCopy = profile;
@@ -94,8 +93,9 @@ namespace Cinemachine.PostFX
                     {
                         if (mProfileCopy == null || mCachedProfileIsInvalid)
                             CreateProfileCopy();
+
                         DepthOfField dof;
-                        if (mProfileCopy.TryGetSettings(out dof))
+                        if (m_Profile.TryGet(out dof))
                         {
                             float focusDistance = m_FocusOffset;
                             if (state.HasLookAt)
@@ -103,7 +103,6 @@ namespace Cinemachine.PostFX
                             dof.focusDistance.value = Mathf.Max(0, focusDistance);
                         }
                     }
-
                     // Apply the post-processing
                     state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
                 }
@@ -113,35 +112,33 @@ namespace Cinemachine.PostFX
         static void OnCameraCut(CinemachineBrain brain)
         {
             // Debug.Log("Camera cut event");
+/*
             PostProcessLayer postFX = GetPPLayer(brain);
             if (postFX != null)
                 postFX.ResetHistory();
+*/
         }
 
         static void ApplyPostFX(CinemachineBrain brain)
         {
-            PostProcessLayer ppLayer = GetPPLayer(brain);
-            if (ppLayer == null || !ppLayer.enabled  || ppLayer.volumeLayer == 0)
-                return;
-
             CameraState state = brain.CurrentCameraState;
             int numBlendables = state.NumCustomBlendables;
-            List<PostProcessVolume> volumes = GetDynamicBrainVolumes(brain, ppLayer, numBlendables);
+            var volumes = GetDynamicBrainVolumes(brain, numBlendables);
             for (int i = 0; i < volumes.Count; ++i)
             {
                 volumes[i].weight = 0;
                 volumes[i].sharedProfile = null;
                 volumes[i].profile = null;
             }
-            PostProcessVolume firstVolume = null;
+            Volume firstVolume = null;
             int numPPblendables = 0;
             for (int i = 0; i < numBlendables; ++i)
             {
                 var b = state.GetCustomBlendable(i);
-                CinemachinePostProcessing src = b.m_Custom as CinemachinePostProcessing;
+                CinemachineVolumeSettings src = b.m_Custom as CinemachineVolumeSettings;
                 if (!(src == null)) // in case it was deleted
                 {
-                    PostProcessVolume v = volumes[i];
+                    var v = volumes[i];
                     if (firstVolume == null)
                         firstVolume = v;
                     v.sharedProfile = src.Profile;
@@ -159,9 +156,8 @@ namespace Cinemachine.PostFX
         }
 
         static string sVolumeOwnerName = "__CMVolumes";
-        static  List<PostProcessVolume> sVolumes = new List<PostProcessVolume>();
-        static List<PostProcessVolume> GetDynamicBrainVolumes(
-            CinemachineBrain brain, PostProcessLayer ppLayer, int minVolumes)
+        static  List<Volume> sVolumes = new List<Volume>();
+        static List<Volume> GetDynamicBrainVolumes(CinemachineBrain brain, int minVolumes)
         {
             // Locate the camera's child object that holds our dynamic volumes
             GameObject volumeOwner = null;
@@ -188,6 +184,7 @@ namespace Cinemachine.PostFX
                     volumeOwner.hideFlags = HideFlags.HideAndDontSave;
                     volumeOwner.transform.parent = t;
                 }
+/*
                 // Update the volume's layer so it will be seen
                 int mask = ppLayer.volumeLayer.value;
                 for (int i = 0; i < 32; ++i)
@@ -198,33 +195,11 @@ namespace Cinemachine.PostFX
                         break;
                     }
                 }
+*/
                 while (sVolumes.Count < minVolumes)
-                    sVolumes.Add(volumeOwner.gameObject.AddComponent<PostProcessVolume>());
+                    sVolumes.Add(volumeOwner.gameObject.AddComponent<Volume>());
             }
             return sVolumes;
-        }
-
-        static Dictionary<CinemachineBrain, PostProcessLayer> mBrainToLayer
-            = new Dictionary<CinemachineBrain, PostProcessLayer>();
-
-        static PostProcessLayer GetPPLayer(CinemachineBrain brain)
-        {
-            PostProcessLayer layer = null;
-            if (mBrainToLayer.TryGetValue(brain, out layer))
-            {
-#if UNITY_EDITOR
-                // Maybe they added it since we last checked
-                if (layer != null || Application.isPlaying)
-#endif
-                return layer;
-            }
-            layer = brain.GetComponent<PostProcessLayer>();
-            mBrainToLayer[brain] = layer;
-            if (layer != null)
-                brain.m_CameraCutEvent.AddListener(OnCameraCut);
-            else
-                brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
-            return layer;
         }
 
 #if UNITY_EDITOR
