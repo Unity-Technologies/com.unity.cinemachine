@@ -1,4 +1,4 @@
-#if true || CINEMACHINE_POST_PROCESSING_V3
+#if CINEMACHINE_POST_PROCESSING_V3
 
 using UnityEngine;
 using UnityEditor;
