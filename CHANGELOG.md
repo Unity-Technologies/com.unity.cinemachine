@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.3.4-preview.2] - 2019-01-00
+## [2.3.4-preview.3] - 2019-02-18
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Orthographic cameras allow a Near Clip of 0
 - Timeline won't auto-create CM brains when something dragged onto it

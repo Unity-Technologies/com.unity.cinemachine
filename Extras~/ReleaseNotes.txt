@@ -1,4 +1,4 @@
-<size=20><b>Version 2.3.4-preview.2</b></size>
+<size=20><b>Version 2.3.4-preview.3</b></size>
 
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Orthographic cameras allow a Near Clip of 0
