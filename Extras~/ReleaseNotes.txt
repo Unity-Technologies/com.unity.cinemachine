@@ -1,5 +1,6 @@
 <size=20><b>Version 2.3.4-preview.3</b></size>
 
+- Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Orthographic cameras allow a Near Clip of 0
 - Timeline won't auto-create CM brains when something dragged onto it

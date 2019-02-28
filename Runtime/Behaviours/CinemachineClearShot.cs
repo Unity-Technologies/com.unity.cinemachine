@@ -5,20 +5,20 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     /// <summary>
-    /// Cinemachine ClearShot is a "manager camera" that owns and manages a set of 
+    /// Cinemachine ClearShot is a "manager camera" that owns and manages a set of
     /// Virtual Camera gameObject children.  When Live, the ClearShot will check the
     /// children, and choose the one with the best quality shot and make it Live.
-    /// 
-    /// This can be a very powerful tool.  If the child cameras have CinemachineCollider 
+    ///
+    /// This can be a very powerful tool.  If the child cameras have CinemachineCollider
     /// extensions, they will analyze the scene for target obstructions, optimal target
-    /// distance, and other items, and report their assessment of shot quality back to 
+    /// distance, and other items, and report their assessment of shot quality back to
     /// the ClearShot parent, who will then choose the best one.  You can use this to set
-    /// up complex multi-camera coverage of a scene, and be assured that a clear shot of 
+    /// up complex multi-camera coverage of a scene, and be assured that a clear shot of
     /// the target will always be available.
-    /// 
-    /// If multiple child cameras have the same shot quality, the one with the highest 
+    ///
+    /// If multiple child cameras have the same shot quality, the one with the highest
     /// priority will be chosen.
-    /// 
+    ///
     /// You can also define custom blends between the ClearShot children.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -73,25 +73,25 @@ namespace Cinemachine
         public CinemachineBlenderSettings m_CustomBlends = null;
 
         /// <summary>Gets a brief debug description of this virtual camera, for use when displayiong debug info</summary>
-        public override string Description 
-        { 
-            get 
-            { 
+        public override string Description
+        {
+            get
+            {
                 // Show the active camera and blend
-                if (mActiveBlend != null) 
+                if (mActiveBlend != null)
                     return mActiveBlend.Description;
 
                 ICinemachineCamera vcam = LiveChild;
-                if (vcam == null) 
+                if (vcam == null)
                     return "(none)";
                 var sb = CinemachineDebug.SBFromPool();
                 sb.Append("["); sb.Append(vcam.Name); sb.Append("]");
-                string text = sb.ToString(); 
-                CinemachineDebug.ReturnToPool(sb); 
+                string text = sb.ToString();
+                CinemachineDebug.ReturnToPool(sb);
                 return text;
             }
         }
-        
+
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the ClearShot camera were active.</summary>
         public ICinemachineCamera LiveChild { set; get; }
@@ -102,9 +102,9 @@ namespace Cinemachine
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam) 
-        { 
-            return vcam == LiveChild 
+        public override bool IsLiveChild(ICinemachineCamera vcam)
+        {
+            return vcam == LiveChild
                 || (mActiveBlend != null && (vcam == mActiveBlend.CamA || vcam == mActiveBlend.CamB));
         }
 
@@ -125,7 +125,7 @@ namespace Cinemachine
         }
 
         /// <summary>This is called to notify the vcam that a target got warped,
-        /// so that the vcam can update its internal state to make the camera 
+        /// so that the vcam can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -231,7 +231,7 @@ namespace Cinemachine
             {
                 var sb = CinemachineDebug.SBFromPool();
                 sb.Append(Name); sb.Append(": "); sb.Append(Description);
-                string text = sb.ToString(); 
+                string text = sb.ToString();
                 Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 CinemachineDebug.ReturnToPool(sb);
@@ -245,7 +245,7 @@ namespace Cinemachine
 
         /// <summary>The list of child cameras.  These are just the immediate children in the hierarchy.</summary>
         public CinemachineVirtualCameraBase[] ChildCameras
-        { 
+        {
             get { UpdateListOfChildren(); return m_ChildCameras; }
         }
 
@@ -255,10 +255,10 @@ namespace Cinemachine
         private CinemachineBlend mActiveBlend = null;
 
         void InvalidateListOfChildren()
-        { 
-            m_ChildCameras = null; 
-            m_RandomizedChilden = null; 
-            LiveChild = null; 
+        {
+            m_ChildCameras = null;
+            m_RandomizedChilden = null;
+            LiveChild = null;
         }
 
         /// <summary>If RandomizeChoice is enabled, call this to re-randomize the children next frame.
@@ -266,9 +266,9 @@ namespace Cinemachine
         public void ResetRandomization()
         {
             m_RandomizedChilden = null;
-            mRandomizeNow = true; 
+            mRandomizeNow = true;
         }
-        
+
         void UpdateListOfChildren()
         {
             if (m_ChildCameras != null)
@@ -318,11 +318,11 @@ namespace Cinemachine
                 if (vcam != null && vcam.gameObject.activeInHierarchy)
                 {
                     // Choose the first in the list that is better than the current
-                    if (best == null 
+                    if (best == null
                         || vcam.State.ShotQuality > best.State.ShotQuality
                         || (vcam.State.ShotQuality == best.State.ShotQuality && vcam.Priority > best.Priority)
-                        || (m_RandomizeChoice && mRandomizeNow && (ICinemachineCamera)vcam != LiveChild 
-                            && vcam.State.ShotQuality == best.State.ShotQuality 
+                        || (m_RandomizeChoice && mRandomizeNow && (ICinemachineCamera)vcam != LiveChild
+                            && vcam.State.ShotQuality == best.State.ShotQuality
                             && vcam.Priority == best.Priority))
                     {
                         best = vcam;
@@ -415,6 +415,8 @@ namespace Cinemachine
                 blend = m_CustomBlends.GetBlendForVirtualCameras(
                         fromCameraName, toCameraName, blend);
             }
+            if (CinemachineCore.GetBlendOverride != null)
+                blend = CinemachineCore.GetBlendOverride(fromKey, toKey, blend, this);
             return blend;
         }
 
@@ -424,7 +426,7 @@ namespace Cinemachine
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public override void OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             TransitioningFrom = fromCam;

@@ -13,7 +13,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20170927;
 
         /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.2.8";
+        public static readonly string kVersionString = "2.3.4";
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
@@ -31,7 +31,7 @@ namespace Cinemachine
             /// Correction channel of the CameraState)</summary>
             Noise,
 
-            /// <summary>Not a pipeline stage.  This is invoked on all virtual camera 
+            /// <summary>Not a pipeline stage.  This is invoked on all virtual camera
             /// types, after the pipeline is complete</summary>
             Finalize
         };
@@ -63,6 +63,30 @@ namespace Cinemachine
         /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
         public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
 
+        /// <summary>
+        /// Delegate for overriding a blend that is about to be applied to a transition.
+        /// A handler can either return the default blend, or a new blend specific to
+        /// current conditions.
+        /// </summary>
+        /// <param name="fromVcam">The outgoing virtual camera</param>
+        /// <param name="toVcam">Yhe incoming virtual camera</param>
+        /// <param name="defaultBlend">The blend that would normally be applied</param>
+        /// <param name="owner">The context in which the blend is taking place.
+        /// Can be a CinemachineBrain, or CinemachineStateDrivenCamera, or other manager
+        /// object that can initiate a blend</param>
+        /// <returns>The blend definition to use for this transition.</returns>
+        public delegate CinemachineBlendDefinition GetBlendOverrideDelegate(
+            ICinemachineCamera fromVcam, ICinemachineCamera toVcam,
+            CinemachineBlendDefinition defaultBlend,
+            MonoBehaviour owner);
+
+        /// <summary>
+        /// Delegate for overriding a blend that is about to be applied to a transition.
+        /// A handler can either return the default blend, or a new blend specific to
+        /// current conditions.
+        /// </summary>
+        public static GetBlendOverrideDelegate GetBlendOverride;
+
         /// <summary>This event will fire after a brain updates its Camera</summary>
         public static CinemachineBrain.BrainEvent CameraUpdatedEvent = new CinemachineBrain.BrainEvent();
 
@@ -72,7 +96,7 @@ namespace Cinemachine
         /// <summary>Access the array of active CinemachineBrains in the scene</summary>
         public int BrainCount { get { return mActiveBrains.Count; } }
 
-        /// <summary>Access the array of active CinemachineBrains in the scene 
+        /// <summary>Access the array of active CinemachineBrains in the scene
         /// without gebnerating garbage</summary>
         /// <param name="index">Index of the brain to access, range 0-BrainCount</param>
         /// <returns>The brain at the specified index</returns>
@@ -104,7 +128,7 @@ namespace Cinemachine
         /// </summary>
         public int VirtualCameraCount { get { return mActiveCameras.Count; } }
 
-        /// <summary>Access the array of active ICinemachineCamera in the scene 
+        /// <summary>Access the array of active ICinemachineCamera in the scene
         /// without gebnerating garbage</summary>
         /// <param name="index">Index of the camera to access, range 0-VirtualCameraCount</param>
         /// <returns>The virtual camera at the specified index</returns>
@@ -135,7 +159,7 @@ namespace Cinemachine
         }
 
         // Registry of all vcams that are present, active or not
-        private List<List<CinemachineVirtualCameraBase>> mAllCameras 
+        private List<List<CinemachineVirtualCameraBase>> mAllCameras
             = new List<List<CinemachineVirtualCameraBase>>();
 
         /// <summary>Called when a vcam is awakened.</summary>
@@ -219,7 +243,7 @@ namespace Cinemachine
             {
                 if (currentRoundRobin == mRoundRobinVcamLastFrame)
                     currentRoundRobin = null; // take the first candidate
-                mRoundRobinVcamLastFrame = currentRoundRobin; 
+                mRoundRobinVcamLastFrame = currentRoundRobin;
             }
         }
 
@@ -235,7 +259,7 @@ namespace Cinemachine
                 return;
 
             bool isSmartUpdate = (CurrentUpdateFilter & UpdateFilter.Smart) == UpdateFilter.Smart;
-            UpdateTracker.UpdateClock updateClock 
+            UpdateTracker.UpdateClock updateClock
                 = (UpdateTracker.UpdateClock)(CurrentUpdateFilter & ~UpdateFilter.Smart);
 
             // If we're in smart update mode and the target moved, then we must examine
@@ -290,15 +314,15 @@ namespace Cinemachine
         static Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;
 
         [RuntimeInitializeOnLoadMethod]
-        static void InitializeModule() 
-        { 
-            mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>(); 
+        static void InitializeModule()
+        {
+            mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
         }
 
         /// <summary>Internal use only</summary>
-        internal enum UpdateFilter 
-        { 
-            Fixed = UpdateTracker.UpdateClock.Fixed, 
+        internal enum UpdateFilter
+        {
+            Fixed = UpdateTracker.UpdateClock.Fixed,
             Late = UpdateTracker.UpdateClock.Late,
             Smart = 8, // meant to be or'ed with the others
             SmartFixed = Smart | Fixed,
@@ -385,8 +409,8 @@ namespace Cinemachine
         /// Try to find a CinemachineBrain to associate with a
         /// Cinemachine Virtual Camera.  The first CinemachineBrain
         /// in which this Cinemachine Virtual Camera is live will be used.
-        /// If none, then the first active CinemachineBrain with the correct 
-        /// layer filter will be used.  
+        /// If none, then the first active CinemachineBrain with the correct
+        /// layer filter will be used.
         /// Brains with OutputCamera == null will not be returned.
         /// Final result may be null.
         /// </summary>
