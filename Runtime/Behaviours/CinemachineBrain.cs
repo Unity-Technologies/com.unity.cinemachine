@@ -669,6 +669,8 @@ namespace Cinemachine
                 blend = m_CustomBlends.GetBlendForVirtualCameras(
                         fromCameraName, toCameraName, blend);
             }
+            if (CinemachineCore.GetBlendOverride != null)
+                blend = CinemachineCore.GetBlendOverride(fromKey, toKey, blend, this);
             return blend;
         }
 
