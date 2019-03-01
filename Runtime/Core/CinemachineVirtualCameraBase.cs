@@ -449,14 +449,20 @@ namespace Cinemachine
                 return null;
             if (activeBlend != null)
             {
-//                if (activeBlend.Uses(camB))
-//                    camA = new StaticPointVirtualCamera(activeBlend.State, "Mid-Blend");
-//                else
-                    camA = new BlendSourceVirtualCamera(activeBlend);
+                // Special case: if backing out of a blend-in-progress
+                // with the same blend in reverse, adjust the belnd time
+                if (activeBlend.CamA == camB
+                    && activeBlend.CamB == camA
+                    && activeBlend.Duration <= blendDef.m_Time)
+                {
+                    blendDef.m_Time = activeBlend.TimeInBlend;
+                }
+                camA = new BlendSourceVirtualCamera(activeBlend);
             }
             else if (camA == null)
                 camA = new StaticPointVirtualCamera(State, "(none)");
-            return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
+            return new CinemachineBlend(
+                camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
         }
 
         /// <summary>
