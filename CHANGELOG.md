@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Orthographic cameras allow a Near Clip of 0
 - Timeline won't auto-create CM brains when something dragged onto it
+- Bugfix: Framing Transposer Center on Activate was not working properly (fogbugz 1129824)
 - Bugfix: FreeLook inherit position
 - Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 - Bugfix: use IsAssignableFrom instead of IsSubclass in several places
