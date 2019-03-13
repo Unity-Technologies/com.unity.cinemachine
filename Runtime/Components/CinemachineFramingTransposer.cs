@@ -5,25 +5,25 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a Cinemachine Component in the Body section of the component pipeline. 
-    /// Its job is to position the camera in a fixed screen-space relationship to 
+    /// This is a Cinemachine Component in the Body section of the component pipeline.
+    /// Its job is to position the camera in a fixed screen-space relationship to
     /// the vcam's Follow target object, with offsets and damping.
-    /// 
+    ///
     /// The camera will be first moved along the camera Z axis until the Follow target
     /// is at the desired distance from the camera's X-Y plane.  The camera will then
     /// be moved in its XY plane until the Follow target is at the desired point on
     /// the camera's screen.
-    /// 
-    /// The FramingTansposer will only change the camera's position in space.  It will not 
+    ///
+    /// The FramingTansposer will only change the camera's position in space.  It will not
     /// re-orient or otherwise aim the camera.
-    /// 
+    ///
     /// For this component to work properly, the vcam's LookAt target must be null.
     /// The Follow target will define what the camera is looking at.
-    /// 
-    /// If the Follow target is a CinemachineTargetGroup, then additional controls will 
+    ///
+    /// If the Follow target is a CinemachineTargetGroup, then additional controls will
     /// be available to dynamically adjust the camera's view in order to frame the entire group.
-    /// 
-    /// Although this component was designed for orthographic cameras, it works equally  
+    ///
+    /// Although this component was designed for orthographic cameras, it works equally
     /// well with persective cameras and can be used in 3D environments.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -35,13 +35,13 @@ namespace Cinemachine
         /// on the motion of the target.  The composer will look at a point where it estimates
         /// the target will be this many seconds into the future.  Note that this setting is sensitive
         /// to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.
-        /// If the camera jitters unacceptably when the target is in motion, turn down this setting, 
+        /// If the camera jitters unacceptably when the target is in motion, turn down this setting,
         /// or animate the target more smoothly.</summary>
         [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
         [Range(0f, 1f)]
         public float m_LookaheadTime = 0;
 
-        /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out 
+        /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out
         /// jittery predictions and also increase prediction lag</summary>
         [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag")]
         [Range(3, 30)]
@@ -294,7 +294,7 @@ namespace Cinemachine
         public Vector3 TrackedPoint { get; private set; }
 
         /// <summary>This is called to notify the us that a target got warped,
-        /// so that we can update its internal state to make the camera 
+        /// so that we can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -341,7 +341,7 @@ namespace Cinemachine
 
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
         public Matrix4x4 LastBoundsMatrix { get; private set; }
-        
+
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
@@ -351,9 +351,12 @@ namespace Cinemachine
             if (deltaTime < 0)
             {
                 m_Predictor.Reset();
-                m_PreviousCameraPosition = FollowTargetPosition
-                    + (curState.RawOrientation * Vector3.back) * m_CameraDistance;
-                m_prevFOV = 0;
+                if (m_CenterOnActivate)
+                {
+                    m_PreviousCameraPosition = FollowTargetPosition
+                        + (curState.RawOrientation * Vector3.back) * m_CameraDistance;
+                    m_prevFOV = 0;
+                }
             }
             if (!IsValid)
                 return;
@@ -428,9 +431,9 @@ namespace Cinemachine
                 cameraOffset.z = targetPos.z - cameraMax;
 
             // Move along the XY plane
-            float screenSize = curState.Lens.Orthographic 
-                ? curState.Lens.OrthographicSize 
-                : Mathf.Tan(0.5f * curState.Lens.FieldOfView * Mathf.Deg2Rad) 
+            float screenSize = curState.Lens.Orthographic
+                ? curState.Lens.OrthographicSize
+                : Mathf.Tan(0.5f * curState.Lens.FieldOfView * Mathf.Deg2Rad)
                     * (targetPos.z - cameraOffset.z);
             Rect softGuideOrtho = ScreenToOrtho(SoftGuideRect, screenSize, curState.Lens.Aspect);
             if (deltaTime < 0)
@@ -479,7 +482,7 @@ namespace Cinemachine
                 }
                 else if (m_AdjustmentMode != AdjustmentMode.DollyOnly)
                 {
-                    var localTarget = Quaternion.Inverse(curState.RawOrientation) 
+                    var localTarget = Quaternion.Inverse(curState.RawOrientation)
                         * (followTargetPosition - curState.RawPosition);
                     float nearBoundsDistance = localTarget.z;
                     float targetFOV = 179;
@@ -529,7 +532,7 @@ namespace Cinemachine
                 float d = (Quaternion.Inverse(curState.RawOrientation) * (groupCenter - cameraPos)).z;
                 cameraPos = groupCenter - fwd * (Mathf.Max(d, boundsDepth) + boundsDepth);
 
-                // Will adjust cameraPos 
+                // Will adjust cameraPos
                 b = GetScreenSpaceGroupBoundingBox(group, ref cameraPos, curState.RawOrientation);
                 LastBoundsMatrix = Matrix4x4.TRS(cameraPos, curState.RawOrientation, Vector3.one);
                 groupCenter = LastBoundsMatrix.MultiplyPoint3x4(b.center);
@@ -539,7 +542,7 @@ namespace Cinemachine
         }
 
         static Bounds GetScreenSpaceGroupBoundingBox(
-            CinemachineTargetGroup group, ref Vector3 pos, Quaternion orientation) 
+            CinemachineTargetGroup group, ref Vector3 pos, Quaternion orientation)
         {
             Matrix4x4 observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
             Vector2 minAngles, maxAngles, zRange;
@@ -560,8 +563,8 @@ namespace Cinemachine
                 angles = Vector3.Max(maxAngles, UnityVectorExtensions.Abs(minAngles)) * Mathf.Deg2Rad;
                 angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f));
             }
-            return new Bounds(new Vector3(0, 0, z), 
+            return new Bounds(new Vector3(0, 0, z),
                 new Vector3(Mathf.Tan(angles.y) * z * 2, Mathf.Tan(angles.x) * z * 2, zSize));
-        }   
+        }
     }
 }
