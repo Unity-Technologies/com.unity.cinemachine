@@ -110,6 +110,7 @@ namespace Cinemachine
         }
 
         private List<List<Vector2>> m_pathCache;
+        private int m_pathTotalPointCount;
        
         /// <summary>Call this if the bounding shape's points change at runtime</summary>
         public void InvalidatePathCache() { m_pathCache = null; }
@@ -120,7 +121,7 @@ namespace Cinemachine
             if (colliderType == typeof(PolygonCollider2D))
             {
                 PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                if (m_pathCache == null || m_pathCache.Count != poly.pathCount)
+                if (m_pathCache == null || m_pathCache.Count != poly.pathCount || m_pathTotalPointCount != poly.GetTotalPointCount())
                 {
                     m_pathCache = new List<List<Vector2>>();
                     for (int i = 0; i < poly.pathCount; ++i)
@@ -131,13 +132,14 @@ namespace Cinemachine
                             dst.Add(path[j]);
                         m_pathCache.Add(dst);
                     }
+                    m_pathTotalPointCount = poly.GetTotalPointCount();
                 }
                 return true;
             }
             else if (colliderType == typeof(CompositeCollider2D))
             {
                 CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                if (m_pathCache == null || m_pathCache.Count != poly.pathCount)
+                if (m_pathCache == null || m_pathCache.Count != poly.pathCount || m_pathTotalPointCount != poly.pointCount)
                 {
                     m_pathCache = new List<List<Vector2>>();
                     Vector2[] path = new Vector2[poly.pointCount];
@@ -149,6 +151,7 @@ namespace Cinemachine
                             dst.Add(path[j]);
                         m_pathCache.Add(dst);
                     }
+                    m_pathTotalPointCount = poly.pointCount;
                 }
                 return true;
             }
