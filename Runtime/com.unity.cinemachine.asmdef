@@ -29,6 +29,11 @@
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "5.3.1",
             "define": "CINEMACHINE_POST_PROCESSING_V3"
+        },
+        {
+            "name": "com.unity.modules.physics2d",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_PHYSICS_2D"
         }
     ]
 }

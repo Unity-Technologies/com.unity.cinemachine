@@ -45,21 +45,21 @@ namespace Cinemachine
             /// <summary>What action to take</summary>
             public enum Mode
             {
-                /// <summary>Use the event only</summary> 
+                /// <summary>Use the event only</summary>
                 Custom,
-                /// <summary>Boost priority of virtual camera target</summary> 
-                PriorityBoost,  
-                /// <summary>Activate the target GameObject</summary> 
-                Activate,   
-                /// <summary>Decativate target GameObject</summary> 
-                Deactivate,  
-                /// <summary>Enable a component</summary> 
-                Enable,     
-                /// <summary>Disable a component</summary> 
-                Disable,     
-                /// <summary>Start animation on target</summary> 
-                Play,    
-                /// <summary>Stop animation on target</summary> 
+                /// <summary>Boost priority of virtual camera target</summary>
+                PriorityBoost,
+                /// <summary>Activate the target GameObject</summary>
+                Activate,
+                /// <summary>Decativate target GameObject</summary>
+                Deactivate,
+                /// <summary>Enable a component</summary>
+                Enable,
+                /// <summary>Disable a component</summary>
+                Disable,
+                /// <summary>Start animation on target</summary>
+                Play,
+                /// <summary>Stop animation on target</summary>
                 Stop
             }
 
@@ -212,7 +212,7 @@ namespace Cinemachine
                 }
                 m_Event.Invoke();
             }
-        }        
+        }
 
         /// <summary>What action to take when an eligible object enters the collider or trigger zone</summary>
         public ActionSettings m_OnObjectEnter = new ActionSettings(ActionSettings.Mode.Custom);
@@ -261,14 +261,16 @@ namespace Cinemachine
 
         void OnTriggerEnter(Collider other) { InternalDoTriggerEnter(other.gameObject); }
         void OnTriggerExit(Collider other) { InternalDoTriggerExit(other.gameObject); }
+#if CINEMACHINE_PHYSICS_2D
         void OnTriggerEnter2D(Collider2D other) { InternalDoTriggerEnter(other.gameObject); }
         void OnTriggerExit2D(Collider2D other) { InternalDoTriggerExit(other.gameObject); }
-
+#endif
         void OnCollisionEnter(Collision other) { InternalDoTriggerEnter(other.gameObject); }
         void OnCollisionExit(Collision other) { InternalDoTriggerExit(other.gameObject); }
+#if CINEMACHINE_PHYSICS_2D
         void OnCollisionEnter2D(Collision2D other) { InternalDoTriggerEnter(other.gameObject); }
         void OnCollisionExit2D(Collision2D other) { InternalDoTriggerExit(other.gameObject); }
-
+#endif
         void OnEnable() {} // For the Enabled checkbox
     }
 }

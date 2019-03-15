@@ -17,8 +17,10 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_ConfineScreenEdges));
             if (Target.m_ConfineMode == CinemachineConfiner.Mode.Confine2D)
                 excluded.Add(FieldPath(x => x.m_BoundingVolume));
+#if CINEMACHINE_PHYSICS_2D
             else
                 excluded.Add(FieldPath(x => x.m_BoundingShape2D));
+#endif
             return excluded;
         }
 
@@ -27,13 +29,14 @@ namespace Cinemachine.Editor
             BeginInspector();
             if (Target.m_ConfineMode == CinemachineConfiner.Mode.Confine2D)
             {
+#if CINEMACHINE_PHYSICS_2D
                 if (Target.m_BoundingShape2D == null)
                     EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
                 else if (Target.m_BoundingShape2D.GetType() != typeof(PolygonCollider2D)
                     && Target.m_BoundingShape2D.GetType() != typeof(CompositeCollider2D))
                 {
                     EditorGUILayout.HelpBox(
-                        "Must be a PolygonCollider2D or CompositeCollider2D.", 
+                        "Must be a PolygonCollider2D or CompositeCollider2D.",
                         MessageType.Warning);
                 }
                 else if (Target.m_BoundingShape2D.GetType() == typeof(CompositeCollider2D))
@@ -42,10 +45,11 @@ namespace Cinemachine.Editor
                     if (poly.geometryType != CompositeCollider2D.GeometryType.Polygons)
                     {
                         EditorGUILayout.HelpBox(
-                            "CompositeCollider2D geometry type must be Polygons", 
+                            "CompositeCollider2D geometry type must be Polygons",
                             MessageType.Warning);
                     }
                 }
+#endif
             }
             else
             {
@@ -56,7 +60,7 @@ namespace Cinemachine.Editor
                     && Target.m_BoundingVolume.GetType() != typeof(CapsuleCollider))
                 {
                     EditorGUILayout.HelpBox(
-                        "Must be a BoxCollider, SphereCollider, or CapsuleCollider.", 
+                        "Must be a BoxCollider, SphereCollider, or CapsuleCollider.",
                         MessageType.Warning);
                 }
             }
@@ -114,8 +118,9 @@ namespace Cinemachine.Editor
                         Gizmos.DrawWireCube(t.position, bounds.extents * 2);
                     }
                 }
-                else 
+                else
                 {
+#if CINEMACHINE_PHYSICS_2D
                     Transform t = confiner.m_BoundingShape2D.transform;
                     Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, t.lossyScale);
 
@@ -136,6 +141,7 @@ namespace Cinemachine.Editor
                             DrawPath(path, numPoints);
                         }
                     }
+#endif
                 }
                 Gizmos.color = oldColor;
                 Gizmos.matrix = oldMatrix;

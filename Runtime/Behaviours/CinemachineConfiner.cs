@@ -21,12 +21,12 @@ namespace Cinemachine
     public class CinemachineConfiner : CinemachineExtension
     {
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>
-        public enum Mode 
-        { 
+        public enum Mode
+        {
             /// <summary>Use a 2D bounding shape, suitable for an orthographic camera</summary>
-            Confine2D, 
+            Confine2D,
             /// <summary>Use a 3D bounding shape, suitable for perspective cameras</summary>
-            Confine3D 
+            Confine3D
         };
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>
         [Tooltip("The confiner can operate using a 2D bounding shape or a 3D bounding volume")]
@@ -35,11 +35,12 @@ namespace Cinemachine
         /// <summary>The volume within which the camera is to be contained.</summary>
         [Tooltip("The volume within which the camera is to be contained")]
         public Collider m_BoundingVolume;
-        
+
+#if CINEMACHINE_PHYSICS_2D
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
-
+#endif
         /// <summary>If camera is orthographic, screen edges will be confined to the volume.</summary>
         [Tooltip("If camera is orthographic, screen edges will be confined to the volume.  If not checked, then only the camera center will be confined")]
         public bool m_ConfineScreenEdges = true;
@@ -57,7 +58,7 @@ namespace Cinemachine
         {
             return GetExtraState<VcamExtraState>(vcam).confinerDisplacement > 0;
         }
-        
+
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
@@ -68,14 +69,18 @@ namespace Cinemachine
             public Vector3 m_previousDisplacement;
             public float confinerDisplacement;
         };
-        
+
         /// <summary>Check if the bounding volume is defined</summary>
-        public bool IsValid 
-        {  
+        public bool IsValid
+        {
             get
             {
-                return ((m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null)
-                    || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null));
+                return
+                    (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null)
+#if CINEMACHINE_PHYSICS_2D
+                    || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null)
+#endif
+                    ;
             }
         }
 
@@ -111,12 +116,13 @@ namespace Cinemachine
 
         private List<List<Vector2>> m_pathCache;
         private int m_pathTotalPointCount;
-       
+
         /// <summary>Call this if the bounding shape's points change at runtime</summary>
         public void InvalidatePathCache() { m_pathCache = null; }
 
         bool ValidatePathCache()
         {
+#if CINEMACHINE_PHYSICS_2D
             Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
             if (colliderType == typeof(PolygonCollider2D))
             {
@@ -155,6 +161,7 @@ namespace Cinemachine
                 }
                 return true;
             }
+#endif
             InvalidatePathCache();
             return false;
         }
@@ -165,16 +172,17 @@ namespace Cinemachine
             if (m_ConfineMode == Mode.Confine3D)
                 return m_BoundingVolume.ClosestPoint(camPos) - camPos;
 
+            Vector2 p = camPos;
+            Vector2 closest = p;
+
+#if CINEMACHINE_PHYSICS_2D
             // 2D version
             if (m_BoundingShape2D.OverlapPoint(camPos))
                 return Vector3.zero;
-
             // Find the nearest point on the shape's boundary
             if (!ValidatePathCache())
                 return Vector3.zero;
 
-            Vector2 p = camPos;
-            Vector2 closest = p;
             float bestDistance = float.MaxValue;
             for (int i = 0; i < m_pathCache.Count; ++i)
             {
@@ -196,6 +204,7 @@ namespace Cinemachine
                     }
                 }
             }
+#endif
             return closest - p;
         }
 
