@@ -1,3 +1,5 @@
+#if CINEMACHINE_PHYSICS
+
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -33,7 +35,7 @@ namespace Cinemachine.Editor
 
             if (Target.m_AvoidObstacles && !Target.VirtualCamera.State.HasLookAt)
                 EditorGUILayout.HelpBox(
-                    "Avoid Obstacles requires a LookAt target.", 
+                    "Avoid Obstacles requires a LookAt target.",
                     MessageType.Warning);
 
             DrawRemainingPropertiesInInspector();
@@ -76,3 +78,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

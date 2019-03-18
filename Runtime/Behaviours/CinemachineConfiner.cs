@@ -1,3 +1,5 @@
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+
 using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -20,6 +22,7 @@ namespace Cinemachine
 #endif
     public class CinemachineConfiner : CinemachineExtension
     {
+#if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>
         public enum Mode
         {
@@ -31,10 +34,13 @@ namespace Cinemachine
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>
         [Tooltip("The confiner can operate using a 2D bounding shape or a 3D bounding volume")]
         public Mode m_ConfineMode;
+#endif
 
+#if CINEMACHINE_PHYSICS
         /// <summary>The volume within which the camera is to be contained.</summary>
         [Tooltip("The volume within which the camera is to be contained")]
         public Collider m_BoundingVolume;
+#endif
 
 #if CINEMACHINE_PHYSICS_2D
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
@@ -42,11 +48,13 @@ namespace Cinemachine
         public Collider2D m_BoundingShape2D;
 #endif
         /// <summary>If camera is orthographic, screen edges will be confined to the volume.</summary>
-        [Tooltip("If camera is orthographic, screen edges will be confined to the volume.  If not checked, then only the camera center will be confined")]
+        [Tooltip("If camera is orthographic, screen edges will be confined to the volume.  "
+            + "If not checked, then only the camera center will be confined")]
         public bool m_ConfineScreenEdges = true;
 
         /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
-        [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  Higher numbers are more gradual.")]
+        [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
+            + "Higher numbers are more gradual.")]
         [Range(0, 10)]
         public float m_Damping = 0;
 
@@ -75,12 +83,14 @@ namespace Cinemachine
         {
             get
             {
-                return
-                    (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null)
-#if CINEMACHINE_PHYSICS_2D
-                    || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null)
+#if CINEMACHINE_PHYSICS && !CINEMACHINE_PHYSICS_2D
+                return m_BoundingVolume != null;
+#elif CINEMACHINE_PHYSICS_2D && !CINEMACHINE_PHYSICS
+                return m_BoundingShape2D != null;
+#else
+                return (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null)
+                    || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null);
 #endif
-                    ;
             }
         }
 
@@ -168,15 +178,18 @@ namespace Cinemachine
 
         private Vector3 ConfinePoint(Vector3 camPos)
         {
+#if CINEMACHINE_PHYSICS
             // 3D version
+    #if CINEMACHINE_PHYSICS_2D
             if (m_ConfineMode == Mode.Confine3D)
+    #endif
                 return m_BoundingVolume.ClosestPoint(camPos) - camPos;
-
-            Vector2 p = camPos;
-            Vector2 closest = p;
+#endif
 
 #if CINEMACHINE_PHYSICS_2D
             // 2D version
+            Vector2 p = camPos;
+            Vector2 closest = p;
             if (m_BoundingShape2D.OverlapPoint(camPos))
                 return Vector3.zero;
             // Find the nearest point on the shape's boundary
@@ -204,8 +217,8 @@ namespace Cinemachine
                     }
                 }
             }
-#endif
             return closest - p;
+#endif
         }
 
         // Camera must be orthographic
@@ -238,3 +251,5 @@ namespace Cinemachine
         }
     }
 }
+
+#endif

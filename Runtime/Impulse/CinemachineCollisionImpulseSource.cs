@@ -1,3 +1,5 @@
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+
 using Cinemachine.Utility;
 using UnityEngine;
 
@@ -39,14 +41,18 @@ namespace Cinemachine
         [Tooltip("If checked, signal amplitude will be multiplied by the speed of the impacting object")]
         public bool m_ScaleImpactWithSpeed = false;
 
+#if CINEMACHINE_PHYSICS
         Rigidbody mRigidBody;
+#endif
 #if CINEMACHINE_PHYSICS_2D
         Rigidbody2D mRigidBody2D;
 #endif
 
         private void Start()
         {
+#if CINEMACHINE_PHYSICS
             mRigidBody = GetComponent<Rigidbody>();
+#endif
 #if CINEMACHINE_PHYSICS_2D
             mRigidBody2D = GetComponent<Rigidbody2D>();
 #endif
@@ -54,6 +60,7 @@ namespace Cinemachine
 
         private void OnEnable() {} // For the Enabled checkbox
 
+#if CINEMACHINE_PHYSICS
         private void OnCollisionEnter(Collision c)
         {
             GenerateImpactEvent(c.collider, c.relativeVelocity);
@@ -115,6 +122,7 @@ namespace Cinemachine
             // Fire it off!
             GenerateImpulse(dir * mass);
         }
+#endif
 
 #if CINEMACHINE_PHYSICS_2D
         private void OnCollisionEnter2D(Collision2D c)
@@ -185,3 +193,4 @@ namespace Cinemachine
 #endif
     }
 }
+#endif

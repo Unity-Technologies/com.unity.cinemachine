@@ -1,3 +1,5 @@
+#if CINEMACHINE_PHYSICS
+
 using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -774,3 +776,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

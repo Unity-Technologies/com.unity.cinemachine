@@ -1,3 +1,5 @@
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -259,18 +261,19 @@ namespace Cinemachine
                 m_OnObjectExit.Invoke();
         }
 
+#if CINEMACHINE_PHYSICS
         void OnTriggerEnter(Collider other) { InternalDoTriggerEnter(other.gameObject); }
         void OnTriggerExit(Collider other) { InternalDoTriggerExit(other.gameObject); }
+        void OnCollisionEnter(Collision other) { InternalDoTriggerEnter(other.gameObject); }
+        void OnCollisionExit(Collision other) { InternalDoTriggerExit(other.gameObject); }
+#endif
 #if CINEMACHINE_PHYSICS_2D
         void OnTriggerEnter2D(Collider2D other) { InternalDoTriggerEnter(other.gameObject); }
         void OnTriggerExit2D(Collider2D other) { InternalDoTriggerExit(other.gameObject); }
-#endif
-        void OnCollisionEnter(Collision other) { InternalDoTriggerEnter(other.gameObject); }
-        void OnCollisionExit(Collision other) { InternalDoTriggerExit(other.gameObject); }
-#if CINEMACHINE_PHYSICS_2D
         void OnCollisionEnter2D(Collision2D other) { InternalDoTriggerEnter(other.gameObject); }
         void OnCollisionExit2D(Collision2D other) { InternalDoTriggerExit(other.gameObject); }
 #endif
         void OnEnable() {} // For the Enabled checkbox
     }
 }
+#endif

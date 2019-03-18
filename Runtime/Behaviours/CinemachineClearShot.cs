@@ -1,3 +1,5 @@
+#if CINEMACHINE_PHYSICS
+
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine.Utility;
@@ -441,3 +443,4 @@ namespace Cinemachine
         ICinemachineCamera TransitioningFrom { get; set; }
     }
 }
+#endif

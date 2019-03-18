@@ -1,10 +1,12 @@
+#if CINEMACHINE_PHYSICS
+
 using UnityEditor;
 using UnityEngine;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineClearShot))]
-    internal sealed class CinemachineClearShotEditor 
+    internal sealed class CinemachineClearShotEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineClearShot>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
@@ -90,11 +92,11 @@ namespace Cinemachine.Editor
 
         enum ColliderState
         {
-            NoCollider, 
-            ColliderOnAllChildren, 
-            ColliderOnSomeChildren, 
-            ColliderOnParent, 
-            ColliderOnChildrenAndParent 
+            NoCollider,
+            ColliderOnAllChildren,
+            ColliderOnSomeChildren,
+            ColliderOnParent,
+            ColliderOnChildrenAndParent
         }
 
         ColliderState GetColliderState()
@@ -109,10 +111,10 @@ namespace Cinemachine.Editor
                 if (ObjectHasCollider(children[i]))
                     ++numColliderChildren;
             if (colliderOnParent)
-                return (numColliderChildren > 0) 
+                return (numColliderChildren > 0)
                     ? ColliderState.ColliderOnChildrenAndParent : ColliderState.ColliderOnParent;
             if (numColliderChildren > 0)
-                return (numColliderChildren == numChildren) 
+                return (numColliderChildren == numChildren)
                     ? ColliderState.ColliderOnAllChildren : ColliderState.ColliderOnSomeChildren;
             return ColliderState.NoCollider;
         }
@@ -149,7 +151,7 @@ namespace Cinemachine.Editor
                     rect.width -= floatFieldWidth + hSpace;
                     rect.height = EditorGUIUtility.singleLineHeight;
                     SerializedProperty element = mChildList.serializedProperty.GetArrayElementAtIndex(index);
-                    if (m_ColliderState == ColliderState.ColliderOnSomeChildren 
+                    if (m_ColliderState == ColliderState.ColliderOnSomeChildren
                         || m_ColliderState == ColliderState.ColliderOnChildrenAndParent)
                     {
                         bool hasCollider = ObjectHasCollider(element.objectReferenceValue);
@@ -208,3 +210,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif
