@@ -1,5 +1,6 @@
 <size=20><b>Version 2.3.4-preview.3</b></size>
 
+- Added conditional compilation to support removal of optional physiscs and physics2D modules
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
 - When a blend is cancelled by the opposite blend, reduce the blend time
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
