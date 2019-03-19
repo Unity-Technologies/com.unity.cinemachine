@@ -95,7 +95,7 @@ namespace Cinemachine.Editor
             EditorGUI.PropertyField(r, element.FindPropertyRelative(() => def.roll), rollLabel);
             EditorGUIUtility.labelWidth = oldWidth;
 
-            r.x += r.width + hSpace; r.height += 1; r.width = r.height; 
+            r.x += r.width + hSpace; r.height += 1; r.width = r.height;
             GUIContent setButtonContent = EditorGUIUtility.IconContent("d_RectTransform Icon");
             setButtonContent.tooltip = "Set to scene-view camera position";
             if (GUI.Button(r, setButtonContent, GUI.skin.label) && SceneView.lastActiveSceneView != null)
@@ -156,26 +156,23 @@ namespace Cinemachine.Editor
 
             if (Tools.current == Tool.Move)
             {
-                Matrix4x4 mOld = Handles.matrix;
                 Color colorOld = Handles.color;
-
-                Handles.matrix = Target.transform.localToWorldMatrix;
+                var localToWorld = Target.transform.localToWorldMatrix;
                 for (int i = 0; i < Target.m_Waypoints.Length; ++i)
                 {
-                    DrawSelectionHandle(i);
+                    DrawSelectionHandle(i, localToWorld);
                     if (mWaypointList.index == i)
-                        DrawPositionControl(i); // Waypoint is selected
+                        DrawPositionControl(i, localToWorld, Target.transform.rotation); // Waypoint is selected
                 }
                 Handles.color = colorOld;
-                Handles.matrix = mOld;
             }
         }
 
-        void DrawSelectionHandle(int i)
+        void DrawSelectionHandle(int i, Matrix4x4 localToWorld)
         {
             if (Event.current.button != 1)
             {
-                Vector3 pos = Target.m_Waypoints[i].position;
+                Vector3 pos = localToWorld.MultiplyPoint(Target.m_Waypoints[i].position);
                 float size = HandleUtility.GetHandleSize(pos) * 0.2f;
                 Handles.color = Color.white;
                 if (Handles.Button(pos, Quaternion.identity, size, size, Handles.SphereHandleCap)
@@ -201,20 +198,21 @@ namespace Cinemachine.Editor
             }
         }
 
-        void DrawPositionControl(int i)
+        void DrawPositionControl(int i, Matrix4x4 localToWorld, Quaternion localRotation)
         {
             CinemachineSmoothPath.Waypoint wp = Target.m_Waypoints[i];
+            Vector3 pos = localToWorld.MultiplyPoint(wp.position);
             EditorGUI.BeginChangeCheck();
             Handles.color = Target.m_Appearance.pathColor;
             Quaternion rotation = (Tools.pivotRotation == PivotRotation.Local)
-                ? Quaternion.identity : Quaternion.Inverse(Target.transform.rotation);
-            float size = HandleUtility.GetHandleSize(wp.position) * 0.1f;
-            Handles.SphereHandleCap(0, wp.position, rotation, size, EventType.Repaint);
-            Vector3 pos = Handles.PositionHandle(wp.position, rotation);
+                ? localRotation : Quaternion.identity;
+            float size = HandleUtility.GetHandleSize(pos) * 0.1f;
+            Handles.SphereHandleCap(0, pos, rotation, size, EventType.Repaint);
+            pos = Handles.PositionHandle(pos, rotation);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(target, "Move Waypoint");
-                wp.position = pos;
+                wp.position = Matrix4x4.Inverse(localToWorld).MultiplyPoint(pos);
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
@@ -225,7 +223,7 @@ namespace Cinemachine.Editor
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSmoothPath))]
         static void DrawGizmos(CinemachineSmoothPath path, GizmoType selectionType)
         {
-            CinemachinePathEditor.DrawPathGizmo(path, 
+            CinemachinePathEditor.DrawPathGizmo(path,
                 (Selection.activeGameObject == path.gameObject)
                 ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor);
         }
