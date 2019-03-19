@@ -227,7 +227,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            if (fromCam != null && fromCam.Follow == FollowTarget
+            if (fromCam != null //&& fromCam.Follow == FollowTarget
                 && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
                 && transitionParams.m_InheritPosition)
             {
