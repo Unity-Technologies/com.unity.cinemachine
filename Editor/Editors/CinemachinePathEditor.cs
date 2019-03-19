@@ -250,38 +250,36 @@ namespace Cinemachine.Editor
 
             if (Tools.current == Tool.Move)
             {
-                Matrix4x4 mOld = Handles.matrix;
                 Color colorOld = Handles.color;
-
-                Handles.matrix = Target.transform.localToWorldMatrix;
+                var localToWorld = Target.transform.localToWorldMatrix;
+                var localRotation = Target.transform.rotation;
                 for (int i = 0; i < Target.m_Waypoints.Length; ++i)
                 {
-                    DrawSelectionHandle(i);
+                    DrawSelectionHandle(i, localToWorld);
                     if (mWaypointList.index == i)
                     {
                         // Waypoint is selected
                         if (mPreferHandleSelection)
                         {
-                            DrawPositionControl(i);
-                            DrawTangentControl(i);
+                            DrawPositionControl(i, localToWorld, localRotation);
+                            DrawTangentControl(i, localToWorld, localRotation);
                         }
                         else
                         {
-                            DrawTangentControl(i);
-                            DrawPositionControl(i);
+                            DrawTangentControl(i, localToWorld, localRotation);
+                            DrawPositionControl(i, localToWorld, localRotation);
                         }
                     }
                 }
                 Handles.color = colorOld;
-                Handles.matrix = mOld;
             }
         }
 
-        void DrawSelectionHandle(int i)
+        void DrawSelectionHandle(int i, Matrix4x4 localToWorld)
         {
             if (Event.current.button != 1)
             {
-                Vector3 pos = Target.m_Waypoints[i].position;
+                Vector3 pos = localToWorld.MultiplyPoint(Target.m_Waypoints[i].position);
                 float size = HandleUtility.GetHandleSize(pos) * 0.2f;
                 Handles.color = Color.white;
                 if (Handles.Button(pos, Quaternion.identity, size, size, Handles.SphereHandleCap)
@@ -307,23 +305,24 @@ namespace Cinemachine.Editor
             }
         }
 
-        void DrawTangentControl(int i)
+        void DrawTangentControl(int i, Matrix4x4 localToWorld, Quaternion localRotation)
         {
             CinemachinePath.Waypoint wp = Target.m_Waypoints[i];
-            Vector3 hPos = wp.position + wp.tangent;
+            Vector3 hPos = localToWorld.MultiplyPoint(wp.position + wp.tangent);
 
             Handles.color = Color.yellow;
-            Handles.DrawLine(wp.position, hPos);
+            Handles.DrawLine(localToWorld.MultiplyPoint(wp.position), hPos);
 
             EditorGUI.BeginChangeCheck();
             Quaternion rotation = (Tools.pivotRotation == PivotRotation.Local)
-                ? Quaternion.identity : Quaternion.Inverse(Target.transform.rotation);
+                ? localRotation : Quaternion.identity;
             float size = HandleUtility.GetHandleSize(hPos) * 0.1f;
             Handles.SphereHandleCap(0, hPos, rotation, size, EventType.Repaint);
             Vector3 newPos = Handles.PositionHandle(hPos, rotation);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(target, "Change Waypoint Tangent");
+                newPos = Matrix4x4.Inverse(localToWorld).MultiplyPoint(newPos);
                 wp.tangent = newPos - wp.position;
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
@@ -331,20 +330,21 @@ namespace Cinemachine.Editor
             }
         }
 
-        void DrawPositionControl(int i)
+        void DrawPositionControl(int i, Matrix4x4 localToWorld, Quaternion localRotation)
         {
             CinemachinePath.Waypoint wp = Target.m_Waypoints[i];
+            Vector3 pos = localToWorld.MultiplyPoint(wp.position);
             EditorGUI.BeginChangeCheck();
             Handles.color = Target.m_Appearance.pathColor;
             Quaternion rotation = (Tools.pivotRotation == PivotRotation.Local)
-                ? Quaternion.identity : Quaternion.Inverse(Target.transform.rotation);
-            float size = HandleUtility.GetHandleSize(wp.position) * 0.1f;
-            Handles.SphereHandleCap(0, wp.position, rotation, size, EventType.Repaint);
-            Vector3 pos = Handles.PositionHandle(wp.position, rotation);
+                ? localRotation : Quaternion.identity;
+            float size = HandleUtility.GetHandleSize(pos) * 0.1f;
+            Handles.SphereHandleCap(0, pos, rotation, size, EventType.Repaint);
+            pos = Handles.PositionHandle(pos, rotation);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(target, "Move Waypoint");
-                wp.position = pos;
+                wp.position = Matrix4x4.Inverse(localToWorld).MultiplyPoint(pos);;
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
@@ -388,7 +388,7 @@ namespace Cinemachine.Editor
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachinePath))]
         static void DrawGizmos(CinemachinePath path, GizmoType selectionType)
         {
-            DrawPathGizmo(path, 
+            DrawPathGizmo(path,
                 (Selection.activeGameObject == path.gameObject)
                 ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor);
         }
