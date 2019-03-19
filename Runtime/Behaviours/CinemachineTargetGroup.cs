@@ -140,7 +140,7 @@ namespace Cinemachine
                 m_Targets = new Target[m_Targets.Length - 1];
                 if (index > 0)
                     Array.Copy(oldTargets, m_Targets, index);
-                if (index < m_Targets.Length - 1)
+                if (index < oldTargets.Length - 1)
                     Array.Copy(oldTargets, index + 1, m_Targets, index, oldTargets.Length - index - 1);
             }
         }
