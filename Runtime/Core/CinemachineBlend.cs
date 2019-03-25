@@ -269,7 +269,7 @@ namespace Cinemachine
         public GameObject VirtualCameraGameObject { get { return null; } }
         public bool IsValid { get { return true; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
-        public bool IsLiveChild(ICinemachineCamera vcam) { return false; }
+        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
@@ -295,7 +295,8 @@ namespace Cinemachine
         public GameObject VirtualCameraGameObject { get { return null; } }
         public bool IsValid { get { return Blend != null && Blend.IsValid; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
-        public bool IsLiveChild(ICinemachineCamera vcam) { return Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB); }
+        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
+            { return Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB); }
         public CameraState CalculateNewState(float deltaTime) { return State; }
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {

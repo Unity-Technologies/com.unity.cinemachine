@@ -88,7 +88,7 @@ namespace Cinemachine
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam)
+        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             return vcam == LiveChild || (mActiveBlend != null && mActiveBlend.Uses(vcam));
         }
