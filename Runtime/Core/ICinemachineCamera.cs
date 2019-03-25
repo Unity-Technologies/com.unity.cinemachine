@@ -56,8 +56,9 @@ namespace Cinemachine
 
         /// <summary>Check whether the vcam is a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
+        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominat live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        bool IsLiveChild(ICinemachineCamera vcam);
+        bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false);
 
         /// <summary>
         /// Update the camera's state.
@@ -90,7 +91,7 @@ namespace Cinemachine
         void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime);
 
         /// <summary>This is called to notify the component that a target got warped,
-        /// so that the component can update its internal state to make the camera 
+        /// so that the component can update its internal state to make the camera
         /// also warp seamlessy.  Base class implementation does nothing.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>

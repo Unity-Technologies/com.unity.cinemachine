@@ -219,15 +219,27 @@ namespace Cinemachine
         /// <summary>Check whether the vcam a live child of this camera.
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
+        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominat live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam)
+        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             // Do not update the rig cache here or there will be infinite loop at creation time
             if (m_Rigs == null || m_Rigs.Length != 3)
                 return false;
+            var y = GetYAxisValue();
+            if (dominantChildOnly)
+            {
+                if (vcam == (ICinemachineCamera)m_Rigs[0])
+                    return y > 0.666f;
+                if (vcam == (ICinemachineCamera)m_Rigs[2])
+                    return y < 0.333;
+                if (vcam == (ICinemachineCamera)m_Rigs[1])
+                    return y >= 0.333f && y <= 0.666f;
+                return false;
+            }
             if (vcam == (ICinemachineCamera)m_Rigs[1])
                 return true;
-            if (GetYAxisValue() < 0.5f)
+            if (y < 0.5f)
                 return vcam == (ICinemachineCamera)m_Rigs[2];
             return vcam == (ICinemachineCamera)m_Rigs[0];
         }
