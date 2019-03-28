@@ -38,9 +38,8 @@ namespace Cinemachine.Editor
             Rect cameraRect = gateRect;
             float screenWidth = cameraRect.width;
             float screenHeight = screenWidth / lens.Aspect;
-            cameraRect.yMax = Screen.height - cameraRect.yMin;
-            cameraRect.yMin = cameraRect.yMax - screenHeight;
-            cameraRect.position += new Vector2(0, (gateRect.y - cameraRect.y) / 2);
+            cameraRect.yMax = Screen.height - gateRect.yMin;
+            cameraRect.yMin = cameraRect.yMax - gateRect.height;
 
             // Shift the guides along with the lens
             cameraRect.position += new Vector2(
