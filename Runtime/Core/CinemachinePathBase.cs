@@ -52,7 +52,7 @@ namespace Cinemachine
                 pos = pos % MaxPos;
                 if (pos < 0)
                     pos += MaxPos;
-                return pos;
+                return pos > MaxPos - UnityVectorExtensions.Epsilon ? 0 : pos;
             }
             return Mathf.Clamp(pos, 0, MaxPos);
         }
@@ -84,7 +84,7 @@ namespace Cinemachine
         /// <param name="stepsPerSegment">We search a segment by dividing it into this many
         /// straight pieces.  The higher the number, the more accurate the result, but performance
         /// is proportionally slower for higher numbers</param>
-        /// <returns>The position along the path that is closest to the target point.  
+        /// <returns>The position along the path that is closest to the target point.
         /// The value is in Path Units, not Distance units.</returns>
         public virtual float FindClosestPoint(
             Vector3 p, int startSegment, int searchRadius, int stepsPerSegment)
@@ -137,7 +137,7 @@ namespace Cinemachine
             /// <summary>Use Distance Along Path.  Path will be sampled according to its Resolution
             /// setting, and a distance lookup table will be cached internally</summary>
             Distance,
-            /// <summary>Normalized units, where 0 is the start of the path, and 1 is the end.  
+            /// <summary>Normalized units, where 0 is the start of the path, and 1 is the end.
             /// Path will be sampled according to its Resolution
             /// setting, and a distance lookup table will be cached internally</summary>
             Normalized
@@ -147,20 +147,20 @@ namespace Cinemachine
         /// <param name="units">The unit type</param>
         /// <returns>The minimum allowable value for this path</returns>
         public float MinUnit(PositionUnits units)
-        { 
+        {
             if (units == PositionUnits.Normalized)
                 return 0;
-            return units == PositionUnits.Distance ? 0 : MinPos; 
+            return units == PositionUnits.Distance ? 0 : MinPos;
         }
 
         /// <summary>Get the maximum value, for the given unit type</summary>
         /// <param name="units">The unit type</param>
         /// <returns>The maximum allowable value for this path</returns>
         public float MaxUnit(PositionUnits units)
-        { 
+        {
             if (units == PositionUnits.Normalized)
                 return 1;
-            return units == PositionUnits.Distance ? PathLength : MaxPos; 
+            return units == PositionUnits.Distance ? PathLength : MaxPos;
         }
 
         /// <summary>Standardize the unit, so that it lies between MinUmit and MaxUnit</summary>
@@ -207,18 +207,18 @@ namespace Cinemachine
             return EvaluateOrientation(ToNativePathUnits(pos, units));
         }
 
-        /// <summary>When calculating the distance cache, sample the path this many 
+        /// <summary>When calculating the distance cache, sample the path this many
         /// times between points</summary>
         public abstract int DistanceCacheSampleStepsPerSegment { get; }
 
         /// <summary>Call this if the path changes in such a way as to affect distances
         /// or other cached path elements</summary>
-        public virtual void InvalidateDistanceCache() 
-        { 
-            m_DistanceToPos = null; 
-            m_PosToDistance = null; 
+        public virtual void InvalidateDistanceCache()
+        {
+            m_DistanceToPos = null;
+            m_PosToDistance = null;
             m_CachedSampleSteps = 0;
-            m_PathLength = 0; 
+            m_PathLength = 0;
         }
 
         /// <summary>See whether the distance cache is valid.  If it's not valid,
@@ -229,17 +229,17 @@ namespace Cinemachine
         {
             return (MaxPos == MinPos)
                 || (m_DistanceToPos != null && m_PosToDistance != null
-                    && m_CachedSampleSteps == DistanceCacheSampleStepsPerSegment 
+                    && m_CachedSampleSteps == DistanceCacheSampleStepsPerSegment
                     && m_CachedSampleSteps > 0);
         }
 
-        /// <summary>Get the length of the path in distance units.  
-        /// If the distance cache is not valid, then calling this will 
+        /// <summary>Get the length of the path in distance units.
+        /// If the distance cache is not valid, then calling this will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <returns>The length of the path in distance units, when sampled at this rate</returns>
         public float PathLength
-        { 
-            get 
+        {
+            get
             {
                 if (DistanceCacheSampleStepsPerSegment < 1)
                     return 0;
@@ -249,8 +249,8 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Standardize a distance along the path based on the path length.  
-        /// If the distance cache is not valid, then calling this will 
+        /// <summary>Standardize a distance along the path based on the path length.
+        /// If the distance cache is not valid, then calling this will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <param name="distance">The distance to standardize</param>
         /// <returns>The standardized distance, ranging from 0 to path length</returns>
@@ -269,8 +269,8 @@ namespace Cinemachine
         }
 
         /// <summary>Get the path position (in native path units) corresponding to the psovided
-        /// value, in the units indicated.  
-        /// If the distance cache is not valid, then calling this will 
+        /// value, in the units indicated.
+        /// If the distance cache is not valid, then calling this will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <param name="pos">The value to convert from</param>
         /// <param name="units">The units in which pos is expressed</param>
@@ -292,8 +292,8 @@ namespace Cinemachine
             return MinPos + Mathf.Lerp(m_DistanceToPos[i], m_DistanceToPos[i+1], t);
         }
 
-        /// <summary>Get the path position (in path units) corresponding to this distance along the path.  
-        /// If the distance cache is not valid, then calling this will 
+        /// <summary>Get the path position (in path units) corresponding to this distance along the path.
+        /// If the distance cache is not valid, then calling this will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <param name="pos">The value to convert from, in native units</param>
         /// <param name="units">The units to convert toexpressed</param>
@@ -310,7 +310,7 @@ namespace Cinemachine
             int i = Mathf.FloorToInt(d);
             if (i >= m_PosToDistance.Length-1)
                 pos = m_PathLength;
-            else 
+            else
             {
                 float t = d - (float)i;
                 pos = Mathf.Lerp(m_PosToDistance[i], m_PosToDistance[i+1], t);
