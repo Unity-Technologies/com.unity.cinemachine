@@ -369,9 +369,9 @@ namespace Cinemachine
 
             if (m_LookaheadTime > Epsilon)
             {
-                m_Predictor.IgnoreY = m_LookaheadIgnoreY;
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(followTargetPosition);
+                m_Predictor.AddPosition(m_LookaheadIgnoreY
+                    ? followTargetPosition.ProjectOntoPlane(curState.ReferenceUp) : followTargetPosition);
                 var p = m_Predictor.PredictPosition(m_LookaheadTime);
                 if (isGroupFraming)
                 {

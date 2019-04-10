@@ -8,10 +8,10 @@ namespace Cinemachine.Utility
 
         const float kSmoothingDefault = 10;
         float mSmoothing = kSmoothingDefault;
-        public float Smoothing 
+        public float Smoothing
         {
             get { return mSmoothing; }
-            set 
+            set
             {
                 if (value != mSmoothing)
                 {
@@ -22,8 +22,6 @@ namespace Cinemachine.Utility
                 }
             }
         }
-
-        public bool IgnoreY { get; set; }
 
         GaussianWindow1D_Vector3 m_Velocity = new GaussianWindow1D_Vector3(kSmoothingDefault);
         GaussianWindow1D_Vector3 m_Accel = new GaussianWindow1D_Vector3(kSmoothingDefault);
@@ -49,8 +47,6 @@ namespace Cinemachine.Utility
             {
                 Vector3 vel = m_Velocity.Value();
                 Vector3 vel2 = (pos - m_Position) / Time.deltaTime;
-                if (IgnoreY)
-                    vel2.y = 0;
                 m_Velocity.AddValue(vel2);
                 m_Accel.AddValue(vel2 - vel);
             }
@@ -104,10 +100,10 @@ namespace Cinemachine.Utility
         /// <summary>Get a damped version of a quantity.  This is the portion of the
         /// quantity that will take effect over the given time.</summary>
         /// <param name="initial">The amount that will be damped</param>
-        /// <param name="dampTime">The rate of damping.  This is the time it would 
+        /// <param name="dampTime">The rate of damping.  This is the time it would
         /// take to reduce the original amount to a negligible percentage</param>
         /// <param name="deltaTime">The time over which to damp</param>
-        /// <returns>The damped amount.  This will be the original amount scaled by 
+        /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
         public static float Damp(float initial, float dampTime, float deltaTime)
         {
@@ -140,10 +136,10 @@ namespace Cinemachine.Utility
         /// <summary>Get a damped version of a quantity.  This is the portion of the
         /// quantity that will take effect over the given time.</summary>
         /// <param name="initial">The amount that will be damped</param>
-        /// <param name="dampTime">The rate of damping.  This is the time it would 
+        /// <param name="dampTime">The rate of damping.  This is the time it would
         /// take to reduce the original amount to a negligible percentage</param>
         /// <param name="deltaTime">The time over which to damp</param>
-        /// <returns>The damped amount.  This will be the original amount scaled by 
+        /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
         public static Vector3 Damp(Vector3 initial, Vector3 dampTime, float deltaTime)
         {
@@ -155,10 +151,10 @@ namespace Cinemachine.Utility
         /// <summary>Get a damped version of a quantity.  This is the portion of the
         /// quantity that will take effect over the given time.</summary>
         /// <param name="initial">The amount that will be damped</param>
-        /// <param name="dampTime">The rate of damping.  This is the time it would 
+        /// <param name="dampTime">The rate of damping.  This is the time it would
         /// take to reduce the original amount to a negligible percentage</param>
         /// <param name="deltaTime">The time over which to damp</param>
-        /// <returns>The damped amount.  This will be the original amount scaled by 
+        /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
         public static Vector3 Damp(Vector3 initial, float dampTime, float deltaTime)
         {
@@ -190,7 +186,7 @@ namespace Cinemachine.Utility
         Vector3 mLastGoodHeading = Vector3.zero;
 
         /// <summary>Construct a heading tracker with a given filter size</summary>
-        /// <param name="filterSize">The size of the filter.  The larger the filter, the 
+        /// <param name="filterSize">The size of the filter.  The larger the filter, the
         /// more constanct (and laggy) is the heading.  30 is pretty big.</param>
         public HeadingTracker(int filterSize)
         {

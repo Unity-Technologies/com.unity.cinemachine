@@ -7,10 +7,10 @@ namespace Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
-    /// Its job is to aim the camera at the vcam's LookAt target object, with 
+    /// Its job is to aim the camera at the vcam's LookAt target object, with
     /// configurable offsets, damping, and composition rules.
-    /// 
-    /// The composer does not change the camera's position.  It will only pan and tilt the 
+    ///
+    /// The composer does not change the camera's position.  It will only pan and tilt the
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
@@ -29,14 +29,14 @@ namespace Cinemachine
         /// on the motion of the target.  The composer will look at a point where it estimates
         /// the target will be this many seconds into the future.  Note that this setting is sensitive
         /// to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.
-        /// If the camera jitters unacceptably when the target is in motion, turn down this setting, 
+        /// If the camera jitters unacceptably when the target is in motion, turn down this setting,
         /// or animate the target more smoothly.</summary>
         [Space]
         [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
         [Range(0f, 1f)]
         public float m_LookaheadTime = 0;
 
-        /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out 
+        /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out
         /// jittery predictions and also increase prediction lag</summary>
         [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag")]
         [Range(3, 30)]
@@ -55,9 +55,9 @@ namespace Cinemachine
         [Tooltip("How aggressively the camera tries to follow the target in the screen-horizontal direction. Small numbers are more responsive, rapidly orienting the camera to keep the target in the dead zone. Larger numbers give a more heavy slowly responding camera. Using different vertical and horizontal settings can yield a wide range of camera behaviors.")]
         public float m_HorizontalDamping = 0.5f;
 
-        /// <summary>How aggressively the camera tries to follow the target in the screen-vertical direction. 
-        /// Small numbers are more responsive, rapidly orienting the camera to keep the target in 
-        /// the dead zone. Larger numbers give a more heavy slowly responding camera. Using different vertical 
+        /// <summary>How aggressively the camera tries to follow the target in the screen-vertical direction.
+        /// Small numbers are more responsive, rapidly orienting the camera to keep the target in
+        /// the dead zone. Larger numbers give a more heavy slowly responding camera. Using different vertical
         /// and horizontal settings can yield a wide range of camera behaviors.</summary>
         [Range(0f, 20)]
         [Tooltip("How aggressively the camera tries to follow the target in the screen-vertical direction. Small numbers are more responsive, rapidly orienting the camera to keep the target in the dead zone. Larger numbers give a more heavy slowly responding camera. Using different vertical and horizontal settings can yield a wide range of camera behaviors.")]
@@ -124,7 +124,7 @@ namespace Cinemachine
         /// Also set the TrackedPoint property, taking lookahead into account.</summary>
         /// <param name="lookAt">The unoffset LookAt point</param>
         /// <returns>The LookAt point with the offset applied</returns>
-        protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(Vector3 lookAt)
+        protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(Vector3 lookAt, Vector3 up)
         {
             Vector3 pos = lookAt;
             if (LookAtTarget != null)
@@ -134,14 +134,13 @@ namespace Cinemachine
                 TrackedPoint = pos;
             else
             {
-                m_Predictor.IgnoreY = m_LookaheadIgnoreY;
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(pos);
+                m_Predictor.AddPosition(m_LookaheadIgnoreY ? pos.ProjectOntoPlane(up) : pos);
                 TrackedPoint = m_Predictor.PredictPosition(m_LookaheadTime);
             }
             return TrackedPoint;
         }
-        
+
         /// <summary>State information for damping</summary>
         Vector3 m_CameraPosPrevFrame = Vector3.zero;
         Vector3 m_LookAtPrevFrame = Vector3.zero;
@@ -150,7 +149,7 @@ namespace Cinemachine
         PositionPredictor m_Predictor = new PositionPredictor();
 
         /// <summary>This is called to notify the us that a target got warped,
-        /// so that we can update its internal state to make the camera 
+        /// so that we can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -165,10 +164,11 @@ namespace Cinemachine
             }
         }
 
-        public override void PrePipelineMutateCameraState(ref CameraState curState) 
+        public override void PrePipelineMutateCameraState(ref CameraState curState)
         {
             if (IsValid && curState.HasLookAt)
-                curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(curState.ReferenceLookAt);
+                curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(
+                    curState.ReferenceLookAt, curState.ReferenceUp);
         }
 
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
@@ -180,7 +180,7 @@ namespace Cinemachine
             // Initialize the state for previous frame if appropriate
             if (deltaTime < 0)
                 m_Predictor.Reset();
-                
+
             if (!IsValid || !curState.HasLookAt)
                 return;
 
@@ -208,17 +208,17 @@ namespace Cinemachine
             {
                 // Start with previous frame's orientation (but with current up)
                 Vector3 dir = m_LookAtPrevFrame - (m_CameraPosPrevFrame + curState.PositionDampingBypass);
-                if (dir.AlmostZero())  
+                if (dir.AlmostZero())
                     rigOrientation = Quaternion.LookRotation(
                         m_CameraOrientationPrevFrame * Vector3.forward, curState.ReferenceUp);
-                else 
+                else
                 {
                     rigOrientation = Quaternion.LookRotation(dir, curState.ReferenceUp);
                     rigOrientation = rigOrientation.ApplyCameraRotation(
                         -m_ScreenOffsetPrevFrame, curState.ReferenceUp);
                 }
 
-                // First force the previous rotation into the hard bounds, no damping, 
+                // First force the previous rotation into the hard bounds, no damping,
                 // then Now move it through the soft zone, with damping
                 if (!RotateToScreenBounds(ref curState, mCache.mFovHardGuideRect, ref rigOrientation, mCache.mFov, mCache.mFovH, -1))
                     RotateToScreenBounds(ref curState, mCache.mFovSoftGuideRect, ref rigOrientation, mCache.mFov, mCache.mFovH, deltaTime);
@@ -280,7 +280,7 @@ namespace Cinemachine
                 m_BiasY = biasHeight < Epsilon ? 0 : Mathf.Clamp(bias.y / biasHeight, -0.5f, 0.5f);
             }
         }
-        
+
         // Cache for some expensive calculations
         struct FovCache
         {
@@ -297,12 +297,12 @@ namespace Cinemachine
             public void UpdateCache(
                 LensSettings lens, Rect softGuide, Rect hardGuide, float targetDistance)
             {
-                bool recalculate = mAspect != lens.Aspect 
+                bool recalculate = mAspect != lens.Aspect
                     || softGuide != mSoftGuideRect || hardGuide != mHardGuideRect;
                 if (lens.Orthographic)
                 {
-                    float orthoOverDistance = Mathf.Abs(lens.OrthographicSize / targetDistance); 
-                    if (mOrthoSizeOverDistance == 0 
+                    float orthoOverDistance = Mathf.Abs(lens.OrthographicSize / targetDistance);
+                    if (mOrthoSizeOverDistance == 0
                         || Mathf.Abs(orthoOverDistance - mOrthoSizeOverDistance) / mOrthoSizeOverDistance
                             > mOrthoSizeOverDistance * 0.01f)
                         recalculate = true;
@@ -409,11 +409,11 @@ namespace Cinemachine
             rigOrientation = rigOrientation.ApplyCameraRotation(rotToRect, state.ReferenceUp);
 #if false
             // GML this gives false positives when the camera is moving.
-            // The way to address this would be to grow the hard rect by the amount 
+            // The way to address this would be to grow the hard rect by the amount
             // that it would be damped
             return Mathf.Abs(rotToRect.x) > Epsilon || Mathf.Abs(rotToRect.y) > Epsilon;
 #else
-            return false; 
+            return false;
 #endif
         }
 
