@@ -5,9 +5,9 @@ namespace Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
-    /// Its job is to aim the camera at a target object, with configurable offsets, damping, 
+    /// Its job is to aim the camera at a target object, with configurable offsets, damping,
     /// and composition rules.
-    /// 
+    ///
     /// In addition, if the target is a CinemachineTargetGroup, the behaviour
     /// will adjust the FOV and the camera distance to ensure that the entire group of targets
     /// is framed properly.
@@ -106,7 +106,7 @@ namespace Cinemachine
             m_MinimumOrthoSize = Mathf.Max(0.01f, m_MinimumOrthoSize);
             m_MaximumOrthoSize = Mathf.Max(m_MinimumOrthoSize, m_MaximumOrthoSize);
         }
-        
+
         // State for damping
         float m_prevFramingDistance;
         float m_prevFOV;
@@ -205,7 +205,7 @@ namespace Cinemachine
                 {
                     // What distance from near edge would be needed to get the adjusted
                     // target height, at the current FOV
-                    float targetDistance = boundsDepth 
+                    float targetDistance = boundsDepth
                         + targetHeight / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
 
                     // Clamp to respect min/max distance settings to the near surface of the bounds
@@ -248,7 +248,8 @@ namespace Cinemachine
                 }
             }
             // Now compose normally
-            curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(groupCenter);
+            curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(
+                groupCenter, curState.ReferenceUp);
             base.MutateCameraState(ref curState, deltaTime);
         }
 
@@ -263,11 +264,11 @@ namespace Cinemachine
                 default:
                 case FramingMode.HorizontalAndVertical:
                     return Mathf.Max(
-                        Mathf.Max(Epsilon, boundsSize.x) / VcamState.Lens.Aspect, 
+                        Mathf.Max(Epsilon, boundsSize.x) / VcamState.Lens.Aspect,
                         Mathf.Max(Epsilon, boundsSize.y));
             }
         }
-        
+
         /// <param name="observer">Point of view</param>
         /// <param name="newFwd">New forward direction to use when interpreting the return value</param>
         /// <returns>Bounding box in a slightly rotated version of observer, as specified by newFwd</returns>
@@ -285,7 +286,7 @@ namespace Cinemachine
             Vector2 angles = (maxAngles - shift) * Mathf.Deg2Rad;
             angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f));
             return new Bounds(
-                new Vector3(0, 0, d/2), 
+                new Vector3(0, 0, d/2),
                 new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
         }
     }
