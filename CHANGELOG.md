@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Orthographic cameras allow a Near Clip of 0
 - Timeline won't auto-create CM brains when something dragged onto it
 - Confiner: Improvement in automatic path invalidation when number of path points path changes
+- Bugfix: FreeLook heading RecenterNow was not working
 - Bugfix: lookahead now takes the overridden Up into account
 - Bugfix: screen composer guides drawn in wrong place for picture-in-picture
 - Bugfix: FreeLook now draws only 1 active composer guide at a time (fogbugz 1138263)

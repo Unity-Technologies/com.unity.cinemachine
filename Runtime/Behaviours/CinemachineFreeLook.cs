@@ -628,6 +628,7 @@ namespace Cinemachine
                 mOrbitals[i].m_RecenterToTargetHeading.m_enabled = (i == 1) ? m_RecenterToTargetHeading.m_enabled : false;
                 mOrbitals[i].m_RecenterToTargetHeading.m_WaitTime = m_RecenterToTargetHeading.m_WaitTime;
                 mOrbitals[i].m_RecenterToTargetHeading.m_RecenteringTime = m_RecenterToTargetHeading.m_RecenteringTime;
+                mOrbitals[i].m_RecenterToTargetHeading.CopyStateFrom(ref m_RecenterToTargetHeading);
 
                 // Hack to get SimpleFollow with heterogeneous dampings to work
                 if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
