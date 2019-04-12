@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// Axis state for defining how to react to player input.  
+    /// Axis state for defining how to react to player input.
     /// The settings here control the responsiveness of the axis to player input.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -47,7 +47,7 @@ namespace Cinemachine
         [Tooltip("The value of the input axis.  A value of 0 means no input.  You can drive this directly from a custom input system, or you can set the Axis Name and have the value driven by the internal Input Manager")]
         public float m_InputAxisValue;
 
-        /// <summary>If checked, then the raw value of the input axis will be inverted 
+        /// <summary>If checked, then the raw value of the input axis will be inverted
         /// before it is used.</summary>
         [FormerlySerializedAs("m_InvertAxis")]
         [Tooltip("If checked, then the raw value of the input axis will be inverted before it is used")]
@@ -74,7 +74,7 @@ namespace Cinemachine
         /// <summary>Constructor with specific values</summary>
         public AxisState(
             float minValue, float maxValue, bool wrap, bool rangeLocked,
-            float maxSpeed, float accelTime, float decelTime, 
+            float maxSpeed, float accelTime, float decelTime,
             string name, bool invert)
         {
             m_MinValue = minValue;
@@ -150,12 +150,12 @@ namespace Cinemachine
                     float delta = Mathf.Min(a * deltaTime, Mathf.Abs(mCurrentSpeed));
                     mCurrentSpeed -= Mathf.Sign(mCurrentSpeed) * delta;
                 }
-                else 
+                else
                 {
                     // Accelerate to the target speed
                     float a = Mathf.Abs(targetSpeed - mCurrentSpeed) / Mathf.Max(Epsilon, m_AccelTime);
                     mCurrentSpeed += Mathf.Sign(targetSpeed) * a * deltaTime;
-                    if (Mathf.Sign(mCurrentSpeed) == Mathf.Sign(targetSpeed) 
+                    if (Mathf.Sign(mCurrentSpeed) == Mathf.Sign(targetSpeed)
                         && Mathf.Abs(mCurrentSpeed) > Mathf.Abs(targetSpeed))
                     {
                         mCurrentSpeed = targetSpeed;
@@ -256,6 +256,12 @@ namespace Cinemachine
             // Internal state
             float mLastAxisInputTime;
             float mRecenteringVelocity;
+            public void CopyStateFrom(ref Recentering other)
+            {
+                if (mLastAxisInputTime != other.mLastAxisInputTime)
+                    other.mRecenteringVelocity = 0;
+                mLastAxisInputTime = other.mLastAxisInputTime;
+            }
 
             /// <summary>Cancel any recenetering in progress.</summary>
             public void CancelRecentering()
@@ -296,7 +302,7 @@ namespace Cinemachine
                             axis.Value = recenterTarget;
                             mRecenteringVelocity = 0;
                         }
-                        else 
+                        else
                         {
                             float scale = deltaTime / recenterTime;
                             float desiredVelocity = Mathf.Sign(headingError)
