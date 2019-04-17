@@ -159,11 +159,7 @@ namespace Cinemachine
                 deltaTime = -1;
 
             UpdateListOfChildren();
-
-            if (deltaTime < 0)
-                mCurrentInstruction = 0;
-            else
-                AdvanceCurrentInstruction();
+            AdvanceCurrentInstruction(deltaTime);
 
             CinemachineVirtualCameraBase best = null;
             if (mCurrentInstruction >= 0 && mCurrentInstruction < m_Instructions.Length)
@@ -312,7 +308,7 @@ namespace Cinemachine
             mActiveBlend = null;
         }
 
-        private void AdvanceCurrentInstruction()
+        private void AdvanceCurrentInstruction(float deltaTime)
         {
             if (m_ChildCameras == null || m_ChildCameras.Length == 0
                 || mActivationTime < 0 || m_Instructions.Length == 0)
@@ -324,7 +320,7 @@ namespace Cinemachine
             }
 
             float now = Time.time;
-            if (mCurrentInstruction < 0)
+            if (mCurrentInstruction < 0 || deltaTime < 0)
             {
                 mActivationTime = now;
                 mCurrentInstruction = 0;
