@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Confiner: Improvement in automatic path invalidation when number of path points path changes
 - Added CinemachineInpuitAxisDriver utility for overriding the default AxisState behaviour
 - CinemachineCameraOffset: added customazable stage for when to apply the offset
+- Added Loop option to BlendList Camera
 - Bugfix: FreeLook heading RecenterNow was not working
 - Bugfix: lookahead now takes the overridden Up into account
 - Bugfix: screen composer guides drawn in wrong place for picture-in-picture
