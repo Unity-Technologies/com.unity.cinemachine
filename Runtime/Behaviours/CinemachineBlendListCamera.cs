@@ -36,6 +36,10 @@ namespace Cinemachine
         [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
         public bool m_ShowDebugText = false;
 
+        /// <summary>When enabled, the child vcams will cycle indefinitely instead of just stopping at the last onesummary>
+        [Tooltip("When enabled, the child vcams will cycle indefinitely instead of just stopping at the last one")]
+        public bool m_Loop = false;
+
         /// <summary>Internal API for the editor.  Do not use this field</summary>
         [SerializeField][HideInInspector][NoSaveDuringPlay]
         internal CinemachineVirtualCameraBase[] m_ChildCameras = null;
@@ -134,7 +138,7 @@ namespace Cinemachine
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             mActivationTime = Time.time;
-            mCurrentInstruction = -1;
+            mCurrentInstruction = 0;
             LiveChild = null;
             mActiveBlend = null;
             TransitioningFrom = fromCam;
@@ -155,7 +159,11 @@ namespace Cinemachine
 
             UpdateListOfChildren();
 
-            AdvanceCurrentInstruction();
+            if (deltaTime < 0)
+                mCurrentInstruction = 0;
+            else
+                AdvanceCurrentInstruction();
+
             CinemachineVirtualCameraBase best = null;
             if (mCurrentInstruction >= 0 && mCurrentInstruction < m_Instructions.Length)
                 best = m_Instructions[mCurrentInstruction].m_VirtualCamera;
@@ -179,7 +187,7 @@ namespace Cinemachine
                     // Generate Camera Activation event in the brain if live
                     CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild, previousCam);
 
-                    if (previousCam != null && mCurrentInstruction > 0)
+                    if (previousCam != null)
                     {
                         // Create a blend (will be null if a cut)
                         mActiveBlend = CreateBlend(
@@ -311,24 +319,28 @@ namespace Cinemachine
                 mActivationTime = -1;
                 mCurrentInstruction = -1;
                 mActiveBlend = null;
+                return;
             }
-            else if (mCurrentInstruction >= m_Instructions.Length - 1)
+
+            float now = Time.time;
+            if (mCurrentInstruction < 0)
             {
+                mActivationTime = now;
+                mCurrentInstruction = 0;
+            }
+            if (mCurrentInstruction > m_Instructions.Length - 1)
+            {
+                mActivationTime = now;
                 mCurrentInstruction = m_Instructions.Length - 1;
             }
-            else
+
+            var minHold = mCurrentInstruction < m_Instructions.Length - 1 || m_Loop ? 0 : float.MaxValue;
+            if (now - mActivationTime > Mathf.Max(minHold, m_Instructions[mCurrentInstruction].m_Hold))
             {
-                float now = Time.time;
-                if (mCurrentInstruction < 0)
-                {
-                    mActivationTime = now;
+                mActivationTime = now;
+                ++mCurrentInstruction;
+                if (m_Loop && mCurrentInstruction == m_Instructions.Length)
                     mCurrentInstruction = 0;
-                }
-                else if (now - mActivationTime > Mathf.Max(0, m_Instructions[mCurrentInstruction].m_Hold))
-                {
-                    mActivationTime = now;
-                    ++mCurrentInstruction;
-                }
             }
         }
     }

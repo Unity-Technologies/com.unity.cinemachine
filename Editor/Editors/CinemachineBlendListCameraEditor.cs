@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBlendListCamera))]
-    internal sealed class CinemachineBlendListCameraEditor 
+    internal sealed class CinemachineBlendListCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineBlendListCamera>
     {
         protected override List<string> GetExcludedPropertiesInInspector()
@@ -106,12 +106,12 @@ namespace Cinemachine.Editor
             float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
             mInstructionList.drawHeaderCallback = (Rect rect) =>
                 {
-                    float sharedWidth = rect.width - EditorGUIUtility.singleLineHeight 
+                    float sharedWidth = rect.width - EditorGUIUtility.singleLineHeight
                         - floatFieldWidth - hSpace - hBigSpace;
-                    rect.x += EditorGUIUtility.singleLineHeight; rect.width = sharedWidth / 2; 
+                    rect.x += EditorGUIUtility.singleLineHeight; rect.width = sharedWidth / 2;
                     EditorGUI.LabelField(rect, "Child");
 
-                    rect.x += rect.width + hSpace; 
+                    rect.x += rect.width + hSpace;
                     EditorGUI.LabelField(rect, "Blend in");
 
                     rect.x += rect.width + hBigSpace; rect.width = floatFieldWidth;
@@ -125,7 +125,7 @@ namespace Cinemachine.Editor
                     float sharedWidth = rect.width - floatFieldWidth - hSpace - hBigSpace;
                     rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
 
-                    rect.width = sharedWidth / 2; 
+                    rect.width = sharedWidth / 2;
                     SerializedProperty vcamSelProp = instProp.FindPropertyRelative(() => def.m_VirtualCamera);
                     int currentVcam = GetCameraIndex(vcamSelProp.objectReferenceValue);
                     int vcamSelection = EditorGUI.Popup(rect, currentVcam, mCameraCandidates);
@@ -134,21 +134,21 @@ namespace Cinemachine.Editor
                             ? null : Target.ChildCameras[vcamSelection - 1];
 
                     rect.x += rect.width + hSpace; rect.width = sharedWidth / 2;
-                    if (index > 0)
-                        EditorGUI.PropertyField(rect, instProp.FindPropertyRelative(() => def.m_Blend), 
+                    if (index > 0 || Target.m_Loop)
+                        EditorGUI.PropertyField(rect, instProp.FindPropertyRelative(() => def.m_Blend),
                             GUIContent.none);
 
-                    if (index < mInstructionList.count - 1)
+                    if (index < mInstructionList.count - 1 || Target.m_Loop)
                     {
                         float oldWidth = EditorGUIUtility.labelWidth;
-                        EditorGUIUtility.labelWidth = hBigSpace; 
+                        EditorGUIUtility.labelWidth = hBigSpace;
 
                         rect.x += rect.width; rect.width = floatFieldWidth + hBigSpace;
                         SerializedProperty holdProp = instProp.FindPropertyRelative(() => def.m_Hold);
                         EditorGUI.PropertyField(rect, holdProp, new GUIContent(" ", holdProp.tooltip));
                         holdProp.floatValue = Mathf.Max(holdProp.floatValue, 0);
 
-                        EditorGUIUtility.labelWidth = oldWidth; 
+                        EditorGUIUtility.labelWidth = oldWidth;
                     }
                 };
         }
