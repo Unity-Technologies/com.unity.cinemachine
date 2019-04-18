@@ -12,8 +12,8 @@ namespace Cinemachine
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
 
         /// <summary>Get the associated CinemachineVirtualCameraBase</summary>
-        public CinemachineVirtualCameraBase VirtualCamera 
-        { 
+        public CinemachineVirtualCameraBase VirtualCamera
+        {
             get
             {
                 if (m_vcamOwner == null)
@@ -26,9 +26,9 @@ namespace Cinemachine
         CinemachineVirtualCameraBase m_vcamOwner;
 
         /// <summary>Returns the owner vcam's Follow target.</summary>
-        public Transform FollowTarget 
+        public Transform FollowTarget
         {
-            get 
+            get
             {
                 CinemachineVirtualCameraBase vcam = VirtualCamera;
                 return vcam == null ? null : vcam.Follow;
@@ -36,9 +36,9 @@ namespace Cinemachine
         }
 
         /// <summary>Returns the owner vcam's LookAt target.</summary>
-        public Transform LookAtTarget 
+        public Transform LookAtTarget
         {
-            get 
+            get
             {
                 CinemachineVirtualCameraBase vcam = VirtualCamera;
                 return vcam == null ? null : vcam.LookAt;
@@ -62,7 +62,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a group</summary>
-        public CinemachineTargetGroup FollowTargetGroup 
+        public CinemachineTargetGroup FollowTargetGroup
         {
             get
             {
@@ -76,7 +76,7 @@ namespace Cinemachine
         /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
         public Vector3 FollowTargetPosition
         {
-            get 
+            get
             {
                 Transform target = FollowTarget;
                 if (target != mCachedFollowTarget)
@@ -93,7 +93,7 @@ namespace Cinemachine
         /// a VirtualCamera, returns the vcam State's rotation, not the transform's rotation</summary>
         public Quaternion FollowTargetRotation
         {
-            get 
+            get
             {
                 Transform target = FollowTarget;
                 if (target != mCachedFollowTarget)
@@ -128,8 +128,8 @@ namespace Cinemachine
         }
 
         /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a group</summary>
-        public CinemachineTargetGroup LookAtTargetGroup 
-        { 
+        public CinemachineTargetGroup LookAtTargetGroup
+        {
             get
             {
                 if (LookAtTarget != mCachedLookAtTarget)
@@ -142,7 +142,7 @@ namespace Cinemachine
         /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
         public Vector3 LookAtTargetPosition
         {
-            get 
+            get
             {
                 Transform target = LookAtTarget;
                 if (target != mCachedLookAtTarget)
@@ -159,7 +159,7 @@ namespace Cinemachine
         /// a VirtualCamera, returns the vcam State's rotation, not the transform's rotation</summary>
         public Quaternion LookAtTargetRotation
         {
-            get 
+            get
             {
                 Transform target = LookAtTarget;
                 if (target != mCachedLookAtTarget)
@@ -188,7 +188,7 @@ namespace Cinemachine
         /// <summary>Override this to do such things as offset the RefereceLookAt.
         /// Base class implementation does nothing.</summary>
         /// <param name="curState">Input state that must be mutated</param>
-        public virtual void PrePipelineMutateCameraState(ref CameraState curState) {}
+        public virtual void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime) {}
 
         /// <summary>What part of the pipeline this fits into</summary>
         public abstract CinemachineCore.Stage Stage { get; }
@@ -197,7 +197,7 @@ namespace Cinemachine
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public abstract void MutateCameraState(ref CameraState curState, float deltaTime);
-        
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
@@ -206,11 +206,11 @@ namespace Cinemachine
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public virtual bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams) 
+            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         { return false; }
 
         /// <summary>This is called to notify the component that a target got warped,
-        /// so that the component can update its internal state to make the camera 
+        /// so that the component can update its internal state to make the camera
         /// also warp seamlessy.  Base class implementation does nothing.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>

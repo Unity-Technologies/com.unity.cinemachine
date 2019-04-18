@@ -37,7 +37,7 @@ namespace Cinemachine
         [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
 
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from 
+        /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
         public TransitionParams m_Transitions;
 
@@ -60,7 +60,7 @@ namespace Cinemachine
         override public CameraState State { get { return m_State; } }
 
         /// <summary>The camera state, which will be a blend of the child rig states</summary>
-        protected CameraState m_State = CameraState.Default; 
+        protected CameraState m_State = CameraState.Default;
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
@@ -79,7 +79,7 @@ namespace Cinemachine
         }
 
         /// <summary>This is called to notify the vcam that a target got warped,
-        /// so that the vcam can update its internal state to make the camera 
+        /// so that the vcam can update its internal state to make the camera
         /// also warp seamlessy.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -104,7 +104,7 @@ namespace Cinemachine
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public override void OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
@@ -118,7 +118,7 @@ namespace Cinemachine
             UpdateComponentCache();
             for (int i = 0; i < m_Components.Length; ++i)
             {
-                if (m_Components[i] != null 
+                if (m_Components[i] != null
                         && m_Components[i].OnTransitionFromCamera(
                             fromCam, worldUp, deltaTime, ref m_Transitions))
                     forceUpdate = true;
@@ -193,14 +193,14 @@ namespace Cinemachine
             UpdateComponentCache();
 
             // Apply the component pipeline
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
                 if (c != null)
-                    c.PrePipelineMutateCameraState(ref state);
+                    c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body; 
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
@@ -213,33 +213,33 @@ namespace Cinemachine
 
             return state;
         }
-        
+
         // Component Cache - serialized only for copy/paste
         [SerializeField, HideInInspector, NoSaveDuringPlay]
         CinemachineComponentBase[] m_Components;
 
         /// For inspector
-        internal CinemachineComponentBase[] ComponentCache 
-        { 
-            get 
-            { 
-                UpdateComponentCache(); 
-                return m_Components; 
+        internal CinemachineComponentBase[] ComponentCache
+        {
+            get
+            {
+                UpdateComponentCache();
+                return m_Components;
             }
         }
 
-        /// <summary>Call this when CinemachineCompponentBase compponents are added 
+        /// <summary>Call this when CinemachineCompponentBase compponents are added
         /// or removed.  If you don't call this, you may get null reference errors.</summary>
         public void InvalidateComponentCache()
         {
-            m_Components = null; 
+            m_Components = null;
         }
 
         /// <summary>Bring the component cache up to date if needed</summary>
         protected void UpdateComponentCache()
         {
 #if UNITY_EDITOR
-            // Special case: if we have serialized in with some other game object's 
+            // Special case: if we have serialized in with some other game object's
             // components, then we have just been pasted so we should clone them
             for (int i = 0; m_Components != null && i < m_Components.Length; ++i)
             {
@@ -291,7 +291,7 @@ namespace Cinemachine
             }
             InvalidateComponentCache();
         }
-        
+
 #if UNITY_EDITOR
         // This gets called when user pastes component values
         void CopyComponents(CinemachineComponentBase[] copyFrom)
@@ -304,9 +304,9 @@ namespace Cinemachine
                     var copy = UnityEditor.Undo.AddComponent(gameObject, type);
                     UnityEditor.Undo.RecordObject(copy, "copying pipeline");
 
-                    System.Reflection.BindingFlags bindingAttr 
-                        = System.Reflection.BindingFlags.Public 
-                        | System.Reflection.BindingFlags.NonPublic 
+                    System.Reflection.BindingFlags bindingAttr
+                        = System.Reflection.BindingFlags.Public
+                        | System.Reflection.BindingFlags.NonPublic
                         | System.Reflection.BindingFlags.Instance;
 
                     System.Reflection.FieldInfo[] fields = type.GetFields(bindingAttr);

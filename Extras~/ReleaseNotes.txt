@@ -1,4 +1,4 @@
-<size=20><b>Version 2.2.9-preview.2</b></size>
+<size=20><b>Version 2.2.9-preview.3</b></size>
 
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
 - When a blend is cancelled by the opposite blend, reduce the blend time
@@ -11,6 +11,8 @@
 - Added CinemachineInpuitAxisDriver utility for overriding the default AxisState behaviour
 - CinemachineCameraOffset: added customazable stage for when to apply the offset
 - Added Loop option to BlendList Camera
+- Improved Lookahed: does not automatically recenter
+- Bugfix: Collider must consider actual target position, not lookahead position
 - Bugfix: FreeLook heading RecenterNow was not working
 - Bugfix: lookahead now takes the overridden Up into account
 - Bugfix: screen composer guides drawn in wrong place for picture-in-picture

@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.9-preview.3] - 2019-01-00
+## [2.2.9-preview.3] - 2019-04-18
 ### Mostly Bugfixes
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
 - When a blend is cancelled by the opposite blend, reduce the blend time
@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineInpuitAxisDriver utility for overriding the default AxisState behaviour
 - CinemachineCameraOffset: added customazable stage for when to apply the offset
 - Added Loop option to BlendList Camera
+- Improved Lookahed: does not automatically recenter
+- Bugfix: Collider must consider actual target position, not lookahead position
 - Bugfix: FreeLook heading RecenterNow was not working
 - Bugfix: lookahead now takes the overridden Up into account
 - Bugfix: screen composer guides drawn in wrong place for picture-in-picture

@@ -124,7 +124,8 @@ namespace Cinemachine
         /// Also set the TrackedPoint property, taking lookahead into account.</summary>
         /// <param name="lookAt">The unoffset LookAt point</param>
         /// <returns>The LookAt point with the offset applied</returns>
-        protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(Vector3 lookAt, Vector3 up)
+        protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(
+            Vector3 lookAt, Vector3 up, float deltaTime)
         {
             Vector3 pos = lookAt;
             if (LookAtTarget != null)
@@ -135,10 +136,13 @@ namespace Cinemachine
             else
             {
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(m_LookaheadIgnoreY ? pos.ProjectOntoPlane(up) : pos);
-                TrackedPoint = m_Predictor.PredictPosition(m_LookaheadTime);
+                m_Predictor.AddPosition(pos, deltaTime, m_LookaheadTime);
+                var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
+                if (m_LookaheadIgnoreY)
+                    delta = delta.ProjectOntoPlane(up);
+                TrackedPoint = pos + delta;
             }
-            return TrackedPoint;
+            return pos;
         }
 
         /// <summary>State information for damping</summary>
@@ -146,7 +150,7 @@ namespace Cinemachine
         Vector3 m_LookAtPrevFrame = Vector3.zero;
         Vector2 m_ScreenOffsetPrevFrame = Vector2.zero;
         Quaternion m_CameraOrientationPrevFrame = Quaternion.identity;
-        PositionPredictor m_Predictor = new PositionPredictor();
+        internal PositionPredictor m_Predictor = new PositionPredictor();
 
         /// <summary>This is called to notify the us that a target got warped,
         /// so that we can update its internal state to make the camera
@@ -164,11 +168,11 @@ namespace Cinemachine
             }
         }
 
-        public override void PrePipelineMutateCameraState(ref CameraState curState)
+        public override void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime)
         {
             if (IsValid && curState.HasLookAt)
                 curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(
-                    curState.ReferenceLookAt, curState.ReferenceUp);
+                    curState.ReferenceLookAt, curState.ReferenceUp, deltaTime);
         }
 
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
@@ -177,12 +181,23 @@ namespace Cinemachine
         /// zero, then target will snap to the center of the dead zone.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            // Initialize the state for previous frame if appropriate
-            if (deltaTime < 0)
-                m_Predictor.Reset();
-
             if (!IsValid || !curState.HasLookAt)
                 return;
+
+            // Correct the tracked point in the event that it's behind the camera
+            // while the real target is in front
+            if (!(TrackedPoint - curState.ReferenceLookAt).AlmostZero())
+            {
+                Vector3 mid = Vector3.Lerp(curState.CorrectedPosition, curState.ReferenceLookAt, 0.5f);
+                Vector3 toLookAt = curState.ReferenceLookAt - mid;
+                Vector3 toTracked = TrackedPoint - mid;
+                if (Vector3.Dot(toLookAt, toTracked) < 0)
+                {
+                    float t = Vector3.Distance(curState.ReferenceLookAt, mid)
+                        / Vector3.Distance(curState.ReferenceLookAt, TrackedPoint);
+                    TrackedPoint = Vector3.Lerp(curState.ReferenceLookAt, TrackedPoint, t);
+                }
+            }
 
             float targetDistance = (TrackedPoint - curState.CorrectedPosition).magnitude;
             if (targetDistance < Epsilon)
@@ -202,7 +217,9 @@ namespace Cinemachine
                 Rect rect = mCache.mFovSoftGuideRect;
                 if (m_CenterOnActivate)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
-                RotateToScreenBounds(ref curState, rect, ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
+                RotateToScreenBounds(
+                    ref curState, rect, curState.ReferenceLookAt,
+                    ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
             }
             else
             {
@@ -220,9 +237,22 @@ namespace Cinemachine
 
                 // First force the previous rotation into the hard bounds, no damping,
                 // then Now move it through the soft zone, with damping
-                if (!RotateToScreenBounds(ref curState, mCache.mFovHardGuideRect, ref rigOrientation, mCache.mFov, mCache.mFovH, -1))
-                    RotateToScreenBounds(ref curState, mCache.mFovSoftGuideRect, ref rigOrientation, mCache.mFov, mCache.mFovH, deltaTime);
+                RotateToScreenBounds(
+                    ref curState, mCache.mFovHardGuideRect, TrackedPoint,
+                    ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
+                RotateToScreenBounds(
+                    ref curState, mCache.mFovSoftGuideRect, TrackedPoint,
+                    ref rigOrientation, mCache.mFov, mCache.mFovH, deltaTime);
             }
+
+            // If we have lookahead, make sure the real target is still in the frame
+            if (!(TrackedPoint - curState.ReferenceLookAt).AlmostZero())
+            {
+                RotateToScreenBounds(
+                    ref curState, mCache.mFovHardGuideRect, curState.ReferenceLookAt,
+                    ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
+            }
+
             m_CameraPosPrevFrame = curState.CorrectedPosition;
             m_LookAtPrevFrame = TrackedPoint;
             m_CameraOrientationPrevFrame = UnityQuaternionExtensions.Normalized(rigOrientation);
@@ -371,11 +401,11 @@ namespace Cinemachine
         /// state.ReferenceUp.  If this condition is violated
         /// then you will see crazy spinning.  That's the symptom.
         /// </summary>
-        private bool RotateToScreenBounds(
-            ref CameraState state, Rect screenRect,
+        private void RotateToScreenBounds(
+            ref CameraState state, Rect screenRect, Vector3 trackedPoint,
             ref Quaternion rigOrientation, float fov, float fovH, float deltaTime)
         {
-            Vector3 targetDir = TrackedPoint - state.CorrectedPosition;
+            Vector3 targetDir = trackedPoint - state.CorrectedPosition;
             Vector2 rotToRect = rigOrientation.GetCameraRotationToTarget(targetDir, state.ReferenceUp);
 
             // Bring it to the edge of screenRect, if outside.  Leave it alone if inside.
@@ -407,14 +437,6 @@ namespace Cinemachine
 
             // Rotate
             rigOrientation = rigOrientation.ApplyCameraRotation(rotToRect, state.ReferenceUp);
-#if false
-            // GML this gives false positives when the camera is moving.
-            // The way to address this would be to grow the hard rect by the amount
-            // that it would be damped
-            return Mathf.Abs(rotToRect.x) > Epsilon || Mathf.Abs(rotToRect.y) > Epsilon;
-#else
-            return false;
-#endif
         }
 
         /// <summary>
