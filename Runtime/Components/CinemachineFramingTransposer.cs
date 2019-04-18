@@ -367,22 +367,24 @@ namespace Cinemachine
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
 
+            TrackedPoint = followTargetPosition;
             if (m_LookaheadTime > Epsilon)
             {
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(m_LookaheadIgnoreY
-                    ? followTargetPosition.ProjectOntoPlane(curState.ReferenceUp) : followTargetPosition);
-                var p = m_Predictor.PredictPosition(m_LookaheadTime);
+                m_Predictor.AddPosition(followTargetPosition, deltaTime, m_LookaheadTime);
+                var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
+                if (m_LookaheadIgnoreY)
+                    delta = delta.ProjectOntoPlane(curState.ReferenceUp);
+                var p = followTargetPosition + delta;
                 if (isGroupFraming)
                 {
                     var b = LastBounds;
                     b.center += p - followTargetPosition;
                     LastBounds = b;
                 }
-                followTargetPosition = p;
+                TrackedPoint = p;
             }
 
-            TrackedPoint = followTargetPosition;
             if (!curState.HasLookAt)
                 curState.ReferenceLookAt = followTargetPosition;
 
@@ -420,21 +422,23 @@ namespace Cinemachine
             Quaternion worldToLocal = Quaternion.Inverse(localToWorld);
             Vector3 cameraPos = worldToLocal * camPosWorld;
             Vector3 targetPos = (worldToLocal * TrackedPoint) - cameraPos;
+            Vector3 lookAtPos = (worldToLocal * curState.ReferenceLookAt) - cameraPos;
 
             // Move along camera z
             Vector3 cameraOffset = Vector3.zero;
             float cameraMin = Mathf.Max(kMinimumCameraDistance, targetDistance - m_DeadZoneDepth/2);
             float cameraMax = Mathf.Max(cameraMin, targetDistance + m_DeadZoneDepth/2);
-            if (targetPos.z < cameraMin)
-                cameraOffset.z = targetPos.z - cameraMin;
-            if (targetPos.z > cameraMax)
-                cameraOffset.z = targetPos.z - cameraMax;
+            float targetZ = Mathf.Min(targetPos.z, lookAtPos.z);
+            if (targetZ < cameraMin)
+                cameraOffset.z = targetZ - cameraMin;
+            if (targetZ > cameraMax)
+                cameraOffset.z = targetZ - cameraMax;
 
             // Move along the XY plane
             float screenSize = curState.Lens.Orthographic
                 ? curState.Lens.OrthographicSize
                 : Mathf.Tan(0.5f * curState.Lens.FieldOfView * Mathf.Deg2Rad)
-                    * (targetPos.z - cameraOffset.z);
+                    * (targetZ - cameraOffset.z);
             Rect softGuideOrtho = ScreenToOrtho(SoftGuideRect, screenSize, curState.Lens.Aspect);
             if (deltaTime < 0)
             {
@@ -461,6 +465,13 @@ namespace Cinemachine
                 // Apply damping, but only to the portion of the move that's inside the hard zone
                 cameraOffset = hard + Damper.Damp(
                     cameraOffset - hard, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
+
+                // If we have lookahead, make sure the real target is still in the frame
+                if (!m_UnlimitedSoftZone && !(TrackedPoint - curState.ReferenceLookAt).AlmostZero())
+                {
+                    Rect hardGuideOrtho = ScreenToOrtho(HardGuideRect, screenSize, curState.Lens.Aspect);
+                    cameraOffset += OrthoOffsetToScreenBounds(lookAtPos - cameraOffset, hardGuideOrtho);
+                }
             }
             curState.RawPosition = m_PreviousCameraPosition = localToWorld * (cameraPos + cameraOffset);
 

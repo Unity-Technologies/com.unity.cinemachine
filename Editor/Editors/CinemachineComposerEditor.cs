@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
+using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
@@ -88,5 +89,28 @@ namespace Cinemachine.Editor
                 }
             }
         }
+#if false
+        // debugging only
+        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineComposer))]
+        static void DrawTransposerGizmos(CinemachineComposer target, GizmoType selectionType)
+        {
+            // Draw lookahead path
+            if (target.m_LookaheadTime > 0)
+            {
+                Color originalGizmoColour = Gizmos.color;
+                Gizmos.color = CinemachineSettings.ComposerSettings.TargetColour;
+
+                var p0 = target.m_Predictor.PredictPosition(0);
+                int numSteps = 20;
+                for (int i = 1; i <= numSteps; ++i)
+                {
+                    var p1 = target.m_Predictor.PredictPosition(i * target.m_LookaheadTime / numSteps);
+                    Gizmos.DrawLine(p0, p1);
+                    p0 = p1;
+                }
+                Gizmos.color = originalGizmoColour;
+            }
+        }
+#endif
     }
 }

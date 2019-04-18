@@ -249,7 +249,7 @@ namespace Cinemachine
             }
             // Now compose normally
             curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(
-                groupCenter, curState.ReferenceUp);
+                groupCenter, curState.ReferenceUp, deltaTime);
             base.MutateCameraState(ref curState, deltaTime);
         }
 

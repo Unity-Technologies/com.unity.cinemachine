@@ -61,7 +61,7 @@ namespace Cinemachine.Utility
             if (KernelSize < 3)
                 return v;
             AddValue(v);
-            return Value();    
+            return Value();
         }
 
         /// Returned value will be kernelRadius old

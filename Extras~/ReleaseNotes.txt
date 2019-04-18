@@ -1,4 +1,4 @@
-<size=20><b>Version 2.3.4-preview.3</b></size>
+<size=20><b>Version 2.2.9-preview.4</b></size>
 
 - Added conditional compilation to support removal of optional physics and physics2D modules
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
@@ -8,8 +8,10 @@
 - Timeline won't auto-create CM brains when something dragged onto it
 - Confiner: Improvement in automatic path invalidation when number of path points path changes
 - Added CinemachineInpuitAxisDriver utility for overriding the default AxisState behaviour
-- CinemachineCameraOffset: added customazable stage for when to apply the offset
+- CinemachineCameraOffset: added customizable stage for when to apply the offset
 - Added Loop option to BlendList Camera
+- Improved Lookahed: does not automatically recenter
+- Bugfix: Collider must consider actual target position, not lookahead position
 - Bugfix: FreeLook heading RecenterNow was not working
 - Bugfix: lookahead now takes the overridden Up into account
 - Bugfix: screen composer guides drawn in wrong place for picture-in-picture
