@@ -11,26 +11,29 @@ namespace Cinemachine.Editor
         {
             List<string> excluded = base.GetExcludedPropertiesInInspector();
 
-            if (Target.m_AngularDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
-                excluded.Add(FieldPath(x => x.m_AngularDamping));
-            else
-            {
-                excluded.Add(FieldPath(x => x.m_PitchDamping));
-                excluded.Add(FieldPath(x => x.m_YawDamping));
-                excluded.Add(FieldPath(x => x.m_RollDamping));
-            }
-
             switch (Target.m_BindingMode)
             {
                 default:
                 case CinemachineTransposer.BindingMode.LockToTarget:
+                    if (Target.m_AngularDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
+                        excluded.Add(FieldPath(x => x.m_AngularDamping));
+                    else
+                    {
+                        excluded.Add(FieldPath(x => x.m_PitchDamping));
+                        excluded.Add(FieldPath(x => x.m_YawDamping));
+                        excluded.Add(FieldPath(x => x.m_RollDamping));
+                    }
                     break;
                 case CinemachineTransposer.BindingMode.LockToTargetNoRoll:
                     excluded.Add(FieldPath(x => x.m_RollDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
                 case CinemachineTransposer.BindingMode.LockToTargetWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
                 case CinemachineTransposer.BindingMode.LockToTargetOnAssign:
                 case CinemachineTransposer.BindingMode.WorldSpace:

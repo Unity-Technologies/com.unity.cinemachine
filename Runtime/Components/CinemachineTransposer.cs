@@ -213,7 +213,8 @@ namespace Cinemachine
             Quaternion dampedOrientation = targetOrientation;
             if (deltaTime >= 0)
             {
-                if (m_AngularDampingMode == AngularDampingMode.Quaternion)
+                if (m_AngularDampingMode == AngularDampingMode.Quaternion
+                    && m_BindingMode == BindingMode.LockToTarget)
                 {
                     float t = Damper.Damp(1, m_AngularDamping, deltaTime);
                     dampedOrientation = Quaternion.Slerp(
