@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: collider minimum occlusion time and smoothing time interaction
 - Bugfix: TargetGroup.RemoveMember error (fogbugz 1119028)
 - Bugfix: TargetGroup member lerping jerk when member weight near 0
+- Bugfix: Transposer angular damping should be 0 only if binding mode not LockToTarget
 
 ## [2.2.8] - 2018-12-10
 ### Bugfixes, optimizations, and some experimental stuff

@@ -21,26 +21,29 @@ namespace Cinemachine.Editor
             if (Target.HideOffsetInInspector)
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
 
-            if (Target.m_AngularDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
-                excluded.Add(FieldPath(x => x.m_AngularDamping));
-            else
-            {
-                excluded.Add(FieldPath(x => x.m_PitchDamping));
-                excluded.Add(FieldPath(x => x.m_YawDamping));
-                excluded.Add(FieldPath(x => x.m_RollDamping));
-            }
-
             switch (Target.m_BindingMode)
             {
                 default:
                 case CinemachineTransposer.BindingMode.LockToTarget:
+                    if (Target.m_AngularDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
+                        excluded.Add(FieldPath(x => x.m_AngularDamping));
+                    else
+                    {
+                        excluded.Add(FieldPath(x => x.m_PitchDamping));
+                        excluded.Add(FieldPath(x => x.m_YawDamping));
+                        excluded.Add(FieldPath(x => x.m_RollDamping));
+                    }
                     break;
                 case CinemachineTransposer.BindingMode.LockToTargetNoRoll:
                     excluded.Add(FieldPath(x => x.m_RollDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
                 case CinemachineTransposer.BindingMode.LockToTargetWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDamping));
+                    excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
                 case CinemachineTransposer.BindingMode.LockToTargetOnAssign:
                 case CinemachineTransposer.BindingMode.WorldSpace:
@@ -69,9 +72,9 @@ namespace Cinemachine.Editor
             BeginInspector();
             if (Target.FollowTarget == null)
                 EditorGUILayout.HelpBox(
-                    "Orbital Transposer requires a Follow target.", 
+                    "Orbital Transposer requires a Follow target.",
                     MessageType.Warning);
-            Target.m_XAxis.ValueRangeLocked 
+            Target.m_XAxis.ValueRangeLocked
                 = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
             DrawRemainingPropertiesInInspector();
         }
@@ -90,7 +93,7 @@ namespace Cinemachine.Editor
             FindProperty(x => x.m_FollowOffset).vector3Value = Target.EffectiveOffset;
             serializedObject.ApplyModifiedProperties();
         }
-        
+
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]
         static void DrawTransposerGizmos(CinemachineOrbitalTransposer target, GizmoType selectionType)
         {
