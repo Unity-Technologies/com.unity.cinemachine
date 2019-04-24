@@ -307,7 +307,7 @@ namespace Cinemachine
             }
             if (m_IgnoreTimeScale)
                 return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
-            return fixedDelta ? Time.fixedDeltaTime * Time.timeScale : Time.deltaTime;
+            return fixedDelta ? Time.fixedDeltaTime : Time.deltaTime;
         }
 
         private void UpdateVirtualCameras(CinemachineCore.UpdateFilter updateFilter, float deltaTime)

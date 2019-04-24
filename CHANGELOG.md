@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineCameraOffset: added customizable stage for when to apply the offset
 - Added Loop option to BlendList Camera
 - Improved Lookahed: does not automatically recenter
+- Brain no longer applies time scaling to fixed delta
 - Bugfix: Collider must consider actual target position, not lookahead position
 - Bugfix: FreeLook heading RecenterNow was not working
 - Bugfix: lookahead now takes the overridden Up into account
