@@ -111,6 +111,8 @@ namespace Cinemachine
                 IsPhysicalCamera = camera.usePhysicalProperties;
                 if (IsPhysicalCamera)
                     SensorSize = camera.sensorSize;
+                else
+                    LensShift = Vector2.zero;
 #endif
             }
         }
@@ -125,6 +127,8 @@ namespace Cinemachine
             SensorSize = lens.SensorSize;
 #if UNITY_2018_2_OR_NEWER
             IsPhysicalCamera = lens.IsPhysicalCamera;
+            if (!IsPhysicalCamera)
+                LensShift = Vector2.zero;
 #endif
         }
 
