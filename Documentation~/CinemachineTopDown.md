@@ -4,5 +4,5 @@ Cinemachine Virtual Cameras are modeled after human camera operators and how the
 
 **Tip:** You can deliberately roll by animating properties like __Dutch__ in a Virtual Camera.
 
-If you are building a top-down game where the cameras look straight down, the best practice is to redefine the up direction, for the purposes of the camera.  You do this by setting the __World Up Override__ in the [Cinemachine Brain](CinemachineBrainProperties.html) to a GameObject whose local up points in the direction that you want the Virtual Camera’s up to normally be.   This is applied to all Virtual Cameras controlled by that Brain.
+If you are building a top-down game where the cameras look straight down, the best practice is to redefine the up direction, for the purposes of the camera.  You do this by setting the __World Up Override__ in the [Cinemachine Brain](CinemachineBrainProperties.md) to a GameObject whose local up points in the direction that you want the Virtual Camera’s up to normally be.   This is applied to all Virtual Cameras controlled by that Brain.
 

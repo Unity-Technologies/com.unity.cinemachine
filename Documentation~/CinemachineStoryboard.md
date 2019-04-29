@@ -1,6 +1,6 @@
 # Storyboard
 
-Use the Cinemachine Storyboard [extension](CinemachineVirtualCameraExtensions.html) to let artists, producers, and directors contribute to your game development. Cinemachine Storyboard places a still image in screen space over the output of the Unity camera.
+Use the Cinemachine Storyboard [extension](CinemachineVirtualCameraExtensions.md) to let artists, producers, and directors contribute to your game development. Cinemachine Storyboard places a still image in screen space over the output of the Unity camera.
 
 Storyboard simplifies animatics for your team. Start with still images to pre-visualize terrain, layout, movement, lighting, timing, and so on. Following the intentions of the Storyboard image, developers incrementally add the assets, GameObjects, and settings that implement the Scene.
 
@@ -21,5 +21,5 @@ Use the properties in the Storyboard component to hide and show the image to com
 | __Rotation__ || The screen-space rotation of the image. |
 | __Scale__ || The screen-space scaling of the image. |
 | __Sync Scale__ || Check to synchronize the scale of the x and y axes. |
-| __Mute Camera__ || Check to prevent the Virtual Camera from updating the position, rotation, or scale of the Unity camera. Use this feature to prevent Timeline from [blending](CinemachineBlending.html) the camera to an unintended position in the Scene. |
+| __Mute Camera__ || Check to prevent the Virtual Camera from updating the position, rotation, or scale of the Unity camera. Use this feature to prevent Timeline from [blending](CinemachineBlending.md) the camera to an unintended position in the Scene. |
 | __Split View__ || Wipe the image on and off horizontally. |
