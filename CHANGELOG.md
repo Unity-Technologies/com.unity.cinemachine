@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineInpuitAxisDriver utility for overriding the default AxisState behaviour
 - CinemachineCameraOffset: added customizable stage for when to apply the offset
 - Added Loop option to BlendList Camera
-- Improved Lookahed: does not automatically recenter
+- Improved Lookahead: does not automatically recenter
 - Brain no longer applies time scaling to fixed delta
 - Bugfix: Generate a cut event if cutting to a blend-in-progess (fogbugz 1150847)
 - Bugfix: reset lens shift if not physical camera

@@ -1,3 +1,6 @@
+#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+
 using UnityEngine;
 using UnityEditor;
 using System;
