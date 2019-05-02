@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.3.4-preview.4] - 2019-04-18
+## [2.3.4-preview.5] - 2019-05-02
 ### PostProcessingV3 and bugfixes
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
 - When a blend is cancelled by the opposite blend, reduce the blend time

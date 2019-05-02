@@ -1,4 +1,4 @@
-<size=20><b>Version 2.2.9-preview.4</b></size>
+<size=20><b>Version 2.2.9-preview.5</b></size>
 
 - Added conditional compilation to support removal of optional physics and physics2D modules
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
