@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Loop option to BlendList Camera
 - Improved Lookahed: does not automatically recenter
 - Brain no longer applies time scaling to fixed delta
+- Bugfix: Generate a cut event if cutting to a blend-in-progess (fogbugz 1150847)
 - Bugfix: reset lens shift if not physical camera
 - Bugfix: Collider must consider actual target position, not lookahead position
 - Bugfix: FreeLook heading RecenterNow was not working
