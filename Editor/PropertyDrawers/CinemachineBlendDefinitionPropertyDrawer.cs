@@ -24,7 +24,7 @@ namespace Cinemachine.Editor
             SerializedProperty styleProp = property.FindPropertyRelative(() => myClass.m_Style);
             if (styleProp.enumValueIndex != (int)CinemachineBlendDefinition.Style.Custom)
                 EditorGUI.PropertyField(rect, styleProp, GUIContent.none);
-            else 
+            else
             {
                 SerializedProperty curveProp = property.FindPropertyRelative(() => myClass.m_CustomCurve);
                 Rect r = rect;
@@ -43,11 +43,13 @@ namespace Cinemachine.Editor
             if (styleProp.intValue != (int)CinemachineBlendDefinition.Style.Cut)
             {
                 float oldWidth = EditorGUIUtility.labelWidth;
-                EditorGUIUtility.labelWidth = textDimensions.x; 
+                EditorGUIUtility.labelWidth = textDimensions.x;
                 rect.x += rect.width; rect.width = floatFieldWidth + EditorGUIUtility.labelWidth;
+                EditorGUI.BeginChangeCheck();
                 EditorGUI.PropertyField(rect, timeProp, timeText);
-                timeProp.floatValue = Mathf.Max(timeProp.floatValue, 0);
-                EditorGUIUtility.labelWidth = oldWidth; 
+                if (EditorGUI.EndChangeCheck())
+                    timeProp.floatValue = Mathf.Max(timeProp.floatValue, 0);
+                EditorGUIUtility.labelWidth = oldWidth;
             }
         }
     }
