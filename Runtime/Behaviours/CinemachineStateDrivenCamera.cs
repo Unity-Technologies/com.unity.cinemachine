@@ -229,7 +229,7 @@ namespace Cinemachine
                             LookupBlend(previousCam, LiveChild), mActiveBlend);
 
                     // If cutting, generate a camera cut event if live
-                    if (mActiveBlend == null)
+                    if (mActiveBlend == null || !mActiveBlend.Uses(previousCam))
                         CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
                 }
             }

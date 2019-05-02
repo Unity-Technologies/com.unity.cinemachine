@@ -9,10 +9,11 @@
 - Timeline won't auto-create CM brains when something dragged onto it
 - Confiner: Improvement in automatic path invalidation when number of path points path changes
 - Added CinemachineInpuitAxisDriver utility for overriding the default AxisState behaviour
-- CinemachineCameraOffset: added customazable stage for when to apply the offset
+- CinemachineCameraOffset: added customizable stage for when to apply the offset
 - Added Loop option to BlendList Camera
 - Improved Lookahed: does not automatically recenter
 - Brain no longer applies time scaling to fixed delta
+- Bugfix: Generate a cut event if cutting to a blend-in-progess (fogbugz 1150847)
 - Bugfix: reset lens shift if not physical camera
 - Bugfix: Collider must consider actual target position, not lookahead position
 - Bugfix: FreeLook heading RecenterNow was not working
