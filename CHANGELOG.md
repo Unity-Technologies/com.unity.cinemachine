@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.3.4-preview.6] - 2019-05-03
+## [2.3.4-preview.7] - 2019-05-03
 ### PostProcessingV3 and bugfixes
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Loop option to BlendList Camera
 - Improved Lookahead: does not automatically recenter
 - Brain no longer applies time scaling to fixed delta
+- Bugfix: Allow externally-driven FeeLook XAxis to work properly with SimpleFollow
+
 - Bugfix: vcams with noise would sometimes show one noiseless frame when they were activated and standby update was not Always
 - Bugfix: Generate a cut event if cutting to a blend-in-progess (fogbugz 1150847)
 - Bugfix: reset lens shift if not physical camera
