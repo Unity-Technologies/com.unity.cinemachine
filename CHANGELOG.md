@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Improved Lookahead: does not automatically recenter
 - Brain no longer applies time scaling to fixed delta
 - Bugfix: Allow externally-driven FeeLook XAxis to work properly with SimpleFollow
-
 - Bugfix: vcams with noise would sometimes show one noiseless frame when they were activated and standby update was not Always
 - Bugfix: Generate a cut event if cutting to a blend-in-progess (fogbugz 1150847)
 - Bugfix: reset lens shift if not physical camera
