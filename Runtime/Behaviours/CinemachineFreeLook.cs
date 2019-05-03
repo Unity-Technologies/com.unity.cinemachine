@@ -297,6 +297,8 @@ namespace Cinemachine
                     m_YAxisRecentering.CancelRecentering();
             }
             PushSettingsToRigs();
+            if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                m_XAxis.Value = 0;
         }
 
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
@@ -575,9 +577,7 @@ namespace Cinemachine
                             {
                                 mOrbitals[i].m_HeadingIsSlave = true;
                                 if (i == 1)
-                                    mOrbitals[i].HeadingUpdater
-                                        = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
-                                            => { return orbital.UpdateHeading(deltaTime, up, ref m_XAxis); };
+                                    mOrbitals[i].HeadingUpdater = UpdateXAxisHeading;
                                 m_Rigs[i] = vcam;
                                 m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
                                 ++rigsFound;
@@ -587,6 +587,16 @@ namespace Cinemachine
                 }
             }
             return rigsFound;
+        }
+
+        float UpdateXAxisHeading(CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
+        {
+            var oldValue = m_XAxis.Value;
+            float headng = orbital.UpdateHeading(deltaTime, up, ref m_XAxis);
+            // Allow externally-driven values to work in this mode
+            if (orbital.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                m_XAxis.Value = oldValue;
+            return headng;
         }
 
         void PushSettingsToRigs()
