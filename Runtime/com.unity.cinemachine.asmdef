@@ -4,9 +4,9 @@
         "GUID:f06555f75b070af458a003d92f9efb00",
         "GUID:d60799ab2a985554ea1a39cd38695018",
         "GUID:df380645f10b7bc4b97d4f5eb6303d95",
-        "GUID:457756d89b35d2941b3e7b37b4ece6f1"
+        "GUID:457756d89b35d2941b3e7b37b4ece6f1",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -39,6 +39,11 @@
             "name": "com.unity.modules.physics",
             "expression": "1.0.0",
             "define": "CINEMACHINE_PHYSICS"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UGUI"
         }
     ]
 }

@@ -1,3 +1,4 @@
+#if CINEMACHINE_UGUI
 using UnityEngine;
 using UnityEditor;
 
@@ -43,7 +44,7 @@ namespace Cinemachine.Editor
                 var prop = FindProperty(x => x.m_SyncScale);
                 GUIContent syncLabel = new GUIContent("Sync", prop.tooltip);
                 prop.boolValue = EditorGUI.ToggleLeft(rect, syncLabel, prop.boolValue);
-                rect.x += rect.width; 
+                rect.x += rect.width;
                 if (prop.boolValue)
                 {
                     prop = FindProperty(x => x.m_Scale);
@@ -71,7 +72,7 @@ namespace Cinemachine.Editor
                 serializedObject.ApplyModifiedProperties();
             }
             rect = EditorGUILayout.GetControlRect(true);
-            GUI.Label(new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), 
+            GUI.Label(new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height),
                 "Waveform Monitor");
             rect.width -= EditorGUIUtility.labelWidth; rect.width /= 2;
             rect.x += EditorGUIUtility.labelWidth;
@@ -80,3 +81,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

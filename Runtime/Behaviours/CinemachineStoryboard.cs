@@ -1,11 +1,12 @@
-﻿using System;
+﻿#if CINEMACHINE_UGUI
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that places an image in screen space 
+    /// An add-on module for Cinemachine Virtual Camera that places an image in screen space
     /// over the camera's output.
     /// </summary>
     [SaveDuringPlay]
@@ -64,7 +65,7 @@ namespace Cinemachine
         {
             public GameObject mCanvas;
             public CinemachineBrain mCanvasParent;
-            public RectTransform mViewport; // for mViewport clipping 
+            public RectTransform mViewport; // for mViewport clipping
             public UnityEngine.UI.RawImage mRawImage;
         }
         List<CanvasInfo> mCanvasInfo = new List<CanvasInfo>();
@@ -93,7 +94,7 @@ namespace Cinemachine
             else
                 DestroyCanvas();
         }
-        
+
         string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
 
         void CameraUpdatedCallback(CinemachineBrain brain)
@@ -106,7 +107,7 @@ namespace Cinemachine
             if (ci != null && ci.mCanvas != null)
                 ci.mCanvas.SetActive(showIt);
         }
-        
+
         CanvasInfo LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
         {
             CanvasInfo ci = null;
@@ -208,7 +209,7 @@ namespace Cinemachine
 
                 Vector2 scale = Vector2.one;
                 if (m_Image != null
-                    && m_Image.width > 0 && m_Image.width > 0 
+                    && m_Image.width > 0 && m_Image.width > 0
                     && screen.width > 0 && screen.height > 0)
                 {
                     float f = (screen.height * m_Image.width) / (screen.width * m_Image.height);
@@ -239,13 +240,13 @@ namespace Cinemachine
                 ci.mRawImage.color = tintColor;
 
                 pos = new Vector2(screen.width * m_Center.x, screen.height * m_Center.y);
-                pos.x += wipeAmount/2; 
+                pos.x += wipeAmount/2;
                 ci.mRawImage.rectTransform.localPosition = pos;
                 ci.mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
                 ci.mRawImage.rectTransform.localScale = scale;
                 ci.mRawImage.rectTransform.ForceUpdateRectTransforms();
                 ci.mRawImage.rectTransform.sizeDelta = screen.size;
-            }        
+            }
         }
 
         static void StaticBlendingHandler(CinemachineBrain brain)
@@ -285,14 +286,14 @@ namespace Cinemachine
         // Workaround for the Unity bug where OnDestroy doesn't get called if Undo
         // bug case Case 1004117
         [UnityEditor.InitializeOnLoad]
-        class CanvasesAndTheirOwners 
-        { 
+        class CanvasesAndTheirOwners
+        {
             static Dictionary<UnityEngine.Object, UnityEngine.Object> sCanvasesAndTheirOwners;
-            static CanvasesAndTheirOwners() 
-            { 
+            static CanvasesAndTheirOwners()
+            {
                 UnityEditor.Undo.undoRedoPerformed -= OnUndoRedoPerformed;
                 UnityEditor.Undo.undoRedoPerformed += OnUndoRedoPerformed;
-            } 
+            }
             static void OnUndoRedoPerformed()
             {
                 if (sCanvasesAndTheirOwners != null)
@@ -332,3 +333,5 @@ namespace Cinemachine
 #endif
     }
 }
+#endif
+

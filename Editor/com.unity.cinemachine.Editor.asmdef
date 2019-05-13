@@ -9,9 +9,9 @@
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Core.Editor",
         "Unity.RenderPipelines.HighDefinition.Runtime",
-        "Unity.RenderPipelines.HighDefinition.Editor"
+        "Unity.RenderPipelines.HighDefinition.Editor",
+        "Unity.ugui"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -46,6 +46,11 @@
             "name": "com.unity.modules.physics",
             "expression": "1.0.0",
             "define": "CINEMACHINE_PHYSICS"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UGUI"
         }
     ]
 }
