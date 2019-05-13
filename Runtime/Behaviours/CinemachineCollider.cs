@@ -422,7 +422,7 @@ namespace Cinemachine
                 if (!hitInfo.collider.Raycast(inverseRay, out hitInfo, rayLength))
                     break;
                 float deltaExtraDistance = rayLength - (hitInfo.distance - PrecisionSlush);
-                if(deltaExtraDistance < Epsilon)
+                if (deltaExtraDistance < Epsilon)
                     break;
                 extraDistance += deltaExtraDistance;
                 rayLength = hitInfo.distance - PrecisionSlush;
