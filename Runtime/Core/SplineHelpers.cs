@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Cinemachine.Utility
 {
-    internal static class SplineHelpers
+    public static class SplineHelpers
     {
         public static Vector3 Bezier3(
             float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
@@ -63,7 +63,7 @@ namespace Cinemachine.Utility
             {
                 int n = numPoints - 1;
 
-                // Linear into the first segment 
+                // Linear into the first segment
                 a[0] = 0;
                 b[0] = 2;
                 c[0] = 1;
@@ -78,7 +78,7 @@ namespace Cinemachine.Utility
                     r[i] = 4 * knot[i][axis] + 2 * knot[i+1][axis];
                 }
 
-                // Linear out of the last segment 
+                // Linear out of the last segment
                 a[n - 1] = 2;
                 b[n - 1] = 7;
                 c[n - 1] = 0;

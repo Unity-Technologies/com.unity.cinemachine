@@ -7,7 +7,7 @@ using Cinemachine.Utility;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePath))]
-    internal sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
+    public sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
     {
         private ReorderableList mWaypointList;
         static bool mWaypointsExpanded;
@@ -351,7 +351,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        internal static void DrawPathGizmo(CinemachinePathBase path, Color pathColor)
+        public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor)
         {
             // Draw the path
             Color colorOld = Gizmos.color;

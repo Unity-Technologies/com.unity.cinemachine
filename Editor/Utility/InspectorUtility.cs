@@ -6,14 +6,14 @@ using System.IO;
 
 namespace Cinemachine.Editor
 {
-    internal class InspectorUtility
+    public class InspectorUtility
     {
-        /// <summary>Put multiple properties on a single inspector line, with 
-        /// optional label overrides.  Passing null as a label (or sublabel) override will 
+        /// <summary>Put multiple properties on a single inspector line, with
+        /// optional label overrides.  Passing null as a label (or sublabel) override will
         /// cause the property's displayName to be used as a label.  For no label at all,
         /// pass GUIContent.none.</summary>
         public static void MultiPropertyOnLine(
-            Rect rect, 
+            Rect rect,
             GUIContent label,
             SerializedProperty[] props, GUIContent[] subLabels)
         {
@@ -48,7 +48,7 @@ namespace Cinemachine.Editor
             float numCols = props.Length - numBoolColumns;
             float colWidth = numCols == 0 ? 0 : subFieldWidth / numCols;
 
-            // Main label.  If no first sublabel, then main label must take on that 
+            // Main label.  If no first sublabel, then main label must take on that
             // role, for mouse dragging value-scrolling support
             int subfieldStartIndex = 0;
             if (label == null)
@@ -109,7 +109,7 @@ namespace Cinemachine.Editor
                 {
                     if (minVal > 0 && minVal + range <= 1)
                         valOffset = minVal;
-                    else 
+                    else
                         valOffset = 1 - range;
                 }
                 for (int i = 0; i < keys.Length; ++i)
@@ -132,7 +132,7 @@ namespace Cinemachine.Editor
         public static void AddAssetsFromPackageSubDirectory(
             Type type, List<ScriptableObject> assets, string path)
         {
-            try 
+            try
             {
                 path = "/" + path;
                 var info = new DirectoryInfo(ScriptableObjectUtility.CinemachineInstallPath + path);
@@ -148,7 +148,7 @@ namespace Cinemachine.Editor
                         assets.Add(a);
                 }
             }
-            catch 
+            catch
             {
             }
         }
