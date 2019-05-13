@@ -426,7 +426,10 @@ namespace Cinemachine
                 Ray inverseRay = new Ray(ray.GetPoint(rayLength), -ray.direction);
                 if (!hitInfo.collider.Raycast(inverseRay, out hitInfo, rayLength))
                     break;
-                extraDistance += rayLength - (hitInfo.distance - PrecisionSlush);
+                float deltaExtraDistance = rayLength - (hitInfo.distance - PrecisionSlush);
+                if (deltaExtraDistance < Epsilon)
+                    break;
+                extraDistance += deltaExtraDistance;
                 rayLength = hitInfo.distance - PrecisionSlush;
                 if (rayLength < Epsilon)
                     break;

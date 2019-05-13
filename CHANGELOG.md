@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.3.4-preview.8] - 2019-05-13
+## [2.3.4-preview.9] - 2019-05-13
 ### PostProcessing V3 and bugfixes
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Improved Lookahead: does not automatically recenter
 - Brain no longer applies time scaling to fixed delta
 - Added dependency on Unity.ugui (2019.2 and up)
+- Bugfix: potential endless loop when using Ignore tag in Collider
 - Bugfix: Allow externally-driven FeeLook XAxis to work properly with SimpleFollow
 - Bugfix: vcams with noise would sometimes show one noiseless frame when they were activated and standby update was not Always
 - Bugfix: Generate a cut event if cutting to a blend-in-progess (fogbugz 1150847)
