@@ -7,7 +7,7 @@ using Cinemachine.Utility;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePath))]
-    public sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
+    internal sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
     {
         private ReorderableList mWaypointList;
         static bool mWaypointsExpanded;
@@ -374,7 +374,7 @@ namespace Cinemachine.Editor
 #if false
                 // Show the normals, for debugging
                 Gizmos.color = Color.red;
-                Vector3 y = (q * Vector3.up) * width / 2;
+                Vector3 y = (q * Vector3.up) * path.m_Appearance.width / 2;
                 Gizmos.DrawLine(p, p + y);
                 Gizmos.color = pathColor;
 #endif

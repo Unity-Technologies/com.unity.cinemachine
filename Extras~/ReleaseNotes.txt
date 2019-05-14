@@ -1,4 +1,4 @@
-<size=20><b>Version 2.3.4-preview.10</b></size>
+<size=20><b>Version 2.3.4-preview.11</b></size>
 
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
