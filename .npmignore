@@ -1,7 +1,4 @@
 Documentation/ApiDocs/**
-Tests/**
-Tests
-Tests.meta
 .npmrc
 .npmignore
 .gitignore
