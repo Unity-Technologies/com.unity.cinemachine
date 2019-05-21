@@ -20,7 +20,7 @@ pack:
     flavor: m1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci project pack
+    - upm-ci package pack
   artifacts:
     packages:
       paths:
@@ -36,7 +36,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci project test -u {{ editor.version }}
+    - upm-ci package test -u {{ editor.version }}
   artifacts:
     logs:
       paths:
