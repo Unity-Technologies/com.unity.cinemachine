@@ -1,6 +1,4 @@
 test_editors:
-  - version: 2018.1
-  - version: 2018.2
   - version: 2018.3
 test_platforms:
   - name: win
