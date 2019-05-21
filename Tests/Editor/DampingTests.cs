@@ -3,7 +3,8 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
 
-public class RuntimeDampingTest
+[TestFixture]
+public class DampingTests
 {
     [Test]
 	public void DampFloat()
@@ -34,15 +35,5 @@ public class RuntimeDampingTest
             //Assert.AreEqual(initial * (1 - MathHelpers.kNegligibleResidual), r, "f = " + f);
         }
 	}
-
-/*
-	// A UnityTest behaves like a coroutine in PlayMode
-	// and allows you to yield null to skip a frame in EditMode
-	[UnityTest]
-	public IEnumerator PlayModeSampleTestWithEnumeratorPasses() {
-		// Use the Assert class to test conditions.
-		// yield to skip a frame
-		yield return null;
-	}
-*/
 }
+
