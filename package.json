@@ -1,7 +1,7 @@
 {
   "name": "com.unity.cinemachine",
   "displayName": "Cinemachine",
-  "version": "2.2.9-preview.10",
+  "version": "2.2.9",
   "unity": "2018.1",
   "description": "Smart camera tools for passionate creators. \n\nIMPORTANT NOTE: If you are upgrading from the Asset Store version of Cinemachine, delete the Cinemachine asset from your project BEFORE installing this version from the Package Manager.",
   "keywords": [ "camera", "follow", "rig", "fps", "cinematography", "aim", "orbit", "cutscene", "cinematic", "collision", "freelook", "cinemachine", "compose", "composition", "dolly", "track", "clearshot", "noise", "framing", "handheld", "lens", "impulse" ],
@@ -11,6 +11,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Unity-Technologies/upm-package-cinemachine",
-    "revision": "f1507f6780a7e5dca799a36d6106d1f596eb52ff"
+    "revision": "08558cfb3884bd235c19e8af060cf66fac2225e3"
   }
 }
