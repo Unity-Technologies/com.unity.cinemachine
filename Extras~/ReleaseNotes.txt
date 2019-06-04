@@ -1,3 +1,8 @@
+<size=20><b>Version 2.2.10</b></size>
+
+- Framing Transposer: ignore LookAt target.  Use Follow exclusively (regression fix)
+
+
 <size=20><b>Version 2.2.9</b></size>
 
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens

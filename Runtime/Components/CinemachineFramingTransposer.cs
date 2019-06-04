@@ -422,7 +422,7 @@ namespace Cinemachine
             Quaternion worldToLocal = Quaternion.Inverse(localToWorld);
             Vector3 cameraPos = worldToLocal * camPosWorld;
             Vector3 targetPos = (worldToLocal * TrackedPoint) - cameraPos;
-            Vector3 lookAtPos = (worldToLocal * curState.ReferenceLookAt) - cameraPos;
+            Vector3 lookAtPos = targetPos;
 
             // Move along camera z
             Vector3 cameraOffset = Vector3.zero;
