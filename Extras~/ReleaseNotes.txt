@@ -1,6 +1,7 @@
 <size=20><b>Version 2.3.5</b></size>
 
 - Framing Transposer: ignore LookAt target.  Use Follow exclusively (regression fix)
+- Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethos and BrainUpdateMethod
 
 
 <size=20><b>Version 2.3.4</b></size>
