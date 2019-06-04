@@ -1,3 +1,8 @@
+<size=20><b>Version 2.3.5</b></size>
+
+- Framing Transposer: ignore LookAt target.  Use Follow exclusively (regression fix)
+
+
 <size=20><b>Version 2.3.4</b></size>
 
 - Added support for PostProcessing V3 - now called CinemachineVolumeSttings
