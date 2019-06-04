@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -60,7 +61,7 @@ namespace Cinemachine
 
         /// <summary>This enum defines the options available for the update method.</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-        public enum UpdateMethod
+        public enum VcamUpdateMethod
         {
             /// <summary>Virtual cameras are updated in sync with the Physics module, in FixedUpdate</summary>
             FixedUpdate,
@@ -74,8 +75,27 @@ namespace Cinemachine
         /// minimize the potential jitter.  Use FixedUpdate if all your targets are animated with for RigidBody animation.
         /// SmartUpdate will choose the best method for each virtual camera, depending
         /// on how the target is animated.</summary>
-        [Tooltip("Use FixedUpdate if all your targets are animated during FixedUpdate (e.g. RigidBodies), LateUpdate if all your targets are animated during the normal Update loop, and SmartUpdate if you want Cinemachine to do the appropriate thing on a per-target basis.  SmartUpdate is the recommended setting")]
-        public UpdateMethod m_UpdateMethod = UpdateMethod.SmartUpdate;
+        [Tooltip("The update time for the vcams.  Use FixedUpdate if all your targets are animated "
+            + "during FixedUpdate (e.g. RigidBodies), LateUpdate if all your targets are animated "
+            + "during the normal Update loop, and SmartUpdate if you want Cinemachine to do the "
+            + "appropriate thing on a per-target basis.  SmartUpdate is the recommended setting")]
+        [FormerlySerializedAs("m_UpdateMethod")]
+        public VcamUpdateMethod m_VcamUpdateMethod = VcamUpdateMethod.SmartUpdate;
+
+        /// <summary>This enum defines the options available for the update method.</summary>
+        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
+        public enum BrainUpdateMethod
+        {
+            /// <summary>Camera is updated in sync with the Physics module, in FixedUpdate</summary>
+            FixedUpdate,
+            /// <summary>Camera is updated in MonoBehaviour LateUpdate.</summary>
+            LateUpdate
+        };
+
+        /// <summary>The update time for the Brain, i.e. when the blends are evaluated and the
+        /// brain's transform is updated.</summary>
+        [Tooltip("The update time for the Brain, i.e. when the blends are evaluated and the brain's transform is updated")]
+        public BrainUpdateMethod m_BrainUpdateMethod = BrainUpdateMethod.LateUpdate;
 
         /// <summary>
         /// The blend which is used if you don't explicitly define a blend between two Virtual Cameras.
@@ -231,10 +251,10 @@ namespace Cinemachine
             {
                 // FixedUpdate can be called multiple times per frame
                 yield return mWaitForFixedUpdate;
-                if (m_UpdateMethod != UpdateMethod.LateUpdate)
+                if (m_VcamUpdateMethod != VcamUpdateMethod.LateUpdate)
                 {
                     CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
-                    if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                    if (m_VcamUpdateMethod == VcamUpdateMethod.SmartUpdate)
                     {
                         // Track the targets
                         UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed);
@@ -242,6 +262,9 @@ namespace Cinemachine
                     }
                     UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
                 }
+                // Choose the active vcam and apply it to the Unity camera
+                if (m_BrainUpdateMethod == BrainUpdateMethod.FixedUpdate)
+                    ProcessActiveCamera(Time.fixedDeltaTime);
             }
         }
 
@@ -251,19 +274,22 @@ namespace Cinemachine
             UpdateFrame0(deltaTime);
             UpdateCurrentLiveCameras();
 
-            if (m_UpdateMethod == UpdateMethod.FixedUpdate)
+            if (m_VcamUpdateMethod == VcamUpdateMethod.FixedUpdate)
             {
                 // Special handling for fixed update: cameras that have been enabled
                 // since the last physics frame must be updated now
-                CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Fixed;
-                if (SoloCamera != null)
-                    SoloCamera.UpdateCameraState(DefaultWorldUp, deltaTime);
-                mCurrentLiveCameras.UpdateCameraState(DefaultWorldUp, deltaTime);
+                if (m_BrainUpdateMethod != BrainUpdateMethod.FixedUpdate)
+                {
+                    CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Fixed;
+                    if (SoloCamera != null)
+                        SoloCamera.UpdateCameraState(DefaultWorldUp, deltaTime);
+                    mCurrentLiveCameras.UpdateCameraState(DefaultWorldUp, deltaTime);
+                }
             }
             else
             {
                 CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Late;
-                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                if (m_VcamUpdateMethod == VcamUpdateMethod.SmartUpdate)
                 {
                     // Track the targets
                     UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Late);
@@ -272,7 +298,8 @@ namespace Cinemachine
                 UpdateVirtualCameras(filter, deltaTime);
             }
             // Choose the active vcam and apply it to the Unity camera
-            ProcessActiveCamera(deltaTime);
+            if (m_BrainUpdateMethod == BrainUpdateMethod.LateUpdate)
+                ProcessActiveCamera(deltaTime);
         }
 
 #if UNITY_EDITOR
@@ -327,9 +354,9 @@ namespace Cinemachine
             updateFilter = CinemachineCore.UpdateFilter.Late;
             if (Application.isPlaying)
             {
-                if (m_UpdateMethod == UpdateMethod.SmartUpdate)
+                if (m_VcamUpdateMethod == VcamUpdateMethod.SmartUpdate)
                     updateFilter |= CinemachineCore.UpdateFilter.Smart;
-                else if (m_UpdateMethod == UpdateMethod.FixedUpdate)
+                else if (m_VcamUpdateMethod == VcamUpdateMethod.FixedUpdate)
                     updateFilter = CinemachineCore.UpdateFilter.Fixed;
             }
             CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
