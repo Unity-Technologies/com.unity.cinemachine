@@ -198,7 +198,7 @@ namespace Cinemachine.Editor
         private static void ImportExamplePackage()
         {
             string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
-                + "/Extras~/CinemachineExamples.unitypackage";
+                + "/Samples~/CinemachineExamples.unitypackage";
             if (!File.Exists(pkgFile))
                 Debug.LogError("Missing file " + pkgFile);
             else
