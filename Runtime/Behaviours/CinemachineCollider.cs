@@ -176,7 +176,7 @@ namespace Cinemachine
             public float colliderDisplacement;
             public bool targetObscured;
             public float occlusionStartTime;
-            public List<Vector3> debugResolutionPath;
+            public List<Vector3> debugResolutionPath = null;
 
             public void AddPointToDebugPath(Vector3 p)
             {
