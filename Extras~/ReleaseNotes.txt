@@ -1,7 +1,8 @@
 <size=20><b>Version 2.2.10</b></size>
 
 - Framing Transposer: ignore LookAt target.  Use Follow exclusively (regression fix)
-- Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethos and BrainUpdateMethod
+- Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
+- Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size
 
 
 <size=20><b>Version 2.2.9</b></size>

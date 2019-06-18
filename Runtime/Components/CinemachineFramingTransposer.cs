@@ -480,15 +480,15 @@ namespace Cinemachine
             {
                 if (isOrthographic)
                 {
-                    targetHeight = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
+                    targetHeight = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
 
-                    // ApplyDamping
+                    // Apply Damping
                     if (deltaTime >= 0)
                         targetHeight = m_prevFOV + Damper.Damp(targetHeight - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetHeight;
 
                     LensSettings lens = curState.Lens;
-                    lens.OrthographicSize = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
+                    lens.OrthographicSize = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
                     curState.Lens = lens;
                 }
                 else if (m_AdjustmentMode != AdjustmentMode.DollyOnly)

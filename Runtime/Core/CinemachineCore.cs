@@ -287,6 +287,12 @@ namespace Cinemachine
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
                 ? Time.frameCount - status.lastUpdateFrame
                 : FixedFrameCount - status.lastUpdateFixedFrame;
+#if false
+            if (deltaTime >= 0 && frameDelta == 0 && status.lastUpdateMode == updateClock)
+                return; // already updated
+            if (frameDelta != 1)
+                deltaTime = -1; // multiple frames - kill the damping
+#else
             if (deltaTime >= 0)
             {
                 if (frameDelta == 0 && status.lastUpdateMode == updateClock)
@@ -294,6 +300,7 @@ namespace Cinemachine
                 if (frameDelta > 0)
                     deltaTime *= frameDelta; // try to catch up if multiple frames
             }
+#endif
 
 //Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "/" + status.lastUpdateFixedFrame + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
             vcam.InternalUpdateCameraState(worldUp, deltaTime);

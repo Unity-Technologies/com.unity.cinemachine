@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.2.10] - 2019-06-10
 ### Bugfixes
 - Framing Transposer: ignore LookAt target.  Use Follow exclusively (regression fix)
-- Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethos and BrainUpdateMethod
+- Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
+- Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size 
 
 ## [2.2.9] - 2019-05-22
 ### Mostly Bugfixes
