@@ -184,18 +184,22 @@ namespace Cinemachine.PostFX
                     volumeOwner.hideFlags = HideFlags.HideAndDontSave;
                     volumeOwner.transform.parent = t;
                 }
-/*
+
                 // Update the volume's layer so it will be seen
-                int mask = ppLayer.volumeLayer.value;
-                for (int i = 0; i < 32; ++i)
+                var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
+                if (data != null)
                 {
-                    if ((mask & (1 << i)) != 0)
+                    int mask = data.volumeLayerMask;
+                    for (int i = 0; i < 32; ++i)
                     {
-                        volumeOwner.layer = i;
-                        break;
+                        if ((mask & (1 << i)) != 0)
+                        {
+                            volumeOwner.layer = i;
+                            break;
+                        }
                     }
                 }
-*/
+
                 while (sVolumes.Count < minVolumes)
                     sVolumes.Add(volumeOwner.gameObject.AddComponent<Volume>());
             }

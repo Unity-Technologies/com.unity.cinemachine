@@ -4,11 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.3.5] - 2019-06-10
+## [2.3.5-preview.1] - 2019-06-18
 ### Bugfixes
 - Framing Transposer: ignore LookAt target.  Use Follow exclusively (regression fix)
 - Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
 - Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size 
+- Bugfix: VolumeSettings: handle layermask in HDAdditionalCameraData
 
 ## [2.3.4] - 2019-05-22
 ### PostProcessing V3 and bugfixes
