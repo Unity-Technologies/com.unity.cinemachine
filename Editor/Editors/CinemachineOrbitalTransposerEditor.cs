@@ -104,10 +104,7 @@ namespace Cinemachine.Editor
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
 
-                Vector3 up = Vector3.up;
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
-                if (brain != null)
-                    up = brain.DefaultWorldUp;
+                Vector3 up = target.VirtualCamera.State.ReferenceUp;
                 Vector3 pos = target.FollowTargetPosition;
 
                 Quaternion orient = target.GetReferenceOrientation(up);
