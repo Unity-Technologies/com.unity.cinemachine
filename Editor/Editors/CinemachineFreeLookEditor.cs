@@ -7,7 +7,7 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineFreeLook))]
-    internal sealed class CinemachineFreeLookEditor 
+    internal sealed class CinemachineFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
     {
         protected override List<string> GetExcludedPropertiesInInspector()
@@ -37,7 +37,7 @@ namespace Cinemachine
 
         public override void OnInspectorGUI()
         {
-            Target.m_XAxis.ValueRangeLocked 
+            Target.m_XAxis.ValueRangeLocked
                 = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
 
             // Ordinary properties
@@ -54,9 +54,9 @@ namespace Cinemachine
             {
                 Rect rect = EditorGUILayout.GetControlRect(true);
                 SerializedProperty orbit = orbits.GetArrayElementAtIndex(i);
-                InspectorUtility.MultiPropertyOnLine(rect, 
+                InspectorUtility.MultiPropertyOnLine(rect,
                     new GUIContent(CinemachineFreeLook.RigNames[i]),
-                    new [] { orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Height), 
+                    new [] { orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),
                             orbit.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
                     null);
             }
@@ -156,10 +156,7 @@ namespace Cinemachine
             if (vcam.Follow != null)
             {
                 Vector3 pos = vcam.Follow.position;
-                Vector3 up = Vector3.up;
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
-                if (brain != null)
-                    up = brain.DefaultWorldUp;
+                Vector3 up = vcam.State.ReferenceUp;
 
                 var MiddleRig = vcam.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
                 if (MiddleRig != null)
