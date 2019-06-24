@@ -7,7 +7,7 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineNewVirtualCamera))]
-    sealed class CinemachineNewVirtualCameraEditor 
+    sealed class CinemachineNewVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
     {
         VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
@@ -69,7 +69,7 @@ namespace Cinemachine
             else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
             {
                 // We're not dragging anything now, but we were
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                EditorUtility.SetDirty(Target);
                 Target.UserIsDragging = false;
             }
         }

@@ -51,7 +51,7 @@ namespace Cinemachine.Editor
             if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
             {
                 CinemachineBrain.SoloCamera = null;
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                EditorUtility.SetDirty(Target);
             }
         }
 
@@ -163,11 +163,11 @@ namespace Cinemachine.Editor
             {
                 isSolo = !isSolo;
                 CinemachineBrain.SoloCamera = isSolo ? Target : null;
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                EditorUtility.SetDirty(Target);
             }
             GUI.color = color;
             if (isSolo && !Application.isPlaying)
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                EditorUtility.SetDirty(Target);
 
             if (labelWidth > 0)
             {

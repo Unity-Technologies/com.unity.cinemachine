@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
                     FieldPath(x => x.m_CustomBlends), this);
             m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) =>
                 {
-                    UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                    EditorUtility.SetDirty(Target);
                 };
         }
 
@@ -76,14 +76,14 @@ namespace Cinemachine.Editor
             if (brain.OutputCamera != null && brain.m_ShowCameraFrustum)
             {
                 DrawCameraFrustumGizmo(
-                    brain, LensSettings.FromCamera(brain.OutputCamera), 
-                    brain.transform.localToWorldMatrix, 
+                    brain, LensSettings.FromCamera(brain.OutputCamera),
+                    brain.transform.localToWorldMatrix,
                     Color.white); // GML why is this color hardcoded?
             }
         }
 
         internal static void DrawCameraFrustumGizmo(
-            CinemachineBrain brain, LensSettings lens, 
+            CinemachineBrain brain, LensSettings lens,
             Matrix4x4 transform, Color color)
         {
             float aspect = 1;
@@ -101,8 +101,8 @@ namespace Cinemachine.Editor
             if (ortho)
             {
                 Vector3 size = new Vector3(
-                        aspect * lens.OrthographicSize * 2, 
-                        lens.OrthographicSize * 2, 
+                        aspect * lens.OrthographicSize * 2,
+                        lens.OrthographicSize * 2,
                         lens.NearClipPlane + lens.FarClipPlane);
                 Gizmos.DrawWireCube(
                     new Vector3(0, 0, (size.z / 2) + lens.NearClipPlane), size);

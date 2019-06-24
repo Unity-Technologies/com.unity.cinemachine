@@ -36,7 +36,7 @@ namespace Cinemachine.Editor
                 if (group == null)
                     excluded.Add(FieldPath(x => x.m_GroupFramingMode));
             }
-            else 
+            else
             {
                 CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
                 bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
@@ -50,7 +50,7 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_MinimumFOV));
                     excluded.Add(FieldPath(x => x.m_MaximumFOV));
                 }
-                else 
+                else
                 {
                     excluded.Add(FieldPath(x => x.m_MinimumOrthoSize));
                     excluded.Add(FieldPath(x => x.m_MaximumOrthoSize));
@@ -85,13 +85,13 @@ namespace Cinemachine.Editor
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            EditorUtility.SetDirty(Target);
         }
 
         protected virtual void OnDisable()
         {
             CinemachineDebug.OnGUIHandlers -= OnGUI;
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            EditorUtility.SetDirty(Target);
         }
 
         public override void OnInspectorGUI()
@@ -99,7 +99,7 @@ namespace Cinemachine.Editor
             BeginInspector();
             if (Target.FollowTarget == null)
                 EditorGUILayout.HelpBox(
-                    "Framing Transposer requires a Follow target.  Change Body to Do Nothing if you don't want a Follow target.", 
+                    "Framing Transposer requires a Follow target.  Change Body to Do Nothing if you don't want a Follow target.",
                     MessageType.Warning);
 
             // First snapshot some settings
@@ -139,13 +139,13 @@ namespace Cinemachine.Editor
 
                     GUI.color = CinemachineSettings.ComposerSettings.TargetColour;
                     Rect r = new Rect(targetScreenPosition, Vector2.zero);
-                    float size = (CinemachineSettings.ComposerSettings.TargetSize 
+                    float size = (CinemachineSettings.ComposerSettings.TargetSize
                         + CinemachineScreenComposerGuides.kGuideBarWidthPx) / 2;
                     GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
                     size -= CinemachineScreenComposerGuides.kGuideBarWidthPx;
                     if (size > 0)
                     {
-                        Vector4 overlayOpacityScalar 
+                        Vector4 overlayOpacityScalar
                             = new Vector4(1f, 1f, 1f, CinemachineSettings.ComposerSettings.OverlayOpacity);
                         GUI.color = Color.black * overlayOpacityScalar;
                         GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
@@ -158,7 +158,7 @@ namespace Cinemachine.Editor
         private static void DrawGroupComposerGizmos(CinemachineFramingTransposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.FollowTargetGroup != null 
+            if (target.FollowTargetGroup != null
                 && target.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
             {
                 Matrix4x4 m = Gizmos.matrix;
@@ -173,7 +173,7 @@ namespace Cinemachine.Editor
                     Vector3 e = b.extents;
                     Gizmos.DrawFrustum(
                         Vector3.zero,
-                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2, 
+                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2,
                         z + e.z, z - e.z, e.x / e.y);
                 }
                 Gizmos.matrix = m;

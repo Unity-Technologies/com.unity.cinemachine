@@ -70,7 +70,7 @@ namespace Cinemachine.Editor
             else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
             {
                 // We're not dragging anything now, but we were
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                EditorUtility.SetDirty(Target);
                 Target.UserIsDragging = false;
             }
         }

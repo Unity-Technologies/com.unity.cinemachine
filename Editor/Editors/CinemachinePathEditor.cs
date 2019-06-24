@@ -286,7 +286,7 @@ namespace Cinemachine.Editor
                     && mWaypointList.index != i)
                 {
                     mWaypointList.index = i;
-                    InternalEditorUtility.RepaintAllViews();
+                    EditorUtility.SetDirty(Target);
                 }
                 // Label it
                 Handles.BeginGUI();
@@ -326,7 +326,7 @@ namespace Cinemachine.Editor
                 wp.tangent = newPos - wp.position;
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                EditorUtility.SetDirty(Target);
             }
         }
 
@@ -347,7 +347,7 @@ namespace Cinemachine.Editor
                 wp.position = Matrix4x4.Inverse(localToWorld).MultiplyPoint(pos);;
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                EditorUtility.SetDirty(Target);
             }
         }
 
