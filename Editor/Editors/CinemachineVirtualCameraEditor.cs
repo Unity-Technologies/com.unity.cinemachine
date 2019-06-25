@@ -70,7 +70,7 @@ namespace Cinemachine.Editor
             else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
             {
                 // We're not dragging anything now, but we were
-                EditorUtility.SetDirty(Target);
+                InspectorUtility.RepaintGameView(Target);
                 Target.UserIsDragging = false;
             }
         }

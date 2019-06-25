@@ -51,7 +51,7 @@ namespace Cinemachine.Editor
             if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
             {
                 CinemachineBrain.SoloCamera = null;
-                EditorUtility.SetDirty(Target);
+                InspectorUtility.RepaintGameView(Target);
             }
         }
 
@@ -167,7 +167,7 @@ namespace Cinemachine.Editor
             }
             GUI.color = color;
             if (isSolo && !Application.isPlaying)
-                EditorUtility.SetDirty(Target);
+                InspectorUtility.RepaintGameView(Target);
 
             if (labelWidth > 0)
             {

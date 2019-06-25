@@ -85,13 +85,13 @@ namespace Cinemachine.Editor
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
-            EditorUtility.SetDirty(Target);
+            InspectorUtility.RepaintGameView(Target);
         }
 
         protected virtual void OnDisable()
         {
             CinemachineDebug.OnGUIHandlers -= OnGUI;
-            EditorUtility.SetDirty(Target);
+            InspectorUtility.RepaintGameView(Target);
         }
 
         public override void OnInspectorGUI()

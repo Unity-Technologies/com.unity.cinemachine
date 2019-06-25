@@ -162,5 +162,19 @@ namespace Cinemachine.Editor
             return new GameObject(name, types);
 #endif
         }
+
+        public static void RepaintGameView(UnityEngine.Object dirtyObject = null)
+        {
+            if (dirtyObject != null)
+                EditorUtility.SetDirty(dirtyObject);
+
+            System.Reflection.Assembly assembly = typeof(UnityEditor.EditorWindow).Assembly;
+            Type type = assembly.GetType("UnityEditor.GameView");
+            EditorWindow gameview = EditorWindow.GetWindow(type);
+            if (gameview != null)
+                gameview.Repaint();
+            else
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+        }
     }
 }
