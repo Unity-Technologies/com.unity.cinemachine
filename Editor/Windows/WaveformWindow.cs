@@ -12,7 +12,7 @@ namespace Cinemachine.Editor
         Texture2D mScreenshot;
         string mScreenshotFilename;
 
-        // Controls how frequently (in seconds) the view will update.  
+        // Controls how frequently (in seconds) the view will update.
         // Performance is really bad, so keep this as large as possible.
         public static float UpdateInterval = 0.5f;
         public static void SetDefaultUpdateInterval() { UpdateInterval = 0.5f; }
@@ -25,7 +25,7 @@ namespace Cinemachine.Editor
             //window.position = new Rect(100, 100, 400, 400);
             window.Show(true);
         }
-        
+
         private void OnEnable()
         {
             titleContent = new GUIContent("Waveform", CinemachineSettings.CinemachineLogoTexture);
@@ -104,9 +104,9 @@ namespace Cinemachine.Editor
             CommandBuffer mCmd;
 
             static Mesh sFullscreenTriangle;
-            static Mesh FullscreenTriangle 
-            { 
-                get 
+            static Mesh FullscreenTriangle
+            {
+                get
                 {
                     if (sFullscreenTriangle == null)
                     {
@@ -122,9 +122,9 @@ namespace Cinemachine.Editor
                         sFullscreenTriangle.UploadMeshData(false);
                     }
                     return sFullscreenTriangle;
-                } 
+                }
             }
-          
+
             public WaveformGenerator()
             {
                 mWaveformCompute = Resources.Load<ComputeShader>("CMWaveform");
@@ -139,7 +139,7 @@ namespace Cinemachine.Editor
 
             void CreateBuffers(int width, int height)
             {
-                if (mOutput == null || !mOutput.IsCreated() 
+                if (mOutput == null || !mOutput.IsCreated()
                     || mOutput.width != width || mOutput.height != height)
                 {
                     DestroyImmediate(mOutput);
@@ -192,16 +192,16 @@ namespace Cinemachine.Editor
                 mCmd.BeginSample("CMWaveform");
 
                 var parameters = new Vector4(
-                    width, height, 
-                    QualitySettings.activeColorSpace == ColorSpace.Linear ? 1 : 0, 
+                    width, height,
+                    QualitySettings.activeColorSpace == ColorSpace.Linear ? 1 : 0,
                     histogramResolution);
 
                 // Clear the buffer on every frame
                 int kernel = mWaveformCompute.FindKernel("KCMWaveformClear");
                 mCmd.SetComputeBufferParam(mWaveformCompute, kernel, "_WaveformBuffer", mData);
                 mCmd.SetComputeVectorParam(mWaveformCompute, "_Params", parameters);
-                mCmd.DispatchCompute(mWaveformCompute, kernel, 
-                    Mathf.CeilToInt(width / (float)mThreadGroupSizeX), 
+                mCmd.DispatchCompute(mWaveformCompute, kernel,
+                    Mathf.CeilToInt(width / (float)mThreadGroupSizeX),
                     Mathf.CeilToInt(histogramResolution / (float)mThreadGroupSizeY), 1);
 
                 // Gather all pixels and fill in our waveform
@@ -209,18 +209,18 @@ namespace Cinemachine.Editor
                 mCmd.SetComputeBufferParam(mWaveformCompute, kernel, "_WaveformBuffer", mData);
                 mCmd.SetComputeTextureParam(mWaveformCompute, kernel, "_Source", source);
                 mCmd.SetComputeVectorParam(mWaveformCompute, "_Params", parameters);
-                mCmd.DispatchCompute(mWaveformCompute, kernel, width, 
+                mCmd.DispatchCompute(mWaveformCompute, kernel, width,
                     Mathf.CeilToInt(height / (float)mThreadGroupSize), 1);
 
                 // Generate the waveform texture
                 float exposure = Mathf.Max(0f, m_Exposure);
                 exposure *= (float)histogramResolution / height;
-                mWaveformProperties.SetVector(Shader.PropertyToID("_Params"), 
+                mWaveformProperties.SetVector(Shader.PropertyToID("_Params"),
                     new Vector4(width, histogramResolution, exposure, 0f));
                 mWaveformProperties.SetBuffer(Shader.PropertyToID("_WaveformBuffer"), mData);
                 mCmd.SetRenderTarget(mOutput);
                 mCmd.DrawMesh(
-                    FullscreenTriangle, Matrix4x4.identity, 
+                    FullscreenTriangle, Matrix4x4.identity,
                     mWaveformMaterial, 0, 0, mWaveformProperties);
                 mCmd.EndSample("CMWaveform");
 
