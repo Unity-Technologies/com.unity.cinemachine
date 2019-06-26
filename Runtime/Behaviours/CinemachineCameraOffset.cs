@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Cinemachine;
+using Cinemachine.Utility;
 
 /// <summary>
 /// An add-on module for Cinemachine Virtual Camera that adds a final offset to the camera
@@ -13,15 +14,37 @@ public class CinemachineCameraOffset : CinemachineExtension
     [Tooltip("When to apply the offset")]
     public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.Aim;
 
+    [Tooltip("If applying offset after aim, re-adjust the aim to preserve the screen position"
+        + " of the LookAt target as much as possible")]
+    public bool m_PreserveComposition;
+
     protected override void PostPipelineStageCallback(
         CinemachineVirtualCameraBase vcam,
         CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
     {
         if (stage == m_ApplyAfter)
         {
-            Vector3 offset = state.FinalOrientation * m_Offset;
-            state.ReferenceLookAt += offset;
+            bool preserveAim = m_PreserveComposition
+                && state.HasLookAt && stage > CinemachineCore.Stage.Body;
+
+            Vector3 screenOffset = Vector2.zero;
+            if (preserveAim)
+            {
+                screenOffset = state.RawOrientation.GetCameraRotationToTarget(
+                    state.ReferenceLookAt - state.CorrectedPosition, state.ReferenceUp);
+            }
+
+            Vector3 offset = state.RawOrientation * m_Offset;
             state.PositionCorrection += offset;
+            if (!preserveAim)
+                state.ReferenceLookAt += offset;
+            else
+            {
+                var q = Quaternion.LookRotation(
+                    state.ReferenceLookAt - state.CorrectedPosition, state.ReferenceUp);
+                q = q.ApplyCameraRotation(-screenOffset, state.ReferenceUp);
+                state.RawOrientation = q;
+            }
         }
     }
 }
