@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
 
         void OnGUI()
         {
-            GUILayout.Label("Source", EditorStyles.boldLabel);
+            GUILayout.Label("Source Camera", EditorStyles.boldLabel);
             EditorGUI.BeginChangeCheck();
             cameraMotion = EditorGUILayout.ObjectField(
                 new GUIContent("Camera Motion"), cameraMotion,
@@ -49,6 +49,7 @@ namespace Cinemachine.Editor
             EditorGUILayout.LabelField(new GUIContent($"Length = { lenA }"));
             startOffsetA = EditorGUILayout.FloatField(new GUIContent("Start Offset"), startOffsetA);
 
+            GUILayout.Label("Source LookAt Target", EditorStyles.boldLabel);
             EditorGUI.BeginChangeCheck();
             targetMotion = EditorGUILayout.ObjectField(
                 new GUIContent("Target Motion"), targetMotion,
@@ -98,45 +99,57 @@ namespace Cinemachine.Editor
             info.selected = labels.Count == 0 ? -1 : 0;
         }
 
-        struct Curve3
+        struct Curve4
         {
             public AnimationCurve x;
             public AnimationCurve y;
             public AnimationCurve z;
+            public AnimationCurve w;
 
-            public Vector3 Sample(float t)
+            public Vector3 Sample3(float t)
             {
                 return new Vector3(
                     (x == null || t < 0) ? 0 : x.Evaluate(t),
                     (y == null || t < 0) ? 0 : y.Evaluate(t),
                     (z == null || t < 0) ? 0 : z.Evaluate(t));
             }
+
+            public Quaternion Sample4(float t)
+            {
+                return new Quaternion(
+                    (x == null || t < 0) ? 0 : x.Evaluate(t),
+                    (y == null || t < 0) ? 0 : y.Evaluate(t),
+                    (z == null || t < 0) ? 0 : z.Evaluate(t),
+                    (w == null || t < 0) ? 0 : w.Evaluate(t)).normalized;
+            }
         }
 
-        static float NormalizeRot(float a, float prev)
+        static float UnwrapEulerRotation(float a, float prev)
         {
             if (Mathf.Abs(a - prev) < 180)
                 return a;
             return (a < prev) ? a + 380 : a - 360;
         }
 
-        Curve3 Curve3FromClip(AnimationClip clip, string path, string p)
+        Curve4 Curve4FromClip(AnimationClip clip, string path, string p)
         {
-            var c = new Curve3();
+            var c = new Curve4();
             c.x = AnimationUtility.GetEditorCurve(clip, new EditorCurveBinding
                 { path = path, propertyName = p + ".x", type = typeof(Transform) });
             c.y = AnimationUtility.GetEditorCurve(clip, new EditorCurveBinding
                 { path = path, propertyName = p + ".y", type = typeof(Transform) });
             c.z = AnimationUtility.GetEditorCurve(clip, new EditorCurveBinding
                 { path = path, propertyName = p + ".z", type = typeof(Transform) });
+            c.w = AnimationUtility.GetEditorCurve(clip, new EditorCurveBinding
+                { path = path, propertyName = p + ".w", type = typeof(Transform) });
             return c;
         }
 
         void ComputeDeltas()
         {
-            Curve3 posA = Curve3FromClip(cameraMotion, bindingsA.bindings[bindingsA.selected].path, "m_LocalPosition");
-            Curve3 rotA = Curve3FromClip(cameraMotion, bindingsA.bindings[bindingsA.selected].path, "localEulerAnglesRaw");
-            Curve3 posB = Curve3FromClip(targetMotion, bindingsB.bindings[bindingsB.selected].path, "m_LocalPosition");
+            Curve4 posA = Curve4FromClip(cameraMotion, bindingsA.bindings[bindingsA.selected].path, "m_LocalPosition");
+            Curve4 rotA = Curve4FromClip(cameraMotion, bindingsA.bindings[bindingsA.selected].path, "m_LocalRotation");
+            Curve4 posB = Curve4FromClip(targetMotion, bindingsB.bindings[bindingsB.selected].path, "m_LocalPosition");
 
             float step = 1 / sampleFPS;
             float length = cameraMotion.length - startOffsetA;
@@ -149,20 +162,22 @@ namespace Cinemachine.Editor
             Vector3 rPrev = Vector3.zero;
             for (float t = 0; t <= length; t += step)
             {
-                var pA = posA.Sample(t + startOffsetA);
-                var pB = posB.Sample(t + startOffsetB);
+                var pA = posA.Sample3(t + startOffsetA);
+                var pB = posB.Sample3(t + startOffsetB);
 
-                var qA = Quaternion.Euler(rotA.Sample(t + startOffsetA));
+                var qA = rotA.Sample4(t + startOffsetA);
                 var fwdA = qA * Vector3.forward;
                 var fwdB = pB - pA;
                 if (fwdB.sqrMagnitude < 0.01f)
                     fwdB = fwdA;
-                var r = Quaternion.FromToRotation(fwdB, fwdA).eulerAngles;
+                var qB = Quaternion.LookRotation(fwdB, Vector3.up);
+
+                var r = (Quaternion.Inverse(qB) * qA).eulerAngles;
                 if (t > 0)
                 {
-                    r.x = NormalizeRot(r.x, rPrev.x);
-                    r.y = NormalizeRot(r.y, rPrev.y);
-                    r.z = NormalizeRot(r.z, rPrev.z);
+                    r.x = UnwrapEulerRotation(r.x, rPrev.x);
+                    r.y = UnwrapEulerRotation(r.y, rPrev.y);
+                    r.z = UnwrapEulerRotation(r.z, rPrev.z);
                 }
                 rPrev = r;
                 kX.Add(new Keyframe { time = t, value = r.x });

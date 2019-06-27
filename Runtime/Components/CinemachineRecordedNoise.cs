@@ -11,6 +11,11 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+#if UNITY_2018_3_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     public class CinemachineRecordedNoise : CinemachineComponentBase
     {
         /// <summary>
@@ -56,7 +61,10 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             if (!IsValid || deltaTime < 0 || mLength < Epsilon)
+            {
+                mNoiseTime = 0;
                 return;
+            }
 
             mNoiseTime += deltaTime * m_FrequencyGain;
             if (mNoiseTime > mLength)
