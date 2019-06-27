@@ -35,7 +35,7 @@ namespace Cinemachine
         /// Gain to apply to the amplitudes defined in the AnimationClip.
         /// </summary>
         [Tooltip("Gain to apply to the amplitudes defined in the AnimationClip asset.  1 is normal.  Setting this to 0 completely mutes the noise.")]
-        public float m_AmplitudeGain = 1f;
+        public Vector3 m_AmplitudeGain = Vector3.one;
 
         /// <summary>
         /// Scale factor to apply to the frequencies defined in the AnimationClip.
@@ -60,13 +60,10 @@ namespace Cinemachine
         /// Noise is only applied if this value is greater than or equal to 0</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (!IsValid || deltaTime < 0 || mLength < Epsilon)
-            {
-                mNoiseTime = 0;
+            if (!IsValid || mLength < Epsilon)
                 return;
-            }
 
-            mNoiseTime += deltaTime * m_FrequencyGain;
+            mNoiseTime = VirtualCamera.TimelineClipTime * m_FrequencyGain;
             if (mNoiseTime > mLength)
                 mNoiseTime %= mLength;
             if (mNoiseTime < 0)
@@ -74,7 +71,9 @@ namespace Cinemachine
 
             // We use pos component of signal as euler
             m_SignalSource.GetSignal(mNoiseTime, out Vector3 pos, out Quaternion rot);
-            pos *= m_AmplitudeGain;
+            pos.x *= m_AmplitudeGain.x;
+            pos.y *= m_AmplitudeGain.y;
+            pos.z *= m_AmplitudeGain.z;
             Quaternion q = Quaternion.Euler(pos);
             curState.OrientationCorrection = curState.OrientationCorrection * q;
 

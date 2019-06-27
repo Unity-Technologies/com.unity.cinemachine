@@ -159,6 +159,9 @@ namespace Cinemachine
             ScreenSpaceAimWhenTargetsDiffer
         }
 
+        /// Hack for Hackweek 2019: Clip time if inside Timeline
+        public float TimelineClipTime { get; set; }
+
         /// <summary>Applies a position blend hint to the camera state</summary>
         protected void ApplyPositionBlendMethod(ref CameraState state, BlendHint hint)
         {

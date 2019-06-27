@@ -67,6 +67,11 @@ using Cinemachine;
                     clipB.weight = weight;
                     clipB.localTime = clip.GetTime();
                     clipB.duration = clip.GetDuration();
+
+                    // GML hackweek 2019
+                    if (shot.VirtualCamera != null)
+                        shot.VirtualCamera.TimelineClipTime = (float)clipB.localTime;
+
                     if (++activeInputs == 2)
                         break;
                 }
