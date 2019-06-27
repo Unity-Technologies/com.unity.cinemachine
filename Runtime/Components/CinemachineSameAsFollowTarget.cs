@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
@@ -11,6 +12,10 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class CinemachineSameAsFollowTarget : CinemachineComponentBase
     {
+        public float m_AngularDamping = 0;
+
+        Quaternion m_PreviousReferenceOrientation = Quaternion.identity;
+
         /// <summary>True if component is enabled and has a Follow target defined</summary>
         public override bool IsValid { get { return enabled && FollowTarget != null; } }
 
@@ -23,8 +28,18 @@ namespace Cinemachine
         /// <param name="deltaTime">Not used.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (IsValid)
-                curState.RawOrientation = FollowTargetRotation;
+            if (!IsValid)
+                return;
+
+            Quaternion dampedOrientation = FollowTargetRotation;
+            if (deltaTime >= 0)
+            {
+                float t = Damper.Damp(1, m_AngularDamping, deltaTime);
+                dampedOrientation = Quaternion.Slerp(
+                    m_PreviousReferenceOrientation, FollowTargetRotation, t);
+            }
+            m_PreviousReferenceOrientation = dampedOrientation;
+            curState.RawOrientation = dampedOrientation;
         }
     }
 }

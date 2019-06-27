@@ -256,7 +256,7 @@ namespace Cinemachine
 
         Quaternion CalculateAverageOrientation()
         {
-            Quaternion r = Quaternion.identity;
+            Quaternion r = Quaternion.identity; r.w = 0;
             for (int i = 0; i < m_Targets.Length; ++i)
             {
                 if (m_Targets[i].target != null)
@@ -267,7 +267,7 @@ namespace Cinemachine
                     r = new Quaternion(r.x + q.x * w, r.y + q.y * w, r.z + q.z * w, r.w + q.w * w);
                 }
             }
-            return r.Normalized();
+            return r.w == 0 ? Quaternion.identity : r.Normalized();
         }
 
         Bounds CalculateBoundingBox(Vector3 avgPos, float maxWeight)

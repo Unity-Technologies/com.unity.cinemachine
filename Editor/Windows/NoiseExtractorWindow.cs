@@ -149,9 +149,10 @@ namespace Cinemachine.Editor
             Vector3 rPrev = Vector3.zero;
             for (float t = 0; t <= length; t += step)
             {
-                var pA = posA.Sample(t + startOffsetA); Debug.Log(t + ": " +"posA = " + pA);
-                var qA = Quaternion.Euler(rotA.Sample(t + startOffsetA)); Debug.Log(t + ": " +"rotA = " + qA);
-                var pB = posB.Sample(t + startOffsetB); Debug.Log(t + ": " +"posB = " + pB);
+                var pA = posA.Sample(t + startOffsetA);
+                var pB = posB.Sample(t + startOffsetB);
+
+                var qA = Quaternion.Euler(rotA.Sample(t + startOffsetA));
                 var fwdA = qA * Vector3.forward;
                 var fwdB = pB - pA;
                 if (fwdB.sqrMagnitude < 0.01f)
