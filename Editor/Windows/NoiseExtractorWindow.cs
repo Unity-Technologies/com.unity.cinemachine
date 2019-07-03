@@ -30,6 +30,7 @@ namespace Cinemachine.Editor
         {
             // Get existing open window or if none, make a new one:
             NoiseExtractorWindow window = (NoiseExtractorWindow)GetWindow(typeof(NoiseExtractorWindow));
+            window.titleContent = new GUIContent("Noise Extractor");
             window.Show();
         }
 
@@ -124,11 +125,20 @@ namespace Cinemachine.Editor
             }
         }
 
+        static float NormalizeEulerRotation(float a)
+        {
+            a %= 360;
+            if (Mathf.Abs(a) > 180)
+                a -= Mathf.Sign(a) * 360;
+            return a;
+        }
+
         static float UnwrapEulerRotation(float a, float prev)
         {
-            if (Mathf.Abs(a - prev) < 180)
-                return a;
-            return (a < prev) ? a + 380 : a - 360;
+            a = NormalizeEulerRotation(a);
+            if (Mathf.Abs(a - prev) > 180)
+                a = (a < prev) ? a + 360 : a - 360;
+            return a;
         }
 
         Curve4 Curve4FromClip(AnimationClip clip, string path, string p)
@@ -173,13 +183,17 @@ namespace Cinemachine.Editor
                 var qB = Quaternion.LookRotation(fwdB, Vector3.up);
 
                 var r = (Quaternion.Inverse(qB) * qA).eulerAngles;
-                if (t > 0)
+                if (t == 0)
                 {
-                    r.x = UnwrapEulerRotation(r.x, rPrev.x);
-                    r.y = UnwrapEulerRotation(r.y, rPrev.y);
-                    r.z = UnwrapEulerRotation(r.z, rPrev.z);
+                    rPrev.x = NormalizeEulerRotation(r.x);
+                    rPrev.y = NormalizeEulerRotation(r.y);
+                    rPrev.z = NormalizeEulerRotation(r.z);
                 }
+                r.x = UnwrapEulerRotation(r.x, rPrev.x);
+                r.y = UnwrapEulerRotation(r.y, rPrev.y);
+                r.z = UnwrapEulerRotation(r.z, rPrev.z);
                 rPrev = r;
+
                 kX.Add(new Keyframe { time = t, value = r.x });
                 kY.Add(new Keyframe { time = t, value = r.y });
                 kZ.Add(new Keyframe { time = t, value = r.z });
