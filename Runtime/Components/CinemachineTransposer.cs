@@ -318,30 +318,29 @@ namespace Cinemachine
                     case BindingMode.LockToTargetOnAssign:
                         return m_targetOrientationOnAssign;
                     case BindingMode.LockToTargetWithWorldUp:
-                        return Uppify(targetOrientation, worldUp);
+                        {
+                            Vector3 fwd = (targetOrientation * Vector3.forward).ProjectOntoPlane(worldUp);
+                            if (fwd.AlmostZero())
+                                break;
+                            return Quaternion.LookRotation(fwd, worldUp);
+                        }
                     case BindingMode.LockToTargetNoRoll:
                         return Quaternion.LookRotation(targetOrientation * Vector3.forward, worldUp);
                     case BindingMode.LockToTarget:
                         return targetOrientation;
                     case BindingMode.SimpleFollowWithWorldUp:
-                    {
-                        Vector3 dir = FollowTargetPosition - VcamState.RawPosition;
-                        dir = dir.ProjectOntoPlane(worldUp);
-                        if (dir.AlmostZero())
-                            break;
-                        return Quaternion.LookRotation(dir.normalized, worldUp);
-                    }
+                        {
+                            Vector3 fwd = (FollowTargetPosition - VcamState.RawPosition).ProjectOntoPlane(worldUp);
+                            if (fwd.AlmostZero())
+                                break;
+                            return Quaternion.LookRotation(fwd, worldUp);
+                        }
                     default:
                         break;
                 }
             }
-            return Quaternion.identity;
-        }
-
-        static Quaternion Uppify(Quaternion q, Vector3 up)
-        {
-            Quaternion r = Quaternion.FromToRotation(q * Vector3.up, up);
-            return r * q;
+            // Gimbal lock situation - use previous orientation if it exists
+            return m_PreviousReferenceOrientation.normalized;
         }
     }
 }
