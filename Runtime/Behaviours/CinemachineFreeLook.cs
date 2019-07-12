@@ -328,6 +328,7 @@ namespace Cinemachine
                 m_YAxis.Value = GetYAxisClosestValue(cameraPos, worldUp);
 
                 transform.position = cameraPos;
+                transform.rotation = fromCam.State.RawOrientation;
                 m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
                 PreviousStateIsValid = false;
                 PushSettingsToRigs();
