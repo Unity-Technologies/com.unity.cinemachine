@@ -308,6 +308,24 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>Notification that this virtual camera is going live.
+        /// Base class implementation does nothing.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <returns>True if the vcam should do an internal update as a result of this call</returns>
+        public override bool OnTransitionFromCamera(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
+            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+        {
+            if (fromCam != null && transitionParams.m_InheritPosition)
+            {
+                transform.rotation = fromCam.State.RawOrientation;
+                return true;
+            }
+            return false;
+        }
+
         // Convert from screen coords to normalized orthographic distance coords
         private Rect ScreenToOrtho(Rect rScreen, float orthoSize, float aspect)
         {
