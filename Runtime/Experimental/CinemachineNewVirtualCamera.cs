@@ -107,6 +107,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
             if (m_Transitions.m_InheritPosition && fromCam != null)
             {
@@ -124,7 +125,10 @@ namespace Cinemachine
                     forceUpdate = true;
             }
             if (forceUpdate)
+            {
                 InternalUpdateCameraState(worldUp, deltaTime);
+                InternalUpdateCameraState(worldUp, deltaTime);
+            }
             else
                 UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
@@ -193,14 +197,14 @@ namespace Cinemachine
             UpdateComponentCache();
 
             // Apply the component pipeline
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Init;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
                 if (c != null)
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Init;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
@@ -325,7 +329,9 @@ namespace Cinemachine
         /// <returns>The Cinemachine component for that stage, or null if not defined</returns>
         public CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
         {
-            return ComponentCache[(int)stage];
+            var cache = ComponentCache;
+            var i = (int)stage;
+            return i >= 0 && i < cache.Length ? cache[i] : null;
         }
 
         /// <summary>Get an existing component of a specific type from the cinemachine pipeline.</summary>

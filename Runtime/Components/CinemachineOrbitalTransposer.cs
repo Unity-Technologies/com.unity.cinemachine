@@ -181,7 +181,7 @@ namespace Cinemachine
 
             float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up), deltaTime);
             if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
-                m_RecenterToTargetHeading.DoRecentering(ref axis, deltaTime, targetHeading);
+                axis.Value = m_RecenterToTargetHeading.DoRecentering(axis.Value, deltaTime, targetHeading);
 
             float finalHeading = axis.Value;
             if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)

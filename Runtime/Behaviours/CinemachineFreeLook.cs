@@ -309,6 +309,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
             if (fromCam != null && m_Transitions.m_InheritPosition)
             {
@@ -657,7 +658,7 @@ namespace Cinemachine
         {
             CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
 
-            m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
+            m_YAxis.Value = m_YAxisRecentering.DoRecentering(m_YAxis.Value, deltaTime, 0.5f);
 
             // Blend from the appropriate rigs
             float t = GetYAxisValue();

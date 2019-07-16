@@ -277,45 +277,45 @@ namespace Cinemachine
             }
 
             /// <summary>Bring the axis back to the cenetered state (only if enabled).</summary>
-            public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
+            public float DoRecentering(float axisValue, float deltaTime, float recenterTarget)
             {
                 if (!m_enabled)
-                    return;
+                    return axisValue;
 
                 if (deltaTime < 0)
                 {
                     CancelRecentering();
-                    axis.Value = recenterTarget;
+                    return recenterTarget;
                 }
-                else if (Time.time > (mLastAxisInputTime + m_WaitTime))
+
+                if (Time.time > (mLastAxisInputTime + m_WaitTime))
                 {
                     // Scale value determined heuristically, to account for accel/decel
                     float recenterTime = m_RecenteringTime / 3f;
                     if (recenterTime <= deltaTime)
-                        axis.Value = recenterTarget;
+                        return recenterTarget;
+
+                    float headingError = Mathf.DeltaAngle(axisValue, recenterTarget);
+                    float absHeadingError = Mathf.Abs(headingError);
+                    if (absHeadingError < UnityVectorExtensions.Epsilon)
+                    {
+                        axisValue = recenterTarget;
+                        mRecenteringVelocity = 0;
+                    }
                     else
                     {
-                        float headingError = Mathf.DeltaAngle(axis.Value, recenterTarget);
-                        float absHeadingError = Mathf.Abs(headingError);
-                        if (absHeadingError < UnityVectorExtensions.Epsilon)
-                        {
-                            axis.Value = recenterTarget;
-                            mRecenteringVelocity = 0;
-                        }
-                        else
-                        {
-                            float scale = deltaTime / recenterTime;
-                            float desiredVelocity = Mathf.Sign(headingError)
-                                * Mathf.Min(absHeadingError, absHeadingError * scale);
-                            // Accelerate to the desired velocity
-                            float accel = desiredVelocity - mRecenteringVelocity;
-                            if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
-                                desiredVelocity = mRecenteringVelocity + desiredVelocity * scale;
-                            axis.Value += desiredVelocity;
-                            mRecenteringVelocity = desiredVelocity;
-                        }
+                        float scale = deltaTime / recenterTime;
+                        float desiredVelocity = Mathf.Sign(headingError)
+                            * Mathf.Min(absHeadingError, absHeadingError * scale);
+                        // Accelerate to the desired velocity
+                        float accel = desiredVelocity - mRecenteringVelocity;
+                        if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
+                            desiredVelocity = mRecenteringVelocity + desiredVelocity * scale;
+                        mRecenteringVelocity = desiredVelocity;
+                        axisValue += desiredVelocity;
                     }
                 }
+                return axisValue;
             }
 
             // Legacy support

@@ -5,6 +5,32 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     [Serializable]
+    public struct AxisBase
+    {
+        /// <summary>The current value of the axis</summary>
+        [NoSaveDuringPlay]
+        [Tooltip("The current value of the axis.")]
+        public float m_Value;
+
+        /// <summary>The minimum value for the axis</summary>
+        [Tooltip("The minimum value for the axis")]
+        public float m_MinValue;
+
+        /// <summary>The maximum value for the axis</summary>
+        [Tooltip("The maximum value for the axis")]
+        public float m_MaxValue;
+
+        /// <summary>If checked, then the axis will wrap around at the min/max values, forming a loop</summary>
+        [Tooltip("If checked, then the axis will wrap around at the min/max values, forming a loop")]
+        public bool m_Wrap;
+
+        public void Validate()
+        {
+            m_MaxValue = Mathf.Clamp(m_MaxValue, m_MinValue, m_MaxValue);
+        }
+    }
+
+    [Serializable]
     public struct CinemachineInputAxisDriver
     {
         [Tooltip("Multiply the input by this amount prior to processing.  Controls the input power.")]
@@ -37,7 +63,7 @@ namespace Cinemachine
             decelTime = Mathf.Max(0, decelTime);
         }
 
-        public bool Update(float deltaTime, ref AxisState axis)
+        public bool Update(float deltaTime, ref AxisBase axis)
         {
             if (!string.IsNullOrEmpty(name))
             {
@@ -60,7 +86,7 @@ namespace Cinemachine
                 float range = axis.m_MaxValue - axis.m_MinValue;
                 if (!axis.m_Wrap && decelTime > Epsilon && range > Epsilon)
                 {
-                    float v0 = ClampValue(ref axis, axis.Value);
+                    float v0 = ClampValue(ref axis, axis.m_Value);
                     float v = ClampValue(ref axis, v0 + speed * deltaTime);
                     float d = (speed > 0) ? axis.m_MaxValue - v : v - axis.m_MinValue;
                     if (d < (0.1f * range) && Mathf.Abs(speed) > Epsilon)
@@ -69,11 +95,11 @@ namespace Cinemachine
                 input = speed * deltaTime;
             }
 
-            axis.Value = ClampValue(ref axis, axis.Value + input);
+            axis.m_Value = ClampValue(ref axis, axis.m_Value + input);
             return Mathf.Abs(inputValue) > Epsilon;
         }
 
-        float ClampValue(ref AxisState axis, float v)
+        float ClampValue(ref AxisBase axis, float v)
         {
             float r = axis.m_MaxValue - axis.m_MinValue;
             if (axis.m_Wrap && r > Epsilon)
@@ -82,6 +108,26 @@ namespace Cinemachine
                 v += axis.m_MinValue + ((v < 0) ? r : 0);
             }
             return Mathf.Clamp(v, axis.m_MinValue, axis.m_MaxValue);
+        }
+
+        /// <summary>
+        /// Support for legacy AxisState struct
+        /// </summary>
+        /// <param name="deltaTime"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public bool Update(float deltaTime, ref AxisState axis)
+        {
+            var a = new AxisBase
+            {
+                m_Value = axis.Value,
+                m_MinValue = axis.m_MinValue,
+                m_MaxValue = axis.m_MaxValue,
+                m_Wrap = axis.m_Wrap
+            };
+            bool changed = Update(deltaTime, ref a);
+            axis.Value = a.m_Value;
+            return changed;
         }
     }
 }

@@ -114,7 +114,7 @@ namespace Cinemachine.Editor
                 int index = (int)stage;
 
                 // Skip pipeline stages that have no implementations
-                if (sStageData[index].PopupOptions.Length <= 1)
+                if (index < 0 || sStageData[index].PopupOptions.Length <= 1)
                     continue;
 
                 const float indentOffset = 4;

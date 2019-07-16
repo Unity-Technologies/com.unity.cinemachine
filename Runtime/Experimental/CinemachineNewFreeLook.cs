@@ -269,6 +269,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             if (fromCam != null && m_Transitions.m_InheritPosition)
             {
                 // Note: horizontal axis already taken care of by base class
@@ -358,7 +359,7 @@ namespace Cinemachine
                     m_VerticalAxis.m_Recentering.CancelRecentering();
                 m_RadialAxis.Update(deltaTime);
             }
-            m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
+            m_VerticalAxis.Value = m_VerticalAxis.m_Recentering.DoRecentering(m_VerticalAxis.Value, deltaTime, 0.5f);
 
             // Blend the components
             if (mBlender == null)

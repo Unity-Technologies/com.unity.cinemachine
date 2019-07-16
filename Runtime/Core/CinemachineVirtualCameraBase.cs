@@ -135,6 +135,32 @@ namespace Cinemachine
                 parent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
         }
 
+        /// <summary>
+        /// Invokes the OnTransitionFromCamera for all extensions on this camera
+        /// </summary>
+        /// <returns>True to request a vcam update of internal state</returns>
+        protected bool InvokeOnTransitionInExtensions(
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
+        {
+            bool forceUpdate = false;
+            if (mExtensions != null)
+            {
+                for (int i = 0; i < mExtensions.Count; ++i)
+                {
+                    var e = mExtensions[i];
+                    if (e == null)
+                    {
+                        // Object was deleted (possibly because of Undo in the editor)
+                        mExtensions.RemoveAt(i);
+                        --i;
+                    }
+                    else if (e.enabled && e.OnTransitionFromCamera(fromCam, worldUp, deltaTime))
+                        forceUpdate = true;
+                }
+            }
+            return forceUpdate;
+        }
+
         /// <summary>Get the name of the Virtual Camera.  Base implementation
         /// returns the owner GameObject's name.</summary>
         public string Name { get { return name; } }
