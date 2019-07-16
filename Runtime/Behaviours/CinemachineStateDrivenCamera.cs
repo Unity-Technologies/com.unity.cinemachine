@@ -184,6 +184,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             TransitioningFrom = fromCam;
             InternalUpdateCameraState(worldUp, deltaTime);
         }

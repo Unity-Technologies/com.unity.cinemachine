@@ -449,7 +449,7 @@ namespace Cinemachine
             }
 
             // Update the state by invoking the component pipeline
-            CinemachineCore.Stage curStage = CinemachineCore.Stage.Body;
+            CinemachineCore.Stage curStage = CinemachineCore.Stage.Init;
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             bool hasAim = false;
             if (m_ComponentPipeline != null)
@@ -520,6 +520,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 
             if (m_Transitions.m_InheritPosition && fromCam != null)
@@ -538,7 +539,10 @@ namespace Cinemachine
                         forceUpdate = true;
             }
             if (forceUpdate)
+            {
                 InternalUpdateCameraState(worldUp, deltaTime);
+                InternalUpdateCameraState(worldUp, deltaTime);
+            }
             else
                 UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)

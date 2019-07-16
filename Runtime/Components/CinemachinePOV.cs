@@ -6,8 +6,8 @@ namespace Cinemachine
     /// <summary>
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to aim the camera in response to the user's mouse or joystick input.
-    /// 
-    /// The composer does not change the camera's position.  It will only pan and tilt the 
+    ///
+    /// The composer does not change the camera's position.  It will only pan and tilt the
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
@@ -65,8 +65,8 @@ namespace Cinemachine
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalRecentering.CancelRecentering();
             }
-            m_HorizontalRecentering.DoRecentering(ref m_HorizontalAxis, deltaTime, 0);
-            m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0);
+            m_HorizontalAxis.Value = m_HorizontalRecentering.DoRecentering(m_HorizontalAxis.Value, deltaTime, 0);
+            m_VerticalAxis.Value = m_VerticalRecentering.DoRecentering(m_VerticalAxis.Value, deltaTime, 0);
 
             // If we have a transform parent, then apply POV in the local space of the parent
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
@@ -86,8 +86,8 @@ namespace Cinemachine
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams) 
-        { 
+            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+        {
             if (fromCam != null && transitionParams.m_InheritPosition)
             {
                 Vector3 up = VcamState.ReferenceUp;
@@ -113,7 +113,7 @@ namespace Cinemachine
                     m_VerticalAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
                 return true;
             }
-            return false; 
+            return false;
         }
     }
 }

@@ -235,6 +235,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             CinemachineVirtualCameraBase[] children = ChildCameras;
             for (int i = 0; i < MaxCameras && i < children.Length; ++i)
             {
