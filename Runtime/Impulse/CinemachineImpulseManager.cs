@@ -6,13 +6,13 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// Property applied to CinemachineImpulseManager.EnvelopeDefinition.  
+    /// Property applied to CinemachineImpulseManager.EnvelopeDefinition.
     /// Used for custom drawing in the inspector.
     /// </summary>
     public sealed class CinemachineImpulseEnvelopePropertyAttribute : PropertyAttribute {}
 
     /// <summary>
-    /// Property applied to CinemachineImpulseManager Channels.  
+    /// Property applied to CinemachineImpulseManager Channels.
     /// Used for custom drawing in the inspector.
     /// </summary>
     public sealed class CinemachineImpulseChannelPropertyAttribute : PropertyAttribute {}
@@ -81,12 +81,12 @@ namespace Cinemachine
 
             /// <summary>Duration of the envelope, in seconds.  If negative, then duration is infinite.</summary>
             public float Duration
-            { 
-                get 
-                { 
+            {
+                get
+                {
                     if (m_HoldForever)
                         return -1;
-                    return m_AttackTime + m_SustainTime + m_DecayTime; 
+                    return m_AttackTime + m_SustainTime + m_DecayTime;
                 }
             }
 
@@ -120,8 +120,8 @@ namespace Cinemachine
             }
 
             /// <summary>
-            /// Change the envelope so that it stops at a specific offset from its start time.  
-            /// Use this to extend or cut short an existing envelope, while respecting the 
+            /// Change the envelope so that it stops at a specific offset from its start time.
+            /// Use this to extend or cut short an existing envelope, while respecting the
             /// attack and decay as much as possible.
             /// </summary>
             /// <param name="offset">When to stop the envelope</param>
@@ -156,7 +156,7 @@ namespace Cinemachine
                 m_SustainTime = Mathf.Max(0, m_SustainTime);
             }
         }
-        
+
         /// <summary>Describes an event that generates an impulse signal on one or more channels.
         /// The event has a location in space, a start time, a duration, and a signal.  The signal
         /// will dissipate as the distance from the event location increases.</summary>
@@ -218,18 +218,18 @@ namespace Cinemachine
             public float m_DissipationDistance;
 
             /// <summary>Returns true if the event is no longer generating a signal because its time has expired</summary>
-            public bool Expired 
-            { 
-                get 
-                { 
-                    var d = m_Envelope.Duration; 
-                    return d > 0 && m_StartTime + d <= Time.time; 
+            public bool Expired
+            {
+                get
+                {
+                    var d = m_Envelope.Duration;
+                    return d > 0 && m_StartTime + d <= Instance.CurrentTime;
                 }
             }
 
             /// <summary>Cancel the event at the supplied time</summary>
             /// <param name="time">The time at which to cancel the event</param>
-            /// <param name="forceNoDecay">If true, event will be cut immediately at the time, 
+            /// <param name="forceNoDecay">If true, event will be cut immediately at the time,
             /// otherwise its envelope's decay curve will begin at the cancel time</param>
             public void Cancel(float time, bool forceNoDecay)
             {
@@ -249,9 +249,9 @@ namespace Cinemachine
                 switch (m_DissipationMode)
                 {
                     default:
-                    case DissipationMode.LinearDecay: 
+                    case DissipationMode.LinearDecay:
                         return Mathf.Lerp(1, 0, distance / m_DissipationDistance);
-                    case DissipationMode.SoftDecay: 
+                    case DissipationMode.SoftDecay:
                         return 0.5f * (1 + Mathf.Cos(Mathf.PI * (distance / m_DissipationDistance)));
                     case DissipationMode.ExponentialDecay:
                         return 1 - Damper.Damp(1, m_DissipationDistance, distance);
@@ -268,7 +268,7 @@ namespace Cinemachine
             {
                 if (m_SignalSource != null)
                 {
-                    float time = Time.time - m_StartTime;
+                    float time = Instance.CurrentTime - m_StartTime;
                     float distance = use2D ? Vector2.Distance(listenerPosition, m_Position)
                         : Vector3.Distance(listenerPosition, m_Position);
                     float scale = m_Envelope.GetValueAt(time) * DistanceDecay(distance);
@@ -307,7 +307,7 @@ namespace Cinemachine
                 m_DissipationMode = DissipationMode.ExponentialDecay;
             }
 
-            /// <summary>Don't create them yourself.  Use CinemachineImpulseManager.NewImpulseEvent().</summary> 
+            /// <summary>Don't create them yourself.  Use CinemachineImpulseManager.NewImpulseEvent().</summary>
             internal ImpulseEvent() {}
         }
 
@@ -362,6 +362,11 @@ namespace Cinemachine
             return nontrivialResult;
         }
 
+        /// <summary>Set this to ignore time scaling so impulses can progress while the game is paused</summary>
+        public bool IgnoreTimeScale { get; set; }
+
+        float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : Time.time; } }
+
         /// <summary>Get a new ImpulseEvent</summary>
         public ImpulseEvent NewImpulseEvent()
         {
@@ -382,7 +387,7 @@ namespace Cinemachine
                 m_ActiveEvents = new List<ImpulseEvent>();
             if (e != null)
             {
-                e.m_StartTime = Time.time;
+                e.m_StartTime = CurrentTime;
                 m_ActiveEvents.Add(e);
             }
         }
