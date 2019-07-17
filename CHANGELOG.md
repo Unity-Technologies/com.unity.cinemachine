@@ -4,9 +4,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.3.5-preview.1] - 2019-06-18
+## [2.3.5-preview.2] - 2019-07-XX
 ### Bugfixes
-- Framing Transposer: ignore LookAt target.  Use Follow exclusively (regression fix)
+- Added Init stage to pipeline, so extensions can intervene before Body stage
+- Added OnTransitionFromCamera callback to extensions
+- New example scene: OverTheShoulderAim illustrating how to do over-the-shoulder TPS cam, with Normal and Aim modes
+- Added CinemachineCameraRotation extension for enhanced POV control
+- Impulse Manager: added option to ignore timescale
+- Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
+- Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfix: FreeLook was not respecting wait time for X axis recentering
+- Bugfix: FreeLook X axis was not always perfectly synched between rigs
 - Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
 - Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size 
 - Bugfix (fogbugz 1165599): Transposer: fix gimbal lock issue in LockToTargetWithWorldUp
