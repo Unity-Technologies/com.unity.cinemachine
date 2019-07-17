@@ -558,6 +558,8 @@ namespace Cinemachine
 
         private int LocateExistingRigs(string[] rigNames, bool forceOrbital)
         {
+            MasterOrbital = null;
+            CachedXAxisHeading = 0;
             mOrbitals = new CinemachineOrbitalTransposer[rigNames.Length];
             m_Rigs = new CinemachineVirtualCamera[rigNames.Length];
             int rigsFound = 0;
@@ -578,8 +580,9 @@ namespace Cinemachine
                             if (mOrbitals[i] != null)
                             {
                                 mOrbitals[i].m_HeadingIsSlave = true;
-                                if (i == 1)
-                                    mOrbitals[i].HeadingUpdater = UpdateXAxisHeading;
+                                mOrbitals[i].m_XAxis.m_InputAxisName = string.Empty;
+                                mOrbitals[i].HeadingUpdater = UpdateXAxisHeading;
+                                mOrbitals[i].m_RecenterToTargetHeading.m_enabled = false;
                                 m_Rigs[i] = vcam;
                                 m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
                                 ++rigsFound;
@@ -591,14 +594,23 @@ namespace Cinemachine
             return rigsFound;
         }
 
+        float CachedXAxisHeading { get; set; }
+        CinemachineOrbitalTransposer MasterOrbital { get; set; }
+
         float UpdateXAxisHeading(CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
         {
-            var oldValue = m_XAxis.Value;
-            float headng = orbital.UpdateHeading(deltaTime, up, ref m_XAxis);
-            // Allow externally-driven values to work in this mode
-            if (orbital.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                m_XAxis.Value = oldValue;
-            return headng;
+            if (MasterOrbital == null)
+                MasterOrbital = orbital;
+            if (MasterOrbital == orbital)
+            {
+                var oldValue = m_XAxis.Value;
+                CachedXAxisHeading = orbital.UpdateHeading(
+                    deltaTime, up, ref m_XAxis, ref m_RecenterToTargetHeading);
+                // Allow externally-driven values to work in this mode
+                if (orbital.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                    m_XAxis.Value = oldValue;
+            }
+            return CachedXAxisHeading;
         }
 
         void PushSettingsToRigs()
@@ -636,11 +648,7 @@ namespace Cinemachine
                 mOrbitals[i].m_FollowOffset = GetLocalPositionForCameraFromInput(GetYAxisValue());
                 mOrbitals[i].m_BindingMode = m_BindingMode;
                 mOrbitals[i].m_Heading = m_Heading;
-                mOrbitals[i].m_XAxis = m_XAxis;
-                mOrbitals[i].m_RecenterToTargetHeading.m_enabled = (i == 1) ? m_RecenterToTargetHeading.m_enabled : false;
-                mOrbitals[i].m_RecenterToTargetHeading.m_WaitTime = m_RecenterToTargetHeading.m_WaitTime;
-                mOrbitals[i].m_RecenterToTargetHeading.m_RecenteringTime = m_RecenterToTargetHeading.m_RecenteringTime;
-                mOrbitals[i].m_RecenterToTargetHeading.CopyStateFrom(ref m_RecenterToTargetHeading);
+                mOrbitals[i].m_XAxis.Value = m_XAxis.Value;
 
                 // Hack to get SimpleFollow with heterogeneous dampings to work
                 if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
