@@ -26,7 +26,7 @@ namespace Cinemachine.Editor
         {
             ScriptableObjectUtility.Create<CinemachineFixedSignal>();
         }
-    
+
         [MenuItem("Cinemachine/Create Virtual Camera", false, 1)]
         public static CinemachineVirtualCamera CreateVirtualCamera()
         {
@@ -39,7 +39,7 @@ namespace Cinemachine.Editor
         {
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineFreeLook), "CM FreeLook"), 
+                    GenerateUniqueObjectName(typeof(CinemachineFreeLook), "CM FreeLook"),
                     typeof(CinemachineFreeLook));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
@@ -192,7 +192,7 @@ namespace Cinemachine.Editor
         [MenuItem("Cinemachine/Import Example Asset Package")]
         private static void ImportExamplePackage()
         {
-            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath 
+            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
                 + "/Extras~/CinemachineExamples.unitypackage";
             if (!File.Exists(pkgFile))
                 Debug.LogError("Missing file " + pkgFile);
@@ -203,7 +203,7 @@ namespace Cinemachine.Editor
         [MenuItem("Cinemachine/Import Post Processing V2 Adapter Asset Package")]
         private static void ImportPostProcessingV2Package()
         {
-            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath 
+            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
                 + "/Extras~/CinemachinePostProcessingV2.unitypackage";
             if (!File.Exists(pkgFile))
                 Debug.LogError("Missing file " + pkgFile);

@@ -3,6 +3,43 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
+    [InitializeOnLoad]
+    internal class CinemachineStoryboardMute
+    {
+        const string StoryboardGlobalMuteMenuName = "Cinemachine/Storyboard Global Mute";
+        [MenuItem(StoryboardGlobalMuteMenuName, false)]
+        public static void StoryboardGlobalMute()
+        {
+            bool enable = !CinemachineStoryboardMute.Enabled;
+            CinemachineStoryboardMute.Enabled = enable;
+        }
+
+        static CinemachineStoryboardMute()
+        {
+            CinemachineStoryboard.s_StoryboardGlobalMute = Enabled;
+
+             /// Delaying until first editor tick so that the menu
+             /// will be populated before setting check state, and
+             /// re-apply correct action
+             EditorApplication.delayCall += () => { Menu.SetChecked(StoryboardGlobalMuteMenuName, Enabled); };
+        }
+
+        public static string kEnabledKey = "StoryboardMute_Enabled";
+        public static bool Enabled
+        {
+            get { return EditorPrefs.GetBool(kEnabledKey, false); }
+            set
+            {
+                if (value != Enabled)
+                {
+                    EditorPrefs.SetBool(kEnabledKey, value);
+                    CinemachineStoryboard.s_StoryboardGlobalMute = value;
+                    Menu.SetChecked(StoryboardGlobalMuteMenuName, value);
+                }
+            }
+        }
+    }
+
     [CustomEditor(typeof(CinemachineStoryboard))]
     internal sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
@@ -21,6 +58,13 @@ namespace Cinemachine.Editor
                 WaveformWindow.SetDefaultUpdateInterval();
 
             BeginInspector();
+            CinemachineStoryboardMute.Enabled
+                = EditorGUILayout.Toggle(
+                    new GUIContent(
+                        "Storyboard Global Mute",
+                        "If checked, all storyboards are globally muted."),
+                    CinemachineStoryboardMute.Enabled);
+
             Rect rect = EditorGUILayout.GetControlRect(true);
             EditorGUI.BeginChangeCheck();
             {
@@ -43,7 +87,7 @@ namespace Cinemachine.Editor
                 var prop = FindProperty(x => x.m_SyncScale);
                 GUIContent syncLabel = new GUIContent("Sync", prop.tooltip);
                 prop.boolValue = EditorGUI.ToggleLeft(rect, syncLabel, prop.boolValue);
-                rect.x += rect.width; 
+                rect.x += rect.width;
                 if (prop.boolValue)
                 {
                     prop = FindProperty(x => x.m_Scale);
@@ -71,7 +115,7 @@ namespace Cinemachine.Editor
                 serializedObject.ApplyModifiedProperties();
             }
             rect = EditorGUILayout.GetControlRect(true);
-            GUI.Label(new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), 
+            GUI.Label(new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height),
                 "Waveform Monitor");
             rect.width -= EditorGUIUtility.labelWidth; rect.width /= 2;
             rect.x += EditorGUIUtility.labelWidth;

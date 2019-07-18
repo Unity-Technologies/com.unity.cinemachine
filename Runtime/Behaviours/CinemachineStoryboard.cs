@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that places an image in screen space 
+    /// An add-on module for Cinemachine Virtual Camera that places an image in screen space
     /// over the camera's output.
     /// </summary>
     [SaveDuringPlay]
@@ -18,6 +18,9 @@ namespace Cinemachine
 #endif
     public class CinemachineStoryboard : CinemachineExtension
     {
+        [Tooltip("If checked, all storyboards are globally muted")]
+        public static bool s_StoryboardGlobalMute;
+
         [Tooltip("If checked, the specified image will be displayed as an overlay over the virtual camera's output")]
         public bool m_ShowImage = true;
 
@@ -64,7 +67,7 @@ namespace Cinemachine
         {
             public GameObject mCanvas;
             public CinemachineBrain mCanvasParent;
-            public RectTransform mViewport; // for mViewport clipping 
+            public RectTransform mViewport; // for mViewport clipping
             public UnityEngine.UI.RawImage mRawImage;
         }
         List<CanvasInfo> mCanvasInfo = new List<CanvasInfo>();
@@ -93,7 +96,7 @@ namespace Cinemachine
             else
                 DestroyCanvas();
         }
-        
+
         string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
 
         void CameraUpdatedCallback(CinemachineBrain brain)
@@ -102,11 +105,13 @@ namespace Cinemachine
             int layer = 1 << gameObject.layer;
             if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
                 showIt = false;
+            if (s_StoryboardGlobalMute)
+                showIt = false;
             CanvasInfo ci = LocateMyCanvas(brain, showIt);
             if (ci != null && ci.mCanvas != null)
                 ci.mCanvas.SetActive(showIt);
         }
-        
+
         CanvasInfo LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
         {
             CanvasInfo ci = null;
@@ -168,7 +173,7 @@ namespace Cinemachine
             {
                 var parent = CinemachineCore.Instance.GetActiveBrain(i);
                 int numChildren = parent.transform.childCount;
-                for (int j = 0; j < numChildren; ++j)
+                for (int j = numChildren - 1; j >= 0; --j)
                 {
                     RectTransform child = parent.transform.GetChild(j) as RectTransform;
                     if (child != null && child.name == CanvasName)
@@ -208,7 +213,7 @@ namespace Cinemachine
 
                 Vector2 scale = Vector2.one;
                 if (m_Image != null
-                    && m_Image.width > 0 && m_Image.width > 0 
+                    && m_Image.width > 0 && m_Image.width > 0
                     && screen.width > 0 && screen.height > 0)
                 {
                     float f = (screen.height * m_Image.width) / (screen.width * m_Image.height);
@@ -239,13 +244,13 @@ namespace Cinemachine
                 ci.mRawImage.color = tintColor;
 
                 pos = new Vector2(screen.width * m_Center.x, screen.height * m_Center.y);
-                pos.x += wipeAmount/2; 
+                pos.x += wipeAmount/2;
                 ci.mRawImage.rectTransform.localPosition = pos;
                 ci.mRawImage.rectTransform.localRotation = Quaternion.Euler(m_Rotation);
                 ci.mRawImage.rectTransform.localScale = scale;
                 ci.mRawImage.rectTransform.ForceUpdateRectTransforms();
                 ci.mRawImage.rectTransform.sizeDelta = screen.size;
-            }        
+            }
         }
 
         static void StaticBlendingHandler(CinemachineBrain brain)
@@ -261,6 +266,8 @@ namespace Cinemachine
                     bool showIt = true;
                     int layer = 1 << src.gameObject.layer;
                     if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
+                        showIt = false;
+                    if (s_StoryboardGlobalMute)
                         showIt = false;
                     CanvasInfo ci = src.LocateMyCanvas(brain, showIt);
                     if (ci != null)
@@ -285,14 +292,14 @@ namespace Cinemachine
         // Workaround for the Unity bug where OnDestroy doesn't get called if Undo
         // bug case Case 1004117
         [UnityEditor.InitializeOnLoad]
-        class CanvasesAndTheirOwners 
-        { 
+        class CanvasesAndTheirOwners
+        {
             static Dictionary<UnityEngine.Object, UnityEngine.Object> sCanvasesAndTheirOwners;
-            static CanvasesAndTheirOwners() 
-            { 
+            static CanvasesAndTheirOwners()
+            {
                 UnityEditor.Undo.undoRedoPerformed -= OnUndoRedoPerformed;
                 UnityEditor.Undo.undoRedoPerformed += OnUndoRedoPerformed;
-            } 
+            }
             static void OnUndoRedoPerformed()
             {
                 if (sCanvasesAndTheirOwners != null)
