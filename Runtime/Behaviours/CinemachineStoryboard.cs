@@ -19,6 +19,9 @@ namespace Cinemachine
 #endif
     public class CinemachineStoryboard : CinemachineExtension
     {
+        [Tooltip("If checked, all storyboards are globally muted")]
+        public static bool s_StoryboardGlobalMute;
+
         [Tooltip("If checked, the specified image will be displayed as an overlay over the virtual camera's output")]
         public bool m_ShowImage = true;
 
@@ -103,6 +106,8 @@ namespace Cinemachine
             int layer = 1 << gameObject.layer;
             if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
                 showIt = false;
+            if (s_StoryboardGlobalMute)
+                showIt = false;
             CanvasInfo ci = LocateMyCanvas(brain, showIt);
             if (ci != null && ci.mCanvas != null)
                 ci.mCanvas.SetActive(showIt);
@@ -169,7 +174,7 @@ namespace Cinemachine
             {
                 var parent = CinemachineCore.Instance.GetActiveBrain(i);
                 int numChildren = parent.transform.childCount;
-                for (int j = 0; j < numChildren; ++j)
+                for (int j = numChildren - 1; j >= 0; --j)
                 {
                     RectTransform child = parent.transform.GetChild(j) as RectTransform;
                     if (child != null && child.name == CanvasName)
@@ -262,6 +267,8 @@ namespace Cinemachine
                     bool showIt = true;
                     int layer = 1 << src.gameObject.layer;
                     if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
+                        showIt = false;
+                    if (s_StoryboardGlobalMute)
                         showIt = false;
                     CanvasInfo ci = src.LocateMyCanvas(brain, showIt);
                     if (ci != null)
