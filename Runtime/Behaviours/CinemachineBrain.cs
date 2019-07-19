@@ -594,7 +594,7 @@ namespace Cinemachine
                 if (frame.blend.IsComplete)
                 {
                     if(m_CameraBlendCompleteEvent != null){
-                        m_CameraBlendCompleteEvent.Invoke(frame.blend.CamA,frame.blend.CamB);
+                        m_CameraBlendCompleteEvent.Invoke(frame.blend.CamB,frame.blend.CamA);
                     }
                     // No more blend
                     frame.blend.CamA = null;
