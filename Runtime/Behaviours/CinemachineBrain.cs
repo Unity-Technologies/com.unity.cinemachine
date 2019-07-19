@@ -130,7 +130,7 @@ namespace Cinemachine
         [Serializable] public class BrainEvent : UnityEvent<CinemachineBrain> {}
 
         /// <summary>Event with a ICinemachineCamera parameter</summary>
-        [Serializable] public class VcamTransitionEvent : UnityEvent<ICinemachineCamera, ICinemachineCamera> {}
+        [Serializable] public class VcamActivatedEvent : UnityEvent<ICinemachineCamera, ICinemachineCamera> {}
 
         /// <summary>This event will fire whenever a virtual camera goes live and there is no blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live and there is no blend")]
@@ -139,13 +139,13 @@ namespace Cinemachine
         /// <summary>This event will fire whenever a virtual camera goes live.  If a blend is involved,
         /// then the event will fire on the first frame of the blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is involved, then the event will fire on the first frame of the blend.")]
-        public VcamTransitionEvent m_CameraActivatedEvent = new VcamTransitionEvent();
+        public VcamActivatedEvent m_CameraActivatedEvent = new VcamActivatedEvent();
 
         /// <summary>
         /// This event will fire whenever a blend finishes between two camera.
         /// </summary>
         [Tooltip("This event will fire whenever a blend finishes between two camera.")]
-        public VcamTransitionEvent m_CameraBlendCompleteEvent = new VcamTransitionEvent();
+        public VcamActivatedEvent m_CameraBlendCompleteEvent = new VcamActivatedEvent();
 
         /// <summary>
         /// API for the Unity Editor.
