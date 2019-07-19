@@ -66,6 +66,7 @@ namespace Cinemachine.Editor
             {
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraCutEvent));
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraActivatedEvent));
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraBlendCompleteEvent));
             }
             serializedObject.ApplyModifiedProperties();
         }
