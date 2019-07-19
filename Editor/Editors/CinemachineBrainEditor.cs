@@ -17,6 +17,7 @@ namespace Cinemachine.Editor
             List<string> excluded = base.GetExcludedPropertiesInInspector();
             excluded.Add(FieldPath(x => x.m_CameraCutEvent));
             excluded.Add(FieldPath(x => x.m_CameraActivatedEvent));
+            excluded.Add(FieldPath(x => x.m_CameraBlendCompleteEvent));
             excluded.Add(FieldPath(x => x.m_CustomBlends));
             return excluded;
         }
