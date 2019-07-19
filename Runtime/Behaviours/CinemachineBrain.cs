@@ -130,7 +130,7 @@ namespace Cinemachine
         [Serializable] public class BrainEvent : UnityEvent<CinemachineBrain> {}
 
         /// <summary>Event with a ICinemachineCamera parameter</summary>
-        [Serializable] public class VcamActivatedEvent : UnityEvent<ICinemachineCamera, ICinemachineCamera> {}
+        [Serializable] public class VcamTransitionEvent : UnityEvent<ICinemachineCamera, ICinemachineCamera> {}
 
         /// <summary>This event will fire whenever a virtual camera goes live and there is no blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live and there is no blend")]
@@ -139,7 +139,13 @@ namespace Cinemachine
         /// <summary>This event will fire whenever a virtual camera goes live.  If a blend is involved,
         /// then the event will fire on the first frame of the blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is involved, then the event will fire on the first frame of the blend.")]
-        public VcamActivatedEvent m_CameraActivatedEvent = new VcamActivatedEvent();
+        public VcamTransitionEvent m_CameraActivatedEvent = new VcamTransitionEvent();
+
+        /// <summary>
+        /// This event will fire whenever a blend finishes between two camera.
+        /// </summary>
+        [Tooltip("This event will fire whenever a blend finishes between two camera.")]
+        public VcamTransitionEvent m_CameraBlendCompleteEvent = new VcamTransitionEvent();
 
         /// <summary>
         /// API for the Unity Editor.
@@ -587,6 +593,9 @@ namespace Cinemachine
                 frame.blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : frame.blend.Duration;
                 if (frame.blend.IsComplete)
                 {
+                    if(m_CameraBlendCompleteEvent != null){
+                        m_CameraBlendCompleteEvent.Invoke(frame.blend.CamA,frame.blend.CamB);
+                    }
                     // No more blend
                     frame.blend.CamA = null;
                     frame.blend.BlendCurve = null;
