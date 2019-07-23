@@ -88,6 +88,10 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
+            m_HorizontalAxis.Value = m_HorizontalRecentering.DoRecentering(m_HorizontalAxis.Value, -1, 0);
+            m_VerticalAxis.Value = m_VerticalRecentering.DoRecentering(m_VerticalAxis.Value, -1, 0);
+            m_HorizontalRecentering.CancelRecentering();
+            m_VerticalRecentering.CancelRecentering();
             if (fromCam != null && transitionParams.m_InheritPosition)
             {
                 Vector3 up = VcamState.ReferenceUp;

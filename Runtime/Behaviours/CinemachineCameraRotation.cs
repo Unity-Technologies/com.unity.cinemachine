@@ -18,66 +18,58 @@ namespace Cinemachine
         [Tooltip("When to apply the offset")]
         public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.Body;
 
-        /// <summary>If set, update always, otherwise update only when playing and vcam is Live</summary>
-        [Tooltip("If set, update always, otherwise update only when playing and vcam is Live")]
-        public bool m_UpdateAlways;
-
         /// <summary>The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation</summary>
         [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-        public AxisBase m_HorizontalAxis;
-
-        /// <summary>Controls the input method for the horizontal axis</summary>
-        [Tooltip("Controls the input method for the horizontal axis")]
-        public CinemachineInputAxisDriver m_HorizontalInput;
-
-        /// <summary>Controls how automatic recentering of the Horizontal axis is accomplished</summary>
-        [Tooltip("Controls how automatic recentering of the Horizontal axis is accomplished")]
-        public AxisState.Recentering m_HorizontalRecentering;
+        [AxisStateProperty]
+        public AxisState m_HorizontalAxis;
 
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-        public AxisBase m_VerticalAxis;
-
-        /// <summary>Controls the input method for the vertical axis</summary>
-        [Tooltip("Controls the input method for the vertical axis")]
-        public CinemachineInputAxisDriver m_VerticalInput;
-
-        /// <summary>Controls how automatic recentering of the Vertical axis is accomplished</summary>
-        [Tooltip("Controls how automatic recentering of the Vertical axis is accomplished")]
-        public AxisState.Recentering m_VerticalRecentering;
+        [AxisStateProperty]
+        public AxisState m_VerticalAxis;
 
         void OnValidate()
         {
             m_HorizontalAxis.Validate();
-            m_HorizontalInput.Validate();
-            m_HorizontalRecentering.Validate();
+            m_HorizontalAxis.HasRecentering = true;
+            m_HorizontalAxis.m_Recentering.Validate();
 
             m_VerticalAxis.Validate();
-            m_VerticalInput.Validate();
-            m_VerticalRecentering.Validate();
+            m_VerticalAxis.HasRecentering = true;
+            m_VerticalAxis.m_Recentering.Validate();
         }
 
         private void Reset()
         {
-            m_HorizontalAxis = new AxisBase { m_Value = 0, m_MinValue = -180, m_MaxValue = 180, m_Wrap = true };
-            m_HorizontalInput = new CinemachineInputAxisDriver
+            m_HorizontalAxis = new AxisState
             {
-                multiplier = 2f,
-                accelTime = 0.5f,
-                decelTime = 0.5f,
-                name = "Mouse X",
+                Value = 0,
+                m_MinValue = -180,
+                m_MaxValue = 180,
+                m_Wrap = true,
+                m_SpeedMode = AxisState.SpeedMode.ValueMultiplier,
+                m_MaxSpeed = 2f,
+                m_AccelTime = 0.5f,
+                m_DecelTime = 0.5f,
+                m_InputAxisName = "Mouse X",
+                m_Recentering = new AxisState.Recentering(false, 1, 2),
+                HasRecentering = true
             };
-            m_HorizontalRecentering = new AxisState.Recentering(false, 1, 2);
 
-            m_VerticalAxis = new AxisBase { m_Value = 0, m_MinValue = -70, m_MaxValue = 70, m_Wrap = false };
-            m_VerticalInput = new CinemachineInputAxisDriver
+            m_VerticalAxis = new AxisState
             {
-                multiplier = -2,
-                accelTime = 0.5f,
-                decelTime = 0.5f,
-                name = "Mouse Y",
+                Value = 0,
+                m_MinValue = -70,
+                m_MaxValue = 70,
+                m_Wrap = false,
+                m_SpeedMode = AxisState.SpeedMode.ValueMultiplier,
+                m_MaxSpeed = -2,
+                m_AccelTime = 0.5f,
+                m_DecelTime = 0.5f,
+                m_InputAxisName = "Mouse Y",
+                m_Recentering = new AxisState.Recentering(false, 1, 2),
+                HasRecentering = true
             };
-            m_VerticalRecentering = new AxisState.Recentering(false, 1, 2);
         }
 
         /// <summary>Notification that this virtual camera is going live.
@@ -89,6 +81,9 @@ namespace Cinemachine
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
+            m_HorizontalAxis.Value = m_HorizontalAxis.m_Recentering.DoRecentering(m_HorizontalAxis.Value, deltaTime, 0);
+            m_VerticalAxis.Value = m_VerticalAxis.m_Recentering.DoRecentering(m_VerticalAxis.Value, deltaTime, 0);
+
             var vcam = VirtualCamera as CinemachineVirtualCamera;
             if (fromCam != null && vcam != null && vcam.m_Transitions.m_InheritPosition)
             {
@@ -100,20 +95,20 @@ namespace Cinemachine
                 if (parent != null)
                     fwd = parent.rotation * fwd;
 
-                m_HorizontalAxis.m_Value = 0;
-                m_HorizontalInput.inputValue = 0;
+                m_HorizontalAxis.m_InputAxisValue = 0;
+                m_HorizontalAxis.m_Recentering.CancelRecentering();
                 Vector3 targetFwd = targetRot * Vector3.forward;
                 Vector3 a = fwd.ProjectOntoPlane(up);
                 Vector3 b = targetFwd.ProjectOntoPlane(up);
                 if (!a.AlmostZero() && !b.AlmostZero())
-                    m_HorizontalAxis.m_Value = Vector3.SignedAngle(a, b, up);
+                    m_HorizontalAxis.Value = Vector3.SignedAngle(a, b, up);
 
-                m_VerticalAxis.m_Value = 0;
-                m_VerticalInput.inputValue = 0;
-                fwd = Quaternion.AngleAxis(m_HorizontalAxis.m_Value, up) * fwd;
+                m_VerticalAxis.m_InputAxisValue = 0;
+                m_VerticalAxis.m_Recentering.CancelRecentering();
+                fwd = Quaternion.AngleAxis(m_HorizontalAxis.Value, up) * fwd;
                 Vector3 right = Vector3.Cross(up, fwd);
                 if (!right.AlmostZero())
-                    m_VerticalAxis.m_Value = Vector3.SignedAngle(fwd, targetFwd, right);
+                    m_VerticalAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
                 return true;
             }
             return false;
@@ -126,22 +121,22 @@ namespace Cinemachine
             if (stage == m_ApplyAfter)
             {
                 // Only read joystick when game is playing
-                if (m_UpdateAlways || (deltaTime >= 0 && CinemachineCore.Instance.IsLive(VirtualCamera)))
+                if (deltaTime >= 0 && CinemachineCore.Instance.IsLive(VirtualCamera))
                 {
-                    bool changed = m_HorizontalInput.Update(deltaTime, ref m_HorizontalAxis);
-                    if (m_VerticalInput.Update(deltaTime, ref m_VerticalAxis))
+                    bool changed = m_HorizontalAxis.Update(deltaTime);
+                    if (m_VerticalAxis.Update(deltaTime))
                         changed = true;
                     if (changed)
                     {
-                        m_HorizontalRecentering.CancelRecentering();
-                        m_VerticalRecentering.CancelRecentering();
+                        m_HorizontalAxis.m_Recentering.CancelRecentering();
+                        m_VerticalAxis.m_Recentering.CancelRecentering();
                     }
+                    m_HorizontalAxis.Value = m_HorizontalAxis.m_Recentering.DoRecentering(m_HorizontalAxis.Value, deltaTime, 0);
+                    m_VerticalAxis.Value = m_VerticalAxis.m_Recentering.DoRecentering(m_VerticalAxis.Value, deltaTime, 0);
                 }
-                m_HorizontalAxis.m_Value = m_HorizontalRecentering.DoRecentering(m_HorizontalAxis.m_Value, deltaTime, 0);
-                m_VerticalAxis.m_Value = m_VerticalRecentering.DoRecentering(m_VerticalAxis.m_Value, deltaTime, 0);
 
                 // If we have a transform parent, then apply POV in the local space of the parent
-                Quaternion rot = Quaternion.Euler(m_VerticalAxis.m_Value, m_HorizontalAxis.m_Value, 0);
+                Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
                 Transform parent = VirtualCamera.transform.parent;
                 if (parent != null)
                     rot = parent.rotation * rot;

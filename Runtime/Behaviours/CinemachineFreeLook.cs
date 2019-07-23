@@ -311,6 +311,10 @@ namespace Cinemachine
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
+            m_XAxis.Value = m_RecenterToTargetHeading.DoRecentering(m_XAxis.Value, -1, 0);
+            m_YAxis.Value = m_RecenterToTargetHeading.DoRecentering(m_YAxis.Value, -1, 0.5f);
+            m_RecenterToTargetHeading.CancelRecentering();
+            m_YAxis.m_Recentering.CancelRecentering();
             if (fromCam != null && m_Transitions.m_InheritPosition)
             {
                 var cameraPos = fromCam.State.RawPosition;
@@ -666,8 +670,8 @@ namespace Cinemachine
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
             CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
-
-            m_YAxis.Value = m_YAxisRecentering.DoRecentering(m_YAxis.Value, deltaTime, 0.5f);
+            if (deltaTime >= 0)
+                m_YAxis.Value = m_YAxisRecentering.DoRecentering(m_YAxis.Value, deltaTime, 0.5f);
 
             // Blend from the appropriate rigs
             float t = GetYAxisValue();

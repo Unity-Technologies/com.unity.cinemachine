@@ -270,6 +270,8 @@ namespace Cinemachine
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
+            m_VerticalAxis.Value = m_VerticalAxis.m_Recentering.DoRecentering(m_VerticalAxis.Value, -1, 0.5f);
+            m_VerticalAxis.m_Recentering.CancelRecentering();
             if (fromCam != null && m_Transitions.m_InheritPosition)
             {
                 // Note: horizontal axis already taken care of by base class
