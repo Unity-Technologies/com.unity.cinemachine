@@ -187,7 +187,7 @@ namespace Cinemachine
                 recentering.CancelRecentering();
 
             float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up), deltaTime);
-            if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+            if (deltaTime >= 0 && m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 axis.Value = recentering.DoRecentering(axis.Value, deltaTime, targetHeading);
 
             float finalHeading = axis.Value;
@@ -234,6 +234,8 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
+            m_XAxis.Value = m_RecenterToTargetHeading.DoRecentering(m_XAxis.Value, -1, 0);
+            m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
                 && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
                 && transitionParams.m_InheritPosition)

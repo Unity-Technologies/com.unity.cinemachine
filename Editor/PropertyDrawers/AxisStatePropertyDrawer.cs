@@ -27,20 +27,23 @@ namespace Cinemachine.Editor
                 {
                     rect.y += height + vSpace;
                     InspectorUtility.MultiPropertyOnLine(rect, new GUIContent("Value Range"),
-                        new [] { property.FindPropertyRelative(() => def.m_MinValue), 
-                                property.FindPropertyRelative(() => def.m_MaxValue), 
+                        new [] { property.FindPropertyRelative(() => def.m_MinValue),
+                                property.FindPropertyRelative(() => def.m_MaxValue),
                                 property.FindPropertyRelative(() => def.m_Wrap) },
                         new [] { GUIContent.none, new GUIContent("to "), null });
                 }
 
                 rect.y += height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_MaxSpeed));
+                InspectorUtility.MultiPropertyOnLine(rect, new GUIContent("Speed"),
+                    new [] { property.FindPropertyRelative(() => def.m_MaxSpeed),
+                            property.FindPropertyRelative(() => def.m_SpeedMode) },
+                    new [] { GUIContent.none, new GUIContent("as") });
 
                 rect.y += height + vSpace;
                 InspectorUtility.MultiPropertyOnLine(
                     rect, null,
-                    new [] { property.FindPropertyRelative(() => def.m_AccelTime), 
-                            property.FindPropertyRelative(() => def.m_DecelTime)}, 
+                    new [] { property.FindPropertyRelative(() => def.m_AccelTime),
+                            property.FindPropertyRelative(() => def.m_DecelTime)},
                     new [] { GUIContent.none, null });
 
                 if (HasRecentering(property))
@@ -50,12 +53,12 @@ namespace Cinemachine.Editor
                     rect.y += height + vSpace;
                     InspectorUtility.MultiPropertyOnLine(
                         rect, new GUIContent(recentering.displayName, recentering.tooltip),
-                        new [] { 
+                        new [] {
                                 recentering.FindPropertyRelative(() => rDef.m_enabled),
-                                recentering.FindPropertyRelative(() => rDef.m_WaitTime),  
+                                recentering.FindPropertyRelative(() => rDef.m_WaitTime),
                                 recentering.FindPropertyRelative(() => rDef.m_RecenteringTime)},
                         new [] { new GUIContent(""),
-                                new GUIContent("Wait"), 
+                                new GUIContent("Wait"),
                                 new GUIContent("Time")} );
                 }
 
@@ -64,7 +67,7 @@ namespace Cinemachine.Editor
 
                 rect.y += height + vSpace;
                 InspectorUtility.MultiPropertyOnLine(rect, null,
-                    new [] { property.FindPropertyRelative(() => def.m_InputAxisValue), 
+                    new [] { property.FindPropertyRelative(() => def.m_InputAxisValue),
                             property.FindPropertyRelative(() => def.m_InvertInput) },
                     new [] { GUIContent.none, new GUIContent("Invert") });
 

@@ -18,9 +18,27 @@ namespace Cinemachine
         [Tooltip("The current value of the axis.")]
         public float Value;
 
+        /// <summary>How to interpret the Max Speed setting.</summary>
+        public enum SpeedMode
+        {
+            /// <summary>
+            /// The Max Speed setting will be interpreted as a maximum axis speed, in units/second
+            /// </summary>
+            MaxSpeed,
+
+            /// <summary>
+            /// The Max Speed setting will be interpreted as a direct multiplier on the input value
+            /// </summary>
+            ValueMultiplier
+        };
+
+        /// <summary>How to interpret the Max Speed setting.</summary>
+        [Tooltip("How to interpret the Max Speed setting: in units/second, or as a direct input value multiplier")]
+        public SpeedMode m_SpeedMode;
+
         /// <summary>How fast the axis value can travel.  Increasing this number
         /// makes the behaviour more responsive to joystick input</summary>
-        [Tooltip("The maximum speed of this axis in units/second")]
+        [Tooltip("The maximum speed of this axis in units/second, or the input value multiplier, depending on the Speed Mode")]
         public float m_MaxSpeed;
 
         /// <summary>The amount of time in seconds it takes to accelerate to
@@ -85,6 +103,7 @@ namespace Cinemachine
             HasRecentering = false;
             m_Recentering = new Recentering(false, 1, 2);
 
+            m_SpeedMode = SpeedMode.MaxSpeed;
             m_MaxSpeed = maxSpeed;
             m_AccelTime = accelTime;
             m_DecelTime = decelTime;
@@ -99,7 +118,8 @@ namespace Cinemachine
         /// <summary>Call from OnValidate: Make sure the fields are sensible</summary>
         public void Validate()
         {
-            m_MaxSpeed = Mathf.Max(0, m_MaxSpeed);
+            if (m_SpeedMode == SpeedMode.MaxSpeed)
+                m_MaxSpeed = Mathf.Max(0, m_MaxSpeed);
             m_AccelTime = Mathf.Max(0, m_AccelTime);
             m_DecelTime = Mathf.Max(0, m_DecelTime);
             m_MaxValue = Mathf.Clamp(m_MaxValue, m_MinValue, m_MaxValue);
@@ -124,20 +144,57 @@ namespace Cinemachine
         {
             if (!string.IsNullOrEmpty(m_InputAxisName))
             {
-                try
-                {
-                    m_InputAxisValue = CinemachineCore.GetInputAxis(m_InputAxisName);
-                }
-                catch (ArgumentException e)
-                {
-                    Debug.LogError(e.ToString());
-                }
+                try { m_InputAxisValue = CinemachineCore.GetInputAxis(m_InputAxisName); }
+                catch (ArgumentException e) { Debug.LogError(e.ToString()); }
             }
 
             float input = m_InputAxisValue;
             if (m_InvertInput)
                 input *= -1f;
 
+            if (m_SpeedMode == SpeedMode.MaxSpeed)
+                return MaxSpeedUpdate(input, deltaTime); // legacy mode
+
+            // Direct mode update: maxSpeed interpreted as multiplier
+            input *= m_MaxSpeed;
+            if (deltaTime < Epsilon)
+                mCurrentSpeed = 0;
+            else
+            {
+                float speed = input / deltaTime;
+                float dampTime = Mathf.Abs(speed) < Mathf.Abs(mCurrentSpeed) ? m_DecelTime : m_AccelTime;
+                speed = mCurrentSpeed + Damper.Damp(speed - mCurrentSpeed, dampTime, deltaTime);
+                mCurrentSpeed = speed;
+
+                // Decelerate to the end points of the range if not wrapping
+                float range = m_MaxValue - m_MinValue;
+                if (!m_Wrap && m_DecelTime > Epsilon && range > Epsilon)
+                {
+                    float v0 = ClampValue(Value);
+                    float v = ClampValue(v0 + speed * deltaTime);
+                    float d = (speed > 0) ? m_MaxValue - v : v - m_MinValue;
+                    if (d < (0.1f * range) && Mathf.Abs(speed) > Epsilon)
+                        speed = Damper.Damp(v - v0, m_DecelTime, deltaTime) / deltaTime;
+                }
+                input = speed * deltaTime;
+            }
+            Value = ClampValue(Value + input);
+            return Mathf.Abs(input) > Epsilon;
+        }
+
+        float ClampValue(float v)
+        {
+            float r = m_MaxValue - m_MinValue;
+            if (m_Wrap && r > Epsilon)
+            {
+                v = (v - m_MinValue) % r;
+                v += m_MinValue + ((v < 0) ? r : 0);
+            }
+            return Mathf.Clamp(v, m_MinValue, m_MaxValue);
+        }
+
+        bool MaxSpeedUpdate(float input, float deltaTime)
+        {
             if (m_MaxSpeed > Epsilon)
             {
                 float targetSpeed = input * m_MaxSpeed;
