@@ -86,9 +86,10 @@ namespace Cinemachine
                     m_HorizontalRecentering.CancelRecentering();
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalRecentering.CancelRecentering();
+
+                m_HorizontalAxis.Value = m_HorizontalRecentering.DoRecentering(m_HorizontalAxis.Value, deltaTime, 0);
+                m_VerticalAxis.Value = m_VerticalRecentering.DoRecentering(m_VerticalAxis.Value, deltaTime, 0);
             }
-            m_HorizontalAxis.Value = m_HorizontalRecentering.DoRecentering(m_HorizontalAxis.Value, deltaTime, 0);
-            m_VerticalAxis.Value = m_VerticalRecentering.DoRecentering(m_VerticalAxis.Value, deltaTime, 0);
 
             // If we have a transform parent, then apply POV in the local space of the parent
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
