@@ -6,13 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.2.10-preview.2] - 2019-07-XX
 ### Bugfixes
-- Added Init stage to pipeline, so extensions can intervene before Body stage
+- Storyboard: added global mute function
+- Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
 - Added OnTransitionFromCamera callback to extensions
+- Added Speed Mode to AxisState, to support direct axis control without max speed
 - New example scene: OverTheShoulderAim illustrating how to do over-the-shoulder TPS cam, with Normal and Aim modes
-- Added CinemachineCameraRotation extension for enhanced POV control
 - Impulse Manager: added option to ignore timescale
 - Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfix: Storyboard canvases were not always destructed properly
 - Bugfix: FreeLook was not respecting wait time for X axis recentering
 - Bugfix: FreeLook X axis was not always perfectly synched between rigs
 - Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
