@@ -16,6 +16,13 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class CinemachinePOV : CinemachineComponentBase
     {
+        /// <summary>Set this if the POV should be applied to the camera state before the body
+        /// position is calculated.  This is useful for body algorithms that use the rotation as input,
+        /// for example Framing Transposer</summary>
+        [Tooltip("Set this if the POV should be applied to the camera state before the body position is calculated.  "
+            + "This is useful for body algorithms that use the rotation as input, for example Framing Transposer.")]
+        public bool m_ApplyBeforeBody = false;
+
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
         [AxisStateProperty]
@@ -49,10 +56,25 @@ namespace Cinemachine
             m_HorizontalRecentering.Validate();
         }
 
+        public override void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime)
+        {
+            if (m_ApplyBeforeBody)
+                ApplyPOV(ref curState, deltaTime);
+        }
+
         /// <summary>Applies the axis values and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for calculating damping.  Not used.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
+        {
+            if (!m_ApplyBeforeBody)
+                ApplyPOV(ref curState, deltaTime);
+        }
+
+        /// <summary>Applies the axis values and orients the camera accordingly</summary>
+        /// <param name="curState">The current camera state</param>
+        /// <param name="deltaTime">Used for calculating damping.  Not used.</param>
+        void ApplyPOV(ref CameraState curState, float deltaTime)
         {
             if (!IsValid)
                 return;

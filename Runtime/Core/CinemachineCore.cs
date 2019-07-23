@@ -21,9 +21,6 @@ namespace Cinemachine
         /// </summary>
         public enum Stage
         {
-            /// <summary>Not a pipeline stage: position the camera in space</summary>
-            Init,
-
             /// <summary>Second stage: position the camera in space</summary>
             Body,
 

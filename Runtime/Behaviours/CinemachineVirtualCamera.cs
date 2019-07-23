@@ -449,7 +449,7 @@ namespace Cinemachine
             }
 
             // Update the state by invoking the component pipeline
-            CinemachineCore.Stage curStage = CinemachineCore.Stage.Init;
+            CinemachineCore.Stage curStage = CinemachineCore.Stage.Body;
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             bool hasAim = false;
             if (m_ComponentPipeline != null)

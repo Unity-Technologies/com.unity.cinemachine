@@ -197,14 +197,14 @@ namespace Cinemachine
             UpdateComponentCache();
 
             // Apply the component pipeline
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Init;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
                 if (c != null)
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Init;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
