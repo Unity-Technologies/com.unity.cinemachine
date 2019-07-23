@@ -605,9 +605,10 @@ namespace Cinemachine
             {
                 var oldValue = m_XAxis.Value;
                 CachedXAxisHeading = orbital.UpdateHeading(
-                    deltaTime, up, ref m_XAxis, ref m_RecenterToTargetHeading);
+                    deltaTime, up, ref m_XAxis, ref m_RecenterToTargetHeading,
+                    CinemachineCore.Instance.IsLive(this));
                 // Allow externally-driven values to work in this mode
-                if (orbital.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                     m_XAxis.Value = oldValue;
             }
             return CachedXAxisHeading;
