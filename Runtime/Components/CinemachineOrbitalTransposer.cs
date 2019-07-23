@@ -157,9 +157,12 @@ namespace Cinemachine
         /// used to calculate the heading.
         /// </summary>
         internal UpdateHeadingDelegate HeadingUpdater
-            = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
-                => { return orbital.UpdateHeading(
-                        deltaTime, up, ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading); };
+            = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
+                    return orbital.UpdateHeading(
+                        deltaTime, up, ref orbital.m_XAxis,
+                        ref orbital.m_RecenterToTargetHeading,
+                        CinemachineCore.Instance.IsLive(orbital.VirtualCamera));
+                };
 
         /// <summary>
         /// Update the X axis and calculate the heading.  This can be called by a delegate
@@ -171,10 +174,11 @@ namespace Cinemachine
         /// <returns>Axis value</returns>
         /// </summary>
         public float UpdateHeading(
-            float deltaTime, Vector3 up, ref AxisState axis, ref AxisState.Recentering recentering)
+            float deltaTime, Vector3 up, ref AxisState axis,
+            ref AxisState.Recentering recentering, bool isLive)
         {
             // Only read joystick when game is playing
-            if (deltaTime < 0 || !CinemachineCore.Instance.IsLive(VirtualCamera))
+            if (deltaTime < 0 || !isLive)
             {
                 axis.Reset();
                 recentering.CancelRecentering();
