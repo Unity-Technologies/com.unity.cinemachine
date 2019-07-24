@@ -4,7 +4,11 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.Rendering;
 using UnityEditor.Rendering;
+#if CINEMACHINE_HDRP_7_0_0
+using UnityEngine.Rendering.HighDefinition;
+#else
 using UnityEngine.Experimental.Rendering.HDPipeline;
+#endif
 
 namespace Cinemachine.PostFX.Editor
 {

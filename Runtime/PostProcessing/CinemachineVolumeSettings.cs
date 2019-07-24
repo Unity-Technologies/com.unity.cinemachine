@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+#if CINEMACHINE_HDRP_7_0_0
+using UnityEngine.Rendering.HighDefinition;
+#else
 using UnityEngine.Experimental.Rendering.HDPipeline;
+#endif
 
 namespace Cinemachine.PostFX
 {
