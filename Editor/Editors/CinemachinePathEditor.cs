@@ -9,9 +9,19 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachinePath))]
     internal sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
     {
+        public static string kPreferTangentSelectionKey = "CinemachinePathEditor.PreferTangentSelection";
+        public static bool PreferTangentSelection
+        {
+            get { return EditorPrefs.GetBool(kPreferTangentSelectionKey, false); }
+            set
+            {
+                if (value != PreferTangentSelection)
+                    EditorPrefs.SetBool(kPreferTangentSelectionKey, value);
+            }
+        }
         private ReorderableList mWaypointList;
         static bool mWaypointsExpanded;
-        static bool mPreferHandleSelection = true;
+        bool mPreferTangentSelection;
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -23,6 +33,7 @@ namespace Cinemachine.Editor
         void OnEnable()
         {
             mWaypointList = null;
+            mPreferTangentSelection = PreferTangentSelection;
         }
 
         public override void OnInspectorGUI()
@@ -63,10 +74,13 @@ namespace Cinemachine.Editor
             }
             EditorGUILayout.EndVertical();
 
-            mPreferHandleSelection = EditorGUILayout.Toggle(
+            if (mPreferTangentSelection != EditorGUILayout.Toggle(
                     new GUIContent("Prefer Tangent Drag",
                         "When editing the path, if waypoint position and tangent coincide, dragging will apply preferentially to the tangent"),
-                    mPreferHandleSelection);
+                    mPreferTangentSelection))
+            {
+                PreferTangentSelection = mPreferTangentSelection = !mPreferTangentSelection;
+            }
 
             mWaypointsExpanded = EditorGUILayout.Foldout(mWaypointsExpanded, "Path Details", true);
             if (mWaypointsExpanded)
@@ -259,7 +273,7 @@ namespace Cinemachine.Editor
                     if (mWaypointList.index == i)
                     {
                         // Waypoint is selected
-                        if (mPreferHandleSelection)
+                        if (PreferTangentSelection)
                         {
                             DrawPositionControl(i, localToWorld, localRotation);
                             DrawTangentControl(i, localToWorld, localRotation);
