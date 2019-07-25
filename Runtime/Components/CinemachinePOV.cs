@@ -23,6 +23,32 @@ namespace Cinemachine
             + "This is useful for body algorithms that use the rotation as input, for example Framing Transposer.")]
         public bool m_ApplyBeforeBody = false;
 
+        /// <summary>
+        /// Axis angles are applied relative to this setting
+        /// </summary>
+        public enum RecenterTargetMode
+        {
+            /// <summary>
+            /// Axis angles are relative to world forward
+            /// </summary>
+            None,
+
+            /// <summary>
+            /// Axis angles are relative to Follow target's forward
+            /// </summary>
+            FollowTargetForward,
+
+            /// <summary>
+            /// Axis angles are relative to LookAt target's forward
+            /// </summary>
+            LookAtTargetForward
+        }
+
+        /// <summary>
+        /// Axis angles are applied relative to this setting
+        /// </summary>
+        public RecenterTargetMode m_RecenterTarget = RecenterTargetMode.None;
+
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
         [AxisStateProperty]
@@ -87,8 +113,9 @@ namespace Cinemachine
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalRecentering.CancelRecentering();
 
-                m_HorizontalAxis.Value = m_HorizontalRecentering.DoRecentering(m_HorizontalAxis.Value, deltaTime, 0);
-                m_VerticalAxis.Value = m_VerticalRecentering.DoRecentering(m_VerticalAxis.Value, deltaTime, 0);
+                var recenterTarget = GetRecenterTarget();
+                m_HorizontalRecentering.DoRecentering(ref m_HorizontalAxis, deltaTime, recenterTarget.x);
+                m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, deltaTime, recenterTarget.y);
             }
 
             // If we have a transform parent, then apply POV in the local space of the parent
@@ -101,6 +128,27 @@ namespace Cinemachine
             curState.RawOrientation = rot;
         }
 
+        Vector2 GetRecenterTarget()
+        {
+            Transform t = null;
+            switch (m_RecenterTarget)
+            {
+                case RecenterTargetMode.FollowTargetForward: t = VirtualCamera.Follow; break;
+                case RecenterTargetMode.LookAtTargetForward: t = VirtualCamera.LookAt; break;
+                default: break;
+            }
+            if (t != null)
+            {
+                var fwd = t.forward;
+                Transform parent = VirtualCamera.transform.parent;
+                if (parent != null)
+                    fwd = parent.rotation * fwd;
+                var v = Quaternion.FromToRotation(Vector3.forward, fwd).eulerAngles;
+                return new Vector2(v.y, v.x);
+            }
+            return Vector2.zero;
+        }
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
@@ -111,8 +159,8 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            m_HorizontalAxis.Value = m_HorizontalRecentering.DoRecentering(m_HorizontalAxis.Value, -1, 0);
-            m_VerticalAxis.Value = m_VerticalRecentering.DoRecentering(m_VerticalAxis.Value, -1, 0);
+            m_HorizontalRecentering.DoRecentering(ref m_HorizontalAxis, -1, 0);
+            m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, -1, 0);
             m_HorizontalRecentering.CancelRecentering();
             m_VerticalRecentering.CancelRecentering();
             if (fromCam != null && transitionParams.m_InheritPosition)
