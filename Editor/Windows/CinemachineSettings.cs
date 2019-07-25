@@ -13,11 +13,11 @@ namespace Cinemachine.Editor
             public static bool ShowInGameGuides
             {
                 get { return EditorPrefs.GetBool(hShowInGameGuidesKey, true); }
-                set 
-                { 
+                set
+                {
                     if (ShowInGameGuides != value)
                     {
-                        EditorPrefs.SetBool(hShowInGameGuidesKey, value); 
+                        EditorPrefs.SetBool(hShowInGameGuidesKey, value);
                         UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
                     }
                 }
@@ -190,7 +190,9 @@ namespace Cinemachine.Editor
             get
             {
                 if (sCinemachineLogoTexture == null)
-                    sCinemachineLogoTexture = Resources.Load<Texture2D>("cm_logo_sm");
+                    sCinemachineLogoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                        ScriptableObjectUtility.CinemachineRealativeInstallPath
+                            + "/Editor/EditorResources/cm_logo_sm.png");
                 if (sCinemachineLogoTexture != null)
                     sCinemachineLogoTexture.hideFlags = HideFlags.DontSaveInEditor;
                 return sCinemachineLogoTexture;
@@ -203,7 +205,9 @@ namespace Cinemachine.Editor
             get
             {
                 if (sCinemachineHeader == null)
-                    sCinemachineHeader = Resources.Load<Texture2D>("cinemachine_header");
+                    sCinemachineHeader = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                        ScriptableObjectUtility.CinemachineRealativeInstallPath
+                            + "/Editor/EditorResources/cinemachine_header.tif");
                 ;
                 if (sCinemachineHeader != null)
                     sCinemachineHeader.hideFlags = HideFlags.DontSaveInEditor;
