@@ -29,7 +29,7 @@ namespace Cinemachine
             /// <summary>
             /// The Max Speed setting will be interpreted as a direct multiplier on the input value
             /// </summary>
-            ValueMultiplier
+            InputValueGain
         };
 
         /// <summary>How to interpret the Max Speed setting.</summary>
@@ -333,46 +333,38 @@ namespace Cinemachine
                 mLastAxisInputTime = 0;
             }
 
-            /// <summary>Bring the axis back to the cenetered state (only if enabled).</summary>
-            public float DoRecentering(float axisValue, float deltaTime, float recenterTarget)
+            /// <summary>Bring the axis back to the centered state (only if enabled).</summary>
+            public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
                 if (!m_enabled)
-                    return axisValue;
+                    return;
 
+                recenterTarget = axis.ClampValue(recenterTarget);
                 if (deltaTime < 0)
                 {
                     CancelRecentering();
-                    return recenterTarget;
+                    axis.Value = recenterTarget;
+                    return;
                 }
 
-                if (Time.time > (mLastAxisInputTime + m_WaitTime))
-                {
-                    // Scale value determined heuristically, to account for accel/decel
-                    float recenterTime = m_RecenteringTime / 3f;
-                    if (recenterTime <= deltaTime)
-                        return recenterTarget;
+                float v = axis.ClampValue(axis.Value);
+                float delta = recenterTarget - v;
+                if (delta == 0)
+                    return;
 
-                    float headingError = Mathf.DeltaAngle(axisValue, recenterTarget);
-                    float absHeadingError = Mathf.Abs(headingError);
-                    if (absHeadingError < UnityVectorExtensions.Epsilon)
-                    {
-                        axisValue = recenterTarget;
-                        mRecenteringVelocity = 0;
-                    }
-                    else
-                    {
-                        float scale = deltaTime / recenterTime;
-                        float desiredVelocity = Mathf.Sign(headingError)
-                            * Mathf.Min(absHeadingError, absHeadingError * scale);
-                        // Accelerate to the desired velocity
-                        float accel = desiredVelocity - mRecenteringVelocity;
-                        if ((desiredVelocity < 0 && accel < 0) || (desiredVelocity > 0 && accel > 0))
-                            desiredVelocity = mRecenteringVelocity + desiredVelocity * scale;
-                        mRecenteringVelocity = desiredVelocity;
-                        axisValue += desiredVelocity;
-                    }
-                }
-                return axisValue;
+                if (Time.time < (mLastAxisInputTime + m_WaitTime))
+                    return;
+
+                // Determine the direction
+                float r = axis.m_MaxValue - axis.m_MinValue;
+                if (axis.m_Wrap && Mathf.Abs(delta) > r * 0.5f)
+                    v += Mathf.Sign(recenterTarget - v) * r;
+
+                // Damp our way there
+                v = Mathf.SmoothDamp(
+                    v, recenterTarget, ref mRecenteringVelocity,
+                    m_RecenteringTime, 9999, deltaTime);
+                axis.Value = axis.ClampValue(v);
             }
 
             // Legacy support
