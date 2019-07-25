@@ -8,7 +8,7 @@ using UnityEditor.Rendering.PostProcessing;
 namespace Cinemachine.PostFX.Editor
 {
     [CustomEditor(typeof(CinemachinePostProcessing))]
-    public sealed class CinemachinePostProcessingEditor 
+    public sealed class CinemachinePostProcessingEditor
         : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
     {
         SerializedProperty m_Profile;
@@ -20,8 +20,10 @@ namespace Cinemachine.PostFX.Editor
 
         void OnEnable()
         {
-            Texture textue = Resources.Load("PostProcessLayer") as Texture;
-            m_ProfileLabel = new GUIContent("Profile", textue, "A reference to a profile asset");
+            Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(
+                Cinemachine.Editor.ScriptableObjectUtility.CinemachineRealativeInstallPath
+                     + "/Editor/EditorResources/PostProcessLayer.png");
+            m_ProfileLabel = new GUIContent("Profile", texture, "A reference to a profile asset");
 
             m_FocusTracksTarget = FindProperty(x => x.m_FocusTracksTarget);
             m_FocusOffset = FindProperty(x => x.m_FocusOffset);
@@ -58,17 +60,17 @@ namespace Cinemachine.PostFX.Editor
                     valid = dof.enabled && dof.active && dof.focusDistance.overrideState;
                 if (!valid)
                     EditorGUILayout.HelpBox(
-                        "Focus Tracking requires an active DepthOfField/FocusDistance effect in the profile", 
+                        "Focus Tracking requires an active DepthOfField/FocusDistance effect in the profile",
                         MessageType.Warning);
                 else
                 {
                     if (!Target.VirtualCamera.State.HasLookAt)
                         EditorGUILayout.HelpBox(
-                            "Focus Offset is relative to the Camera position", 
+                            "Focus Offset is relative to the Camera position",
                             MessageType.Info);
                      else
                         EditorGUILayout.HelpBox(
-                            "Focus Offset is relative to the Target position", 
+                            "Focus Offset is relative to the Target position",
                             MessageType.Info);
                 }
             }
@@ -115,15 +117,15 @@ namespace Cinemachine.PostFX.Editor
 
             using (var scope = new EditorGUI.ChangeCheckScope())
             {
-                m_Profile.objectReferenceValue 
+                m_Profile.objectReferenceValue
                     = (PostProcessProfile)EditorGUI.ObjectField(
                         fieldRect, m_Profile.objectReferenceValue, typeof(PostProcessProfile), false);
                 assetHasChanged = scope.changed;
             }
 
             if (GUI.Button(
-                buttonNewRect, 
-                EditorUtilities.GetContent("New|Create a new profile."), 
+                buttonNewRect,
+                EditorUtilities.GetContent("New|Create a new profile."),
                 showCopy ? EditorStyles.miniButtonLeft : EditorStyles.miniButton))
             {
                 // By default, try to put assets in a folder next to the currently active
@@ -136,8 +138,8 @@ namespace Cinemachine.PostFX.Editor
             }
 
             if (showCopy && GUI.Button(
-                buttonCopyRect, 
-                EditorUtilities.GetContent("Clone|Create a new profile and copy the content of the currently assigned profile."), 
+                buttonCopyRect,
+                EditorUtilities.GetContent("Clone|Create a new profile and copy the content of the currently assigned profile."),
                 EditorStyles.miniButtonRight))
             {
                 // Duplicate the currently assigned profile and save it as a new profile
@@ -160,7 +162,7 @@ namespace Cinemachine.PostFX.Editor
 
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
-                
+
                 m_Profile.objectReferenceValue = asset;
                 assetHasChanged = true;
             }
@@ -171,7 +173,7 @@ namespace Cinemachine.PostFX.Editor
                     m_EffectList.Clear(); // Asset wasn't null before, do some cleanup
 
                 EditorGUILayout.HelpBox(
-                    "Assign an existing Post-process Profile by choosing an asset, or create a new one by clicking the \"New\" button.\nNew assets are automatically put in a folder next to your scene file. If your scene hasn't been saved yet they will be created at the root of the Assets folder.", 
+                    "Assign an existing Post-process Profile by choosing an asset, or create a new one by clicking the \"New\" button.\nNew assets are automatically put in a folder next to your scene file. If your scene hasn't been saved yet they will be created at the root of the Assets folder.",
                     MessageType.Info);
             }
             else
@@ -206,7 +208,7 @@ namespace Cinemachine.PostFX.Editor
 
             path += targetName + " Profile.asset";
             path = AssetDatabase.GenerateUniqueAssetPath(path);
-                        
+
             var profile = ScriptableObject.CreateInstance<PostProcessProfile>();
             AssetDatabase.CreateAsset(profile, path);
             AssetDatabase.SaveAssets();
@@ -214,5 +216,5 @@ namespace Cinemachine.PostFX.Editor
             return profile;
         }
     }
-} 
+}
 #endif
