@@ -24,12 +24,12 @@ namespace Cinemachine
         public bool m_ApplyBeforeBody = false;
 
         /// <summary>
-        /// Axis angles are applied relative to this setting
+        /// Defines the recentering target: Recentering goes here
         /// </summary>
         public enum RecenterTargetMode
         {
             /// <summary>
-            /// Axis angles are relative to world forward
+            /// Just go to 0
             /// </summary>
             None,
 
@@ -45,7 +45,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Axis angles are applied relative to this setting
+        /// Defines the recentering target: recentering goes here
         /// </summary>
         public RecenterTargetMode m_RecenterTarget = RecenterTargetMode.None;
 
@@ -128,7 +128,11 @@ namespace Cinemachine
             curState.RawOrientation = rot;
         }
 
-        Vector2 GetRecenterTarget()
+        /// <summary>
+        /// Get the horizonmtal and vertical angles that correspong to "at rest" position.
+        /// </summary>
+        /// <returns>X is horizontal angle (rot Y) and Y is vertical angle (rot X)</returns>
+        public Vector2 GetRecenterTarget()
         {
             Transform t = null;
             switch (m_RecenterTarget)
