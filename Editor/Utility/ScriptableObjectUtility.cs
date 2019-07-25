@@ -5,7 +5,7 @@ using System;
 
 namespace Cinemachine.Editor
 {
-    internal class ScriptableObjectUtility : ScriptableObject
+    public class ScriptableObjectUtility : ScriptableObject
     {
         public static string kPackageRoot = "Packages/com.unity.cinemachine";
 
@@ -13,10 +13,10 @@ namespace Cinemachine.Editor
         /// a packman package or an ordinary asset.</summary>
         public static string CinemachineInstallPath
         {
-            get 
-            { 
+            get
+            {
                 // First see if we're a UPM package - use some asset that we expect to find
-                string path = Path.GetFullPath(kPackageRoot + "/Editor/Resources/cm_logo_sm.png");
+                string path = Path.GetFullPath(kPackageRoot + "/Editor/EditorResources/cm_logo_sm.png");
                 int index = path.LastIndexOf("/Editor");
                 if (index < 0 || !File.Exists(path))
                 {
@@ -37,6 +37,22 @@ namespace Cinemachine.Editor
             }
         }
 
+        /// <summary>Get the Cinemachine package install path.  Works whether CM is
+        /// a packman package or an ordinary asset.</summary>
+        public static string CinemachineRealativeInstallPath
+        {
+            get
+            {
+                ScriptableObject dummy = ScriptableObject.CreateInstance<ScriptableObjectUtility>();
+                var path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(dummy));
+                DestroyImmediate(dummy);
+                var index = path.LastIndexOf("/Editor");
+                if (index >= 0)
+                    path = path.Substring(0, index);
+                return path;
+            }
+        }
+
         /// <summary>Create a scriptable object asset</summary>
         public static T CreateAt<T>(string assetPath) where T : ScriptableObject
         {
@@ -53,7 +69,7 @@ namespace Cinemachine.Editor
                 return null;
             }
             AssetDatabase.CreateAsset(asset, assetPath);
-            return asset;        
+            return asset;
         }
 
         public static void Create<T>(bool prependFolderName = false, bool trimName = true) where T : ScriptableObject
