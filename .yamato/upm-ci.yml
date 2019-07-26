@@ -59,6 +59,11 @@ test_trigger:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
+  triggers:
+    branches:
+        only:
+            - master
+            - 2019.1
   dependencies:
     - .yamato/upm-ci.yml#pack
     {% for editor in test_editors %}

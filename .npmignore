@@ -10,3 +10,10 @@ npm-debug.log
 npm-debug.log.meta
 node_modules.meta
 node_modules/**
+
+upm-ci~/**
+.Editor/**
+.yamato/**
+*.zip*
+TestRunnerOptions.json
+.idea/**
