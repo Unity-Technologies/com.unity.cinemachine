@@ -20,7 +20,7 @@ namespace Cinemachine
     /// For this component to work properly, the vcam's LookAt target must be null.
     /// The Follow target will define what the camera is looking at.
     ///
-    /// If the Follow target is a CinemachineTargetGroup, then additional controls will
+    /// If the Follow target is a ICinemachineTargetGroup, then additional controls will
     /// be available to dynamically adjust the camera's view in order to frame the entire group.
     ///
     /// Although this component was designed for orthographic cameras, it works equally
@@ -380,7 +380,7 @@ namespace Cinemachine
                 return;
 
             // Compute group bounds and adjust follow target for group framing
-            CinemachineTargetGroup group = FollowTargetGroup;
+            ICinemachineTargetGroup group = FollowTargetGroup;
             bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
@@ -545,7 +545,7 @@ namespace Cinemachine
             }
         }
 
-        Vector3 ComputeGroupBounds(CinemachineTargetGroup group, ref CameraState curState)
+        Vector3 ComputeGroupBounds(ICinemachineTargetGroup group, ref CameraState curState)
         {
             Vector3 cameraPos = curState.RawPosition;
             Vector3 fwd = curState.RawOrientation * Vector3.forward;
@@ -571,7 +571,7 @@ namespace Cinemachine
         }
 
         static Bounds GetScreenSpaceGroupBoundingBox(
-            CinemachineTargetGroup group, ref Vector3 pos, Quaternion orientation)
+            ICinemachineTargetGroup group, ref Vector3 pos, Quaternion orientation)
         {
             Matrix4x4 observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
             Vector2 minAngles, maxAngles, zRange;

@@ -4,6 +4,46 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
+    public interface ICinemachineTargetGroup
+    {
+        /// <summary>
+        /// Get the MonoBehaviour's Transform
+        /// </summary>
+        Transform Transform { get; }
+
+        /// <summary>
+        /// The axis-aligned bounding box of the group, computed using the targets positions and radii
+        /// </summary>
+        Bounds BoundingBox { get; }
+
+        /// <summary>
+        /// The bounding sphere of the group, computed using the targets positions and radii
+        /// </summary>
+        BoundingSphere Sphere { get; }
+
+        /// <summary>
+        /// Returns true if the group has no non-zero-weight members
+        /// </summary>
+        bool IsEmpty { get; }
+
+        /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
+        /// <param name="observer">The frame of reference in which to compute the bounding box</param>
+        /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
+        Bounds GetViewSpaceBoundingBox(Matrix4x4 observer);
+
+        /// <summary>
+        /// Get the local-space angular bounds of the group, from a spoecific point of view.
+        /// Also returns the z depth range of the members.
+        /// </summary>
+        /// <param name="observer">Point of view from which to calculate, and in whose
+        /// space the return values are</param>
+        /// <param name="minAngles">The lower bound of the screen angles of the members (degrees)</param>
+        /// <param name="maxAngles">The upper bound of the screen angles of the members (degrees)</param>
+        /// <param name="zRange">The min and max depth values of the members, relative to the observer</param>
+        void GetViewSpaceAngularBounds(
+            Matrix4x4 observer, out Vector2 minAngles, out Vector2 maxAngles, out Vector2 zRange);
+    }
+
     /// <summary>Defines a group of target objects, each with a radius and a weight.
     /// The weight is used when calculating the average position of the target group.
     /// Higher-weighted members of the group will count more.
@@ -18,7 +58,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
-    public class CinemachineTargetGroup : MonoBehaviour
+    public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup
     {
         /// <summary>Holds the information that represents a member of the group</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -84,6 +124,11 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         [Tooltip("The target objects, together with their weights and radii, that will contribute to the group's average position, orientation, and size.")]
         public Target[] m_Targets = new Target[0];
+
+        /// <summary>
+        /// Get the MonoBehaviour's Transform
+        /// </summary>
+        public Transform Transform { get { return transform; } }
 
         /// <summary>The axis-aligned bounding box of the group, computed using the
         /// targets positions and radii</summary>

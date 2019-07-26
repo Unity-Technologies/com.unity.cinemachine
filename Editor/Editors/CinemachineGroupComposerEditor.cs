@@ -59,7 +59,7 @@ namespace Cinemachine.Editor
         {
             if (MyTarget.IsValid && MyTarget.LookAtTargetGroup == null)
                 EditorGUILayout.HelpBox(
-                    "The Framing settings will be ignored because the LookAt target is not a kind of CinemachineTargetGroup", 
+                    "The Framing settings will be ignored because the LookAt target is not a kind of ICinemachineTargetGroup",
                     MessageType.Info);
 
             base.OnInspectorGUI();
@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
                     Vector3 e = b.extents;
                     Gizmos.DrawFrustum(
                         Vector3.zero,
-                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2, 
+                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2,
                         z + e.z, z - e.z, e.x / e.y);
                 }
                 Gizmos.matrix = m;
