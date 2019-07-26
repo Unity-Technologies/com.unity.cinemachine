@@ -8,7 +8,7 @@ namespace Cinemachine
     /// Its job is to aim the camera at a target object, with configurable offsets, damping,
     /// and composition rules.
     ///
-    /// In addition, if the target is a CinemachineTargetGroup, the behaviour
+    /// In addition, if the target is a ICinemachineTargetGroup, the behaviour
     /// will adjust the FOV and the camera distance to ensure that the entire group of targets
     /// is framed properly.
     /// </summary>
@@ -124,7 +124,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             // Can't do anything without a group to look at
-            CinemachineTargetGroup group = LookAtTargetGroup;
+            ICinemachineTargetGroup group = LookAtTargetGroup;
             if (group == null)
             {
                 base.MutateCameraState(ref curState, deltaTime);
@@ -273,7 +273,7 @@ namespace Cinemachine
         /// <param name="newFwd">New forward direction to use when interpreting the return value</param>
         /// <returns>Bounding box in a slightly rotated version of observer, as specified by newFwd</returns>
         static Bounds GetScreenSpaceGroupBoundingBox(
-            CinemachineTargetGroup group, Matrix4x4 observer, out Vector3 newFwd)
+            ICinemachineTargetGroup group, Matrix4x4 observer, out Vector3 newFwd)
         {
             Vector2 minAngles, maxAngles, zRange;
             group.GetViewSpaceAngularBounds(observer, out minAngles, out maxAngles, out zRange);

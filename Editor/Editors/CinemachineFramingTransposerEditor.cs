@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_BiasX));
                 excluded.Add(FieldPath(x => x.m_BiasY));
             }
-            CinemachineTargetGroup group = Target.FollowTargetGroup;
+            ICinemachineTargetGroup group = Target.FollowTargetGroup;
             if (group == null || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
             {
                 excluded.Add(FieldPath(x => x.m_GroupFramingSize));

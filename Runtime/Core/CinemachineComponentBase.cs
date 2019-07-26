@@ -47,7 +47,7 @@ namespace Cinemachine
 
         private Transform mCachedFollowTarget;
         private CinemachineVirtualCameraBase mCachedFollowTargetVcam;
-        private CinemachineTargetGroup mCachedFollowTargetGroup;
+        private ICinemachineTargetGroup mCachedFollowTargetGroup;
 
         void UpdateFollowTargetCache()
         {
@@ -57,12 +57,12 @@ namespace Cinemachine
             if (mCachedFollowTarget != null)
             {
                 mCachedFollowTargetVcam = mCachedFollowTarget.GetComponent<CinemachineVirtualCameraBase>();
-                mCachedFollowTargetGroup = mCachedFollowTarget.GetComponent<CinemachineTargetGroup>();
+                mCachedFollowTargetGroup = mCachedFollowTarget.GetComponent<ICinemachineTargetGroup>();
             }
         }
 
-        /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a group</summary>
-        public CinemachineTargetGroup FollowTargetGroup
+        /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
+        public ICinemachineTargetGroup FollowTargetGroup
         {
             get
             {
@@ -113,7 +113,7 @@ namespace Cinemachine
 
         private Transform mCachedLookAtTarget;
         private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
-        private CinemachineTargetGroup mCachedLookAtTargetGroup;
+        private ICinemachineTargetGroup mCachedLookAtTargetGroup;
 
         void UpdateLookAtTargetCache()
         {
@@ -123,12 +123,12 @@ namespace Cinemachine
             if (mCachedLookAtTarget != null)
             {
                 mCachedLookAtTargetVcam = mCachedLookAtTarget.GetComponent<CinemachineVirtualCameraBase>();
-                mCachedLookAtTargetGroup = mCachedLookAtTarget.GetComponent<CinemachineTargetGroup>();
+                mCachedLookAtTargetGroup = mCachedLookAtTarget.GetComponent<ICinemachineTargetGroup>();
             }
         }
 
-        /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a group</summary>
-        public CinemachineTargetGroup LookAtTargetGroup
+        /// <summary>Get LookAt target as ICinemachineTargetGroup, or null if target is not a group</summary>
+        public ICinemachineTargetGroup LookAtTargetGroup
         {
             get
             {
