@@ -7,7 +7,6 @@ namespace Cinemachine.Utility
     {
         protected T[] mData;
         protected float[] mKernel;
-        protected float mKernelSum;
         protected int mCurrentPos = -1;
 
         public float Sigma { get; private set; }   // Filter strength: bigger numbers are stronger.  0.5 is minimal.
@@ -18,14 +17,19 @@ namespace Cinemachine.Utility
             // Weight is close to 0 at a distance of sigma*3, so let's just cut it off a little early
             int kernelRadius = Math.Min(maxKernelRadius, Mathf.FloorToInt(Mathf.Abs(sigma) * 2.5f));
             mKernel = new float[2 * kernelRadius + 1];
-            mKernelSum = 0;
             if (kernelRadius == 0)
-                mKernelSum = mKernel[0] = 1;
-            else for (int i = -kernelRadius; i <= kernelRadius; ++i)
+                mKernel[0] = 1;
+            else
             {
-                mKernel[i + kernelRadius]
-                    = (float)(Math.Exp(-(i * i) / (2 * sigma * sigma)) / Math.Sqrt(2.0 * Math.PI * sigma));
-                mKernelSum += mKernel[i + kernelRadius];
+                float sum = 0;
+                for (int i = -kernelRadius; i <= kernelRadius; ++i)
+                {
+                    mKernel[i + kernelRadius]
+                        = (float)(Math.Exp(-(i * i) / (2 * sigma * sigma)) / (2.0 * Math.PI * sigma * sigma));
+                    sum += mKernel[i + kernelRadius];
+                }
+                for (int i = -kernelRadius; i <= kernelRadius; ++i)
+                    mKernel[i + kernelRadius] /= sum;
             }
             Sigma = sigma;
         }
@@ -87,7 +91,7 @@ namespace Cinemachine.Utility
                 if (++windowPos == KernelSize)
                     windowPos = 0;
             }
-            return sum / mKernelSum;
+            return sum;
         }
     }
 
@@ -115,7 +119,7 @@ namespace Cinemachine.Utility
                 if (++windowPos == KernelSize)
                     windowPos = 0;
             }
-            return q * sum;
+            return q * Quaternion.Normalize(sum);
         }
     }
 
@@ -139,7 +143,7 @@ namespace Cinemachine.Utility
                 if (++windowPos == KernelSize)
                     windowPos = 0;
             }
-            return v + (sum / mKernelSum);
+            return v + sum;
         }
     }
 }
