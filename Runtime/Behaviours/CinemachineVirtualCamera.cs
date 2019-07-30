@@ -525,7 +525,7 @@ namespace Cinemachine
 
             if (m_Transitions.m_InheritPosition && fromCam != null)
             {
-                transform.position = fromCam.State.RawPosition;
+                transform.position = fromCam.State.FinalPosition;
                 //transform.rotation = fromCam.State.RawOrientation;
                 PreviousStateIsValid = false;
                 forceUpdate = true;

@@ -321,10 +321,13 @@ namespace Cinemachine
             if (fromCam != null && transitionParams.m_InheritPosition)
             {
                 transform.rotation = fromCam.State.RawOrientation;
+                InheritingPosition = true;
                 return true;
             }
             return false;
         }
+
+        bool InheritingPosition { get; set; }
 
         // Convert from screen coords to normalized orthographic distance coords
         private Rect ScreenToOrtho(Rect rScreen, float orthoSize, float aspect)
@@ -369,15 +372,19 @@ namespace Cinemachine
             if (deltaTime < 0)
             {
                 m_Predictor.Reset();
-                if (m_CenterOnActivate)
+                m_PreviousCameraPosition = curState.RawPosition;
+                m_prevFOV = 0;
+                if (!InheritingPosition && m_CenterOnActivate)
                 {
                     m_PreviousCameraPosition = FollowTargetPosition
                         + (curState.RawOrientation * Vector3.back) * m_CameraDistance;
-                    m_prevFOV = 0;
                 }
             }
             if (!IsValid)
+            {
+                InheritingPosition = false;
                 return;
+            }
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = FollowTargetGroup;
@@ -462,7 +469,7 @@ namespace Cinemachine
             {
                 // No damping or hard bounds, just snap to central bounds, skipping the soft zone
                 Rect rect = softGuideOrtho;
-                if (m_CenterOnActivate)
+                if (m_CenterOnActivate && !InheritingPosition)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
                 cameraOffset += OrthoOffsetToScreenBounds(targetPos, rect);
             }
@@ -529,6 +536,7 @@ namespace Cinemachine
                     curState.Lens = lens;
                 }
             }
+            InheritingPosition = false;
         }
 
         float GetTargetHeight(Vector2 boundsSize)
