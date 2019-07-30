@@ -11,6 +11,7 @@ using UnityEngine.Rendering.HighDefinition;
     using UnityEngine.Experimental.Rendering.HDPipeline;
     #endif
 #endif
+#endif
 
 namespace Cinemachine.PostFX
 {
