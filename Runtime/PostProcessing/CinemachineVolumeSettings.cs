@@ -5,7 +5,11 @@ using UnityEngine.Rendering;
 #if CINEMACHINE_HDRP_7_0_0
 using UnityEngine.Rendering.HighDefinition;
 #else
-using UnityEngine.Experimental.Rendering.HDPipeline;
+    #if CINEMACHINE_LWRP_7_0_0
+    using UnityEngine.Rendering.Universal;
+    #else
+    using UnityEngine.Experimental.Rendering.HDPipeline;
+    #endif
 #endif
 
 namespace Cinemachine.PostFX
@@ -190,7 +194,11 @@ namespace Cinemachine.PostFX
                 }
 
                 // Update the volume's layer so it will be seen
+#if CINEMACHINE_LWRP_7_0_0
+                var data = brain.gameObject.GetComponent<UniversalAdditionalCameraData>();
+#else
                 var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
+#endif
                 if (data != null)
                 {
                     int mask = data.volumeLayerMask;

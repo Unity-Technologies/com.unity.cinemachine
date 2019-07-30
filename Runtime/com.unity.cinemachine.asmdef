@@ -5,7 +5,8 @@
         "GUID:d60799ab2a985554ea1a39cd38695018",
         "GUID:df380645f10b7bc4b97d4f5eb6303d95",
         "GUID:457756d89b35d2941b3e7b37b4ece6f1",
-        "GUID:2bafac87e7f4b9b418d9448d219b01ab"
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -49,6 +50,16 @@
             "name": "com.unity.ugui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UGUI"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "7.0.0",
+            "define": "CINEMACHINE_POST_PROCESSING_V3"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "7.0.0",
+            "define": "CINEMACHINE_LWRP_7_0_0"
         }
     ]
 }
