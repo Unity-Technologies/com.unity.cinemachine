@@ -1,4 +1,5 @@
 ﻿#if CINEMACHINE_POST_PROCESSING_V3
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -10,7 +11,6 @@ using UnityEngine.Rendering.HighDefinition;
     #else
     using UnityEngine.Experimental.Rendering.HDPipeline;
     #endif
-#endif
 #endif
 
 namespace Cinemachine.PostFX

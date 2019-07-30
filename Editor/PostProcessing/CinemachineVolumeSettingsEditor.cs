@@ -7,11 +7,11 @@ using UnityEditor.Rendering;
 #if CINEMACHINE_HDRP_7_0_0
 using UnityEngine.Rendering.HighDefinition;
 #else
-#if CINEMACHINE_LWRP_7_0_0
-using UnityEngine.Rendering.Universal;
-#else
-using UnityEngine.Experimental.Rendering.HDPipeline;
-#endif
+    #if CINEMACHINE_LWRP_7_0_0
+    using UnityEngine.Rendering.Universal;
+    #else
+    using UnityEngine.Experimental.Rendering.HDPipeline;
+    #endif
 #endif
 
 namespace Cinemachine.PostFX.Editor
