@@ -15,8 +15,7 @@
         "Unity.RenderPipelines.Universal.Editor"
     ],
     "includePlatforms": [
-        "Editor",
-        "Stadia"
+        "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
