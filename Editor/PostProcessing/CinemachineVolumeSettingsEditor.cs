@@ -7,7 +7,11 @@ using UnityEditor.Rendering;
 #if CINEMACHINE_HDRP_7_0_0
 using UnityEngine.Rendering.HighDefinition;
 #else
+#if CINEMACHINE_LWRP_7_0_0
+using UnityEngine.Rendering.Universal;
+#else
 using UnityEngine.Experimental.Rendering.HDPipeline;
+#endif
 #endif
 
 namespace Cinemachine.PostFX.Editor
@@ -63,11 +67,18 @@ namespace Cinemachine.PostFX.Editor
                 bool valid = false;
                 DepthOfField dof;
                 if (Target.m_Profile != null && Target.m_Profile.TryGet(out dof))
+                {
+#if CINEMACHINE_LWRP_7_0_0
+                    valid = dof.active && dof.focusDistance.overrideState
+                        && dof.mode != DepthOfFieldMode.Off;
+#else
                     valid = dof.active && dof.focusDistance.overrideState
                         && dof.focusMode == DepthOfFieldMode.UsePhysicalCamera;
+#endif
+                }
                 if (!valid)
                     EditorGUILayout.HelpBox(
-                        "Focus Tracking requires an active DepthOfField/FocusDistance effect and FoculdMode set to Physical Camera in the profile",
+                        "Focus Tracking requires an active DepthOfField/FocusDistance effect and FocusMode set to Physical Camera in the profile",
                         MessageType.Warning);
                 else
                 {

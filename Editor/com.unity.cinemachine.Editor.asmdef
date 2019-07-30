@@ -10,10 +10,13 @@
         "Unity.RenderPipelines.Core.Editor",
         "Unity.RenderPipelines.HighDefinition.Runtime",
         "Unity.RenderPipelines.HighDefinition.Editor",
-        "Unity.ugui"
+        "Unity.ugui",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.Editor"
     ],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "Stadia"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -56,6 +59,16 @@
             "name": "com.unity.ugui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UGUI"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "7.0.0",
+            "define": "CINEMACHINE_POST_PROCESSING_V3"
+        },
+        {
+            "name": "com.unity.render-pipelines.lightweight",
+            "expression": "7.0.0",
+            "define": "CINEMACHINE_LWRP_7_0_0"
         }
     ]
 }
