@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.10-preview.2] - 2019-07-25
+## [2.2.10-preview.3] - 2019-07-31
 ### Bugfixes
 - Storyboard: added global mute function
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New example scene: OverTheShoulderAim illustrating how to do over-the-shoulder TPS cam, with Normal and Aim modes
 - Impulse Manager: added option to ignore timescale
 - Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
-- Upgrade to support HDRP 7.0.0 API
 - Removed Resources diretories
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
 - Bugfix: Storyboard canvases were not always destructed properly
