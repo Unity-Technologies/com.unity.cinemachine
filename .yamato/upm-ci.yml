@@ -56,7 +56,7 @@ test_trigger:
   triggers:
     branches:
         only:
-            - master
+            - 2018
   artifacts:
     logs:
       paths:
