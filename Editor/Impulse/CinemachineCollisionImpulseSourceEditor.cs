@@ -1,10 +1,15 @@
-﻿using UnityEditor;
+﻿#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+
+using UnityEditor;
 using UnityEngine;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineCollisionImpulseSource))]
-    internal sealed class CinemachineCollisionImpulseSourceEditor 
+    internal sealed class CinemachineCollisionImpulseSourceEditor
         : BaseEditor<CinemachineCollisionImpulseSource>
     {
         public override void OnInspectorGUI()
@@ -23,3 +28,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

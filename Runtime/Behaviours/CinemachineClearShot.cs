@@ -1,3 +1,8 @@
+#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+
+#if CINEMACHINE_PHYSICS
+
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine.Utility;
@@ -442,3 +447,4 @@ namespace Cinemachine
         ICinemachineCamera TransitioningFrom { get; set; }
     }
 }
+#endif

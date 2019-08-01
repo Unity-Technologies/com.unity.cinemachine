@@ -70,7 +70,7 @@ namespace Cinemachine.Editor
             else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
             {
                 // We're not dragging anything now, but we were
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                InspectorUtility.RepaintGameView(Target);
                 Target.UserIsDragging = false;
             }
         }
@@ -422,7 +422,7 @@ namespace Cinemachine.Editor
                                         var attributes = method.GetCustomAttributes(typeof(DrawGizmo), true) as DrawGizmo[];
                                         foreach (var a in attributes)
                                         {
-                                            if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType))
+                                            if (typeof(CinemachineComponentBase).IsAssignableFrom(a.drawnType) && !a.drawnType.IsAbstract)
                                             {
                                                 m_GizmoDrawers.Add(a.drawnType, method);
                                                 added = true;

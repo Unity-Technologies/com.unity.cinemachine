@@ -1,11 +1,14 @@
+#if CINEMACHINE_TIMELINE
+
 using UnityEditor;
 using UnityEngine;
 using Cinemachine.Editor;
 using System.Collections.Generic;
 using UnityEditor.Timeline;
+using Cinemachine;
 
-namespace Cinemachine.Timeline
-{
+//namespace Cinemachine.Timeline
+//{
     [CustomEditor(typeof(CinemachineShot))]
     internal sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
     {
@@ -143,4 +146,5 @@ namespace Cinemachine.Timeline
             }
         }
     }
-}
+//}
+#endif

@@ -8,13 +8,13 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineNewFreeLook))]
-    sealed class CinemachineNewFreeLookEditor 
+    sealed class CinemachineNewFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
     {
-        GUIContent[] mRigNames = new GUIContent[] 
+        GUIContent[] mRigNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Bottom Rig") };
 
-        GUIContent[] mOrbitNames = new GUIContent[] 
+        GUIContent[] mOrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
 
         GUIContent mAllLensLabel = new GUIContent(
@@ -63,7 +63,7 @@ namespace Cinemachine
                 Rect rect = EditorGUILayout.GetControlRect(true);
                 InspectorUtility.MultiPropertyOnLine(
                     rect, mOrbitNames[i],
-                    new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height), 
+                    new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),
                             o.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
                     null);
             }
@@ -95,7 +95,7 @@ namespace Cinemachine
                 EditorGUILayout.Separator();
                 DrawRigEditor(i, rigs.GetArrayElementAtIndex(i));
             }
-            
+
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
@@ -140,11 +140,11 @@ namespace Cinemachine
             else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
             {
                 // We're not dragging anything now, but we were
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                InspectorUtility.RepaintGameView(Target);
                 Target.UserIsDragging = false;
             }
         }
-        
+
         void DrawRigEditor(int rigIndex, SerializedProperty rig)
         {
             const float kBoxMargin = 3;
@@ -208,9 +208,9 @@ namespace Cinemachine
             SerializedProperty enabledProperty, SerializedProperty property)
         {
             GUIContent label = new GUIContent(property.displayName, property.tooltip);
-            Rect rect = EditorGUILayout.GetControlRect(true, 
+            Rect rect = EditorGUILayout.GetControlRect(true,
                 (enabledProperty.boolValue && property.isExpanded)
-                    ? EditorGUI.GetPropertyHeight(property) 
+                    ? EditorGUI.GetPropertyHeight(property)
                         : EditorGUIUtility.singleLineHeight);
             Rect r = rect; r.height = EditorGUIUtility.singleLineHeight;
             if (!enabledProperty.boolValue)
@@ -218,7 +218,7 @@ namespace Cinemachine
 
             float labelWidth = EditorGUIUtility.labelWidth;
             bool newValue = EditorGUI.ToggleLeft(
-                new Rect(labelWidth, r.y, r.width - labelWidth, r.height), 
+                new Rect(labelWidth, r.y, r.width - labelWidth, r.height),
                 mAllLensLabel, enabledProperty.boolValue);
             if (newValue != enabledProperty.boolValue)
             {
@@ -270,13 +270,13 @@ namespace Cinemachine
                         orient = Quaternion.AngleAxis(rotation, up) * orient;
                     }
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[0].m_Height * scale, 
+                        pos + up * vcam.m_Orbits[0].m_Height * scale,
                         orient, vcam.m_Orbits[0].m_Radius * scale);
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[1].m_Height * scale, 
+                        pos + up * vcam.m_Orbits[1].m_Height * scale,
                         orient, vcam.m_Orbits[1].m_Radius * scale);
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[2].m_Height * scale, 
+                        pos + up * vcam.m_Orbits[2].m_Height * scale,
                         orient, vcam.m_Orbits[2].m_Radius * scale);
 
                     DrawCameraPath(pos, orient, vcam);

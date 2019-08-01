@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if CINEMACHINE_UGUI
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -339,3 +340,5 @@ namespace Cinemachine
 #endif
     }
 }
+#endif
+

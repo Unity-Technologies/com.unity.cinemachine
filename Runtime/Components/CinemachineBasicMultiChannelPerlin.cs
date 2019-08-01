@@ -7,8 +7,8 @@ namespace Cinemachine
     /// As a part of the Cinemachine Pipeline implementing the Noise stage, this
     /// component adds Perlin Noise to the Camera state, in the Correction
     /// channel of the CameraState.
-    /// 
-    /// The noise is created by using a predefined noise profile asset.  This defines the 
+    ///
+    /// The noise is created by using a predefined noise profile asset.  This defines the
     /// shape of the noise over time.  You can scale this in amplitude or in time, to produce
     /// a large family of different noises using the same profile.
     /// </summary>
@@ -25,6 +25,12 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Definition")]
         [NoiseSettingsProperty]
         public NoiseSettings m_NoiseProfile;
+
+        /// <summary>
+        /// When rotating the camera, offset the camera's pivot position by this much (camera space)
+        /// </summary>
+        [Tooltip("When rotating the camera, offset the camera's pivot position by this much (camera space)")]
+        public Vector3 m_PivotOffset = Vector3.zero;
 
         /// <summary>
         /// Gain to apply to the amplitudes defined in the settings asset.
@@ -64,6 +70,14 @@ namespace Cinemachine
             Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
                     m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
             curState.OrientationCorrection = curState.OrientationCorrection * rotNoise;
+
+            if (m_PivotOffset != Vector3.zero)
+            {
+                Matrix4x4 m = Matrix4x4.Translate(-m_PivotOffset);
+                m = Matrix4x4.Rotate(curState.CorrectedOrientation) * m;
+                m = Matrix4x4.Translate(m_PivotOffset) * m;
+                curState.PositionCorrection += m.MultiplyPoint(Vector3.zero);
+            }
         }
 
         private bool mInitialized = false;

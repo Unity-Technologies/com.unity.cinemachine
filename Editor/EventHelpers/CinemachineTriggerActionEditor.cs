@@ -1,3 +1,8 @@
+#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -9,7 +14,7 @@ namespace Cinemachine.Editor
     internal class CinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
     {
         const int vSpace = 2;
-        CinemachineTriggerAction.ActionSettings def 
+        CinemachineTriggerAction.ActionSettings def
             = new CinemachineTriggerAction.ActionSettings(); // to access name strings
 
         static bool mEnterExpanded;
@@ -20,7 +25,7 @@ namespace Cinemachine.Editor
         GUIContent[] mRepeatSubLabels = new GUIContent[2];
 
         GUIStyle mFoldoutStyle;
-        
+
         private void OnEnable()
         {
             mRepeatProperties[0] = FindProperty(x => x.m_SkipFirst);
@@ -83,8 +88,8 @@ namespace Cinemachine.Editor
                         property.FindPropertyRelative(() => def.m_StartTime),
                         property.FindPropertyRelative(() => def.m_Mode)
                     };
-                    GUIContent[] sublabels = new GUIContent[2] 
-                    { 
+                    GUIContent[] sublabels = new GUIContent[2]
+                    {
                         GUIContent.none, new GUIContent("s", props[1].tooltip)
                     };
                     InspectorUtility.MultiPropertyOnLine(
@@ -151,3 +156,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

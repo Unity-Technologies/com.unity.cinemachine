@@ -1,3 +1,6 @@
+#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -91,6 +94,7 @@ namespace Cinemachine.Editor
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create state driven camera");
         }
 
+#if CINEMACHINE_PHYSICS
         [MenuItem("Cinemachine/Create ClearShot Camera", false, 1)]
         private static void CreateClearShotVirtualCamera()
         {
@@ -110,6 +114,7 @@ namespace Cinemachine.Editor
             collider.m_AvoidObstacles = false;
             Undo.RecordObject(collider, "create ClearShot camera");
         }
+#endif
 
         [MenuItem("Cinemachine/Create Dolly Camera with Track", false, 1)]
         private static void CreateDollyCameraWithPath()
@@ -193,7 +198,7 @@ namespace Cinemachine.Editor
         private static void ImportExamplePackage()
         {
             string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
-                + "/Extras~/CinemachineExamples.unitypackage";
+                + "/Samples/CinemachineExamples.unitypackage";
             if (!File.Exists(pkgFile))
                 Debug.LogError("Missing file " + pkgFile);
             else

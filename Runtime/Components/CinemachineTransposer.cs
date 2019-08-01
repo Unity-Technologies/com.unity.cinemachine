@@ -318,23 +318,23 @@ namespace Cinemachine
                     case BindingMode.LockToTargetOnAssign:
                         return m_targetOrientationOnAssign;
                     case BindingMode.LockToTargetWithWorldUp:
-                        {
-                            Vector3 fwd = (targetOrientation * Vector3.forward).ProjectOntoPlane(worldUp);
-                            if (fwd.AlmostZero())
-                                break;
-                            return Quaternion.LookRotation(fwd, worldUp);
-                        }
+                    {
+                        Vector3 fwd = (targetOrientation * Vector3.forward).ProjectOntoPlane(worldUp);
+                        if (fwd.AlmostZero())
+                            break;
+                        return Quaternion.LookRotation(fwd, worldUp);
+                    }
                     case BindingMode.LockToTargetNoRoll:
                         return Quaternion.LookRotation(targetOrientation * Vector3.forward, worldUp);
                     case BindingMode.LockToTarget:
                         return targetOrientation;
                     case BindingMode.SimpleFollowWithWorldUp:
-                        {
-                            Vector3 fwd = (FollowTargetPosition - VcamState.RawPosition).ProjectOntoPlane(worldUp);
-                            if (fwd.AlmostZero())
-                                break;
-                            return Quaternion.LookRotation(fwd, worldUp);
-                        }
+                    {
+                        Vector3 fwd = (FollowTargetPosition - VcamState.RawPosition).ProjectOntoPlane(worldUp);
+                        if (fwd.AlmostZero())
+                            break;
+                        return Quaternion.LookRotation(fwd, worldUp);
+                    }
                     default:
                         break;
                 }

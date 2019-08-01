@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.10-preview.3] - 2019-07-31
+## [2.3.5-preview.3] - 2019-07-31
 ### Bugfixes
 - Storyboard: added global mute function
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
@@ -14,33 +14,33 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New example scene: OverTheShoulderAim illustrating how to do over-the-shoulder TPS cam, with Normal and Aim modes
 - Impulse Manager: added option to ignore timescale
 - Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
+- Upgrade to support HDRP and Universal RP 7.0.0 API
 - Removed Resources diretories
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
-- Bugfix: Storyboard canvases were not always destructed properly
 - Bugfix: FreeLook was not respecting wait time for X axis recentering
 - Bugfix: FreeLook X axis was not always perfectly synched between rigs
 - Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
 - Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size 
 - Bugfix (fogbugz 1165599): Transposer: fix gimbal lock issue in LockToTargetWithWorldUp
+- Bugfix: VolumeSettings: handle layermask in HDAdditionalCameraData
 - Bugfix: use vcam's up when drawing gizmos (orbital transposer and free look)
 
 
-## [2.2.9] - 2019-05-22
-### Mostly Bugfixes
+## [2.3.4] - 2019-05-22
+### PostProcessing V3 and bugfixes
+- Added support for PostProcessing V3 - now called CinemachineVolumeSttings
 - Added CinemachineCore.GetBlendOverride delegate to allow applications to override any vcam blend when it happens
 - When a blend is cancelled by the opposite blend, reduce the blend time
-- FreeLook: if inherit position from similar FreeLooks, bypass damping 
-- Timeline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
-- OnTargetObjectWarped no longer generates garbage
 - Orthographic cameras allow a Near Clip of 0
 - Timeline won't auto-create CM brains when something dragged onto it
 - Confiner: Improvement in automatic path invalidation when number of path points path changes
 - Added CinemachineInpuitAxisDriver utility for overriding the default AxisState behaviour
 - CinemachineCameraOffset: added customizable stage for when to apply the offset
 - Added Loop option to BlendList Camera
-- Improved Lookahed: does not automatically recenter
-- Bugfix: potential endless loop when using Ignore tag in Collider
+- Improved Lookahead: does not automatically recenter
 - Brain no longer applies time scaling to fixed delta
+- Added dependency on Unity.ugui (2019.2 and up)
+- Bugfix: potential endless loop when using Ignore tag in Collider
 - Bugfix: Allow externally-driven FeeLook XAxis to work properly with SimpleFollow
 - Bugfix: vcams with noise would sometimes show one noiseless frame when they were activated and standby update was not Always
 - Bugfix: Generate a cut event if cutting to a blend-in-progess (fogbugz 1150847)
@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: cameras sometimes snapped when interrupting blends
 - Bugfix: Path handles no longer scale with the path object
 - Bugfix: Framing Transposer Center on Activate was not working properly (fogbugz 1129824)
+- Bugfix: FreeLook inherit position
 - Bugfix: collider was pushing camera too far if there were multiple overlapping obstacles
 - Bugfix: use IsAssignableFrom instead of IsSubclass in several places
 - Bugfix: when interrupting a blend in progress, Cut was not respected
@@ -60,6 +61,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: TargetGroup.RemoveMember error (fogbugz 1119028)
 - Bugfix: TargetGroup member lerping jerk when member weight near 0
 - Bugfix: Transposer angular damping should be 0 only if binding mode not LockToTarget
+
+## [2.3.3] - 2019-01-08
+### Temporary patch to get around a Unity bug in conditional dependencies
+- Removed Cinemachine.Timeline namespace, as a workaround for fogbugz 1115321
+
+## [2.3.1] - 2019-01-07
+### Bugfixes
+- Added timeline dependency
+- OnTargetObjectWarped no longer generates garbage
+
+## [2.3.0] - 2018-12-20
+### Support for Unity 2019.1
+- Added dependency on new unity.timeline
+- Added conditional dependence on PostProcessingV2
+- No copying CM gizmo into assets folder
+- FreeLook: if inherit position from similar FreeLooks, bypass damping 
+- Timeline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
 
 ## [2.2.8] - 2018-12-10
 ### Bugfixes, optimizations, and some experimental stuff
@@ -70,7 +88,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - State-driven-camera: added [NoSaveDuringPlay] to Animated Target and Layer Index
 - Added AxisState.Recentering.RecenterNow() API call to skip wait time and start recentering now (if enabled)
 - Added NoLens blend hint, to leave camera Lens settings alone
-- Added Composer.CenterOnActivate option, to disable automatic centering in dead zone when vcam is activated
 - Updated documentation (corrections, and relocation to prevent importing)
 - Upgrade: added support for nested prefabs in Unity 2018.3 (fogbugz 1077395)
 - Optimization: position predictor is more efficient

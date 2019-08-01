@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
                     FieldPath(x => x.m_CustomBlends), this);
             m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) =>
                 {
-                    UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                    InspectorUtility.RepaintGameView(Target);
                 };
         }
 
@@ -76,14 +76,14 @@ namespace Cinemachine.Editor
             if (brain.OutputCamera != null && brain.m_ShowCameraFrustum)
             {
                 DrawCameraFrustumGizmo(
-                    brain, LensSettings.FromCamera(brain.OutputCamera), 
-                    brain.transform.localToWorldMatrix, 
+                    brain, LensSettings.FromCamera(brain.OutputCamera),
+                    brain.transform.localToWorldMatrix,
                     Color.white); // GML why is this color hardcoded?
             }
         }
 
         internal static void DrawCameraFrustumGizmo(
-            CinemachineBrain brain, LensSettings lens, 
+            CinemachineBrain brain, LensSettings lens,
             Matrix4x4 transform, Color color)
         {
             float aspect = 1;
@@ -101,8 +101,8 @@ namespace Cinemachine.Editor
             if (ortho)
             {
                 Vector3 size = new Vector3(
-                        aspect * lens.OrthographicSize * 2, 
-                        lens.OrthographicSize * 2, 
+                        aspect * lens.OrthographicSize * 2,
+                        lens.OrthographicSize * 2,
                         lens.NearClipPlane + lens.FarClipPlane);
                 Gizmos.DrawWireCube(
                     new Vector3(0, 0, (size.z / 2) + lens.NearClipPlane), size);
@@ -141,31 +141,6 @@ namespace Cinemachine.Editor
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
         }
 
-        static string kGizmoFileName = "Cinemachine/cm_logo_lg.png";
-        [InitializeOnLoad]
-        static class InstallGizmos
-        {
-            static InstallGizmos()
-            {
-                string srcFile = ScriptableObjectUtility.CinemachineInstallPath + "/Gizmos/" + kGizmoFileName;
-                if (File.Exists(srcFile))
-                {
-                    string dstFile = Application.dataPath + "/Gizmos";
-                    if (!Directory.Exists(dstFile))
-                        Directory.CreateDirectory(dstFile);
-                    dstFile += "/" + kGizmoFileName;
-                    if (!File.Exists(dstFile) 
-                        || (File.GetLastWriteTime(dstFile) < File.GetLastWriteTime(srcFile)
-                            && (File.GetAttributes(dstFile) & FileAttributes.ReadOnly) == 0))
-                    {
-                        if (!Directory.Exists(Path.GetDirectoryName(dstFile)))
-                            Directory.CreateDirectory(Path.GetDirectoryName(dstFile));
-                        File.Copy(srcFile, dstFile, true);
-                        File.SetAttributes(
-                            dstFile, File.GetAttributes(dstFile) & ~FileAttributes.ReadOnly);
-                    }
-                }
-            }
-        }
+        static string kGizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
     }
 }
