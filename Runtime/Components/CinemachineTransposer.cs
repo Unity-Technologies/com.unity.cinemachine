@@ -340,7 +340,7 @@ namespace Cinemachine
                 }
             }
             // Gimbal lock situation - use previous orientation if it exists
-            return m_PreviousReferenceOrientation.normalized;
+            return m_PreviousReferenceOrientation.Normalized();
         }
     }
 }
