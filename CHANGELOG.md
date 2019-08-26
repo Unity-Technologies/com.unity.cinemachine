@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.10-preview.4] - 2019-08-06
+## [2.2.10-preview.5] - 2019-08-29
 ### Bugfixes
 - Storyboard: added global mute function
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
 - Removed Resources diretories
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfix: composer screen guides drawn in correct place for physical camera
 - Bugfix: Storyboard canvases were not always destructed properly
 - Bugfix: FreeLook was not respecting wait time for X axis recentering
 - Bugfix: FreeLook X axis was not always perfectly synched between rigs

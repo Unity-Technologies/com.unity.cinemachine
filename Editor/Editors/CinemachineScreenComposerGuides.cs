@@ -40,6 +40,7 @@ namespace Cinemachine.Editor
             float screenHeight = screenWidth / lens.Aspect;
             cameraRect.yMax = Screen.height - gateRect.yMin;
             cameraRect.yMin = cameraRect.yMax - gateRect.height;
+            cameraRect.position += new Vector2(0, (screenWidth / outputCamera.aspect - screenHeight) * 0.5f);
 
             // Shift the guides along with the lens
             cameraRect.position += new Vector2(
