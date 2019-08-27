@@ -32,19 +32,69 @@ namespace Cinemachine.Editor
             }
         }
 
-        public void OnGUI_DrawGuides(bool isLive, Camera outputCamera, LensSettings lens, bool showHardGuides)
+        Rect GetCameraRect(Camera outputCamera, LensSettings lens)
         {
-            Rect gateRect = outputCamera.pixelRect;
-            Rect cameraRect = gateRect;
+            Rect cameraRect = outputCamera.pixelRect;
+            float screenHeight = cameraRect.height;
             float screenWidth = cameraRect.width;
-            float screenHeight = screenWidth / lens.Aspect;
-            cameraRect.yMax = Screen.height - gateRect.yMin;
-            cameraRect.yMin = cameraRect.yMax - gateRect.height;
-            cameraRect.position += new Vector2(0, (screenWidth / outputCamera.aspect - screenHeight) * 0.5f);
+            float screenAspect = screenWidth / screenHeight;
+
+            switch (outputCamera.gateFit)
+            {
+                case Camera.GateFitMode.Vertical:
+                    screenWidth = screenHeight * lens.Aspect;
+                    cameraRect.position += new Vector2((cameraRect.width - screenWidth) * 0.5f, 0);
+                    break;
+                case Camera.GateFitMode.Horizontal:
+                    screenHeight = screenWidth / lens.Aspect;
+                    cameraRect.position += new Vector2(0, (cameraRect.height - screenHeight) * 0.5f);
+                    break;
+                case Camera.GateFitMode.Overscan:
+                    if (screenAspect < lens.Aspect)
+                    {
+                        screenHeight = screenWidth / lens.Aspect;
+                        cameraRect.position += new Vector2(0, (cameraRect.height - screenHeight) * 0.5f);
+                    }
+                    else
+                    {
+                        screenWidth = screenHeight * lens.Aspect;
+                        cameraRect.position += new Vector2((cameraRect.width - screenWidth) * 0.5f, 0);
+                    }
+                    break;
+                case Camera.GateFitMode.Fill:
+                    if (screenAspect > lens.Aspect)
+                    {
+                        screenHeight = screenWidth / lens.Aspect;
+                        cameraRect.position += new Vector2(0, (cameraRect.height - screenHeight) * 0.5f);
+                    }
+                    else
+                    {
+                        screenWidth = screenHeight * lens.Aspect;
+                        cameraRect.position += new Vector2((cameraRect.width - screenWidth) * 0.5f, 0);
+                    }
+                    break;
+                case Camera.GateFitMode.None:
+                    break;
+            }
+            cameraRect = new Rect(cameraRect.position, new Vector2(screenWidth, screenHeight));
+
+            // Invert Y
+            float h = cameraRect.height;
+            cameraRect.yMax = Screen.height - cameraRect.yMin;
+            cameraRect.yMin = cameraRect.yMax - h;
 
             // Shift the guides along with the lens
             cameraRect.position += new Vector2(
                 -screenWidth * lens.LensShift.x, screenHeight * lens.LensShift.y);
+
+            return cameraRect;
+        }
+
+        public void OnGUI_DrawGuides(bool isLive, Camera outputCamera, LensSettings lens, bool showHardGuides)
+        {
+            Rect cameraRect = GetCameraRect(outputCamera, lens);
+            float screenWidth = cameraRect.width;
+            float screenHeight = cameraRect.height;
 
             // Rotate the guides along with the dutch
             Matrix4x4 oldMatrix = GUI.matrix;
