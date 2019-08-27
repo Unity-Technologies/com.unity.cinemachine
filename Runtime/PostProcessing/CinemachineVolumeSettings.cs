@@ -1,20 +1,21 @@
 ﻿#if CINEMACHINE_POST_PROCESSING_V3
-
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering;
-#if CINEMACHINE_HDRP_7_0_0
-using UnityEngine.Rendering.HighDefinition;
-#else
-    #if CINEMACHINE_LWRP_7_0_0
-    using UnityEngine.Rendering.Universal;
+    using System.Collections.Generic;
+    using UnityEngine;
+    using UnityEngine.Rendering;
+    #if CINEMACHINE_HDRP_7_0_0
+    using UnityEngine.Rendering.HighDefinition;
     #else
-    using UnityEngine.Experimental.Rendering.HDPipeline;
+        #if CINEMACHINE_LWRP_7_0_0
+        using UnityEngine.Rendering.Universal;
+        #else
+        using UnityEngine.Experimental.Rendering.HDPipeline;
+        #endif
     #endif
 #endif
 
 namespace Cinemachine.PostFX
 {
+#if CINEMACHINE_POST_PROCESSING_V3
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
     ///
@@ -231,5 +232,5 @@ namespace Cinemachine.PostFX
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
         }
     }
-}
 #endif
+}

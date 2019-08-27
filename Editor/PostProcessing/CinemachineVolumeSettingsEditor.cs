@@ -1,21 +1,22 @@
 #if CINEMACHINE_POST_PROCESSING_V3
-
-using UnityEngine;
-using UnityEditor;
-using UnityEngine.Rendering;
-using UnityEditor.Rendering;
-#if CINEMACHINE_HDRP_7_0_0
-using UnityEngine.Rendering.HighDefinition;
-#else
-    #if CINEMACHINE_LWRP_7_0_0
-    using UnityEngine.Rendering.Universal;
+    using UnityEngine;
+    using UnityEditor;
+    using UnityEngine.Rendering;
+    using UnityEditor.Rendering;
+    #if CINEMACHINE_HDRP_7_0_0
+    using UnityEngine.Rendering.HighDefinition;
     #else
-    using UnityEngine.Experimental.Rendering.HDPipeline;
+        #if CINEMACHINE_LWRP_7_0_0
+        using UnityEngine.Rendering.Universal;
+        #else
+        using UnityEngine.Experimental.Rendering.HDPipeline;
+        #endif
     #endif
 #endif
 
 namespace Cinemachine.PostFX.Editor
 {
+#if CINEMACHINE_POST_PROCESSING_V3
     [CustomEditor(typeof(CinemachineVolumeSettings))]
     public sealed class CinemachineVolumeSettingsEditor
         : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
@@ -230,5 +231,5 @@ namespace Cinemachine.PostFX.Editor
             return profile;
         }
     }
-}
 #endif
+}

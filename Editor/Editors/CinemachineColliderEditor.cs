@@ -1,11 +1,10 @@
-#if CINEMACHINE_PHYSICS
-
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
+#if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineCollider))]
     internal sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
     {
@@ -77,5 +76,5 @@ namespace Cinemachine.Editor
             }
         }
     }
-}
 #endif
+}

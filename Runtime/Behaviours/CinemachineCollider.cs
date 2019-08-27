@@ -1,8 +1,3 @@
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-
-#if CINEMACHINE_PHYSICS
-
 using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -11,6 +6,7 @@ using System;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_PHYSICS
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that post-processes
     /// the final position of the virtual camera. Based on the supplied settings,
@@ -781,5 +777,5 @@ namespace Cinemachine
             return false;
         }
     }
-}
 #endif
+}

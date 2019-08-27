@@ -1,13 +1,9 @@
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
-
 using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// Generate an Impulse Event this object's Collider collides with something
     /// or its trigger zone is entered.
@@ -195,5 +191,5 @@ namespace Cinemachine
         }
 #endif
     }
-}
 #endif
+}

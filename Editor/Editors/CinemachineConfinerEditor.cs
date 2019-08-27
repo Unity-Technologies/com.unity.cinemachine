@@ -1,8 +1,3 @@
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
-
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -10,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineConfiner))]
     internal sealed class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>
     {
@@ -185,7 +181,5 @@ namespace Cinemachine.Editor
             }
         }
     }
-}
-
 #endif
-
+}

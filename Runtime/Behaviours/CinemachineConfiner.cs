@@ -1,8 +1,3 @@
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
-
 using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -10,6 +5,7 @@ using System;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that post-processes
     /// the final position of the virtual camera. It will confine the virtual
@@ -253,6 +249,5 @@ namespace Cinemachine
             return displacement;
         }
     }
-}
-
 #endif
+}

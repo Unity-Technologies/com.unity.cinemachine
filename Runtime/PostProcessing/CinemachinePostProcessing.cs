@@ -1,11 +1,12 @@
 ﻿#if CINEMACHINE_POST_PROCESSING_V2
-
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+#endif
 
 namespace Cinemachine.PostFX
 {
+#if CINEMACHINE_POST_PROCESSING_V2
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
     /// have the Post-Processing V2 stack asset store package installed in order to use this behaviour.
@@ -239,5 +240,5 @@ namespace Cinemachine.PostFX
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
         }
     }
-}
 #endif
+}

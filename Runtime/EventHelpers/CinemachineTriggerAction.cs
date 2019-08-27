@@ -1,8 +1,3 @@
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +6,7 @@ using UnityEngine.Playables;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// A multi-purpose script which causes an action to occur when
     /// a trigger collider is entered and exited.
@@ -278,5 +274,5 @@ namespace Cinemachine
 #endif
         void OnEnable() {} // For the Enabled checkbox
     }
-}
 #endif
+}

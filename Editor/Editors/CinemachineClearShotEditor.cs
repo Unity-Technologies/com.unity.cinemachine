@@ -1,13 +1,9 @@
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-
-#if CINEMACHINE_PHYSICS
-
 using UnityEditor;
 using UnityEngine;
 
 namespace Cinemachine.Editor
 {
+#if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineClearShot))]
     internal sealed class CinemachineClearShotEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineClearShot>
@@ -212,5 +208,5 @@ namespace Cinemachine.Editor
                 };
         }
     }
-}
 #endif
+}

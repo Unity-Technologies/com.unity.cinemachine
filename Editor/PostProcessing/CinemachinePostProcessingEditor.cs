@@ -1,12 +1,13 @@
 #if CINEMACHINE_POST_PROCESSING_V2
-
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEditor.Rendering.PostProcessing;
+#endif
 
 namespace Cinemachine.PostFX.Editor
 {
+#if CINEMACHINE_POST_PROCESSING_V2
     [CustomEditor(typeof(CinemachinePostProcessing))]
     public sealed class CinemachinePostProcessingEditor
         : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
@@ -216,5 +217,5 @@ namespace Cinemachine.PostFX.Editor
             return profile;
         }
     }
-}
 #endif
+}
