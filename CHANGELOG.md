@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: composer screen guides drawn in correct place for physical camera
 - Bugfix: FreeLook was not respecting wait time for X axis recentering
 - Bugfix: FreeLook X axis was not always perfectly synched between rigs
+- Bugfix (fogbugz 1174180): framing transposer wrong ortho size calculation
 - Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
 - Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size 
 - Bugfix (fogbugz 1165599): Transposer: fix gimbal lock issue in LockToTargetWithWorldUp
