@@ -1,4 +1,4 @@
-#if CINEMACHINE_POST_PROCESSING_V3
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
     using UnityEngine;
     using UnityEditor;
     using UnityEngine.Rendering;
@@ -16,7 +16,7 @@
 
 namespace Cinemachine.PostFX.Editor
 {
-#if CINEMACHINE_POST_PROCESSING_V3
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
     [CustomEditor(typeof(CinemachineVolumeSettings))]
     public sealed class CinemachineVolumeSettingsEditor
         : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>

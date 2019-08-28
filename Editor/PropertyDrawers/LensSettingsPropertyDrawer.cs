@@ -5,6 +5,19 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using System;
 
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
+    #if CINEMACHINE_HDRP_7_0_0
+    using UnityEngine.Rendering.HighDefinition;
+    #else
+        #if CINEMACHINE_LWRP_7_0_0
+        using UnityEngine.Rendering.Universal;
+        #else
+        using UnityEngine.Experimental.Rendering.HDPipeline;
+        #endif
+    #endif
+#endif
+
+
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(LensSettingsPropertyAttribute))]
@@ -14,12 +27,17 @@ namespace Cinemachine.Editor
         LensSettings def = new LensSettings(); // to access name strings
         GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
 
+#if CINEMACHINE_HDRP
+        GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
+        bool mPhysicalExapnded;
+#endif
+
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             float height = EditorGUIUtility.singleLineHeight;
             rect.height = height;
             property.isExpanded = EditorGUI.Foldout(
-                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height), 
+                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height),
                 property.isExpanded, label, true);
             if (property.isExpanded)
             {
@@ -40,8 +58,60 @@ namespace Cinemachine.Editor
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.FarClipPlane));
                 if (IsPhysical)
                 {
+#if CINEMACHINE_HDRP
+                    rect.y += height + vSpace;
+                    mPhysicalExapnded = EditorGUI.Foldout(
+                        new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height),
+                        mPhysicalExapnded, PhysicalPropertiesLabel, true);
+                    if (mPhysicalExapnded)
+                    {
+                        ++EditorGUI.indentLevel;
+                        rect.y += height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Aperture));
+                        rect.y += height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Iso));
+                        rect.y += height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.ShutterSpeed));
+                        rect.y += height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.BladeCount));
+
+                        rect.y += height + vSpace;
+                        var curvature = property.FindPropertyRelative(() => def.Curvature);
+                        using (var propertyScope = new EditorGUI.PropertyScope(rect, new GUIContent("Curvature"), curvature))
+                        {
+                            var v = curvature.vector2Value;
+
+                            // The layout system breaks alignment when mixing inspector fields with custom layout'd
+                            // fields as soon as a scrollbar is needed in the inspector, so we'll do the layout
+                            // manually instead
+                            const int kFloatFieldWidth = 50;
+                            const int kSeparatorWidth = 5;
+                            float indentOffset = EditorGUI.indentLevel * 15f;
+                            var labelRect = new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth - indentOffset, rect.height);
+                            var floatFieldLeft = new Rect(labelRect.xMax, rect.y, kFloatFieldWidth + indentOffset, rect.height);
+                            var sliderRect = new Rect(floatFieldLeft.xMax + kSeparatorWidth - indentOffset, rect.y, rect.width - labelRect.width - kFloatFieldWidth * 2 - kSeparatorWidth * 2, rect.height);
+                            var floatFieldRight = new Rect(sliderRect.xMax + kSeparatorWidth - indentOffset, rect.y, kFloatFieldWidth + indentOffset, rect.height);
+
+                            EditorGUI.PrefixLabel(labelRect, propertyScope.content);
+                            v.x = EditorGUI.FloatField(floatFieldLeft, v.x);
+                            EditorGUI.MinMaxSlider(sliderRect, ref v.x, ref v.y, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
+                            v.y = EditorGUI.FloatField(floatFieldRight, v.y);
+
+                            curvature.vector2Value = v;
+                        }
+
+                        rect.y += height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.BarrelClipping));
+                        rect.y += height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Anamorphism));
+                        rect.y += height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.LensShift));
+                        --EditorGUI.indentLevel;
+                    }
+#else
                     rect.y += height + vSpace;
                     EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.LensShift));
+#endif
                 }
                 rect.y += height + vSpace;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Dutch));
@@ -150,7 +220,18 @@ namespace Cinemachine.Editor
 
             float height = EditorGUIUtility.singleLineHeight + vSpace;
             if (property.isExpanded)
-                height *= IsPhysical ? 6 : 5;
+            {
+                if (!IsPhysical)
+                    height *= 5;
+                else
+                {
+#if CINEMACHINE_HDRP
+                    height *= 5 + (mPhysicalExapnded ? 9 : 1);
+#else
+                    height *= 5 + 1;
+#endif
+                }
+            }
             return height - vSpace;
         }
 

@@ -1,4 +1,4 @@
-﻿#if CINEMACHINE_POST_PROCESSING_V3
+﻿#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.Rendering;
@@ -15,7 +15,7 @@
 
 namespace Cinemachine.PostFX
 {
-#if CINEMACHINE_POST_PROCESSING_V3
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
     ///

@@ -6,6 +6,18 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
+    #if CINEMACHINE_HDRP_7_0_0
+    using UnityEngine.Rendering.HighDefinition;
+    #else
+        #if CINEMACHINE_LWRP_7_0_0
+        using UnityEngine.Rendering.Universal;
+        #else
+        using UnityEngine.Experimental.Rendering.HDPipeline;
+        #endif
+    #endif
+#endif
+
 namespace Cinemachine
 {
     /// <summary>
@@ -735,11 +747,25 @@ namespace Cinemachine
                     cam.fieldOfView = state.Lens.FieldOfView;
                     if (cam.orthographic)
                         cam.orthographicSize = state.Lens.OrthographicSize;
-#if UNITY_2018_2_OR_NEWER
                     else
                     {
                         cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
                         cam.lensShift = state.Lens.LensShift;
+                    }
+#if CINEMACHINE_HDRP
+                    if (state.Lens.IsPhysicalCamera)
+                    {
+                        var hda = cam.GetComponent<HDAdditionalCameraData>();
+                        if (hda != null)
+                        {
+                            hda.physicalParameters.iso = state.Lens.Iso;
+                            hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
+                            hda.physicalParameters.aperture = state.Lens.Aperture;
+                            hda.physicalParameters.bladeCount = state.Lens.BladeCount;
+                            hda.physicalParameters.curvature = state.Lens.Curvature;
+                            hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
+                            hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
+                        }
                     }
 #endif
                 }

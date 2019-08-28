@@ -29,7 +29,7 @@
         {
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "5.3.1",
-            "define": "CINEMACHINE_POST_PROCESSING_V3"
+            "define": "CINEMACHINE_HDRP"
         },
         {
             "name": "com.unity.render-pipelines.high-definition",
@@ -50,11 +50,6 @@
             "name": "com.unity.ugui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UGUI"
-        },
-        {
-            "name": "com.unity.render-pipelines.universal",
-            "expression": "7.0.0",
-            "define": "CINEMACHINE_POST_PROCESSING_V3"
         },
         {
             "name": "com.unity.render-pipelines.universal",

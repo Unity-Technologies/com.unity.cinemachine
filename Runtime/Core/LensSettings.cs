@@ -1,6 +1,18 @@
 using UnityEngine;
 using System;
 
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
+    #if CINEMACHINE_HDRP_7_0_0
+    using UnityEngine.Rendering.HighDefinition;
+    #else
+        #if CINEMACHINE_LWRP_7_0_0
+        using UnityEngine.Rendering.Universal;
+        #else
+        using UnityEngine.Experimental.Rendering.HDPipeline;
+        #endif
+    #endif
+#endif
+
 namespace Cinemachine
 {
     /// <summary>
@@ -58,12 +70,6 @@ namespace Cinemachine
         /// This is set every frame by the virtual camera, based on the value
         /// found in the currently associated Unity camera
         /// </summary>
-        public bool IsPhysicalCamera { get; set; }
-
-        /// <summary>
-        /// This is set every frame by the virtual camera, based on the value
-        /// found in the currently associated Unity camera
-        /// </summary>
         public Vector2 SensorSize { get; set; }
 
         /// <summary>
@@ -71,8 +77,28 @@ namespace Cinemachine
         /// </summary>
         public float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
 
+        /// <summary>
+        /// This is set every frame by the virtual camera, based on the value
+        /// found in the currently associated Unity camera
+        /// </summary>
+        public bool IsPhysicalCamera { get; set; }
+
         /// <summary>For physical cameras only: position of the gate relative to the film back</summary>
         public Vector2 LensShift;
+
+#if CINEMACHINE_HDRP
+        public int Iso;
+        public float ShutterSpeed;
+        [Range(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
+        public float Aperture;
+        [Range(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
+        public int BladeCount;
+        public Vector2 Curvature;
+        [Range(0, 1)]
+        public float BarrelClipping;
+        [Range(-1, 1)]
+        public float Anamorphism;
+#endif
 
         /// <summary>
         /// Creates a new LensSettings, copying the values from the
@@ -89,10 +115,25 @@ namespace Cinemachine
                 lens.OrthographicSize = fromCamera.orthographicSize;
                 lens.NearClipPlane = fromCamera.nearClipPlane;
                 lens.FarClipPlane = fromCamera.farClipPlane;
-#if UNITY_2018_2_OR_NEWER
                 lens.LensShift = fromCamera.lensShift;
-#endif
                 lens.SnapshotCameraReadOnlyProperties(fromCamera);
+
+#if CINEMACHINE_HDRP
+                if (lens.IsPhysicalCamera)
+                {
+                    var pc = new HDPhysicalCamera();
+                    var hda = fromCamera.GetComponent<HDAdditionalCameraData>();
+                    if (hda != null)
+                        pc = hda.physicalParameters;
+                    lens.Iso = pc.iso;
+                    lens.ShutterSpeed = pc.shutterSpeed;
+                    lens.Aperture = pc.aperture;
+                    lens.BladeCount = pc.bladeCount;
+                    lens.Curvature = pc.curvature;
+                    lens.BarrelClipping = pc.barrelClipping;
+                    lens.Anamorphism = pc.anamorphism;
+                }
+#endif
             }
             return lens;
         }
@@ -107,13 +148,11 @@ namespace Cinemachine
             {
                 Orthographic = camera.orthographic;
                 SensorSize = new Vector2(camera.aspect, 1f);
-#if UNITY_2018_2_OR_NEWER
                 IsPhysicalCamera = camera.usePhysicalProperties;
                 if (IsPhysicalCamera)
                     SensorSize = camera.sensorSize;
                 else
                     LensShift = Vector2.zero;
-#endif
             }
         }
 
@@ -125,11 +164,9 @@ namespace Cinemachine
         {
             Orthographic = lens.Orthographic;
             SensorSize = lens.SensorSize;
-#if UNITY_2018_2_OR_NEWER
             IsPhysicalCamera = lens.IsPhysicalCamera;
             if (!IsPhysicalCamera)
                 LensShift = Vector2.zero;
-#endif
         }
 
         /// <summary>
@@ -172,6 +209,16 @@ namespace Cinemachine
             blendedLens.IsPhysicalCamera = lensA.IsPhysicalCamera || lensB.IsPhysicalCamera;
             blendedLens.SensorSize = Vector2.Lerp(lensA.SensorSize, lensB.SensorSize, t);
             blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
+
+#if CINEMACHINE_HDRP
+            blendedLens.Iso = Mathf.RoundToInt(Mathf.Lerp(lensA.Iso, lensB.Iso, t));
+            blendedLens.ShutterSpeed = Mathf.Lerp(lensA.ShutterSpeed, lensB.ShutterSpeed, t);
+            blendedLens.Aperture = Mathf.Lerp(lensA.Aperture, lensB.Aperture, t);
+            blendedLens.BladeCount = Mathf.RoundToInt(Mathf.Lerp(lensA.BladeCount, lensB.BladeCount, t));;
+            blendedLens.Curvature = Vector2.Lerp(lensA.Curvature, lensB.Curvature, t);
+            blendedLens.BarrelClipping = Mathf.Lerp(lensA.BarrelClipping, lensB.BarrelClipping, t);
+            blendedLens.Anamorphism = Mathf.Lerp(lensA.Anamorphism, lensB.Anamorphism, t);
+#endif
             return blendedLens;
         }
 
@@ -181,6 +228,15 @@ namespace Cinemachine
             NearClipPlane = Mathf.Max(NearClipPlane, Orthographic ? 0 : 0.01f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.01f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.1f, 179f);
+#if CINEMACHINE_HDRP
+            ShutterSpeed = Mathf.Max(0, ShutterSpeed);
+            Aperture = Mathf.Clamp(Aperture, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
+            BladeCount = Mathf.Clamp(BladeCount, HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount);
+            BarrelClipping = Mathf.Clamp01(BarrelClipping);
+            Curvature.x = Mathf.Clamp(Curvature.x, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
+            Curvature.y = Mathf.Clamp(Curvature.y, Curvature.x, HDPhysicalCamera.kMaxAperture);
+            Anamorphism = Mathf.Clamp(Anamorphism, -1, 1);
+#endif
         }
     }
 }

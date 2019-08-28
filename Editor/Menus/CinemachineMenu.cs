@@ -234,7 +234,7 @@ namespace Cinemachine.Editor
             string name, bool selectIt, params Type[] components)
         {
             // Create a new virtual camera
-            CreateCameraBrainIfAbsent();
+            var brain = CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineVirtualCamera), name),
                     typeof(CinemachineVirtualCamera));
@@ -246,6 +246,8 @@ namespace Cinemachine.Editor
             foreach (Type t in components)
                 Undo.AddComponent(componentOwner, t);
             vcam.InvalidateComponentPipeline();
+            if (brain != null && brain.OutputCamera != null)
+                vcam.m_Lens = LensSettings.FromCamera(brain.OutputCamera);
             if (selectIt)
                 Selection.activeObject = go;
             return vcam;
@@ -254,11 +256,12 @@ namespace Cinemachine.Editor
         /// <summary>
         /// If there is no CinemachineBrain in the scene, try to create one on the main camera
         /// </summary>
-        public static void CreateCameraBrainIfAbsent()
+        public static CinemachineBrain CreateCameraBrainIfAbsent()
         {
             CinemachineBrain[] brains = UnityEngine.Object.FindObjectsOfType(
                     typeof(CinemachineBrain)) as CinemachineBrain[];
-            if (brains == null || brains.Length == 0)
+            CinemachineBrain brain = (brains != null && brains.Length > 0) ? brains[0] : null;
+            if (brain == null)
             {
                 Camera cam = Camera.main;
                 if (cam == null)
@@ -270,9 +273,10 @@ namespace Cinemachine.Editor
                 }
                 if (cam != null)
                 {
-                    Undo.AddComponent<CinemachineBrain>(cam.gameObject);
+                    brain = Undo.AddComponent<CinemachineBrain>(cam.gameObject);
                 }
             }
+            return brain;
         }
 
         /// <summary>
