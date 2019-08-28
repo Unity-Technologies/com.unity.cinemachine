@@ -91,6 +91,7 @@ namespace Cinemachine.Editor
                         = UnityEditor.VersionControl.Provider.GetAssetByPath(
                                 AssetDatabase.GetAssetPath(m_Editor.target));
                     bool isLockedFile = m_DoVersionControlChecks
+                        && targetAsset != null
                         && !targetAsset.IsOneOfStates(new[] {
                         UnityEditor.VersionControl.Asset.States.CheckedOutLocal,
                         UnityEditor.VersionControl.Asset.States.AddedLocal,
@@ -101,7 +102,7 @@ namespace Cinemachine.Editor
                     {
                         EditorGUILayout.Separator();
                         EditorGUILayout.HelpBox(
-                            "This is a shared asset.  Changes made here will apply to all users of this asset.", 
+                            "This is a shared asset.  Changes made here will apply to all users of this asset.",
                             MessageType.Info);
                         EditorGUI.BeginChangeCheck();
                         if (indent)
