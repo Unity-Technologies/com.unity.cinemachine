@@ -62,7 +62,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
-        public ICinemachineTargetGroup FollowTargetGroup
+        public ICinemachineTargetGroup AbstractFollowTargetGroup
         {
             get
             {
@@ -70,6 +70,12 @@ namespace Cinemachine
                     UpdateFollowTargetCache();
                 return mCachedFollowTargetGroup;
             }
+        }
+
+        /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
+        public CinemachineTargetGroup FollowTargetGroup
+        {
+            get { return AbstractFollowTargetGroup as CinemachineTargetGroup; }
         }
 
         /// <summary>Get the position of the Follow target.  Special handling: If the Follow target is
@@ -128,7 +134,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get LookAt target as ICinemachineTargetGroup, or null if target is not a group</summary>
-        public ICinemachineTargetGroup LookAtTargetGroup
+        public ICinemachineTargetGroup AbstractLookAtTargetGroup
         {
             get
             {
@@ -136,6 +142,12 @@ namespace Cinemachine
                     UpdateLookAtTargetCache();
                 return mCachedLookAtTargetGroup;
             }
+        }
+
+        /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
+        public CinemachineTargetGroup LookAtTargetGroup
+        {
+            get { return AbstractLookAtTargetGroup as CinemachineTargetGroup; }
         }
 
         /// <summary>Get the position of the LookAt target.  Special handling: If the LookAt target is

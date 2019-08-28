@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_BiasX));
                 excluded.Add(FieldPath(x => x.m_BiasY));
             }
-            ICinemachineTargetGroup group = Target.FollowTargetGroup;
+            ICinemachineTargetGroup group = Target.AbstractFollowTargetGroup;
             if (group == null || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
             {
                 excluded.Add(FieldPath(x => x.m_GroupFramingSize));
@@ -158,7 +158,7 @@ namespace Cinemachine.Editor
         private static void DrawGroupComposerGizmos(CinemachineFramingTransposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.FollowTargetGroup != null
+            if (target.AbstractFollowTargetGroup != null
                 && target.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
             {
                 Matrix4x4 m = Gizmos.matrix;

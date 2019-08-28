@@ -166,11 +166,25 @@ namespace Cinemachine
 
         /// <summary>
         /// Update the X axis and calculate the heading.  This can be called by a delegate
+        /// with a custom axis.  Note that this method is obsolete.
+        /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
+        /// <param name="up">World Up, set by the CinemachineBrain</param>
+        /// <param name="axis"></param>
+        /// <returns>Axis value</returns>
+        /// </summary>
+        public float UpdateHeading(float deltaTime, Vector3 up, ref AxisState axis)
+        {
+            return UpdateHeading(deltaTime, up, ref axis, ref m_RecenterToTargetHeading, true);
+        }
+
+        /// <summary>
+        /// Update the X axis and calculate the heading.  This can be called by a delegate
         /// with a custom axis.
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">World Up, set by the CinemachineBrain</param>
         /// <param name="axis"></param>
         /// <param name="recentering"></param>
+        /// <param name="isLive"/>true if the vcam is live</param>
         /// <returns>Axis value</returns>
         /// </summary>
         public float UpdateHeading(
