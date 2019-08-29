@@ -1,4 +1,4 @@
-<size=20><b>Version 2.3.5</b></size>
+<size=20><b>Version 2.4.0</b></size>
 
 - Storyboard: added global mute function
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
