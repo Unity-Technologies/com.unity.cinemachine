@@ -10,10 +10,12 @@
 - Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
 - Removed Resources diretories
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfix: added EmbeddedAssetHelper null check
 - Bugfix: composer screen guides drawn in correct place for physical camera
 - Bugfix: Storyboard canvases were not always destructed properly
 - Bugfix: FreeLook was not respecting wait time for X axis recentering
 - Bugfix: FreeLook X axis was not always perfectly synched between rigs
+- Bugfix (fogbugz 1176866): Collider: clean up static RigidBody on exit
 - Bugfix (fogbugz 1174180): framing transposer wrong ortho size calculation
 - Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
 - Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size
