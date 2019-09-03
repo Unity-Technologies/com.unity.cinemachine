@@ -141,6 +141,35 @@ namespace Cinemachine.Editor
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
         }
 
+#if UNITY_2019_1_OR_NEWER
         static string kGizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
+#else
+        static string kGizmoFileName = "Cinemachine/cm_logo_lg.png";
+        [InitializeOnLoad]
+        static class InstallGizmos
+        {
+            static InstallGizmos()
+            {
+                string srcFile = ScriptableObjectUtility.CinemachineInstallPath + "/Gizmos/" + kGizmoFileName;
+                if (File.Exists(srcFile))
+                {
+                    string dstFile = Application.dataPath + "/Gizmos";
+                    if (!Directory.Exists(dstFile))
+                        Directory.CreateDirectory(dstFile);
+                    dstFile += "/" + kGizmoFileName;
+                    if (!File.Exists(dstFile)
+                        || (File.GetLastWriteTime(dstFile) < File.GetLastWriteTime(srcFile)
+                            && (File.GetAttributes(dstFile) & FileAttributes.ReadOnly) == 0))
+                    {
+                        if (!Directory.Exists(Path.GetDirectoryName(dstFile)))
+                            Directory.CreateDirectory(Path.GetDirectoryName(dstFile));
+                        File.Copy(srcFile, dstFile, true);
+                        File.SetAttributes(
+                            dstFile, File.GetAttributes(dstFile) & ~FileAttributes.ReadOnly);
+                    }
+                }
+            }
+        }
+#endif
     }
 }

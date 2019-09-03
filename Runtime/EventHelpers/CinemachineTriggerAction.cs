@@ -11,7 +11,11 @@ using UnityEngine.Playables;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+#if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)
+    // Workaround for Unity scripting bug
+    [AddComponentMenu("")] // Hide in menu
+    public class CinemachineTriggerAction : MonoBehaviour {}
+#else
     /// <summary>
     /// A multi-purpose script which causes an action to occur when
     /// a trigger collider is entered and exited.

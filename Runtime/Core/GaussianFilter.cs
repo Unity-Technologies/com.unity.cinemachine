@@ -119,7 +119,11 @@ namespace Cinemachine.Utility
                 if (++windowPos == KernelSize)
                     windowPos = 0;
             }
+#if UNITY_2019_1_OR_NEWER
             return q * Quaternion.Normalize(sum);
+#else
+            return q * sum.Normalized();
+#endif
         }
     }
 

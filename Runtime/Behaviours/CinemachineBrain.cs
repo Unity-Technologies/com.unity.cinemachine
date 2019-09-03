@@ -746,12 +746,13 @@ namespace Cinemachine
                     cam.fieldOfView = state.Lens.FieldOfView;
                     if (cam.orthographic)
                         cam.orthographicSize = state.Lens.OrthographicSize;
+#if UNITY_2018_2_OR_NEWER
                     else
                     {
                         cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
                         cam.lensShift = state.Lens.LensShift;
                     }
-#if CINEMACHINE_HDRP
+    #if CINEMACHINE_HDRP
                     if (state.Lens.IsPhysicalCamera)
                     {
                         var hda = cam.GetComponent<HDAdditionalCameraData>();
@@ -766,6 +767,7 @@ namespace Cinemachine
                             hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
                         }
                     }
+    #endif
 #endif
                 }
             }

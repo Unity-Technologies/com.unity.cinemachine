@@ -207,6 +207,7 @@ namespace Cinemachine.Editor
                 AssetDatabase.ImportPackage(pkgFile, true);
         }
 
+#if !UNITY_2019_1_OR_NEWER
         [MenuItem("Cinemachine/Import Post Processing V2 Adapter Asset Package")]
         private static void ImportPostProcessingV2Package()
         {
@@ -217,6 +218,7 @@ namespace Cinemachine.Editor
             else
                 AssetDatabase.ImportPackage(pkgFile, true);
         }
+#endif
 
         /// <summary>
         /// Create a default Virtual Camera, with standard components

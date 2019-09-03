@@ -163,7 +163,11 @@ namespace Cinemachine.Editor
             {
                 isSolo = !isSolo;
                 CinemachineBrain.SoloCamera = isSolo ? Target : null;
+#if UNITY_2019_1_OR_NEWER
                 EditorUtility.SetDirty(Target);
+#else
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+#endif
             }
             GUI.color = color;
             if (isSolo && !Application.isPlaying)

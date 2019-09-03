@@ -8,7 +8,11 @@ using UnityEngine;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+#if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)
+    // Workaround for Unity scripting bug
+    [AddComponentMenu("")] // Hide in menu
+    public class CinemachineCollisionImpulseSource : CinemachineImpulseSource {}
+#else
     /// <summary>
     /// Generate an Impulse Event this object's Collider collides with something
     /// or its trigger zone is entered.

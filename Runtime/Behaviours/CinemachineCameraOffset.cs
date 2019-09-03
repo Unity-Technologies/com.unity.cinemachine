@@ -6,6 +6,11 @@ using Cinemachine;
 /// An add-on module for Cinemachine Virtual Camera that adds a final offset to the camera
 /// </summary>
 [AddComponentMenu("")] // Hide in menu
+#if UNITY_2018_3_OR_NEWER
+[ExecuteAlways]
+#else
+[ExecuteInEditMode]
+#endif
 public class CinemachineCameraOffset : CinemachineExtension
 {
     [Tooltip("Offset the camera's position by this much (camera space)")]

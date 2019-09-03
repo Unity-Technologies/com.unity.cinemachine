@@ -165,6 +165,7 @@ namespace Cinemachine.Editor
 
         public static void RepaintGameView(UnityEngine.Object dirtyObject = null)
         {
+#if UNITY_2019_1_OR_NEWER
             if (dirtyObject != null)
                 EditorUtility.SetDirty(dirtyObject);
 
@@ -175,6 +176,9 @@ namespace Cinemachine.Editor
                 gameview.Repaint();
             else
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+#else
+            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+#endif
         }
     }
 }
