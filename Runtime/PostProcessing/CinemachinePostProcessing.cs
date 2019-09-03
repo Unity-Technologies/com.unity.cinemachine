@@ -1,6 +1,6 @@
-﻿#if CINEMACHINE_POST_PROCESSING_V2
+﻿using UnityEngine;
+#if CINEMACHINE_POST_PROCESSING_V2
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 #endif
 
