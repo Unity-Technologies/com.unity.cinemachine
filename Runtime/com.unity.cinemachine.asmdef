@@ -1,60 +1,60 @@
 {
-    "name": "Cinemachine",
-    "references": [
-        "GUID:f06555f75b070af458a003d92f9efb00",
-        "GUID:d60799ab2a985554ea1a39cd38695018",
-        "GUID:df380645f10b7bc4b97d4f5eb6303d95",
-        "GUID:457756d89b35d2941b3e7b37b4ece6f1",
-        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
-        "GUID:15fc0a57446b3144c949da3e2b9737a9"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "com.unity.postprocessing",
-            "expression": "2.1.0",
-            "define": "CINEMACHINE_POST_PROCESSING_V2"
-        },
-        {
-            "name": "com.unity.timeline",
-            "expression": "0.0.0-builtin",
-            "define": "CINEMACHINE_TIMELINE"
-        },
-        {
-            "name": "com.unity.render-pipelines.high-definition",
-            "expression": "5.3.1",
-            "define": "CINEMACHINE_HDRP"
-        },
-        {
-            "name": "com.unity.render-pipelines.high-definition",
-            "expression": "7.0.0",
-            "define": "CINEMACHINE_HDRP_7_0_0"
-        },
-        {
-            "name": "com.unity.modules.physics2d",
-            "expression": "1.0.0",
-            "define": "CINEMACHINE_PHYSICS_2D"
-        },
-        {
-            "name": "com.unity.modules.physics",
-            "expression": "1.0.0",
-            "define": "CINEMACHINE_PHYSICS"
-        },
-        {
-            "name": "com.unity.ugui",
-            "expression": "1.0.0",
-            "define": "CINEMACHINE_UGUI"
-        },
-        {
-            "name": "com.unity.render-pipelines.universal",
-            "expression": "7.0.0",
-            "define": "CINEMACHINE_LWRP_7_0_0"
-        }
-    ]
+  "name": "Cinemachine",
+  "references": [
+    "Unity.Timeline",
+    "Unity.Postprocessing.Runtime",
+    "Unity.RenderPipelines.Core.Runtime",
+    "Unity.RenderPipelines.HighDefinition.Runtime",
+    "Unity.ugui",
+    "Unity.RenderPipelines.Universal.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.unity.postprocessing",
+      "expression": "2.1.0",
+      "define": "CINEMACHINE_POST_PROCESSING_V2"
+    },
+    {
+      "name": "com.unity.timeline",
+      "expression": "0.0.0-builtin",
+      "define": "CINEMACHINE_TIMELINE"
+    },
+    {
+      "name": "com.unity.render-pipelines.high-definition",
+      "expression": "5.3.1",
+      "define": "CINEMACHINE_HDRP"
+    },
+    {
+      "name": "com.unity.render-pipelines.high-definition",
+      "expression": "7.0.0",
+      "define": "CINEMACHINE_HDRP_7_0_0"
+    },
+    {
+      "name": "com.unity.modules.physics2d",
+      "expression": "1.0.0",
+      "define": "CINEMACHINE_PHYSICS_2D"
+    },
+    {
+      "name": "com.unity.modules.physics",
+      "expression": "1.0.0",
+      "define": "CINEMACHINE_PHYSICS"
+    },
+    {
+      "name": "com.unity.ugui",
+      "expression": "1.0.0",
+      "define": "CINEMACHINE_UGUI"
+    },
+    {
+      "name": "com.unity.render-pipelines.universal",
+      "expression": "7.0.0",
+      "define": "CINEMACHINE_LWRP_7_0_0"
+    }
+  ]
 }
