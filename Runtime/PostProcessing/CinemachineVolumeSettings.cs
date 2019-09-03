@@ -1,6 +1,7 @@
-﻿#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
+﻿using UnityEngine;
+
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
     using System.Collections.Generic;
-    using UnityEngine;
     using UnityEngine.Rendering;
     #if CINEMACHINE_HDRP_7_0_0
     using UnityEngine.Rendering.HighDefinition;
@@ -15,7 +16,11 @@
 
 namespace Cinemachine.PostFX
 {
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
+#if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0)
+    // Workaround for Unity scripting bug
+    [AddComponentMenu("")] // Hide in menu
+    public class CinemachineVolumeSettings : MonoBehaviour {}
+#else
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
     ///

@@ -6,7 +6,11 @@ using UnityEngine.Rendering.PostProcessing;
 
 namespace Cinemachine.PostFX
 {
-#if CINEMACHINE_POST_PROCESSING_V2
+#if !CINEMACHINE_POST_PROCESSING_V2
+    // Workaround for Unity scripting bug
+    [AddComponentMenu("")] // Hide in menu
+    public class CinemachinePostProcessing : MonoBehaviour {}
+#else
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
     /// have the Post-Processing V2 stack asset store package installed in order to use this behaviour.
