@@ -103,13 +103,13 @@ namespace Cinemachine.Editor
                     }
                     GUI.enabled = true;
                     if(m_Editor.target != null)
-					{
-						if (!canEditAsset && GUILayout.Button("Check out"))
-						{
-							Task task = Provider.Checkout(AssetDatabase.GetAssetPath(m_Editor.target), CheckoutMode.Asset);
-							task.Wait();
-						}
-					}
+                    {
+			if (!canEditAsset && GUILayout.Button("Check out"))
+			{
+                            Task task = Provider.Checkout(AssetDatabase.GetAssetPath(m_Editor.target), CheckoutMode.Asset);
+			    task.Wait();
+			}
+		    }
                 }
                 EditorGUILayout.EndVertical();
             }
