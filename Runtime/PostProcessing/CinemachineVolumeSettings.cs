@@ -70,6 +70,7 @@ namespace Cinemachine.PostFX
                 {
                     var itemCopy = Instantiate(item);
                     profile.components.Add(itemCopy);
+                    profile.isDirty = true;
                 }
             }
             mProfileCopy = profile;
@@ -85,8 +86,8 @@ namespace Cinemachine.PostFX
 
         protected override void OnDestroy()
         {
-            base.OnDestroy();
             DestroyProfileCopy();
+            base.OnDestroy();
         }
 
         protected override void PostPipelineStageCallback(
@@ -110,12 +111,13 @@ namespace Cinemachine.PostFX
                             CreateProfileCopy();
 
                         DepthOfField dof;
-                        if (m_Profile.TryGet(out dof))
+                        if (mProfileCopy.TryGet(out dof))
                         {
                             float focusDistance = m_FocusOffset;
                             if (state.HasLookAt)
                                 focusDistance += (state.FinalPosition - state.ReferenceLookAt).magnitude;
                             dof.focusDistance.value = Mathf.Max(0, focusDistance);
+                            mProfileCopy.isDirty = true;
                         }
                     }
                     // Apply the post-processing
@@ -126,12 +128,17 @@ namespace Cinemachine.PostFX
 
         static void OnCameraCut(CinemachineBrain brain)
         {
-            // Debug.Log("Camera cut event");
-/*
-            PostProcessLayer postFX = GetPPLayer(brain);
-            if (postFX != null)
-                postFX.ResetHistory();
-*/
+            //Debug.Log($"Camera cut to {brain.ActiveVirtualCamera.Name}");
+
+            // Reset temporal effects
+            var cam = brain.OutputCamera;
+            if (cam != null)
+            {
+                HDCamera hdCam = HDCamera.GetOrCreate(cam, new XRPass());
+                hdCam.volumetricHistoryIsValid = false;
+                hdCam.colorPyramidHistoryIsValid = false;
+                hdCam.Reset();
+            }
         }
 
         static void ApplyPostFX(CinemachineBrain brain)
@@ -158,7 +165,7 @@ namespace Cinemachine.PostFX
                         firstVolume = v;
                     v.sharedProfile = src.Profile;
                     v.isGlobal = true;
-                    v.priority = float.MaxValue-(numBlendables-i)-1;
+                    v.priority = float.MaxValue - (numBlendables - i - 1) * 1.0e35f;
                     v.weight = b.m_Weight;
                     ++numPPblendables;
                 }
@@ -168,6 +175,8 @@ namespace Cinemachine.PostFX
                     firstVolume.weight = 1;
 #endif
             }
+//            if (firstVolume != null)
+//                Debug.Log($"Applied post FX for {numPPblendables} PP blendables in {brain.ActiveVirtualCamera.Name}");
         }
 
         static string sVolumeOwnerName = "__CMVolumes";
@@ -235,6 +244,8 @@ namespace Cinemachine.PostFX
             // Afetr the brain pushes the state to the camera, hook in to the PostFX
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
+            CinemachineCore.CameraCutEvent.RemoveListener(OnCameraCut);
+            CinemachineCore.CameraCutEvent.AddListener(OnCameraCut);
         }
     }
 #endif

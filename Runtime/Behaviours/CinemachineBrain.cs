@@ -533,10 +533,14 @@ namespace Cinemachine
                         m_CameraActivatedEvent.Invoke(activeCamera, mActiveCameraPreviousFrame);
 
                     // If we're cutting without a blend, send an event
-                    if (m_CameraCutEvent != null
-                            && (!IsBlending || (mActiveCameraPreviousFrame != null
-                                && !ActiveBlend.Uses(mActiveCameraPreviousFrame))))
-                        m_CameraCutEvent.Invoke(this);
+                    if (!IsBlending || (mActiveCameraPreviousFrame != null
+                                && !ActiveBlend.Uses(mActiveCameraPreviousFrame)))
+                    {
+                        if (m_CameraCutEvent != null)
+                            m_CameraCutEvent.Invoke(this);
+                        if (CinemachineCore.CameraCutEvent != null)
+                            CinemachineCore.CameraCutEvent.Invoke(this);
+                    }
                 }
                 // Apply the vcam state to the Unity camera
                 PushStateToUnityCamera(

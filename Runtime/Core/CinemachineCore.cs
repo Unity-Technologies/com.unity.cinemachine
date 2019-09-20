@@ -90,6 +90,9 @@ namespace Cinemachine
         /// <summary>This event will fire after a brain updates its Camera</summary>
         public static CinemachineBrain.BrainEvent CameraUpdatedEvent = new CinemachineBrain.BrainEvent();
 
+        /// <summary>This event will fire after a brain updates its Camera</summary>
+        public static CinemachineBrain.BrainEvent CameraCutEvent = new CinemachineBrain.BrainEvent();
+
         /// <summary>List of all active CinemachineBrains.</summary>
         private List<CinemachineBrain> mActiveBrains = new List<CinemachineBrain>();
 
@@ -402,7 +405,12 @@ namespace Cinemachine
                 {
                     CinemachineBrain b = GetActiveBrain(i);
                     if (b != null && b.IsLive(vcam))
-                        b.m_CameraCutEvent.Invoke(b);
+                    {
+                        if (b.m_CameraCutEvent != null)
+                            b.m_CameraCutEvent.Invoke(b);
+                        if (CameraCutEvent != null)
+                            CameraCutEvent.Invoke(b);
+                    }
                 }
             }
         }
