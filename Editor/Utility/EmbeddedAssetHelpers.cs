@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using System;
 
 namespace Cinemachine.Editor
@@ -16,7 +17,6 @@ namespace Cinemachine.Editor
         {
             m_PropertyName = propertyName;
             m_Owner = owner;
-            m_DoVersionControlChecks = UnityEditor.VersionControl.Provider.isActive;
             m_CreateButtonGUIContent = new GUIContent(
                     "Create Asset", "Create a new shared settings asset");
         }
@@ -51,7 +51,6 @@ namespace Cinemachine.Editor
         private string m_PropertyName;
         private UnityEditor.Editor m_Editor = null;
         private UnityEditor.Editor m_Owner = null;
-        private bool m_DoVersionControlChecks = false;
 
         const int kIndentOffset = 6;
 
@@ -87,23 +86,12 @@ namespace Cinemachine.Editor
                     property.isExpanded = EditorGUI.Foldout(
                         foldoutRect, property.isExpanded, GUIContent.none, true);
 
-                    UnityEditor.VersionControl.Asset targetAsset
-                        = UnityEditor.VersionControl.Provider.GetAssetByPath(
-                                AssetDatabase.GetAssetPath(m_Editor.target));
-                    bool isLockedFile = m_DoVersionControlChecks
-                        && targetAsset != null
-                        && !targetAsset.IsOneOfStates(new[] {
-                        UnityEditor.VersionControl.Asset.States.CheckedOutLocal,
-                        UnityEditor.VersionControl.Asset.States.AddedLocal,
-                    });
-
-                    GUI.enabled = !isLockedFile;
+                    bool canEditAsset = AssetDatabase.IsOpenForEdit(m_Editor.target, StatusQueryOptions.UseCachedIfPossible);
+                    GUI.enabled = canEditAsset;
                     if (property.isExpanded)
                     {
                         EditorGUILayout.Separator();
-                        EditorGUILayout.HelpBox(
-                            "This is a shared asset.  Changes made here will apply to all users of this asset.",
-                            MessageType.Info);
+                        EditorGUILayout.HelpBox("This is a shared asset.  Changes made here will apply to all users of this asset.", MessageType.Info);
                         EditorGUI.BeginChangeCheck();
                         if (indent)
                             ++EditorGUI.indentLevel;
@@ -114,11 +102,14 @@ namespace Cinemachine.Editor
                             OnChanged(property.objectReferenceValue as T);
                     }
                     GUI.enabled = true;
-                    if (isLockedFile && GUILayout.Button("Check out"))
+                    if(m_Editor.target != null)
                     {
-                        UnityEditor.VersionControl.Provider.Checkout(
-                            targetAsset, UnityEditor.VersionControl.CheckoutMode.Both);
-                    }
+			if (!canEditAsset && GUILayout.Button("Check out"))
+			{
+                            Task task = Provider.Checkout(AssetDatabase.GetAssetPath(m_Editor.target), CheckoutMode.Asset);
+			    task.Wait();
+			}
+		    }
                 }
                 EditorGUILayout.EndVertical();
             }
