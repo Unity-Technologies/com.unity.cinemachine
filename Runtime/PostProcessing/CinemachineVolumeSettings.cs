@@ -130,15 +130,21 @@ namespace Cinemachine.PostFX
         {
             //Debug.Log($"Camera cut to {brain.ActiveVirtualCamera.Name}");
 
+#if CINEMACHINE_HDRP_7_0_0
             // Reset temporal effects
             var cam = brain.OutputCamera;
             if (cam != null)
             {
+    #if CINEMACHINE_HDRP_7_1_0
+                HDCamera hdCam = HDCamera.GetOrCreate(cam);
+    #else
                 HDCamera hdCam = HDCamera.GetOrCreate(cam, new XRPass());
+    #endif
                 hdCam.volumetricHistoryIsValid = false;
                 hdCam.colorPyramidHistoryIsValid = false;
                 hdCam.Reset();
             }
+#endif
         }
 
         static void ApplyPostFX(CinemachineBrain brain)

@@ -9,6 +9,7 @@
 - Impulse Manager: added option to ignore timescale
 - Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
 - Upgrade to support HDRP and Universal RP 7.0.0 API
+- Upgrade to support HDRP and Universal RP 7.1.0 API
 - Removed Resources diretories
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
 - Bugfix: added EmbeddedAssetHelper null check
