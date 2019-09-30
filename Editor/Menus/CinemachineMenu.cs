@@ -196,17 +196,6 @@ namespace Cinemachine.Editor
             InternalCreateVirtualCamera("CM vcam", true, typeof(CinemachineFramingTransposer));
         }
 
-        [MenuItem("Cinemachine/Import Example Asset Package")]
-        private static void ImportExamplePackage()
-        {
-            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
-                + "/Samples/CinemachineExamples.unitypackage";
-            if (!File.Exists(pkgFile))
-                Debug.LogError("Missing file " + pkgFile);
-            else
-                AssetDatabase.ImportPackage(pkgFile, true);
-        }
-
 #if !UNITY_2019_1_OR_NEWER
         [MenuItem("Cinemachine/Import Post Processing V2 Adapter Asset Package")]
         private static void ImportPostProcessingV2Package()
