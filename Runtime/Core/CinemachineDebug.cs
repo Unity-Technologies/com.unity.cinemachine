@@ -46,13 +46,13 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>
-        /// Delegate for OnGUI debugging.  
+        /// Delegate for OnGUI debugging.
         /// This will be called by the CinemachineBrain in its OnGUI (editor only)
         /// </summary>
         public delegate void OnGUIDelegate();
 
         /// <summary>
-        /// Delegate for OnGUI debugging.  
+        /// Delegate for OnGUI debugging.
         /// This will be called by the CinemachineBrain in its OnGUI (editor only)
         /// </summary>
         public static OnGUIDelegate OnGUIHandlers;
