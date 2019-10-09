@@ -9,6 +9,7 @@ namespace Cinemachine.Editor
     internal class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>
     {
         CinemachineScreenComposerGuides mScreenGuideEditor;
+        GameViewEventCatcher mGameViewEventCatcher;
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -83,6 +84,9 @@ namespace Cinemachine.Editor
             mScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
             mScreenGuideEditor.Target = () => { return serializedObject; };
 
+            mGameViewEventCatcher = new GameViewEventCatcher();
+            mGameViewEventCatcher.OnEnable();
+
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
             InspectorUtility.RepaintGameView(Target);
@@ -90,6 +94,7 @@ namespace Cinemachine.Editor
 
         protected virtual void OnDisable()
         {
+            mGameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             InspectorUtility.RepaintGameView(Target);
         }

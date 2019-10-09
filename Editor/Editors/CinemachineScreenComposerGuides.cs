@@ -2,8 +2,93 @@ using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
 
+#if UNITY_2019_3_OR_NEWER
+using UnityEngine.UIElements;
+#endif
+
 namespace Cinemachine.Editor
 {
+#if !UNITY_2019_3_OR_NEWER
+    internal class GameViewEventCatcher
+    {
+        public void OnEnable() {}
+        public void OnDisable() {}
+    }
+#else
+    // This is necessary because in 2019.3 we don't get mouse events in the game view in Edit mode
+    internal class GameViewEventCatcher
+    {
+        class Dragger
+        {
+            bool mActive;
+            VisualElement mRoot;
+
+            void OnMouseDown(MouseDownEvent e) { if (mRoot.panel != null) mActive = true; }
+            void OnMouseUp(MouseUpEvent e) { mActive = false; }
+            void OnMouseMove(MouseMoveEvent e)
+            {
+                if (mActive && mRoot.panel != null)
+                {
+                    if (!Application.isPlaying
+                        && CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides
+                        && CinemachineBrain.SoloCamera == null)
+                    {
+                        InspectorUtility.RepaintRequested = true;
+                        InspectorUtility.RepaintGameView();
+                    }
+                }
+            }
+
+            public Dragger(VisualElement root)
+            {
+                mRoot = root;
+                if (mRoot == null || mRoot.panel == null || mRoot.panel.visualTree == null)
+                    return;
+                mRoot.panel.visualTree.RegisterCallback<MouseDownEvent>(OnMouseDown, TrickleDown.TrickleDown);
+                mRoot.panel.visualTree.RegisterCallback<MouseUpEvent>(OnMouseUp, TrickleDown.TrickleDown);
+                mRoot.panel.visualTree.RegisterCallback<MouseMoveEvent>(OnMouseMove, TrickleDown.TrickleDown);
+            }
+
+            public void Unregister()
+            {
+                if (mRoot == null || mRoot.panel == null || mRoot.panel.visualTree == null)
+                    return;
+                mRoot.panel.visualTree.UnregisterCallback<MouseDownEvent>(OnMouseDown, TrickleDown.TrickleDown);
+                mRoot.panel.visualTree.UnregisterCallback<MouseUpEvent>(OnMouseUp, TrickleDown.TrickleDown);
+                mRoot.panel.visualTree.UnregisterCallback<MouseMoveEvent>(OnMouseMove, TrickleDown.TrickleDown);
+            }
+        }
+
+        Dragger[] mDraggers;
+
+        // Create manipulator in each game view
+        public void OnEnable()
+        {
+            System.Reflection.Assembly assembly = typeof(UnityEditor.EditorWindow).Assembly;
+            System.Type type = assembly.GetType( "UnityEditor.GameView" );
+            var gameViews = UnityEngine.Resources.FindObjectsOfTypeAll(type);
+            mDraggers = new Dragger[gameViews.Length];
+
+            for (int i = 0; i < gameViews.Length; ++i)
+            {
+                var gameViewRoot = (gameViews[i] as UnityEditor.EditorWindow).rootVisualElement;
+                mDraggers[i] = new Dragger(gameViewRoot);
+            }
+        }
+
+        public void OnDisable()
+        {
+            for (int i = 0; mDraggers != null && i < mDraggers.Length; ++i)
+            {
+                var dragger = mDraggers[i];
+                if (dragger != null)
+                    dragger.Unregister();
+            }
+            mDraggers = null;
+        }
+    }
+#endif
+
     public class CinemachineScreenComposerGuides
     {
         public delegate Rect RectGetter();
@@ -239,7 +324,7 @@ namespace Cinemachine.Editor
 
                 // Apply the changes, enforcing the bounds
                 SetNewBounds(GetHardGuide(), GetSoftGuide(), newHard, newSoft);
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                Event.current.Use();
             }
         }
     }

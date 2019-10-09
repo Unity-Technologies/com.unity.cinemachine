@@ -168,17 +168,11 @@ namespace Cinemachine.Editor
 #if UNITY_2019_1_OR_NEWER
             if (dirtyObject != null)
                 EditorUtility.SetDirty(dirtyObject);
-
-            System.Reflection.Assembly assembly = typeof(UnityEditor.EditorWindow).Assembly;
-            Type type = assembly.GetType("UnityEditor.GameView");
-            EditorWindow gameview = EditorWindow.GetWindow(type);
-            if (gameview != null)
-                gameview.Repaint();
-            else
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-#else
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 #endif
+            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }
+
+        // Needed for 2019.3 and later, for catching GameView mouse dragging the guides
+        internal static bool RepaintRequested { get; set; }
     }
 }

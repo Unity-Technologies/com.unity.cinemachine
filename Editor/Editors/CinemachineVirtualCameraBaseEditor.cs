@@ -170,8 +170,9 @@ namespace Cinemachine.Editor
 #endif
             }
             GUI.color = color;
-            if (isSolo && !Application.isPlaying)
+            if ((isSolo || InspectorUtility.RepaintRequested) && !Application.isPlaying)
                 InspectorUtility.RepaintGameView(Target);
+            InspectorUtility.RepaintRequested = false;
 
             if (labelWidth > 0)
             {
