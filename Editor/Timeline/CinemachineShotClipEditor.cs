@@ -14,14 +14,17 @@ public class CinemachineShotClipEditor : ClipEditor
     {
         var shotClip = (CinemachineShot) clip.asset;
         var clipOptions = base.GetClipOptions(clip);
-        var director = TimelineEditor.inspectedDirector;
-        if (director != null)
+        if (shotClip != null)
         {
-            var vcam = shotClip.VirtualCamera.Resolve(director);
-            if (vcam == null)
-                clipOptions.errorText = "A virtual camera must be assigned.";
-            else
-                clipOptions.tooltip = vcam.Name;
+            var director = TimelineEditor.inspectedDirector;
+            if (director != null)
+            {
+                var vcam = shotClip.VirtualCamera.Resolve(director);
+                if (vcam == null)
+                    clipOptions.errorText = "A virtual camera must be assigned.";
+                else
+                    clipOptions.tooltip = vcam.Name;
+            }
         }
         return clipOptions;
     }
@@ -29,6 +32,8 @@ public class CinemachineShotClipEditor : ClipEditor
     public override void OnClipChanged(TimelineClip clip)
     {
         var shotClip = (CinemachineShot) clip.asset;
+        if (shotClip == null)
+            return;
         if (shotClip.DisplayName.Length != 0)
             clip.displayName = shotClip.DisplayName;
         else
