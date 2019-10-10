@@ -27,6 +27,7 @@ using Cinemachine;
         public override Playable CreateTrackMixer(
             PlayableGraph graph, GameObject go, int inputCount)
         {
+#if !UNITY_2019_2_OR_NEWER
             // Hack to set the display name of the clip to match the vcam
             foreach (var c in GetClips())
             {
@@ -35,7 +36,7 @@ using Cinemachine;
                 if (vcam != null)
                     c.displayName = vcam.Name;
             }
-
+#endif
             var mixer = ScriptPlayable<CinemachineMixer>.Create(graph);
             mixer.SetInputCount(inputCount);
             return mixer;

@@ -11,6 +11,8 @@
 - Upgrade to support HDRP and Universal RP 7.0.0 API
 - Upgrade to support HDRP and Universal RP 7.1.0 API
 - Removed Resources diretories
+- Sample scenes now available via package manager
+- Added optional "Display Name" field to Cinemachine Shot in Timeline
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
 - Bugfix: added EmbeddedAssetHelper null check
 - Bugfix: composer screen guides drawn in correct place for physical camera
