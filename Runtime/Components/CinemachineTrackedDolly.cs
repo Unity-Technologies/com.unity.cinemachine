@@ -8,9 +8,9 @@ namespace Cinemachine
     /// <summary>
     /// A Cinemachine Virtual Camera Body component that constrains camera motion
     /// to a CinemachinePath.  The camera can move along the path.
-    /// 
-    /// This behaviour can operate in two modes: manual positioning, and Auto-Dolly positioning.  
-    /// In Manual mode, the camera's position is specified by animating the Path Position field.  
+    ///
+    /// This behaviour can operate in two modes: manual positioning, and Auto-Dolly positioning.
+    /// In Manual mode, the camera's position is specified by animating the Path Position field.
     /// In Auto-Dolly mode, the Path Position field is animated automatically every frame by finding
     /// the position on the path that's closest to the virtual camera's Follow target.
     /// </summary>
@@ -81,19 +81,19 @@ namespace Cinemachine
         [Tooltip("How to set the virtual camera's Up vector.  This will affect the screen composition, because the camera Aim behaviours will always try to respect the Up direction.")]
         public CameraUpMode m_CameraUp = CameraUpMode.Default;
 
-        /// <summary>"How aggressively the camera tries to track the target rotation's X angle.  
+        /// <summary>"How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_PitchDamping = 0;
 
-        /// <summary>How aggressively the camera tries to track the target rotation's Y angle.  
+        /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_YawDamping = 0;
 
-        /// <summary>How aggressively the camera tries to track the target rotation's Z angle.  
+        /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
@@ -151,7 +151,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             // Init previous frame state info
-            if (deltaTime < 0)
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
                 m_PreviousPathPosition = m_PathPosition;
                 m_PreviousCameraPosition = curState.RawPosition;
@@ -168,7 +168,7 @@ namespace Cinemachine
                 m_PathPosition = m_Path.FindClosestPoint(
                     FollowTargetPosition,
                     Mathf.FloorToInt(prevPos),
-                    (deltaTime < 0 || m_AutoDolly.m_SearchRadius <= 0) 
+                    (deltaTime < 0 || m_AutoDolly.m_SearchRadius <= 0)
                         ? -1 : m_AutoDolly.m_SearchRadius,
                     m_AutoDolly.m_SearchResolution);
                 m_PathPosition = m_Path.FromPathNativeUnits(m_PathPosition, m_PositionUnits);
@@ -178,7 +178,7 @@ namespace Cinemachine
             }
             float newPathPosition = m_PathPosition;
 
-            if (deltaTime >= 0)
+            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 // Normalize previous position to find the shortest path
                 float maxUnit = m_Path.MaxUnit(m_PositionUnits);
@@ -215,7 +215,7 @@ namespace Cinemachine
             newCameraPos += m_PathOffset.z * offsetZ;
 
             // Apply damping to the remaining directions
-            if (deltaTime >= 0)
+            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 Vector3 currentCameraPos = m_PreviousCameraPosition;
                 Vector3 delta = (currentCameraPos - newCameraPos);
@@ -228,30 +228,25 @@ namespace Cinemachine
             curState.RawPosition = m_PreviousCameraPosition = newCameraPos;
 
             // Set the orientation and up
-            Quaternion newOrientation 
+            Quaternion newOrientation
                 = GetCameraOrientationAtPathPoint(newPathOrientation, curState.ReferenceUp);
-            if (deltaTime < 0)
-                m_PreviousOrientation = newOrientation;
-            else 
+            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                if (deltaTime >= 0)
-                {
-                    Vector3 relative = (Quaternion.Inverse(m_PreviousOrientation) 
-                        * newOrientation).eulerAngles;
-                    for (int i = 0; i < 3; ++i)
-                        if (relative[i] > 180)
-                            relative[i] -= 360;
-                    relative = Damper.Damp(relative, AngularDamping, deltaTime);
-                    newOrientation = m_PreviousOrientation * Quaternion.Euler(relative);
-                }
-                m_PreviousOrientation = newOrientation;
+                Vector3 relative = (Quaternion.Inverse(m_PreviousOrientation)
+                    * newOrientation).eulerAngles;
+                for (int i = 0; i < 3; ++i)
+                    if (relative[i] > 180)
+                        relative[i] -= 360;
+                relative = Damper.Damp(relative, AngularDamping, deltaTime);
+                newOrientation = m_PreviousOrientation * Quaternion.Euler(relative);
             }
+            m_PreviousOrientation = newOrientation;
 
             curState.RawOrientation = newOrientation;
             if (m_CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
-        
+
         private Quaternion GetCameraOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)
         {
             switch (m_CameraUp)
@@ -259,7 +254,7 @@ namespace Cinemachine
                 default:
                 case CameraUpMode.Default: break;
                 case CameraUpMode.Path: return pathOrientation;
-                case CameraUpMode.PathNoRoll: 
+                case CameraUpMode.PathNoRoll:
                     return Quaternion.LookRotation(pathOrientation * Vector3.forward, up);
                 case CameraUpMode.FollowTarget:
                     if (FollowTarget != null)
@@ -275,21 +270,21 @@ namespace Cinemachine
 
         private Vector3 AngularDamping
         {
-            get 
-            { 
+            get
+            {
                 switch (m_CameraUp)
                 {
                     case CameraUpMode.PathNoRoll:
                     case CameraUpMode.FollowTargetNoRoll:
-                        return new Vector3(m_PitchDamping, m_YawDamping, 0); 
+                        return new Vector3(m_PitchDamping, m_YawDamping, 0);
                     case CameraUpMode.Default:
                         return Vector3.zero;
                     default:
-                        return new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping); 
+                        return new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping);
                 }
-            } 
+            }
         }
-        
+
         private float m_PreviousPathPosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         private Vector3 m_PreviousCameraPosition = Vector3.zero;

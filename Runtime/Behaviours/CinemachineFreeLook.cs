@@ -265,9 +265,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            if (!PreviousStateIsValid)
-                deltaTime = -1;
-
             UpdateRigCache();
 
             // Update the current state by invoking the component pipeline
@@ -290,8 +287,8 @@ namespace Cinemachine
             PreviousStateIsValid = true;
 
             // Set up for next frame
-            bool activeCam = (deltaTime >= 0) && CinemachineCore.Instance.IsLive(this);
-            if (activeCam)
+            bool activeCam = PreviousStateIsValid && CinemachineCore.Instance.IsLive(this);
+            if (activeCam && deltaTime >= 0)
             {
                 if (m_YAxis.Update(deltaTime))
                     m_YAxisRecentering.CancelRecentering();
@@ -666,7 +663,7 @@ namespace Cinemachine
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
             CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
-            if (deltaTime >= 0)
+            if (PreviousStateIsValid && deltaTime >= 0)
                 m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 
             // Blend from the appropriate rigs

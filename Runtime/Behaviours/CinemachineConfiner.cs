@@ -115,7 +115,7 @@ namespace Cinemachine
                         displacement = ConfinePoint(state.CorrectedPosition);
 
                     VcamExtraState extra = GetExtraState<VcamExtraState>(vcam);
-                    if (m_Damping > 0 && deltaTime >= 0)
+                    if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, m_Damping, deltaTime);

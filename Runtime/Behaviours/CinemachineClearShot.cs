@@ -150,13 +150,10 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            if (!PreviousStateIsValid)
-                deltaTime = -1;
-
             // Choose the best camera
             UpdateListOfChildren();
             ICinemachineCamera previousCam = LiveChild;
-            LiveChild = ChooseCurrentCamera(worldUp, deltaTime);
+            LiveChild = ChooseCurrentCamera(worldUp);
 
             // Are we transitioning cameras?
             if (previousCam != LiveChild && LiveChild != null)
@@ -297,7 +294,7 @@ namespace Cinemachine
         private bool mRandomizeNow = false;
         private  CinemachineVirtualCameraBase[] m_RandomizedChilden = null;
 
-        private ICinemachineCamera ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
+        private ICinemachineCamera ChooseCurrentCamera(Vector3 worldUp)
         {
             if (m_ChildCameras == null || m_ChildCameras.Length == 0)
             {
@@ -350,7 +347,7 @@ namespace Cinemachine
                 }
 
                 // Is it pending?
-                if (deltaTime >= 0)
+                if (PreviousStateIsValid)
                 {
                     if (mPendingActivationTime != 0 && mPendingCamera == best)
                     {
@@ -375,7 +372,7 @@ namespace Cinemachine
             mPendingCamera = null;
 
             // Can we activate it now?
-            if (deltaTime >= 0 && mActivationTime > 0)
+            if (PreviousStateIsValid && mActivationTime > 0)
             {
                 if (m_ActivateAfter > 0
                     || (now - mActivationTime) < m_MinDuration)

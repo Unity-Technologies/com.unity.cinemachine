@@ -345,17 +345,14 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            if (!PreviousStateIsValid)
-                deltaTime = -1;
-
             // Initialize the camera state, in case the game object got moved in the editor
             m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
             m_Rigs[(int)RigID.Top].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
             m_Rigs[(int)RigID.Bottom].m_Lens.SnapshotCameraReadOnlyProperties(ref m_Lens);
 
             // Update our axes
-            bool activeCam = (deltaTime >= 0) || CinemachineCore.Instance.IsLive(this);
-            if (activeCam)
+            bool activeCam = PreviousStateIsValid || CinemachineCore.Instance.IsLive(this);
+            if (activeCam && deltaTime >= 0)
             {
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalAxis.m_Recentering.CancelRecentering();

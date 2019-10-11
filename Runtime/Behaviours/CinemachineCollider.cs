@@ -295,7 +295,7 @@ namespace Cinemachine
                         extra.ResetDistanceSmoothing(m_SmoothingTime);
                     else
                         damping = m_DampingWhenOccluded;
-                    if (damping > 0 && deltaTime >= 0)
+                    if (damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, damping, deltaTime);
@@ -303,7 +303,7 @@ namespace Cinemachine
                     }
                     extra.m_previousDisplacement = displacement;
                     Vector3 correction = RespectCameraRadius(state.CorrectedPosition + displacement, ref state);
-                    if (damping > 0 && deltaTime >= 0)
+                    if (damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
                         Vector3 delta = correction - extra.m_previousDisplacementCorrection;
                         delta = Damper.Damp(delta, damping, deltaTime);

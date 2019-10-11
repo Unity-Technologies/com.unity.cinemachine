@@ -131,9 +131,6 @@ namespace Cinemachine
         /// invoke its pipeline and generate a CameraState for this frame.</summary>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            if (!PreviousStateIsValid)
-                deltaTime = -1;
-
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
             ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);

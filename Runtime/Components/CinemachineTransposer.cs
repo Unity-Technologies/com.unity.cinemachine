@@ -161,10 +161,9 @@ namespace Cinemachine
             InitPrevFrameStateInfo(ref curState, deltaTime);
             if (IsValid)
             {
-                Vector3 pos;
-                Quaternion orient;
                 Vector3 offset = EffectiveOffset;
-                TrackTarget(deltaTime, curState.ReferenceUp, offset, out pos, out orient);
+                TrackTarget(deltaTime, curState.ReferenceUp, offset,
+                    out Vector3 pos, out Quaternion orient);
                 curState.RawPosition = pos + orient * offset;
                 curState.ReferenceUp = orient * Vector3.up;
             }
@@ -186,13 +185,14 @@ namespace Cinemachine
         protected void InitPrevFrameStateInfo(
             ref CameraState curState, float deltaTime)
         {
-            if (m_previousTarget != FollowTarget || deltaTime < 0)
+            bool prevStateValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
+            if (m_previousTarget != FollowTarget || !prevStateValid)
             {
                 m_previousTarget = FollowTarget;
                 m_targetOrientationOnAssign
                     = (m_previousTarget == null) ? Quaternion.identity : FollowTargetRotation;
             }
-            if (deltaTime < 0)
+            if (!prevStateValid)
             {
                 m_PreviousTargetPosition = FollowTargetPosition;
                 m_PreviousReferenceOrientation = GetReferenceOrientation(curState.ReferenceUp);
@@ -211,7 +211,7 @@ namespace Cinemachine
         {
             Quaternion targetOrientation = GetReferenceOrientation(up);
             Quaternion dampedOrientation = targetOrientation;
-            if (deltaTime >= 0)
+            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 if (m_AngularDampingMode == AngularDampingMode.Quaternion
                     && m_BindingMode == BindingMode.LockToTarget)
@@ -238,7 +238,7 @@ namespace Cinemachine
             Vector3 worldOffset = targetPosition - currentPosition;
 
             // Adjust for damping, which is done in camera-offset-local coords
-            if (deltaTime >= 0)
+            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 Quaternion dampingSpace;
                 if (desiredCameraOffset.AlmostZero())

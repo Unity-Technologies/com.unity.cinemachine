@@ -249,30 +249,7 @@ namespace Cinemachine
         public abstract Transform Follow { get; set; }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
-        public bool PreviousStateIsValid
-        {
-            get
-            {
-                if (LookAt != m_previousLookAtTarget)
-                {
-                    m_previousLookAtTarget = LookAt;
-                    m_previousStateIsValid = false;
-                }
-                if (Follow != m_previousFollowTarget)
-                {
-                    m_previousFollowTarget = Follow;
-                    m_previousStateIsValid = false;
-                }
-                return m_previousStateIsValid;
-            }
-            set
-            {
-                m_previousStateIsValid = value;
-            }
-        }
-        private bool m_previousStateIsValid;
-        private Transform m_previousLookAtTarget;
-        private Transform m_previousFollowTarget;
+        public bool PreviousStateIsValid { get; set; }
 
         /// <summary>
         /// Update the camera's state.

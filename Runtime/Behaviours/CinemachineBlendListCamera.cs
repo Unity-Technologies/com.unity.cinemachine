@@ -157,7 +157,10 @@ namespace Cinemachine
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             if (!PreviousStateIsValid)
-                deltaTime = -1;
+            {
+                mCurrentInstruction = -1;
+                mActiveBlend = null;
+            }
 
             UpdateListOfChildren();
             AdvanceCurrentInstruction(deltaTime);

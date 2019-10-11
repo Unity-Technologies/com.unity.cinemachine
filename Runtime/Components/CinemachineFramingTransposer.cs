@@ -391,7 +391,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             Vector3 followTargetPosition = FollowTargetPosition;
-            if (deltaTime < 0)
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
                 m_Predictor.Reset();
                 m_PreviousCameraPosition = curState.RawPosition;
@@ -485,7 +485,7 @@ namespace Cinemachine
             float screenSize = curState.Lens.Orthographic
                 ? m_prevFOV : Mathf.Tan(0.5f * m_prevFOV * Mathf.Deg2Rad) * (targetZ - cameraOffset.z);
             Rect softGuideOrtho = ScreenToOrtho(SoftGuideRect, screenSize, curState.Lens.Aspect);
-            if (deltaTime < 0)
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
                 // No damping or hard bounds, just snap to central bounds, skipping the soft zone
                 Rect rect = softGuideOrtho;
@@ -528,7 +528,7 @@ namespace Cinemachine
                     targetHeight = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
 
                     // Apply Damping
-                    if (deltaTime >= 0)
+                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                         targetHeight = m_prevFOV + Damper.Damp(targetHeight - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetHeight;
 
@@ -547,7 +547,7 @@ namespace Cinemachine
                     targetFOV = Mathf.Clamp(targetFOV, m_MinimumFOV, m_MaximumFOV);
 
                     // ApplyDamping
-                    if (deltaTime >= 0)
+                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                         targetFOV = m_prevFOV + Damper.Damp(targetFOV - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetFOV;
 

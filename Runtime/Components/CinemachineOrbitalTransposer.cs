@@ -192,7 +192,7 @@ namespace Cinemachine
             ref AxisState.Recentering recentering, bool isLive)
         {
             // Only read joystick when game is playing
-            if (deltaTime < 0 || !isLive)
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !isLive)
             {
                 axis.Reset();
                 recentering.CancelRecentering();
@@ -200,7 +200,7 @@ namespace Cinemachine
             else if (axis.Update(deltaTime))
                 recentering.CancelRecentering();
 
-            float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up), deltaTime);
+            float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up));
             if (deltaTime >= 0 && m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 recentering.DoRecentering(ref axis, deltaTime, targetHeading);
 
@@ -364,8 +364,7 @@ namespace Cinemachine
         }
 
         // Make sure this is calld only once per frame
-        private float GetTargetHeading(
-            float currentHeading, Quaternion targetOrientation, float deltaTime)
+        private float GetTargetHeading(float currentHeading, Quaternion targetOrientation)
         {
             if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
                 return 0;
@@ -405,7 +404,8 @@ namespace Cinemachine
 
             velocity = mHeadingTracker.GetReliableHeading();
             if (!velocity.AlmostZero())
-                return UnityVectorExtensions.SignedAngle(targetOrientation * Vector3.forward, velocity, up);
+                return UnityVectorExtensions.SignedAngle(
+                    targetOrientation * Vector3.forward, velocity, up);
 
             // If no reliable heading, then stay where we are.
             return currentHeading;

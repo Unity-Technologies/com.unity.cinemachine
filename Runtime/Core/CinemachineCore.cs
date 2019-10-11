@@ -291,7 +291,8 @@ namespace Cinemachine
                 : FixedFrameCount - status.lastUpdateFixedFrame;
             if (deltaTime >= 0)
             {
-                if (frameDelta == 0 && status.lastUpdateMode == updateClock)
+                if (frameDelta == 0 && status.lastUpdateMode == updateClock
+                        && status.lastUpdateDeltaTime == deltaTime)
                     return; // already updated
                 if (frameDelta > 0)
                     deltaTime *= frameDelta; // try to catch up if multiple frames
@@ -302,6 +303,7 @@ namespace Cinemachine
             status.lastUpdateFrame = Time.frameCount;
             status.lastUpdateFixedFrame = FixedFrameCount;
             status.lastUpdateMode = updateClock;
+            status.lastUpdateDeltaTime = deltaTime;
         }
 
         class UpdateStatus
@@ -309,11 +311,13 @@ namespace Cinemachine
             public int lastUpdateFrame;
             public int lastUpdateFixedFrame;
             public UpdateTracker.UpdateClock lastUpdateMode;
+            public float lastUpdateDeltaTime;
             public UpdateStatus()
             {
                 lastUpdateFrame = -2;
                 lastUpdateFixedFrame = 0;
                 lastUpdateMode = UpdateTracker.UpdateClock.Late;
+                lastUpdateDeltaTime = -2;
             }
         }
         static Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;

@@ -199,11 +199,8 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            if (!PreviousStateIsValid)
-                deltaTime = -1;
-
             UpdateListOfChildren();
-            CinemachineVirtualCameraBase best = ChooseCurrentCamera(deltaTime);
+            CinemachineVirtualCameraBase best = ChooseCurrentCamera();
             if (best != null && !best.gameObject.activeInHierarchy)
             {
                 best.gameObject.SetActive(true);
@@ -387,7 +384,7 @@ namespace Cinemachine
         }
 
         List<AnimatorClipInfo>  m_clipInfoList = new List<AnimatorClipInfo>();
-        private CinemachineVirtualCameraBase ChooseCurrentCamera(float deltaTime)
+        private CinemachineVirtualCameraBase ChooseCurrentCamera()
         {
             if (m_ChildCameras == null || m_ChildCameras.Length == 0)
             {
@@ -444,7 +441,7 @@ namespace Cinemachine
                 }
 
                 // Is it pending?
-                if (deltaTime >= 0)
+                if (PreviousStateIsValid)
                 {
                     if (mPendingActivationTime != 0 && mPendingInstruction.m_FullHash == hash)
                     {
@@ -479,7 +476,7 @@ namespace Cinemachine
             Instruction newInstr = m_Instructions[mInstructionDictionary[hash]];
             if (newInstr.m_VirtualCamera == null)
                 newInstr.m_VirtualCamera = defaultCam;
-            if (deltaTime >= 0 && mActivationTime > 0)
+            if (PreviousStateIsValid && mActivationTime > 0)
             {
                 if (newInstr.m_ActivateAfter > 0
                     || ((now - mActivationTime) < mActiveInstruction.m_MinDuration

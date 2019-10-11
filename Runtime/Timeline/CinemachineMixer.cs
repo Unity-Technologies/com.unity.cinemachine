@@ -95,21 +95,25 @@ using Cinemachine;
                     mBrainOverrideId, camA, camB, camWeightB, GetDeltaTime(info.deltaTime));
         }
 
-        float mLastOverrideFrame;
+        float mLastOverrideTime;
         float GetDeltaTime(float deltaTime)
         {
             if (!mPlaying)
             {
+                // We're scrubbing or paused
                 if (mBrainOverrideId < 0)
-                    mLastOverrideFrame = -1;
-                float time = Time.realtimeSinceStartup;
-                deltaTime = Time.unscaledDeltaTime;
-                if (!Application.isPlaying
-                    && (mLastOverrideFrame < 0 || time - mLastOverrideFrame > Time.maximumDeltaTime))
+                    mLastOverrideTime = -1;
+
+                // When force-scrubbing in playmode, we use timeline's suggested deltaTime
+                // otherwise we look at the real clock for scrubbing in edit mode
+                if (!Application.isPlaying)
                 {
-                    deltaTime = -1;
+                    deltaTime = Time.unscaledDeltaTime;
+                    float time = Time.realtimeSinceStartup;
+                    if (mLastOverrideTime < 0 || time - mLastOverrideTime > Time.maximumDeltaTime * 5)
+                        deltaTime = -1; // paused long enough - kill time-dependent stuff
+                    mLastOverrideTime = time;
                 }
-                mLastOverrideFrame = time;
             }
             return deltaTime;
         }
