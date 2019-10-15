@@ -3,6 +3,18 @@ using System;
 using UnityEditor;
 using System.Collections.Generic;
 
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
+    #if CINEMACHINE_HDRP_7_0_0
+    using UnityEngine.Rendering.HighDefinition;
+    #else
+        #if CINEMACHINE_LWRP_7_0_0
+        using UnityEngine.Rendering.Universal;
+        #else
+        using UnityEngine.Experimental.Rendering.HDPipeline;
+        #endif
+    #endif
+#endif
+
 namespace Cinemachine.Editor
 {
     /// <summary>
@@ -40,7 +52,7 @@ namespace Cinemachine.Editor
                 if (InstanceIfExists == null)
                 {
                     string newAssetPath = EditorUtility.SaveFilePanelInProject(
-                            "Create Lens Presets asset", "CinemachineLensPresets", "asset", 
+                            "Create Lens Presets asset", "CinemachineLensPresets", "asset",
                             "This editor-only file will contain the lens presets for this project");
                     if (!string.IsNullOrEmpty(newAssetPath))
                     {
@@ -61,7 +73,7 @@ namespace Cinemachine.Editor
                 return sInstance;
             }
         }
-        
+
         /// <summary>Lens Preset</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
@@ -87,11 +99,31 @@ namespace Cinemachine.Editor
         [Serializable]
         public struct PhysicalPreset
         {
+            [Tooltip("Lens Name")]
+            public string m_Name;
+
             /// <summary>
             /// This is the camera focal length in mm
             /// </summary>
             [Tooltip("This is the camera focal length in mm")]
             public float m_FocalLength;
+
+            /// <summary>Position of the gate relative to the film back</summary>
+            public Vector2 LensShift;
+
+#if CINEMACHINE_HDRP
+            public int Iso;
+            public float ShutterSpeed;
+            [Range(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
+            public float Aperture;
+            [Range(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
+            public int BladeCount;
+            public Vector2 Curvature;
+            [Range(0, 1)]
+            public float BarrelClipping;
+            [Range(-1, 1)]
+            public float Anamorphism;
+#endif
         }
 
         /// <summary>The array containing Preset definitions, for physical cameras</summary>
@@ -117,5 +149,40 @@ namespace Cinemachine.Editor
                     return i;
             return -1;
         }
+
+#if CINEMACHINE_HDRP
+        /// <summary>Get the index of the physical preset that matches the lens settings</summary>
+        /// <returns>the preset index, or -1 if no matching preset</returns>
+        public int GetMatchingPhysicalPreset(
+            float FocalLength,
+            int Iso,
+            float ShutterSpeed,
+            float Aperture,
+            int BladeCount,
+            Vector2 Curvature,
+            float BarrelClipping,
+            float Anamorphism,
+            Vector2 LensShift)
+        {
+            for (int i = 0; i < m_PhysicalPresets.Length; ++i)
+            {
+                if (Mathf.Approximately(m_PhysicalPresets[i].m_FocalLength, FocalLength)
+                    && m_PhysicalPresets[i].Iso == Iso
+                    && Mathf.Approximately(m_PhysicalPresets[i].ShutterSpeed, ShutterSpeed)
+                    && Mathf.Approximately(m_PhysicalPresets[i].Aperture, Aperture)
+                    && m_PhysicalPresets[i].BladeCount == BladeCount
+                    && Mathf.Approximately(m_PhysicalPresets[i].Curvature.x, Curvature.x)
+                    && Mathf.Approximately(m_PhysicalPresets[i].Curvature.y, Curvature.y)
+                    && Mathf.Approximately(m_PhysicalPresets[i].BarrelClipping, BarrelClipping)
+                    && Mathf.Approximately(m_PhysicalPresets[i].Anamorphism, Anamorphism)
+                    && Mathf.Approximately(m_PhysicalPresets[i].LensShift.x, LensShift.x)
+                    && Mathf.Approximately(m_PhysicalPresets[i].LensShift.y, LensShift.y))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+#endif
     }
 }

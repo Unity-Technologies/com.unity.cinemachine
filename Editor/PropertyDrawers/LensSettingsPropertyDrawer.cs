@@ -29,7 +29,7 @@ namespace Cinemachine.Editor
 
 #if CINEMACHINE_HDRP
         GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
-        bool mPhysicalExapnded;
+        static bool mPhysicalExapnded;
 #endif
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
@@ -148,15 +148,54 @@ namespace Cinemachine.Editor
             float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 3;
             rect.width -= dropdownWidth;
             float f = VerticalFOVToFocalLength(FOVProperty.floatValue);
+
+            EditorGUI.BeginProperty(rect, FocalLengthLabel, FOVProperty);
             f = EditorGUI.FloatField(rect, FocalLengthLabel, f);
             f = FocalLengthToVerticalFOV(f);
             if (!Mathf.Approximately(FOVProperty.floatValue, f))
-            {
                 FOVProperty.floatValue = Mathf.Clamp(f, 1, 179);
-                property.serializedObject.ApplyModifiedProperties();
-            }
+            EditorGUI.EndProperty();
+
             rect.x += rect.width; rect.width = dropdownWidth;
 
+#if CINEMACHINE_HDRP
+            CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
+            int preset = -1;
+            if (presets != null)
+            {
+                var focalLength = VerticalFOVToFocalLength(FOVProperty.floatValue);
+                var aperture = property.FindPropertyRelative(() => def.Aperture).floatValue;
+                var iso = property.FindPropertyRelative(() => def.Iso).intValue;
+                var shutterSpeed = property.FindPropertyRelative(() => def.ShutterSpeed).floatValue;
+                var bladeCount = property.FindPropertyRelative(() => def.BladeCount).intValue;
+                var curvature = property.FindPropertyRelative(() => def.Curvature).vector2Value;
+                var barrelClipping = property.FindPropertyRelative(() => def.BarrelClipping).floatValue;
+                var anamprphism = property.FindPropertyRelative(() => def.Anamorphism).floatValue;
+                var lensShift = property.FindPropertyRelative(() => def.LensShift).vector2Value;
+
+                preset = presets.GetMatchingPhysicalPreset(
+                    focalLength, iso, shutterSpeed, aperture, bladeCount,
+                    curvature, barrelClipping, anamprphism, lensShift);
+            }
+            rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
+            int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_PhysicalPresetOptions);
+            if (selection == m_PhysicalPresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
+                Selection.activeObject = presets = CinemachineLensPresets.Instance;
+            else if (selection >= 0 && selection < m_PhysicalPresetOptions.Length-1)
+            {
+                var v = presets.m_PhysicalPresets[selection];
+                FOVProperty.floatValue = FocalLengthToVerticalFOV(v.m_FocalLength);
+                property.FindPropertyRelative(() => def.Aperture).floatValue = v.Aperture;
+                property.FindPropertyRelative(() => def.Iso).intValue = v.Iso;
+                property.FindPropertyRelative(() => def.ShutterSpeed).floatValue = v.ShutterSpeed;
+                property.FindPropertyRelative(() => def.BladeCount).intValue = v.BladeCount;
+                property.FindPropertyRelative(() => def.Curvature).vector2Value = v.Curvature;
+                property.FindPropertyRelative(() => def.BarrelClipping).floatValue = v.BarrelClipping;
+                property.FindPropertyRelative(() => def.Anamorphism).floatValue = v.Anamorphism;
+                property.FindPropertyRelative(() => def.LensShift).vector2Value = v.LensShift;
+                property.serializedObject.ApplyModifiedProperties();
+            }
+#else
             CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
             int preset = (presets == null) ? -1 : presets.GetMatchingPhysicalPreset(VerticalFOVToFocalLength(FOVProperty.floatValue));
             rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
@@ -169,6 +208,7 @@ namespace Cinemachine.Editor
                     presets.m_PhysicalPresets[selection].m_FocalLength);
                 property.serializedObject.ApplyModifiedProperties();
             }
+#endif
         }
 
         float VerticalFOVToFocalLength(float fov)
@@ -208,7 +248,7 @@ namespace Cinemachine.Editor
             options.Clear();
             if (presets != null)
                 for (int i = 0; i < presets.m_PhysicalPresets.Length; ++i)
-                    options.Add(new GUIContent(presets.m_PhysicalPresets[i].m_FocalLength.ToString() + "mm"));
+                    options.Add(new GUIContent(presets.m_PhysicalPresets[i].m_Name));
             options.Add(new GUIContent("Edit Presets..."));
             m_PhysicalPresetOptions = options.ToArray();
         }

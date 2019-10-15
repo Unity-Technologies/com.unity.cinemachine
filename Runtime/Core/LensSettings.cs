@@ -193,6 +193,16 @@ namespace Cinemachine
             NearClipPlane = nearClip;
             FarClipPlane = farClip;
             Dutch = dutch;
+
+#if CINEMACHINE_HDRP
+            Iso = 200;
+            ShutterSpeed = 0.005f;
+            Aperture = 16;
+            BladeCount = 5;
+            Curvature = new Vector2(2, 11);
+            BarrelClipping = 0.25f;
+            Anamorphism = 0;
+#endif
         }
 
         /// <summary>
@@ -217,7 +227,7 @@ namespace Cinemachine
             blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
 
 #if CINEMACHINE_HDRP
-            blendedLens.Iso = Mathf.RoundToInt(Mathf.Lerp(lensA.Iso, lensB.Iso, t));
+            blendedLens.Iso = Mathf.RoundToInt(Mathf.Lerp((float)lensA.Iso, (float)lensB.Iso, t));
             blendedLens.ShutterSpeed = Mathf.Lerp(lensA.ShutterSpeed, lensB.ShutterSpeed, t);
             blendedLens.Aperture = Mathf.Lerp(lensA.Aperture, lensB.Aperture, t);
             blendedLens.BladeCount = Mathf.RoundToInt(Mathf.Lerp(lensA.BladeCount, lensB.BladeCount, t));;
