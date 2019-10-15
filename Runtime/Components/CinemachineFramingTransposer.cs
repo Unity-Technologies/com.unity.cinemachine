@@ -93,12 +93,12 @@ namespace Cinemachine
 
         /// <summary>Horizontal screen position for target. The camera will move to position the tracked object here</summary>
         [Space]
-        [Range(0f, 1f)]
+        [Range(-0.5f, 1.5f)]
         [Tooltip("Horizontal screen position for target. The camera will move to position the tracked object here.")]
         public float m_ScreenX = 0.5f;
 
         /// <summary>Vertical screen position for target, The camera will move to to position the tracked object here</summary>
-        [Range(0f, 1f)]
+        [Range(-0.5f, 1.5f)]
         [Tooltip("Vertical screen position for target, The camera will move to position the tracked object here.")]
         public float m_ScreenY = 0.5f;
 
@@ -108,12 +108,12 @@ namespace Cinemachine
 
         /// <summary>Camera will not move horizontally if the target is within this range of the position</summary>
         [Space]
-        [Range(0f, 1f)]
+        [Range(0f, 2f)]
         [Tooltip("Camera will not move horizontally if the target is within this range of the position.")]
         public float m_DeadZoneWidth = 0f;
 
         /// <summary>Camera will not move vertically if the target is within this range of the position</summary>
-        [Range(0f, 1f)]
+        [Range(0f, 2f)]
         [Tooltip("Camera will not move vertically if the target is within this range of the position.")]
         public float m_DeadZoneHeight = 0f;
 
@@ -245,10 +245,10 @@ namespace Cinemachine
             }
             set
             {
-                m_DeadZoneWidth = Mathf.Clamp01(value.width);
-                m_DeadZoneHeight = Mathf.Clamp01(value.height);
-                m_ScreenX = Mathf.Clamp01(value.x + m_DeadZoneWidth / 2);
-                m_ScreenY = Mathf.Clamp01(value.y + m_DeadZoneHeight / 2);
+                m_DeadZoneWidth = Mathf.Clamp(value.width, 0, 2);
+                m_DeadZoneHeight = Mathf.Clamp(value.height, 0, 2);
+                m_ScreenX = Mathf.Clamp(value.x + m_DeadZoneWidth / 2, -0.5f,  1.5f);
+                m_ScreenY = Mathf.Clamp(value.y + m_DeadZoneHeight / 2, -0.5f,  1.5f);
                 m_SoftZoneWidth = Mathf.Max(m_SoftZoneWidth, m_DeadZoneWidth);
                 m_SoftZoneHeight = Mathf.Max(m_SoftZoneHeight, m_DeadZoneHeight);
             }

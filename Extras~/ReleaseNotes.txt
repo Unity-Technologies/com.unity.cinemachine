@@ -12,6 +12,7 @@
 - Upgrade to support HDRP and Universal RP 7.1.0 API
 - Removed Resources diretories
 - Sample scenes now available via package manager
+- Composer and FramingTransposer: allow the dead zone to extend to 2, and the Screen x,Y can range from -1.5 to 1.5
 - Added optional "Display Name" field to Cinemachine Shot in Timeline
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
 - Bugfix: added EmbeddedAssetHelper null check
