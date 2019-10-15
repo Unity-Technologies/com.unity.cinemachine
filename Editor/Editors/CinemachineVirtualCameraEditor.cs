@@ -75,6 +75,18 @@ namespace Cinemachine.Editor
             }
         }
 
+        [MenuItem("CONTEXT/CinemachineVirtualCamera/Adopt Current Camera Settings")]
+        static void AdoptCurrentCameraSettings(MenuCommand command)
+        {
+            var vcam = command.context as CinemachineVirtualCamera;
+            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
+            if (brain != null)
+            {
+                vcam.m_Lens = brain.CurrentCameraState.Lens;
+                vcam.transform.position = brain.transform.position;
+                vcam.transform.rotation = brain.transform.rotation;
+            }
+        }
 
         void OnPositionDragged(Vector3 delta)
         {

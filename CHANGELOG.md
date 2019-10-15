@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Removed Resources diretories
 - Sample scenes now available via package manager
 - Added optional "Display Name" field to Cinemachine Shot in Timeline
+- Added "Adopt Current Camera Settings" item to vcam inspector context menu
 - Composer and FramingTransposer: allow the dead zone to extend to 2, and the Screen x,Y can range from -1.5 to 1.5
 - Bugfix: added EmbeddedAssetHelper null check
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
