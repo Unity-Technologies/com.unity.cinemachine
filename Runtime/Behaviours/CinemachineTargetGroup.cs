@@ -250,7 +250,11 @@ namespace Cinemachine
         private float mMaxWeight;
         private Vector3 mAveragePos;
 
-        void DoUpdate()
+        /// <summary>
+        /// Update the group's transform right now, depending on the transforms of the members.
+        /// Normally this is called automatically by Update() or LateUpdate().
+        /// </summary>
+        public void DoUpdate()
         {
             if (IsEmpty)
                 return;
