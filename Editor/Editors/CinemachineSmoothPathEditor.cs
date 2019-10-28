@@ -92,8 +92,12 @@ namespace Cinemachine.Editor
             r.x += r.width + hSpace; r.width = rollWidth;
             float oldWidth = EditorGUIUtility.labelWidth;
             EditorGUIUtility.labelWidth = labelDimension.x;
+
+            var indent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
             EditorGUI.PropertyField(r, element.FindPropertyRelative(() => def.roll), rollLabel);
             EditorGUIUtility.labelWidth = oldWidth;
+            EditorGUI.indentLevel = indent;
 
             r.x += r.width + hSpace; r.height += 1; r.width = r.height;
             GUIContent setButtonContent = EditorGUIUtility.IconContent("d_RectTransform Icon");

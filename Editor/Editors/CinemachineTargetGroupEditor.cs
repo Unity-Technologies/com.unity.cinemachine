@@ -37,7 +37,7 @@ namespace Cinemachine.Editor
         void SetupTargetList()
         {
             float vSpace = 2;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
+            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 3.5f;
             float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
 
             mTargetList = new UnityEditorInternal.ReorderableList(
@@ -54,10 +54,10 @@ namespace Cinemachine.Editor
                     rect.position = pos;
                     EditorGUI.LabelField(rect, "Target");
 
-                    pos.x += rect.width + hBigSpace; rect.width = floatFieldWidth; rect.position = pos;
+                    pos.x += rect.width + hBigSpace; rect.width = floatFieldWidth + hBigSpace; rect.position = pos;
                     EditorGUI.LabelField(rect, "Weight");
 
-                    pos.x += rect.width + hBigSpace; rect.position = pos;
+                    pos.x += rect.width; rect.position = pos;
                     EditorGUI.LabelField(rect, "Radius");
                 };
 
@@ -74,12 +74,12 @@ namespace Cinemachine.Editor
                     EditorGUI.PropertyField(rect, elemProp.FindPropertyRelative(() => def.target), GUIContent.none);
 
                     float oldWidth = EditorGUIUtility.labelWidth;
-                    EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight; 
+                    EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight;
                     pos.x += rect.width; rect.width = floatFieldWidth + hBigSpace; rect.position = pos;
                     EditorGUI.PropertyField(rect, elemProp.FindPropertyRelative(() => def.weight), new GUIContent(" "));
                     pos.x += rect.width; rect.position = pos;
                     EditorGUI.PropertyField(rect, elemProp.FindPropertyRelative(() => def.radius), new GUIContent(" "));
-                    EditorGUIUtility.labelWidth = oldWidth; 
+                    EditorGUIUtility.labelWidth = oldWidth;
                 };
 
             mTargetList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
