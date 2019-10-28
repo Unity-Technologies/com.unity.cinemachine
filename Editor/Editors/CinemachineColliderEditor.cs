@@ -37,7 +37,8 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
-            if (Target.m_AvoidObstacles && !Target.VirtualCamera.State.HasLookAt)
+            if (Target.m_AvoidObstacles && Target.VirtualCamera != null
+                    && !Target.VirtualCamera.State.HasLookAt)
                 EditorGUILayout.HelpBox(
                     "Avoid Obstacles requires a LookAt target.",
                     MessageType.Warning);

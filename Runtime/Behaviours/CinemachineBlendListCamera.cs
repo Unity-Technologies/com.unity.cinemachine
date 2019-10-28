@@ -19,6 +19,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineBlendListCamera")]
     public class CinemachineBlendListCamera : CinemachineVirtualCameraBase
     {

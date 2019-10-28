@@ -34,6 +34,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineClearShot")]
     public class CinemachineClearShot : CinemachineVirtualCameraBase
     {

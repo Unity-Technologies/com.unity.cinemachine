@@ -24,6 +24,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineStateDrivenCamera")]
     public class CinemachineStateDrivenCamera : CinemachineVirtualCameraBase
     {

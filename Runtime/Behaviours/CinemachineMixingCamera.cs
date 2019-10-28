@@ -19,6 +19,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
     public class CinemachineMixingCamera : CinemachineVirtualCameraBase
     {

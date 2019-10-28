@@ -21,10 +21,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added optional "Display Name" field to Cinemachine Shot in Timeline
 - Added "Adopt Current Camera Settings" item to vcam inspector context menu
 - Composer and FramingTransposer: allow the dead zone to extend to 2, and the Screen x,Y can range from -1.5 to 1.5
-- Bugfix: added EmbeddedAssetHelper null check
 - HDRP: lens presets include physical settings if physical camera
-
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfixes: (fogbugz 1193311, 1193307, 1192423, 1192414): disallow presets for vcams
+- Bugfix: added EmbeddedAssetHelper null check
 - Bugfix: composer screen guides drawn in correct place for physical camera
 - Bugfix: FreeLook was not respecting wait time for X axis recentering
 - Bugfix: FreeLook X axis was not always perfectly synched between rigs

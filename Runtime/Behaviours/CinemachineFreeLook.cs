@@ -20,6 +20,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase
     {

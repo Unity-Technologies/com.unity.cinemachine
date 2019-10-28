@@ -63,7 +63,7 @@ namespace Cinemachine.PostFX.Editor
                     EditorGUILayout.HelpBox(
                         "Focus Tracking requires an active DepthOfField/FocusDistance effect in the profile",
                         MessageType.Warning);
-                else
+                else if (Target.VirtualCamera != null)
                 {
                     if (!Target.VirtualCamera.State.HasLookAt)
                         EditorGUILayout.HelpBox(
