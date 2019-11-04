@@ -60,6 +60,11 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.0.0",
             "define": "CINEMACHINE_LWRP_7_0_0"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "7.1.3",
+            "define": "CINEMACHINE_LWRP_7_1_3"
         }
     ],
     "noEngineReferences": false
