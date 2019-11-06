@@ -4,6 +4,7 @@
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
 - Added RectenterTarget to POV component
 - Added OnTransitionFromCamera callback to extensions
+- Added Angular Damping to SameAsFollowTarget Aim component
 - URP 7.1.3: added CinemachineUniversalPixelPerfect extension
 - Added Speed Mode to AxisState, to support direct axis control without max speed
 - New example scene: OverTheShoulderAim illustrating how to do over-the-shoulder TPS cam, with Normal and Aim modes
