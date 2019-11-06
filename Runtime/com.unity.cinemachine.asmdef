@@ -69,8 +69,8 @@
         },
         {
             "name": "com.unity.2d.pixel-perfect",
-            "expression": "2.1.0",
-            "define": "CINEMACHINE_PIXEL_PERFECT_2_1_0"
+            "expression": "2.0.3",
+            "define": "CINEMACHINE_PIXEL_PERFECT_2_0_3"
         }
     ],
     "noEngineReferences": false
