@@ -6,7 +6,8 @@
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.HighDefinition.Runtime",
         "Unity.ugui",
-        "Unity.RenderPipelines.Universal.Runtime"
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.2D.PixelPerfect"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -65,6 +66,11 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.1.3",
             "define": "CINEMACHINE_LWRP_7_1_3"
+        },
+        {
+            "name": "com.unity.2d.pixel-perfect",
+            "expression": "2.0.3",
+            "define": "CINEMACHINE_PIXEL_PERFECT_2_0_3"
         }
     ],
     "noEngineReferences": false

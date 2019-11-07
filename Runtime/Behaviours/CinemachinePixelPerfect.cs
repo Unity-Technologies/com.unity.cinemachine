@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
-#if CINEMACHINE_LWRP_7_1_3
-using UnityEngine.Experimental.Rendering.Universal
+#if CINEMACHINE_LWRP_7_1_3 || CINEMACHINE_PIXEL_PERFECT_2_0_3
 
 namespace Cinemachine
 {
@@ -13,7 +12,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
-    public class CinemachineUniversalPixelPerfect : CinemachineExtension
+    public class CinemachinePixelPerfect : CinemachineExtension
     {
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
@@ -29,7 +28,11 @@ namespace Cinemachine
             if (brain == null || !brain.IsLive(vcam))
                 return;
 
-            PixelPerfectCamera pixelPerfectCamera;
+#if CINEMACHINE_LWRP_7_1_3
+            UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
+#elif CINEMACHINE_PIXEL_PERFECT_2_0_3
+            UnityEngine.U2D.PixelPerfectCamera pixelPerfectCamera;
+#endif
             brain.TryGetComponent(out pixelPerfectCamera);
             if (pixelPerfectCamera == null || !pixelPerfectCamera.isActiveAndEnabled)
                 return;
@@ -57,6 +60,6 @@ namespace Cinemachine
     /// sprites would appear pixel perfect when the virtual camera becomes live.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
-    public class CinemachineUniversalPixelPerfect : MonoBehaviour {}
+    public class CinemachinePixelPerfect : MonoBehaviour {}
 }
 #endif
