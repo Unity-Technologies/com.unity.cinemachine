@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -11,6 +12,13 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
     {
+        /// <summary>
+        /// How much time it takes for the position to catch up to the target's position
+        /// </summary>
+        [Tooltip("How much time it takes for the position to catch up to the target's position")]
+        public float m_Damping = 0;
+        Vector3 m_PreviousTargetPosition;
+
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled && FollowTarget != null; } }
 
@@ -24,8 +32,15 @@ namespace Cinemachine
         /// zero, then target will snap to the center of the dead zone.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (IsValid)
-                curState.RawPosition = FollowTargetPosition;
+            if (!IsValid)
+                return;
+
+            Vector3 dampedPos = FollowTargetPosition;
+            if (deltaTime >= 0)
+                dampedPos = m_PreviousTargetPosition + Damper.Damp(
+                    dampedPos - m_PreviousTargetPosition, m_Damping, deltaTime);
+            m_PreviousTargetPosition = dampedPos;
+            curState.RawPosition = dampedPos;
         }
     }
 }

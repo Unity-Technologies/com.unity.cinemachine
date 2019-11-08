@@ -1,5 +1,6 @@
 using Cinemachine.Utility;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -12,7 +13,12 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class CinemachineSameAsFollowTarget : CinemachineComponentBase
     {
-        public float m_AngularDamping = 0;
+        /// <summary>
+        /// How much time it takes for the aim to catch up to the target's rotation
+        /// </summary>
+        [Tooltip("How much time it takes for the aim to catch up to the target's rotation")]
+        [FormerlySerializedAs("m_AngularDamping")]
+        public float m_Damping = 0;
 
         Quaternion m_PreviousReferenceOrientation = Quaternion.identity;
 
@@ -34,7 +40,7 @@ namespace Cinemachine
             Quaternion dampedOrientation = FollowTargetRotation;
             if (deltaTime >= 0)
             {
-                float t = Damper.Damp(1, m_AngularDamping, deltaTime);
+                float t = Damper.Damp(1, m_Damping, deltaTime);
                 dampedOrientation = Quaternion.Slerp(
                     m_PreviousReferenceOrientation, FollowTargetRotation, t);
             }
