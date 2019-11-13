@@ -187,6 +187,13 @@ namespace Cinemachine
         {
             for (int i = 0; i < mAllCameras.Count; ++i)
                 mAllCameras[i].Remove(vcam);
+
+            mUpdateStatus.Remove(vcam);
+
+            if (mRoundRobinVcamLastFrame == vcam)
+            {
+                mRoundRobinVcamLastFrame = null;
+            }
         }
 
         CinemachineVirtualCameraBase mRoundRobinVcamLastFrame = null;
@@ -326,12 +333,12 @@ namespace Cinemachine
                 lastUpdateDeltaTime = -2;
             }
         }
-        static Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;
+        Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;
 
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule()
         {
-            mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
+            CinemachineCore.Instance.mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
         }
 
         /// <summary>Internal use only</summary>
