@@ -10,12 +10,12 @@ using Cinemachine;
 
 //namespace Cinemachine.Timeline
 //{
-    /// <summary>
-    /// Internal use only.  Not part of the public API.
-    /// </summary>
+/// <summary>
+/// Internal use only.  Not part of the public API.
+/// </summary>
     public sealed class CinemachineShot : PlayableAsset, IPropertyPreview
     {
-#if UNITY_2019_2_OR_NEWER
+        #if UNITY_2019_2_OR_NEWER
         public string DisplayName;
 #endif
         public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;

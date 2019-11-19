@@ -187,13 +187,10 @@ namespace Cinemachine
         {
             for (int i = 0; i < mAllCameras.Count; ++i)
                 mAllCameras[i].Remove(vcam);
-
-            mUpdateStatus.Remove(vcam);
-
+            if (mUpdateStatus != null)
+                mUpdateStatus.Remove(vcam);
             if (mRoundRobinVcamLastFrame == vcam)
-            {
                 mRoundRobinVcamLastFrame = null;
-            }
         }
 
         CinemachineVirtualCameraBase mRoundRobinVcamLastFrame = null;

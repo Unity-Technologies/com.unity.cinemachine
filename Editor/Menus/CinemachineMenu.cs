@@ -219,6 +219,14 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
+        /// Create a static Virtual Camera, with no procedural components
+        /// </summary>
+        public static CinemachineVirtualCamera CreateStaticVirtualCamera()
+        {
+            return InternalCreateVirtualCamera("CM vcam", false);
+        }
+
+        /// <summary>
         /// Create a Virtual Camera, with components
         /// </summary>
         static CinemachineVirtualCamera InternalCreateVirtualCamera(
@@ -230,7 +238,10 @@ namespace Cinemachine.Editor
                     GenerateUniqueObjectName(typeof(CinemachineVirtualCamera), name),
                     typeof(CinemachineVirtualCamera));
             if (SceneView.lastActiveSceneView != null)
-                go.transform.position = SceneView.lastActiveSceneView.pivot;
+            {
+                go.transform.position = SceneView.lastActiveSceneView.camera.transform.position;
+                go.transform.rotation = SceneView.lastActiveSceneView.camera.transform.rotation;
+            }
             Undo.RegisterCreatedObjectUndo(go, "create " + name);
             CinemachineVirtualCamera vcam = go.GetComponent<CinemachineVirtualCamera>();
             GameObject componentOwner = vcam.GetComponentOwner().gameObject;

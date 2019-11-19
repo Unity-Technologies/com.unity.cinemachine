@@ -6,6 +6,10 @@
 
 using UnityEngine.Timeline;
 using UnityEditor.Timeline;
+using Cinemachine.Editor;
+using Cinemachine;
+using UnityEditor;
+using UnityEngine;
 
 [CustomTimelineEditor(typeof(CinemachineShot))]
 public class CinemachineShotClipEditor : ClipEditor
@@ -21,7 +25,7 @@ public class CinemachineShotClipEditor : ClipEditor
             {
                 var vcam = shotClip.VirtualCamera.Resolve(director);
                 if (vcam == null)
-                    clipOptions.errorText = "A virtual camera must be assigned.";
+                    clipOptions.errorText = "A virtual camera must be assigned";
                 else
                     clipOptions.tooltip = vcam.Name;
             }
@@ -34,7 +38,7 @@ public class CinemachineShotClipEditor : ClipEditor
         var shotClip = (CinemachineShot) clip.asset;
         if (shotClip == null)
             return;
-        if (shotClip.DisplayName.Length != 0)
+        if (shotClip.DisplayName != null && shotClip.DisplayName.Length != 0)
             clip.displayName = shotClip.DisplayName;
         else
         {
@@ -47,6 +51,25 @@ public class CinemachineShotClipEditor : ClipEditor
             }
         }
     }
+
+#if true && UNITY_2018_3_OR_NEWER
+    public override void OnCreate(TimelineClip clip, TrackAsset track, TimelineClip clonedFrom)
+    {
+        base.OnCreate(clip, track, clonedFrom);
+        if (CinemachineShotEditor.AutoCreateShotFromSceneView)
+        {
+            var asset = clip.asset as CinemachineShot;
+            var vcam = CinemachineShotEditor.CreateStaticVcamFromSceneView();
+            var d = TimelineEditor.inspectedDirector;
+            if (d != null && d.GetReferenceValue(asset.VirtualCamera.exposedName, out bool idValid) == null)
+            {
+                asset.VirtualCamera.exposedName = System.Guid.NewGuid().ToString();
+                d.SetReferenceValue(asset.VirtualCamera.exposedName, vcam);
+            }
+        }
+    }
+#endif
 }
+
 
 #endif

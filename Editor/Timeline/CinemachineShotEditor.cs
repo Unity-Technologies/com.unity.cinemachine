@@ -15,6 +15,32 @@ using Cinemachine;
     [CustomEditor(typeof(CinemachineShot))]
     internal sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
     {
+        static string kAutoCreateKey = "CM_Timeline_AutoCreateShotFromSceneView";
+        public static bool AutoCreateShotFromSceneView
+        {
+            get { return EditorPrefs.GetBool(kAutoCreateKey, false); }
+            set
+            {
+                if (value != AutoCreateShotFromSceneView)
+                {
+                    EditorPrefs.SetBool(kAutoCreateKey, value);
+                }
+            }
+        }
+
+        static public CinemachineVirtualCameraBase CreateStaticVcamFromSceneView()
+        {
+            CinemachineVirtualCameraBase vcam = CinemachineMenu.CreateStaticVirtualCamera();
+            vcam.m_StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
+            vcam.gameObject.SetActive(false);
+#if UNITY_2018_3_OR_NEWER
+            var d = TimelineEditor.inspectedDirector;
+            if (d != null)
+                Undo.SetTransformParent(vcam.transform, d.transform, "");
+#endif
+            return vcam;
+        }
+
         private static readonly GUIContent kVirtualCameraLabel
             = new GUIContent("Virtual Camera", "The virtual camera to use for this shot");
 
@@ -41,6 +67,13 @@ using Cinemachine;
             SerializedProperty vcamProperty = FindProperty(x => x.VirtualCamera);
             EditorGUI.indentLevel = 0; // otherwise subeditor layouts get screwed up
 
+            AutoCreateShotFromSceneView
+                = EditorGUILayout.Toggle(
+                    new GUIContent(
+                        "Auto-create new shots",  "When enabled, new clips will be "
+                        + "automatically populated to match the scene view camera"),
+                    AutoCreateShotFromSceneView);
+
             Rect rect;
             CinemachineVirtualCameraBase vcam
                 = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
@@ -58,7 +91,7 @@ using Cinemachine;
                 rect.x += rect.width; rect.width = createSize.x;
                 if (GUI.Button(rect, createLabel))
                 {
-                    vcam = CinemachineMenu.CreateDefaultVirtualCamera();
+                    vcam = CreateStaticVcamFromSceneView();
                     vcamProperty.exposedReferenceValue = vcam;
                 }
                 serializedObject.ApplyModifiedProperties();
