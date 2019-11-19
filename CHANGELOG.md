@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Framing Transposer: added OnTransition handling for camera rotation if InheritPosition
 - Removed Resources diretories
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfix: PostProcessing extension was not handling standby update correctly when on Manager Vcams
 - Bugfix: added EmbeddedAssetHelper null check
 - Bugfix: composer screen guides drawn in correct place for physical camera
 - Bugfix: Storyboard canvases were not always destructed properly
