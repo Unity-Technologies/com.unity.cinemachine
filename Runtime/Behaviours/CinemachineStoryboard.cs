@@ -2,10 +2,10 @@
 #define CINEMACHINE_UGUI
 #endif
 
-#if CINEMACHINE_UGUI
-using System;
-using System.Collections.Generic;
 using UnityEngine;
+
+#if CINEMACHINE_UGUI
+using System.Collections.Generic;
 
 namespace Cinemachine
 {
@@ -343,6 +343,13 @@ namespace Cinemachine
         }
 #endif
     }
+}
+#else
+// We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
+namespace Cinemachine
+{
+    [AddComponentMenu("")] // Hide in menu
+    public class CinemachineStoryboard : MonoBehaviour {}
 }
 #endif
 
