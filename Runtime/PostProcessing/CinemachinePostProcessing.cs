@@ -13,7 +13,7 @@ namespace Cinemachine.PostFX
 #else
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
-    /// have the Post-Processing V2 stack asset store package installed in order to use this behaviour.
+    /// have the Post-Processing V2 stack package installed in order to use this behaviour.
     ///
     /// As a component on the Virtual Camera, it holds
     /// a Post-Processing Profile asset that will be applied to the Unity camera whenever
@@ -41,43 +41,48 @@ namespace Cinemachine.PostFX
         [Tooltip("This Post-Processing profile will be applied whenever this virtual camera is live")]
         public PostProcessProfile m_Profile;
 
-        bool mCachedProfileIsInvalid = true;
-        PostProcessProfile mProfileCopy;
-        public PostProcessProfile Profile { get { return mProfileCopy != null ? mProfileCopy : m_Profile; } }
+        class VcamExtraState
+        {
+            public PostProcessProfile mProfileCopy;
+
+            public void CreateProfileCopy(PostProcessProfile source)
+            {
+                DestroyProfileCopy();
+                PostProcessProfile profile = ScriptableObject.CreateInstance<PostProcessProfile>();
+                if (source != null)
+                {
+                    foreach (var item in source.settings)
+                    {
+                        var itemCopy = Instantiate(item);
+                        profile.settings.Add(itemCopy);
+                    }
+                }
+                mProfileCopy = profile;
+            }
+
+            public void DestroyProfileCopy()
+            {
+                if (mProfileCopy != null)
+                    RuntimeUtility.DestroyObject(mProfileCopy);
+                mProfileCopy = null;
+            }
+        }
 
         /// <summary>True if the profile is enabled and nontrivial</summary>
         public bool IsValid { get { return m_Profile != null && m_Profile.settings.Count > 0; } }
 
         /// <summary>Called by the editor when the shared asset has been edited</summary>
-        public void InvalidateCachedProfile() { mCachedProfileIsInvalid = true; }
-
-        void CreateProfileCopy()
+        public void InvalidateCachedProfile()
         {
-            DestroyProfileCopy();
-            PostProcessProfile profile = ScriptableObject.CreateInstance<PostProcessProfile>();
-            if (m_Profile != null)
-            {
-                foreach (var item in m_Profile.settings)
-                {
-                    var itemCopy = Instantiate(item);
-                    profile.settings.Add(itemCopy);
-                }
-            }
-            mProfileCopy = profile;
-            mCachedProfileIsInvalid = false;
-        }
-
-        void DestroyProfileCopy()
-        {
-            if (mProfileCopy != null)
-                RuntimeUtility.DestroyObject(mProfileCopy);
-            mProfileCopy = null;
+            var list = GetAllExtraStates<VcamExtraState>();
+            for (int i = 0; i < list.Count; ++i)
+                list[i].DestroyProfileCopy();
         }
 
         protected override void OnDestroy()
         {
+            InvalidateCachedProfile();
             base.OnDestroy();
-            DestroyProfileCopy();
         }
 
         protected override void PostPipelineStageCallback(
@@ -88,19 +93,23 @@ namespace Cinemachine.PostFX
             // GML todo: what about collider?
             if (stage == CinemachineCore.Stage.Aim)
             {
+                var extra = GetExtraState<VcamExtraState>(vcam);
                 if (!IsValid)
-                    DestroyProfileCopy();
+                    extra.DestroyProfileCopy();
                 else
                 {
+                    var profile = m_Profile;
+
                     // Handle Follow Focus
                     if (!m_FocusTracksTarget)
-                        DestroyProfileCopy();
+                        extra.DestroyProfileCopy();
                     else
                     {
-                        if (mProfileCopy == null || mCachedProfileIsInvalid)
-                            CreateProfileCopy();
+                        if (extra.mProfileCopy == null)
+                            extra.CreateProfileCopy(m_Profile);
+                        profile = extra.mProfileCopy;
                         DepthOfField dof;
-                        if (mProfileCopy.TryGetSettings(out dof))
+                        if (profile.TryGetSettings(out dof))
                         {
                             float focusDistance = m_FocusOffset;
                             if (state.HasLookAt)
@@ -110,7 +119,7 @@ namespace Cinemachine.PostFX
                     }
 
                     // Apply the post-processing
-                    state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
+                    state.AddCustomBlendable(new CameraState.CustomBlendable(profile, 1));
                 }
             }
         }
@@ -143,13 +152,13 @@ namespace Cinemachine.PostFX
             for (int i = 0; i < numBlendables; ++i)
             {
                 var b = state.GetCustomBlendable(i);
-                CinemachinePostProcessing src = b.m_Custom as CinemachinePostProcessing;
-                if (!(src == null)) // in case it was deleted
+                var profile = b.m_Custom as PostProcessProfile;
+                if (!(profile == null)) // in case it was deleted
                 {
                     PostProcessVolume v = volumes[i];
                     if (firstVolume == null)
                         firstVolume = v;
-                    v.sharedProfile = src.Profile;
+                    v.sharedProfile = profile;
                     v.isGlobal = true;
                     v.priority = float.MaxValue-(numBlendables-i)-1;
                     v.weight = b.m_Weight;

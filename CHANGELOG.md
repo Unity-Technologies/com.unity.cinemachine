@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Composer and FramingTransposer: allow the dead zone to extend to 2, and the Screen x,Y can range from -1.5 to 1.5
 - HDRP: lens presets include physical settings if physical camera
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfix: PostProcessing extension was not handling standby update correctly when on Manager Vcams
 - Bugfixes: (fogbugz 1193311, 1193307, 1192423, 1192414): disallow presets for vcams
 - Bugfix: added EmbeddedAssetHelper null check
 - Bugfix: composer screen guides drawn in correct place for physical camera
