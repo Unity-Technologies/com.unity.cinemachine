@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
 
-#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_2_OR_NEWER
 using UnityEngine.UIElements;
 #endif
 
 namespace Cinemachine.Editor
 {
-#if !UNITY_2019_3_OR_NEWER
+#if !UNITY_2019_2_OR_NEWER
     internal class GameViewEventCatcher
     {
         public void OnEnable() {}
