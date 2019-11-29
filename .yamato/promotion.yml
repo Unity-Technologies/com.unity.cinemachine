@@ -1,4 +1,5 @@
 test_editors:
+  - version: 2018.4
   - version: 2019.1
   - version: 2019.2
   - version: 2019.3
