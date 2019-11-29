@@ -207,6 +207,16 @@ namespace Cinemachine.Editor
             else
                 AssetDatabase.ImportPackage(pkgFile, true);
         }
+        [MenuItem("Cinemachine/Import CinemachineExamples Asset Package")]
+        private static void ImportExamplePackage()
+        {
+            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
+                + "/Extras~/CinemachineExamples.unitypackage";
+            if (!File.Exists(pkgFile))
+                Debug.LogError("Missing file " + pkgFile);
+            else
+                AssetDatabase.ImportPackage(pkgFile, true);
+        }
 #endif
 
         /// <summary>
