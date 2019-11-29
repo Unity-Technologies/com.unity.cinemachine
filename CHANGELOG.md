@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.4.0-preview.7] - 2019-11-27
+## [2.4.0-preview.8] - 2019-11-28
 ### HDRP 7 support and bugfixes
 - Storyboard: added global mute function
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
 - Bugfix: PostProcessing extension was not handling standby update correctly when on Manager Vcams
 - Bugfixes: (fogbugz 1193311, 1193307, 1192423, 1192414): disallow presets for vcams
+- Bugfix: In some heading modes, FreeLook was improperly modifying the axes when activated
+- Bugfix: Orbital transposer was improperly filtering the heading in TargetForward heading mode
 - Bugfix: added EmbeddedAssetHelper null check
 - Bugfix: composer screen guides drawn in correct place for physical camera
 - Bugfix: FreeLook was not respecting wait time for X axis recentering

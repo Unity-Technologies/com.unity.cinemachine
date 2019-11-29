@@ -198,6 +198,18 @@ namespace Cinemachine
             DestroyRigs();
         }
 
+        public override bool PreviousStateIsValid
+        {
+            get { return base.PreviousStateIsValid; }
+            set
+            {
+                if (value == false)
+                    for (int i = 0; m_Rigs != null && i < m_Rigs.Length; ++i)
+                        m_Rigs[i].PreviousStateIsValid = value;
+                base.PreviousStateIsValid = value;
+            }
+        }
+
         /// <summary>The cacmera state, which will be a blend of the child rig states</summary>
         override public CameraState State { get { return m_State; } }
 
@@ -309,10 +321,10 @@ namespace Cinemachine
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
-            m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
-            m_RecenterToTargetHeading.DoRecentering(ref m_YAxis, -1, 0.5f);
-            m_RecenterToTargetHeading.CancelRecentering();
-            m_YAxis.m_Recentering.CancelRecentering();
+//            m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
+//              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
+//            m_RecenterToTargetHeading.CancelRecentering();
+//            m_YAxis.m_Recentering.CancelRecentering();
             if (fromCam != null && m_Transitions.m_InheritPosition)
             {
                 var cameraPos = fromCam.State.RawPosition;
@@ -338,7 +350,11 @@ namespace Cinemachine
                 forceUpdate = true;
             }
             if (forceUpdate)
+            {
+                for (int i = 0; i < 3; ++i)
+                    m_Rigs[i].InternalUpdateCameraState(worldUp, deltaTime);
                 InternalUpdateCameraState(worldUp, deltaTime);
+            }
             else
                 UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
@@ -544,6 +560,7 @@ namespace Cinemachine
                 LocateExistingRigs(RigNames, true);
             }
 
+#if UNITY_EDITOR
             foreach (var rig in m_Rigs)
             {
                 // Configure the UI
@@ -552,6 +569,7 @@ namespace Cinemachine
                     : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
                 rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
             }
+#endif
 
             // Create the blend objects
             mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
@@ -603,7 +621,8 @@ namespace Cinemachine
             {
                 var oldValue = m_XAxis.Value;
                 CachedXAxisHeading = orbital.UpdateHeading(
-                    deltaTime, up, ref m_XAxis, ref m_RecenterToTargetHeading,
+                    PreviousStateIsValid ? deltaTime : -1, up,
+                    ref m_XAxis, ref m_RecenterToTargetHeading,
                     CinemachineCore.Instance.IsLive(this));
                 // Allow externally-driven values to work in this mode
                 if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
@@ -641,9 +660,10 @@ namespace Cinemachine
                     m_Rigs[i].transform.position = transform.position;
                     m_Rigs[i].transform.rotation = transform.rotation;
                 }
+#if UNITY_EDITOR
                 // Hide the rigs from prying eyes
                 CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
-
+#endif
                 mOrbitals[i].m_FollowOffset = GetLocalPositionForCameraFromInput(GetYAxisValue());
                 mOrbitals[i].m_BindingMode = m_BindingMode;
                 mOrbitals[i].m_Heading = m_Heading;
@@ -664,8 +684,7 @@ namespace Cinemachine
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
             CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
-            if (PreviousStateIsValid && deltaTime >= 0)
-                m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
+            m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 
             // Blend from the appropriate rigs
             float t = GetYAxisValue();

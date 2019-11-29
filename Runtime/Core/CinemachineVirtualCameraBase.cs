@@ -249,7 +249,7 @@ namespace Cinemachine
         public abstract Transform Follow { get; set; }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
-        public bool PreviousStateIsValid { get; set; }
+        public virtual bool PreviousStateIsValid { get; set; }
 
         /// <summary>
         /// Update the camera's state.

@@ -200,14 +200,16 @@ namespace Cinemachine
             else if (axis.Update(deltaTime))
                 recentering.CancelRecentering();
 
-            float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up));
-            if (deltaTime >= 0 && m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
-                recentering.DoRecentering(ref axis, deltaTime, targetHeading);
-
-            float finalHeading = axis.Value;
             if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            {
+                float finalHeading = axis.Value;
                 axis.Value = 0;
-            return finalHeading;
+                return finalHeading;
+            }
+
+            float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up));
+            recentering.DoRecentering(ref axis, deltaTime, targetHeading);
+            return axis.Value;
         }
 
         private void OnEnable()
@@ -393,16 +395,18 @@ namespace Cinemachine
             }
 
             // Process the velocity and derive the heading from it.
-            int filterSize = m_Heading.m_VelocityFilterStrength * 5;
-            if (mHeadingTracker == null || mHeadingTracker.FilterSize != filterSize)
-                mHeadingTracker = new HeadingTracker(filterSize);
-            mHeadingTracker.DecayHistory();
             Vector3 up = targetOrientation * Vector3.up;
             velocity = velocity.ProjectOntoPlane(up);
-            if (!velocity.AlmostZero())
-                mHeadingTracker.Add(velocity);
-
-            velocity = mHeadingTracker.GetReliableHeading();
+            if (headingDef != Heading.HeadingDefinition.TargetForward)
+            {
+                int filterSize = m_Heading.m_VelocityFilterStrength * 5;
+                if (mHeadingTracker == null || mHeadingTracker.FilterSize != filterSize)
+                    mHeadingTracker = new HeadingTracker(filterSize);
+                mHeadingTracker.DecayHistory();
+                if (!velocity.AlmostZero())
+                    mHeadingTracker.Add(velocity);
+                velocity = mHeadingTracker.GetReliableHeading();
+            }
             if (!velocity.AlmostZero())
                 return UnityVectorExtensions.SignedAngle(
                     targetOrientation * Vector3.forward, velocity, up);

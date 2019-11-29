@@ -352,13 +352,15 @@ namespace Cinemachine
 
             // Update our axes
             bool activeCam = PreviousStateIsValid || CinemachineCore.Instance.IsLive(this);
-            if (activeCam && deltaTime >= 0)
+            if (!activeCam || deltaTime < 0)
+                m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, -1, 0.5f);
+            else
             {
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalAxis.m_Recentering.CancelRecentering();
                 m_RadialAxis.Update(deltaTime);
+                m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
             }
-            m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, deltaTime, 0.5f);
 
             // Blend the components
             if (mBlender == null)

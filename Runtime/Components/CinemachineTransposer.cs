@@ -310,6 +310,8 @@ namespace Cinemachine
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
         public Quaternion GetReferenceOrientation(Vector3 worldUp)
         {
+            if (m_BindingMode == BindingMode.WorldSpace)
+                return Quaternion.identity;
             if (FollowTarget != null)
             {
                 Quaternion targetOrientation = FollowTarget.rotation;
@@ -335,8 +337,6 @@ namespace Cinemachine
                             break;
                         return Quaternion.LookRotation(fwd, worldUp);
                     }
-                    default:
-                        break;
                 }
             }
             // Gimbal lock situation - use previous orientation if it exists

@@ -336,7 +336,7 @@ namespace Cinemachine
             /// <summary>Bring the axis back to the centered state (only if enabled).</summary>
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
-                if (!m_enabled)
+                if (!m_enabled && deltaTime >= 0)
                     return;
 
                 recenterTarget = axis.ClampValue(recenterTarget);
@@ -361,9 +361,12 @@ namespace Cinemachine
                     v += Mathf.Sign(recenterTarget - v) * r;
 
                 // Damp our way there
-                v = Mathf.SmoothDamp(
-                    v, recenterTarget, ref mRecenteringVelocity,
-                    m_RecenteringTime, 9999, deltaTime);
+                if (m_RecenteringTime < 0.001f)
+                    v = recenterTarget;
+                else
+                    v = Mathf.SmoothDamp(
+                        v, recenterTarget, ref mRecenteringVelocity,
+                        m_RecenteringTime, 9999, deltaTime);
                 axis.Value = axis.ClampValue(v);
             }
 
