@@ -330,7 +330,7 @@ namespace Cinemachine
 
         private float GetEffectiveDeltaTime(bool fixedDelta)
         {
-            if (Application.isPlaying && CinemachineCore.UniformDeltaTimeOverride > 0)
+            if (Application.isPlaying && CinemachineCore.UniformDeltaTimeOverride >= 0)
                 return CinemachineCore.UniformDeltaTimeOverride;
 
             if (SoloCamera != null)

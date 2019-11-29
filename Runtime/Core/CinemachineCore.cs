@@ -64,10 +64,10 @@ namespace Cinemachine
         public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
 
         /// <summary>
-        /// If set, and in play mode, cinemachine will update with this uniform delta time.
+        /// If non-negative, and in play mode, cinemachine will update with this uniform delta time.
         /// Usage is for timelines in manual update mode.
         /// </summary>
-        public static float UniformDeltaTimeOverride = 0;
+        public static float UniformDeltaTimeOverride = -1;
 
         /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.
