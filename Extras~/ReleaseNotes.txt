@@ -1,6 +1,7 @@
 <size=20><b>Version 2.4.0</b></size>
 
 - Storyboard: added global mute function
+- New vcams are by default created matching the cene view camera
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
 - Added RectenterTarget to POV component
 - Added OnTransitionFromCamera callback to extensions
