@@ -88,6 +88,13 @@ namespace Cinemachine.Editor
             }
         }
 
+        [MenuItem("CONTEXT/CinemachineVirtualCamera/Adopt Scene View Camera Settings")]
+        static void AdoptSceneViewCameraSettings(MenuCommand command)
+        {
+            var vcam = command.context as CinemachineVirtualCamera;
+            CinemachineMenu.SetVcamFromSceneView(vcam);
+        }
+
         void OnPositionDragged(Vector3 delta)
         {
             if (m_componentEditors != null)

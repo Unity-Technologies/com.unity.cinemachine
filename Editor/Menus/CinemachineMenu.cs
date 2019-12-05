@@ -248,13 +248,9 @@ namespace Cinemachine.Editor
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineVirtualCamera), name),
                     typeof(CinemachineVirtualCamera));
-            if (SceneView.lastActiveSceneView != null)
-            {
-                go.transform.position = SceneView.lastActiveSceneView.camera.transform.position;
-                go.transform.rotation = SceneView.lastActiveSceneView.camera.transform.rotation;
-            }
-            Undo.RegisterCreatedObjectUndo(go, "create " + name);
             CinemachineVirtualCamera vcam = go.GetComponent<CinemachineVirtualCamera>();
+            SetVcamFromSceneView(vcam);
+            Undo.RegisterCreatedObjectUndo(go, "create " + name);
             GameObject componentOwner = vcam.GetComponentOwner().gameObject;
             foreach (Type t in components)
                 Undo.AddComponent(componentOwner, t);
@@ -264,6 +260,16 @@ namespace Cinemachine.Editor
             if (selectIt)
                 Selection.activeObject = go;
             return vcam;
+        }
+
+        public static void SetVcamFromSceneView(CinemachineVirtualCamera vcam)
+        {
+            if (SceneView.lastActiveSceneView != null)
+            {
+                vcam.transform.position = SceneView.lastActiveSceneView.camera.transform.position;
+                vcam.transform.rotation = SceneView.lastActiveSceneView.camera.transform.rotation;
+                vcam.m_Lens = LensSettings.FromCamera(SceneView.lastActiveSceneView.camera);
+            }
         }
 
         /// <summary>
