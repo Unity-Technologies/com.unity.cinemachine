@@ -740,7 +740,8 @@ namespace Cinemachine
         Vector4[] m_CachedCtrl2;
         void UpdateCachedSpline()
         {
-            bool cacheIsValid = (m_CachedOrbits != null && m_CachedTension == m_SplineCurvature);
+            bool cacheIsValid = (m_CachedOrbits != null && m_CachedOrbits.Length == 3 
+                && m_CachedTension == m_SplineCurvature);
             for (int i = 0; i < 3 && cacheIsValid; ++i)
                 cacheIsValid = (m_CachedOrbits[i].m_Height == m_Orbits[i].m_Height
                     && m_CachedOrbits[i].m_Radius == m_Orbits[i].m_Radius);
