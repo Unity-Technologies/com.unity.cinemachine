@@ -162,8 +162,9 @@ namespace Cinemachine
             if (IsValid)
             {
                 Vector3 offset = EffectiveOffset;
-                TrackTarget(deltaTime, curState.ReferenceUp, offset,
-                    out Vector3 pos, out Quaternion orient);
+                Vector3 pos;
+                Quaternion orient;
+                TrackTarget(deltaTime, curState.ReferenceUp, offset, out pos, out orient);
                 curState.RawPosition = pos + orient * offset;
                 curState.ReferenceUp = orient * Vector3.up;
             }
