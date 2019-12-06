@@ -76,6 +76,7 @@ namespace Cinemachine.PostFX.Editor
                 }
             }
 
+            EditorGUI.BeginChangeCheck();
             var rect = GUILayoutUtility.GetRect(1, EditorGUIUtility.singleLineHeight); rect.y += 2;
             float checkboxWidth = rect.height + 5;
             rect = EditorGUI.PrefixLabel(rect, new GUIContent(m_FocusTracksTarget.displayName));
@@ -92,9 +93,11 @@ namespace Cinemachine.PostFX.Editor
             }
 
             DrawProfileInspectorGUI();
-            Target.InvalidateCachedProfile();
-
-            serializedObject.ApplyModifiedProperties();
+            if (EditorGUI.EndChangeCheck())
+            {
+                Target.InvalidateCachedProfile();
+                serializedObject.ApplyModifiedProperties();
+            }
         }
 
         void DrawProfileInspectorGUI()
@@ -174,7 +177,10 @@ namespace Cinemachine.PostFX.Editor
                     m_EffectList.Clear(); // Asset wasn't null before, do some cleanup
 
                 EditorGUILayout.HelpBox(
-                    "Assign an existing Post-process Profile by choosing an asset, or create a new one by clicking the \"New\" button.\nNew assets are automatically put in a folder next to your scene file. If your scene hasn't been saved yet they will be created at the root of the Assets folder.",
+                    "Assign an existing Post-process Profile by choosing an asset, or create a new one by "
+                        + "clicking the \"New\" button.\nNew assets are automatically put in a folder next " 
+                        + "to your scene file. If your scene hasn't been saved yet they will be created " 
+                        + "at the root of the Assets folder.",
                     MessageType.Info);
             }
             else

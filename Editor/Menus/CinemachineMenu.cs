@@ -200,12 +200,16 @@ namespace Cinemachine.Editor
         [MenuItem("Cinemachine/Import Post Processing V2 Adapter Asset Package")]
         private static void ImportPostProcessingV2Package()
         {
-            string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
-                + "/Extras~/CinemachinePostProcessingV2.unitypackage";
-            if (!File.Exists(pkgFile))
-                Debug.LogError("Missing file " + pkgFile);
-            else
-                AssetDatabase.ImportPackage(pkgFile, true);
+            var message = "In Cinemachine 2.4.0 and up, the PostProcessing adapter is built-in, and "
+                + "can be auto-enabled by Unity 2019 and up.\n\n"
+                + "Unity 2018.4 is unable to auto-detect the presence of PostProcessing, so you must "
+                + "manually add a define to your player settings to enable the code.\n\n"
+                + "To enable support for PostProcessing v2, please do the following:\n\n"
+                + "1. Delete the CinemachinePostProcessing folder from your assets, if it's present\n\n"
+                + "2. Open the Player Settings tab in Project Settings\n\n"
+                + "3. Add this define: CINEMACHINE_POST_PROCESSING_V2";
+
+            EditorUtility.DisplayDialog("Cinemachine Adapter Code for PostProcessing V2", message, "OK");
         }
 #endif
 
