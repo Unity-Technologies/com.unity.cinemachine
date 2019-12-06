@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.4.0-preview.9] - 2019-11-28
+## [2.4.0-preview.10] - 2019-12-06
 ### HDRP 7 support and bugfixes
 - Storyboard: added global mute function
 - New vcams are by default created matching the cene view camera
