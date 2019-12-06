@@ -211,7 +211,6 @@ namespace Cinemachine.Editor
 
             EditorUtility.DisplayDialog("Cinemachine Adapter Code for PostProcessing V2", message, "OK");
         }
-#endif
 
         [MenuItem("Cinemachine/Import CinemachineExamples Asset Package")]
         private static void ImportExamplePackage()
@@ -223,6 +222,7 @@ namespace Cinemachine.Editor
             else
                 AssetDatabase.ImportPackage(pkgFile, true);
         }
+#endif
 
         /// <summary>
         /// Create a default Virtual Camera, with standard components
