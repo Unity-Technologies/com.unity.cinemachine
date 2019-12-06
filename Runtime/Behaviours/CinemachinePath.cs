@@ -58,6 +58,18 @@ namespace Cinemachine
         /// <summary>True if the path ends are joined to form a continuous loop</summary>
         public override bool Looped { get { return m_Looped; } }
 
+        private void Reset()
+        {
+            m_Looped = false;
+            m_Waypoints = new Waypoint[2]
+            {
+                new Waypoint { position = new Vector3(-3, 0, 0), tangent = new Vector3(1, 0, 0) },
+                new Waypoint { position = new Vector3(3, 0, 0), tangent = new Vector3(1, 0, 0) }
+            };
+            m_Appearance = new Appearance();
+            InvalidateDistanceCache();
+        }
+
         /// <summary>When calculating the distance cache, sample the path this many 
         /// times between points</summary>
         public override int DistanceCacheSampleStepsPerSegment { get { return m_Resolution; } }
