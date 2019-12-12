@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEditorInternal;
 
@@ -20,6 +21,25 @@ namespace Cinemachine.Editor
         void OnEnable()
         {
             mWaypointList = null;
+        }
+
+
+        // ReSharper disable once UnusedMember.Global - magic method called when doing Frame Selected
+        public bool HasFrameBounds()
+        {
+            return Target.m_Waypoints != null && Target.m_Waypoints.Length > 0;
+        }
+
+        // ReSharper disable once UnusedMember.Global - magic method called when doing Frame Selected
+        public Bounds OnGetFrameBounds()
+        {
+            Vector3[] wp;
+            int selected = mWaypointList == null ? -1 : mWaypointList.index;
+            if (selected >= 0 && selected < Target.m_Waypoints.Length)
+                wp = new Vector3[1] { Target.m_Waypoints[selected].position };
+            else
+                wp = Target.m_Waypoints.Select(p => p.position).ToArray();
+            return GeometryUtility.CalculateBounds(wp, Target.transform.localToWorldMatrix);
         }
 
         public override void OnInspectorGUI()

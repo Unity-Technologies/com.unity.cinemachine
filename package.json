@@ -16,8 +16,8 @@
     "samples": [
         {
             "displayName": "Cinemachine Example Scenes",
-            "description": "Sample scene illustrating various ways to use Cinemachine",
-            "path": "Samples~/Cinemachine Example Scenes"
+            "description": "Sample scenes illustrating various ways to use Cinemachine",
+            "path": "Samples/Cinemachine Example Scenes"
         }
     ]
 }
