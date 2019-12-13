@@ -1,4 +1,4 @@
-# Using multiple Unity cameras
+# Multiple Unity cameras
 
 Split-screen and picture-in-picture effects require the use of more than one Unity camera. Each Unity camera presents its own view on the player’s screen.
 

@@ -1,6 +1,6 @@
 # Cinemachine and Timeline
 
-Use [Timeline](https://docs.unity3d.com/Manual/TimelineSection.html) to activate, deactivate, and blend between Virtual Cameras. In Timeline, combine Cinemachine with other GameObjects and assets to interactively implement and tune rich cutscenes, even interactive ones.
+Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between Virtual Cameras. In Timeline, combine Cinemachine with other GameObjects and assets to interactively implement and tune rich cutscenes, even interactive ones.
 
 **Tip**: For simple shot sequences, use a [Cinemachine Blend List Camera](CinemachineBlendListCamera.html) instead of Timeline.
 
@@ -18,13 +18,13 @@ To create a Timeline for Cinemachine:
 
 2. Give the empty GameObject a descriptive name. For example, `IntroTimeline`.
 
-3. In your Scene, select your empty Timeline object as the focus to [create a Timeline Asset and instance](https://docs.unity3d.com/Manual/TimelineWorkflowCreatingAssetInstance.html).
+3. In your Scene, select your empty Timeline object as the focus to create a Timeline Asset and instance.
 
 4. Click the padlock button to lock the TImeline window to make it easier to add and adjust tracks.
 
 5. Drag a Unity camera with a CinemachineBrain component onto the Timeline Editor, then choose __Create Cinemachine Track__ from the drop-down menu.
 
-6. [Add other tracks to the Timeline](https://docs.unity3d.com/Manual/TimelineAddingTracks.html) for controlling the subjects of your Scene.  For example, add an Animation track to animate your main character.
+6. Add other tracks to the Timeline for controlling the subjects of your Scene.  For example, add an Animation track to animate your main character.
 
 **Tip**: Delete the default track that refers to your Timeline object. This track isn’t necessary for Timeline. For example, in the Timeline editor, right-click the track for IntroTimeline and choose __Delete__.
 
@@ -42,7 +42,7 @@ To add Cinemachine Shot Clips to a Cinemachine Track:
 
 4. [Adjust the properties of the Virtual Camera](CinemachineVirtualCamera.html) to place it in the Scene and specify what to aim at or follow.
 
-5. To animate properties of the Virtual Camera, create an [Animation Track](https://docs.unity3d.com/Manual/TimelineAnimationTrackProperties.html) for it and animate as you would any other GameObject.
+5. To animate properties of the Virtual Camera, create an Animation Track for it and animate as you would any other GameObject.
 
-6. [Organize your Timeline tracks](https://docs.unity3d.com/Manual/TimelineTrackList.html) to fine-tune your Scene.
+6. Organize your Timeline tracks to fine-tune your Scene.
 

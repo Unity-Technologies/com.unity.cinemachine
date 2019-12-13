@@ -1,4 +1,4 @@
-# Cinemachine and Postprocessing
+# Post Processing Extension
 
 Use the Cinemachine Post Processing [extension](CinemachineVirtualCameraExtensions.html) to attach a Postprocessing V2 profile to a Virtual Camera.
 
