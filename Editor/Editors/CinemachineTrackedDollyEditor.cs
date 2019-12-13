@@ -63,7 +63,7 @@ namespace Cinemachine.Editor
                     Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
                         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                         : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
-                    Gizmos.DrawLine(pos, target.transform.position);
+                    Gizmos.DrawLine(pos, target.VirtualCamera.State.RawPosition);
                     Gizmos.color = oldColor;
                 }
             }
