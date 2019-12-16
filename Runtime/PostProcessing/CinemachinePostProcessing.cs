@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 #if CINEMACHINE_POST_PROCESSING_V2
 using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
@@ -241,6 +242,18 @@ namespace Cinemachine.PostFX
             return layer;
         }
 
+        static void OnSceneUnloaded(Scene scene)
+        {
+            var iter = mBrainToLayer.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                var brain = iter.Current.Key;
+                if (brain != null)
+                    brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+            }
+            mBrainToLayer.Clear();
+        }
+
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoad]
         class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
@@ -251,6 +264,9 @@ namespace Cinemachine.PostFX
             // Afetr the brain pushes the state to the camera, hook in to the PostFX
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
+
+            // Clean up our resources
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
     }
 #endif
