@@ -20,6 +20,7 @@
 - Added "Adopt Current Camera Settings" item to vcam inspector context menu
 - HDRP: lens presets include physical settings if physical camera
 - Regression Fix: Framing Transposer: ignore LookAt target.  Use Follow exclusively
+- Bugfix: Framing Transposer was not handling dynamic changes to FOV properly
 - Bugfix: PostProcessing extension was not handling standby update correctly when on Manager Vcams
 - Bugfix: PostProcessing extension was leaking a smallamounts of memory when scenes were unloaded
 - Bugfixes: (fogbugz 1193311, 1193307, 1192423, 1192414): disallow presets for vcams
