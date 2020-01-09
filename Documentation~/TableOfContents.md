@@ -30,7 +30,7 @@
                 * [Cinemachine Collider](CinemachineCollider)
                 * [Cinemachine Confiner](CinemachineConfiner)
             * [Follow Zoom extension](CinemachineFollowZoom)
-            * [Pixel Perfect extension](CinemachineSPixelPerfect)
+            * [Pixel Perfect extension](CinemachinePixelPerfect)
             * [Post Processing extension](CinemachinePostProcessing)
             * [Storyboard extension](CinemachineStoryboard)
         * [Saving in Play Mode](CinemachineSavingDuringPlay)
