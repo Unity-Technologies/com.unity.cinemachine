@@ -1,11 +1,11 @@
-<size=20><b>Version 2.4.1</b></size>
+<size=20><b>Version 2.5.0</b></size>
 - Accommodate simultaneous precesnce of HDRP and URP
 
 
 <size=20><b>Version 2.4.0</b></size>
 
 - Storyboard: added global mute function
-- New vcams are by default created matching the cene view camera
+- New vcams are by default created matching the scene view camera
 - Added ApplyBeforeBody option to POV component, to support working with FramingTransposer
 - Added RectenterTarget to POV component
 - Added OnTransitionFromCamera callback to extensions
