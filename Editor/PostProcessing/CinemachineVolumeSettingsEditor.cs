@@ -1,17 +1,19 @@
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
+#if CINEMACHINE_HDRP
     using UnityEngine;
     using UnityEditor;
     using UnityEngine.Rendering;
     using UnityEditor.Rendering;
     #if CINEMACHINE_HDRP_7_0_0
-    using UnityEngine.Rendering.HighDefinition;
+        using UnityEngine.Rendering.HighDefinition;
     #else
-        #if CINEMACHINE_LWRP_7_0_0
-        using UnityEngine.Rendering.Universal;
-        #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
-        #endif
     #endif
+#elif CINEMACHINE_LWRP_7_0_0
+    using UnityEngine;
+    using UnityEditor;
+    using UnityEngine.Rendering;
+    using UnityEditor.Rendering;
+    using UnityEngine.Rendering.Universal;
 #endif
 
 namespace Cinemachine.PostFX.Editor
@@ -69,7 +71,7 @@ namespace Cinemachine.PostFX.Editor
                 DepthOfField dof;
                 if (Target.m_Profile != null && Target.m_Profile.TryGet(out dof))
                 {
-#if CINEMACHINE_LWRP_7_0_0
+#if CINEMACHINE_LWRP_7_0_0 && !CINEMACHINE_HDRP
                     valid = dof.active && dof.focusDistance.overrideState
                         && dof.mode != DepthOfFieldMode.Off;
 #else

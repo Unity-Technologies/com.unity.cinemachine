@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2020-01-15
+### Support HDRP 7 and URP simultaneously
+- Accommodate simultaneous precesnce of HDRP and URP
+
+
 ## [2.4.0] - 2020-01-10
 ### HDRP 7 support and bugfixes
 - Storyboard: added global mute function
