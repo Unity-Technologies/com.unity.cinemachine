@@ -12,7 +12,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomTimelineEditor(typeof(CinemachineShot))]
-public class CinemachineShotClipEditor : ClipEditor
+class CinemachineShotClipEditor : ClipEditor
 {
     public override ClipDrawOptions GetClipOptions(TimelineClip clip)
     {
