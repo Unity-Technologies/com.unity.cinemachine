@@ -79,8 +79,8 @@ namespace Cinemachine
             m_Looped = false;
             m_Waypoints = new Waypoint[2]
             {
-                new Waypoint { position = new Vector3(-3, 0, 0) },
-                new Waypoint { position = new Vector3(3, 0, 0) }
+                new Waypoint { position = new Vector3(0, 0, -5) },
+                new Waypoint { position = new Vector3(0, 0, 5) }
             };
             m_Appearance = new Appearance();
             InvalidateDistanceCache();

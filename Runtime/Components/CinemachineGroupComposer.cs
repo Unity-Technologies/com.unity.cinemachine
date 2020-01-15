@@ -58,7 +58,7 @@ namespace Cinemachine
 
         /// <summary>How to adjust the camera to get the desired framing</summary>
         [Tooltip("How to adjust the camera to get the desired framing.  You can zoom, dolly in/out, or do both.")]
-        public AdjustmentMode m_AdjustmentMode = AdjustmentMode.DollyThenZoom;
+        public AdjustmentMode m_AdjustmentMode = AdjustmentMode.ZoomOnly;
 
         /// <summary>How much closer to the target can the camera go?</summary>
         [Tooltip("The maximum distance toward the target that this behaviour is allowed to move the camera.")]

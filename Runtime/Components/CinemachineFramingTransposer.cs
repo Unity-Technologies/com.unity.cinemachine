@@ -193,7 +193,7 @@ namespace Cinemachine
 
         /// <summary>How to adjust the camera to get the desired framing</summary>
         [Tooltip("How to adjust the camera to get the desired framing.  You can zoom, dolly in/out, or do both.")]
-        public AdjustmentMode m_AdjustmentMode = AdjustmentMode.DollyThenZoom;
+        public AdjustmentMode m_AdjustmentMode = AdjustmentMode.ZoomOnly;
 
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
         [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  "
