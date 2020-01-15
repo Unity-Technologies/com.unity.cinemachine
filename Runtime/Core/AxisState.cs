@@ -343,7 +343,8 @@ namespace Cinemachine
                 if (deltaTime < 0)
                 {
                     CancelRecentering();
-                    axis.Value = recenterTarget;
+                    if (m_enabled)
+                        axis.Value = recenterTarget;
                     return;
                 }
 
