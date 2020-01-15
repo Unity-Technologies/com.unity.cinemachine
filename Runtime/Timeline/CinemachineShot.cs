@@ -15,10 +15,12 @@ using Cinemachine;
 /// </summary>
     public sealed class CinemachineShot : PlayableAsset, IPropertyPreview
     {
-        #if UNITY_2019_2_OR_NEWER
-        public string DisplayName;
+#if !UNITY_2019_2_OR_NEWER
+    [HideInInspector]
 #endif
-        public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;
+    public string DisplayName;
+
+    public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;
 
         public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
         {

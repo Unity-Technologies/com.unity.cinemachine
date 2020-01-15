@@ -1,4 +1,4 @@
-<size=20><b>Version 2.5.0</b></size>
+<size=20><b>Version 2.4.1</b></size>
 - Accommodate simultaneous precesnce of HDRP and URP
 - Regression fix: Axis was always recentered in Edit mode, even if recentering is off
 
