@@ -1,5 +1,6 @@
 <size=20><b>Version 2.5.1</b></size>
 - Bugfix (1213471): add null check in editor
+- Bugfix (1213488): no solo for prefab vcams
 
 
 <size=20><b>Version 2.5.0</b></size>

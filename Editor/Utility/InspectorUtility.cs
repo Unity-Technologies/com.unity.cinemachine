@@ -167,7 +167,11 @@ namespace Cinemachine.Editor
         {
 #if UNITY_2019_1_OR_NEWER
             if (dirtyObject != null)
-                EditorUtility.SetDirty(dirtyObject);
+            {
+                var go = dirtyObject as GameObject;
+                if (go == null || go.scene.name != null)    // don't dirty prefabs
+                    EditorUtility.SetDirty(dirtyObject);
+            }
 #endif
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }

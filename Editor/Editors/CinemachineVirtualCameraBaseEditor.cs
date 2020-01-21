@@ -15,6 +15,7 @@ namespace Cinemachine.Editor
     {
         static Type[] sExtensionTypes;  // First entry is null
         static string[] sExtensionNames;
+        bool IsPrefab = false;
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -26,6 +27,7 @@ namespace Cinemachine.Editor
 
         protected virtual void OnEnable()
         {
+            IsPrefab = Target.gameObject.scene.name == null; // causes a small GC alloc
             if (sExtensionTypes == null)
             {
                 // Populate the extension list
@@ -130,6 +132,10 @@ namespace Cinemachine.Editor
                 EditorGUILayout.HelpBox(
                     "The camera is positioned on the same point at which it is trying to look.",
                     MessageType.Warning);
+
+            // No status and Solo for prefabs
+            if (IsPrefab)
+                return;
 
             // Active status and Solo button
             Rect rect = EditorGUILayout.GetControlRect(true);
