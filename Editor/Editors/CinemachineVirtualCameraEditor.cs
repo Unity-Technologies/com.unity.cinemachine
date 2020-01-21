@@ -403,7 +403,7 @@ namespace Cinemachine.Editor
                     if (sStageData[(int)stage].types[index] == c.GetType())
                         break;
                 m_stageState[(int)stage] = index;
-                m_stageError[(int)stage] = !c.IsValid;
+                m_stageError[(int)stage] = c == null || !c.IsValid;
             }
         }
 

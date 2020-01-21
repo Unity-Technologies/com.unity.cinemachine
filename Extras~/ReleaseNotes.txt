@@ -1,3 +1,7 @@
+<size=20><b>Version 2.5.1</b></size>
+- Bugfix (1213471): add null check in editor
+
+
 <size=20><b>Version 2.5.0</b></size>
 - Accommodate simultaneous precesnce of HDRP and URP
 - Regression fix: Axis was always recentered in Edit mode, even if recentering is off
