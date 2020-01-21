@@ -52,7 +52,11 @@ namespace Cinemachine.Editor
                         AssetDatabase.Refresh();
                     }
                 }
-                sInstance.EnsureDefaultLayer();
+
+                if (sInstance != null)
+                {
+                    sInstance.EnsureDefaultLayer();
+                }
                 return sInstance;
             }
         }
