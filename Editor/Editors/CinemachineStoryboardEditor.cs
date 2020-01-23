@@ -42,10 +42,6 @@ namespace Cinemachine.Editor
                     Menu.SetChecked(StoryboardGlobalMuteMenuName, value);
                     
                     UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-//                    System.Reflection.Assembly assembly = typeof(EditorWindow).Assembly;
-//                    System.Type type = assembly.GetType( "UnityEditor.GameView" );
-//                    var gameview = EditorWindow.GetWindow(type);
-//                    gameview.Repaint();
                 }
             }
         }
