@@ -324,6 +324,7 @@ namespace Cinemachine
                 // Note: this call will cause any screen canvas attached to the camera
                 // to be painted one frame out of sync.  It will only happen in the editor when not playing.
                 ProcessActiveCamera(GetEffectiveDeltaTime(false));
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             }
         }
 #endif
