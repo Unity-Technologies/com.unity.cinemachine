@@ -41,11 +41,11 @@ namespace Cinemachine.Editor
                     CinemachineStoryboard.s_StoryboardGlobalMute = value;
                     Menu.SetChecked(StoryboardGlobalMuteMenuName, value);
                     
-                    //UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-                    System.Reflection.Assembly assembly = typeof(EditorWindow).Assembly;
-                    System.Type type = assembly.GetType( "UnityEditor.GameView" );
-                    var gameview = EditorWindow.GetWindow(type);
-                    gameview.Repaint();
+                    UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+//                    System.Reflection.Assembly assembly = typeof(EditorWindow).Assembly;
+//                    System.Type type = assembly.GetType( "UnityEditor.GameView" );
+//                    var gameview = EditorWindow.GetWindow(type);
+//                    gameview.Repaint();
                 }
             }
         }
