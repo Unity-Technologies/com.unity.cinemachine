@@ -197,6 +197,15 @@ namespace Cinemachine
 
         void Reset()
         {
+#if UNITY_EDITOR
+            if (UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject)
+                != UnityEditor.PrefabInstanceStatus.NotAPrefab)
+            {
+                Debug.Log("You cannot reset a prefab instance.  "
+                    + "First disconnect this instance from the prefab, or enter Prefab Edit mode");
+                return;
+            }
+#endif
             DestroyPipeline();
         }
 
