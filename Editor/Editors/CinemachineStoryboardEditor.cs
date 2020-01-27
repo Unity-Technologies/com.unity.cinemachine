@@ -40,6 +40,8 @@ namespace Cinemachine.Editor
                     EditorPrefs.SetBool(kEnabledKey, value);
                     CinemachineStoryboard.s_StoryboardGlobalMute = value;
                     Menu.SetChecked(StoryboardGlobalMuteMenuName, value);
+
+                    InspectorUtility.RepaintGameView();
                 }
             }
         }

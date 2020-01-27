@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bugfixes
 - Bugfix (1213471, 1213434): add null check in editor
 - Bugfix (1213488): no solo for prefab vcams
+- Bugfix (1213819): repaintGameView on editor change
 
 
 ## [2.5.0] - 2020-01-15
