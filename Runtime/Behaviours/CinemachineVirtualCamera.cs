@@ -197,6 +197,15 @@ namespace Cinemachine
 
         void Reset()
         {
+#if UNITY_EDITOR
+            if (UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject)
+                != UnityEditor.PrefabInstanceStatus.NotAPrefab)
+            {
+                Debug.Log("You cannot reset a prefab instance.  "
+                    + "First disconnect this instance from the prefab, or enter Prefab Edit mode");
+                return;
+            }
+#endif
             DestroyPipeline();
         }
 
@@ -236,14 +245,20 @@ namespace Cinemachine
                 if (child.GetComponent<CinemachinePipeline>() != null)
                     oldPipeline.Add(child);
 
-            foreach (Transform child in oldPipeline)
+#if UNITY_EDITOR
+            bool isPrefab = gameObject.scene.name == null; // causes a small GC alloc
+            if (!isPrefab)
+#endif
             {
-                if (DestroyPipelineOverride != null)
-                    DestroyPipelineOverride(child.gameObject);
-                else
-                    Destroy(child.gameObject);
+                foreach (Transform child in oldPipeline)
+                {
+                    if (DestroyPipelineOverride != null)
+                        DestroyPipelineOverride(child.gameObject);
+                    else
+                        Destroy(child.gameObject);
+                }
+                m_ComponentOwner = null;
             }
-            m_ComponentOwner = null;
             PreviousStateIsValid = false;
         }
 
@@ -314,6 +329,8 @@ namespace Cinemachine
         {
             // Get the existing components
             Transform owner = GetComponentOwner();
+            if (owner == null)
+                return null; // maybe it's a prefab
             CinemachineComponentBase[] components = owner.GetComponents<CinemachineComponentBase>();
 
             T component = owner.gameObject.AddComponent<T>();

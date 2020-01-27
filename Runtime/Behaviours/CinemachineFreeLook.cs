@@ -195,6 +195,16 @@ namespace Cinemachine
 
         void Reset()
         {
+#if UNITY_EDITOR
+            bool isPrefab = gameObject.scene.name == null; // causes a small GC alloc
+            if (isPrefab || UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject)
+                    != UnityEditor.PrefabInstanceStatus.NotAPrefab)
+            {
+                Debug.Log("You cannot reset a prefab instance.  "
+                    + "First disconnect this instance from the prefab, or enter Prefab Edit mode");
+                return;
+            }
+#endif
             DestroyRigs();
         }
 
@@ -205,7 +215,8 @@ namespace Cinemachine
             {
                 if (value == false)
                     for (int i = 0; m_Rigs != null && i < m_Rigs.Length; ++i)
-                        m_Rigs[i].PreviousStateIsValid = value;
+                        if (m_Rigs[i] != null)
+                            m_Rigs[i].PreviousStateIsValid = value;
                 base.PreviousStateIsValid = value;
             }
         }
@@ -542,7 +553,7 @@ namespace Cinemachine
                     m_Rigs = CreateRigs(copyFrom);
                 }
             }
-            for (int i = 0; m_Rigs != null && i < 3; ++i)
+            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
                 if (m_Rigs[i] != null)
                     CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 #endif
@@ -564,6 +575,8 @@ namespace Cinemachine
             foreach (var rig in m_Rigs)
             {
                 // Configure the UI
+                if (rig == null)
+                    continue;
                 rig.m_ExcludedPropertiesInInspector = m_CommonLens
                     ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
                     : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };

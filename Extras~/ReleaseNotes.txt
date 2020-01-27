@@ -1,4 +1,5 @@
 <size=20><b>Version 2.5.1</b></size>
+- Bugfix (1214301, 1213836) - disallow structural change when editing vcam prefabs
 - Bugfix (1213471, 1213434): add null check in editor
 - Bugfix (1213488): no solo for prefab vcams
 - Bugfix (1213819): repaintGameView on editor change
