@@ -195,7 +195,13 @@ namespace Cinemachine
 
         void Reset()
         {
-            DestroyRigs();
+#if UNITY_EDITOR
+            bool isPrefab = gameObject.scene.name == null; // causes a small GC alloc
+            if (!isPrefab)
+#endif
+            {
+                DestroyRigs();
+            }
         }
 
         public override bool PreviousStateIsValid
@@ -564,6 +570,8 @@ namespace Cinemachine
             foreach (var rig in m_Rigs)
             {
                 // Configure the UI
+                if (rig == null)
+                    continue;
                 rig.m_ExcludedPropertiesInInspector = m_CommonLens
                     ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
                     : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
