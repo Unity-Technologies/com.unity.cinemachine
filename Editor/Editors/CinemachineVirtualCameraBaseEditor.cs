@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
     {
         static Type[] sExtensionTypes;  // First entry is null
         static string[] sExtensionNames;
-        bool IsPrefab = false;
+        bool IsPrefabBase { get; set; }
 
         protected override List<string> GetExcludedPropertiesInInspector()
         {
@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
 
         protected virtual void OnEnable()
         {
-            IsPrefab = Target.gameObject.scene.name == null; // causes a small GC alloc
+            IsPrefabBase = Target.gameObject.scene.name == null; // causes a small GC alloc
             if (sExtensionTypes == null)
             {
                 // Populate the extension list
@@ -134,7 +134,7 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
 
             // No status and Solo for prefabs
-            if (IsPrefab)
+            if (IsPrefabBase)
                 return;
 
             // Active status and Solo button

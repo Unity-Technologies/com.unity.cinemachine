@@ -32,7 +32,7 @@ namespace Cinemachine.Editor
         bool[] m_stageError = null;
         CinemachineComponentBase[] m_components;
         UnityEditor.Editor[] m_componentEditors = new UnityEditor.Editor[0];
-        bool IsPrefab = false;
+        bool IsPrefab { get; set; }
 
         protected override void OnEnable()
         {
