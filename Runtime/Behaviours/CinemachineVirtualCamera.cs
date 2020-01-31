@@ -69,6 +69,7 @@ namespace Cinemachine
         /// If this is null, then the vcam's Transform orientation will be used.</summary>
         [Tooltip("The object that the camera wants to look at (the Aim target).  If this is null, then the vcam's Transform orientation will define the camera's orientation.")]
         [NoSaveDuringPlay]
+        [VcamTargetProperty]
         public Transform m_LookAt = null;
 
         /// <summary>The object that the camera wants to move with (the Body target).
@@ -78,6 +79,7 @@ namespace Cinemachine
         /// If this is null, then the vcam's Transform position will be used.</summary>
         [Tooltip("The object that the camera wants to move with (the Body target).  If this is null, then the vcam's Transform position will define the camera's position.")]
         [NoSaveDuringPlay]
+        [VcamTargetProperty]
         public Transform m_Follow = null;
 
         /// <summary>Specifies the LensSettings of this Virtual Camera.

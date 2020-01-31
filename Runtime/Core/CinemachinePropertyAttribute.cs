@@ -16,7 +16,12 @@ namespace Cinemachine
     /// Property applied to LensSettings.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class LensSettingsPropertyAttribute : PropertyAttribute {}
-    
+
+    /// <summary>
+    /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
+    /// </summary>
+    public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
+
     /// <summary>
     /// Property applied to CinemachineBlendDefinition.  Used for custom drawing in the inspector.
     /// </summary>
