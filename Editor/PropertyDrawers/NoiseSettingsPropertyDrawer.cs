@@ -22,7 +22,7 @@ namespace Cinemachine.Editor
                 property.objectReferenceValue = newProfile;
                 property.serializedObject.ApplyModifiedProperties();
             }
-            rect.x += rect.width; rect.width = iconSize; rect.height = iconSize;
+            rect.x += rect.width; rect.width = iconSize; rect.height = iconSize; rect.y -= 2;
             if (GUI.Button(rect, EditorGUIUtility.IconContent("_Popup"), GUI.skin.label))
             {
                 GenericMenu menu = new GenericMenu();
@@ -106,7 +106,7 @@ namespace Cinemachine.Editor
 
         NoiseSettings CreateProfile(SerializedProperty property, string label, NoiseSettings copyFrom)
         {
-            string path = GetObjectName(property) + " " + label;
+            string path = InspectorUtility.GetVirtualCameraObjectName(property) + " " + label;
             path = EditorUtility.SaveFilePanelInProject(
                     "Create Noise Profile asset", path, "asset", 
                     "This asset will generate a procedural noise signal");
@@ -132,27 +132,6 @@ namespace Cinemachine.Editor
                 return profile;
             }
             return null;
-        }
-
-        static string GetObjectName(SerializedProperty property)
-        {
-            // A little hacky here, as we favour virtual cameras...
-            var obj = property.serializedObject.targetObject;
-            GameObject go = obj as GameObject;
-            if (go == null)
-            {
-                var component = obj as Component;
-                if (component != null)
-                    go = component.gameObject;
-            }
-            if (go != null)
-            {
-                var vcam = go.GetComponentInParent<CinemachineVirtualCameraBase>();
-                if (vcam != null)
-                    return vcam.Name;
-                return go.name;
-            }
-            return obj.name;
         }
     }
 }

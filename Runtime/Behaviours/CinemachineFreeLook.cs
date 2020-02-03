@@ -27,11 +27,13 @@ namespace Cinemachine
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
         [NoSaveDuringPlay]
+        [VcamTargetProperty]
         public Transform m_LookAt = null;
 
         /// <summary>Object for the camera children wants to move with (the body target)</summary>
         [Tooltip("Object for the camera children wants to move with (the body target).")]
         [NoSaveDuringPlay]
+        [VcamTargetProperty]
         public Transform m_Follow = null;
 
         /// <summary>If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used</summary>

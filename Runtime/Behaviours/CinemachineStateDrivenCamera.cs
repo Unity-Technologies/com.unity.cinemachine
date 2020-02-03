@@ -31,11 +31,13 @@ namespace Cinemachine
         /// <summary>Default object for the camera children to look at (the aim target), if not specified in a child rig.  May be empty</summary>
         [Tooltip("Default object for the camera children to look at (the aim target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
         [NoSaveDuringPlay]
+        [VcamTargetProperty]
         public Transform m_LookAt = null;
 
         /// <summary>Default object for the camera children wants to move with (the body target), if not specified in a child rig.  May be empty</summary>
         [Tooltip("Default object for the camera children wants to move with (the body target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
         [NoSaveDuringPlay]
+        [VcamTargetProperty]
         public Transform m_Follow = null;
 
         /// <summary>The state machine whose state changes will drive this camera's choice of active child</summary>

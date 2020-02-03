@@ -20,8 +20,10 @@ namespace Cinemachine
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera is looking at.</summary>
-        [Tooltip("The object that the camera is looking at.  Setting this will improve the quality of the blends to and from this camera")]
+        [Tooltip("The object that the camera is looking at.  Setting this will improve the "
+            + "quality of the blends to and from this camera")]
         [NoSaveDuringPlay]
+        [VcamTargetProperty]
         public Transform m_LookAt = null;
 
         private Camera m_Camera;
