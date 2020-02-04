@@ -324,9 +324,15 @@ namespace Cinemachine
 
                 // Place the camera
                 offset = orient * offset;
-                var targetPosition = FollowTargetPosition;
                 curState.ReferenceUp = orient * Vector3.up;
+
+                // Respect minimum target distance on XZ plane
+                var targetPosition = FollowTargetPosition;
+                pos += GetOffsetForMinimumTargetDistance(
+                    pos, offset, curState.RawOrientation * Vector3.forward,
+                    curState.ReferenceUp, targetPosition);
                 curState.RawPosition = pos + offset;
+
                 if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
                     var dir0 = mLastCameraPosition - targetPosition;

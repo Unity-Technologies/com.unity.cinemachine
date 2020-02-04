@@ -165,7 +165,15 @@ namespace Cinemachine
                 Vector3 pos;
                 Quaternion orient;
                 TrackTarget(deltaTime, curState.ReferenceUp, offset, out pos, out orient);
-                curState.RawPosition = pos + orient * offset;
+                offset = orient * offset;
+
+                // Respect minimum target distance on XZ plane
+                var targetPosition = FollowTargetPosition;
+                pos += GetOffsetForMinimumTargetDistance(
+                    pos, offset, curState.RawOrientation * Vector3.forward,
+                    curState.ReferenceUp, targetPosition);
+                    
+                curState.RawPosition = pos + offset;
                 curState.ReferenceUp = orient * Vector3.up;
             }
         }
@@ -206,7 +214,7 @@ namespace Cinemachine
         /// <param name="desiredCameraOffset">Where we want to put the camera relative to the follow target</param>
         /// <param name="outTargetPosition">Resulting camera position</param>
         /// <param name="outTargetOrient">Damped target orientation</param>
-            protected void TrackTarget(
+        protected void TrackTarget(
             float deltaTime, Vector3 up, Vector3 desiredCameraOffset,
             out Vector3 outTargetPosition, out Quaternion outTargetOrient)
         {
@@ -261,8 +269,42 @@ namespace Cinemachine
                 localDelta = Damper.Damp(localDelta, Damping, deltaTime);
                 positionDelta = dampingSpace * localDelta;
             }
-            outTargetPosition = m_PreviousTargetPosition = currentPosition + positionDelta;
+            currentPosition += positionDelta;
+
+            outTargetPosition = m_PreviousTargetPosition = currentPosition;
             outTargetOrient = dampedOrientation;
+        }
+
+        /// <summary>Return a new damped target position that respects the minimum 
+        /// distance from the real target</summary>
+        protected Vector3 GetOffsetForMinimumTargetDistance(
+            Vector3 dampedTargetPos, Vector3 cameraOffset, 
+            Vector3 cameraFwd, Vector3 up, Vector3 actualTargetPos)
+        {
+            var posOffset = Vector3.zero;
+            cameraOffset = cameraOffset.ProjectOntoPlane(up);
+            var minDistance = cameraOffset.magnitude * 0.2f;
+            if (minDistance > 0)
+            {
+                actualTargetPos = actualTargetPos.ProjectOntoPlane(up);
+                dampedTargetPos = dampedTargetPos.ProjectOntoPlane(up);
+                var cameraPos = dampedTargetPos + cameraOffset;
+                var d = Vector3.Dot(
+                    actualTargetPos - cameraPos,
+                    (dampedTargetPos - cameraPos).normalized);
+                if (d < minDistance)
+                {
+                    var dir = actualTargetPos - dampedTargetPos;
+                    var len = dir.magnitude;
+                    if (len < 0.01f)
+                        dir = -cameraFwd.ProjectOntoPlane(up);
+                    else
+                        dir /= len;
+                    posOffset = dir * (minDistance - d);
+                }
+                m_PreviousTargetPosition += posOffset;
+            }
+            return posOffset;
         }
 
         /// <summary>

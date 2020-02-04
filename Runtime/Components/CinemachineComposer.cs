@@ -237,7 +237,7 @@ namespace Cinemachine
                 }
 
                 // First force the previous rotation into the hard bounds, no damping,
-                // then Now move it through the soft zone, with damping
+                // then  move it through the soft zone, with damping
                 RotateToScreenBounds(
                     ref curState, mCache.mFovHardGuideRect, TrackedPoint,
                     ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
