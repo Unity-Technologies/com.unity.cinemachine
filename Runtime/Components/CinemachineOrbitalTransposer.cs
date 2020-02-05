@@ -223,8 +223,7 @@ namespace Cinemachine
         private HeadingTracker mHeadingTracker;
         private Rigidbody mTargetRigidBody = null;
         private Transform PreviousTarget { get; set; }
-        private Quaternion mHeadingPrevFrame = Quaternion.identity;
-        private Vector3 mOffsetPrevFrame = Vector3.zero;
+        private Vector3 mLastCameraPosition;
 
         /// <summary>This is called to notify the us that a target got warped,
         /// so that we can update its internal state to make the camera
@@ -308,36 +307,39 @@ namespace Cinemachine
             }
             LastHeading = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
             float heading = LastHeading;
-
             if (IsValid)
             {
-                mLastTargetPosition = FollowTargetPosition;
-
                 // Calculate the heading
                 if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                     heading += m_Heading.m_Bias;
                 Quaternion headingRot = Quaternion.AngleAxis(heading, Vector3.up);
 
+                Vector3 rawOffset = EffectiveOffset;
+                Vector3 offset = headingRot * rawOffset;
+
                 // Track the target, with damping
-                Vector3 offset = EffectiveOffset;
-                Vector3 pos;
-                Quaternion orient;
-                TrackTarget(deltaTime, curState.ReferenceUp, headingRot * offset, out pos, out orient);
+                TrackTarget(deltaTime, curState.ReferenceUp, offset, out Vector3 pos, out Quaternion orient);
 
                 // Place the camera
+                offset = orient * offset;
                 curState.ReferenceUp = orient * Vector3.up;
-                if (deltaTime >= 0)
-                {
-                    Vector3 bypass = (headingRot * offset) - mHeadingPrevFrame * mOffsetPrevFrame;
-                    bypass = orient * bypass;
-                    curState.PositionDampingBypass = bypass;
-                }
-                orient = orient * headingRot;
-                curState.RawPosition = pos + orient * offset;
 
-                mHeadingPrevFrame = (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
-                    ? Quaternion.identity : headingRot;
-                mOffsetPrevFrame = offset;
+                // Respect minimum target distance on XZ plane
+                var targetPosition = FollowTargetPosition;
+                pos += GetOffsetForMinimumTargetDistance(
+                    pos, offset, curState.RawOrientation * Vector3.forward,
+                    curState.ReferenceUp, targetPosition);
+                curState.RawPosition = pos + offset;
+
+                if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                {
+                    var dir0 = mLastCameraPosition - targetPosition;
+                    var dir1 = curState.RawPosition - targetPosition;
+                    if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
+                        curState.PositionDampingBypass = Quaternion.FromToRotation(dir0, dir1).eulerAngles;
+                }
+                mLastTargetPosition = targetPosition;
+                mLastCameraPosition = curState.RawPosition;
             }
         }
 

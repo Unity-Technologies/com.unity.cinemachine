@@ -224,19 +224,20 @@ namespace Cinemachine
             else
             {
                 // Start with previous frame's orientation (but with current up)
-                Vector3 dir = m_LookAtPrevFrame - (m_CameraPosPrevFrame + curState.PositionDampingBypass);
+                Vector3 dir = m_LookAtPrevFrame - m_CameraPosPrevFrame;
                 if (dir.AlmostZero())
                     rigOrientation = Quaternion.LookRotation(
                         m_CameraOrientationPrevFrame * Vector3.forward, curState.ReferenceUp);
                 else
                 {
+                    dir = Quaternion.Euler(curState.PositionDampingBypass) * dir;
                     rigOrientation = Quaternion.LookRotation(dir, curState.ReferenceUp);
                     rigOrientation = rigOrientation.ApplyCameraRotation(
                         -m_ScreenOffsetPrevFrame, curState.ReferenceUp);
                 }
 
                 // First force the previous rotation into the hard bounds, no damping,
-                // then Now move it through the soft zone, with damping
+                // then  move it through the soft zone, with damping
                 RotateToScreenBounds(
                     ref curState, mCache.mFovHardGuideRect, TrackedPoint,
                     ref rigOrientation, mCache.mFov, mCache.mFovH, -1);

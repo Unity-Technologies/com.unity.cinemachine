@@ -162,10 +162,16 @@ namespace Cinemachine
             if (IsValid)
             {
                 Vector3 offset = EffectiveOffset;
-                Vector3 pos;
-                Quaternion orient;
-                TrackTarget(deltaTime, curState.ReferenceUp, offset, out pos, out orient);
-                curState.RawPosition = pos + orient * offset;
+                TrackTarget(deltaTime, curState.ReferenceUp, offset, out Vector3 pos, out Quaternion orient);
+                offset = orient * offset;
+
+                // Respect minimum target distance on XZ plane
+                var targetPosition = FollowTargetPosition;
+                pos += GetOffsetForMinimumTargetDistance(
+                    pos, offset, curState.RawOrientation * Vector3.forward,
+                    curState.ReferenceUp, targetPosition);
+                    
+                curState.RawPosition = pos + offset;
                 curState.ReferenceUp = orient * Vector3.up;
             }
         }
@@ -210,9 +216,10 @@ namespace Cinemachine
             float deltaTime, Vector3 up, Vector3 desiredCameraOffset,
             out Vector3 outTargetPosition, out Quaternion outTargetOrient)
         {
-            Quaternion targetOrientation = GetReferenceOrientation(up);
-            Quaternion dampedOrientation = targetOrientation;
-            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            var targetOrientation = GetReferenceOrientation(up);
+            var dampedOrientation = targetOrientation;
+            bool prevStateValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
+            if (prevStateValid)
             {
                 if (m_AngularDampingMode == AngularDampingMode.Quaternion
                     && m_BindingMode == BindingMode.LockToTarget)
@@ -223,7 +230,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Vector3 relative = (Quaternion.Inverse(m_PreviousReferenceOrientation)
+                    var relative = (Quaternion.Inverse(m_PreviousReferenceOrientation)
                         * targetOrientation).eulerAngles;
                     for (int i = 0; i < 3; ++i)
                         if (relative[i] > 180)
@@ -234,24 +241,68 @@ namespace Cinemachine
             }
             m_PreviousReferenceOrientation = dampedOrientation;
 
-            Vector3 targetPosition = FollowTargetPosition;
-            Vector3 currentPosition = m_PreviousTargetPosition;
-            Vector3 worldOffset = targetPosition - currentPosition;
+            var targetPosition = FollowTargetPosition;
+            var currentPosition = m_PreviousTargetPosition;
+            var previousOffset = prevStateValid ? m_PreviousOffset : desiredCameraOffset;
+            var offsetDelta = desiredCameraOffset - previousOffset;
+            if (offsetDelta.sqrMagnitude > 0.01f)
+            {
+                var q = Quaternion.FromToRotation(
+                    m_PreviousOffset.ProjectOntoPlane(up), 
+                    desiredCameraOffset.ProjectOntoPlane(up));
+                currentPosition = targetPosition + q * (m_PreviousTargetPosition - targetPosition);
+            }
+            m_PreviousOffset = desiredCameraOffset;
 
             // Adjust for damping, which is done in camera-offset-local coords
-            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            var positionDelta = targetPosition - currentPosition;
+            if (prevStateValid)
             {
                 Quaternion dampingSpace;
                 if (desiredCameraOffset.AlmostZero())
                     dampingSpace = VcamState.RawOrientation;
                 else
-                    dampingSpace = Quaternion.LookRotation(dampedOrientation * desiredCameraOffset.normalized, up);
-                Vector3 localOffset = Quaternion.Inverse(dampingSpace) * worldOffset;
-                localOffset = Damper.Damp(localOffset, Damping, deltaTime);
-                worldOffset = dampingSpace * localOffset;
+                    dampingSpace = Quaternion.LookRotation(dampedOrientation * desiredCameraOffset, up);
+                var localDelta = Quaternion.Inverse(dampingSpace) * positionDelta;
+                localDelta = Damper.Damp(localDelta, Damping, deltaTime);
+                positionDelta = dampingSpace * localDelta;
             }
-            outTargetPosition = m_PreviousTargetPosition = currentPosition + worldOffset;
+            currentPosition += positionDelta;
+
+            outTargetPosition = m_PreviousTargetPosition = currentPosition;
             outTargetOrient = dampedOrientation;
+        }
+
+        /// <summary>Return a new damped target position that respects the minimum 
+        /// distance from the real target</summary>
+        protected Vector3 GetOffsetForMinimumTargetDistance(
+            Vector3 dampedTargetPos, Vector3 cameraOffset, 
+            Vector3 cameraFwd, Vector3 up, Vector3 actualTargetPos)
+        {
+            var posOffset = Vector3.zero;
+            cameraOffset = cameraOffset.ProjectOntoPlane(up);
+            var minDistance = cameraOffset.magnitude * 0.2f;
+            if (minDistance > 0)
+            {
+                actualTargetPos = actualTargetPos.ProjectOntoPlane(up);
+                dampedTargetPos = dampedTargetPos.ProjectOntoPlane(up);
+                var cameraPos = dampedTargetPos + cameraOffset;
+                var d = Vector3.Dot(
+                    actualTargetPos - cameraPos,
+                    (dampedTargetPos - cameraPos).normalized);
+                if (d < minDistance)
+                {
+                    var dir = actualTargetPos - dampedTargetPos;
+                    var len = dir.magnitude;
+                    if (len < 0.01f)
+                        dir = -cameraFwd.ProjectOntoPlane(up);
+                    else
+                        dir /= len;
+                    posOffset = dir * (minDistance - d);
+                }
+                m_PreviousTargetPosition += posOffset;
+            }
+            return posOffset;
         }
 
         /// <summary>
@@ -306,6 +357,7 @@ namespace Cinemachine
         Vector3 m_PreviousTargetPosition = Vector3.zero;
         Quaternion m_PreviousReferenceOrientation = Quaternion.identity;
         Quaternion m_targetOrientationOnAssign = Quaternion.identity;
+        Vector3 m_PreviousOffset;
         Transform m_previousTarget = null;
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>

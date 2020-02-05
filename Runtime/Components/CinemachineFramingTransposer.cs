@@ -91,6 +91,13 @@ namespace Cinemachine
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
         public float m_ZDamping = 1f;
 
+        /// <summary>If set, damping will apply only to target motion, and not when 
+        /// the camera rotation changes.  Turn this on to get an instant response when 
+        /// the rotation changes</summary>
+        [Tooltip("If set, damping will apply  only to target motion, but not to camera "
+            + "rotation changes.  Turn this on to get an instant response when the rotation changes.  ")]
+        public bool m_TargetMovementOnly;
+
         /// <summary>Horizontal screen position for target. The camera will move to position the tracked object here</summary>
         [Space]
         [Range(-0.5f, 1.5f)]
@@ -378,6 +385,7 @@ namespace Cinemachine
         }
 
         float m_prevFOV; // State for frame damping
+        Quaternion m_prevRotation;
 
         /// <summary>For editor visulaization of the calculated bounding box of the group</summary>
         public Bounds LastBounds { get; private set; }
@@ -392,11 +400,13 @@ namespace Cinemachine
         {
             LensSettings lens = curState.Lens;
             Vector3 followTargetPosition = FollowTargetPosition;
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
+            bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
+            if (!previousStateIsValid)
             {
                 m_Predictor.Reset();
                 m_PreviousCameraPosition = curState.RawPosition;
                 m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
+                m_prevRotation = curState.RawOrientation;
                 if (!InheritingPosition && m_CenterOnActivate)
                 {
                     m_PreviousCameraPosition = FollowTargetPosition
@@ -464,9 +474,17 @@ namespace Cinemachine
                 }
             }
 
+            // Optionally allow undamped camera orientation change
+            Quaternion localToWorld = curState.RawOrientation;
+            if (previousStateIsValid && m_TargetMovementOnly && m_prevRotation != localToWorld)
+            {
+                var q = localToWorld * Quaternion.Inverse(m_prevRotation);
+                m_PreviousCameraPosition = TrackedPoint + q * (m_PreviousCameraPosition - TrackedPoint);
+            }
+            m_prevRotation = localToWorld;
+
             // Work in camera-local space
             Vector3 camPosWorld = m_PreviousCameraPosition;
-            Quaternion localToWorld = curState.RawOrientation;
             Quaternion worldToLocal = Quaternion.Inverse(localToWorld);
             Vector3 cameraPos = worldToLocal * camPosWorld;
             Vector3 targetPos = (worldToLocal * TrackedPoint) - cameraPos;
@@ -487,7 +505,7 @@ namespace Cinemachine
                 ? lens.OrthographicSize 
                 : Mathf.Tan(0.5f * lens.FieldOfView * Mathf.Deg2Rad) * (targetZ - cameraOffset.z);
             Rect softGuideOrtho = ScreenToOrtho(SoftGuideRect, screenSize, lens.Aspect);
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
+            if (!previousStateIsValid)
             {
                 // No damping or hard bounds, just snap to central bounds, skipping the soft zone
                 Rect rect = softGuideOrtho;
@@ -520,7 +538,8 @@ namespace Cinemachine
                     cameraOffset += OrthoOffsetToScreenBounds(lookAtPos - cameraOffset, hardGuideOrtho);
                 }
             }
-            curState.RawPosition = m_PreviousCameraPosition = localToWorld * (cameraPos + cameraOffset);
+            curState.RawPosition = localToWorld * (cameraPos + cameraOffset);
+            m_PreviousCameraPosition = curState.RawPosition;
 
             // Adjust lens for group framing
             if (isGroupFraming)
@@ -530,7 +549,7 @@ namespace Cinemachine
                     targetHeight = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
 
                     // Apply Damping
-                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                    if (previousStateIsValid)
                         targetHeight = m_prevFOV + Damper.Damp(targetHeight - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetHeight;
 
@@ -548,7 +567,7 @@ namespace Cinemachine
                     targetFOV = Mathf.Clamp(targetFOV, m_MinimumFOV, m_MaximumFOV);
 
                     // ApplyDamping
-                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                    if (previousStateIsValid)
                         targetFOV = m_prevFOV + Damper.Damp(targetFOV - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetFOV;
 
