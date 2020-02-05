@@ -1,5 +1,5 @@
 <size=20><b>Version 2.5.1</b></size>
-- Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and olny target motion will be damped.
+- Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
 - Orbital Transposer / FreeLook: improved damping when target is moving
 - Add Convert to TargetGroup option on LookAt and Follow target fields
 - Bugfix (1214301, 1213836) - disallow structural change when editing vcam prefabs
