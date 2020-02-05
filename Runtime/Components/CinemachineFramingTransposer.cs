@@ -91,12 +91,12 @@ namespace Cinemachine
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
         public float m_ZDamping = 1f;
 
-        /// <summary>If set, damping will apply not only when the target moves, but also when 
-        /// the camera rotation changes.  Turn this off to get an instant response when 
+        /// <summary>If set, damping will apply only to target motion, and not when 
+        /// the camera rotation changes.  Turn this on to get an instant response when 
         /// the rotation changes</summary>
-        [Tooltip("If set, damping will apply not only when the target moves, but also when the camera "
-            + "rotation changes.  Turn this off to get an instant response when the rotation changes.  ")]
-        public bool m_DampedRotations = true;
+        [Tooltip("If set, damping will apply  only to target motion, but not to camera "
+            + "rotation changes.  Turn this on to get an instant response when the rotation changes.  ")]
+        public bool m_TargetMovementOnly;
 
         /// <summary>Horizontal screen position for target. The camera will move to position the tracked object here</summary>
         [Space]
@@ -476,7 +476,7 @@ namespace Cinemachine
 
             // Optionally allow undamped camera orientation change
             Quaternion localToWorld = curState.RawOrientation;
-            if (previousStateIsValid && !m_DampedRotations && m_prevRotation != localToWorld)
+            if (previousStateIsValid && m_TargetMovementOnly && m_prevRotation != localToWorld)
             {
                 var q = localToWorld * Quaternion.Inverse(m_prevRotation);
                 m_PreviousCameraPosition = TrackedPoint + q * (m_PreviousCameraPosition - TrackedPoint);
