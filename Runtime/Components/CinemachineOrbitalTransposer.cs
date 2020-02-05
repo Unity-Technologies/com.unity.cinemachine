@@ -318,9 +318,7 @@ namespace Cinemachine
                 Vector3 offset = headingRot * rawOffset;
 
                 // Track the target, with damping
-                Vector3 pos;
-                Quaternion orient;
-                TrackTarget(deltaTime, curState.ReferenceUp, offset, out pos, out orient);
+                TrackTarget(deltaTime, curState.ReferenceUp, offset, out Vector3 pos, out Quaternion orient);
 
                 // Place the camera
                 offset = orient * offset;
