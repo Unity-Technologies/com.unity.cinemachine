@@ -162,9 +162,7 @@ namespace Cinemachine
             if (IsValid)
             {
                 Vector3 offset = EffectiveOffset;
-                Vector3 pos;
-                Quaternion orient;
-                TrackTarget(deltaTime, curState.ReferenceUp, offset, out pos, out orient);
+                TrackTarget(deltaTime, curState.ReferenceUp, offset, out Vector3 pos, out Quaternion orient);
                 offset = orient * offset;
 
                 // Respect minimum target distance on XZ plane
