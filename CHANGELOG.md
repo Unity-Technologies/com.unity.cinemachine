@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.5.1] - 2020-02-01
 ### Mostly Bugfixes
-- Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and olny target motion will be damped.
+- Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
 - Orbital Transposer / FreeLook: improved damping when target is moving
 - Add Convert to TargetGroup option on LookAt and Follow target fields
 - Bugfix (1214301, 1213836) - disallow structural change when editing vcam prefabs
