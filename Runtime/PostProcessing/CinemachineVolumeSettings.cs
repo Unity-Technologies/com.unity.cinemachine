@@ -118,13 +118,13 @@ namespace Cinemachine.PostFX
                         if (extra.mProfileCopy == null)
                             extra.CreateProfileCopy(m_Profile);
                         profile = extra.mProfileCopy;
-                        DepthOfField dof;
-                        if (profile.TryGet(out dof))
+                        if (profile.TryGet(out DepthOfField dof))
                         {
                             float focusDistance = m_FocusOffset;
                             if (state.HasLookAt)
                                 focusDistance += (state.FinalPosition - state.ReferenceLookAt).magnitude;
                             dof.focusDistance.value = Mathf.Max(0, focusDistance);
+                            
                             profile.isDirty = true;
                         }
                     }
