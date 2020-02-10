@@ -414,15 +414,13 @@ namespace Cinemachine
             {
                 CustomBlendable b = stateA.GetCustomBlendable(i);
                 b.m_Weight *= (1-t);
-                if (b.m_Weight > UnityVectorExtensions.Epsilon)
-                    state.AddCustomBlendable(b);
+                state.AddCustomBlendable(b);
             }
             for (int i = 0; i < stateB.NumCustomBlendables; ++i)
             {
                 CustomBlendable b = stateB.GetCustomBlendable(i);
                 b.m_Weight *= t;
-                if (b.m_Weight > UnityVectorExtensions.Epsilon)
-                    state.AddCustomBlendable(b);
+                state.AddCustomBlendable(b);
             }
             return state;
         }
