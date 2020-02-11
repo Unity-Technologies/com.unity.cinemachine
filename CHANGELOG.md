@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1213471, 1213434): add null check in editor
 - Bugfix (1213488): no solo for prefab vcams
 - Bugfix (1213819): repaintGameView on editor change
+- Fixed first frame jitter when blending cameras that use HDRP Depth of Field volumes. In the first frame, we ignored the target blend, because its weight was less than epsilon. We no longer do that, because it caused a jitter in the first frame of the blend in two cases: (1) The default DoF values in HDRP were extremely large, so even with minimal weight they caused a noticeable jitter, or (2) The default DoF settings in HDRP used a different focus mode than the blending camera; focus mode is not a lerpable property
+
 
 
 ## [2.5.0] - 2020-01-15
