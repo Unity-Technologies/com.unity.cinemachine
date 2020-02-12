@@ -32,6 +32,9 @@ namespace Cinemachine
             ConnectToVcam(true);
         }
 
+        /// <summary>Does nothing.  For the little checkbox in the inspector.</summary>
+        protected virtual void OnEnable() {}
+
 #if UNITY_EDITOR
         [UnityEditor.Callbacks.DidReloadScripts]
         static void OnScriptReload()

@@ -210,8 +210,7 @@ namespace Cinemachine.Editor
                     if (e != null)
                     {
                         CinemachineComponentBase c = e.target as CinemachineComponentBase;
-                        if (c != null && (c.Stage == stage 
-                            || stage == CinemachineCore.Stage.Body && c.Stage == CinemachineCore.Stage.BodyAfterAim))
+                        if (c != null && c.Stage == stage)
                             return e;
                     }
                 }
@@ -327,9 +326,6 @@ namespace Cinemachine.Editor
                 if (c != null)
                 {
                     CinemachineCore.Stage stage = c.Stage;
-                    // For simplicity, map BodyAfterAim to Body
-                    if (stage == CinemachineCore.Stage.BodyAfterAim)
-                        stage = CinemachineCore.Stage.Body;
                     stageTypes[(int)stage].Add(t);
                 }
             }
@@ -408,8 +404,6 @@ namespace Cinemachine.Editor
             foreach (var c in components)
             {
                 CinemachineCore.Stage stage = c.Stage;
-                if (stage == CinemachineCore.Stage.BodyAfterAim)
-                    stage = CinemachineCore.Stage.Body;
                 int index = 0;
                 for (index = sStageData[(int)stage].types.Length - 1; index > 0; --index)
                     if (sStageData[(int)stage].types[index] == c.GetType())
