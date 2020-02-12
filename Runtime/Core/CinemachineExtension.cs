@@ -33,10 +33,6 @@ namespace Cinemachine
         }
 
 #if UNITY_EDITOR
-        /// <summary>Does nothing.  This is only here so we get the little "enabled"
-        /// checkbox in the inspector</summary>
-        void Update() {}
-
         [UnityEditor.Callbacks.DidReloadScripts]
         static void OnScriptReload()
         {
@@ -55,7 +51,7 @@ namespace Cinemachine
 
         /// <summary>Connect to virtual camera.  Implementation must be safe to be called
         /// redundantly.  Override implementations must call this base implementation</summary>
-        /// <param name="connect">True if connectinf, false if disconnecting</param>
+        /// <param name="connect">True if connecting, false if disconnecting</param>
         protected virtual void ConnectToVcam(bool connect)
         {
             if (connect && VirtualCamera == null)

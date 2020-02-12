@@ -326,6 +326,9 @@ namespace Cinemachine.Editor
                 if (c != null)
                 {
                     CinemachineCore.Stage stage = c.Stage;
+                    // For simplicity, map BodyAfterAim to Body
+                    if (stage == CinemachineCore.Stage.BodyAfterAim)
+                        stage = CinemachineCore.Stage.Body;
                     stageTypes[(int)stage].Add(t);
                 }
             }

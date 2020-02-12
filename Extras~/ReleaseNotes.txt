@@ -1,4 +1,5 @@
 <size=20><b>Version 2.5.1</b></size>
+- Added new pipeline stage: BodyAfterAim.  Moved FramingTransposer to it, so it plays better with Aim components.
 - Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
 - Orbital Transposer / FreeLook: improved damping when target is moving
 - Add Convert to TargetGroup option on LookAt and Follow target fields

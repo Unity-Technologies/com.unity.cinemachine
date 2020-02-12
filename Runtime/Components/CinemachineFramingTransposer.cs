@@ -311,7 +311,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.BodyAfterAim; } }
 
         const float kMinimumCameraDistance = 0.01f;
 
