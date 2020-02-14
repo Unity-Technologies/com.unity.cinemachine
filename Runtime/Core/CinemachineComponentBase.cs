@@ -205,6 +205,10 @@ namespace Cinemachine
         /// <summary>What part of the pipeline this fits into</summary>
         public abstract CinemachineCore.Stage Stage { get; }
 
+        /// <summary>Special for Body Stage compoments that want to be applied after Aim 
+        /// stage because they use the aim as inout for the procedural placement</summary>
+        public virtual bool BodyAppliesAfterAim { get { return false; } }
+
         /// <summary>Mutates the camera state.  This state will later be applied to the camera.</summary>
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>

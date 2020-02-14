@@ -466,43 +466,42 @@ namespace Cinemachine
             }
 
             // Update the state by invoking the component pipeline
-            CinemachineCore.Stage curStage = CinemachineCore.Stage.Body;
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
-            bool hasAim = false;
-            if (m_ComponentPipeline != null)
+            if (m_ComponentPipeline == null)
+            {
+                state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
+                for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
+                    InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
+            }
+            else
             {
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
-                {
                     m_ComponentPipeline[i].PrePipelineMutateCameraState(ref state, deltaTime);
-                    if (m_ComponentPipeline[i].Stage == CinemachineCore.Stage.Aim)
-                        hasAim = true;
-                }
-                for (int i = 0; i < m_ComponentPipeline.Length; ++i)
-                {
-                    curStage = AdvancePipelineStage(
-                        ref state, deltaTime, curStage,
-                        (int)m_ComponentPipeline[i].Stage, hasAim);
-                    m_ComponentPipeline[i].MutateCameraState(ref state, deltaTime);
-                }
-            }
-            AdvancePipelineStage(
-                ref state, deltaTime, curStage,
-                (int)CinemachineCore.Stage.Finalize + 1, hasAim);
-            return state;
-        }
 
-        private CinemachineCore.Stage AdvancePipelineStage(
-            ref CameraState state, float deltaTime,
-            CinemachineCore.Stage curStage, int maxStage, bool hasAim)
-        {
-            while ((int)curStage < maxStage)
-            {
-                if (!hasAim && curStage == CinemachineCore.Stage.Aim)
-                    state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
-                InvokePostPipelineStageCallback(this, curStage, ref state, deltaTime);
-                ++curStage;
+                CinemachineComponentBase postAimBody = null;
+                int componentIndex = 0;
+                for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
+                {
+                    if (stage == CinemachineCore.Stage.Finalize && postAimBody != null)
+                        postAimBody.MutateCameraState(ref state, deltaTime);
+
+                    var c = componentIndex < m_ComponentPipeline.Length 
+                        ? m_ComponentPipeline[componentIndex] : null;
+                    if (c != null && stage == c.Stage)
+                    {
+                        ++componentIndex;
+                        if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
+                            postAimBody = c;
+                        else
+                            c.MutateCameraState(ref state, deltaTime);
+                    }
+                    else if (stage == CinemachineCore.Stage.Aim)
+                        state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
+
+                    InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
+                }
             }
-            return curStage;
+            return state;
         }
 
         // This is a hack for FreeLook rigs - to be removed
