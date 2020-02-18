@@ -10,9 +10,12 @@ public class ActivateCameraWithDistance : MonoBehaviour
     public float distanceToObject = 15f;
     public CinemachineVirtualCameraBase initialActiveCam;
     public CinemachineVirtualCameraBase switchCameraTo;
+    
+    CinemachineBrain brain;
 
     void Start()
     {
+        brain = Camera.main.GetComponent<CinemachineBrain>();
         SwitchCam(initialActiveCam);
     }
 
@@ -34,10 +37,10 @@ public class ActivateCameraWithDistance : MonoBehaviour
 
     public void SwitchCam(CinemachineVirtualCameraBase vcam)
     {
-        if (Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.Name != vcam.Name)
-        {
+        if (brain == null || vcam == null)
+            return;
+        if (brain.ActiveVirtualCamera != (ICinemachineCamera)vcam)
             vcam.MoveToTopOfPrioritySubqueue();      
-        } 
     }
 }
 
