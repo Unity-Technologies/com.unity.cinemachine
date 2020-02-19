@@ -306,7 +306,6 @@ namespace Cinemachine
         /// <summary>Maintains the global vcam registry.  Always call the base class implementation.</summary>
         protected virtual void OnDestroy()
         {
-            CinemachineCore.Instance.RemoveActiveCamera(this);
             CinemachineCore.Instance.CameraDestroyed(this);
         }
 
