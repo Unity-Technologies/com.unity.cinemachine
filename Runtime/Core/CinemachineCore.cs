@@ -167,7 +167,7 @@ namespace Cinemachine
             mActiveCameras.Remove(vcam);
         }
 
-        /// <summary>Called when a Cinemachine Virtual Camera is destoryed.</summary>
+        /// <summary>Called when a Cinemachine Virtual Camera is destroyed.</summary>
         internal void CameraDestroyed(CinemachineVirtualCameraBase vcam)
         {
             if (mActiveCameras.Contains(vcam))
@@ -191,7 +191,7 @@ namespace Cinemachine
             mAllCameras[parentLevel].Add(vcam);
         }
 
-        /// <summary>Called when a vcam is destroyed.</summary>
+        /// <summary>Called when a vcam is disabled.</summary>
         internal void CameraDisabled(CinemachineVirtualCameraBase vcam)
         {
             for (int i = 0; i < mAllCameras.Count; ++i)
