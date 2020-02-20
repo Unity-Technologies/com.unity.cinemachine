@@ -38,6 +38,7 @@ namespace Cinemachine.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
+        private const string kNoneLabel = "(none)";
         private string[] mCameraCandidates;
         private Dictionary<string, int> mCameraIndexLookup;
         private void UpdateCameraCandidates()
@@ -58,7 +59,7 @@ namespace Cinemachine.Editor
                     if (candidates[i].ParentCamera != null)
                         candidates[i] = null;
             }
-            vcams.Add("(none)");
+            vcams.Add(kNoneLabel);
             vcams.Add(CinemachineBlenderSettings.kBlendFromAnyCameraLabel);
             foreach (CinemachineVirtualCameraBase c in candidates)
                 if (c != null && !vcams.Contains(c.Name))
@@ -78,6 +79,22 @@ namespace Cinemachine.Editor
             return mCameraIndexLookup[name];
         }
 
+        void DrawVcamSelector(Rect r, SerializedProperty prop)
+        {
+            r.width -= EditorGUIUtility.singleLineHeight;
+            int current = GetCameraIndex(prop.stringValue);
+            var oldColor = GUI.color;
+            if (current == 0)
+                GUI.color = new Color(1, 193.0f/255.0f, 7.0f/255.0f); // the "warning" icon color
+            EditorGUI.PropertyField(r, prop, GUIContent.none);
+            r.x += r.width; r.width = EditorGUIUtility.singleLineHeight;
+            int sel = EditorGUI.Popup(r, current, mCameraCandidates);
+            if (current != sel)
+                prop.stringValue = (mCameraCandidates[sel] == kNoneLabel) 
+                    ? string.Empty : mCameraCandidates[sel];
+            GUI.color = oldColor;
+        }
+        
         void SetupBlendList()
         {
             mBlendList = new ReorderableList(serializedObject,
@@ -95,17 +112,16 @@ namespace Cinemachine.Editor
                 {
                     rect.width -= (EditorGUIUtility.singleLineHeight + 2 * hSpace);
                     rect.width /= 3;
-                    Vector2 pos = rect.position; pos.x += EditorGUIUtility.singleLineHeight;
-                    rect.position = pos;
+                    rect.x += EditorGUIUtility.singleLineHeight;
                     EditorGUI.LabelField(rect, "From");
 
-                    pos.x += rect.width + hSpace; rect.position = pos;
+                    rect.x += rect.width + hSpace;
                     EditorGUI.LabelField(rect, "To");
 
-                    pos.x += rect.width + hSpace; rect.width -= floatFieldWidth + hSpace; rect.position = pos;
+                    rect.x += rect.width + hSpace; rect.width -= floatFieldWidth + hSpace;
                     EditorGUI.LabelField(rect, "Style");
 
-                    pos.x += rect.width + hSpace; rect.width = floatFieldWidth; rect.position = pos;
+                    rect.x += rect.width + hSpace; rect.width = floatFieldWidth;
                     EditorGUI.LabelField(rect, "Time");
                 };
 
@@ -117,23 +133,14 @@ namespace Cinemachine.Editor
 
                     rect.y += vSpace;
                     rect.height = EditorGUIUtility.singleLineHeight;
-                    Vector2 pos = rect.position;
                     rect.width -= 2 * hSpace; rect.width /= 3;
-                    SerializedProperty fromProp = element.FindPropertyRelative(() => def.m_From);
-                    int current = GetCameraIndex(fromProp.stringValue);
-                    int sel = EditorGUI.Popup(rect, current, mCameraCandidates);
-                    if (current != sel)
-                        fromProp.stringValue = mCameraCandidates[sel];
+                    DrawVcamSelector(rect, element.FindPropertyRelative(() => def.m_From));
 
-                    pos.x += rect.width + hSpace; rect.position = pos;
-                    SerializedProperty toProp = element.FindPropertyRelative(() => def.m_To);
-                    current = GetCameraIndex(toProp.stringValue);
-                    sel = EditorGUI.Popup(rect, current, mCameraCandidates);
-                    if (current != sel)
-                        toProp.stringValue = mCameraCandidates[sel];
+                    rect.x += rect.width + hSpace;
+                    DrawVcamSelector(rect, element.FindPropertyRelative(() => def.m_To));
 
                     SerializedProperty blendProp = element.FindPropertyRelative(() => def.m_Blend);
-                    pos.x += rect.width + hSpace; rect.position = pos;
+                    rect.x += rect.width + hSpace;
                     EditorGUI.PropertyField(rect, blendProp, GUIContent.none);
                 };
 

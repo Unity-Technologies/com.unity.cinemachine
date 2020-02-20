@@ -167,12 +167,21 @@ namespace Cinemachine
             mActiveCameras.Remove(vcam);
         }
 
+        /// <summary>Called when a Cinemachine Virtual Camera is destroyed.</summary>
+        internal void CameraDestroyed(CinemachineVirtualCameraBase vcam)
+        {
+            if (mActiveCameras.Contains(vcam))
+                mActiveCameras.Remove(vcam);
+            if (mUpdateStatus != null && mUpdateStatus.ContainsKey(vcam))
+                mUpdateStatus.Remove(vcam);
+        }
+
         // Registry of all vcams that are present, active or not
         private List<List<CinemachineVirtualCameraBase>> mAllCameras
             = new List<List<CinemachineVirtualCameraBase>>();
 
-        /// <summary>Called when a vcam is awakened.</summary>
-        internal void CameraAwakened(CinemachineVirtualCameraBase vcam)
+        /// <summary>Called when a vcam is enabled.</summary>
+        internal void CameraEnabled(CinemachineVirtualCameraBase vcam)
         {
             int parentLevel = 0;
             for (ICinemachineCamera p = vcam.ParentCamera; p != null; p = p.ParentCamera)
@@ -182,13 +191,11 @@ namespace Cinemachine
             mAllCameras[parentLevel].Add(vcam);
         }
 
-        /// <summary>Called when a vcam is destroyed.</summary>
-        internal void CameraDestroyed(CinemachineVirtualCameraBase vcam)
+        /// <summary>Called when a vcam is disabled.</summary>
+        internal void CameraDisabled(CinemachineVirtualCameraBase vcam)
         {
             for (int i = 0; i < mAllCameras.Count; ++i)
                 mAllCameras[i].Remove(vcam);
-            if (mUpdateStatus != null)
-                mUpdateStatus.Remove(vcam);
             if (mRoundRobinVcamLastFrame == vcam)
                 mRoundRobinVcamLastFrame = null;
         }

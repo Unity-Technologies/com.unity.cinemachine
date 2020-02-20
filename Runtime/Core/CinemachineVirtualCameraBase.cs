@@ -306,14 +306,14 @@ namespace Cinemachine
         /// <summary>Maintains the global vcam registry.  Always call the base class implementation.</summary>
         protected virtual void OnDestroy()
         {
-            CinemachineCore.Instance.RemoveActiveCamera(this);
+            CinemachineCore.Instance.CameraDestroyed(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
         protected virtual void OnTransformParentChanged()
         {
-            CinemachineCore.Instance.CameraDestroyed(this);
-            CinemachineCore.Instance.CameraAwakened(this);
+            CinemachineCore.Instance.CameraDisabled(this);
+            CinemachineCore.Instance.CameraEnabled(this);
             UpdateSlaveStatus();
             UpdateVcamPoolStatus();
         }
@@ -352,14 +352,14 @@ namespace Cinemachine
             UpdateVcamPoolStatus();    // Add to queue
             if (!CinemachineCore.Instance.IsLive(this))
                 PreviousStateIsValid = false;
-            CinemachineCore.Instance.CameraAwakened(this);
+            CinemachineCore.Instance.CameraEnabled(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
         protected virtual void OnDisable()
         {
             UpdateVcamPoolStatus();    // Remove from queue
-            CinemachineCore.Instance.CameraDestroyed(this);
+            CinemachineCore.Instance.CameraDisabled(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
