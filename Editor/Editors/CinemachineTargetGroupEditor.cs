@@ -51,8 +51,8 @@ namespace Cinemachine.Editor
             {
                 indices = indices.Substring(0, indices.Length - 2);
                 EditorGUILayout.HelpBox(
-                    "Having a target as a descendant of the Group's GameObject (" + Target.name + ") " +
-                    "is not supported, and will cause drifting - descendants found at {" + indices + "}",
+                    "Group members at index {" + indices + "} are child gameobjects of the group. " +
+                    "This is not supported and may cause undefined behaviour. Unparent them from the group.",
                     MessageType.Error);
             }
         }
