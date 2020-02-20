@@ -32,7 +32,6 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             mTargetList.DoLayoutList();
             DisplayErrorMessageForDescendants();
-            
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
         }

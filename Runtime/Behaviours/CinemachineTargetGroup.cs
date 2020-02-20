@@ -344,8 +344,6 @@ namespace Cinemachine
                 m_Targets[i].weight = Mathf.Max(0, m_Targets[i].weight);
                 m_Targets[i].radius = Mathf.Max(0, m_Targets[i].radius);
             }
-            
-            
         }
 
         void FixedUpdate()
