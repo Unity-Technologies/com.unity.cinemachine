@@ -11,11 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
 - Orbital Transposer / FreeLook: improved damping when target is moving
 - Add Convert to TargetGroup option on LookAt and Follow target fields
+- Bugfix (1219867) - vcam popping on disable if blending
 - Bugfix (1214301, 1213836) - disallow structural change when editing vcam prefabs
 - Bugfix (1213471, 1213434): add null check in editor
 - Bugfix (1213488): no solo for prefab vcams
 - Bugfix (1213819): repaintGameView on editor change
-- Fixed first frame jitter when blending cameras that use HDRP Depth of Field volumes. In the first frame, we ignored the target blend, because its weight was less than epsilon. We no longer do that, because it caused a jitter in the first frame of the blend in two cases: (1) The default DoF values in HDRP were extremely large, so even with minimal weight they caused a noticeable jitter, or (2) The default DoF settings in HDRP used a different focus mode than the blending camera; focus mode is not a lerpable property
+- Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
 
 
 
