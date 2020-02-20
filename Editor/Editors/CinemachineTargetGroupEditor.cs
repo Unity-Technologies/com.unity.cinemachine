@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
@@ -30,8 +31,31 @@ namespace Cinemachine.Editor
                 SetupTargetList();
             EditorGUI.BeginChangeCheck();
             mTargetList.DoLayoutList();
+            DisplayErrorMessageForDescendants();
+            
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
+        }
+
+        void DisplayErrorMessageForDescendants()
+        {
+            String indices = "";
+            for (int i = 0; i < Target.m_Targets.Length; ++i)
+            {
+                if (Target.m_Targets[i].target != null && Target.m_Targets[i].target.IsChildOf(Target.Transform))
+                {
+                    indices += i + ", ";
+                }
+            }
+
+            if (indices.Length > 0)
+            {
+                indices = indices.Substring(0, indices.Length - 2);
+                EditorGUILayout.HelpBox(
+                    "Having a target as a descendant of the Group's GameObject (" + Target.name + ") " +
+                    "is not supported, and will cause drifting - descendants found at {" + indices + "}",
+                    MessageType.Error);
+            }
         }
 
         void SetupTargetList()
