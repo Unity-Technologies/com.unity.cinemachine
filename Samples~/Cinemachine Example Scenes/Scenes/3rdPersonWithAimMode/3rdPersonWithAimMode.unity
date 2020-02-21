@@ -324,7 +324,7 @@ GameObject:
   - component: {fileID: 226826962}
   - component: {fileID: 226826964}
   m_Layer: 0
-  m_Name: CM3rdPerson
+  m_Name: CM 3rdPerson Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -373,7 +373,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 226826961}
   m_LocalRotation: {x: 0.32326594, y: 0, z: 0, w: 0.94630814}
-  m_LocalPosition: {x: 19.231213, y: 3.8288567, z: -3.033436}
+  m_LocalPosition: {x: 19.357666, y: 3.819136, z: -3.0409548}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 424502139}
@@ -524,8 +524,8 @@ MonoBehaviour:
   m_YDamping: 0.2
   m_ZDamping: 1
   m_TargetMovementOnly: 1
-  m_ScreenX: 0.3786177
-  m_ScreenY: 0.3205551
+  m_ScreenX: 0.33440018
+  m_ScreenY: 0.3129505
   m_CameraDistance: 2.22
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
@@ -776,7 +776,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1787124812}
   m_LocalRotation: {x: 0.32326594, y: 0, z: 0, w: 0.94630814}
-  m_LocalPosition: {x: 19.231213, y: 3.8288567, z: -3.033436}
+  m_LocalPosition: {x: 19.357666, y: 3.819136, z: -3.0409548}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -918,7 +918,7 @@ GameObject:
   - component: {fileID: 1925854223}
   - component: {fileID: 1925854226}
   m_Layer: 0
-  m_Name: CM3rdPersonAim
+  m_Name: CM 3rd Person Aim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -997,7 +997,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1925854222}
   m_LocalRotation: {x: 0.32326594, y: 0, z: 0, w: 0.94630814}
-  m_LocalPosition: {x: 19.25245, y: 3.7590237, z: -2.4300532}
+  m_LocalPosition: {x: 19.331215, y: 3.77435, z: -2.4181988}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 21398638}
@@ -1047,7 +1047,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2046313210}
-  m_LocalRotation: {x: 0.32326594, y: -0, z: -0, w: 0.94630814}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -5.225742, y: -2.614874, z: 6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1085,8 +1085,8 @@ MonoBehaviour:
   m_YDamping: 0
   m_ZDamping: 0
   m_TargetMovementOnly: 1
-  m_ScreenX: 0.1427491
-  m_ScreenY: 0.5399239
+  m_ScreenX: 0.0866267
+  m_ScreenY: 0.57224333
   m_CameraDistance: 1.7
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0.000000027939677

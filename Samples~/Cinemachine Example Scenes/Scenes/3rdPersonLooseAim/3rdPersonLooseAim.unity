@@ -651,8 +651,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: -0.004563493, y: -0.0048452807, z: -0.0000221119, w: 0.9999779}
-  m_LocalPosition: {x: 0.30552012, y: 3.0746806, z: -15.017306}
+  m_LocalRotation: {x: -0.004563487, y: -0.0046542985, z: -0.000021240288, w: 0.9999788}
+  m_LocalPosition: {x: 0.2915271, y: 3.0746806, z: -15.017498}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -827,7 +827,7 @@ GameObject:
   - component: {fileID: 1043897087}
   - component: {fileID: 1043897089}
   m_Layer: 0
-  m_Name: CM vcam
+  m_Name: CM 3rdPerson Loose Aim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -882,8 +882,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1043897086}
-  m_LocalRotation: {x: -0.004563493, y: -0.0048452807, z: -0.0000221119, w: 0.9999779}
-  m_LocalPosition: {x: 0.30552012, y: 3.0746806, z: -15.017306}
+  m_LocalRotation: {x: -0.004563487, y: -0.0046542985, z: -0.000021240288, w: 0.9999788}
+  m_LocalPosition: {x: 0.2915271, y: 3.0746806, z: -15.017498}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
