@@ -4,8 +4,8 @@ namespace Cinemachine
 {
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that forces the LookAt
-    /// point to the center of the screen, cancelling noise and other corections.
-    /// This is useful for thrird-person style aim cameras that want a dead-accurate
+    /// point to the center of the screen, cancelling noise and other corrections.
+    /// This is useful for third-person style aim cameras that want a dead-accurate
     /// aim at all times, even in the presence of positional or rotational noise.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu

@@ -27,8 +27,8 @@ namespace Cinemachine
         public float CameraDistance;
 
         [Header("Obstacles")]
-        /// <summary>Camere will avoid obstacles on these layers.</summary>
-        [Tooltip("Camere will avoid obstacles on these layers")]
+        /// <summary>Camera will avoid obstacles on these layers.</summary>
+        [Tooltip("Camera will avoid obstacles on these layers")]
         public LayerMask CameraCollisionFilter;
         [TagField]
         [Tooltip("Obstacles with this tag will be ignored.  "
