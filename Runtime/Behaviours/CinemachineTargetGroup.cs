@@ -256,9 +256,6 @@ namespace Cinemachine
         /// </summary>
         public void DoUpdate()
         {
-            if (IsEmpty)
-                return;
-
             mAveragePos = CalculateAveragePosition(out mMaxWeight);
             BoundingBox = CalculateBoundingBox(mAveragePos, mMaxWeight);
 
