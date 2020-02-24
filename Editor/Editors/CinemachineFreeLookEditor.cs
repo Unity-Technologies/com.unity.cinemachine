@@ -10,9 +10,9 @@ namespace Cinemachine
     internal sealed class CinemachineFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
     {
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_Orbits));
             if (!Target.m_CommonLens)
                 excluded.Add(FieldPath(x => x.m_Lens));
@@ -21,7 +21,6 @@ namespace Cinemachine
                 excluded.Add(FieldPath(x => x.m_Heading));
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
             }
-            return excluded;
         }
 
         protected override void OnDisable()

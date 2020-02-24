@@ -18,11 +18,10 @@ namespace Cinemachine.Editor
         public GetAllVirtualCamerasDelegate GetAllVirtualCameras;
         public delegate CinemachineVirtualCameraBase[] GetAllVirtualCamerasDelegate();
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_CustomBlends));
-            return excluded;
         }
 
         public override void OnInspectorGUI()

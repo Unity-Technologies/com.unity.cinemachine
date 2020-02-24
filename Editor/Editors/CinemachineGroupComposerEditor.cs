@@ -17,9 +17,9 @@ namespace Cinemachine.Editor
             return ReflectionHelpers.GetFieldPath(expr);
         }
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(MyTarget.VirtualCamera);
             bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
             if (ortho)
@@ -52,7 +52,6 @@ namespace Cinemachine.Editor
                         break;
                 }
             }
-            return excluded;
         }
 
         public override void OnInspectorGUI()

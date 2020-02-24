@@ -9,12 +9,11 @@ namespace Cinemachine.Editor
     internal sealed class CinemachineMixingCameraEditor 
         : CinemachineVirtualCameraBaseEditor<CinemachineMixingCamera>
     {
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             for (int i = 0; i < CinemachineMixingCamera.MaxCameras; ++i)
                 excluded.Add(WeightPropertyName(i));
-            return excluded;
         }
 
         static string WeightPropertyName(int i) { return "m_Weight" + i; }

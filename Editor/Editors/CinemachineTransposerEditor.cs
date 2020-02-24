@@ -7,9 +7,9 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineTransposer))]
     internal sealed class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
     {
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
 
             switch (Target.m_BindingMode)
             {
@@ -54,7 +54,6 @@ namespace Cinemachine.Editor
             }
             if (Target.HideOffsetInInspector)
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
-            return excluded;
         }
 
         public override void OnInspectorGUI()

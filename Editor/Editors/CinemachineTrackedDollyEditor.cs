@@ -7,9 +7,9 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     internal sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
     {
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             switch (Target.m_CameraUp)
             {
                 default:
@@ -24,7 +24,6 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     break;
             }
-            return excluded;
         }
 
         public override void OnInspectorGUI()
