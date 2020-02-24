@@ -5,11 +5,11 @@ public class CharacterMovementNoCamera : MonoBehaviour
 {
     public Transform InvisibleCameraOrigin;
 
-    public float StrafeSpeed = 1;
-    public float TurnSpeed = 1;
+    public float StrafeSpeed = 0.1f;
+    public float TurnSpeed = 3;
     public float Damping = 0.2f;
-    public float VerticalRotMin = -20;
-    public float VerticalRotMax = 70;
+    public float VerticalRotMin = -80;
+    public float VerticalRotMax = 80;
     public KeyCode sprintJoystick = KeyCode.JoystickButton2;
     public KeyCode sprintKeyboard = KeyCode.Space;
 

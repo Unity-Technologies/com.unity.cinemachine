@@ -56,7 +56,7 @@ namespace Cinemachine
             VerticalArmLength = 0.4f;
             CameraSide = 1.0f;
             CameraDistance = 2.0f;
-            Damping = new Vector3(0.2f, 0.5f, 0.5f);
+            Damping = new Vector3(0.1f, 0.5f, 0.3f);
             CameraRadius = 0.2f;
         }
 
