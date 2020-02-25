@@ -307,10 +307,8 @@ namespace Cinemachine
             {
                 if (m_Targets[i].target != null)
                 {
-                    float w = m_Targets[i].weight;
-                    Quaternion q = m_Targets[i].target.rotation;
-                    // This is probably bogus
-                    r = new Quaternion(r.x + q.x * w, r.y + q.y * w, r.z + q.z * w, r.w + q.w * w);
+                    float scaledWeight = m_Targets[i].weight / mMaxWeight; // [0, 1]
+                    r *= Quaternion.Lerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight); // weighted rotation
                 }
             }
             return r.Normalized();
