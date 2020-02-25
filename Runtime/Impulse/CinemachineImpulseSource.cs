@@ -16,6 +16,12 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class CinemachineImpulseSource : MonoBehaviour
     {
+#if UNITY_EDITOR
+        [NoSaveDuringPlay]
+        [Tooltip("(Editor only, while in Play mode) Click this to generate an impulse right now")]
+        public bool TestNow;
+#endif
+
         /// <summary>
         /// This defines the complete impulse signal that will be broadcast.
         /// </summary>
@@ -27,6 +33,14 @@ namespace Cinemachine
             m_ImpulseDefinition.OnValidate();
         }
 
+#if UNITY_EDITOR
+        private void Update()
+        {
+            if (TestNow)
+                GenerateImpulse();
+            TestNow = false;
+        }
+#endif
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels,
         /// using a custom position and impact velocity</summary>
         /// <param name="position">The world-space position from which the impulse will emanate</param>
@@ -43,6 +57,14 @@ namespace Cinemachine
         public void GenerateImpulse(Vector3 velocity)
         {
             GenerateImpulseAt(transform.position, velocity);
+        }
+
+        /// <summary>Broadcast the Impulse Signal onto the appropriate channels, using
+        /// a custom impact force, with the standard direction, and this transfom's position.</summary>
+        /// <param name="force">The impact magnitude.  1 is normal</param>
+        public void GenerateImpulse(float force)
+        {
+            GenerateImpulseAt(transform.position, new Vector3(0, -force, 0));
         }
 
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels, 
