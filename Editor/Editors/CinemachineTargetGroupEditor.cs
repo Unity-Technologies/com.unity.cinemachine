@@ -10,11 +10,10 @@ namespace Cinemachine.Editor
     {
         private UnityEditorInternal.ReorderableList mTargetList;
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_Targets));
-            return excluded;
         }
 
         void OnEnable()

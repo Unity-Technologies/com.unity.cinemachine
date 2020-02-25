@@ -31,20 +31,19 @@ namespace Cinemachine.Editor
             return ReflectionHelpers.GetFieldPath(expr);
         }
 
-        protected virtual List<string> GetExcludedPropertiesInInspector()
+        protected virtual void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            var excluded = new List<string>() { "m_Script" }; 
-            if (mAdditionalExcluded != null)
-                excluded.AddRange(mAdditionalExcluded);
-            return excluded;
+            excluded.Add("m_Script");
         }
 
-        List<string> mAdditionalExcluded;
         protected void ExcludeProperty(string propertyName)
         {
-            if (mAdditionalExcluded == null)
-                mAdditionalExcluded = new List<string>();
-            mAdditionalExcluded.Add(propertyName);
+            mExcluded.Add(propertyName);
+        }
+
+        protected bool IsPropertyExcluded(string propertyName)
+        {
+            return mExcluded.Contains(propertyName);
         }
 
         public override void OnInspectorGUI()
@@ -53,16 +52,17 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
+        List<string> mExcluded = new List<string>();
         protected virtual void BeginInspector()
         {
-            mAdditionalExcluded = null;
             serializedObject.Update();
+            mExcluded.Clear();
+            GetExcludedPropertiesInInspector(mExcluded);
         }
 
         protected virtual void DrawPropertyInInspector(SerializedProperty p)
         {
-            List<string> excluded = GetExcludedPropertiesInInspector();
-            if (!excluded.Contains(p.name))
+            if (!IsPropertyExcluded(p.name))
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(p);
@@ -75,7 +75,7 @@ namespace Cinemachine.Editor
         protected void DrawRemainingPropertiesInInspector()
         {
             EditorGUI.BeginChangeCheck();
-            DrawPropertiesExcluding(serializedObject, GetExcludedPropertiesInInspector().ToArray());
+            DrawPropertiesExcluding(serializedObject, mExcluded.ToArray());
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
         }

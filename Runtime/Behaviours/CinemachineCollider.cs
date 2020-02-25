@@ -403,7 +403,8 @@ namespace Cinemachine
                     rayLength += PrecisionSlush;
                     if (rayLength > Epsilon)
                     {
-                        if (RaycastIgnoreTag(ray, out hitInfo, rayLength, layerMask))
+                        if (RuntimeUtility.RaycastIgnoreTag(
+                            ray, out hitInfo, rayLength, layerMask, m_IgnoreTag))
                         {
                             // Pull camera forward in front of obstacle
                             float adjustment = Mathf.Max(0, hitInfo.distance - PrecisionSlush);
@@ -413,36 +414,6 @@ namespace Cinemachine
                 }
             }
             return displacement;
-        }
-
-        private bool RaycastIgnoreTag(
-            Ray ray, out RaycastHit hitInfo, float rayLength, int layerMask)
-        {
-            float extraDistance = 0;
-            while (Physics.Raycast(
-                ray, out hitInfo, rayLength, layerMask,
-                QueryTriggerInteraction.Ignore))
-            {
-                if (m_IgnoreTag.Length == 0 || !hitInfo.collider.CompareTag(m_IgnoreTag))
-                {
-                    hitInfo.distance += extraDistance;
-                    return true;
-                }
-
-                // Ignore the hit.  Pull ray origin forward in front of obstacle
-                Ray inverseRay = new Ray(ray.GetPoint(rayLength), -ray.direction);
-                if (!hitInfo.collider.Raycast(inverseRay, out hitInfo, rayLength))
-                    break;
-                float deltaExtraDistance = rayLength - (hitInfo.distance - PrecisionSlush);
-                if (deltaExtraDistance < Epsilon)
-                    break;
-                extraDistance += deltaExtraDistance;
-                rayLength = hitInfo.distance - PrecisionSlush;
-                if (rayLength < Epsilon)
-                    break;
-                ray.origin = inverseRay.GetPoint(rayLength);
-            }
-            return false;
         }
 
         private Vector3 PushCameraBack(
@@ -466,8 +437,8 @@ namespace Cinemachine
             distance = Mathf.Min(distance, clampedDistance + PrecisionSlush);
 
             RaycastHit hitInfo;
-            if (RaycastIgnoreTag(ray, out hitInfo, distance,
-                    m_CollideAgainst & ~m_TransparentLayers))
+            if (RuntimeUtility.RaycastIgnoreTag(ray, out hitInfo, distance,
+                    m_CollideAgainst & ~m_TransparentLayers, m_IgnoreTag))
             {
                 // We hit something.  Stop there and take a step along that wall.
                 float adjustment = hitInfo.distance - PrecisionSlush;
@@ -489,9 +460,9 @@ namespace Cinemachine
             dir = pos - lookAtPos;
             float d = dir.magnitude;
             RaycastHit hitInfo2;
-            if (d < Epsilon || RaycastIgnoreTag(
+            if (d < Epsilon || RuntimeUtility.RaycastIgnoreTag(
                     new Ray(lookAtPos, dir), out hitInfo2, d - PrecisionSlush,
-                    m_CollideAgainst & ~m_TransparentLayers))
+                    m_CollideAgainst & ~m_TransparentLayers, m_IgnoreTag))
                 return currentPos;
 
             // All clear
@@ -500,8 +471,8 @@ namespace Cinemachine
             distance = GetPushBackDistance(ray, startPlane, targetDistance, lookAtPos);
             if (distance > Epsilon)
             {
-                if (!RaycastIgnoreTag(ray, out hitInfo, distance,
-                        m_CollideAgainst & ~m_TransparentLayers))
+                if (!RuntimeUtility.RaycastIgnoreTag(ray, out hitInfo, distance,
+                        m_CollideAgainst & ~m_TransparentLayers, m_IgnoreTag))
                 {
                     pos = ray.GetPoint(distance); // no obstacles - all good
                     extra.AddPointToDebugPath(pos);
@@ -685,7 +656,8 @@ namespace Cinemachine
                 // OverlapSphereNonAlloc won't catch those.
                 float d = distance - m_MinimumDistanceFromTarget;
                 Vector3 targetPos = state.ReferenceLookAt + dir * m_MinimumDistanceFromTarget;
-                if (RaycastIgnoreTag(new Ray(targetPos, dir), out hitInfo, d, m_CollideAgainst))
+                if (RuntimeUtility.RaycastIgnoreTag(new Ray(targetPos, dir), 
+                    out hitInfo, d, m_CollideAgainst, m_IgnoreTag))
                 {
                     // Only count it if there's an incoming collision but not an outgoing one
                     Collider c = hitInfo.collider;
@@ -765,9 +737,9 @@ namespace Cinemachine
                     return true;
                 Ray ray = new Ray(pos, dir.normalized);
                 RaycastHit hitInfo;
-                if (RaycastIgnoreTag(ray, out hitInfo,
+                if (RuntimeUtility.RaycastIgnoreTag(ray, out hitInfo,
                         distance - m_MinimumDistanceFromTarget,
-                        m_CollideAgainst & ~m_TransparentLayers))
+                        m_CollideAgainst & ~m_TransparentLayers, m_IgnoreTag))
                     return true;
             }
             return false;

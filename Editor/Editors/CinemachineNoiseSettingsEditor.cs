@@ -47,12 +47,11 @@ namespace Cinemachine.Editor
             mNoiseOffset = 0;
         }
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            var excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => Target.PositionNoise));
             excluded.Add(FieldPath(x => Target.OrientationNoise));
-            return excluded;
         }
 
         public override void OnInspectorGUI()

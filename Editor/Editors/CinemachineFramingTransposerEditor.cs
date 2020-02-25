@@ -11,9 +11,9 @@ namespace Cinemachine.Editor
         CinemachineScreenComposerGuides mScreenGuideEditor;
         GameViewEventCatcher mGameViewEventCatcher;
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             if (Target.m_UnlimitedSoftZone)
             {
                 excluded.Add(FieldPath(x => x.m_SoftZoneWidth));
@@ -72,7 +72,6 @@ namespace Cinemachine.Editor
                     }
                 }
             }
-            return excluded;
         }
 
         protected virtual void OnEnable()

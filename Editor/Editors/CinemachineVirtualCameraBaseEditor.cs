@@ -17,12 +17,11 @@ namespace Cinemachine.Editor
         static string[] sExtensionNames;
         bool IsPrefabBase { get; set; }
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            var excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             if (Target.m_ExcludedPropertiesInInspector != null)
                 excluded.AddRange(Target.m_ExcludedPropertiesInInspector);
-            return excluded;
         }
 
         protected virtual void OnEnable()
@@ -67,8 +66,7 @@ namespace Cinemachine.Editor
 
         protected void DrawHeaderInInspector()
         {
-            List<string> excluded = GetExcludedPropertiesInInspector();
-            if (!excluded.Contains("Header"))
+            if (!IsPropertyExcluded("Header"))
             {
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
@@ -79,9 +77,8 @@ namespace Cinemachine.Editor
         protected void DrawTargetsInInspector(
             SerializedProperty followTarget, SerializedProperty lookAtTarget)
         {
-            List<string> excluded = GetExcludedPropertiesInInspector();
             EditorGUI.BeginChangeCheck();
-            if (!excluded.Contains(followTarget.name))
+            if (!IsPropertyExcluded(followTarget.name))
             {
                 if (Target.ParentCamera == null || Target.ParentCamera.Follow == null)
                     EditorGUILayout.PropertyField(followTarget);
@@ -90,7 +87,7 @@ namespace Cinemachine.Editor
                         new GUIContent(followTarget.displayName + " Override"));
                 ExcludeProperty(followTarget.name);
             }
-            if (!excluded.Contains(lookAtTarget.name))
+            if (!IsPropertyExcluded(lookAtTarget.name))
             {
                 if (Target.ParentCamera == null || Target.ParentCamera.LookAt == null)
                     EditorGUILayout.PropertyField(lookAtTarget);
@@ -105,8 +102,7 @@ namespace Cinemachine.Editor
 
         protected void DrawExtensionsWidgetInInspector()
         {
-            List<string> excluded = GetExcludedPropertiesInInspector();
-            if (!excluded.Contains("Extensions"))
+            if (!IsPropertyExcluded("Extensions"))
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Extensions", EditorStyles.boldLabel);
