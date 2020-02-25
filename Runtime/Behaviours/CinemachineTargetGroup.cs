@@ -304,16 +304,19 @@ namespace Cinemachine
         {
             float weightedAverage = 0;
             Quaternion r = Quaternion.identity;
-            for (int i = 0; i < m_Targets.Length; ++i)
+            if (mMaxWeight > UnityVectorExtensions.Epsilon)
             {
-                if (m_Targets[i].target != null)
+                for (int i = 0; i < m_Targets.Length; ++i)
                 {
-                    float scaledWeight = m_Targets[i].weight / mMaxWeight;
-                    r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
-                    weightedAverage += scaledWeight;
+                    if (m_Targets[i].target != null)
+                    {
+                        float scaledWeight = m_Targets[i].weight / mMaxWeight;
+                        r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
+                        weightedAverage += scaledWeight;
+                    }
                 }
             }
-            
+
             if (weightedAverage > UnityVectorExtensions.Epsilon)
                 r = Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
             else
