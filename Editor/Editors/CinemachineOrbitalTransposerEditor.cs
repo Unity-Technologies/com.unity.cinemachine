@@ -7,9 +7,9 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
     internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
     {
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             if (Target.m_HeadingIsSlave)
             {
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
@@ -64,7 +64,6 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
                     break;
             }
-            return excluded;
         }
 
         public override void OnInspectorGUI()

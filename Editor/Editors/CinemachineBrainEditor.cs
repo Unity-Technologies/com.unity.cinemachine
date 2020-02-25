@@ -12,13 +12,12 @@ namespace Cinemachine.Editor
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         bool mEventsExpanded = false;
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_CameraCutEvent));
             excluded.Add(FieldPath(x => x.m_CameraActivatedEvent));
             excluded.Add(FieldPath(x => x.m_CustomBlends));
-            return excluded;
         }
 
         private void OnEnable()

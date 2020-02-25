@@ -14,9 +14,9 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineConfiner))]
     internal sealed class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>
     {
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
             bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
             if (!ortho)
@@ -27,7 +27,6 @@ namespace Cinemachine.Editor
             else
                 excluded.Add(FieldPath(x => x.m_BoundingShape2D));
 #endif
-            return excluded;
         }
 
         public override void OnInspectorGUI()

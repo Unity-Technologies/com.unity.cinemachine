@@ -11,12 +11,11 @@ namespace Cinemachine.Editor
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_CustomBlends));
             excluded.Add(FieldPath(x => x.m_Instructions));
-            return excluded;
         }
 
         private UnityEditorInternal.ReorderableList mChildList;

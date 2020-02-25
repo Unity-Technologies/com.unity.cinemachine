@@ -22,13 +22,12 @@ namespace Cinemachine
 
         VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_Rigs)); // can't use HideInInspector for this
             excluded.Add(FieldPath(x => x.m_Orbits));
             excluded.Add(FieldPath(x => x.m_SplineCurvature));
-            return excluded;
         }
 
         protected override void OnEnable()

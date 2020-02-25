@@ -38,14 +38,13 @@ namespace Cinemachine.Editor
                 mRepeatProperties[1].displayName, mRepeatProperties[1].tooltip);
         }
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_SkipFirst));
             excluded.Add(FieldPath(x => x.m_Repeating));
             excluded.Add(FieldPath(x => x.m_OnObjectEnter));
             excluded.Add(FieldPath(x => x.m_OnObjectExit));
-            return excluded;
         }
 
         public override void OnInspectorGUI()

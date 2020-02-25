@@ -24,11 +24,10 @@ namespace Cinemachine.Editor
         static bool mWaypointsExpanded;
         bool mPreferTangentSelection;
 
-        protected override List<string> GetExcludedPropertiesInInspector()
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
-            List<string> excluded = base.GetExcludedPropertiesInInspector();
+            base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_Waypoints));
-            return excluded;
         }
 
         void OnEnable()
