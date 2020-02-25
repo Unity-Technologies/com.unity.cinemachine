@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.5.1] - 2020-02-01
 ### Mostly Bugfixes
+- Added 3rdPersonFollow Body and 3rdPersonAim extension for dead-accurate 3rd-person aiming camera
+- Added example scenes: 3rdPersonDeadCenterAim and 3rdPersonLooseAim to show different 3rd person cmera styles
 - FramingTransposer does its work after Aim, so it plays better with Aim components.
 - Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
 - Orbital Transposer / FreeLook: improved damping when target is moving

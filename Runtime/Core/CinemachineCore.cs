@@ -13,7 +13,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20170927;
 
         /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.4.0";
+        public static readonly string kVersionString = "2.5.0";
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
@@ -31,7 +31,7 @@ namespace Cinemachine
             /// Correction channel of the CameraState)</summary>
             Noise,
 
-            /// <summary>Not a pipeline stage.  This is invoked on all virtual camera
+            /// <summary>Post-correction stage.  This is invoked on all virtual camera
             /// types, after the pipeline is complete</summary>
             Finalize
         };

@@ -7,7 +7,7 @@ namespace Cinemachine.Examples
 public class ExampleHelpWindow : MonoBehaviour
 {
     public string m_Title;
-    [Multiline]
+    [TextArea(minLines: 10, maxLines: 50)]
     public string m_Description;
 
     private bool mShowingHelpWindow = true;
