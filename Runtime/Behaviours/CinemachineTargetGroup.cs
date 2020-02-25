@@ -308,7 +308,9 @@ namespace Cinemachine
             {
                 if (m_Targets[i].target != null)
                 {
-                    float scaledWeight = m_Targets[i].weight / mMaxWeight; // [0, 1]
+                    float scaledWeight = Math.Abs(mMaxWeight) > UnityVectorExtensions.Epsilon 
+                        ? m_Targets[i].weight / mMaxWeight 
+                        : 1.0f;
                     r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
                     weightedAverage += scaledWeight;
                 }
