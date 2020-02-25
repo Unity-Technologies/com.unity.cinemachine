@@ -12,6 +12,7 @@
 - Bugfix (1213471, 1213434): add null check in editor
 - Bugfix (1213488): no solo for prefab vcams
 - Bugfix (1213819): repaintGameView on editor change
+- Bugfix (1217306): drifting camera fixed, when (1) the Targets of TargetGroup are descendants of TargetGroup's gameobject, or (2) TargetGroup's Target list is uninitialized.
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
 
 

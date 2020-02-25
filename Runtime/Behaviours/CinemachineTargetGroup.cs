@@ -256,9 +256,6 @@ namespace Cinemachine
         /// </summary>
         public void DoUpdate()
         {
-            if (IsEmpty)
-                return;
-
             mAveragePos = CalculateAveragePosition(out mMaxWeight);
             BoundingBox = CalculateBoundingBox(mAveragePos, mMaxWeight);
 
@@ -305,18 +302,23 @@ namespace Cinemachine
 
         Quaternion CalculateAverageOrientation()
         {
+            if (mMaxWeight <= UnityVectorExtensions.Epsilon)
+            {
+                return transform.rotation;
+            }
+            
+            float weightedAverage = 0;
             Quaternion r = Quaternion.identity;
             for (int i = 0; i < m_Targets.Length; ++i)
             {
                 if (m_Targets[i].target != null)
                 {
-                    float w = m_Targets[i].weight;
-                    Quaternion q = m_Targets[i].target.rotation;
-                    // This is probably bogus
-                    r = new Quaternion(r.x + q.x * w, r.y + q.y * w, r.z + q.z * w, r.w + q.w * w);
+                    float scaledWeight = m_Targets[i].weight / mMaxWeight;
+                    r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
+                    weightedAverage += scaledWeight;
                 }
             }
-            return r.Normalized();
+            return Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
         }
 
         Bounds CalculateBoundingBox(Vector3 avgPos, float maxWeight)
