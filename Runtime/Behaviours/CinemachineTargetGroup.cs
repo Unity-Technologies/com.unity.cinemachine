@@ -302,6 +302,7 @@ namespace Cinemachine
 
         Quaternion CalculateAverageOrientation()
         {
+            float weightedAverage = 0;
             Quaternion r = Quaternion.identity;
             for (int i = 0; i < m_Targets.Length; ++i)
             {
@@ -309,8 +310,11 @@ namespace Cinemachine
                 {
                     float scaledWeight = m_Targets[i].weight / mMaxWeight; // [0, 1]
                     r *= Quaternion.Lerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
+                    weightedAverage += scaledWeight;
                 }
             }
+
+            r = Quaternion.Lerp(Quaternion.identity, r, 1.0f / weightedAverage);
             return r.Normalized();
         }
 
