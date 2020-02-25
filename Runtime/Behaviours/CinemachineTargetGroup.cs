@@ -302,27 +302,23 @@ namespace Cinemachine
 
         Quaternion CalculateAverageOrientation()
         {
+            if (mMaxWeight <= UnityVectorExtensions.Epsilon)
+            {
+                return transform.rotation;
+            }
+            
             float weightedAverage = 0;
             Quaternion r = Quaternion.identity;
-            if (mMaxWeight > UnityVectorExtensions.Epsilon)
+            for (int i = 0; i < m_Targets.Length; ++i)
             {
-                for (int i = 0; i < m_Targets.Length; ++i)
+                if (m_Targets[i].target != null)
                 {
-                    if (m_Targets[i].target != null)
-                    {
-                        float scaledWeight = m_Targets[i].weight / mMaxWeight;
-                        r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
-                        weightedAverage += scaledWeight;
-                    }
+                    float scaledWeight = m_Targets[i].weight / mMaxWeight;
+                    r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
+                    weightedAverage += scaledWeight;
                 }
             }
-
-            if (weightedAverage > UnityVectorExtensions.Epsilon)
-                r = Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
-            else
-                r = transform.rotation;
-            
-            return r.Normalized();
+            return Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
         }
 
         Bounds CalculateBoundingBox(Vector3 avgPos, float maxWeight)
