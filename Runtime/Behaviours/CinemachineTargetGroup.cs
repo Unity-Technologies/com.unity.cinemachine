@@ -309,12 +309,12 @@ namespace Cinemachine
                 if (m_Targets[i].target != null)
                 {
                     float scaledWeight = m_Targets[i].weight / mMaxWeight; // [0, 1]
-                    r *= Quaternion.Lerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
+                    r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
                     weightedAverage += scaledWeight;
                 }
             }
 
-            r = Quaternion.Lerp(Quaternion.identity, r, 1.0f / weightedAverage);
+            r = Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
             return r.Normalized();
         }
 
