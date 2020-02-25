@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.5.1] - 2020-02-01
 ### Mostly Bugfixes
+- Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave
+- Added CinemachineIndependentImpulseListener, to give ImpulseListener ability to any game object
 - Added 3rdPersonFollow Body and 3rdPersonAim extension for dead-accurate 3rd-person aiming camera
 - Added example scenes: 3rdPersonDeadCenterAim and 3rdPersonLooseAim to show different 3rd person cmera styles
 - FramingTransposer does its work after Aim, so it plays better with Aim components.
