@@ -313,8 +313,12 @@ namespace Cinemachine
                     weightedAverage += scaledWeight;
                 }
             }
-
-            r = Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
+            
+            if (weightedAverage > UnityVectorExtensions.Epsilon)
+                r = Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
+            else
+                r = transform.rotation;
+            
             return r.Normalized();
         }
 
