@@ -285,9 +285,9 @@ namespace Cinemachine
                         : Vector3.Distance(listenerPosition, m_Position);
                     float time = Instance.CurrentTime - m_StartTime 
                         - distance / Mathf.Max(1, m_PropagationSpeed);
-                    if (time >= 0)
+                    float scale = m_Envelope.GetValueAt(time) * DistanceDecay(distance);
+                    if (scale != 0)
                     {
-                        float scale = m_Envelope.GetValueAt(time) * DistanceDecay(distance);
                         m_SignalSource.GetSignal(time, out pos, out rot);
                         pos *= scale;
                         rot = Quaternion.SlerpUnclamped(Quaternion.identity, rot, scale);
@@ -301,7 +301,6 @@ namespace Cinemachine
                                     q, Quaternion.identity, Mathf.Cos(Mathf.PI * t / 2));
                             }
                             pos = q * pos;
-                            rot = Quaternion.Inverse(q) * rot * q;
                         }
                         return true;
                     }

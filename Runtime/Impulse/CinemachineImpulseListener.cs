@@ -27,7 +27,8 @@ namespace Cinemachine
         /// <summary>
         /// Gain to apply to the Impulse signal.
         /// </summary>
-        [Tooltip("Gain to apply to the Impulse signal.  1 is normal strength.  Setting this to 0 completely mutes the signal.")]
+        [Tooltip("Gain to apply to the Impulse signal.  1 is normal strength.  "
+            + "Setting this to 0 completely mutes the signal.")]
         public float m_Gain = 1;
 
         /// <summary>
@@ -47,7 +48,8 @@ namespace Cinemachine
                 Vector3 impulsePos = Vector3.zero;
                 Quaternion impulseRot = Quaternion.identity;
                 if (CinemachineImpulseManager.Instance.GetImpulseAt(
-                    state.FinalPosition, m_Use2DDistance, m_ChannelMask, out impulsePos, out impulseRot))
+                    state.FinalPosition, m_Use2DDistance, m_ChannelMask, 
+                    out impulsePos, out impulseRot))
                 {
                     state.PositionCorrection += impulsePos * -m_Gain;
                     impulseRot = Quaternion.SlerpUnclamped(Quaternion.identity, impulseRot, -m_Gain);
