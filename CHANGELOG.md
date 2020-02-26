@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1213819): repaintGameView on editor change
 - Bugfix (1217306): drifting camera fixed, when (1) the Targets of TargetGroup are descendants of TargetGroup's gameobject, or (2) TargetGroup's Target list is uninitialized.
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
-
+- Bugfix (1218695): Fully qualify UnityEditor.Menu to avoid compile errors in some circumstances
 
 
 ## [2.5.0] - 2020-01-15

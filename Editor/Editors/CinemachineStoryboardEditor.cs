@@ -26,7 +26,7 @@ namespace Cinemachine.Editor
              /// Delaying until first editor tick so that the menu
              /// will be populated before setting check state, and
              /// re-apply correct action
-             EditorApplication.delayCall += () => { Menu.SetChecked(StoryboardGlobalMuteMenuName, Enabled); };
+             EditorApplication.delayCall += () => { UnityEditor.Menu.SetChecked(StoryboardGlobalMuteMenuName, Enabled); };
         }
 
         public static string kEnabledKey = "StoryboardMute_Enabled";
@@ -39,7 +39,7 @@ namespace Cinemachine.Editor
                 {
                     EditorPrefs.SetBool(kEnabledKey, value);
                     CinemachineStoryboard.s_StoryboardGlobalMute = value;
-                    Menu.SetChecked(StoryboardGlobalMuteMenuName, value);
+                    UnityEditor.Menu.SetChecked(StoryboardGlobalMuteMenuName, value);
 
                     InspectorUtility.RepaintGameView();
                 }
