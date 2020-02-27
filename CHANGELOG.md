@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.5.1] - 2020-02-01
 ### Mostly Bugfixes
+- Added CinemachineCompositionAdjustment for timeline-tweaking of procedural or recorded vcam Aim output
+- Added GroupWeightManipulator for animating group member weights
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave
 - Added CinemachineIndependentImpulseListener, to give ImpulseListener ability to any game object
-- Added 3rdPersonFollow Body and 3rdPersonAim extension for dead-accurate 3rd-person aiming camera
+- Added 3rdPersonFollow and 3rdPersonAim for dead-accurate 3rd-person aiming camera
 - Added example scenes: 3rdPersonDeadCenterAim and 3rdPersonLooseAim to show different 3rd person cmera styles
 - FramingTransposer does its work after Aim, so it plays better with Aim components.
 - Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
@@ -17,13 +19,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CustomBlends editor UX improvements: allow direct editing of vcam names, as well as dropdown
 - Add Convert to TargetGroup option on LookAt and Follow target fields
 - Bugfix: Blend Update Method handling was incorrect and caused judder in some circumstances
+- Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
 - Bugfix (1219867) - vcam popping on disable if blending
 - Bugfix (1214301, 1213836) - disallow structural change when editing vcam prefabs
 - Bugfix (1213471, 1213434): add null check in editor
 - Bugfix (1213488): no solo for prefab vcams
 - Bugfix (1213819): repaintGameView on editor change
-- Bugfix (1217306): drifting camera fixed, when (1) the Targets of TargetGroup are descendants of TargetGroup's gameobject, or (2) TargetGroup's Target list is uninitialized.
-- Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
+- Bugfix (1217306): target group position drifting when empty or when members are descendants of the group
 - Bugfix (1218695): Fully qualify UnityEditor.Menu to avoid compile errors in some circumstances
 
 
