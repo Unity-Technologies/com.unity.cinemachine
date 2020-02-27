@@ -108,12 +108,23 @@ namespace Cinemachine
         [Tooltip("At this distance beyond the impact radius, the signal will have dissipated to zero.")]
         public float m_DissipationDistance = 1000;
 
+        /// <summary>
+        /// The speed (m/s) at which the impulse propagates through space.  High speeds 
+        /// allow listeners to react instantaneously, while slower speeds allow listeres in the 
+        /// scene to react as if to a wave spreading from the source.  
+        /// </summary>
+        [Tooltip("The speed (m/s) at which the impulse propagates through space.  High speeds "
+            + "allow listeners to react instantaneously, while slower speeds allow listeres in the "
+            + "scene to react as if to a wave spreading from the source.")]
+        public float m_PropagationSpeed = 343;  // speed of sound
+
         /// <summary>Call this from your behaviour's OnValidate to validate the fields here</summary>
         public void OnValidate()
         {
             m_ImpactRadius = Mathf.Max(0, m_ImpactRadius);
             m_DissipationDistance = Mathf.Max(0, m_DissipationDistance);
             m_TimeEnvelope.Validate();
+            m_PropagationSpeed = Mathf.Max(1, m_PropagationSpeed);
         }
 
         /// <summary>Generate an impulse event at a location in space, 
@@ -139,6 +150,7 @@ namespace Cinemachine
             e.m_DirectionMode = m_DirectionMode;
             e.m_DissipationMode = m_DissipationMode;
             e.m_DissipationDistance = m_DissipationDistance;
+            e.m_PropagationSpeed = m_PropagationSpeed;
             CinemachineImpulseManager.Instance.AddImpulseEvent(e);
         }
 

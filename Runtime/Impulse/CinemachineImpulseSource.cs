@@ -8,7 +8,7 @@ namespace Cinemachine
     /// This is the base class for custom impulse sources.  It contains an impulse
     /// definition, where the characteristics of the impulse signal are defined.
     /// 
-    /// API methods are fined for actually broadcasting the impulse.  Call these
+    /// API methods are provided for actually broadcasting the impulse.  Call these
     /// methods from your custom code, or hook them up to game events in the Editor.
     /// 
     /// </summary>
@@ -43,6 +43,14 @@ namespace Cinemachine
         public void GenerateImpulse(Vector3 velocity)
         {
             GenerateImpulseAt(transform.position, velocity);
+        }
+
+        /// <summary>Broadcast the Impulse Signal onto the appropriate channels, using
+        /// a custom impact force, with the standard direction, and this transfom's position.</summary>
+        /// <param name="force">The impact magnitude.  1 is normal</param>
+        public void GenerateImpulse(float force)
+        {
+            GenerateImpulseAt(transform.position, new Vector3(0, -force, 0));
         }
 
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels, 
