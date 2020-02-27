@@ -20,7 +20,7 @@ public class SpawnInCircle : MonoBehaviour
                 var a = Random.Range(0, 360);
                 var pos = new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a));
                 pos = rootPos + pos * Mathf.Sqrt(Random.Range(0.0f, 1.0f)) * Radius;
-                Instantiate(Prefab, pos, rot);
+                Instantiate(Prefab, pos, rot, transform.parent);
             }
         }
         DoIt = false;
