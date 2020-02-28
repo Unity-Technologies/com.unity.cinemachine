@@ -1,7 +1,12 @@
-﻿using UnityEngine;
+﻿#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_PHYSICS
+#endif
+
+using UnityEngine;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_PHYSICS
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that forces the LookAt
     /// point to the center of the screen, cancelling noise and other corrections.
@@ -100,4 +105,5 @@ namespace Cinemachine
             }
         }
     }
+#endif
 }
