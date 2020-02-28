@@ -151,5 +151,5 @@ namespace Cinemachine
             return hasHit ? hitInfo.point + hitInfo.normal * radius: rayEnd;
         }
     }
-}
 #endif
+}
