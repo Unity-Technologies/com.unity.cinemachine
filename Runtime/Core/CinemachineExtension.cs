@@ -71,6 +71,12 @@ namespace Cinemachine
             mExtraState = null;
         }
 
+        /// <summary>Override this to do such things as offset the RefereceLookAt.
+        /// Base class implementation does nothing.</summary>
+        /// <param name="curState">Input state that must be mutated</param>
+        public virtual void PrePipelineMutateCameraStateCallback(
+            CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) {}
+
         /// <summary>Legacy support.  This is only here to avoid changing the API
         /// to make PostPipelineStageCallback() public</summary>
         public void InvokePostPipelineStageCallback(

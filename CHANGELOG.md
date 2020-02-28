@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CustomBlends editor UX improvements: allow direct editing of vcam names, as well as dropdown
 - Add Convert to TargetGroup option on LookAt and Follow target fields
 - Confiner: improved stability when ConfineScreenEdges is selected and confing shape is too small
+- Extensions now have PrePipelineMutateState callback
 - Bugfix: Blend Update Method handling was incorrect and caused judder in some circumstances
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
 - Bugfix (1219867) - vcam popping on disable if blending

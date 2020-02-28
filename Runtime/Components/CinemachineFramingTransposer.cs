@@ -523,7 +523,7 @@ namespace Cinemachine
 
                 // Find where it intersects the hard zone
                 Vector3 hard = Vector3.zero;
-                if (!m_UnlimitedSoftZone)
+                if (!m_UnlimitedSoftZone && deltaTime < 0 || VirtualCamera.TargetAttachment > 1 - Epsilon)
                 {
                     Rect hardGuideOrtho = ScreenToOrtho(HardGuideRect, screenSize, lens.Aspect);
                     hard = OrthoOffsetToScreenBounds(targetPos, hardGuideOrtho);
@@ -531,7 +531,7 @@ namespace Cinemachine
                     hard = cameraOffset * t;
                 }
                 // Apply damping, but only to the portion of the move that's inside the hard zone
-                cameraOffset = hard + Damper.Damp(
+                cameraOffset = hard + VirtualCamera.DetachedTargetDamp(
                     cameraOffset - hard, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
 
                 // If we have lookahead, make sure the real target is still in the frame
@@ -553,7 +553,8 @@ namespace Cinemachine
 
                     // Apply Damping
                     if (previousStateIsValid)
-                        targetHeight = m_prevFOV + Damper.Damp(targetHeight - m_prevFOV, m_ZDamping, deltaTime);
+                        targetHeight = m_prevFOV + VirtualCamera.DetachedTargetDamp(
+                            targetHeight - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetHeight;
 
                     lens.OrthographicSize = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
@@ -571,7 +572,8 @@ namespace Cinemachine
 
                     // ApplyDamping
                     if (previousStateIsValid)
-                        targetFOV = m_prevFOV + Damper.Damp(targetFOV - m_prevFOV, m_ZDamping, deltaTime);
+                        targetFOV = m_prevFOV + VirtualCamera.DetachedTargetDamp(
+                            targetFOV - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetFOV;
 
                     lens.FieldOfView = targetFOV;

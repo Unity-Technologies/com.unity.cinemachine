@@ -88,7 +88,7 @@ namespace Cinemachine
             var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) 
                 * (targetPos - prevTargetPos);
             if (deltaTime >= 0)
-                dampedTargetPos = Damper.Damp(dampedTargetPos, Damping, deltaTime);
+                dampedTargetPos = VirtualCamera.DetachedTargetDamp(dampedTargetPos, Damping, deltaTime);
             dampedTargetPos = prevTargetPos + curState.RawOrientation * dampedTargetPos;
 
             // Get target rotation (worldspace)

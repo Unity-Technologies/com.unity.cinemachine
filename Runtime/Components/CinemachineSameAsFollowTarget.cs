@@ -40,7 +40,7 @@ namespace Cinemachine
             Quaternion dampedOrientation = FollowTargetRotation;
             if (deltaTime >= 0)
             {
-                float t = Damper.Damp(1, m_Damping, deltaTime);
+                float t = VirtualCamera.DetachedTargetDamp(1, m_Damping, deltaTime);
                 dampedOrientation = Quaternion.Slerp(
                     m_PreviousReferenceOrientation, FollowTargetRotation, t);
             }

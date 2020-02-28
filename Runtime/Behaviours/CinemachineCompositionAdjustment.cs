@@ -14,6 +14,9 @@ using Cinemachine;
 #endif
 public class CinemachineCompositionAdjustment : CinemachineExtension
 {
+    [Tooltip("When to apply the adjustment")]
+    public CinemachineCore.Stage m_ApplyAfter;
+
     [Tooltip("Tilt the camera by this much")]
     public float m_Tilt;
     [Tooltip("Pan the camera by this much")]
@@ -24,21 +27,30 @@ public class CinemachineCompositionAdjustment : CinemachineExtension
     [Tooltip("Scale the zoom by this amount (normal = 1)")]
     public float m_ZoomScale;
 
-    [Tooltip("When to apply the adjustment")]
-    public CinemachineCore.Stage m_ApplyAfter;
+    [Range(0, 1)]
+    [Tooltip("Lowering this value relaxes the camera's attention to the target (normal = 1)")]
+    public float m_TargetAttachment;
 
     private void Reset()
     {
+        m_ApplyAfter = CinemachineCore.Stage.Finalize;
         m_Tilt = 0;
         m_Pan = 0;
         m_Dutch = 0;
         m_ZoomScale = 1;
-        m_ApplyAfter = CinemachineCore.Stage.Finalize;
+        m_TargetAttachment = 1;
     }
 
     private void OnValidate()
     {
-        m_ZoomScale =Mathf.Max(0.01f, m_ZoomScale);
+        m_ZoomScale = Mathf.Max(0.01f, m_ZoomScale);
+        m_TargetAttachment = Mathf.Clamp01(m_TargetAttachment);
+    }
+
+    public override void PrePipelineMutateCameraStateCallback(
+        CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) 
+    {
+        vcam.TargetAttachment = m_TargetAttachment;
     }
 
     protected override void PostPipelineStageCallback(
