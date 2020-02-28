@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.6.0] - 2020-02-27
+## [2.6.0-preview.1] - 2020-02-28
 ### New Features and Bugfixes
 - Added CinemachineCompositionAdjustment for timeline-tweaking of procedural or recorded vcam Aim output
 - Added GroupWeightManipulator for animating group member weights
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Orbital Transposer / FreeLook: improved damping when target is moving
 - CustomBlends editor UX improvements: allow direct editing of vcam names, as well as dropdown
 - Add Convert to TargetGroup option on LookAt and Follow target fields
+- Confiner: improved stability when ConfineScreenEdges is selected and confing shape is too small
 - Bugfix: Blend Update Method handling was incorrect and caused judder in some circumstances
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
 - Bugfix (1219867) - vcam popping on disable if blending

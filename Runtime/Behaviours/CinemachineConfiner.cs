@@ -236,20 +236,27 @@ namespace Cinemachine
 
             Vector3 displacement = Vector3.zero;
             Vector3 camPos = state.CorrectedPosition;
+            Vector3 lastD = Vector3.zero;
             const int kMaxIter = 12;
             for (int i = 0; i < kMaxIter; ++i)
             {
                 Vector3 d = ConfinePoint((camPos - vy) - vx);
                 if (d.AlmostZero())
+                    d = ConfinePoint((camPos + vy) + vx);
+                if (d.AlmostZero())
                     d = ConfinePoint((camPos - vy) + vx);
                 if (d.AlmostZero())
                     d = ConfinePoint((camPos + vy) - vx);
                 if (d.AlmostZero())
-                    d = ConfinePoint((camPos + vy) + vx);
-                if (d.AlmostZero())
                     break;
+                if ((d + lastD).AlmostZero())
+                {
+                    displacement += d * 0.5f;  // confiner too small: center it
+                    break;
+                }
                 displacement += d;
                 camPos += d;
+                lastD = d;
             }
             return displacement;
         }
