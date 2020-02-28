@@ -17,6 +17,10 @@ namespace Cinemachine.Editor
         static string[] sExtensionNames;
         bool IsPrefabBase { get; set; }
 
+        /// <summary>Obsolete, do not use</summary>
+        protected override List<string> GetExcludedPropertiesInInspector() 
+            { return base.GetExcludedPropertiesInInspector(); }
+
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);

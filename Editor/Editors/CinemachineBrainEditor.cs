@@ -12,6 +12,10 @@ namespace Cinemachine.Editor
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         bool mEventsExpanded = false;
 
+        /// <summary>Obsolete, do not use</summary>
+        protected override List<string> GetExcludedPropertiesInInspector() 
+            { return base.GetExcludedPropertiesInInspector(); }
+
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);

@@ -31,6 +31,9 @@ namespace Cinemachine.Editor
             return ReflectionHelpers.GetFieldPath(expr);
         }
 
+        /// <summary>Obsolete, do not use</summary>
+        protected virtual List<string> GetExcludedPropertiesInInspector() { return mExcluded; }
+
         protected virtual void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             excluded.Add("m_Script");
