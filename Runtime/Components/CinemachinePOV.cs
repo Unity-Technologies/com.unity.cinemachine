@@ -60,6 +60,11 @@ namespace Cinemachine
         [Tooltip("Controls how automatic recentering of the Horizontal axis is accomplished")]
         public AxisState.Recentering m_HorizontalRecentering = new AxisState.Recentering(false, 1, 2);
 
+        /// <summary>Obsolete - no longer used</summary>
+        [HideInInspector]
+        [Tooltip("Obsolete - no longer used")]
+        public bool m_ApplyBeforeBody;
+
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled; } }
 
@@ -74,6 +79,11 @@ namespace Cinemachine
             m_HorizontalAxis.Validate();
             m_HorizontalRecentering.Validate();
         }
+
+        /// <summary>Does nothing</summary>
+        /// <param name="state"></param>
+        /// <param name="deltaTime"></param>
+        public override void PrePipelineMutateCameraState(ref CameraState state, float deltaTime) {}
 
         /// <summary>Applies the axis values and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>
