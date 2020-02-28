@@ -52,6 +52,8 @@ namespace Cinemachine
             ConnectToVcam(false);
         }
 
+        internal void EnsureStarted() { ConnectToVcam(true); }
+
         /// <summary>Connect to virtual camera.  Implementation must be safe to be called
         /// redundantly.  Override implementations must call this base implementation</summary>
         /// <param name="connect">True if connecting, false if disconnecting</param>

@@ -41,13 +41,17 @@ namespace Cinemachine.PostFX
     [SaveDuringPlay]
     public class CinemachineVolumeSettings : CinemachineExtension
     {
-        [Tooltip("If checked, then the Focus Distance will be set to the distance between the camera and the LookAt target.  Requires DepthOfField effect in the Profile")]
+        [Tooltip("If checked, then the Focus Distance will be set to the "
+            + "distance between the camera and the LookAt target.  "
+            + "Requires DepthOfField effect in the Profile")]
         public bool m_FocusTracksTarget;
 
-        [Tooltip("Offset from target distance, to be used with Focus Tracks Target.  Offsets the sharpest point away from the LookAt target.")]
+        [Tooltip("Offset from target distance, to be used with Focus Tracks Target.  "
+            + "Offsets the sharpest point away from the LookAt target.")]
         public float m_FocusOffset;
 
-        [Tooltip("This Post-Processing profile will be applied whenever this virtual camera is live")]
+        [Tooltip("This Post-Processing profile will be applied whenever this "
+            + "virtual camera is live")]
         public VolumeProfile m_Profile;
 
         class VcamExtraState

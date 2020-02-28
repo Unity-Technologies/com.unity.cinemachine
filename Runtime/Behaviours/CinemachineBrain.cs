@@ -501,6 +501,14 @@ namespace Cinemachine
             frame.blend.Duration = 1;
             frame.blend.TimeInBlend = weightB;
 
+            // In case vcams are inactive game objects, make sure they get initialized properly
+            var cam = camA as CinemachineVirtualCameraBase;
+            if (cam != null)
+                cam.EnsureStarted();
+            cam = camB as CinemachineVirtualCameraBase;
+            if (cam != null)
+                cam.EnsureStarted();
+
             return overrideId;
         }
 

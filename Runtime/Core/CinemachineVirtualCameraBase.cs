@@ -318,9 +318,27 @@ namespace Cinemachine
             UpdateVcamPoolStatus();
         }
 
-        /// <summary>Base class implementation does nothing.</summary>
+        bool m_WasStarted;
+
+        /// <summary>Derived classes should call base class implementation.</summary>
         protected virtual void Start()
         {
+            m_WasStarted = true;
+        }
+
+        /// <summary>
+        /// Called on inactive object when being artificially activated by timeline.
+        /// This is necessary because Awak() isn't called on inactive gameObjects.
+        /// </summary>
+        internal void EnsureStarted()
+        {
+            if (!m_WasStarted)
+            {
+                m_WasStarted = true;
+                var extensions = GetComponentsInChildren<CinemachineExtension>();
+                for (int i = 0; i < extensions.Length; ++i)
+                    extensions[i].EnsureStarted();
+            }
         }
 
         /// <summary>Enforce bounds for fields, when changed in inspector.
