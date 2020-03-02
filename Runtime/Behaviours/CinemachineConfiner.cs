@@ -43,7 +43,18 @@ namespace Cinemachine
 #if CINEMACHINE_PHYSICS
         /// <summary>The volume within which the camera is to be contained.</summary>
         [Tooltip("The volume within which the camera is to be contained")]
-        public Collider m_BoundingVolume;
+        [SerializeField]
+        internal Collider _BoundingVolume;
+
+        public Collider m_BoundingVolume
+        {
+            get => _BoundingVolume;
+            set
+            {
+                InvalidatePathCache();
+                _BoundingVolume = value;
+            }
+        }
 #endif
 
 #if CINEMACHINE_PHYSICS_2D
@@ -51,7 +62,7 @@ namespace Cinemachine
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [field: Tooltip("The 2D shape within which the camera is to be contained")]
         [SerializeField]
-        private Collider2D _BoundingShape2D;
+        internal Collider2D _BoundingShape2D;
 
         public Collider2D m_BoundingShape2D
         {
