@@ -191,6 +191,12 @@ namespace Cinemachine
             float deltaTime, Vector3 up, ref AxisState axis,
             ref AxisState.Recentering recentering, bool isLive)
         {
+            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            {
+                axis.m_MinValue = -180;
+                axis.m_MaxValue = 180;
+            }
+
             // Only read joystick when game is playing
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !isLive)
             {
