@@ -44,7 +44,6 @@ namespace Cinemachine
         /// <summary>The volume within which the camera is to be contained.</summary>
         [Tooltip("The volume within which the camera is to be contained")]
         public Collider m_BoundingVolume;
-        private Collider m_BoundingVolumeCache;
 #endif
 
 #if CINEMACHINE_PHYSICS_2D
@@ -140,12 +139,9 @@ namespace Cinemachine
 
         bool ValidatePathCache()
         {
-            if (m_BoundingVolumeCache != m_BoundingVolume)
-            {
-                InvalidatePathCache();
-            }
             if (m_BoundingShape2DCache != m_BoundingShape2D)
             {
+                m_BoundingShape2DCache = m_BoundingShape2D;
                 InvalidatePathCache();
             }
             
