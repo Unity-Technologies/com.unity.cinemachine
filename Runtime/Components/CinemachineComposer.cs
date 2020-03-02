@@ -238,7 +238,7 @@ namespace Cinemachine
 
                 // First force the previous rotation into the hard bounds, no damping,
                 // then  move it through the soft zone, with damping
-                if (deltaTime < 0 || VirtualCamera.TargetAttachment > 1 - Epsilon)
+                if (deltaTime < 0 || VirtualCamera.LookAtTargetAttachment > 1 - Epsilon)
                 {
                     RotateToScreenBounds(
                         ref curState, mCache.mFovHardGuideRect, TrackedPoint,
@@ -435,8 +435,10 @@ namespace Cinemachine
             // Apply damping
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                rotToRect.x = VirtualCamera.DetachedTargetDamp(rotToRect.x, m_VerticalDamping, deltaTime);
-                rotToRect.y = VirtualCamera.DetachedTargetDamp(rotToRect.y, m_HorizontalDamping, deltaTime);
+                rotToRect.x = VirtualCamera.DetachedLookAtTargetDamp(
+                    rotToRect.x, m_VerticalDamping, deltaTime);
+                rotToRect.y = VirtualCamera.DetachedLookAtTargetDamp(
+                    rotToRect.y, m_HorizontalDamping, deltaTime);
             }
 
             // Rotate

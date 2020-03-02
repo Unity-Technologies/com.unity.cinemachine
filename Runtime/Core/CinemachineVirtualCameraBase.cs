@@ -60,10 +60,19 @@ namespace Cinemachine
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
         /// attachment to the target.  Range is 0...1.  
         /// 1 is full attachment, and is the normal state.
-        /// 0 is no attachment, and virtual camera will behave as if no LookAt or Follow 
+        /// 0 is no attachment, and virtual camera will behave as if no Follow 
         /// targets are set.
         /// </summary>
-        public float TargetAttachment { get; set; }
+        public float FollowTargetAttachment { get; set; }
+
+        /// <summary>
+        /// This must be set every frame at the start of the pipeline to relax the virtual camera's
+        /// attachment to the target.  Range is 0...1.  
+        /// 1 is full attachment, and is the normal state.
+        /// 0 is no attachment, and virtual camera will behave as if no LookAt
+        /// targets are set.
+        /// </summary>
+        public float LookAtTargetAttachment { get; set; }
 
         /// <summary>
         /// How often to update a virtual camera when it is in Standby mode
@@ -98,10 +107,10 @@ namespace Cinemachine
         /// <param name="deltaTime">The time over which to damp</param>
         /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
-        public float DetachedTargetDamp(float initial, float dampTime, float deltaTime)
+        public float DetachedFollowTargetDamp(float initial, float dampTime, float deltaTime)
         {
-            dampTime = Mathf.Lerp(Mathf.Max(1, dampTime), dampTime, TargetAttachment);
-            deltaTime = Mathf.Lerp(0, deltaTime, TargetAttachment);
+            dampTime = Mathf.Lerp(Mathf.Max(1, dampTime), dampTime, FollowTargetAttachment);
+            deltaTime = Mathf.Lerp(0, deltaTime, FollowTargetAttachment);
             return Damper.Damp(initial, dampTime, deltaTime);
         }
 
@@ -115,10 +124,10 @@ namespace Cinemachine
         /// <param name="deltaTime">The time over which to damp</param>
         /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
-        public Vector3 DetachedTargetDamp(Vector3 initial, Vector3 dampTime, float deltaTime)
+        public Vector3 DetachedFollowTargetDamp(Vector3 initial, Vector3 dampTime, float deltaTime)
         {
-            dampTime = Vector3.Lerp(Vector3.Max(Vector3.one, dampTime), dampTime, TargetAttachment);
-            deltaTime = Mathf.Lerp(0, deltaTime, TargetAttachment);
+            dampTime = Vector3.Lerp(Vector3.Max(Vector3.one, dampTime), dampTime, FollowTargetAttachment);
+            deltaTime = Mathf.Lerp(0, deltaTime, FollowTargetAttachment);
             return Damper.Damp(initial, dampTime, deltaTime);
         }
 
@@ -132,10 +141,61 @@ namespace Cinemachine
         /// <param name="deltaTime">The time over which to damp</param>
         /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
-        public Vector3 DetachedTargetDamp(Vector3 initial, float dampTime, float deltaTime)
+        public Vector3 DetachedFollowTargetDamp(Vector3 initial, float dampTime, float deltaTime)
         {
-            dampTime = Mathf.Lerp(Mathf.Max(1, dampTime), dampTime, TargetAttachment);
-            deltaTime = Mathf.Lerp(0, deltaTime, TargetAttachment);
+            dampTime = Mathf.Lerp(Mathf.Max(1, dampTime), dampTime, FollowTargetAttachment);
+            deltaTime = Mathf.Lerp(0, deltaTime, FollowTargetAttachment);
+            return Damper.Damp(initial, dampTime, deltaTime);
+        }
+
+        /// <summary>Get a damped version of a quantity.  This is the portion of the
+        /// quantity that will take effect over the given time.
+        /// This method takes the target attachment into account.  For general
+        /// damping without consideration of target attachment, use Damper.Damp()</summary>
+        /// <param name="initial">The amount that will be damped</param>
+        /// <param name="dampTime">The rate of damping.  This is the time it would
+        /// take to reduce the original amount to a negligible percentage</param>
+        /// <param name="deltaTime">The time over which to damp</param>
+        /// <returns>The damped amount.  This will be the original amount scaled by
+        /// a value between 0 and 1.</returns>
+        public float DetachedLookAtTargetDamp(float initial, float dampTime, float deltaTime)
+        {
+            dampTime = Mathf.Lerp(Mathf.Max(1, dampTime), dampTime, LookAtTargetAttachment);
+            deltaTime = Mathf.Lerp(0, deltaTime, LookAtTargetAttachment);
+            return Damper.Damp(initial, dampTime, deltaTime);
+        }
+
+        /// <summary>Get a damped version of a quantity.  This is the portion of the
+        /// quantity that will take effect over the given time.
+        /// This method takes the target attachment into account.  For general
+        /// damping without consideration of target attachment, use Damper.Damp()</summary>
+        /// <param name="initial">The amount that will be damped</param>
+        /// <param name="dampTime">The rate of damping.  This is the time it would
+        /// take to reduce the original amount to a negligible percentage</param>
+        /// <param name="deltaTime">The time over which to damp</param>
+        /// <returns>The damped amount.  This will be the original amount scaled by
+        /// a value between 0 and 1.</returns>
+        public Vector3 DetachedLookAtTargetDamp(Vector3 initial, Vector3 dampTime, float deltaTime)
+        {
+            dampTime = Vector3.Lerp(Vector3.Max(Vector3.one, dampTime), dampTime, LookAtTargetAttachment);
+            deltaTime = Mathf.Lerp(0, deltaTime, LookAtTargetAttachment);
+            return Damper.Damp(initial, dampTime, deltaTime);
+        }
+
+        /// <summary>Get a damped version of a quantity.  This is the portion of the
+        /// quantity that will take effect over the given time.
+        /// This method takes the target attachment into account.  For general
+        /// damping without consideration of target attachment, use Damper.Damp()</summary>
+        /// <param name="initial">The amount that will be damped</param>
+        /// <param name="dampTime">The rate of damping.  This is the time it would
+        /// take to reduce the original amount to a negligible percentage</param>
+        /// <param name="deltaTime">The time over which to damp</param>
+        /// <returns>The damped amount.  This will be the original amount scaled by
+        /// a value between 0 and 1.</returns>
+        public Vector3 DetachedLookAtTargetDamp(Vector3 initial, float dampTime, float deltaTime)
+        {
+            dampTime = Mathf.Lerp(Mathf.Max(1, dampTime), dampTime, LookAtTargetAttachment);
+            deltaTime = Mathf.Lerp(0, deltaTime, LookAtTargetAttachment);
             return Damper.Damp(initial, dampTime, deltaTime);
         }
 

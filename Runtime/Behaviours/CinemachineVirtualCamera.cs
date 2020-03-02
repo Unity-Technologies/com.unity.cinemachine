@@ -444,7 +444,8 @@ namespace Cinemachine
         private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
-            TargetAttachment = 1;
+            FollowTargetAttachment = 1;
+            LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
             CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);

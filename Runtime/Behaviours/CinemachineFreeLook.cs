@@ -669,7 +669,8 @@ namespace Cinemachine
                 }
                 m_Rigs[i].Follow = null;
                 m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
-                m_Rigs[i].TargetAttachment = TargetAttachment;
+                m_Rigs[i].FollowTargetAttachment = FollowTargetAttachment;
+                m_Rigs[i].LookAtTargetAttachment = LookAtTargetAttachment;
                 if (!PreviousStateIsValid)
                 {
                     m_Rigs[i].PreviousStateIsValid = false;

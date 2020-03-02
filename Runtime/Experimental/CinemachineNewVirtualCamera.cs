@@ -144,7 +144,8 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            TargetAttachment = 1;
+            FollowTargetAttachment = 1;
+            LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
             m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);

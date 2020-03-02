@@ -5,9 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.6.0-preview.1] - 2020-02-28
+## [2.6.0-preview.2] - 2020-02-28
 ### New Features and Bugfixes
-- Added CinemachineCompositionAdjustment for timeline-tweaking of procedural or recorded vcam Aim output
+- Added CinemachineRecomposer for timeline-tweaking of procedural or recorded vcam Aim output
 - Added GroupWeightManipulator for animating group member weights
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave
 - Added CinemachineIndependentImpulseListener, to give ImpulseListener ability to any game object

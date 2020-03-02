@@ -12,7 +12,7 @@ using Cinemachine;
 #else
 [ExecuteInEditMode]
 #endif
-public class CinemachineCompositionAdjustment : CinemachineExtension
+public class CinemachineRecomposer : CinemachineExtension
 {
     [Tooltip("When to apply the adjustment")]
     public CinemachineCore.Stage m_ApplyAfter;
@@ -28,8 +28,12 @@ public class CinemachineCompositionAdjustment : CinemachineExtension
     public float m_ZoomScale;
 
     [Range(0, 1)]
-    [Tooltip("Lowering this value relaxes the camera's attention to the target (normal = 1)")]
-    public float m_TargetAttachment;
+    [Tooltip("Lowering this value relaxes the camera's attention to the Follow target (normal = 1)")]
+    public float m_FollowAttachment;
+
+        [Range(0, 1)]
+    [Tooltip("Lowering this value relaxes the camera's attention to the LookAt target (normal = 1)")]
+    public float m_LookAtAttachment;
 
     private void Reset()
     {
@@ -38,19 +42,22 @@ public class CinemachineCompositionAdjustment : CinemachineExtension
         m_Pan = 0;
         m_Dutch = 0;
         m_ZoomScale = 1;
-        m_TargetAttachment = 1;
+        m_FollowAttachment = 1;
+        m_LookAtAttachment = 1;
     }
 
     private void OnValidate()
     {
         m_ZoomScale = Mathf.Max(0.01f, m_ZoomScale);
-        m_TargetAttachment = Mathf.Clamp01(m_TargetAttachment);
+        m_FollowAttachment = Mathf.Clamp01(m_FollowAttachment);
+        m_LookAtAttachment = Mathf.Clamp01(m_LookAtAttachment);
     }
 
     public override void PrePipelineMutateCameraStateCallback(
         CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) 
     {
-        vcam.TargetAttachment = m_TargetAttachment;
+        vcam.FollowTargetAttachment = m_FollowAttachment;
+        vcam.LookAtTargetAttachment = m_LookAtAttachment;
     }
 
     protected override void PostPipelineStageCallback(

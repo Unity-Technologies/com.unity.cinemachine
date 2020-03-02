@@ -37,7 +37,7 @@ namespace Cinemachine
 
             Vector3 dampedPos = FollowTargetPosition;
             if (deltaTime >= 0)
-                dampedPos = m_PreviousTargetPosition + VirtualCamera.DetachedTargetDamp(
+                dampedPos = m_PreviousTargetPosition + VirtualCamera.DetachedFollowTargetDamp(
                     dampedPos - m_PreviousTargetPosition, m_Damping, deltaTime);
             m_PreviousTargetPosition = dampedPos;
             curState.RawPosition = dampedPos;

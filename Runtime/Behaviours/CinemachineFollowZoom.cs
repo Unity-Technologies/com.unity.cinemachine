@@ -81,7 +81,7 @@ namespace Cinemachine
                     {
                         float currentWidth = d * 2f * Mathf.Tan(extra.m_previousFrameZoom * Mathf.Deg2Rad / 2f);
                         float delta = targetWidth - currentWidth;
-                        delta = VirtualCamera.DetachedTargetDamp(delta, m_Damping, deltaTime);
+                        delta = VirtualCamera.DetachedLookAtTargetDamp(delta, m_Damping, deltaTime);
                         targetWidth = currentWidth + delta;
                     }
                     fov = 2f * Mathf.Atan(targetWidth / (2 * d)) * Mathf.Rad2Deg;
