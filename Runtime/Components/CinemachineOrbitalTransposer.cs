@@ -295,6 +295,13 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
+            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            {
+                m_XAxis.m_MinValue = -180;
+                m_XAxis.m_MaxValue = 180;
+                m_XAxis.Value = 0;
+            }
+            
             InitPrevFrameStateInfo(ref curState, deltaTime);
 
             // Update the heading
