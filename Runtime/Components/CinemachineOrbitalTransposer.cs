@@ -160,9 +160,9 @@ namespace Cinemachine
             = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
                     if (orbital.m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
                     {
-                        orbital. m_XAxis.m_MinValue = -180;
-                        orbital.m_XAxis.m_MaxValue = 180;
                         orbital.m_XAxis.Value = 0;
+                        orbital.m_XAxis.m_MinValue = -180;
+                        orbital.m_XAxis.m_MaxValue = 180;
                     }
                     return orbital.UpdateHeading(
                         deltaTime, up, ref orbital.m_XAxis,
