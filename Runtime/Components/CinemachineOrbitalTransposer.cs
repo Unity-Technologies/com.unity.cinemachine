@@ -158,12 +158,6 @@ namespace Cinemachine
         /// </summary>
         internal UpdateHeadingDelegate HeadingUpdater
             = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
-                    if (orbital.m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
-                    {
-                        orbital.m_XAxis.Value = 0;
-                        orbital.m_XAxis.m_MinValue = -180;
-                        orbital.m_XAxis.m_MaxValue = 180;
-                    }
                     return orbital.UpdateHeading(
                         deltaTime, up, ref orbital.m_XAxis,
                         ref orbital.m_RecenterToTargetHeading,
@@ -197,6 +191,12 @@ namespace Cinemachine
             float deltaTime, Vector3 up, ref AxisState axis,
             ref AxisState.Recentering recentering, bool isLive)
         {
+            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            {
+                axis.m_MinValue = -180;
+                axis.m_MaxValue = 180;
+            }
+
             // Only read joystick when game is playing
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !isLive)
             {
