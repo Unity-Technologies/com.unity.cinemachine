@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.6.0-preview.2] - 2020-02-28
 ### New Features and Bugfixes
+- VolumeSettings/PostProcessing: added ability to choose custom target for focus tracking
 - Added CinemachineRecomposer for timeline-tweaking of procedural or recorded vcam Aim output
 - Added GroupWeightManipulator for animating group member weights
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave

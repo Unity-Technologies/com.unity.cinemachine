@@ -1,4 +1,5 @@
 <size=20><b>Version 2.6.0</b></size>
+- VolumeSettings/PostProcessing: added ability to choose custom target for focus tracking
 - Added CinemachineRecomposer for timeline-tweaking of procedural or recorded vcam Aim output
 - Added GroupWeightManipulator for animating group member weights
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave

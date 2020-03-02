@@ -33,10 +33,41 @@ namespace Cinemachine.PostFX
     [SaveDuringPlay]
     public class CinemachinePostProcessing : CinemachineExtension
     {
-        [Tooltip("If checked, then the Focus Distance will be set to the distance between the camera and the LookAt target.  Requires DepthOfField effect in the Profile")]
+        /// <summary>This is obsolete, please use m_FocusTracking</summary>
+        [HideInInspector]
         public bool m_FocusTracksTarget;
 
-        [Tooltip("Offset from target distance, to be used with Focus Tracks Target.  Offsets the sharpest point away from the LookAt target.")]
+        /// <summary>The reference object for focus tracking</summary>
+        public enum FocusTrackingMode
+        {
+            /// <summary>No focus tracking</summary>
+            None,
+            /// <summary>Focus offet is relative to the LookAt target</summary>
+            LookAtTarget,
+            /// <summary>Focus offet is relative to the Follow target</summary>
+            FollowTarget,
+            /// <summary>Focus offet is relative to the Custom target set here</summary>
+            CustomTarget,
+            /// <summary>Focus offet is relative to the camera</summary>
+            Camera
+        };
+
+        /// <summary>If the profile has the appropriate overrides, will set the base focus 
+        /// distance to be the distance from the selected target to the camera.
+        /// The Focus Offset field will then modify that distance</summary>
+        [Tooltip("If the profile has the appropriate overrides, will set the base focus "
+            + "distance to be the distance from the selected target to the camera."
+            + "The Focus Offset field will then modify that distance.")]
+        public FocusTrackingMode m_FocusTracking;
+
+        /// <summary>The target to use if Focus Tracks Target is set to Custom Target</summary>
+        [Tooltip("The target to use if Focus Tracks Target is set to Custom Target")]
+        public Transform m_FocusTarget;
+
+        /// <summary>Offset from target distance, to be used with Focus Tracks Target.  
+        /// Offsets the sharpest point away from the focus target</summary>
+        [Tooltip("Offset from target distance, to be used with Focus Tracks Target.  "
+            + "Offsets the sharpest point away from the focus target.")]
         public float m_FocusOffset;
 
         [Tooltip("This Post-Processing profile will be applied whenever this virtual camera is live")]
@@ -80,6 +111,19 @@ namespace Cinemachine.PostFX
                 list[i].DestroyProfileCopy();
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            // Map legacy m_FocusTracksTarget to focus mode
+            if (m_FocusTracksTarget)
+            {
+                m_FocusTracking = VirtualCamera.LookAt != null 
+                    ? FocusTrackingMode.LookAtTarget : FocusTrackingMode.Camera;
+            }
+            m_FocusTracksTarget = false;
+        }
+
         protected override void OnDestroy()
         {
             InvalidateCachedProfile();
@@ -102,7 +146,7 @@ namespace Cinemachine.PostFX
                     var profile = m_Profile;
 
                     // Handle Follow Focus
-                    if (!m_FocusTracksTarget)
+                    if (m_FocusTracking == FocusTrackingMode.None)
                         extra.DestroyProfileCopy();
                     else
                     {
@@ -113,8 +157,16 @@ namespace Cinemachine.PostFX
                         if (profile.TryGetSettings(out dof))
                         {
                             float focusDistance = m_FocusOffset;
-                            if (state.HasLookAt)
-                                focusDistance += (state.FinalPosition - state.ReferenceLookAt).magnitude;
+                            Transform focusTarget = null;
+                            switch (m_FocusTracking)
+                            {
+                                default: break;
+                                case FocusTrackingMode.LookAtTarget: focusTarget = VirtualCamera.LookAt; break;
+                                case FocusTrackingMode.FollowTarget: focusTarget = VirtualCamera.Follow; break;
+                                case FocusTrackingMode.CustomTarget: focusTarget = m_FocusTarget; break;
+                            }
+                            if (focusTarget != null)
+                                focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
                             dof.focusDistance.value = Mathf.Max(0, focusDistance);
                         }
                     }
