@@ -139,13 +139,13 @@ namespace Cinemachine
 
         bool ValidatePathCache()
         {
+#if CINEMACHINE_PHYSICS_2D
             if (m_BoundingShape2DCache != m_BoundingShape2D)
             {
                 m_BoundingShape2DCache = m_BoundingShape2D;
                 InvalidatePathCache();
             }
             
-#if CINEMACHINE_PHYSICS_2D
             Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
             if (colliderType == typeof(PolygonCollider2D))
             {
