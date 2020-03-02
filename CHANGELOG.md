@@ -5,9 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.6.0-preview.1] - 2020-02-28
+## [2.6.0-preview.2] - 2020-02-28
 ### New Features and Bugfixes
-- Added CinemachineCompositionAdjustment for timeline-tweaking of procedural or recorded vcam Aim output
+- Added CinemachineRecomposer for timeline-tweaking of procedural or recorded vcam Aim output
 - Added GroupWeightManipulator for animating group member weights
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave
 - Added CinemachineIndependentImpulseListener, to give ImpulseListener ability to any game object
@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CustomBlends editor UX improvements: allow direct editing of vcam names, as well as dropdown
 - Add Convert to TargetGroup option on LookAt and Follow target fields
 - Confiner: improved stability when ConfineScreenEdges is selected and confing shape is too small
+- Extensions now have PrePipelineMutateState callback
+- Added TargetAttachment property to vcams.  Normally 1, this can be used to relax attention to targets - effectively a damping override
 - Bugfix: Blend Update Method handling was incorrect and caused judder in some circumstances
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
 - Bugfix (1219867) - vcam popping on disable if blending

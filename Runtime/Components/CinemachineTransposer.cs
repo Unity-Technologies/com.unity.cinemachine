@@ -224,7 +224,7 @@ namespace Cinemachine
                 if (m_AngularDampingMode == AngularDampingMode.Quaternion
                     && m_BindingMode == BindingMode.LockToTarget)
                 {
-                    float t = Damper.Damp(1, m_AngularDamping, deltaTime);
+                    float t = VirtualCamera.DetachedFollowTargetDamp(1, m_AngularDamping, deltaTime);
                     dampedOrientation = Quaternion.Slerp(
                         m_PreviousReferenceOrientation, targetOrientation, t);
                 }
@@ -235,7 +235,7 @@ namespace Cinemachine
                     for (int i = 0; i < 3; ++i)
                         if (relative[i] > 180)
                             relative[i] -= 360;
-                    relative = Damper.Damp(relative, AngularDamping, deltaTime);
+                    relative = VirtualCamera.DetachedFollowTargetDamp(relative, AngularDamping, deltaTime);
                     dampedOrientation = m_PreviousReferenceOrientation * Quaternion.Euler(relative);
                 }
             }
@@ -264,7 +264,7 @@ namespace Cinemachine
                 else
                     dampingSpace = Quaternion.LookRotation(dampedOrientation * desiredCameraOffset, up);
                 var localDelta = Quaternion.Inverse(dampingSpace) * positionDelta;
-                localDelta = Damper.Damp(localDelta, Damping, deltaTime);
+                localDelta = VirtualCamera.DetachedFollowTargetDamp(localDelta, Damping, deltaTime);
                 positionDelta = dampingSpace * localDelta;
             }
             currentPosition += positionDelta;
@@ -280,27 +280,30 @@ namespace Cinemachine
             Vector3 cameraFwd, Vector3 up, Vector3 actualTargetPos)
         {
             var posOffset = Vector3.zero;
-            cameraOffset = cameraOffset.ProjectOntoPlane(up);
-            var minDistance = cameraOffset.magnitude * 0.2f;
-            if (minDistance > 0)
+            if (VirtualCamera.FollowTargetAttachment > 1 - Epsilon)
             {
-                actualTargetPos = actualTargetPos.ProjectOntoPlane(up);
-                dampedTargetPos = dampedTargetPos.ProjectOntoPlane(up);
-                var cameraPos = dampedTargetPos + cameraOffset;
-                var d = Vector3.Dot(
-                    actualTargetPos - cameraPos,
-                    (dampedTargetPos - cameraPos).normalized);
-                if (d < minDistance)
+                cameraOffset = cameraOffset.ProjectOntoPlane(up);
+                var minDistance = cameraOffset.magnitude * 0.2f;
+                if (minDistance > 0)
                 {
-                    var dir = actualTargetPos - dampedTargetPos;
-                    var len = dir.magnitude;
-                    if (len < 0.01f)
-                        dir = -cameraFwd.ProjectOntoPlane(up);
-                    else
-                        dir /= len;
-                    posOffset = dir * (minDistance - d);
+                    actualTargetPos = actualTargetPos.ProjectOntoPlane(up);
+                    dampedTargetPos = dampedTargetPos.ProjectOntoPlane(up);
+                    var cameraPos = dampedTargetPos + cameraOffset;
+                    var d = Vector3.Dot(
+                        actualTargetPos - cameraPos,
+                        (dampedTargetPos - cameraPos).normalized);
+                    if (d < minDistance)
+                    {
+                        var dir = actualTargetPos - dampedTargetPos;
+                        var len = dir.magnitude;
+                        if (len < 0.01f)
+                            dir = -cameraFwd.ProjectOntoPlane(up);
+                        else
+                            dir /= len;
+                        posOffset = dir * (minDistance - d);
+                    }
+                    m_PreviousTargetPosition += posOffset;
                 }
-                m_PreviousTargetPosition += posOffset;
             }
             return posOffset;
         }

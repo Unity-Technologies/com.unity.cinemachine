@@ -186,7 +186,8 @@ namespace Cinemachine
 
                 // ApplyDamping
                 if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-                    targetHeight = m_prevFOV + Damper.Damp(targetHeight - m_prevFOV, m_FrameDamping, deltaTime);
+                    targetHeight = m_prevFOV + VirtualCamera.DetachedLookAtTargetDamp(
+                        targetHeight - m_prevFOV, m_FrameDamping, deltaTime);
                 m_prevFOV = targetHeight;
 
                 LensSettings lens = curState.Lens;
@@ -220,7 +221,7 @@ namespace Cinemachine
                     if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
                         float delta = targetDelta - m_prevFramingDistance;
-                        delta = Damper.Damp(delta, m_FrameDamping, deltaTime);
+                        delta = VirtualCamera.DetachedLookAtTargetDamp(delta, m_FrameDamping, deltaTime);
                         targetDelta = m_prevFramingDistance + delta;
                     }
                     m_prevFramingDistance = targetDelta;
@@ -239,7 +240,8 @@ namespace Cinemachine
 
                     // ApplyDamping
                     if (deltaTime >= 0 && m_prevFOV != 0 && VirtualCamera.PreviousStateIsValid)
-                        targetFOV = m_prevFOV + Damper.Damp(targetFOV - m_prevFOV, m_FrameDamping, deltaTime);
+                        targetFOV = m_prevFOV + VirtualCamera.DetachedLookAtTargetDamp(
+                            targetFOV - m_prevFOV, m_FrameDamping, deltaTime);
                     m_prevFOV = targetFOV;
 
                     LensSettings lens = curState.Lens;

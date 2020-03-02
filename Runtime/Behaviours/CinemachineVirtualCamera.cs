@@ -1,6 +1,4 @@
-﻿using Cinemachine.Utility;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -446,6 +444,9 @@ namespace Cinemachine
         private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
+            FollowTargetAttachment = 1;
+            LookAtTargetAttachment = 1;
+
             // Initialize the camera state, in case the game object got moved in the editor
             CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
 
@@ -467,6 +468,11 @@ namespace Cinemachine
 
             // Update the state by invoking the component pipeline
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
+
+            // Extensions first
+            InvokePrePipelineMutateCameraStateCallback(this, ref state, deltaTime);
+
+            // Then components
             if (m_ComponentPipeline == null)
             {
                 state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
