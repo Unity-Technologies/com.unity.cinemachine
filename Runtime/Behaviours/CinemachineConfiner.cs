@@ -60,7 +60,7 @@ namespace Cinemachine
 #if CINEMACHINE_PHYSICS_2D
 
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
-        [field: Tooltip("The 2D shape within which the camera is to be contained")]
+        [Tooltip("The 2D shape within which the camera is to be contained")]
         [SerializeField]
         internal Collider2D _BoundingShape2D;
 
