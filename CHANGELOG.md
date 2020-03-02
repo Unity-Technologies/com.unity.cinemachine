@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1213819): repaintGameView on editor change
 - Bugfix (1217306): target group position drifting when empty or when members are descendants of the group
 - Bugfix (1218695): Fully qualify UnityEditor.Menu to avoid compile errors in some circumstances
+- Bugfix: Confiner's cache is reset, when bounding shape/volume is changed.
 
 
 ## [2.5.0] - 2020-01-15

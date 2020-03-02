@@ -47,9 +47,11 @@ namespace Cinemachine
 #endif
 
 #if CINEMACHINE_PHYSICS_2D
+
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
+        private Collider2D m_BoundingShape2DCache;
 #endif
         /// <summary>If camera is orthographic, screen edges will be confined to the volume.</summary>
         [Tooltip("If camera is orthographic, screen edges will be confined to the volume.  "
@@ -132,11 +134,21 @@ namespace Cinemachine
         private int m_pathTotalPointCount;
 
         /// <summary>Call this if the bounding shape's points change at runtime</summary>
-        public void InvalidatePathCache() { m_pathCache = null; }
+        public void InvalidatePathCache()
+        {
+            m_pathCache = null;
+            m_BoundingShape2DCache = null;
+        }
 
         bool ValidatePathCache()
         {
 #if CINEMACHINE_PHYSICS_2D
+            if (m_BoundingShape2DCache != m_BoundingShape2D)
+            {
+                InvalidatePathCache();
+                m_BoundingShape2DCache = m_BoundingShape2D;
+            }
+            
             Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
             if (colliderType == typeof(PolygonCollider2D))
             {
