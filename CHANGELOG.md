@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.6.0-preview.2] - 2020-02-28
 ### New Features and Bugfixes
+- VolumeSettings/PostProcessing: added ability to choose custom target for focus tracking
 - Added CinemachineRecomposer for timeline-tweaking of procedural or recorded vcam Aim output
 - Added GroupWeightManipulator for animating group member weights
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave
@@ -31,6 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1217306): target group position drifting when empty or when members are descendants of the group
 - Bugfix (1218695): Fully qualify UnityEditor.Menu to avoid compile errors in some circumstances
 - Bugfix (1222740): Binding Modes, that don't have control over axis value range, are not affected by it. 
+- Bugfix: Confiner's cache is reset, when bounding shape/volume is changed.
 
 
 ## [2.5.0] - 2020-01-15

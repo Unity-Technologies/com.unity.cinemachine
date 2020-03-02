@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEditor.Rendering.PostProcessing;
+using System.Collections.Generic;
 #endif
 
 namespace Cinemachine.PostFX.Editor
@@ -13,8 +14,7 @@ namespace Cinemachine.PostFX.Editor
         : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
     {
         SerializedProperty m_Profile;
-        SerializedProperty m_FocusTracksTarget;
-        SerializedProperty m_FocusOffset;
+        SerializedProperty m_FocusTracking;
 
         EffectListEditor m_EffectList;
         GUIContent m_ProfileLabel;
@@ -26,8 +26,7 @@ namespace Cinemachine.PostFX.Editor
                      + "/Editor/EditorResources/PostProcessLayer.png");
             m_ProfileLabel = new GUIContent("Profile", texture, "A reference to a profile asset");
 
-            m_FocusTracksTarget = FindProperty(x => x.m_FocusTracksTarget);
-            m_FocusOffset = FindProperty(x => x.m_FocusOffset);
+            m_FocusTracking = FindProperty(x => x.m_FocusTracking);
             m_Profile = FindProperty(x => x.m_Profile);
 
             m_EffectList = new EffectListEditor(this);
@@ -49,11 +48,24 @@ namespace Cinemachine.PostFX.Editor
                 m_EffectList.Init(asset, new SerializedObject(asset));
         }
 
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        {
+            base.GetExcludedPropertiesInInspector(excluded);
+            var mode = (CinemachinePostProcessing.FocusTrackingMode)m_FocusTracking.intValue;
+            if (mode != CinemachinePostProcessing.FocusTrackingMode.CustomTarget)
+                excluded.Add(FieldPath(x => x.m_FocusTarget));
+            if (mode == CinemachinePostProcessing.FocusTrackingMode.None)
+                excluded.Add(FieldPath(x => x.m_FocusOffset));
+            excluded.Add(FieldPath(x => x.m_Profile));
+        }
+
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
+            BeginInspector();
+            DrawRemainingPropertiesInInspector();
 
-            if (m_FocusTracksTarget.boolValue)
+            var focusMode = (CinemachinePostProcessing.FocusTrackingMode)m_FocusTracking.intValue;
+            if (focusMode != CinemachinePostProcessing.FocusTrackingMode.None)
             {
                 bool valid = false;
                 DepthOfField dof;
@@ -63,35 +75,9 @@ namespace Cinemachine.PostFX.Editor
                     EditorGUILayout.HelpBox(
                         "Focus Tracking requires an active DepthOfField/FocusDistance effect in the profile",
                         MessageType.Warning);
-                else if (Target.VirtualCamera != null)
-                {
-                    if (!Target.VirtualCamera.State.HasLookAt)
-                        EditorGUILayout.HelpBox(
-                            "Focus Offset is relative to the Camera position",
-                            MessageType.Info);
-                     else
-                        EditorGUILayout.HelpBox(
-                            "Focus Offset is relative to the Target position",
-                            MessageType.Info);
-                }
             }
 
             EditorGUI.BeginChangeCheck();
-            var rect = GUILayoutUtility.GetRect(1, EditorGUIUtility.singleLineHeight); rect.y += 2;
-            float checkboxWidth = rect.height + 5;
-            rect = EditorGUI.PrefixLabel(rect, new GUIContent(m_FocusTracksTarget.displayName));
-            EditorGUI.PropertyField(new Rect(rect.x, rect.y, checkboxWidth, rect.height), m_FocusTracksTarget, GUIContent.none);
-            rect.x += checkboxWidth; rect.width -= checkboxWidth;
-            if (m_FocusTracksTarget.boolValue)
-            {
-                GUIContent offsetText = new GUIContent("Offset ");
-                var textDimensions = GUI.skin.label.CalcSize(offsetText);
-                float oldWidth = EditorGUIUtility.labelWidth;
-                EditorGUIUtility.labelWidth = textDimensions.x;
-                EditorGUI.PropertyField(rect, m_FocusOffset, offsetText);
-                EditorGUIUtility.labelWidth = oldWidth;
-            }
-
             DrawProfileInspectorGUI();
             if (EditorGUI.EndChangeCheck())
             {

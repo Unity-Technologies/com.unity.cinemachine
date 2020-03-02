@@ -1,4 +1,5 @@
 <size=20><b>Version 2.6.0</b></size>
+- VolumeSettings/PostProcessing: added ability to choose custom target for focus tracking
 - Added CinemachineRecomposer for timeline-tweaking of procedural or recorded vcam Aim output
 - Added GroupWeightManipulator for animating group member weights
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave
@@ -23,6 +24,7 @@
 - Bugfix (1217306): target group position drifting when empty or when members are descendants of the group
 - Bugfix (1218695): Fully qualify UnityEditor.Menu to avoid compile errors in some circumstances
 - Bugfix (1222740): Binding Modes, that don't have control over axis value range, are not affected by it. 
+- Bugfix: Confiner's cache is reset, when bounding shape/volume is changed.
 
 
 <size=20><b>Version 2.5.0</b></size>

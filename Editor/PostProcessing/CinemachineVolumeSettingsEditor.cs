@@ -3,6 +3,7 @@
     using UnityEditor;
     using UnityEngine.Rendering;
     using UnityEditor.Rendering;
+    using System.Collections.Generic;
     #if CINEMACHINE_HDRP_7_0_0
         using UnityEngine.Rendering.HighDefinition;
     #else
@@ -13,6 +14,7 @@
     using UnityEditor;
     using UnityEngine.Rendering;
     using UnityEditor.Rendering;
+    using System.Collections.Generic;
     using UnityEngine.Rendering.Universal;
 #endif
 
@@ -24,8 +26,7 @@ namespace Cinemachine.PostFX.Editor
         : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
         SerializedProperty m_Profile;
-        SerializedProperty m_FocusTracksTarget;
-        SerializedProperty m_FocusOffset;
+        SerializedProperty m_FocusTracking;
 
         VolumeComponentListEditor m_ComponentList;
 
@@ -39,8 +40,7 @@ namespace Cinemachine.PostFX.Editor
             m_NewLabel = new GUIContent("New", "Create a new profile.");
             m_CloneLabel = new GUIContent("Clone", "Create a new profile and copy the content of the currently assigned profile.");
 
-            m_FocusTracksTarget = FindProperty(x => x.m_FocusTracksTarget);
-            m_FocusOffset = FindProperty(x => x.m_FocusOffset);
+            m_FocusTracking = FindProperty(x => x.m_FocusTracking);
             m_Profile = FindProperty(x => x.m_Profile);
 
             RefreshVolumeComponentEditor(Target.m_Profile);
@@ -61,11 +61,24 @@ namespace Cinemachine.PostFX.Editor
                 m_ComponentList.Init(asset, new SerializedObject(asset));
         }
 
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        {
+            base.GetExcludedPropertiesInInspector(excluded);
+            var mode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
+            if (mode != CinemachineVolumeSettings.FocusTrackingMode.CustomTarget)
+                excluded.Add(FieldPath(x => x.m_FocusTarget));
+            if (mode == CinemachineVolumeSettings.FocusTrackingMode.None)
+                excluded.Add(FieldPath(x => x.m_FocusOffset));
+            excluded.Add(FieldPath(x => x.m_Profile));
+        }
+
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
+            BeginInspector();
+            DrawRemainingPropertiesInInspector();
 
-            if (m_FocusTracksTarget.boolValue)
+            var focusMode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
+            if (focusMode != CinemachineVolumeSettings.FocusTrackingMode.None)
             {
                 bool valid = false;
                 DepthOfField dof;
@@ -81,39 +94,13 @@ namespace Cinemachine.PostFX.Editor
                 }
                 if (!valid)
                     EditorGUILayout.HelpBox(
-                        "Focus Tracking requires an active DepthOfField/FocusDistance effect and FocusMode set to Physical Camera in the profile",
+                        "Focus Tracking requires an active DepthOfField/FocusDistance effect "
+                            + "and FocusMode set to Physical Camera in the profile",
                         MessageType.Warning);
-                else if (Target.VirtualCamera != null)
-                {
-                    if (!Target.VirtualCamera.State.HasLookAt)
-                        EditorGUILayout.HelpBox(
-                            "Focus Offset is relative to the Camera position",
-                            MessageType.Info);
-                     else
-                        EditorGUILayout.HelpBox(
-                            "Focus Offset is relative to the Target position",
-                            MessageType.Info);
-                }
-            }
-
-            var rect = GUILayoutUtility.GetRect(1, EditorGUIUtility.singleLineHeight); rect.y += 2;
-            float checkboxWidth = rect.height + 5;
-            rect = EditorGUI.PrefixLabel(rect, new GUIContent(m_FocusTracksTarget.displayName));
-            EditorGUI.PropertyField(new Rect(rect.x, rect.y, checkboxWidth, rect.height), m_FocusTracksTarget, GUIContent.none);
-            rect.x += checkboxWidth; rect.width -= checkboxWidth;
-            if (m_FocusTracksTarget.boolValue)
-            {
-                GUIContent offsetText = new GUIContent("Offset ");
-                var textDimensions = GUI.skin.label.CalcSize(offsetText);
-                float oldWidth = EditorGUIUtility.labelWidth;
-                EditorGUIUtility.labelWidth = textDimensions.x;
-                EditorGUI.PropertyField(rect, m_FocusOffset, offsetText);
-                EditorGUIUtility.labelWidth = oldWidth;
             }
 
             DrawProfileInspectorGUI();
             Target.InvalidateCachedProfile();
-
             serializedObject.ApplyModifiedProperties();
         }
 
