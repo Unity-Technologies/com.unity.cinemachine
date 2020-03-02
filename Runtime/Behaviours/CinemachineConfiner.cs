@@ -44,15 +44,15 @@ namespace Cinemachine
         /// <summary>The volume within which the camera is to be contained.</summary>
         [Tooltip("The volume within which the camera is to be contained")]
         [SerializeField]
-        internal Collider _BoundingVolume;
+        internal Collider BoundingVolume;
 
         public Collider m_BoundingVolume
         {
-            get => _BoundingVolume;
+            get => BoundingVolume;
             set
             {
                 InvalidatePathCache();
-                _BoundingVolume = value;
+                BoundingVolume = value;
             }
         }
 #endif
@@ -62,15 +62,15 @@ namespace Cinemachine
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         [SerializeField]
-        internal Collider2D _BoundingShape2D;
+        internal Collider2D BoundingShape2D;
 
         public Collider2D m_BoundingShape2D
         {
-            get => _BoundingShape2D;
+            get => BoundingShape2D;
             set
             {
                 InvalidatePathCache();
-                _BoundingShape2D = value;
+                BoundingShape2D = value;
             }
         }
 #endif
@@ -97,7 +97,7 @@ namespace Cinemachine
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
-            m_BoundingShape2D = _BoundingShape2D;
+            InvalidatePathCache();
         }
 
         class VcamExtraState

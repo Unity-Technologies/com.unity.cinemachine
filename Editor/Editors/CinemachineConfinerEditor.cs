@@ -23,9 +23,9 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_ConfineScreenEdges));
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
             if (Target.m_ConfineMode == CinemachineConfiner.Mode.Confine2D)
-                excluded.Add(FieldPath(x => x._BoundingVolume));
+                excluded.Add(FieldPath(x => x.BoundingVolume));
             else
-                excluded.Add(FieldPath(x => x._BoundingShape2D));
+                excluded.Add(FieldPath(x => x.BoundingShape2D));
 #endif
         }
 
