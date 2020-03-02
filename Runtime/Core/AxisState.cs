@@ -225,7 +225,7 @@ namespace Cinemachine
             mCurrentSpeed = Mathf.Clamp(mCurrentSpeed, -maxSpeed, maxSpeed);
 
             Value += mCurrentSpeed * deltaTime;
-            bool isOutOfRange = !ValueRangeLocked && ((Value > m_MaxValue) || (Value < m_MinValue));
+            bool isOutOfRange = (Value > m_MaxValue) || (Value < m_MinValue);
             if (isOutOfRange)
             {
                 if (m_Wrap)

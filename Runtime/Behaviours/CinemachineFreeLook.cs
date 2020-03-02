@@ -321,7 +321,11 @@ namespace Cinemachine
             }
             PushSettingsToRigs();
             if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            {
                 m_XAxis.Value = 0;
+                m_XAxis.m_MinValue = -180;
+                m_XAxis.m_MaxValue = 180;
+            }
         }
 
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
