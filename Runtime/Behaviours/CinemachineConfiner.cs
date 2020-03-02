@@ -76,7 +76,6 @@ namespace Cinemachine
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
-            InvalidatePathCache();
         }
 
         class VcamExtraState
@@ -135,15 +134,19 @@ namespace Cinemachine
         private int m_pathTotalPointCount;
 
         /// <summary>Call this if the bounding shape's points change at runtime</summary>
-        public void InvalidatePathCache() { m_pathCache = null; }
+        public void InvalidatePathCache()
+        {
+            m_pathCache = null;
+            m_BoundingShape2DCache = null;
+        }
 
         bool ValidatePathCache()
         {
 #if CINEMACHINE_PHYSICS_2D
             if (m_BoundingShape2DCache != m_BoundingShape2D)
             {
-                m_BoundingShape2DCache = m_BoundingShape2D;
                 InvalidatePathCache();
+                m_BoundingShape2DCache = m_BoundingShape2D;
             }
             
             Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
