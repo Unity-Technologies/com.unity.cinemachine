@@ -47,9 +47,21 @@ namespace Cinemachine
 #endif
 
 #if CINEMACHINE_PHYSICS_2D
+
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
-        [Tooltip("The 2D shape within which the camera is to be contained")]
-        public Collider2D m_BoundingShape2D;
+        [field: Tooltip("The 2D shape within which the camera is to be contained")]
+        [SerializeField]
+        private Collider2D _BoundingShape2D;
+
+        public Collider2D m_BoundingShape2D
+        {
+            get => _BoundingShape2D;
+            set
+            {
+                InvalidatePathCache();
+                _BoundingShape2D = value;
+            }
+        }
 #endif
         /// <summary>If camera is orthographic, screen edges will be confined to the volume.</summary>
         [Tooltip("If camera is orthographic, screen edges will be confined to the volume.  "
@@ -74,6 +86,7 @@ namespace Cinemachine
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
+            m_BoundingShape2D = _BoundingShape2D;
         }
 
         class VcamExtraState
