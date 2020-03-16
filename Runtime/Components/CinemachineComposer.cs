@@ -214,6 +214,8 @@ namespace Cinemachine
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
                 // No damping, just snap to central bounds, skipping the soft zone
+                rigOrientation = Quaternion.LookRotation(
+                    rigOrientation * Vector3.forward, curState.ReferenceUp);
                 Rect rect = mCache.mFovSoftGuideRect;
                 if (m_CenterOnActivate)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
