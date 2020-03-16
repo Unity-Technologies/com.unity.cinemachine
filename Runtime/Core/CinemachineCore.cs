@@ -64,7 +64,7 @@ namespace Cinemachine
         public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
 
         /// <summary>
-        /// If non-negative, and in play mode, cinemachine will update with this uniform delta time.
+        /// If non-negative, cinemachine will update with this uniform delta time.
         /// Usage is for timelines in manual update mode.
         /// </summary>
         public static float UniformDeltaTimeOverride = -1;

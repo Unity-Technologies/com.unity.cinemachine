@@ -13,6 +13,7 @@
 - Add Convert to TargetGroup option on LookAt and Follow target fields
 - Confiner: improved stability when ConfineScreenEdges is selected and confing shape is too small
 - Extensions now have PrePipelineMutateState callback
+- CinemachineCore.UniformDeltaTimeOverride works in Eit mode
 - Added TargetAttachment property to vcams.  Normally 1, this can be used to relax attention to targets - effectively a damping override
 - Bugfix: Blend Update Method handling was incorrect and caused judder in some circumstances
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
