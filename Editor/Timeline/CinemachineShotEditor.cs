@@ -32,11 +32,16 @@ using Cinemachine;
         {
             CinemachineVirtualCameraBase vcam = CinemachineMenu.CreateStaticVirtualCamera();
             vcam.m_StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
+
+#if false 
+            // GML this is too bold.  What if timeline is a child of something moving?
+            // also, SetActive(false) prevents the animator from being able to animate the object
             vcam.gameObject.SetActive(false);
-#if UNITY_2018_3_OR_NEWER
+    #if UNITY_2018_3_OR_NEWER
             var d = TimelineEditor.inspectedDirector;
             if (d != null)
                 Undo.SetTransformParent(vcam.transform, d.transform, "");
+    #endif
 #endif
             return vcam;
         }
