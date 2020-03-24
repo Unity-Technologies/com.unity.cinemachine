@@ -68,8 +68,8 @@ namespace Cinemachine
             /// <summary>The full hash of the animation state</summary>
             [Tooltip("The full hash of the animation state")]
             public int m_FullHash;
-            /// <summary>The virtual camera to activate whrn the animation state becomes active</summary>
-            [Tooltip("The virtual camera to activate whrn the animation state becomes active")]
+            /// <summary>The virtual camera to activate when the animation state becomes active</summary>
+            [Tooltip("The virtual camera to activate when the animation state becomes active")]
             public CinemachineVirtualCameraBase m_VirtualCamera;
             /// <summary>How long to wait (in seconds) before activating the virtual camera.
             /// This filters out very short state durations</summary>
@@ -140,7 +140,7 @@ namespace Cinemachine
 
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominat live child</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominat live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
@@ -168,7 +168,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the vcam that a target got warped,
         /// so that the vcam can update its internal state to make the camera
-        /// also warp seamlessy.</summary>
+        /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
@@ -408,7 +408,7 @@ namespace Cinemachine
             int hash;
             if (m_AnimatedTarget.IsInTransition(m_LayerIndex))
             {
-                // Force "current" state to be the state we're transitionaing to
+                // Force "current" state to be the state we're transitioning to
                 AnimatorStateInfo info = m_AnimatedTarget.GetNextAnimatorStateInfo(m_LayerIndex);
                 hash = info.fullPathHash;
                 if (m_AnimatedTarget.GetNextAnimatorClipInfoCount(m_LayerIndex) > 1)
