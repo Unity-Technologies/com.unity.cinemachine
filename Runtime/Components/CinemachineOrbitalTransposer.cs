@@ -342,7 +342,8 @@ namespace Cinemachine
                     var dir0 = mLastCameraPosition - targetPosition;
                     var dir1 = curState.RawPosition - targetPosition;
                     if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
-                        curState.PositionDampingBypass = Quaternion.FromToRotation(dir0, dir1).eulerAngles;
+                        curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                            dir0, dir1, curState.ReferenceUp).eulerAngles;
                 }
                 mLastTargetPosition = targetPosition;
                 mLastCameraPosition = curState.RawPosition;

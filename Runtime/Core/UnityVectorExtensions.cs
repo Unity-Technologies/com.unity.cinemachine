@@ -94,6 +94,15 @@ namespace Cinemachine.Utility
             return angle;
         }
 
+        /// <summary>Much more stable for small angles than Unity's native implementation</summary>
+        public static Quaternion SafeFromToRotation(Vector3 v1, Vector3 v2, Vector3 up)
+        {
+            var axis = Vector3.Cross(v1, v2);
+            if (axis.AlmostZero())
+                axis = up; // in case they are pointing in opposite directions
+            return Quaternion.AngleAxis(Angle(v1, v2), axis);
+        }
+
         /// <summary>This is a slerp that mimics a camera operator's movement in that
         /// it chooses a path that avoids the lower hemisphere, as defined by
         /// the up param</summary>

@@ -247,9 +247,9 @@ namespace Cinemachine
             var offsetDelta = desiredCameraOffset - previousOffset;
             if (offsetDelta.sqrMagnitude > 0.01f)
             {
-                var q = Quaternion.FromToRotation(
+                var q = UnityVectorExtensions.SafeFromToRotation(
                     m_PreviousOffset.ProjectOntoPlane(up), 
-                    desiredCameraOffset.ProjectOntoPlane(up));
+                    desiredCameraOffset.ProjectOntoPlane(up), up);
                 currentPosition = targetPosition + q * (m_PreviousTargetPosition - targetPosition);
             }
             m_PreviousOffset = desiredCameraOffset;
