@@ -101,6 +101,25 @@ namespace Cinemachine
             base.OnTargetObjectWarped(target, positionDelta);
         }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            PreviousStateIsValid = false;
+            transform.position = pos;
+            transform.rotation = rot;
+            m_State.RawPosition = pos;
+            m_State.RawOrientation = rot;
+
+            UpdateComponentCache();
+            for (int i = 0; i < m_Components.Length; ++i)
+                if (m_Components[i] != null)
+                    m_Components[i].ForceCameraPosition(pos, rot);
+        }
+        
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>

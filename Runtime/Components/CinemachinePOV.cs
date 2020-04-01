@@ -141,6 +141,17 @@ namespace Cinemachine
             return Vector2.zero;
         }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation.  
+        /// Procedural placement then takes over
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            SetAxesForRotation(rot);
+        }
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
@@ -157,30 +168,34 @@ namespace Cinemachine
             m_VerticalRecentering.CancelRecentering();
             if (fromCam != null && transitionParams.m_InheritPosition)
             {
-                Vector3 up = VcamState.ReferenceUp;
-                Quaternion targetRot = fromCam.State.RawOrientation;
-                Vector3 fwd = Vector3.forward;
-                Transform parent = VirtualCamera.transform.parent;
-                if (parent != null)
-                    fwd = parent.rotation * fwd;
-
-                m_HorizontalAxis.Value = 0;
-                m_HorizontalAxis.Reset();
-                Vector3 targetFwd = targetRot * Vector3.forward;
-                Vector3 a = fwd.ProjectOntoPlane(up);
-                Vector3 b = targetFwd.ProjectOntoPlane(up);
-                if (!a.AlmostZero() && !b.AlmostZero())
-                    m_HorizontalAxis.Value = Vector3.SignedAngle(a, b, up);
-
-                m_VerticalAxis.Value = 0;
-                m_VerticalAxis.Reset();
-                fwd = Quaternion.AngleAxis(m_HorizontalAxis.Value, up) * fwd;
-                Vector3 right = Vector3.Cross(up, fwd);
-                if (!right.AlmostZero())
-                    m_VerticalAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
+                SetAxesForRotation(fromCam.State.RawOrientation);
                 return true;
             }
             return false;
+        }
+
+        void SetAxesForRotation(Quaternion targetRot)
+        {
+            Vector3 up = VcamState.ReferenceUp;
+            Vector3 fwd = Vector3.forward;
+            Transform parent = VirtualCamera.transform.parent;
+            if (parent != null)
+                fwd = parent.rotation * fwd;
+
+            m_HorizontalAxis.Value = 0;
+            m_HorizontalAxis.Reset();
+            Vector3 targetFwd = targetRot * Vector3.forward;
+            Vector3 a = fwd.ProjectOntoPlane(up);
+            Vector3 b = targetFwd.ProjectOntoPlane(up);
+            if (!a.AlmostZero() && !b.AlmostZero())
+                m_HorizontalAxis.Value = Vector3.SignedAngle(a, b, up);
+
+            m_VerticalAxis.Value = 0;
+            m_VerticalAxis.Reset();
+            fwd = Quaternion.AngleAxis(m_HorizontalAxis.Value, up) * fwd;
+            Vector3 right = Vector3.Cross(up, fwd);
+            if (!right.AlmostZero())
+                m_VerticalAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
         }
     }
 }

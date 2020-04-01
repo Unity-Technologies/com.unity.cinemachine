@@ -324,6 +324,29 @@ namespace Cinemachine
                 m_XAxis.Value = 0;
         }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation.  
+        /// Procedural placement then takes over
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            var up = State.ReferenceUp;
+            if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(pos, up);
+            m_YAxis.Value = GetYAxisClosestValue(pos, up);
+
+            transform.position = pos;
+            transform.rotation = rot;
+            m_State.RawPosition = pos;
+            m_State.RawOrientation = rot;
+            PreviousStateIsValid = false;
+            UpdateRigCache();
+            PushSettingsToRigs();
+            InternalUpdateCameraState(up, -1);
+        }
+
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>

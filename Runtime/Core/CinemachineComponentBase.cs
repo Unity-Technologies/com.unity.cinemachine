@@ -225,6 +225,15 @@ namespace Cinemachine
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         { return false; }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation.  
+        /// Procedural placement then takes over.
+        /// Base class implementation does nothing.</summary>
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) { }
+
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera
         /// also warp seamlessy.  Base class implementation does nothing.</summary>

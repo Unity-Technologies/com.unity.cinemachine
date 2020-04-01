@@ -5,6 +5,7 @@
 - Impulse: Added PropagationSpeed, to allow the impulse to travel outward in a wave
 - Added CinemachineIndependentImpulseListener, to give ImpulseListener ability to any game object
 - Added 3rdPersonFollow and 3rdPersonAim for dead-accurate 3rd-person aiming camera
+- Added ForceCameraPosition API of virtual cameras, to manually initialize a camera's position and rotation
 - Added example scenes: 3rdPersonDeadCenterAim and 3rdPersonLooseAim to show different 3rd person cmera styles
 - FramingTransposer does its work after Aim, so it plays better with Aim components.
 - Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
