@@ -107,8 +107,7 @@ namespace Cinemachine
         {
             if (IsValid)
             {
-                // Move the body before the Aim is calculated
-                if (stage == CinemachineCore.Stage.Body)
+                if (stage == CinemachineCore.Stage.Finalize)
                 {
                     Vector3 displacement;
                     if (m_ConfineScreenEdges && state.Lens.Orthographic)
