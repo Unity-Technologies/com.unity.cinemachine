@@ -82,7 +82,7 @@ namespace Cinemachine
         {
             public Vector3 m_previousDisplacement;
             public float confinerDisplacement;
-            public bool isFramingTransposer;
+            public bool applyAfterAim;
         };
 
         /// <summary>Check if the bounding volume is defined</summary>
@@ -106,13 +106,15 @@ namespace Cinemachine
             base.ConnectToVcam(connect);
 
             CinemachineVirtualCamera vcam = VirtualCamera as CinemachineVirtualCamera;
+            if (vcam == null) return;
+            
             var components = vcam.GetComponentPipeline();
             foreach (var component in components)
             {
                 if (component.BodyAppliesAfterAim)
                 {
                     var extraState = GetExtraState<VcamExtraState>(VirtualCamera);
-                    extraState.isFramingTransposer = true;
+                    extraState.applyAfterAim = true;
                     break;
                 }
             }
@@ -126,11 +128,10 @@ namespace Cinemachine
         {
             if (IsValid)
             {
-                var extraState = GetExtraState<VcamExtraState>(VirtualCamera);
-                if (extraState.isFramingTransposer && stage == CinemachineCore.Stage.Finalize
+                var extra = GetExtraState<VcamExtraState>(vcam);
+                if ((extra.applyAfterAim && stage == CinemachineCore.Stage.Finalize)
                     ||
-                    !extraState.isFramingTransposer && stage == CinemachineCore.Stage.Body
-                    )
+                    (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
                 {
                     Vector3 displacement;
                     if (m_ConfineScreenEdges && state.Lens.Orthographic)
@@ -138,7 +139,6 @@ namespace Cinemachine
                     else
                         displacement = ConfinePoint(state.CorrectedPosition);
 
-                    VcamExtraState extra = GetExtraState<VcamExtraState>(vcam);
                     if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
