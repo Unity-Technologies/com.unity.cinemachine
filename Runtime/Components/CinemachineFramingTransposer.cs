@@ -58,6 +58,10 @@ namespace Cinemachine
         [Tooltip("If checked, movement along the Y axis will be ignored for lookahead calculations")]
         public bool m_LookaheadIgnoreY;
 
+        /// <summary>If checked, lookahead will reset when target stops moving</summary>
+        [Tooltip("If checked, lookahead will reset when target stops moving")]
+        public bool m_LookaheadResetWhenStill;
+
         /// <summary>How aggressively the camera tries to maintain the offset in the X-axis.
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
@@ -432,6 +436,7 @@ namespace Cinemachine
             if (m_LookaheadTime > Epsilon)
             {
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
+                m_Predictor.Recenter = m_LookaheadResetWhenStill;
                 m_Predictor.AddPosition(followTargetPosition, deltaTime, m_LookaheadTime);
                 var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
                 if (m_LookaheadIgnoreY)
