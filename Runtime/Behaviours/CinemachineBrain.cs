@@ -80,7 +80,10 @@ namespace Cinemachine
             /// <summary>Virtual cameras are updated in MonoBehaviour LateUpdate.</summary>
             LateUpdate,
             /// <summary>Virtual cameras are updated according to how the target is updated.</summary>
-            SmartUpdate
+            SmartUpdate,
+            /// <summary>Virtual cameras are not automatically updated, client must explicitly call 
+            /// the CinemachineBrain's ManualUpdate() method.</summary>
+            ManualUpdate
         };
 
         /// <summary>Depending on how the target objects are animated, adjust the update method to
@@ -99,7 +102,7 @@ namespace Cinemachine
         {
             /// <summary>Camera is updated in sync with the Physics module, in FixedUpdate</summary>
             FixedUpdate,
-            /// <summary>Camera is updated in MonoBehaviour LateUpdate.</summary>
+            /// <summary>Camera is updated in MonoBehaviour LateUpdate (or when ManualUpdate is called).</summary>
             LateUpdate
         };
 
@@ -262,7 +265,8 @@ namespace Cinemachine
             {
                 // FixedUpdate can be called multiple times per frame
                 yield return mWaitForFixedUpdate;
-                if (m_UpdateMethod != UpdateMethod.LateUpdate)
+                if (m_UpdateMethod == UpdateMethod.FixedUpdate
+                    || m_UpdateMethod == UpdateMethod.SmartUpdate)
                 {
                     CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
                     if (m_UpdateMethod == UpdateMethod.SmartUpdate)
@@ -284,9 +288,22 @@ namespace Cinemachine
 
         private void LateUpdate()
         {
+            if (m_UpdateMethod != UpdateMethod.ManualUpdate)
+                ManualUpdate();
+        }
+
+        /// <summary>
+        /// Call this method explicitly from an external script to update the virtual cameras
+        /// and position the main camera, if the UpdateMode is set to ManualUpdate.
+        /// For other update modes, this method is called automatically, and should not be
+        /// called from elsewhere.
+        /// </summary>
+        public void ManualUpdate()
+        {
             float deltaTime = GetEffectiveDeltaTime(false);
-            if (m_BlendUpdateMethod == BrainUpdateMethod.LateUpdate)
+            if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 UpdateFrame0(deltaTime);
+
             UpdateCurrentLiveCameras();
 
             if (m_UpdateMethod == UpdateMethod.FixedUpdate)
@@ -297,7 +314,8 @@ namespace Cinemachine
                 {
                     CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Fixed;
                     if (SoloCamera == null)
-                        mCurrentLiveCameras.UpdateCameraState(DefaultWorldUp, GetEffectiveDeltaTime(true));
+                        mCurrentLiveCameras.UpdateCameraState(
+                            DefaultWorldUp, GetEffectiveDeltaTime(true));
                 }
             }
             else
@@ -311,8 +329,9 @@ namespace Cinemachine
                 }
                 UpdateVirtualCameras(filter, deltaTime);
             }
+
             // Choose the active vcam and apply it to the Unity camera
-            if (m_BlendUpdateMethod == BrainUpdateMethod.LateUpdate)
+            if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 ProcessActiveCamera(deltaTime);
         }
 
