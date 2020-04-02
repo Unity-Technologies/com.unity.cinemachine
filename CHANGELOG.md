@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1222740): Binding Modes, that don't have control over axis value range, are not affected by it. 
 - Bugfix (1227606): Timeline preview and playmode not the same for composer with hand-animated rotations
 - Bugfix: Confiner's cache is reset, when bounding shape/volume is changed.
+- Bugfix (1232146): Vcam no longer jerks at edge of confiner bound box.
 
 
 ## [2.5.0] - 2020-01-15

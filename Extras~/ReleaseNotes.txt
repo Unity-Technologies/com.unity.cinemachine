@@ -27,6 +27,7 @@
 - Bugfix (1222740): Binding Modes, that don't have control over axis value range, are not affected by it. 
 - Bugfix (1227606): Timeline preview and playmode not the same for composer with hand-animated rotations
 - Bugfix: Confiner's cache is reset, when bounding shape/volume is changed.
+- Bugfix (1232146): Vcam no longer jerks at edge of confiner bound box.
 
 
 <size=20><b>Version 2.5.0</b></size>
