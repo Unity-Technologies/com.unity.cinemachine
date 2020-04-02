@@ -82,6 +82,7 @@ namespace Cinemachine
         {
             public Vector3 m_previousDisplacement;
             public float confinerDisplacement;
+            public bool isFramingTransposer;
         };
 
         /// <summary>Check if the bounding volume is defined</summary>
@@ -100,6 +101,24 @@ namespace Cinemachine
             }
         }
 
+        protected override void ConnectToVcam(bool connect)
+        {
+            base.ConnectToVcam(connect);
+
+            CinemachineVirtualCamera vcam = VirtualCamera as CinemachineVirtualCamera;
+            var components = vcam.GetComponentPipeline();
+            foreach (var component in components)
+            {
+                if (component.BodyAppliesAfterAim)
+                {
+                    var extraState = GetExtraState<VcamExtraState>(VirtualCamera);
+                    extraState.isFramingTransposer = true;
+                    break;
+                }
+            }
+        }
+        
+
         /// <summary>Callback to to the camera confining</summary>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
@@ -107,7 +126,11 @@ namespace Cinemachine
         {
             if (IsValid)
             {
-                if (stage == CinemachineCore.Stage.Finalize)
+                var extraState = GetExtraState<VcamExtraState>(VirtualCamera);
+                if (extraState.isFramingTransposer && stage == CinemachineCore.Stage.Finalize
+                    ||
+                    !extraState.isFramingTransposer && stage == CinemachineCore.Stage.Body
+                    )
                 {
                     Vector3 displacement;
                     if (m_ConfineScreenEdges && state.Lens.Orthographic)
