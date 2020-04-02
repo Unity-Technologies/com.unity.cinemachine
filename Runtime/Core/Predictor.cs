@@ -30,6 +30,8 @@ namespace Cinemachine.Utility
         }
         public bool IsEmpty { get { return m_Velocity.IsEmpty(); } }
 
+        public bool Recenter { get; set; }
+
         public void ApplyTransformDelta(Vector3 positionDelta)
         {
             m_Position += positionDelta;
@@ -50,12 +52,12 @@ namespace Cinemachine.Utility
             else
             {
                 Vector3 vel = (pos - m_Position) / deltaTime;
-                if (vel.sqrMagnitude > UnityVectorExtensions.Epsilon)
+                if (Recenter || vel.sqrMagnitude > UnityVectorExtensions.Epsilon)
                 {
                     Vector3 vel0 = m_Velocity.Value();
                     float now = Time.time;
                     if (vel.sqrMagnitude >= vel0.sqrMagnitude
-                        || Vector3.Angle(vel, vel0) > 10
+                        || UnityVectorExtensions.Angle(vel, vel0) > 10
                         || now > mLastVelAddedTime + lookaheadTime)
                     {
                         m_Velocity.AddValue(vel);

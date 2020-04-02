@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.6.0-preview.3] - 2020-03-28
 ### New Features and Bugfixes
+- Added Lookahead Reset When Still option, to reproduce legacy lookahead behaviour if desired
 - Added ManualUpdate mode to the Brain, to allow for custom game loop logic
 - VolumeSettings/PostProcessing: added ability to choose custom target for focus tracking
 - Added CinemachineRecomposer for timeline-tweaking of procedural or recorded vcam Aim output
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added example scenes: 3rdPersonDeadCenterAim and 3rdPersonLooseAim to show different 3rd person cmera styles
 - FramingTransposer does its work after Aim, so it plays better with Aim components.
 - Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
+- Added Lookahead Reset When Still option, to reproduce legacy lookahead behaviour if desired
 - Orbital Transposer / FreeLook: improved damping when target is moving
 - CustomBlends editor UX improvements: allow direct editing of vcam names, as well as dropdown
 - Add Convert to TargetGroup option on LookAt and Follow target fields
