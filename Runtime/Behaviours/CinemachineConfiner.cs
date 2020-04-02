@@ -113,7 +113,7 @@ namespace Cinemachine
             {
                 if (component.BodyAppliesAfterAim)
                 {
-                    var extraState = GetExtraState<VcamExtraState>(VirtualCamera);
+                    var extraState = GetExtraState<VcamExtraState>(vcam);
                     extraState.applyAfterAim = true;
                     break;
                 }
