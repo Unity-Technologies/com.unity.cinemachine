@@ -106,7 +106,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="pos">Worldspace pposition to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
-        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             PreviousStateIsValid = false;
             transform.position = pos;
@@ -118,6 +118,8 @@ namespace Cinemachine
             for (int i = 0; i < m_Components.Length; ++i)
                 if (m_Components[i] != null)
                     m_Components[i].ForceCameraPosition(pos, rot);
+
+            base.ForceCameraPosition(pos, rot);
         }
         
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>

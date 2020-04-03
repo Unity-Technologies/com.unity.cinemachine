@@ -188,6 +188,21 @@ namespace Cinemachine
                 m_PreviousTargetPosition += positionDelta;
         }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            base.ForceCameraPosition(pos, rot);
+
+            // Infer target pos from camera
+            var targetRot = m_BindingMode == BindingMode.SimpleFollowWithWorldUp 
+                ? rot : GetReferenceOrientation(VirtualCamera.State.ReferenceUp);
+            m_PreviousTargetPosition = pos - targetRot * EffectiveOffset;
+        }
+        
         /// <summary>Initializes the state for previous frame if appropriate.</summary>
         protected void InitPrevFrameStateInfo(
             ref CameraState curState, float deltaTime)

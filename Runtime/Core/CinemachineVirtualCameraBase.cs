@@ -611,6 +611,21 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            // inform the extensions
+            if (mExtensions != null)
+            {
+                for (int i = 0; i < mExtensions.Count; ++i)
+                    mExtensions[i].ForceCameraPosition(pos, rot);
+            }
+        }
+        
         /// <summary>Create a blend between 2 virtual cameras, taking into account
         /// any existing active blend.</summary>
         protected CinemachineBlend CreateBlend(
