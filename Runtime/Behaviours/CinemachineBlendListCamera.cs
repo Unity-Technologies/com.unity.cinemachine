@@ -338,8 +338,11 @@ namespace Cinemachine
                 mCurrentInstruction = m_Instructions.Length - 1;
             }
 
-            var minHold = mCurrentInstruction < m_Instructions.Length - 1 || m_Loop ? 0 : float.MaxValue;
-            if (now - mActivationTime > Mathf.Max(minHold, m_Instructions[mCurrentInstruction].m_Hold))
+            var holdTime = m_Instructions[mCurrentInstruction].m_Hold 
+                + m_Instructions[mCurrentInstruction].m_Blend.m_Time;
+            var minHold = mCurrentInstruction < m_Instructions.Length - 1 || m_Loop 
+                ? 0 : float.MaxValue;
+            if (now - mActivationTime > Mathf.Max(minHold, holdTime))
             {
                 mActivationTime = now;
                 ++mCurrentInstruction;
