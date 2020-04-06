@@ -320,6 +320,7 @@ namespace Cinemachine
         public override bool BodyAppliesAfterAim { get { return true; } }
 
         const float kMinimumCameraDistance = 0.01f;
+        const float kMinimumGroupSize = 0.01f;
 
         /// <summary>State information for damping</summary>
         Vector3 m_PreviousCameraPosition = Vector3.zero;
@@ -427,8 +428,7 @@ namespace Cinemachine
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = AbstractFollowTargetGroup;
-            bool isGroupFraming = group != null && Math.Abs(group.Sphere.radius) > 1e-5f &&
-                                  m_GroupFramingMode != FramingMode.None;
+            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
 
@@ -458,6 +458,7 @@ namespace Cinemachine
             float targetDistance = m_CameraDistance;
             bool isOrthographic = lens.Orthographic;
             float targetHeight = isGroupFraming ? GetTargetHeight(LastBounds.size / m_GroupFramingSize) : 0;
+            targetHeight = Mathf.Max(targetHeight, kMinimumGroupSize);
             if (!isOrthographic && isGroupFraming)
             {
                 // Adjust height for perspective - we want the height at the near surface
