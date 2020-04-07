@@ -231,5 +231,14 @@ namespace Cinemachine
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation.  
+        /// Procedural placement then takes over.
+        /// Base class implementation does nothing.</summary>
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
     }
 }

@@ -510,9 +510,6 @@ namespace Cinemachine
             return state;
         }
 
-        // This is a hack for FreeLook rigs - to be removed
-        internal void SetStateRawPosition(Vector3 pos) { m_State.RawPosition = pos; }
-
         /// <summary>This is called to notify the vcam that a target got warped,
         /// so that the vcam can update its internal state to make the camera
         /// also warp seamlessy.</summary>
@@ -533,6 +530,30 @@ namespace Cinemachine
             }
             base.OnTargetObjectWarped(target, positionDelta);
         }
+
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            PreviousStateIsValid = true;
+            transform.position = pos;
+            transform.rotation = rot;
+            m_State.RawPosition = pos;
+            m_State.RawOrientation = rot;
+
+            UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
+            if (m_ComponentPipeline != null)
+                for (int i = 0; i < m_ComponentPipeline.Length; ++i)
+                    m_ComponentPipeline[i].ForceCameraPosition(pos, rot);
+
+            base.ForceCameraPosition(pos, rot);
+        }
+        
+        // This is a hack for FreeLook rigs - to be removed
+        internal void SetStateRawPosition(Vector3 pos) { m_State.RawPosition = pos; }
 
         /// <summary>If we are transitioning from another vcam, grab the position from it.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>

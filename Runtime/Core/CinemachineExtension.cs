@@ -102,6 +102,13 @@ namespace Cinemachine
         /// <param name="positionDelta">The amount the target's position changed</param>
         public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
+        
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation must be called by any overridden method.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>

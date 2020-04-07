@@ -284,6 +284,36 @@ namespace Cinemachine
             base.OnTargetObjectWarped(target, positionDelta);
         }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation.  
+        /// Procedural placement then takes over
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            var up = State.ReferenceUp;
+            m_YAxis.Value = GetYAxisClosestValue(pos, up);
+
+            PreviousStateIsValid = true;
+            transform.position = pos;
+            transform.rotation = rot;
+            m_State.RawPosition = pos;
+            m_State.RawOrientation = rot;
+
+            UpdateRigCache();
+            if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(pos, up);
+
+            PushSettingsToRigs();
+            for (int i = 0; i < 3; ++i)
+                m_Rigs[i].ForceCameraPosition(pos, rot);
+
+            InternalUpdateCameraState(up, -1);
+
+            base.ForceCameraPosition(pos, rot);
+        }
+        
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  All 3 child rigs are updated,
         /// and a blend calculated, depending on the value of the Y axis.</summary>

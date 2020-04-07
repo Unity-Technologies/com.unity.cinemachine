@@ -133,6 +133,19 @@ namespace Cinemachine
             base.OnTargetObjectWarped(target, positionDelta);
         }
 
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation
+        /// </summary>
+        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="rot">Worldspace orientation to take</param>
+        public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        {
+            UpdateListOfChildren();
+            foreach (var vcam in m_ChildCameras)
+                vcam.ForceCameraPosition(pos, rot);
+            base.ForceCameraPosition(pos, rot);
+        }
+
         /// <summary>Notification that this virtual camera is going live.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
