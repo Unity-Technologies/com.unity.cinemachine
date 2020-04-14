@@ -662,6 +662,8 @@ namespace Cinemachine
 
         float UpdateXAxisHeading(CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
         {
+            if (this == null)   
+                return 0; // deleted
             if (mOrbitals != null && mOrbitals[1] == orbital)
             {
                 var oldValue = m_XAxis.Value;

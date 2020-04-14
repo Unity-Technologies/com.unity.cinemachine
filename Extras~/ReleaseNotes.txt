@@ -20,6 +20,7 @@
 - Added TargetAttachment property to vcams.  Normally 1, this can be used to relax attention to targets - effectively a damping override
 - Bugfix: Blend Update Method handling was incorrect and caused judder in some circumstances
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
+- Bugfix (1234813) - Check for deleted freelooks
 - Bugfix (1219867) - vcam popping on disable if blending
 - Bugfix (1214301, 1213836) - disallow structural change when editing vcam prefabs
 - Bugfix (1213471, 1213434): add null check in editor
