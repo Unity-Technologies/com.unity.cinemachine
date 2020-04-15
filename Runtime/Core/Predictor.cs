@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine.Utility
 {
-#if true // GML experiment -  new lookahead algortithm
     public class PositionPredictor
     {
         Vector3 m_Velocity;
@@ -13,7 +11,6 @@ namespace Cinemachine.Utility
         bool m_HavePos;
 
         public float Smoothing { get; set; }
-        public bool Recenter { get; set; }
 
         public void ApplyTransformDelta(Vector3 positionDelta) { m_Pos += positionDelta; }
 
@@ -32,14 +29,11 @@ namespace Cinemachine.Utility
             {
                 var vel = (pos - m_Pos) / deltaTime;
                 var sqrSpeed = vel.sqrMagnitude;
-                if (Recenter || sqrSpeed > UnityVectorExtensions.Epsilon)
-                {
-                    bool slowing = sqrSpeed < m_SqrSpeed;
-                    m_Velocity = Vector3.SmoothDamp(
-                        m_Velocity, vel, ref m_SmoothDampVelocity, Smoothing / (slowing ? 30 : 10), 
-                        float.PositiveInfinity, deltaTime);
-                    m_SqrSpeed = m_Velocity.sqrMagnitude;
-                }
+                bool slowing = sqrSpeed < m_SqrSpeed;
+                m_Velocity = Vector3.SmoothDamp(
+                    m_Velocity, vel, ref m_SmoothDampVelocity, Smoothing / (slowing ? 30 : 10), 
+                    float.PositiveInfinity, deltaTime);
+                m_SqrSpeed = m_Velocity.sqrMagnitude;
             }
             m_Pos = pos;
             m_HavePos = true;
@@ -55,89 +49,6 @@ namespace Cinemachine.Utility
             return m_Pos + PredictPositionDelta(lookaheadTime);
         }
     }
-
-#else
-    public class PositionPredictor
-    {
-        Vector3 m_Position;
-
-        GaussianWindow1D_Vector3 m_Velocity = new GaussianWindow1D_Vector3(kSmoothingDefault);
-        GaussianWindow1D_Vector3 m_Accel = new GaussianWindow1D_Vector3(kSmoothingDefault);
-
-        float mLastVelAddedTime = 0;
-
-        const float kSmoothingDefault = 10;
-        float mSmoothing = kSmoothingDefault;
-        public float Smoothing
-        {
-            get { return mSmoothing; }
-            set
-            {
-                if (value != mSmoothing)
-                {
-                    mSmoothing = value;
-                    int maxRadius = Mathf.Max(10, Mathf.FloorToInt(value * 1.5f));
-                    m_Velocity = new GaussianWindow1D_Vector3(mSmoothing, maxRadius);
-                    m_Accel = new GaussianWindow1D_Vector3(mSmoothing, maxRadius);
-                }
-            }
-        }
-        public bool IsEmpty { get { return m_Velocity.IsEmpty(); } }
-
-        public bool Recenter { get; set; }
-
-        public void ApplyTransformDelta(Vector3 positionDelta)
-        {
-            m_Position += positionDelta;
-        }
-
-        public void Reset()
-        {
-            m_Velocity.Reset();
-            m_Accel.Reset();
-        }
-
-        public void AddPosition(Vector3 pos, float deltaTime, float lookaheadTime)
-        {
-            if (deltaTime < UnityVectorExtensions.Epsilon)
-                Reset();
-            else if (IsEmpty)
-                m_Velocity.AddValue(Vector3.zero);
-            else
-            {
-                Vector3 vel = (pos - m_Position) / deltaTime;
-                if (Recenter || vel.sqrMagnitude > UnityVectorExtensions.Epsilon)
-                {
-                    Vector3 vel0 = m_Velocity.Value();
-                    float now = Time.time;
-                    if (vel.sqrMagnitude >= vel0.sqrMagnitude
-                        || UnityVectorExtensions.Angle(vel, vel0) > 10
-                        || now > mLastVelAddedTime + lookaheadTime)
-                    {
-                        m_Velocity.AddValue(vel);
-                        m_Accel.AddValue(vel - vel0);
-                        mLastVelAddedTime = now;
-                    }
-                }
-            }
-            m_Position = pos;
-        }
-
-        public Vector3 PredictPositionDelta(float lookaheadTime)
-        {
-            Vector3 vel = m_Velocity.IsEmpty() ? Vector3.zero : m_Velocity.Value();
-            Vector3 accel = m_Accel.IsEmpty() ? Vector3.zero : m_Accel.Value();
-            Vector3 delta = vel * lookaheadTime;
-            delta += accel * lookaheadTime * lookaheadTime * 0.5f;
-            return delta;
-        }
-
-        public Vector3 PredictPosition(float lookaheadTime)
-        {
-            return m_Position + PredictPositionDelta(lookaheadTime);
-        }
-    }
-#endif
 
     /// <summary>Utility to perform realistic damping of float or Vector3 values.
     /// The algorithm is based on exponentially decaying the delta until only

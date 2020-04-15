@@ -10,7 +10,8 @@
 - Added example scenes: 3rdPersonDeadCenterAim and 3rdPersonLooseAim to show different 3rd person cmera styles
 - FramingTransposer does its work after Aim, so it plays better with Aim components.
 - Framing Transposer: add Damped Rotations option.  If unchecked, changes to the vcam's rotation will bypass Damping, and only target motion will be damped.
-- Added Lookahead Reset When Still option, to reproduce legacy lookahead behaviour if desired
+- Refactored Lookahead - new behaviour may require some parameter adjustment in existing content
+- Composer and Framing Transposer: improved handling at edge of hard zone (no juddering)
 - Orbital Transposer / FreeLook: improved damping when target is moving
 - CustomBlends editor UX improvements: allow direct editing of vcam names, as well as dropdown
 - Add Convert to TargetGroup option on LookAt and Follow target fields
