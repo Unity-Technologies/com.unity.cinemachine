@@ -536,7 +536,8 @@ namespace Cinemachine
                     cameraOffset, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
 
                 // Make sure the real target (not the lookahead one) is still in the frame
-                if (!m_UnlimitedSoftZone)
+                if (!m_UnlimitedSoftZone 
+                    && (deltaTime < 0 || VirtualCamera.FollowTargetAttachment > 1 - Epsilon))
                 {
                     Rect hardGuideOrtho = ScreenToOrtho(HardGuideRect, screenSize, lens.Aspect);
                     var realTargetPos = (worldToLocal * followTargetPosition) - cameraPos;
