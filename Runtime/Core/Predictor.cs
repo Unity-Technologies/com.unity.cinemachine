@@ -3,6 +3,60 @@ using UnityEngine;
 
 namespace Cinemachine.Utility
 {
+#if true // GML experiment -  new lookahead algortithm
+    public class PositionPredictor
+    {
+        Vector3 m_Velocity;
+        Vector3 m_SmoothDampVelocity;
+        Vector3 m_Pos;
+        float m_SqrSpeed;
+        bool m_HavePos;
+
+        public float Smoothing { get; set; }
+        public bool Recenter { get; set; }
+
+        public void ApplyTransformDelta(Vector3 positionDelta) { m_Pos += positionDelta; }
+
+        public void Reset() 
+        { 
+            m_HavePos = false; 
+            m_SmoothDampVelocity = Vector3.zero; 
+            m_SqrSpeed = 0;
+        }
+
+        public void AddPosition(Vector3 pos, float deltaTime, float lookaheadTime)
+        {
+            if (deltaTime < 0)
+                Reset();
+            if (m_HavePos && deltaTime > UnityVectorExtensions.Epsilon)
+            {
+                var vel = (pos - m_Pos) / deltaTime;
+                var sqrSpeed = vel.sqrMagnitude;
+                if (Recenter || sqrSpeed > UnityVectorExtensions.Epsilon)
+                {
+                    bool slowing = sqrSpeed < m_SqrSpeed;
+                    m_Velocity = Vector3.SmoothDamp(
+                        m_Velocity, vel, ref m_SmoothDampVelocity, Smoothing / (slowing ? 30 : 10), 
+                        float.PositiveInfinity, deltaTime);
+                    m_SqrSpeed = m_Velocity.sqrMagnitude;
+                }
+            }
+            m_Pos = pos;
+            m_HavePos = true;
+        }
+
+        public Vector3 PredictPositionDelta(float lookaheadTime)
+        {
+            return m_Velocity * lookaheadTime;
+        }
+
+        public Vector3 PredictPosition(float lookaheadTime)
+        {
+            return m_Pos + PredictPositionDelta(lookaheadTime);
+        }
+    }
+
+#else
     public class PositionPredictor
     {
         Vector3 m_Position;
@@ -83,6 +137,7 @@ namespace Cinemachine.Utility
             return m_Position + PredictPositionDelta(lookaheadTime);
         }
     }
+#endif
 
     /// <summary>Utility to perform realistic damping of float or Vector3 values.
     /// The algorithm is based on exponentially decaying the delta until only
