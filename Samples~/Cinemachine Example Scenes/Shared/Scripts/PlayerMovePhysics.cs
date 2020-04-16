@@ -30,8 +30,7 @@ public class PlayerMovePhysics : MonoBehaviour
         //input = Vector3.forward;
 		if (input.magnitude > 0)
         {
-            Vector3 fwd = worldDirection
-                ? Vector3.forward : transform.position - Camera.main.transform.position;
+            Vector3 fwd = worldDirection ? Vector3.forward : Camera.main.transform.forward;
             fwd.y = 0;
             fwd = fwd.normalized;
             if (fwd.magnitude > 0.001f)
