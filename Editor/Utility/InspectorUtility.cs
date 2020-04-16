@@ -163,21 +163,10 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        public static void RepaintGameView(UnityEngine.Object dirtyObject = null)
+        public static void RepaintGameView()
         {
-#if UNITY_2019_1_OR_NEWER
-            if (dirtyObject != null)
-            {
-                var go = dirtyObject as GameObject;
-                if (go == null || go.scene.name != null)    // don't dirty prefabs
-                    EditorUtility.SetDirty(dirtyObject);
-            }
-#endif
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            EditorApplication.QueuePlayerLoopUpdate();
         }
-
-        // Needed for 2019.3 and later, for catching GameView mouse dragging the guides
-        internal static bool RepaintRequested { get; set; }
 
         /// <summary>
         /// Try to get the name of the owning virtual camera oibject.  If none then use

@@ -168,7 +168,7 @@ namespace Cinemachine.Editor
             list.Insert(indexA + 1, wp);
             Target.m_Waypoints = list.ToArray();
             Target.InvalidateDistanceCache();
-            InspectorUtility.RepaintGameView(Target);
+            InspectorUtility.RepaintGameView();
             mWaypointList.index = indexA + 1; // select it
         }
 
@@ -202,7 +202,7 @@ namespace Cinemachine.Editor
                     && mWaypointList.index != i)
                 {
                     mWaypointList.index = i;
-                    InspectorUtility.RepaintGameView(Target);
+                    InspectorUtility.RepaintGameView();
                 }
                 // Label it
                 Handles.BeginGUI();
@@ -238,7 +238,7 @@ namespace Cinemachine.Editor
                 wp.position = Matrix4x4.Inverse(localToWorld).MultiplyPoint(pos);
                 Target.m_Waypoints[i] = wp;
                 Target.InvalidateDistanceCache();
-                InspectorUtility.RepaintGameView(Target);
+                InspectorUtility.RepaintGameView();
             }
         }
 

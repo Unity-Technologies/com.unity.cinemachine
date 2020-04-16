@@ -56,7 +56,7 @@ namespace Cinemachine.Editor
             if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
             {
                 CinemachineBrain.SoloCamera = null;
-                InspectorUtility.RepaintGameView(Target);
+                InspectorUtility.RepaintGameView();
             }
         }
 
@@ -169,16 +169,11 @@ namespace Cinemachine.Editor
             {
                 isSolo = !isSolo;
                 CinemachineBrain.SoloCamera = isSolo ? Target : null;
-#if UNITY_2019_1_OR_NEWER
-                EditorUtility.SetDirty(Target);
-#else
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-#endif
+                InspectorUtility.RepaintGameView();
             }
             GUI.color = color;
-            if ((isSolo || InspectorUtility.RepaintRequested) && !Application.isPlaying)
-                InspectorUtility.RepaintGameView(Target);
-            InspectorUtility.RepaintRequested = false;
+            if (isSolo && !Application.isPlaying)
+                InspectorUtility.RepaintGameView();
 
             if (labelWidth > 0)
             {

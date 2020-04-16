@@ -30,7 +30,7 @@ namespace Cinemachine.Editor
                     FieldPath(x => x.m_CustomBlends), this);
             m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) =>
                 {
-                    InspectorUtility.RepaintGameView(Target);
+                    InspectorUtility.RepaintGameView();
                 };
         }
 

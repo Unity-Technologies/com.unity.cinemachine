@@ -33,7 +33,6 @@ namespace Cinemachine.Editor
                         && CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides
                         && CinemachineBrain.SoloCamera == null)
                     {
-                        InspectorUtility.RepaintRequested = true;
                         InspectorUtility.RepaintGameView();
                     }
                 }

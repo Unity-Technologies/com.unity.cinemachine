@@ -24,14 +24,16 @@ namespace Cinemachine.Editor
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
-            InspectorUtility.RepaintGameView(Target);
+            if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+                InspectorUtility.RepaintGameView();
         }
 
         protected virtual void OnDisable()
         {
             mGameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
-            InspectorUtility.RepaintGameView(Target);
+            if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+                InspectorUtility.RepaintGameView();
         }
 
         public override void OnInspectorGUI()
