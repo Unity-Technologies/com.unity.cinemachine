@@ -239,6 +239,7 @@ namespace Cinemachine
         public void OnTransformChildrenChanged()
         {
             InvalidateListOfChildren();
+            UpdateListOfChildren();
         }
 
         ///  Will only be called if Unity Editor - never in build
