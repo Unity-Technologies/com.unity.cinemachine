@@ -163,7 +163,7 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        public static void RepaintGameView()
+        public static void RepaintGameView(UnityEngine.Object unused = null)
         {
             EditorApplication.QueuePlayerLoopUpdate();
         }
