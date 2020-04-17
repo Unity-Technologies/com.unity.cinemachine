@@ -39,16 +39,12 @@ namespace Cinemachine
         /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out
         /// jittery predictions and also increase prediction lag</summary>
         [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag")]
-        [Range(3, 30)]
-        public float m_LookaheadSmoothing = 10;
+        [Range(0, 30)]
+        public float m_LookaheadSmoothing = 0;
 
         /// <summary>If checked, movement along the Y axis will be ignored for lookahead calculations</summary>
         [Tooltip("If checked, movement along the Y axis will be ignored for lookahead calculations")]
         public bool m_LookaheadIgnoreY;
-
-        /// <summary>If checked, lookahead will reset when target stops moving</summary>
-        [Tooltip("If checked, lookahead will reset when target stops moving")]
-        public bool m_LookaheadResetWhenStill;
 
         /// <summary>How aggressively the camera tries to follow the target in the screen-horizontal direction.
         /// Small numbers are more responsive, rapidly orienting the camera to keep the target in
@@ -140,7 +136,6 @@ namespace Cinemachine
             else
             {
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.Recenter = m_LookaheadResetWhenStill;
                 m_Predictor.AddPosition(pos, VirtualCamera.PreviousStateIsValid ? deltaTime : -1, m_LookaheadTime);
                 var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
                 if (m_LookaheadIgnoreY)
@@ -255,25 +250,16 @@ namespace Cinemachine
                         -m_ScreenOffsetPrevFrame, curState.ReferenceUp);
                 }
 
-                // First force the previous rotation into the hard bounds, no damping,
-                // then  move it through the soft zone, with damping
-                if (deltaTime < 0 || VirtualCamera.LookAtTargetAttachment > 1 - Epsilon)
-                {
-                    RotateToScreenBounds(
-                        ref curState, mCache.mFovHardGuideRect, TrackedPoint,
-                        ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
-                }
+                // Move target through the soft zone, with damping
                 RotateToScreenBounds(
                     ref curState, mCache.mFovSoftGuideRect, TrackedPoint,
                     ref rigOrientation, mCache.mFov, mCache.mFovH, deltaTime);
-            }
 
-            // If we have lookahead, make sure the real target is still in the frame
-            if (!(TrackedPoint - curState.ReferenceLookAt).AlmostZero())
-            {
-                RotateToScreenBounds(
-                    ref curState, mCache.mFovHardGuideRect, curState.ReferenceLookAt,
-                    ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
+                // Force the actual target (not the lookahead one) into the hard bounds, no damping
+                if (deltaTime < 0 || VirtualCamera.LookAtTargetAttachment > 1 - Epsilon)
+                    RotateToScreenBounds(
+                        ref curState, mCache.mFovHardGuideRect, curState.ReferenceLookAt,
+                        ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
             }
 
             m_CameraPosPrevFrame = curState.CorrectedPosition;

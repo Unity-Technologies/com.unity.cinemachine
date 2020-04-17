@@ -1,86 +1,52 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine.Utility
 {
     public class PositionPredictor
     {
-        Vector3 m_Position;
+        Vector3 m_Velocity;
+        Vector3 m_SmoothDampVelocity;
+        Vector3 m_Pos;
+        float m_SqrSpeed;
+        bool m_HavePos;
 
-        GaussianWindow1D_Vector3 m_Velocity = new GaussianWindow1D_Vector3(kSmoothingDefault);
-        GaussianWindow1D_Vector3 m_Accel = new GaussianWindow1D_Vector3(kSmoothingDefault);
+        public float Smoothing { get; set; }
 
-        float mLastVelAddedTime = 0;
+        public void ApplyTransformDelta(Vector3 positionDelta) { m_Pos += positionDelta; }
 
-        const float kSmoothingDefault = 10;
-        float mSmoothing = kSmoothingDefault;
-        public float Smoothing
-        {
-            get { return mSmoothing; }
-            set
-            {
-                if (value != mSmoothing)
-                {
-                    mSmoothing = value;
-                    int maxRadius = Mathf.Max(10, Mathf.FloorToInt(value * 1.5f));
-                    m_Velocity = new GaussianWindow1D_Vector3(mSmoothing, maxRadius);
-                    m_Accel = new GaussianWindow1D_Vector3(mSmoothing, maxRadius);
-                }
-            }
-        }
-        public bool IsEmpty { get { return m_Velocity.IsEmpty(); } }
-
-        public bool Recenter { get; set; }
-
-        public void ApplyTransformDelta(Vector3 positionDelta)
-        {
-            m_Position += positionDelta;
-        }
-
-        public void Reset()
-        {
-            m_Velocity.Reset();
-            m_Accel.Reset();
+        public void Reset() 
+        { 
+            m_HavePos = false; 
+            m_SmoothDampVelocity = Vector3.zero; 
+            m_SqrSpeed = 0;
         }
 
         public void AddPosition(Vector3 pos, float deltaTime, float lookaheadTime)
         {
-            if (deltaTime < UnityVectorExtensions.Epsilon)
+            if (deltaTime < 0)
                 Reset();
-            else if (IsEmpty)
-                m_Velocity.AddValue(Vector3.zero);
-            else
+            if (m_HavePos && deltaTime > UnityVectorExtensions.Epsilon)
             {
-                Vector3 vel = (pos - m_Position) / deltaTime;
-                if (Recenter || vel.sqrMagnitude > UnityVectorExtensions.Epsilon)
-                {
-                    Vector3 vel0 = m_Velocity.Value();
-                    float now = Time.time;
-                    if (vel.sqrMagnitude >= vel0.sqrMagnitude
-                        || UnityVectorExtensions.Angle(vel, vel0) > 10
-                        || now > mLastVelAddedTime + lookaheadTime)
-                    {
-                        m_Velocity.AddValue(vel);
-                        m_Accel.AddValue(vel - vel0);
-                        mLastVelAddedTime = now;
-                    }
-                }
+                var vel = (pos - m_Pos) / deltaTime;
+                var sqrSpeed = vel.sqrMagnitude;
+                bool slowing = sqrSpeed < m_SqrSpeed;
+                m_Velocity = Vector3.SmoothDamp(
+                    m_Velocity, vel, ref m_SmoothDampVelocity, Smoothing / (slowing ? 30 : 10), 
+                    float.PositiveInfinity, deltaTime);
+                m_SqrSpeed = m_Velocity.sqrMagnitude;
             }
-            m_Position = pos;
+            m_Pos = pos;
+            m_HavePos = true;
         }
 
         public Vector3 PredictPositionDelta(float lookaheadTime)
         {
-            Vector3 vel = m_Velocity.IsEmpty() ? Vector3.zero : m_Velocity.Value();
-            Vector3 accel = m_Accel.IsEmpty() ? Vector3.zero : m_Accel.Value();
-            Vector3 delta = vel * lookaheadTime;
-            delta += accel * lookaheadTime * lookaheadTime * 0.5f;
-            return delta;
+            return m_Velocity * lookaheadTime;
         }
 
         public Vector3 PredictPosition(float lookaheadTime)
         {
-            return m_Position + PredictPositionDelta(lookaheadTime);
+            return m_Pos + PredictPositionDelta(lookaheadTime);
         }
     }
 

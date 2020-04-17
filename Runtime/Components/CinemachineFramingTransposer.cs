@@ -51,16 +51,12 @@ namespace Cinemachine
         /// jittery predictions and also increase prediction lag</summary>
         [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth out "
             + "jittery predictions and also increase prediction lag")]
-        [Range(3, 30)]
-        public float m_LookaheadSmoothing = 10;
+        [Range(0, 30)]
+        public float m_LookaheadSmoothing = 0;
 
         /// <summary>If checked, movement along the Y axis will be ignored for lookahead calculations</summary>
         [Tooltip("If checked, movement along the Y axis will be ignored for lookahead calculations")]
         public bool m_LookaheadIgnoreY;
-
-        /// <summary>If checked, lookahead will reset when target stops moving</summary>
-        [Tooltip("If checked, lookahead will reset when target stops moving")]
-        public bool m_LookaheadResetWhenStill;
 
         /// <summary>How aggressively the camera tries to maintain the offset in the X-axis.
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
@@ -447,7 +443,6 @@ namespace Cinemachine
             if (m_LookaheadTime > Epsilon)
             {
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.Recenter = m_LookaheadResetWhenStill;
                 m_Predictor.AddPosition(followTargetPosition, deltaTime, m_LookaheadTime);
                 var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
                 if (m_LookaheadIgnoreY)
@@ -535,29 +530,19 @@ namespace Cinemachine
             }
             else
             {
-                // Move it through the soft zone
+                // Move it through the soft zone, with damping
                 cameraOffset += OrthoOffsetToScreenBounds(targetPos, softGuideOrtho);
+                cameraOffset = VirtualCamera.DetachedFollowTargetDamp(
+                    cameraOffset, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
 
-                // Find where it intersects the hard zone
-                Vector3 hard = Vector3.zero;
-                if (!m_UnlimitedSoftZone && deltaTime < 0 
-                    || VirtualCamera.FollowTargetAttachment > 1 - Epsilon)
+                // Make sure the real target (not the lookahead one) is still in the frame
+                if (!m_UnlimitedSoftZone 
+                    && (deltaTime < 0 || VirtualCamera.FollowTargetAttachment > 1 - Epsilon))
                 {
                     Rect hardGuideOrtho = ScreenToOrtho(HardGuideRect, screenSize, lens.Aspect);
-                    hard = OrthoOffsetToScreenBounds(targetPos, hardGuideOrtho);
-                    float t = Mathf.Max(
-                        hard.x / (cameraOffset.x + Epsilon), hard.y / (cameraOffset.y + Epsilon));
-                    hard = cameraOffset * t;
-                }
-                // Apply damping, but only to the portion of the move that's inside the hard zone
-                cameraOffset = hard + VirtualCamera.DetachedFollowTargetDamp(
-                    cameraOffset - hard, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
-
-                // If we have lookahead, make sure the real target is still in the frame
-                if (!m_UnlimitedSoftZone && !(TrackedPoint - curState.ReferenceLookAt).AlmostZero())
-                {
-                    Rect hardGuideOrtho = ScreenToOrtho(HardGuideRect, screenSize, lens.Aspect);
-                    cameraOffset += OrthoOffsetToScreenBounds(lookAtPos - cameraOffset, hardGuideOrtho);
+                    var realTargetPos = (worldToLocal * followTargetPosition) - cameraPos;
+                    cameraOffset += OrthoOffsetToScreenBounds(
+                        realTargetPos - cameraOffset, hardGuideOrtho);
                 }
             }
             curState.RawPosition = localToWorld * (cameraPos + cameraOffset);
