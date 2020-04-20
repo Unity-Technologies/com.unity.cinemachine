@@ -284,9 +284,9 @@ namespace Cinemachine
             newFwd = Quaternion.identity.ApplyCameraRotation(shift, Vector3.up) * Vector3.forward;
             newFwd = observer.MultiplyVector(newFwd);
 
-            float d = (zRange.y + zRange.x);
-            Vector2 angles = (maxAngles - shift) * Mathf.Deg2Rad;
-            angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f));
+            float d = zRange.y + zRange.x;
+            Vector2 angles = (maxAngles - shift);
+            angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f)) * Mathf.Deg2Rad;
             return new Bounds(
                 new Vector3(0, 0, d/2),
                 new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
