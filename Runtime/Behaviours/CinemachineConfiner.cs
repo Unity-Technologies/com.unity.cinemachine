@@ -198,7 +198,7 @@ namespace Cinemachine
                     m_pathCache = new List<List<Vector2>>();
                     Vector2[] path = new Vector2[poly.pointCount];
                     var lossyScale = m_BoundingShape2D.transform.lossyScale;
-                    Vector2 compositeScale = new Vector2(
+                    Vector2 revertCompositeColliderScale = new Vector2(
                         1f / lossyScale.x, 
                         1f / lossyScale.y);
                     for (int i = 0; i < poly.pathCount; ++i)
@@ -206,7 +206,7 @@ namespace Cinemachine
                         int numPoints = poly.GetPath(i, path);
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < numPoints; ++j)
-                            dst.Add(compositeScale * path[j]);
+                            dst.Add(revertCompositeColliderScale * path[j]);
                         m_pathCache.Add(dst);
                     }
                     m_pathTotalPointCount = poly.pointCount;
