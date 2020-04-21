@@ -206,7 +206,7 @@ namespace Cinemachine
                         int numPoints = poly.GetPath(i, path);
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < numPoints; ++j)
-                            dst.Add(revertCompositeColliderScale * path[j]);
+                            dst.Add(path[j] * revertCompositeColliderScale);
                         m_pathCache.Add(dst);
                     }
                     m_pathTotalPointCount = poly.pointCount;

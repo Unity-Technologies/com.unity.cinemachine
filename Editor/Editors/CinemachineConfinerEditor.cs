@@ -154,13 +154,13 @@ namespace Cinemachine.Editor
                     {
                         CompositeCollider2D poly = confiner.m_BoundingShape2D as CompositeCollider2D;
                         Vector2[] path = new Vector2[poly.pointCount];
-                        Vector2 scaleBack = new Vector2(1f / t.lossyScale.x, 1f / t.lossyScale.y);
+                        Vector2 revertCompositeColliderScale = new Vector2(1f / t.lossyScale.x, 1f / t.lossyScale.y);
                         for (int i = 0; i < poly.pathCount; ++i)
                         {
                             int numPoints = poly.GetPath(i, path);
                             for (int j = 0; j < path.Length; ++j)
                             {
-                                path[j] *= scaleBack;
+                                path[j] *= revertCompositeColliderScale;
                             }
                             DrawPath(path, numPoints);
                         }
