@@ -240,10 +240,12 @@ namespace Cinemachine
                 int numPoints = m_pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][numPoints-1]);
+                    Transform t = m_BoundingShape2D.transform;
+                    var localToWorldWithoutScale = Matrix4x4.TRS(t.position, t.rotation, Vector3.one);
+                    Vector2 v0 = localToWorldWithoutScale * m_pathCache[i][numPoints-1];
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][j]);
+                        Vector2 v = localToWorldWithoutScale * m_pathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
                         float d = Vector2.SqrMagnitude(p - c);
                         if (d < bestDistance)

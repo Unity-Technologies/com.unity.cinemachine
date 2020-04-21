@@ -141,7 +141,7 @@ namespace Cinemachine.Editor
 #endif
 #if CINEMACHINE_PHYSICS_2D
                     Transform t = confiner.m_BoundingShape2D.transform;
-                    Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, t.lossyScale);
+                    Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, Vector3.one);
 
                     Type colliderType = confiner.m_BoundingShape2D.GetType();
                     if (colliderType == typeof(PolygonCollider2D))
