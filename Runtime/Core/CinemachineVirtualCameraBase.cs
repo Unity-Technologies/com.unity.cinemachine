@@ -505,6 +505,11 @@ namespace Cinemachine
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
         protected virtual void OnEnable()
         {
+            UpdateSlaveStatus();
+            UpdateVcamPoolStatus();    // Add to queue
+            if (!CinemachineCore.Instance.IsLive(this))
+                PreviousStateIsValid = false;
+            CinemachineCore.Instance.CameraEnabled(this);
             // Sanity check - if another vcam component is enabled, shut down
             var vcamComponents = GetComponents<CinemachineVirtualCameraBase>();
             for (int i = 0; i < vcamComponents.Length; ++i)
@@ -517,11 +522,6 @@ namespace Cinemachine
                     enabled = false;
                 }
             }
-            UpdateSlaveStatus();
-            UpdateVcamPoolStatus();    // Add to queue
-            if (!CinemachineCore.Instance.IsLive(this))
-                PreviousStateIsValid = false;
-            CinemachineCore.Instance.CameraEnabled(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
