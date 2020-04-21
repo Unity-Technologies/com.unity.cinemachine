@@ -141,7 +141,7 @@ namespace Cinemachine.Editor
 #endif
 #if CINEMACHINE_PHYSICS_2D
                     Transform t = confiner.m_BoundingShape2D.transform;
-                    Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, Vector3.one);
+                    Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, t.lossyScale);
 
                     Type colliderType = confiner.m_BoundingShape2D.GetType();
                     if (colliderType == typeof(PolygonCollider2D))
@@ -154,9 +154,14 @@ namespace Cinemachine.Editor
                     {
                         CompositeCollider2D poly = confiner.m_BoundingShape2D as CompositeCollider2D;
                         Vector2[] path = new Vector2[poly.pointCount];
+                        Vector2 scaleBack = new Vector2(1f / t.lossyScale.x, 1f / t.lossyScale.y);
                         for (int i = 0; i < poly.pathCount; ++i)
                         {
                             int numPoints = poly.GetPath(i, path);
+                            for (int j = 0; j < path.Length; ++j)
+                            {
+                                path[j] *= scaleBack;
+                            }
                             DrawPath(path, numPoints);
                         }
                     }

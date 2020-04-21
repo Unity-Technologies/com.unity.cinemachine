@@ -197,12 +197,16 @@ namespace Cinemachine
                 {
                     m_pathCache = new List<List<Vector2>>();
                     Vector2[] path = new Vector2[poly.pointCount];
+                    var lossyScale = m_BoundingShape2D.transform.lossyScale;
+                    Vector2 compositeScale = new Vector2(
+                        1f / lossyScale.x, 
+                        1f / lossyScale.y);
                     for (int i = 0; i < poly.pathCount; ++i)
                     {
                         int numPoints = poly.GetPath(i, path);
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < numPoints; ++j)
-                            dst.Add(path[j]);
+                            dst.Add(compositeScale * path[j]);
                         m_pathCache.Add(dst);
                     }
                     m_pathTotalPointCount = poly.pointCount;
@@ -240,12 +244,10 @@ namespace Cinemachine
                 int numPoints = m_pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Transform t = m_BoundingShape2D.transform;
-                    var localToWorldWithoutScale = Matrix4x4.TRS(t.position, t.rotation, Vector3.one);
-                    Vector2 v0 = localToWorldWithoutScale * m_pathCache[i][numPoints-1];
+                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][numPoints - 1]);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = localToWorldWithoutScale * m_pathCache[i][j];
+                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][j]);
                         Vector2 c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
                         float d = Vector2.SqrMagnitude(p - c);
                         if (d < bestDistance)
