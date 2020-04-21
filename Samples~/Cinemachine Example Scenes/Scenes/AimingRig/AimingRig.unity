@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 172419708}
   - component: {fileID: 172419707}
   m_Layer: 5
-  m_Name: PlayerHitReticle
+  m_Name: Player Hit Reticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -247,7 +247,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00064086914, y: 0.000030517578}
+  m_AnchoredPosition: {x: -0.0007019043, y: 0.000030517578}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &172419707
@@ -298,7 +298,7 @@ GameObject:
   - component: {fileID: 226826962}
   - component: {fileID: 226826965}
   m_Layer: 0
-  m_Name: CM 3rdPerson Dead Center Aim
+  m_Name: CM Aiming Rig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -386,7 +386,7 @@ GameObject:
   - component: {fileID: 266176020}
   - component: {fileID: 266176019}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Reticle Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -600,7 +600,7 @@ GameObject:
   - component: {fileID: 483716839}
   - component: {fileID: 483716838}
   m_Layer: 5
-  m_Name: CameraReticle
+  m_Name: Camera Reticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -661,6 +661,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 483716836}
   m_CullTransparentMesh: 0
+--- !u!1 &1134903599
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1134903601}
+  - component: {fileID: 1134903600}
+  m_Layer: 0
+  m_Name: Instructions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1134903600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1134903599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Title: Aiming Rig
+  m_Description: 'Use WASD to move the character, and the mouse to rotate.
+
+
+    The
+    3rdPerson vcam is set up follow an invisible child of the player, which rotates
+    itself in response to mouse movement.
+
+
+    The 3rdPersonAim extension locks
+    the camera reticle to the first object that a raycast from the camera position
+    intersects, and this is stable even in the presence of some camera noise.
+
+
+    The
+    secondary (inner) reticle shows what the player would hit if a shot were fired. 
+    This may be different from the outer reticle if a nearby obstacle obstructs the
+    player from seeing the object under the camera reticle.
+
+
+    The dual reticle
+    behaviour can be disabled by setting the  Aim Target reticle field to null in
+    the 3rdPersonAim extension.'
+--- !u!4 &1134903601
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1134903599}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.527199, y: -0.140625, z: -7.5859556}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1493626625
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -725,7 +791,6 @@ GameObject:
   - component: {fileID: 1787124814}
   - component: {fileID: 1787124813}
   - component: {fileID: 1787124817}
-  - component: {fileID: 1787124818}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -841,41 +906,6 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1787124818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1787124812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Title: Third Person Dead Center Aim
-  m_Description: 'Use WASD to move the character, and the mouse to rotate.
-
-
-    The
-    3rdPerson vcam is set up follow an invisible child of the player, which rotates
-    itself in response to mouse movement.
-
-
-    The 3rdPersonAim extension locks
-    the camera reticle to the first object that a raycast from the camera position
-    intersects, and this is stable even in the presence of some camera noise.
-
-
-    The
-    secondary (inner) reticle shows what the player would hit if a shot were fired. 
-    This may be different from the outer reticle if a nearby obstacle obstructs the
-    player from seeing the object under the camera reticle.
-
-
-    The dual reticle
-    behaviour can be disabled by setting the  Aim Target reticle field to null in
-    the 3rdPersonAim extension.'
 --- !u!1 &1923080547
 GameObject:
   m_ObjectHideFlags: 0

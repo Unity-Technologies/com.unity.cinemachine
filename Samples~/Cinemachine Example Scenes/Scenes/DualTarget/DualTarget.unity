@@ -343,7 +343,7 @@ GameObject:
   - component: {fileID: 227433049}
   - component: {fileID: 227433048}
   m_Layer: 0
-  m_Name: CM 3rdPerson Loose Aim
+  m_Name: CM Dual Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -391,8 +391,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 227433047}
-  m_LocalRotation: {x: -0.010564434, y: 0.00078191335, z: 0.000008260906, w: 0.9999439}
-  m_LocalPosition: {x: -0.023522802, y: 2.7810009, z: -15.040967}
+  m_LocalRotation: {x: -0.010564436, y: 0.00078191346, z: 0.000008260938, w: 0.9999439}
+  m_LocalPosition: {x: -0.023522805, y: 2.7810009, z: -15.040967}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 492781135}
@@ -832,8 +832,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: -0.010564434, y: 0.00078191335, z: 0.000008260906, w: 0.9999439}
-  m_LocalPosition: {x: -0.023522802, y: 2.7810009, z: -15.040967}
+  m_LocalRotation: {x: -0.010564436, y: 0.00078191346, z: 0.000008260938, w: 0.9999439}
+  m_LocalPosition: {x: -0.023522805, y: 2.7810009, z: -15.040967}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1323,7 +1323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: 3rd Person Aim Anywhere
+  m_Title: Dual Target
   m_Description: 'Use WASD to move, and mouse to aim.
 
 

@@ -451,7 +451,7 @@ namespace Cinemachine
                 if (isGroupFraming)
                 {
                     var b = LastBounds;
-                    b.center += p - followTargetPosition;
+                    b.center += LastBoundsMatrix.MultiplyPoint3x4(delta);
                     LastBounds = b;
                 }
                 TrackedPoint = p;
@@ -645,9 +645,10 @@ namespace Cinemachine
             Vector2 angles = new Vector2(89.5f, 89.5f);
             if (zRange.x > 0)
             {
-                angles = Vector3.Max(maxAngles, UnityVectorExtensions.Abs(minAngles)) * Mathf.Deg2Rad;
+                angles = Vector2.Max(maxAngles, UnityVectorExtensions.Abs(minAngles));
                 angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f));
             }
+            angles *= Mathf.Deg2Rad;
             return new Bounds(new Vector3(0, 0, z),
                 new Vector3(Mathf.Tan(angles.y) * z * 2, Mathf.Tan(angles.x) * z * 2, zSize));
         }

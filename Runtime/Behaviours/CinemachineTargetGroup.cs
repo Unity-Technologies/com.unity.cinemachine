@@ -377,35 +377,46 @@ namespace Cinemachine
         public void GetViewSpaceAngularBounds(
             Matrix4x4 observer, out Vector2 minAngles, out Vector2 maxAngles, out Vector2 zRange)
         {
+            zRange = Vector2.zero;
+
             Matrix4x4 inverseView = observer.inverse;
-            minAngles = Vector2.zero;
-            maxAngles = Vector2.zero;
-            zRange = Vector3.zero;
+            Bounds b = new Bounds();
+            bool haveOne = false;
             for (int i = 0; i < m_Targets.Length; ++i)
             {
                 BoundingSphere s = GetWeightedBoundsForMember(i);
                 Vector3 p = inverseView.MultiplyPoint3x4(s.position);
+                if (p.z < UnityVectorExtensions.Epsilon)
+                    continue; // behind us
 
-                // Add the radius
-                float r = p.magnitude;
-                Vector2 extraA = Vector2.zero;
-                if (r > UnityVectorExtensions.Epsilon && s.radius > UnityVectorExtensions.Epsilon)
-                    extraA = Mathf.Atan2(s.radius, r) * Mathf.Rad2Deg * Vector2.one;
-                Vector2 a = Quaternion.identity.GetCameraRotationToTarget(p, Vector3.up);
-                if (i == 0)
+                var r = s.radius / p.z;
+                var r2 = new Vector3(r, r, 0);
+                var p2 = p / p.z;
+                if (!haveOne)
                 {
-                    minAngles = a - extraA;
-                    maxAngles = a + extraA;
+                    b.center = p2;
+                    b.extents = r2;
                     zRange = new Vector2(p.z - s.radius, p.z + s.radius);
+                    haveOne = true;
                 }
                 else
                 {
-                    minAngles = Vector3.Min(minAngles, a - extraA);
-                    maxAngles = Vector3.Max(maxAngles, a + extraA);
+                    b.Encapsulate(p2 + r2);
+                    b.Encapsulate(p2 - r2);
                     zRange.x = Mathf.Min(zRange.x, p.z - s.radius);
                     zRange.y = Mathf.Max(zRange.y, p.z + s.radius);
                 }
             }
+
+            // Don't need the high-precision versions of SignedAngle
+            var pMin = b.min;
+            var pMax = b.max;
+            minAngles = new Vector2(
+                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMin.y, 1), Vector3.right),
+                Vector3.SignedAngle(Vector3.forward, new Vector3(pMin.x, 0, 1), Vector3.up));
+            maxAngles = new Vector2(
+                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMax.y, 1), Vector3.right),
+                Vector3.SignedAngle(Vector3.forward, new Vector3(pMax.x, 0, 1), Vector3.up));
         }
     }
 }
