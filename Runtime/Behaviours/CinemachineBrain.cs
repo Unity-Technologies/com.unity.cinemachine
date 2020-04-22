@@ -519,7 +519,7 @@ namespace Cinemachine
         /// time-based calculations to be included, -1 otherwise</param>
         /// <returns>The oiverride ID.  Don't forget to call ReleaseCameraOverride
         /// after all overriding is finished, to free the OverideStack resources.</returns>
-        internal int SetCameraOverride(
+        public int SetCameraOverride(
             int overrideId,
             ICinemachineCamera camA, ICinemachineCamera camB,
             float weightB, float deltaTime)
@@ -554,7 +554,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="overrideId">The ID to released.  This is the value that
         /// was returned by SetCameraOverride</param>
-        internal void ReleaseCameraOverride(int overrideId)
+        public void ReleaseCameraOverride(int overrideId)
         {
             for (int i = mFrameStack.Count - 1; i > 0; --i)
             {
