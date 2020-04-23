@@ -272,7 +272,11 @@ namespace Cinemachine.Editor
             {
                 vcam.transform.position = SceneView.lastActiveSceneView.camera.transform.position;
                 vcam.transform.rotation = SceneView.lastActiveSceneView.camera.transform.rotation;
-                vcam.m_Lens = LensSettings.FromCamera(SceneView.lastActiveSceneView.camera);
+                var lens = LensSettings.FromCamera(SceneView.lastActiveSceneView.camera);
+                // Don't grab these
+                lens.NearClipPlane = LensSettings.Default.NearClipPlane;
+                lens.FarClipPlane = LensSettings.Default.FarClipPlane;
+                vcam.m_Lens = lens;
             }
         }
 
