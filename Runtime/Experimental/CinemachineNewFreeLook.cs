@@ -236,6 +236,28 @@ namespace Cinemachine
             m_RadialAxis.HasRecentering = false;
         }
 
+        /// <summary>Updates the child rig cache</summary>
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            UpdateInputAxisProvider();
+        }
+        
+        /// <summary>
+        /// API for the inspector.  Internal use only
+        /// </summary>
+        public void UpdateInputAxisProvider()
+        {
+            m_VerticalAxis.SetInputAxisProvider(0, null);
+            m_RadialAxis.SetInputAxisProvider(1, null);
+            var provider = GetInputAxisProvider();
+            if (provider != null)
+            {
+                m_VerticalAxis.SetInputAxisProvider(1, provider);
+                m_RadialAxis.SetInputAxisProvider(2, provider);
+            }
+        }
+        
         void Reset()
         {
             DestroyComponents();

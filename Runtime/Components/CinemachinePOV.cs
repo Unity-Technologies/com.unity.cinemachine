@@ -80,6 +80,29 @@ namespace Cinemachine
             m_HorizontalRecentering.Validate();
         }
 
+        private void OnEnable()
+        {
+            UpdateInputAxisProvider();
+        }
+        
+        /// <summary>
+        /// API for the inspector.  Internal use only
+        /// </summary>
+        public void UpdateInputAxisProvider()
+        {
+            m_HorizontalAxis.SetInputAxisProvider(0, null);
+            m_VerticalAxis.SetInputAxisProvider(1, null);
+            if (VirtualCamera != null)
+            {
+                var provider = VirtualCamera.GetInputAxisProvider();
+                if (provider != null)
+                {
+                    m_HorizontalAxis.SetInputAxisProvider(0, provider);
+                    m_VerticalAxis.SetInputAxisProvider(1, provider);
+                }
+            }
+        }
+
         /// <summary>Does nothing</summary>
         /// <param name="state"></param>
         /// <param name="deltaTime"></param>

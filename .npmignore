@@ -17,3 +17,4 @@ upm-ci~/**
 *.zip*
 TestRunnerOptions.json
 .idea/**
+upm-ci.log
