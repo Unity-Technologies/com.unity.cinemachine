@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.6.0-preview.3] - 2020-03-28
+## [2.6.0-preview.4] - 2020-04-25
 ### New Features and Bugfixes
 - Added ManualUpdate mode to the Brain, to allow for custom game loop logic
 - VolumeSettings/PostProcessing: added ability to choose custom target for focus tracking
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add Convert to TargetGroup option on LookAt and Follow target fields
 - Confiner: improved stability when ConfineScreenEdges is selected and confing shape is too small
 - Extensions now have PrePipelineMutateState callback
-- CinemachineCore.UniformDeltaTimeOverride works in Eit mode
+- CinemachineCore.UniformDeltaTimeOverride works in Edit mode
 - Added TargetAttachment property to vcams.  Normally 1, this can be used to relax attention to targets - effectively a damping override
 - Bugfix: Blend Update Method handling was incorrect and caused judder in some circumstances
 - Bugfix: VolumeSettings blending was popping when weight was epsilon if volume altered a non-lerpable value
