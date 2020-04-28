@@ -9,7 +9,7 @@ namespace Cinemachine
     /// <summary>
     /// This is an add-on to override the legacy input system and read input using the
     /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
-    /// or FreeLook that requires user input, and set it up to read the desired actions.
+    /// or FreeLook that requires user input, and drag in the the desired actions.
     /// </summary>
     public class CinemachineInputProvider : MonoBehaviour, AxisState.IInputAxisProvider
     {
@@ -18,11 +18,17 @@ namespace Cinemachine
         /// For multi-player games, set this to be the player index, and the actions will
         /// be read from that player's controls
         /// </summary>
+        [Tooltip("Leave this at -1 for single-player games.  "
+            + "For multi-player games, set this to be the player index, and the actions will "
+            + "be read from that player's controls")]
         public int PlayerIndex = -1;
 
         /// <summary>Vector2 action for XY movement</summary>
+        [Tooltip("Vector2 action for XY movement")]
         public InputActionReference XYAxis;
+
         /// <summary>Float action for Z movement</summary>
+        [Tooltip("Float action for Z movement")]
         public InputActionReference ZAxis;
 
         /// <summary>
@@ -31,17 +37,18 @@ namespace Cinemachine
         /// Reads the action associated with the axis.
         /// </summary>
         /// <param name="axis"></param>
-        /// <returns></returns>
+        /// <returns>The current axis value</returns>
         public virtual float GetAxisValue(int axis)
         {
             var action = ResolveForPlayer(axis, axis == 2 ? ZAxis : XYAxis);
-            if (action == null)
-                return 0;
-            switch (axis)
+            if (action != null)
             {
-                case 0: return action.ReadValue<Vector2>().x;
-                case 1: return action.ReadValue<Vector2>().y;
-                case 2: return action.ReadValue<float>();
+                switch (axis)
+                {
+                    case 0: return action.ReadValue<Vector2>().x;
+                    case 1: return action.ReadValue<Vector2>().y;
+                    case 2: return action.ReadValue<float>();
+                }
             }
             return 0;
         }
@@ -51,7 +58,10 @@ namespace Cinemachine
 
         /// <summary>
         /// In a multi-player context, actions are associated with specific players
-        /// This gets the appropriate action for the specified player
+        /// This resolves the appropriate action reference for the specified player.
+        /// 
+        /// Because the resolution involves a search, we also cache the returned 
+        /// action to make future resolutions faster.
         /// </summary>
         /// <param name="axis">Which input axis (0, 1, or 2)</param>
         /// <param name="actionRef">Which action reference to resolve</param>
@@ -75,6 +85,10 @@ namespace Cinemachine
                     m_cachedActions[axis] = user.actions.First(x => x.id == actionRef.action.id);
                 }
             }
+            // Auto-enable it if disabled
+            if (m_cachedActions[axis] != null && !m_cachedActions[axis].enabled)
+                m_cachedActions[axis].Enable();
+
             return m_cachedActions[axis];
         }
 
