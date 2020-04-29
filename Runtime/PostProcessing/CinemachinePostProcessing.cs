@@ -42,13 +42,13 @@ namespace Cinemachine.PostFX
         {
             /// <summary>No focus tracking</summary>
             None,
-            /// <summary>Focus offet is relative to the LookAt target</summary>
+            /// <summary>Focus offset is relative to the LookAt target</summary>
             LookAtTarget,
-            /// <summary>Focus offet is relative to the Follow target</summary>
+            /// <summary>Focus offset is relative to the Follow target</summary>
             FollowTarget,
-            /// <summary>Focus offet is relative to the Custom target set here</summary>
+            /// <summary>Focus offset is relative to the Custom target set here</summary>
             CustomTarget,
-            /// <summary>Focus offet is relative to the camera</summary>
+            /// <summary>Focus offset is relative to the camera</summary>
             Camera
         };
 
@@ -65,9 +65,9 @@ namespace Cinemachine.PostFX
         public Transform m_FocusTarget;
 
         /// <summary>Offset from target distance, to be used with Focus Tracks Target.  
-        /// Offsets the sharpest point away from the focus target</summary>
+        /// Offsets the sharpest point away from the location of the focus target</summary>
         [Tooltip("Offset from target distance, to be used with Focus Tracks Target.  "
-            + "Offsets the sharpest point away from the focus target.")]
+            + "Offsets the sharpest point away from the location of the focus target.")]
         public float m_FocusOffset;
 
         [Tooltip("This Post-Processing profile will be applied whenever this virtual camera is live")]

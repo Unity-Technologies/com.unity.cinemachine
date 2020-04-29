@@ -50,13 +50,13 @@ namespace Cinemachine.PostFX
         {
             /// <summary>No focus tracking</summary>
             None,
-            /// <summary>Focus offet is relative to the LookAt target</summary>
+            /// <summary>Focus offset is relative to the LookAt target</summary>
             LookAtTarget,
-            /// <summary>Focus offet is relative to the Follow target</summary>
+            /// <summary>Focus offset is relative to the Follow target</summary>
             FollowTarget,
-            /// <summary>Focus offet is relative to the Custom target set here</summary>
+            /// <summary>Focus offset is relative to the Custom target set here</summary>
             CustomTarget,
-            /// <summary>Focus offet is relative to the camera</summary>
+            /// <summary>Focus offset is relative to the camera</summary>
             Camera
         };
 

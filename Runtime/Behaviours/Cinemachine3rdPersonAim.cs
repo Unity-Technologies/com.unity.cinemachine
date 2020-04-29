@@ -25,12 +25,24 @@ namespace Cinemachine
         [Header("Aim Target Detection")]
         [Tooltip("Objects on these layers will be detected")]
         public LayerMask AimCollisionFilter;
+
+        /// <summary>Objects with this tag will be ignored.  
+        /// It is a good idea to set this field to the target's tag.</summary>
         [TagField]
-        [Tooltip("Obstacles with this tag will be ignored.  "
+        [Tooltip("Objects with this tag will be ignored.  "
             + "It is a good idea to set this field to the target's tag")]
         public string IgnoreTag = string.Empty;
 
+        /// <summary>How far to project the object detection ray.</summary>
+        [Tooltip("How far to project the object detection ray")]
         public float AimDistance;
+
+        /// <summary>This 2D object will be positioned in the game view over the raycast hit point, 
+        /// if any, or will remain in the center of the screen if no hit point is 
+        /// detected.  May be null, in which case no on-screen indicator will appear.</summary>
+        [Tooltip("This 2D object will be positioned in the game view over the raycast hit point, if any, "
+            + "or will remain in the center of the screen if no hit point is detected.  "
+            + "May be null, in which case no on-screen indicator will appear")]
         public RectTransform AimTargetReticle;
 
         private void OnValidate()
