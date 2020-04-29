@@ -32,6 +32,10 @@ Cinemachine Brain holds the following key properties:
 | | _Fixed Update_ | Synchronize Virtual Camera update with the Physics module, in FixedUpdate. |
 | | _Late Update_ | In MonoBehaviour LateUpdate. |
 | | _Smart Update_ | Update each virtual camera according to how its target is updated. This is the recommended setting. |
+| | _Manual Update_ | Virtual Cameras do not update automatically.  You must explicitly call `brain.ManualUpdate()` at an appropriate time in your game loop.  This should be after any camera LookAt or Follow targets have moved.  This is an advanced feature. |
+| __Blend Update Method__ || When to resolve the blends and update the main camera.  |
+| | _Late Update_ | In MonoBehaviour LateUpdate. This is the recommended setting. |
+| | _Fixed Update_ | Use this setting only if your Update Method is FixedUpdate and you see judder when blending. |
 | __Default Blend__ || The blend to use when you haven’t explicitly defined a blend between two Virtual Cameras. |
 | | _Cut_ | Zero-length blend. |
 | | _Ease In Out_ | S-shaped curve, giving a gentle and smooth transition. |

@@ -17,23 +17,58 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
     {
+        /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 
+        /// can have its own setting.  Value is the approximate time it takes the camera 
+        /// to catch up to the target's new position.  Smaller values give a more rigid 
+        /// effect, larger values give a squishier one.</summary>
+        [Tooltip("How responsively the camera tracks the target.  Each axis (camera-local) "
+           + "can have its own setting.  Value is the approximate time it takes the camera "
+           + "to catch up to the target's new position.  Smaller values give a more "
+           + "rigid effect, larger values give a squishier one")]
         public Vector3 Damping;
 
         [Header("Rig")]
+        /// <summary>Position of the shoulder pivot relative to the Follow target origin.  
+        /// This offset is in target-local space.</summary>
+        [Tooltip("Position of the shoulder pivot relative to the Follow target origin.  "
+            + "This offset is in target-local space")]
         public Vector3 ShoulderOffset;
+
+        /// <summary>Vertical offset of the hand in relation to the shoulder.  
+        /// Arm length will affect the follow target's screen position 
+        /// when the camera rotates vertically.</summary>
+        [Tooltip("Vertical offset of the hand in relation to the shoulder.  "
+            + "Arm length will affect the follow target's screen position when "
+            + "the camera rotates vertically")]
         public float VerticalArmLength;
+
+        /// <summary>Specifies which shoulder (left, right, or in-between) the camera is on.</summary>
+        [Tooltip("Specifies which shoulder (left, right, or in-between) the camera is on")]
         [Range(0, 1)]
         public float CameraSide;
+
+        /// <summary>How far baehind the hand the camera will be placed.</summary>
+        [Tooltip("How far baehind the hand the camera will be placed")]
         public float CameraDistance;
 
-        [Header("Obstacles")]
         /// <summary>Camera will avoid obstacles on these layers.</summary>
+        [Header("Obstacles")]
         [Tooltip("Camera will avoid obstacles on these layers")]
         public LayerMask CameraCollisionFilter;
+
+        /// <summary>
+        /// Obstacles with this tag will be ignored.  It is a good idea 
+        /// to set this field to the target's tag
+        /// </summary>
         [TagField]
         [Tooltip("Obstacles with this tag will be ignored.  "
             + "It is a good idea to set this field to the target's tag")]
         public string IgnoreTag = string.Empty;
+
+        /// <summary>
+        /// Specifies how close the camera can get to obstacles
+        /// </summary>
+        [Tooltip("Specifies how close the camera can get to obstacles")]
         public float CameraRadius;
 
         // State info

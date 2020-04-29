@@ -2,6 +2,8 @@
 
 This Virtual Camera __Body__ algorithm moves the Virtual Camera in a fixed offset to the __Follow__ target. It also applies damping.
 
+The fixed offset can be interpreted in various ways, depending on the Binding Mode.
+
 ## Properties:
 
 | **Property:** || **Function:** |

@@ -6,7 +6,7 @@ The __Orbital Transposer__ introduces the concept of __heading__, which is the d
 
 If you attach an input controller to the __Orbital Transposer__, then the player can also control the camera. This allows the player to move the camera to any spot on an orbit around the target.  Configure the __Orbital Transposer__ to take its input from any axis that you set up in the [Input Manager](https://docs.unity3d.com/Manual/class-InputManager.html). Or control the value directly using a custom input system.
 
-__Orbital Transposer __optionally automatically re-centers the camera.  When __Recenter To Target Heading__ is checked, Orbital Transposer automatically moves the camera back to the target heading. You can specify the length of time to wait after it has detected no user input and the speed of the recentering.
+__Orbital Transposer__ optionally re-centers the camera automatically.  When __Recenter To Target Heading__ is checked, Orbital Transposer automatically moves the camera back to the target heading. You can specify the length of time to wait after it has detected no user input and the speed of the recentering.
 
 ![Orbital Transposer](images/CinemachineOrbitalTransposer.png)
 
@@ -41,7 +41,8 @@ __Orbital Transposer __optionally automatically re-centers the camera.  When __R
 | | _Min Value_ | The minimum value for the axis. |
 | | _Max Value_ | The maximum value for the axis. |
 | | _Wrap_ | If checked, then the axis wraps around at the Min and Max values, forming a loop. |
-| | _Max Speed_ | The maximum speed of this axis in units/second. |
+| | _Max Speed_ | The maximum speed of this axis in degrees/second, or the multipler for the input value if Speed Mode is set to _InputValueGain_. |
+| | _Speed Mode_ | How the axis responds to input.  _MaxSpeed_ (the default) clamps the maximum speed at which the axis can change, regardless of the input.  _Input Value Gain_ multiplies the input value by MaxSpeed. |
 | | _Accel Time_ | The amount of time in seconds to accelerate to MaxSpeed with the supplied axis at its maximum value. |
 | | _Decel Time_ | The amount of time in seconds o decelerate the axis to zero if the supplied axis is in a neutral position. |
 | | _Input Axis Name_ | The name of this axis as specified in the Unity Input manager. Set to an empty string to disable the automatic updating of this axis. |
