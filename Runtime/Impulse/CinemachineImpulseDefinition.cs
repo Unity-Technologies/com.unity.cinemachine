@@ -110,11 +110,11 @@ namespace Cinemachine
 
         /// <summary>
         /// The speed (m/s) at which the impulse propagates through space.  High speeds 
-        /// allow listeners to react instantaneously, while slower speeds allow listeres in the 
+        /// allow listeners to react instantaneously, while slower speeds allow listeners in the 
         /// scene to react as if to a wave spreading from the source.  
         /// </summary>
         [Tooltip("The speed (m/s) at which the impulse propagates through space.  High speeds "
-            + "allow listeners to react instantaneously, while slower speeds allow listeres in the "
+            + "allow listeners to react instantaneously, while slower speeds allow listeners in the "
             + "scene to react as if to a wave spreading from the source.")]
         public float m_PropagationSpeed = 343;  // speed of sound
 
