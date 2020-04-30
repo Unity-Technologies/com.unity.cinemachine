@@ -62,8 +62,12 @@ namespace Cinemachine.Editor
                                 new GUIContent("Time")} );
                 }
 
-                rect.y += height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.m_InputAxisName));
+                if (!HasInputProvider(property))
+                {
+                    rect.y += height + vSpace;
+                    EditorGUI.PropertyField(
+                        rect, property.FindPropertyRelative(() => def.m_InputAxisName));
+                }
 
                 rect.y += height + vSpace;
                 InspectorUtility.MultiPropertyOnLine(rect, null,
@@ -80,8 +84,10 @@ namespace Cinemachine.Editor
             float height = EditorGUIUtility.singleLineHeight + vSpace;
             if (mExpanded)
             {
-                int lines = 6;
+                int lines = 5;
                 if (!ValueRangeIsLocked(property))
+                    ++lines;
+                if (!HasInputProvider(property))
                     ++lines;
                 if (HasRecentering(property))
                     ++lines;
@@ -105,6 +111,16 @@ namespace Cinemachine.Editor
             bool value = false;
             PropertyInfo pi = typeof(AxisState).GetProperty(
                 "HasRecentering", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (pi != null)
+                value = bool.Equals(true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
+            return value;
+        }
+
+        bool HasInputProvider(SerializedProperty property)
+        {
+            bool value = false;
+            PropertyInfo pi = typeof(AxisState).GetProperty(
+                "HasInputProvider", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             if (pi != null)
                 value = bool.Equals(true, pi.GetValue(SerializedPropertyHelper.GetPropertyValue(property), null));
             return value;

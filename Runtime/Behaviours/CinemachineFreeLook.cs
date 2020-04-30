@@ -172,6 +172,22 @@ namespace Cinemachine
             mIsDestroyed = false;
             base.OnEnable();
             InvalidateRigCache();
+            UpdateInputAxisProvider();
+        }
+
+        /// <summary>
+        /// API for the inspector.  Internal use only
+        /// </summary>
+        public void UpdateInputAxisProvider()
+        {
+            m_XAxis.SetInputAxisProvider(0, null);
+            m_YAxis.SetInputAxisProvider(1, null);
+            var provider = GetInputAxisProvider();
+            if (provider != null)
+            {
+                m_XAxis.SetInputAxisProvider(0, provider);
+                m_YAxis.SetInputAxisProvider(1, provider);
+            }
         }
 
         /// <summary>Makes sure that the child rigs get destroyed in an undo-firndly manner.

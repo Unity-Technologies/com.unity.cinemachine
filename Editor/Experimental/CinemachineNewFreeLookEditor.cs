@@ -34,6 +34,7 @@ namespace Cinemachine
         {
             base.OnEnable();
             mPipelineSet.CreateSubeditors(this);
+            Target.UpdateInputAxisProvider();
         }
 
         protected override void OnDisable()

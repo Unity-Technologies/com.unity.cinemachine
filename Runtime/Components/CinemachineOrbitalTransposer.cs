@@ -223,6 +223,22 @@ namespace Cinemachine
             // GML todo: do we really need this?
             PreviousTarget = null;
             mLastTargetPosition = Vector3.zero;
+
+            UpdateInputAxisProvider();
+        }
+
+        /// <summary>
+        /// API for the inspector.  Internal use only
+        /// </summary>
+        public void UpdateInputAxisProvider()
+        {
+            m_XAxis.SetInputAxisProvider(0, null);
+            if (!m_HeadingIsSlave && VirtualCamera != null)
+            {
+                var provider = VirtualCamera.GetInputAxisProvider();
+                if (provider != null)
+                    m_XAxis.SetInputAxisProvider(0, provider);
+            }
         }
 
         private Vector3 mLastTargetPosition = Vector3.zero;

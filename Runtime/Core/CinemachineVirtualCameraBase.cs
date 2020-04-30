@@ -492,6 +492,22 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// Locate the first component that implements AxisState.IInputAxisProvider.
+        /// </summary>
+        /// <returns>The first AxisState.IInputAxisProvider or null if none</returns>
+        public AxisState.IInputAxisProvider GetInputAxisProvider()
+        {
+            var components = GetComponentsInChildren<MonoBehaviour>();
+            for (int i = 0; i < components.Length; ++i)
+            {
+                var provider = components[i] as AxisState.IInputAxisProvider;
+                if (provider != null)
+                    return provider;
+            }
+            return null;
+        }
+
         /// <summary>Enforce bounds for fields, when changed in inspector.
         /// Call base class implementation at the beginning of overridden method.
         /// After base method is called, ValidatingStreamVersion will be valid.</summary>

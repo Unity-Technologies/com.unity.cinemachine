@@ -23,6 +23,12 @@ namespace Cinemachine
             }
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Target.UpdateInputAxisProvider();
+        }
+        
         protected override void OnDisable()
         {
             base.OnDisable();
