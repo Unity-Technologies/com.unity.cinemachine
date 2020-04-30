@@ -33,28 +33,33 @@ namespace Cinemachine
         };
 
         /// <summary>How to interpret the Max Speed setting.</summary>
-        [Tooltip("How to interpret the Max Speed setting: in units/second, or as a direct input value multiplier")]
+        [Tooltip("How to interpret the Max Speed setting: in units/second, or as a "
+            + "direct input value multiplier")]
         public SpeedMode m_SpeedMode;
 
         /// <summary>How fast the axis value can travel.  Increasing this number
         /// makes the behaviour more responsive to joystick input</summary>
-        [Tooltip("The maximum speed of this axis in units/second, or the input value multiplier, depending on the Speed Mode")]
+        [Tooltip("The maximum speed of this axis in units/second, or the input value "
+            + "multiplier, depending on the Speed Mode")]
         public float m_MaxSpeed;
 
         /// <summary>The amount of time in seconds it takes to accelerate to
         /// MaxSpeed with the supplied Axis at its maximum value</summary>
-        [Tooltip("The amount of time in seconds it takes to accelerate to MaxSpeed with the supplied Axis at its maximum value")]
+        [Tooltip("The amount of time in seconds it takes to accelerate to MaxSpeed "
+            + "with the supplied Axis at its maximum value")]
         public float m_AccelTime;
 
         /// <summary>The amount of time in seconds it takes to decelerate
         /// the axis to zero if the supplied axis is in a neutral position</summary>
-        [Tooltip("The amount of time in seconds it takes to decelerate the axis to zero if the supplied axis is in a neutral position")]
+        [Tooltip("The amount of time in seconds it takes to decelerate the axis to "
+            + "zero if the supplied axis is in a neutral position")]
         public float m_DecelTime;
 
         /// <summary>The name of this axis as specified in Unity Input manager.
         /// Setting to an empty string will disable the automatic updating of this axis</summary>
         [FormerlySerializedAs("m_AxisName")]
-        [Tooltip("The name of this axis as specified in Unity Input manager. Setting to an empty string will disable the automatic updating of this axis")]
+        [Tooltip("The name of this axis as specified in Unity Input manager. "
+            + "Setting to an empty string will disable the automatic updating of this axis")]
         public string m_InputAxisName;
 
         /// <summary>The value of the input axis.  A value of 0 means no input
@@ -62,13 +67,16 @@ namespace Cinemachine
         /// custom input system, or you can set the Axis Name and have the value
         /// driven by the internal Input Manager</summary>
         [NoSaveDuringPlay]
-        [Tooltip("The value of the input axis.  A value of 0 means no input.  You can drive this directly from a custom input system, or you can set the Axis Name and have the value driven by the internal Input Manager")]
+        [Tooltip("The value of the input axis.  A value of 0 means no input.  "
+            + "You can drive this directly from a custom input system, or you can set "
+            + "the Axis Name and have the value driven by the internal Input Manager")]
         public float m_InputAxisValue;
 
         /// <summary>If checked, then the raw value of the input axis will be inverted
         /// before it is used.</summary>
         [FormerlySerializedAs("m_InvertAxis")]
-        [Tooltip("If checked, then the raw value of the input axis will be inverted before it is used")]
+        [Tooltip("If checked, then the raw value of the input axis will be inverted "
+            + "before it is used")]
         public bool m_InvertInput;
 
         /// <summary>The minimum value for the axis</summary>
@@ -79,8 +87,10 @@ namespace Cinemachine
         [Tooltip("The maximum value for the axis")]
         public float m_MaxValue;
 
-        /// <summary>If checked, then the axis will wrap around at the min/max values, forming a loop</summary>
-        [Tooltip("If checked, then the axis will wrap around at the min/max values, forming a loop")]
+        /// <summary>If checked, then the axis will wrap around at the 
+        /// min/max values, forming a loop</summary>
+        [Tooltip("If checked, then the axis will wrap around at the min/max values, "
+            + "forming a loop")]
         public bool m_Wrap;
 
         /// <summary>Automatic recentering.  Valid only if HasRecentering is true</summary>
@@ -113,6 +123,8 @@ namespace Cinemachine
             m_InvertInput = invert;
 
             mCurrentSpeed = 0f;
+            m_InputAxisProvider = null;
+            m_InputAxisIndex = 0;
         }
 
         /// <summary>Call from OnValidate: Make sure the fields are sensible</summary>
@@ -133,6 +145,34 @@ namespace Cinemachine
             mCurrentSpeed = 0;
         }
 
+        public interface IInputAxisProvider
+        {
+            /// <summary>Get the value of the input axis</summary>
+            /// <param name="index">Which axis to query: 0, 1, or 2.</param>
+            /// <returns>The input value of the axis</returns>
+            float GetAxisValue(int axis);
+        }
+        IInputAxisProvider m_InputAxisProvider;
+        int m_InputAxisIndex;
+
+        /// <summary>
+        /// Set an input provider for this axis.  If an input provider is set, the 
+        /// provider will be queried when user input is needed, and the Input Axis Name 
+        /// field will be ignored.  If no provider is set, then the legacy Input system 
+        /// will be queried, using the Input Axis Name.
+        /// </summary>
+        /// <param name="axis">Which axis will be queried for input</param>
+        /// <param name="provider">The input provider</param>
+        public void SetInputAxisProvider(int axis, IInputAxisProvider provider)
+        {
+            m_InputAxisIndex = axis;
+            m_InputAxisProvider = provider;
+        }
+
+        /// <summary>Returns true if this axis has an InputAxisProvider, in which case 
+        /// we ignore the input axis name</summary>
+        public bool HasInputProvider { get => m_InputAxisProvider != null; }
+
         /// <summary>
         /// Updates the state of this axis based on the axis defined
         /// by AxisState.m_AxisName
@@ -142,7 +182,9 @@ namespace Cinemachine
         /// <b>false</b> otherwise</returns>
         public bool Update(float deltaTime)
         {
-            if (!string.IsNullOrEmpty(m_InputAxisName))
+            if (m_InputAxisProvider != null)
+                m_InputAxisValue = m_InputAxisProvider.GetAxisValue(m_InputAxisIndex);
+            else if (!string.IsNullOrEmpty(m_InputAxisName))
             {
                 try { m_InputAxisValue = CinemachineCore.GetInputAxis(m_InputAxisName); }
                 catch (ArgumentException e) { Debug.LogError(e.ToString()); }

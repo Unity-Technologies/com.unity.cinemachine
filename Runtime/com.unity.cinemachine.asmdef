@@ -7,7 +7,8 @@
         "Unity.RenderPipelines.HighDefinition.Runtime",
         "Unity.ugui",
         "Unity.RenderPipelines.Universal.Runtime",
-        "Unity.2D.PixelPerfect"
+        "Unity.2D.PixelPerfect",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -71,6 +72,11 @@
             "name": "com.unity.2d.pixel-perfect",
             "expression": "2.0.3",
             "define": "CINEMACHINE_PIXEL_PERFECT_2_0_3"
+        },
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.0.0-preview",
+            "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
         }
     ],
     "noEngineReferences": false

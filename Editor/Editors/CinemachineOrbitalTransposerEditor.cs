@@ -66,6 +66,11 @@ namespace Cinemachine.Editor
             }
         }
 
+        private void OnEnable()
+        {
+            Target.UpdateInputAxisProvider();
+        }
+
         public override void OnInspectorGUI()
         {
             BeginInspector();
