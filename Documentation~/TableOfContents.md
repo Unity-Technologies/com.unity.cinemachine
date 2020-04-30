@@ -48,6 +48,7 @@
     * [Cinemachine and Timeline](CinemachineTimeline)
     * [Cinemachine and 2D graphics](Cinemachine2D)
     * [Cinemachine and top-down games](CinemachineTopDown)
+    * [Alternative Input Systems](CinemachineAlternativeInput)
     * [Cinemachine Impulse](CinemachineImpulse)
         * [Cinemachine Impulse Sources](CinemachineImpulseSourceOverview)
             * [Cinemachine Collision Impulse Source](CinemachineCollisionImpulseSource)
