@@ -75,6 +75,8 @@ namespace SaveDuringPlay
             List<T> objectsInScene = new List<T>();
             foreach (T b in Resources.FindObjectsOfTypeAll<T>())
             {
+                if (b == null)
+                    continue;   // object was deleted
                 GameObject go = b.gameObject;
                 if (go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave)
                     continue;
