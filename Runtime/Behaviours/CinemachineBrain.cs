@@ -320,7 +320,7 @@ namespace Cinemachine
             if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 UpdateFrame0(deltaTime);
 
-            UpdateCurrentLiveCameras();
+            ComputeCurrentBlend(ref mCurrentLiveCameras, 0);
 
             if (m_UpdateMethod == UpdateMethod.FixedUpdate)
             {
@@ -662,11 +662,21 @@ namespace Cinemachine
             }
         }
 
-        private void UpdateCurrentLiveCameras()
+        /// <summary>
+        /// Used internally to compute the currrent blend, taking into account
+        /// the in-game camera and all the active overrides.  Caller may optionally
+        /// exclude n topmost overrides.
+        /// </summary>
+        /// <param name="outputBlend">Receives the nested blend</param>
+        /// <param name="numTopLayersToExclude">Optionaly exclude the last number 
+        /// of overrides from the blend</param>
+        public void ComputeCurrentBlend(
+            ref CinemachineBlend outputBlend, int numTopLayersToExclude)
         {
             // Resolve the current working frame states in the stack
             int lastActive = 0;
-            for (int i = 0; i < mFrameStack.Count; ++i)
+            int topLayer = Mathf.Max(1, mFrameStack.Count - numTopLayersToExclude);
+            for (int i = 0; i < topLayer; ++i)
             {
                 BrainFrame frame = mFrameStack[i];
                 if (i == 0 || frame.Active)
@@ -703,11 +713,11 @@ namespace Cinemachine
                 }
             }
             var workingBlend = mFrameStack[lastActive].workingBlend;
-            mCurrentLiveCameras.CamA = workingBlend.CamA;
-            mCurrentLiveCameras.CamB = workingBlend.CamB;
-            mCurrentLiveCameras.BlendCurve = workingBlend.BlendCurve;
-            mCurrentLiveCameras.Duration = workingBlend.Duration;
-            mCurrentLiveCameras.TimeInBlend = workingBlend.TimeInBlend;
+            outputBlend.CamA = workingBlend.CamA;
+            outputBlend.CamB = workingBlend.CamB;
+            outputBlend.BlendCurve = workingBlend.BlendCurve;
+            outputBlend.Duration = workingBlend.Duration;
+            outputBlend.TimeInBlend = workingBlend.TimeInBlend;
         }
 
         /// <summary>
