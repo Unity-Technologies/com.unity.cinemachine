@@ -529,7 +529,7 @@ namespace Cinemachine
 
             BrainFrame frame = mFrameStack[GetBrainFrame(overrideId)];
             frame.deltaTimeOverride = deltaTime;
-            frame.timeOfOverride = Time.realtimeSinceStartup;
+            frame.timeOfOverride = float.MaxValue; //GML Time.realtimeSinceStartup;
             frame.blend.CamA = camA;
             frame.blend.CamB = camB;
             frame.blend.BlendCurve = AnimationCurve.Linear(0, 0, 1, 1);

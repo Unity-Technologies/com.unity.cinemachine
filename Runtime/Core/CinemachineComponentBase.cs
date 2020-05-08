@@ -90,7 +90,10 @@ namespace Cinemachine
                 if (mCachedFollowTargetVcam != null)
                     return mCachedFollowTargetVcam.State.FinalPosition;
                 if (target != null)
-                    return target.position;
+                {
+                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
+                    return p;
+                }
                 return Vector3.zero;
             }
         }
@@ -112,7 +115,10 @@ namespace Cinemachine
                 if (mCachedFollowTargetVcam != null)
                     return mCachedFollowTargetVcam.State.FinalOrientation;
                 if (target != null)
-                    return target.rotation;
+                {
+                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
+                    return rot;
+                }
                 return Quaternion.identity;
             }
         }
@@ -162,7 +168,10 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalPosition;
                 if (target != null)
-                    return target.position;
+                {
+                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
+                    return p;
+                }
                 return Vector3.zero;
             }
         }
@@ -179,7 +188,10 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalOrientation;
                 if (target != null)
-                    return target.rotation;
+                {
+                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
+                    return rot;
+                }
                 return Quaternion.identity;
             }
         }

@@ -197,6 +197,7 @@ namespace Cinemachine
                     newPathPosition = next;
                 }
 
+// GML DAMPING
                 // Apply damping along the path direction
                 float offset = m_PreviousPathPosition - newPathPosition;
                 offset = Damper.Damp(offset, m_ZDamping, deltaTime);
@@ -221,6 +222,7 @@ namespace Cinemachine
                 Vector3 delta = (currentCameraPos - newCameraPos);
                 Vector3 delta1 = Vector3.Dot(delta, offsetY) * offsetY;
                 Vector3 delta0 = delta - delta1;
+// GML DAMPING
                 delta0 = Damper.Damp(delta0, m_XDamping, deltaTime);
                 delta1 = Damper.Damp(delta1, m_YDamping, deltaTime);
                 newCameraPos = currentCameraPos - (delta0 + delta1);
@@ -237,6 +239,7 @@ namespace Cinemachine
                 for (int i = 0; i < 3; ++i)
                     if (relative[i] > 180)
                         relative[i] -= 360;
+// GML DAMPING
                 relative = Damper.Damp(relative, AngularDamping, deltaTime);
                 newOrientation = m_PreviousOrientation * Quaternion.Euler(relative);
             }

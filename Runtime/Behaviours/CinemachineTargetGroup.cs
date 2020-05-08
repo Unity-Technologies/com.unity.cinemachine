@@ -237,7 +237,8 @@ namespace Cinemachine
             Vector3 pos = avgPos;
             if (t.target != null)
             {
-                pos = t.target.position;
+                TargetPositionCache.GetTargetPosition(t.target, out var p, out var rot);
+                pos = p;
                 w = Mathf.Max(0, t.weight);
                 if (maxWeight > UnityVectorExtensions.Epsilon && w < maxWeight)
                     w /= maxWeight;
@@ -289,7 +290,9 @@ namespace Cinemachine
                 if (m_Targets[i].target != null)
                 {
                     weight += m_Targets[i].weight;
-                    pos += m_Targets[i].target.position * m_Targets[i].weight;
+                    TargetPositionCache.GetTargetPosition(
+                        m_Targets[i].target, out var p, out var rot);
+                    pos += p * m_Targets[i].weight;
                     maxWeight = Mathf.Max(maxWeight, m_Targets[i].weight);
                 }
             }
@@ -314,7 +317,9 @@ namespace Cinemachine
                 if (m_Targets[i].target != null)
                 {
                     float scaledWeight = m_Targets[i].weight / mMaxWeight;
-                    r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
+                    TargetPositionCache.GetTargetPosition(
+                        m_Targets[i].target, out var p, out var rot);
+                    r *= Quaternion.Slerp(Quaternion.identity, r, scaledWeight);
                     weightedAverage += scaledWeight;
                 }
             }

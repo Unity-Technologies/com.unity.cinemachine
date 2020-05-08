@@ -97,6 +97,17 @@ namespace Cinemachine
             + "unless the virtual camera is doing shot evaluation.")]
         public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.RoundRobin;
 
+        /// <summary>
+        /// Query components and extensions for the maximum damping time.
+        /// Only used in editor for timeline scrubbing.
+        /// </summary>
+        /// <returns></returns>
+        public float GetMaxDampTime()
+        {
+            float maxDamp = 1; // 0; // GML todo: implement this properly
+            return maxDamp;
+        }
+
         /// <summary>Get a damped version of a quantity.  This is the portion of the
         /// quantity that will take effect over the given time.
         /// This method takes the target attachment into account.  For general
