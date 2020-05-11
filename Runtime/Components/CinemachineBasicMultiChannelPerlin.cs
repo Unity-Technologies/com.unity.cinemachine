@@ -64,7 +64,8 @@ namespace Cinemachine
             if (!mInitialized)
                 Initialize();
 
-            if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback)
+            if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
+                    && TargetPositionCache.HasHurrentTime)
                 mNoiseTime = TargetPositionCache.CurrentTime * m_FrequencyGain;
             else
                 mNoiseTime += deltaTime * m_FrequencyGain;

@@ -20,8 +20,8 @@ namespace Cinemachine
                 m_CacheMode = value;
                 switch (m_CacheMode)
                 {
-                    default: case Mode.Disabled: m_Cache = null; break;
-                    case Mode.Record: m_Cache = new Dictionary<Transform, CacheEntry>(); break;
+                    default: case Mode.Disabled: ClearCache(); break;
+                    case Mode.Record: InitCache(); break;
                     case Mode.Playback: CreatePlaybackCurves(); break;
                 }
             }
@@ -88,6 +88,38 @@ namespace Cinemachine
 
         static Dictionary<Transform, CacheEntry> m_Cache;
 
+        public struct TimeRange
+        {
+            public float Start;
+            public float End;
+
+            public bool IsEmpty => End < Start;
+            public bool Contains(float time) => time >= Start && time <= End;
+            public static TimeRange Empty 
+                { get => new TimeRange { Start = float.MaxValue, End = float.MinValue }; }
+
+            public void Include(float time)
+            {
+                Start = Mathf.Min(Start, time);
+                End = Mathf.Max(End, time);
+            }
+        }
+        static TimeRange m_CacheTimeRange;
+        public static TimeRange CacheTimeRange { get => m_CacheTimeRange; }
+        public static bool HasHurrentTime { get => m_CacheTimeRange.Contains(CurrentTime); }
+
+        static void ClearCache()
+        {
+            m_Cache = null;
+            m_CacheTimeRange = TimeRange.Empty;
+        }
+
+        static void InitCache()
+        {
+            m_Cache = new Dictionary<Transform, CacheEntry>();
+            m_CacheTimeRange = TimeRange.Empty;
+        }
+
         static void CreatePlaybackCurves()
         {
             if (m_Cache == null)
@@ -105,7 +137,18 @@ namespace Cinemachine
         /// <param name="position">Target's position at CurrentTime</param>
         public static Vector3 GetTargetPosition(Transform target)
         {
-            if (CacheMode == Mode.Disabled)
+            if (!UseCache || CacheMode == Mode.Disabled)
+                return target.position;
+
+            // Wrap around during record?
+            if (CacheMode == Mode.Record 
+                && !m_CacheTimeRange.IsEmpty && CurrentTime < m_CacheTimeRange.Start)
+            {
+                ClearCache();
+                InitCache();
+            }
+
+            if (CacheMode == Mode.Playback && !HasHurrentTime)
                 return target.position;
 
             if (!m_Cache.TryGetValue(target, out var entry))
@@ -119,6 +162,7 @@ namespace Cinemachine
             if (CacheMode == Mode.Record)
             {
                 entry.AddRawItem(CurrentTime, target);
+                m_CacheTimeRange.Include(CurrentTime);
                 return target.position;
             }
             return new Vector3(
@@ -138,6 +182,17 @@ namespace Cinemachine
             if (CacheMode == Mode.Disabled)
                 return target.rotation;
 
+            // Wrap around during record?
+            if (CacheMode == Mode.Record 
+                && !m_CacheTimeRange.IsEmpty && CurrentTime < m_CacheTimeRange.Start)
+            {
+                ClearCache();
+                InitCache();
+            }
+
+            if (CacheMode == Mode.Playback && !HasHurrentTime)
+                return target.rotation;
+
             if (!m_Cache.TryGetValue(target, out var entry))
             {
                 if (CacheMode != Mode.Record)
@@ -149,6 +204,7 @@ namespace Cinemachine
             if (CacheMode == Mode.Record)
             {
                 entry.AddRawItem(CurrentTime, target);
+                m_CacheTimeRange.Include(CurrentTime);
                 return target.rotation;
             }
             return Quaternion.Euler(
