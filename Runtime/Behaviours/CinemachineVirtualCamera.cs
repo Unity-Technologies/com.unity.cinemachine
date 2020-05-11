@@ -463,7 +463,7 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     state.ReferenceLookAt = mCachedLookAtTargetVcam.State.FinalPosition;
                 else
-                    state.ReferenceLookAt = lookAtTarget.position;
+                    state.ReferenceLookAt = TargetPositionCache.GetTargetPosition(lookAtTarget);
             }
 
             // Update the state by invoking the component pipeline

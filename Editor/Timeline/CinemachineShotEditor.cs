@@ -22,9 +22,30 @@ using Cinemachine;
             set
             {
                 if (value != AutoCreateShotFromSceneView)
-                {
                     EditorPrefs.SetBool(kAutoCreateKey, value);
+            }
+        }
+
+        static string kUseScrubbingCache = "CNMCN_Timeeline_UseTimelineScrubbingCache";
+        public static bool UseScrubbingCache
+        {
+            get { return EditorPrefs.GetBool(kUseScrubbingCache, true); }
+            set
+            {
+                if (UseScrubbingCache != value)
+                {
+                    EditorPrefs.SetBool(kUseScrubbingCache, value);
+                    TargetPositionCache.UseCache = value;
                 }
+            }
+        }
+
+        [InitializeOnLoad]
+        public class SyncCacheEnabledSetting
+        {
+            static SyncCacheEnabledSetting()
+            {
+                TargetPositionCache.UseCache = UseScrubbingCache;
             }
         }
 
@@ -75,9 +96,18 @@ using Cinemachine;
                 = EditorGUILayout.Toggle(
                     new GUIContent(
                         "Auto-create new shots",  "When enabled, new clips will be "
-                        + "automatically populated to match the scene view camera"),
+                            + "automatically populated to match the scene view camera.  "
+                            + "This is a global setting"),
                     AutoCreateShotFromSceneView);
 
+            UseScrubbingCache
+                = EditorGUILayout.Toggle(
+                    new GUIContent(
+                        "Use Scrubbing Cache",
+                        "For preview playback, use a cache to approximate damping "
+                            + "and noise playback.  This is a global setting."),
+                    UseScrubbingCache);
+    
             Rect rect;
             CinemachineVirtualCameraBase vcam
                 = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;

@@ -90,10 +90,7 @@ namespace Cinemachine
                 if (mCachedFollowTargetVcam != null)
                     return mCachedFollowTargetVcam.State.FinalPosition;
                 if (target != null)
-                {
-                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
-                    return p;
-                }
+                    return TargetPositionCache.GetTargetPosition(target);
                 return Vector3.zero;
             }
         }
@@ -115,10 +112,7 @@ namespace Cinemachine
                 if (mCachedFollowTargetVcam != null)
                     return mCachedFollowTargetVcam.State.FinalOrientation;
                 if (target != null)
-                {
-                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
-                    return rot;
-                }
+                    return TargetPositionCache.GetTargetRotation(target);
                 return Quaternion.identity;
             }
         }
@@ -168,10 +162,7 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalPosition;
                 if (target != null)
-                {
-                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
-                    return p;
-                }
+                    return TargetPositionCache.GetTargetPosition(target);
                 return Vector3.zero;
             }
         }
@@ -188,10 +179,7 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalOrientation;
                 if (target != null)
-                {
-                    TargetPositionCache.GetTargetPosition(target, out var p, out var rot);
-                    return rot;
-                }
+                    return TargetPositionCache.GetTargetRotation(target);
                 return Quaternion.identity;
             }
         }

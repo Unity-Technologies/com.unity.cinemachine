@@ -6,49 +6,96 @@ namespace Cinemachine
 {
     internal class TargetPositionCache
     {
-        const float kItemsPerSecond = 10f;
-        static bool m_Enabled;
+        public static bool UseCache { get; set; }
+        public enum Mode { Disabled, Record, Playback }
+        public static Mode m_CacheMode = Mode.Disabled;
 
-        public static bool Enabled 
-        { 
-            get => m_Enabled;
+        public static Mode CacheMode
+        {
+            get => m_CacheMode;
             set
             {
-                if (value != m_Enabled)
+                if (value == m_CacheMode)
+                    return;
+                m_CacheMode = value;
+                switch (m_CacheMode)
                 {
-                    m_Enabled = value;
-                    m_Cache = m_Enabled ? new List<CacheEntry>() : null;
-                    m_LastCurrentTimeIndex = -1;
+                    default: case Mode.Disabled: m_Cache = null; break;
+                    case Mode.Record: m_Cache = new Dictionary<Transform, CacheEntry>(); break;
+                    case Mode.Playback: CreatePlaybackCurves(); break;
                 }
             }
         }
 
         public static float CurrentTime { get; set; }
-        public static float CurrentRealTime { get; set; }
-        public static bool Recording { get; set; }
 
-        struct Item
+        class CacheEntry
         {
-            public Vector3 Position;
-            public Quaternion Rotation;
-        }
+            public AnimationCurve X = new AnimationCurve();
+            public AnimationCurve Y = new AnimationCurve();
+            public AnimationCurve Z = new AnimationCurve();
+            public AnimationCurve RotX = new AnimationCurve();
+            public AnimationCurve RotY = new AnimationCurve();
+            public AnimationCurve RotZ = new AnimationCurve();
 
-        struct CacheEntry : IComparable<CacheEntry>
-        {
-            public float Timestamp;
-            public Dictionary<Transform, Item> Targets;
-
-            public int CompareTo(CacheEntry other)
+            struct RecordingItem : IComparable<RecordingItem>
             {
-                return Timestamp.CompareTo(other.Timestamp);
+                public float Time;
+                public Vector3 Pos;
+                public Vector3 Rot;
+                public int CompareTo(RecordingItem other) { return Time.CompareTo(other.Time); }
+            }
+            List<RecordingItem> RawItems = new List<RecordingItem>();
+
+            public void AddRawItem(float time, Transform target)
+            {
+                RawItems.Add(new RecordingItem
+                {
+                    Time = time,
+                    Pos = target.position,
+                    Rot = target.rotation.eulerAngles
+                });
+            }
+
+            public void CreateCurves()
+            {
+                X = new AnimationCurve();
+                Y = new AnimationCurve();
+                Z = new AnimationCurve();
+                RotX = new AnimationCurve();
+                RotY = new AnimationCurve();
+                RotZ = new AnimationCurve();
+
+                RawItems.Sort();
+                float time = float.MaxValue;
+                for (int i = 0; i < RawItems.Count; ++i)
+                {
+                    var item = RawItems[i];
+                    if (item.Time == time)
+                        continue;
+                    time = item.Time;
+
+                    X.AddKey(new Keyframe(time, item.Pos.x));
+                    Y.AddKey(new Keyframe(time, item.Pos.y));
+                    Z.AddKey(new Keyframe(time, item.Pos.z));
+                    RotX.AddKey(new Keyframe(time, item.Rot.x));
+                    RotY.AddKey(new Keyframe(time, item.Rot.y));
+                    RotZ.AddKey(new Keyframe(time, item.Rot.z));
+                }
+                RawItems.Clear();
             }
         }
 
-        static List<CacheEntry> m_Cache;
+        static Dictionary<Transform, CacheEntry> m_Cache;
 
-        // Optimization so we don't keep binary-searching the same frame
-        static float m_LastCurrentTime;
-        static int m_LastCurrentTimeIndex;
+        static void CreatePlaybackCurves()
+        {
+            if (m_Cache == null)
+                m_Cache = new Dictionary<Transform, CacheEntry>();
+            var iter = m_Cache.GetEnumerator();
+            while (iter.MoveNext())
+                iter.Current.Value.CreateCurves();
+        }
 
         /// <summary>
         /// If Recording, will log the target position at the CurrentTime.
@@ -56,78 +103,58 @@ namespace Cinemachine
         /// </summary>
         /// <param name="target">Target whose transform is tracked</param>
         /// <param name="position">Target's position at CurrentTime</param>
-        /// <param name="rotation">Target's rotation at CurrentTime</param>
-        public static void GetTargetPosition(
-            Transform target, out Vector3 position, out Quaternion rotation)
+        public static Vector3 GetTargetPosition(Transform target)
         {
-            if (Enabled && (Recording || m_Cache.Count > 0))
+            if (CacheMode == Mode.Disabled)
+                return target.position;
+
+            if (!m_Cache.TryGetValue(target, out var entry))
             {
-                var scaledTime = CurrentTime * kItemsPerSecond;
-                var key = Mathf.Round(scaledTime);
+                if (CacheMode != Mode.Record)
+                    return target.position;
 
-                int index = m_LastCurrentTimeIndex;
-                if (m_LastCurrentTimeIndex < 0 || CurrentTime != m_LastCurrentTime)
-                    index = m_Cache.BinarySearch(new CacheEntry { Timestamp = key });
-                if (index < 0)
-                {
-                    index = ~index;
-                    if (Recording)
-                        m_Cache.Insert(index, new CacheEntry 
-                            { Timestamp = key, Targets = new Dictionary<Transform, Item>() });
-                    else
-                        index = Mathf.Max(0, index - 1); // best we can do
-                }
-                m_LastCurrentTime = CurrentTime;
-                m_LastCurrentTimeIndex = index;
-
-                var item = new Item
-                { 
-                    Position = target.position,
-                    Rotation = target.rotation
-                };
-                var cache = m_Cache[index].Targets;
-                if (!cache.TryGetValue(target, out var existing))
-                {
-                    if (Recording)
-                        cache.Add(target, item);
-                    existing = item;
-                }
-
-                if (Recording)
-                    cache[target] = existing = item;
-
-                if (CurrentTime != CurrentRealTime)
-                {
-                    position = existing.Position;
-                    rotation = existing.Rotation;
-                    return;
-                }
+                entry = new CacheEntry();
+                m_Cache.Add(target, entry);
             }
-            
-            // Nothing in cache
-            position = target.position;
-            rotation = target.rotation;
-            return;
+            if (CacheMode == Mode.Record)
+            {
+                entry.AddRawItem(CurrentTime, target);
+                return target.position;
+            }
+            return new Vector3(
+                entry.X.Evaluate(CurrentTime),
+                entry.Y.Evaluate(CurrentTime),
+                entry.Z.Evaluate(CurrentTime));
         }
 
-        public static void GetTimestamps(float startTime, float endTime, List<float> returns)
+        /// <summary>
+        /// If Recording, will log the target rotation at the CurrentTime.
+        /// Otherwise, will fetch the cached position at CurrentTime.
+        /// </summary>
+        /// <param name="target">Target whose transform is tracked</param>
+        /// <param name="rotation">Target's rotation at CurrentTime</param>
+        public static Quaternion GetTargetRotation(Transform target)
         {
-            returns.Clear();
+            if (CacheMode == Mode.Disabled)
+                return target.rotation;
 
-            var scaledTime = startTime * kItemsPerSecond;
-            var key = Mathf.Round(scaledTime);
-            int index = m_LastCurrentTimeIndex;
-            if (m_LastCurrentTimeIndex < 0 || startTime != m_LastCurrentTime)
-                index = m_Cache.BinarySearch(new CacheEntry { Timestamp = key });
-            if (index < 0)
-                index = Mathf.Max(0, ~index - 1); // best we can do
-            while (index < m_Cache.Count)
+            if (!m_Cache.TryGetValue(target, out var entry))
             {
-                var t = m_Cache[index++].Timestamp / kItemsPerSecond;
-                if (t > endTime + 0.001f)
-                    break;
-                returns.Add(t);
+                if (CacheMode != Mode.Record)
+                    return target.rotation;
+
+                entry = new CacheEntry();
+                m_Cache.Add(target, entry);
             }
+            if (CacheMode == Mode.Record)
+            {
+                entry.AddRawItem(CurrentTime, target);
+                return target.rotation;
+            }
+            return Quaternion.Euler(
+                entry.RotX.Evaluate(CurrentTime),
+                entry.RotY.Evaluate(CurrentTime),
+                entry.RotZ.Evaluate(CurrentTime));
         }
     }
 }
