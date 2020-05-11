@@ -52,7 +52,6 @@ public class CinemachineShotClipEditor : ClipEditor
         }
     }
 
-#if true && UNITY_2018_3_OR_NEWER
     public override void OnCreate(TimelineClip clip, TrackAsset track, TimelineClip clonedFrom)
     {
         base.OnCreate(clip, track, clonedFrom);
@@ -68,7 +67,29 @@ public class CinemachineShotClipEditor : ClipEditor
             }
         }
     }
-#endif
+
+    public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
+    {
+        base.DrawBackground(clip, region);
+        if (TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
+        {
+            var range = TargetPositionCache.CacheTimeRange;
+            if (!range.IsEmpty)
+            {
+                // Clip range to rect
+                float start = (float)region.startTime;
+                float end = (float)region.endTime;
+                range.Start = Mathf.Max((float)clip.ToLocalTime(range.Start), start);
+                range.End = Mathf.Min((float)clip.ToLocalTime(range.End), end);
+                
+                var r = region.position;
+                var a = r.x + Mathf.Lerp(0, r.width, range.Start / (end - start));
+                var b = r.x + Mathf.Lerp(0, r.width, range.End / (end - start));
+                r.x = a; r.width = b-a;
+                EditorGUI.DrawRect(r, Color.Lerp(GetDefaultHighlightColor(clip), Color.gray, 0.8f));
+            }
+        }
+    }
 }
 
 
