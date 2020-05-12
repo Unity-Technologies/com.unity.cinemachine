@@ -167,6 +167,7 @@ namespace Cinemachine
             {
                 m_PreviousPathPosition = m_PathPosition;
                 m_PreviousCameraPosition = curState.RawPosition;
+                m_PreviousOrientation = curState.RawOrientation;
             }
 
             if (!IsValid)
