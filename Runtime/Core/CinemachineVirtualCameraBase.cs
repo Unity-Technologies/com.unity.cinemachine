@@ -692,8 +692,8 @@ namespace Cinemachine
         protected CameraState PullStateFromVirtualCamera(Vector3 worldUp, ref LensSettings lens)
         {
             CameraState state = CameraState.Default;
-            state.RawPosition = transform.position;
-            state.RawOrientation = transform.rotation;
+            state.RawPosition = TargetPositionCache.GetTargetPosition(transform);
+            state.RawOrientation = TargetPositionCache.GetTargetRotation(transform);
             state.ReferenceUp = worldUp;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
