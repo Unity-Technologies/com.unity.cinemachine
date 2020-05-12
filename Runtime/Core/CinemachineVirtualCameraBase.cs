@@ -99,12 +99,15 @@ namespace Cinemachine
 
         /// <summary>
         /// Query components and extensions for the maximum damping time.
+        /// Base class implementation queries extensions.
         /// Only used in editor for timeline scrubbing.
         /// </summary>
-        /// <returns></returns>
-        public float GetMaxDampTime()
+        /// <returns>Highest damping setting in this vcam</returns>
+        public virtual float GetMaxDampTime()
         {
-            float maxDamp = 1; // 0; // GML todo: implement this properly
+            float maxDamp = 0;
+            for (int i = 0; i < mExtensions.Count; ++i)
+                maxDamp = Mathf.Max(maxDamp, mExtensions[i].GetMaxDampTime());
             return maxDamp;
         }
 
@@ -233,7 +236,7 @@ namespace Cinemachine
                 mExtensions.Remove(extension);
         }
 
-        /// <summary> THe extensions connected to this vcam</summary>
+        /// <summary> Tee extensions connected to this vcam</summary>
         List<CinemachineExtension> mExtensions;
 
         /// <summary>
@@ -490,7 +493,7 @@ namespace Cinemachine
 
         /// <summary>
         /// Called on inactive object when being artificially activated by timeline.
-        /// This is necessary because Awak() isn't called on inactive gameObjects.
+        /// This is necessary because Awake() isn't called on inactive gameObjects.
         /// </summary>
         internal void EnsureStarted()
         {

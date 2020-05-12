@@ -58,7 +58,8 @@ using System.Collections.Generic;
                         maxDampingTime = Mathf.Max(maxDampingTime, vcam.GetMaxDampTime());
                     }
                 }
-                return maxDampingTime;
+                // Impose upper limit on damping time, to avoid simulating too many frames
+                return Mathf.Min(maxDampingTime, 2.0f); 
             }
 
             public void ScrubTohere(

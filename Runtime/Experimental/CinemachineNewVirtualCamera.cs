@@ -122,6 +122,20 @@ namespace Cinemachine
             base.ForceCameraPosition(pos, rot);
         }
         
+        /// <summary>
+        /// Query components and extensions for the maximum damping time.
+        /// </summary>
+        /// <returns>Highest damping setting in this vcam</returns>
+        public override float GetMaxDampTime()
+        {
+            float maxDamp = base.GetMaxDampTime();
+            UpdateComponentCache();
+            for (int i = 0; i < m_Components.Length; ++i)
+                if (m_Components[i] != null)
+                    maxDamp = Mathf.Max(maxDamp, m_Components[i].GetMaxDampTime());
+            return maxDamp;
+        }
+
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>

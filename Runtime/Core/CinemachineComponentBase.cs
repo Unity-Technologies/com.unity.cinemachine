@@ -240,5 +240,12 @@ namespace Cinemachine
         /// <param name="pos">Worldspace pposition to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
+
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// Only used in editor for timeline scrubbing.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public virtual float GetMaxDampTime() { return 0; }
     }
 }

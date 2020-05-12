@@ -248,6 +248,15 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
+        }
+        
         /// <summary>Callback to do the collision resolution and shot evaluation</summary>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,

@@ -47,42 +47,53 @@ namespace Cinemachine
             }
             List<RecordingItem> RawItems = new List<RecordingItem>();
 
+            const float kResolution = 0.04f;
+
             public void AddRawItem(float time, Transform target)
             {
-                RawItems.Add(new RecordingItem
-                {
-                    Time = time,
-                    Pos = target.position,
-                    Rot = target.rotation.eulerAngles
-                });
+                var n = RawItems.Count;
+                if (n == 0 || Mathf.Abs(RawItems[n-1].Time - time) >= kResolution)
+                    RawItems.Add(new RecordingItem
+                    {
+                        Time = time,
+                        Pos = target.position,
+                        Rot = target.rotation.eulerAngles
+                    });
             }
 
             public void CreateCurves()
             {
-                X = new AnimationCurve();
-                Y = new AnimationCurve();
-                Z = new AnimationCurve();
-                RotX = new AnimationCurve();
-                RotY = new AnimationCurve();
-                RotZ = new AnimationCurve();
+                var XList = new List<Keyframe>();
+                var YList = new List<Keyframe>();
+                var ZList = new List<Keyframe>();
+                var RotXList = new List<Keyframe>();
+                var RotYList = new List<Keyframe>();
+                var RotZList = new List<Keyframe>();
 
                 RawItems.Sort();
                 float time = float.MaxValue;
                 for (int i = 0; i < RawItems.Count; ++i)
                 {
                     var item = RawItems[i];
-                    if (Mathf.Abs(item.Time - time) < 0.03f)
+                    if (Mathf.Abs(item.Time - time) < kResolution)
                         continue;
                     time = item.Time;
 
-                    X.AddKey(new Keyframe(time, item.Pos.x));
-                    Y.AddKey(new Keyframe(time, item.Pos.y));
-                    Z.AddKey(new Keyframe(time, item.Pos.z));
-                    RotX.AddKey(new Keyframe(time, item.Rot.x));
-                    RotY.AddKey(new Keyframe(time, item.Rot.y));
-                    RotZ.AddKey(new Keyframe(time, item.Rot.z));
+                    XList.Add(new Keyframe(time, item.Pos.x));
+                    YList.Add(new Keyframe(time, item.Pos.y));
+                    ZList.Add(new Keyframe(time, item.Pos.z));
+                    RotXList.Add(new Keyframe(time, item.Rot.x));
+                    RotYList.Add(new Keyframe(time, item.Rot.y));
+                    RotZList.Add(new Keyframe(time, item.Rot.z));
                 }
                 RawItems.Clear();
+
+                X = new AnimationCurve(XList.ToArray());
+                Y = new AnimationCurve(YList.ToArray());
+                Z = new AnimationCurve(ZList.ToArray());
+                RotX = new AnimationCurve(RotXList.ToArray());
+                RotY = new AnimationCurve(RotYList.ToArray());
+                RotZ = new AnimationCurve(RotZList.ToArray());
             }
         }
 

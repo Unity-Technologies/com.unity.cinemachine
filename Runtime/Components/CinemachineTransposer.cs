@@ -153,6 +153,19 @@ namespace Cinemachine
         /// Always returns the Body stage</summary>
         public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            var d = Damping;
+            var d2 = AngularDamping;
+            var a = Mathf.Max(d.x, Mathf.Max(d.y, d.z)); 
+            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
+            return Mathf.Max(a, b); 
+        }
+
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
