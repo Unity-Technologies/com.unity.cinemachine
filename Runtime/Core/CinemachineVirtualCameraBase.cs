@@ -106,8 +106,9 @@ namespace Cinemachine
         public virtual float GetMaxDampTime()
         {
             float maxDamp = 0;
-            for (int i = 0; i < mExtensions.Count; ++i)
-                maxDamp = Mathf.Max(maxDamp, mExtensions[i].GetMaxDampTime());
+            if (mExtensions != null)
+                for (int i = 0; i < mExtensions.Count; ++i)
+                    maxDamp = Mathf.Max(maxDamp, mExtensions[i].GetMaxDampTime());
             return maxDamp;
         }
 
