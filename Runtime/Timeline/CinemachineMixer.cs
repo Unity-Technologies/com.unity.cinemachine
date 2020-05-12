@@ -71,7 +71,7 @@ using System.Collections.Generic;
                 if (cacheMode != TargetPositionCache.Mode.Playback)
                     return;
             
-                const float kStepsPerSecond = 30;
+                const float kStepsPerSecond = 60;
                 const float kStepSize = 1.0f / kStepsPerSecond;
 
                 int numSteps = Mathf.CeilToInt(GetMaxDampTime() * kStepsPerSecond);

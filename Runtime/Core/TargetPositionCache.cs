@@ -71,7 +71,7 @@ namespace Cinemachine
                 for (int i = 0; i < RawItems.Count; ++i)
                 {
                     var item = RawItems[i];
-                    if (item.Time == time)
+                    if (Mathf.Abs(item.Time - time) < 0.03f)
                         continue;
                     time = item.Time;
 
@@ -129,6 +129,8 @@ namespace Cinemachine
                 iter.Current.Value.CreateCurves();
         }
 
+        const float kWraparoundSlush = 0.1f;
+
         /// <summary>
         /// If Recording, will log the target position at the CurrentTime.
         /// Otherwise, will fetch the cached position at CurrentTime.
@@ -142,7 +144,8 @@ namespace Cinemachine
 
             // Wrap around during record?
             if (CacheMode == Mode.Record 
-                && !m_CacheTimeRange.IsEmpty && CurrentTime < m_CacheTimeRange.Start)
+                && !m_CacheTimeRange.IsEmpty 
+                && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
                 ClearCache();
                 InitCache();
@@ -184,7 +187,8 @@ namespace Cinemachine
 
             // Wrap around during record?
             if (CacheMode == Mode.Record 
-                && !m_CacheTimeRange.IsEmpty && CurrentTime < m_CacheTimeRange.Start)
+                && !m_CacheTimeRange.IsEmpty 
+                && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
                 ClearCache();
                 InitCache();
