@@ -47,7 +47,7 @@ namespace Cinemachine
             }
             List<RecordingItem> RawItems = new List<RecordingItem>();
 
-            const float kResolution = 0.04f;
+            const float kResolution = 0.033f;
 
             public void AddRawItem(float time, Transform target)
             {
@@ -79,12 +79,12 @@ namespace Cinemachine
                         continue;
                     time = item.Time;
 
-                    XList.Add(new Keyframe(time, item.Pos.x));
-                    YList.Add(new Keyframe(time, item.Pos.y));
-                    ZList.Add(new Keyframe(time, item.Pos.z));
-                    RotXList.Add(new Keyframe(time, item.Rot.x));
-                    RotYList.Add(new Keyframe(time, item.Rot.y));
-                    RotZList.Add(new Keyframe(time, item.Rot.z));
+                    SmoothAddKey(XList, time, item.Pos.x);
+                    SmoothAddKey(YList, time, item.Pos.y);
+                    SmoothAddKey(ZList, time, item.Pos.z);
+                    SmoothAddKey(RotXList, time, item.Rot.x);
+                    SmoothAddKey(RotYList, time, item.Rot.y);
+                    SmoothAddKey(RotZList, time, item.Rot.z);
                 }
                 RawItems.Clear();
 
@@ -94,6 +94,19 @@ namespace Cinemachine
                 RotX = new AnimationCurve(RotXList.ToArray());
                 RotY = new AnimationCurve(RotYList.ToArray());
                 RotZ = new AnimationCurve(RotZList.ToArray());
+            }
+
+            void SmoothAddKey(List<Keyframe> keys, float time, float value)
+            {
+                var n = keys.Count;
+                if (n == 0)
+                    keys.Add(new Keyframe(time, value));
+                else
+                {
+                    var k = keys[keys.Count - 1];
+                    var t = (value - k.value) / (time - k.time);
+                    keys.Add(new Keyframe(time, value, t, t));
+                }
             }
         }
 
