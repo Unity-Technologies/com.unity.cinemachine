@@ -64,7 +64,11 @@ namespace Cinemachine
             if (!mInitialized)
                 Initialize();
 
-            mNoiseTime += deltaTime * m_FrequencyGain;
+            if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
+                    && TargetPositionCache.HasHurrentTime)
+                mNoiseTime = TargetPositionCache.CurrentTime * m_FrequencyGain;
+            else
+                mNoiseTime += deltaTime * m_FrequencyGain;
             curState.PositionCorrection += curState.CorrectedOrientation * NoiseSettings.GetCombinedFilterResults(
                     m_NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain;
             Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(

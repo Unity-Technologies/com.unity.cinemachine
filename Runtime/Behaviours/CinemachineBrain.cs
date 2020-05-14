@@ -380,7 +380,7 @@ namespace Cinemachine
                 {
                     var frame = mFrameStack[i];
                     if (frame.Active)
-                        return frame.TimeOverrideExpired ? -1 : frame.deltaTimeOverride;
+                        return frame.deltaTimeOverride;
                 }
                 return -1;
             }
@@ -474,11 +474,6 @@ namespace Cinemachine
 
             // Used by Timeline Preview for overriding the current value of deltaTime
             public float deltaTimeOverride;
-            public float timeOfOverride;
-            public bool TimeOverrideExpired
-            {
-                get { return Time.realtimeSinceStartup - timeOfOverride > Time.maximumDeltaTime; }
-            }
         }
 
         // Current game state is always frame 0, overrides are subsequent frames
@@ -529,7 +524,6 @@ namespace Cinemachine
 
             BrainFrame frame = mFrameStack[GetBrainFrame(overrideId)];
             frame.deltaTimeOverride = deltaTime;
-            frame.timeOfOverride = Time.realtimeSinceStartup;
             frame.blend.CamA = camA;
             frame.blend.CamB = camB;
             frame.blend.BlendCurve = AnimationCurve.Linear(0, 0, 1, 1);

@@ -6,9 +6,11 @@
 using UnityEngine;
 using UnityEngine.Playables;
 using Cinemachine;
+using System.Collections.Generic;
 
 //namespace Cinemachine.Timeline
 //{
+
     internal sealed class CinemachineMixer : PlayableBehaviour
     {
         // The brain that this track controls
@@ -16,16 +18,127 @@ using Cinemachine;
         private int mBrainOverrideId = -1;
         private bool mPlaying;
 
+#if UNITY_EDITOR
+        class ScrubbingCacheHelper
+        {
+            // Registry of all vcams that are present in the track, active or not
+            List<List<CinemachineVirtualCameraBase>> mAllCamerasForScrubbing;
+
+            public void Init(Playable playable)
+            {
+                // Build our vcam registry for scrubbing updates
+                mAllCamerasForScrubbing = new List<List<CinemachineVirtualCameraBase>>();
+                for (int i = 0; i < playable.GetInputCount(); ++i)
+                {
+                    var clip = (ScriptPlayable<CinemachineShotPlayable>)playable.GetInput(i);
+                    CinemachineShotPlayable shot = clip.GetBehaviour();
+                    if (shot != null && shot.IsValid)
+                    {
+                        var vcam = shot.VirtualCamera;
+                        int nestLevel = 0;
+                        for (ICinemachineCamera p = vcam.ParentCamera; p != null; p = p.ParentCamera)
+                            ++nestLevel;
+                        while (mAllCamerasForScrubbing.Count <= nestLevel)
+                            mAllCamerasForScrubbing.Add(new List<CinemachineVirtualCameraBase>());
+                        if (mAllCamerasForScrubbing[nestLevel].IndexOf(vcam) < 0)
+                            mAllCamerasForScrubbing[nestLevel].Add(vcam);
+                    }
+                }
+            }
+
+            float GetMaxDampTime()
+            {
+                float maxDampingTime = 0;
+                for (int i = mAllCamerasForScrubbing.Count - 1; i >= 0; --i)
+                {
+                    var sublist = mAllCamerasForScrubbing[i];
+                    for (int j = sublist.Count - 1; j >= 0; --j)
+                    {
+                        var vcam = sublist[j];
+                        maxDampingTime = Mathf.Max(maxDampingTime, vcam.GetMaxDampTime());
+                    }
+                }
+                // Impose upper limit on damping time, to avoid simulating too many frames
+                return Mathf.Min(maxDampingTime, 2.0f); 
+            }
+
+            public void ScrubToHere(
+                float currentTime, TargetPositionCache.Mode cacheMode, CinemachineBrain brain)
+            {
+                if (brain == null)
+                    return;
+                TargetPositionCache.CacheMode = cacheMode;
+                TargetPositionCache.CurrentTime = currentTime;
+                if (cacheMode != TargetPositionCache.Mode.Playback)
+                    return;
+            
+                const float kStepsPerSecond = 30;
+                const float kStepSize = 1.0f / kStepsPerSecond;
+
+                int numSteps = Mathf.CeilToInt(GetMaxDampTime() * kStepsPerSecond);
+                float endTime = TargetPositionCache.CurrentTime;
+
+                for (int step = numSteps; step >= 0; --step)
+                {
+                    var t = endTime - step * kStepSize;
+                    var deltaTime = (step == numSteps) ? -1 : kStepSize;
+                    TargetPositionCache.CurrentTime = t;
+
+                    // Update all relevant vcams, leaf-most first
+                    for (int i = mAllCamerasForScrubbing.Count - 1; i >= 0; --i)
+                    {
+                        var sublist = mAllCamerasForScrubbing[i];
+                        for (int j = sublist.Count - 1; j >= 0; --j)
+                        {
+                            var vcam = sublist[j];
+                            vcam.InternalUpdateCameraState(brain.DefaultWorldUp, deltaTime);
+                        }
+                    }
+                }
+            }
+        }
+        ScrubbingCacheHelper m_ScrubbingCacheHelper;
+#endif
+
+#if UNITY_EDITOR
+        public override void OnGraphStart(Playable playable)
+        {
+            base.OnGraphStart(playable);
+            m_ScrubbingCacheHelper = null;
+        }
+#endif
+        
         public override void OnPlayableDestroy(Playable playable)
         {
             if (mBrain != null)
                 mBrain.ReleaseCameraOverride(mBrainOverrideId); // clean up
             mBrainOverrideId = -1;
+#if UNITY_EDITOR
+            m_ScrubbingCacheHelper = null;
+#endif
         }
 
         public override void PrepareFrame(Playable playable, FrameData info)
         {
             mPlaying = info.evaluationType == FrameData.EvaluationType.Playback;
+#if UNITY_EDITOR
+            if (Application.isPlaying || !TargetPositionCache.UseCache)
+                TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;
+            else
+            {
+                if (m_ScrubbingCacheHelper == null)
+                {
+                    m_ScrubbingCacheHelper = new ScrubbingCacheHelper();
+                    m_ScrubbingCacheHelper.Init(playable);
+                }
+                m_ScrubbingCacheHelper.ScrubToHere(
+                    (float)playable.GetGraph().GetRootPlayable(0).GetTime(), 
+                    mPlaying ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback,
+                    mBrain);
+            }
+#else
+            TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;
+#endif
         }
 
         struct ClipInfo
@@ -95,27 +208,18 @@ using Cinemachine;
                     mBrainOverrideId, camA, camB, camWeightB, GetDeltaTime(info.deltaTime));
         }
 
-        float mLastOverrideTime;
         float GetDeltaTime(float deltaTime)
         {
-            if (!mPlaying)
-            {
-                // We're scrubbing or paused
-                if (mBrainOverrideId < 0)
-                    mLastOverrideTime = -1;
+            if (mPlaying || Application.isPlaying)
+                return deltaTime;
 
-                // When force-scrubbing in playmode, we use timeline's suggested deltaTime
-                // otherwise we look at the real clock for scrubbing in edit mode
-                if (!Application.isPlaying)
-                {
-                    deltaTime = Time.unscaledDeltaTime;
-                    float time = Time.realtimeSinceStartup;
-                    if (mLastOverrideTime < 0 || time - mLastOverrideTime > Time.maximumDeltaTime * 5)
-                        deltaTime = -1; // paused long enough - kill time-dependent stuff
-                    mLastOverrideTime = time;
-                }
+            // We're scrubbing or paused
+            if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
+                && TargetPositionCache.HasHurrentTime)
+            {
+                return 0;
             }
-            return deltaTime;
+            return -1;
         }
     }
 //}

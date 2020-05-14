@@ -126,6 +126,19 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
+        /// <summary>
+        /// Query components and extensions for the maximum damping time.
+        /// </summary>
+        /// <returns>Highest damping setting in this vcam</returns>
+        public override float GetMaxDampTime()
+        {
+            float maxDamp = base.GetMaxDampTime();
+            if (m_ComponentPipeline != null)
+                for (int i = 0; i < m_ComponentPipeline.Length; ++i)
+                    maxDamp = Mathf.Max(maxDamp, m_ComponentPipeline[i].GetMaxDampTime());
+            return maxDamp;
+        }
+
         /// <summary>Internal use only.  Do not call this method.
         /// Called by CinemachineCore at the appropriate Update time
         /// so the vcam can position itself and track its targets.  This class will
@@ -463,7 +476,7 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     state.ReferenceLookAt = mCachedLookAtTargetVcam.State.FinalPosition;
                 else
-                    state.ReferenceLookAt = lookAtTarget.position;
+                    state.ReferenceLookAt = TargetPositionCache.GetTargetPosition(lookAtTarget);
             }
 
             // Update the state by invoking the component pipeline

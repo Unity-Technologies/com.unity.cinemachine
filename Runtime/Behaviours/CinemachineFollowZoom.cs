@@ -52,6 +52,15 @@ namespace Cinemachine
             public float m_previousFrameZoom = 0;
         }
 
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            return m_Damping;
+        }
+        
         /// <summary>Callback to preform the zoom adjustment</summary>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,

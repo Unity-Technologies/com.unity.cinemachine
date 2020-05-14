@@ -351,6 +351,15 @@ namespace Cinemachine
             m_PreviousCameraPosition = pos;
         }
         
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(m_XDamping, Mathf.Max(m_YDamping, m_ZDamping)); 
+        }
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>

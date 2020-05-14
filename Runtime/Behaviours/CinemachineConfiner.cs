@@ -129,6 +129,14 @@ namespace Cinemachine
             }
         }
         
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            return m_Damping;
+        }
 
         /// <summary>Callback to to the camera confining</summary>
         protected override void PostPipelineStageCallback(
