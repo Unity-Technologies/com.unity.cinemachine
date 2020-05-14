@@ -35,13 +35,13 @@ using System.Collections.Generic;
                     if (shot != null && shot.IsValid)
                     {
                         var vcam = shot.VirtualCamera;
-                        int parentLevel = 0;
+                        int nestLevel = 0;
                         for (ICinemachineCamera p = vcam.ParentCamera; p != null; p = p.ParentCamera)
-                            ++parentLevel;
-                        while (mAllCamerasForScrubbing.Count <= parentLevel)
+                            ++nestLevel;
+                        while (mAllCamerasForScrubbing.Count <= nestLevel)
                             mAllCamerasForScrubbing.Add(new List<CinemachineVirtualCameraBase>());
-                        if (mAllCamerasForScrubbing[parentLevel].IndexOf(vcam) < 0)
-                            mAllCamerasForScrubbing[parentLevel].Add(vcam);
+                        if (mAllCamerasForScrubbing[nestLevel].IndexOf(vcam) < 0)
+                            mAllCamerasForScrubbing[nestLevel].Add(vcam);
                     }
                 }
             }
@@ -62,7 +62,7 @@ using System.Collections.Generic;
                 return Mathf.Min(maxDampingTime, 2.0f); 
             }
 
-            public void ScrubTohere(
+            public void ScrubToHere(
                 float currentTime, TargetPositionCache.Mode cacheMode, CinemachineBrain brain)
             {
                 if (brain == null)
@@ -131,7 +131,7 @@ using System.Collections.Generic;
                     m_ScrubbingCacheHelper = new ScrubbingCacheHelper();
                     m_ScrubbingCacheHelper.Init(playable);
                 }
-                m_ScrubbingCacheHelper.ScrubTohere(
+                m_ScrubbingCacheHelper.ScrubToHere(
                     (float)playable.GetGraph().GetRootPlayable(0).GetTime(), 
                     mPlaying ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback,
                     mBrain);

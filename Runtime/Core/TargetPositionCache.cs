@@ -8,7 +8,8 @@ namespace Cinemachine
     {
         public static bool UseCache { get; set; }
         public enum Mode { Disabled, Record, Playback }
-        public static Mode m_CacheMode = Mode.Disabled;
+        
+        static Mode m_CacheMode = Mode.Disabled;
 
         public static Mode CacheMode
         {
