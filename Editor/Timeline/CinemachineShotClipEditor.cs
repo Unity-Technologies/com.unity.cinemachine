@@ -86,7 +86,9 @@ public class CinemachineShotClipEditor : ClipEditor
                 var a = r.x + Mathf.Lerp(0, r.width, range.Start / (end - start));
                 var b = r.x + Mathf.Lerp(0, r.width, range.End / (end - start));
                 r.x = a; r.width = b-a;
-                EditorGUI.DrawRect(r, Color.Lerp(GetDefaultHighlightColor(clip), Color.gray, 0.8f));
+                var color = Color.Lerp(GetDefaultHighlightColor(clip), Color.gray, 0.8f);
+                color.a = 0.5f;
+                EditorGUI.DrawRect(r, color);
             }
         }
     }
