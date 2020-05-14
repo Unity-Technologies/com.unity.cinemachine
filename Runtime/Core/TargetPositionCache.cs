@@ -30,20 +30,78 @@ namespace Cinemachine
 
         public static float CurrentTime { get; set; }
 
+        class CacheCurve
+        {
+            public struct Item
+            {
+                public Vector3 Pos;
+                public Quaternion Rot;
+
+                public static Item Lerp(Item a, Item b, float t)
+                {
+                    return new Item
+                    {
+                        Pos = Vector3.LerpUnclamped(a.Pos, b.Pos, t),
+                        Rot = Quaternion.SlerpUnclamped(a.Rot, b.Rot, t)
+                    };
+                }
+            }
+
+            public float StartTime;
+            public float StepSize;
+ 
+            List<Item> m_Cache;
+
+            public CacheCurve(float startTime, float endTime, float stepSize)
+            {
+                StepSize = stepSize;
+                StartTime = startTime;
+                m_Cache = new List<Item>(Mathf.CeilToInt((endTime - startTime) / StepSize));
+            }
+
+            public void Add(Item item, float time)
+            {
+                if (time < StartTime)
+                    return;
+                var lastIndex = m_Cache.Count - 1;
+                if (lastIndex < 0)
+                    m_Cache.Add(item);
+                else
+                {
+                    int index = Mathf.FloorToInt((time - StartTime) / StepSize);
+                    var lastItem = m_Cache[lastIndex];
+                    var lastTime = StartTime + lastIndex * StepSize;
+                    for (int i = lastIndex + 1; i <= index; ++i)
+                        m_Cache.Add(Item.Lerp(
+                            lastItem, item, 
+                            (float)(i - lastIndex) / (float)(index - lastIndex)));
+                }
+            }
+
+            public Item Evaluate(float time)
+            {
+                var numItems = m_Cache.Count;
+                if (numItems == 0)
+                    return new Item { Rot = Quaternion.identity };
+
+                var s = time - StartTime;
+                var index = Mathf.Max(Mathf.FloorToInt(s / StepSize), 0);
+                if (index >= numItems - 1)
+                    return m_Cache[numItems - 1];
+
+                float t = (s - (index * StepSize)) / StepSize;
+                return Item.Lerp(m_Cache[index], m_Cache[index + 1], t);
+            }
+        }
+
         class CacheEntry
         {
-            public AnimationCurve X = new AnimationCurve();
-            public AnimationCurve Y = new AnimationCurve();
-            public AnimationCurve Z = new AnimationCurve();
-            public AnimationCurve RotX = new AnimationCurve();
-            public AnimationCurve RotY = new AnimationCurve();
-            public AnimationCurve RotZ = new AnimationCurve();
+            public CacheCurve Curve;
 
             struct RecordingItem : IComparable<RecordingItem>
             {
                 public float Time;
-                public Vector3 Pos;
-                public Vector3 Rot;
+                public CacheCurve.Item Item;
                 public int CompareTo(RecordingItem other) { return Time.CompareTo(other.Time); }
             }
             List<RecordingItem> RawItems = new List<RecordingItem>();
@@ -57,57 +115,29 @@ namespace Cinemachine
                     RawItems.Add(new RecordingItem
                     {
                         Time = time,
-                        Pos = target.position,
-                        Rot = target.rotation.eulerAngles
+                        Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
                     });
             }
 
             public void CreateCurves()
             {
-                var XList = new List<Keyframe>();
-                var YList = new List<Keyframe>();
-                var ZList = new List<Keyframe>();
-                var RotXList = new List<Keyframe>();
-                var RotYList = new List<Keyframe>();
-                var RotZList = new List<Keyframe>();
-
                 RawItems.Sort();
+
+                int numItems = RawItems.Count;
+                float startTime = numItems == 0 ? 0 : RawItems[0].Time;
+                float endTime = numItems == 0 ? 0 : RawItems[numItems-1].Time;
+                Curve = new CacheCurve(startTime, endTime, kResolution);
+
                 float time = float.MaxValue;
-                for (int i = 0; i < RawItems.Count; ++i)
+                for (int i = 0; i < numItems; ++i)
                 {
                     var item = RawItems[i];
                     if (Mathf.Abs(item.Time - time) < kResolution)
                         continue;
                     time = item.Time;
-
-                    SmoothAddKey(XList, time, item.Pos.x);
-                    SmoothAddKey(YList, time, item.Pos.y);
-                    SmoothAddKey(ZList, time, item.Pos.z);
-                    SmoothAddKey(RotXList, time, item.Rot.x);
-                    SmoothAddKey(RotYList, time, item.Rot.y);
-                    SmoothAddKey(RotZList, time, item.Rot.z);
+                    Curve.Add(item.Item, time);
                 }
                 RawItems.Clear();
-
-                X = new AnimationCurve(XList.ToArray());
-                Y = new AnimationCurve(YList.ToArray());
-                Z = new AnimationCurve(ZList.ToArray());
-                RotX = new AnimationCurve(RotXList.ToArray());
-                RotY = new AnimationCurve(RotYList.ToArray());
-                RotZ = new AnimationCurve(RotZList.ToArray());
-            }
-
-            void SmoothAddKey(List<Keyframe> keys, float time, float value)
-            {
-                var n = keys.Count;
-                if (n == 0)
-                    keys.Add(new Keyframe(time, value));
-                else
-                {
-                    var k = keys[keys.Count - 1];
-                    var t = (value - k.value) / (time - k.time);
-                    keys.Add(new Keyframe(time, value, t, t));
-                }
             }
         }
 
@@ -193,10 +223,7 @@ namespace Cinemachine
                 m_CacheTimeRange.Include(CurrentTime);
                 return target.position;
             }
-            return new Vector3(
-                entry.X.Evaluate(CurrentTime),
-                entry.Y.Evaluate(CurrentTime),
-                entry.Z.Evaluate(CurrentTime));
+            return entry.Curve.Evaluate(CurrentTime).Pos;
         }
 
         /// <summary>
@@ -236,10 +263,7 @@ namespace Cinemachine
                 m_CacheTimeRange.Include(CurrentTime);
                 return target.rotation;
             }
-            return Quaternion.Euler(
-                entry.RotX.Evaluate(CurrentTime),
-                entry.RotY.Evaluate(CurrentTime),
-                entry.RotZ.Evaluate(CurrentTime));
+            return entry.Curve.Evaluate(CurrentTime).Rot;
         }
     }
 }
