@@ -219,8 +219,11 @@ namespace Cinemachine
             }
             if (CacheMode == Mode.Record)
             {
-                entry.AddRawItem(CurrentTime, target);
-                m_CacheTimeRange.Include(CurrentTime);
+                if (m_CacheTimeRange.End <= CurrentTime)
+                {
+                    entry.AddRawItem(CurrentTime, target);
+                    m_CacheTimeRange.Include(CurrentTime);
+                }
                 return target.position;
             }
             return entry.Curve.Evaluate(CurrentTime).Pos;
@@ -259,8 +262,11 @@ namespace Cinemachine
             }
             if (CacheMode == Mode.Record)
             {
-                entry.AddRawItem(CurrentTime, target);
-                m_CacheTimeRange.Include(CurrentTime);
+                if (m_CacheTimeRange.End <= CurrentTime)
+                {
+                    entry.AddRawItem(CurrentTime, target);
+                    m_CacheTimeRange.Include(CurrentTime);
+                }
                 return target.rotation;
             }
             return entry.Curve.Evaluate(CurrentTime).Rot;
