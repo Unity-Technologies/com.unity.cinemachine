@@ -276,8 +276,8 @@ namespace Cinemachine.PostFX
 
         static PostProcessLayer GetPPLayer(CinemachineBrain brain)
         {
-            PostProcessLayer layer = null;
-            if (mBrainToLayer.TryGetValue(brain, out layer))
+            bool found = mBrainToLayer.TryGetValue(brain, out PostProcessLayer layer);
+            if (found)
             {
 #if UNITY_EDITOR
                 // Maybe they added it since we last checked
@@ -285,12 +285,21 @@ namespace Cinemachine.PostFX
 #endif
                 return layer;
             }
+#if UNITY_2019_2_OR_NEWER
+            brain.TryGetComponent(out layer);
+#else
             layer = brain.GetComponent<PostProcessLayer>();
-            mBrainToLayer[brain] = layer;
-            if (layer != null)
-                brain.m_CameraCutEvent.AddListener(OnCameraCut);
-            else
+#endif
+            if (found)
+            {
+                mBrainToLayer.Remove(brain); // layer is null
                 brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+            }
+            else if (layer != null)
+            {
+                mBrainToLayer[brain] = layer;
+                brain.m_CameraCutEvent.AddListener(OnCameraCut);
+            }
             return layer;
         }
 
