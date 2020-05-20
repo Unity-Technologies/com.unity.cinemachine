@@ -276,21 +276,36 @@ namespace Cinemachine.PostFX
 
         static PostProcessLayer GetPPLayer(CinemachineBrain brain)
         {
-            PostProcessLayer layer = null;
-            if (mBrainToLayer.TryGetValue(brain, out layer))
-            {
-#if UNITY_EDITOR
-                // Maybe they added it since we last checked
-                if (layer != null || Application.isPlaying)
-#endif
-                return layer;
-            }
-            layer = brain.GetComponent<PostProcessLayer>();
-            mBrainToLayer[brain] = layer;
+            bool found = mBrainToLayer.TryGetValue(brain, out PostProcessLayer layer);
             if (layer != null)
-                brain.m_CameraCutEvent.AddListener(OnCameraCut);
+                return layer;   // layer is valid and in our lookup
+
+            if (found)
+            {
+                if (layer) // note: this is not the same check as (layer == null)
+                {
+                    // layer is a deleted object
+                    brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+                    mBrainToLayer.Remove(brain);
+                    layer = null;
+                }
+            }
             else
-                brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+            {
+                // Brain is not in our lookup - add it
+#if UNITY_2019_2_OR_NEWER
+                brain.TryGetComponent(out layer);
+#else
+                layer = brain.GetComponent<PostProcessLayer>();
+#endif
+                if (layer != null)
+                    brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
+#if UNITY_EDITOR
+                // Never add null in edit mode in case user adds a layer dynamically
+                if (Application.isPlaying)  
+#endif
+                    mBrainToLayer[brain] = layer;
+            }
             return layer;
         }
 

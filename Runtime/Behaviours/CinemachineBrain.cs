@@ -144,7 +144,11 @@ namespace Cinemachine
             get
             {
                 if (m_OutputCamera == null && !Application.isPlaying)
+#if UNITY_2019_2_OR_NEWER
+                    TryGetComponent(out m_OutputCamera);
+#else
                     m_OutputCamera = GetComponent<Camera>();
+#endif
                 return m_OutputCamera;
             }
         }
@@ -814,7 +818,11 @@ namespace Cinemachine
     #if CINEMACHINE_HDRP
                     if (state.Lens.IsPhysicalCamera)
                     {
+#if UNITY_2019_2_OR_NEWER
+                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
+#else
                         var hda = cam.GetComponent<HDAdditionalCameraData>();
+#endif
                         if (hda != null)
                         {
                             hda.physicalParameters.iso = state.Lens.Iso;

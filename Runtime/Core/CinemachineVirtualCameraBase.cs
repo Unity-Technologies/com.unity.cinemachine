@@ -578,7 +578,13 @@ namespace Cinemachine
             m_parentVcam = null;
             Transform p = transform.parent;
             if (p != null)
+            {
+#if UNITY_2019_2_OR_NEWER
+                p.TryGetComponent(out m_parentVcam);
+#else
                 m_parentVcam = p.GetComponent<CinemachineVirtualCameraBase>();
+#endif
+            }
         }
 
         /// <summary>Returns this vcam's LookAt target, or if that is null, will retrun
