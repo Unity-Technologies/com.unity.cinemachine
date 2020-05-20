@@ -18,7 +18,7 @@ using System.Collections.Generic;
         private int mBrainOverrideId = -1;
         private bool mPlaying;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
         class ScrubbingCacheHelper
         {
             // Registry of all vcams that are present in the track, active or not
@@ -100,7 +100,7 @@ using System.Collections.Generic;
         ScrubbingCacheHelper m_ScrubbingCacheHelper;
 #endif
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
         public override void OnGraphStart(Playable playable)
         {
             base.OnGraphStart(playable);
@@ -113,7 +113,7 @@ using System.Collections.Generic;
             if (mBrain != null)
                 mBrain.ReleaseCameraOverride(mBrainOverrideId); // clean up
             mBrainOverrideId = -1;
-#if UNITY_EDITOR
+#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
             m_ScrubbingCacheHelper = null;
 #endif
         }
@@ -121,7 +121,7 @@ using System.Collections.Generic;
         public override void PrepareFrame(Playable playable, FrameData info)
         {
             mPlaying = info.evaluationType == FrameData.EvaluationType.Playback;
-#if UNITY_EDITOR
+#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
             if (Application.isPlaying || !TargetPositionCache.UseCache)
                 TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;
             else

@@ -89,7 +89,7 @@ public class CinemachineShotClipEditor : ClipEditor
                 var a = r.x + r.width * (cacheRange.Start - start) / (end - start);
                 var b = r.x + r.width * (cacheRange.End - start) / (end - start);
                 r.x = a; r.width = b-a;
-                EditorGUI.DrawRect(r, new Color(0.4f, 0.6f, 0.8f, 0.6f));
+                EditorGUI.DrawRect(r, new Color(0.2f, 0.4f, 0.8f, 0.6f));
 
             }
         }

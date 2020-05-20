@@ -26,6 +26,7 @@ using Cinemachine;
             }
         }
 
+#if UNITY_2019_2_OR_NEWER
         static string kUseScrubbingCache = "CNMCN_Timeeline_UseTimelineScrubbingCache";
         public static bool UseScrubbingCache
         {
@@ -48,6 +49,7 @@ using Cinemachine;
                 TargetPositionCache.UseCache = UseScrubbingCache;
             }
         }
+#endif
 
         static public CinemachineVirtualCameraBase CreateStaticVcamFromSceneView()
         {
@@ -73,11 +75,14 @@ using Cinemachine;
             "Auto-create new shots",  "When enabled, new clips will be "
                 + "automatically populated to match the scene view camera.  "
                 + "This is a global setting");
+#if UNITY_2019_2_OR_NEWER
         private static readonly GUIContent kScrubbingCacheLabel = new GUIContent(
             "Use Scrubbing Cache",
-            "For preview playback, use a cache to approximate damping "
-                + "and noise playback.  This is a global setting.");
-
+            "For preview scrubbing, use a cache to approximate damping "
+                + "and noise playback.  Cache is built when timeline is played forward, "
+                + "and used when timeline is scrubbed within the cached zone. "
+                + "This is a global setting.");
+#endif
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
@@ -104,8 +109,10 @@ using Cinemachine;
             AutoCreateShotFromSceneView
                 = EditorGUILayout.Toggle(kAutoCreateLabel, AutoCreateShotFromSceneView);
 
+            Rect rect;
+#if UNITY_2019_2_OR_NEWER
             GUI.enabled = !Application.isPlaying;
-            var rect = EditorGUILayout.GetControlRect();
+            rect = EditorGUILayout.GetControlRect();
             var r = rect;
             r.width = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
             if (Application.isPlaying)
@@ -115,6 +122,7 @@ using Cinemachine;
             r.x += r.width; r.width = rect.width - r.width;
             EditorGUI.LabelField(r, "(experimental)");
             GUI.enabled = true;
+#endif
 
             EditorGUILayout.Space();
             CinemachineVirtualCameraBase vcam
