@@ -35,7 +35,7 @@ public class CinemachineShotClipEditor : ClipEditor
 
     public override void OnClipChanged(TimelineClip clip)
     {
-        var shotClip = (CinemachineShot) clip.asset;
+        var shotClip = (CinemachineShot)clip.asset;
         if (shotClip == null)
             return;
         if (shotClip.DisplayName != null && shotClip.DisplayName.Length != 0)
@@ -68,27 +68,50 @@ public class CinemachineShotClipEditor : ClipEditor
         }
     }
 
+    GUIContent kUndamped = new GUIContent("UNCACHED");
+
     public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
     {
         base.DrawBackground(clip, region);
+
         if (TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
         {
-            var range = TargetPositionCache.CacheTimeRange;
-            if (!range.IsEmpty)
+            var cacheRange = TargetPositionCache.CacheTimeRange;
+            if (!cacheRange.IsEmpty)
             {
-                // Clip range to rect
+                // Clip cacheRange to rect
                 float start = (float)region.startTime;
                 float end = (float)region.endTime;
-                range.Start = Mathf.Max((float)clip.ToLocalTime(range.Start), start);
-                range.End = Mathf.Min((float)clip.ToLocalTime(range.End), end);
+                cacheRange.Start = Mathf.Max((float)clip.ToLocalTime(cacheRange.Start), start);
+                cacheRange.End = Mathf.Min((float)clip.ToLocalTime(cacheRange.End), end);
                 
                 var r = region.position;
-                var a = r.x + Mathf.Lerp(0, r.width, range.Start / (end - start));
-                var b = r.x + Mathf.Lerp(0, r.width, range.End / (end - start));
+                var a = r.x + r.width * (cacheRange.Start - start) / (end - start);
+                var b = r.x + r.width * (cacheRange.End - start) / (end - start);
                 r.x = a; r.width = b-a;
-                var color = Color.Lerp(GetDefaultHighlightColor(clip), Color.gray, 0.8f);
-                color.a = 0.5f;
-                EditorGUI.DrawRect(r, color);
+                EditorGUI.DrawRect(r, new Color(0.4f, 0.6f, 0.8f, 0.6f));
+
+            }
+        }
+        if (!Application.isPlaying && TargetPositionCache.UseCache
+            && !TargetPositionCache.IsRecording 
+            && !TargetPositionCache.CurrentPlaybackTimeValid)
+        {
+            var director = TimelineEditor.inspectedDirector;
+            if (director != null)
+            {
+                var r = region.position;
+
+                var t = clip.ToLocalTime(director.time);
+                var pos = r.x + r.width 
+                    * (float)((t - region.startTime) / (region.endTime - region.startTime));
+    
+                var s = GUI.skin.label.CalcSize(kUndamped);
+                r.width = s.x; r.x = pos - r.width / 2;
+                var c = GUI.color;
+                GUI.color = Color.yellow;
+                EditorGUI.LabelField(r, kUndamped, GUI.skin.label);
+                GUI.color = c;
             }
         }
     }

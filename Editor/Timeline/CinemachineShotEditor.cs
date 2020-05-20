@@ -69,6 +69,15 @@ using Cinemachine;
 
         private static readonly GUIContent kVirtualCameraLabel
             = new GUIContent("Virtual Camera", "The virtual camera to use for this shot");
+        private static readonly GUIContent kAutoCreateLabel = new GUIContent(
+            "Auto-create new shots",  "When enabled, new clips will be "
+                + "automatically populated to match the scene view camera.  "
+                + "This is a global setting");
+        private static readonly GUIContent kScrubbingCacheLabel = new GUIContent(
+            "Use Scrubbing Cache",
+            "For preview playback, use a cache to approximate damping "
+                + "and noise playback.  This is a global setting.");
+
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
@@ -93,22 +102,21 @@ using Cinemachine;
             EditorGUI.indentLevel = 0; // otherwise subeditor layouts get screwed up
 
             AutoCreateShotFromSceneView
-                = EditorGUILayout.Toggle(
-                    new GUIContent(
-                        "Auto-create new shots",  "When enabled, new clips will be "
-                            + "automatically populated to match the scene view camera.  "
-                            + "This is a global setting"),
-                    AutoCreateShotFromSceneView);
+                = EditorGUILayout.Toggle(kAutoCreateLabel, AutoCreateShotFromSceneView);
 
-            UseScrubbingCache
-                = EditorGUILayout.Toggle(
-                    new GUIContent(
-                        "Use Scrubbing Cache",
-                        "For preview playback, use a cache to approximate damping "
-                            + "and noise playback.  This is a global setting."),
-                    UseScrubbingCache);
-    
-            Rect rect;
+            GUI.enabled = !Application.isPlaying;
+            var rect = EditorGUILayout.GetControlRect();
+            var r = rect;
+            r.width = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
+            if (Application.isPlaying)
+                EditorGUI.Toggle(r, kScrubbingCacheLabel, false);
+            else
+                UseScrubbingCache = EditorGUI.Toggle(r, kScrubbingCacheLabel, UseScrubbingCache);
+            r.x += r.width; r.width = rect.width - r.width;
+            EditorGUI.LabelField(r, "(experimental)");
+            GUI.enabled = true;
+
+            EditorGUILayout.Space();
             CinemachineVirtualCameraBase vcam
                 = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
             if (vcam != null)

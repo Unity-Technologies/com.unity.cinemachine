@@ -28,6 +28,9 @@ namespace Cinemachine
             }
         }
 
+        public static bool IsRecording => UseCache && m_CacheMode == Mode.Record;
+        public static bool CurrentPlaybackTimeValid => UseCache && m_CacheMode == Mode.Playback && HasHurrentTime;
+
         public static float CurrentTime { get; set; }
 
         class CacheCurve
