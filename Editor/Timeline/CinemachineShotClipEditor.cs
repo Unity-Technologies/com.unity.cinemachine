@@ -89,7 +89,8 @@ public class CinemachineShotClipEditor : ClipEditor
                 var a = r.x + r.width * (cacheRange.Start - start) / (end - start);
                 var b = r.x + r.width * (cacheRange.End - start) / (end - start);
                 r.x = a; r.width = b-a;
-                EditorGUI.DrawRect(r, new Color(0.2f, 0.4f, 0.8f, 0.6f));
+                r.y += r.height; r.height *= 0.2f; r.y -= r.height;
+                EditorGUI.DrawRect(r, new Color(0.1f, 0.2f, 0.8f, 0.6f));
 
             }
         }
@@ -106,11 +107,11 @@ public class CinemachineShotClipEditor : ClipEditor
                 var pos = r.x + r.width 
                     * (float)((t - region.startTime) / (region.endTime - region.startTime));
     
-                var s = GUI.skin.label.CalcSize(kUndamped);
+                var s = EditorStyles.miniLabel.CalcSize(kUndamped);
                 r.width = s.x; r.x = pos - r.width / 2;
                 var c = GUI.color;
                 GUI.color = Color.yellow;
-                EditorGUI.LabelField(r, kUndamped, GUI.skin.label);
+                EditorGUI.LabelField(r, kUndamped, EditorStyles.miniLabel);
                 GUI.color = c;
             }
         }
