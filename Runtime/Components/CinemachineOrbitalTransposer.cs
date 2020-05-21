@@ -367,8 +367,11 @@ namespace Cinemachine
 
                 if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
-                    var dir0 = mLastCameraPosition - targetPosition;
-                    var dir1 = curState.RawPosition - targetPosition;
+                    var lookAt = targetPosition;
+                    if (LookAtTarget != null)
+                        lookAt = LookAtTargetPosition;
+                    var dir0 = mLastCameraPosition - lookAt;
+                    var dir1 = curState.RawPosition - lookAt;
                     if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
                         curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                             dir0, dir1, curState.ReferenceUp).eulerAngles;
