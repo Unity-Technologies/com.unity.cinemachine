@@ -8,9 +8,15 @@ For blends between specific Virtual Cameras, use the __Custom Blends__ list in t
 
 ![Custom Blends list in Cinemachine Brain](images/CinemachineCustomBlends.png)
 
-The __From__ and __To__ settings are name-based, not references. This means that Cinemachine finds cameras by matching their names to the settings. They are not linked to specific GameObjects.
+The __From__ and __To__ settings are name-based, not references. This means that Cinemachine finds cameras by matching their names to the settings. They are not linked to specific GameObjects.  The built-in dropdowns can be used to select a virtual camera from the current scene, or the name can be typed directly into the text boxes.  If a name does not match any virtual camera in the current scene, the field will be highlighted in yellow.
 
-Use the name \*\*ANY CAMERA\*\* to blend from or to any Virtual Camera.
+Use the reserved name **\*\*ANY CAMERA\*\*** to blend from or to any Virtual Camera.
+
+When Cinemachine begins a transition from one virtual camera to another, it will look in this asset for an entry that matches the upcoming transition, and apply that blend definition.  
+
+- If none is found, then the CinemachineBrain's DefaultBlend setting will apply.  
+- If multiple entries in the Custom Blends asset match the upcoming transition, Cinemachine will choose the one with the strongest specificity.  For example, if blending from vcam1 to vcam2, and the custom blends asset contains an entry for _vcam1-to-AnyCamera_, and another entry for _vcam1-to-vcam2_, then the _vcam1-to-vcam2_ entry will apply.
+- If multiple entries in the Custom Blends asset match the upcoming transition with equally-strong specificity, then the first one found will apply.
 
 ## Properties:
 
