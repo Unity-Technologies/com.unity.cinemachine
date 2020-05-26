@@ -23,6 +23,18 @@ namespace Cinemachine.Editor
                 }
             }
 
+
+            static string kUseTimelneScrubbingCache = "CNMCN_Timeeline_UseTimelineScrubbingCache";
+            public static bool UseTimelneScrubbingCache
+            {
+                get { return EditorPrefs.GetBool(kUseTimelneScrubbingCache, true); }
+                set
+                {
+                    if (UseTimelneScrubbingCache != value)
+                        EditorPrefs.SetBool(kUseTimelneScrubbingCache, value);
+                }
+            }
+        
             private static readonly string kCoreActiveGizmoColourKey = "CNMCN_Core_Active_Gizmo_Colour";
             public static readonly Color kDefaultActiveColour = new Color32(255, 0, 0, 100);
             public static Color ActiveGizmoColour

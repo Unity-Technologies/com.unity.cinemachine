@@ -93,7 +93,7 @@ namespace Cinemachine
             /// <summary>
             /// Get the value of the tenvelope at a given time relative to the envelope start.
             /// </summary>
-            /// <param name="offset">Time in seconds fromt he envelope start</param>
+            /// <param name="offset">Time in seconds from the envelope start</param>
             /// <returns>Envelope amplitude.  This will range from 0...1</returns>
             public float GetValueAt(float offset)
             {
@@ -245,6 +245,7 @@ namespace Cinemachine
             /// otherwise its envelope's decay curve will begin at the cancel time</param>
             public void Cancel(float time, bool forceNoDecay)
             {
+                m_Envelope.m_HoldForever = false;
                 m_Envelope.ChangeStopTime(time - m_StartTime, forceNoDecay);
             }
 
@@ -381,7 +382,11 @@ namespace Cinemachine
         /// <summary>Set this to ignore time scaling so impulses can progress while the game is paused</summary>
         public bool IgnoreTimeScale { get; set; }
 
-        float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : Time.time; } }
+        /// <summary>
+        /// This is the Impulse system's current time.  
+        /// Takes into accoount whether impulse is ignoring time scale.
+        /// </summary>
+        public float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : Time.time; } }
 
         /// <summary>Get a new ImpulseEvent</summary>
         public ImpulseEvent NewImpulseEvent()

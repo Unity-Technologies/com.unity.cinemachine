@@ -117,6 +117,15 @@ namespace Cinemachine
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
         public Matrix4x4 LastBoundsMatrix { get; private set; }
 
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(base.GetMaxDampTime(), m_FrameDamping); 
+        }
+
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for calculating damping.  If less than

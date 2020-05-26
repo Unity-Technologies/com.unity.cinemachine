@@ -52,8 +52,13 @@ namespace Cinemachine
         {
             // Get the state from the camera
             if (m_Camera == null)
+            {
+#if UNITY_2019_2_OR_NEWER
+                TryGetComponent(out m_Camera);
+#else
                 m_Camera = GetComponent<Camera>();
-
+#endif
+            }
             m_State = CameraState.Default;
             m_State.RawPosition = transform.position;
             m_State.RawOrientation = transform.rotation;

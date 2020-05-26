@@ -35,7 +35,7 @@ public class CinemachineShotClipEditor : ClipEditor
 
     public override void OnClipChanged(TimelineClip clip)
     {
-        var shotClip = (CinemachineShot) clip.asset;
+        var shotClip = (CinemachineShot)clip.asset;
         if (shotClip == null)
             return;
         if (shotClip.DisplayName != null && shotClip.DisplayName.Length != 0)
@@ -52,7 +52,6 @@ public class CinemachineShotClipEditor : ClipEditor
         }
     }
 
-#if true && UNITY_2018_3_OR_NEWER
     public override void OnCreate(TimelineClip clip, TrackAsset track, TimelineClip clonedFrom)
     {
         base.OnCreate(clip, track, clonedFrom);
@@ -68,7 +67,55 @@ public class CinemachineShotClipEditor : ClipEditor
             }
         }
     }
-#endif
+
+    GUIContent kUndamped = new GUIContent("UNCACHED");
+
+    public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
+    {
+        base.DrawBackground(clip, region);
+
+        if (TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
+        {
+            var cacheRange = TargetPositionCache.CacheTimeRange;
+            if (!cacheRange.IsEmpty)
+            {
+                // Clip cacheRange to rect
+                float start = (float)region.startTime;
+                float end = (float)region.endTime;
+                cacheRange.Start = Mathf.Max((float)clip.ToLocalTime(cacheRange.Start), start);
+                cacheRange.End = Mathf.Min((float)clip.ToLocalTime(cacheRange.End), end);
+                
+                var r = region.position;
+                var a = r.x + r.width * (cacheRange.Start - start) / (end - start);
+                var b = r.x + r.width * (cacheRange.End - start) / (end - start);
+                r.x = a; r.width = b-a;
+                r.y += r.height; r.height *= 0.2f; r.y -= r.height;
+                EditorGUI.DrawRect(r, new Color(0.1f, 0.2f, 0.8f, 0.6f));
+
+            }
+        }
+        if (!Application.isPlaying && TargetPositionCache.UseCache
+            && !TargetPositionCache.IsRecording 
+            && !TargetPositionCache.CurrentPlaybackTimeValid)
+        {
+            var director = TimelineEditor.inspectedDirector;
+            if (director != null)
+            {
+                var r = region.position;
+
+                var t = clip.ToLocalTime(director.time);
+                var pos = r.x + r.width 
+                    * (float)((t - region.startTime) / (region.endTime - region.startTime));
+    
+                var s = EditorStyles.miniLabel.CalcSize(kUndamped);
+                r.width = s.x; r.x = pos - r.width / 2;
+                var c = GUI.color;
+                GUI.color = Color.yellow;
+                EditorGUI.LabelField(r, kUndamped, EditorStyles.miniLabel);
+                GUI.color = c;
+            }
+        }
+    }
 }
 
 

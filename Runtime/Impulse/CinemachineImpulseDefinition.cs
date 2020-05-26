@@ -110,11 +110,11 @@ namespace Cinemachine
 
         /// <summary>
         /// The speed (m/s) at which the impulse propagates through space.  High speeds 
-        /// allow listeners to react instantaneously, while slower speeds allow listeres in the 
+        /// allow listeners to react instantaneously, while slower speeds allow listeners in the 
         /// scene to react as if to a wave spreading from the source.  
         /// </summary>
         [Tooltip("The speed (m/s) at which the impulse propagates through space.  High speeds "
-            + "allow listeners to react instantaneously, while slower speeds allow listeres in the "
+            + "allow listeners to react instantaneously, while slower speeds allow listeners in the "
             + "scene to react as if to a wave spreading from the source.")]
         public float m_PropagationSpeed = 343;  // speed of sound
 
@@ -129,10 +129,11 @@ namespace Cinemachine
 
         /// <summary>Generate an impulse event at a location in space, 
         /// and broadcast it on the appropriate impulse channel</summary>
-        public void CreateEvent(Vector3 position, Vector3 velocity)
+        public CinemachineImpulseManager.ImpulseEvent CreateEvent(
+            Vector3 position, Vector3 velocity)
         {
             if (m_RawSignal == null || Mathf.Abs(m_TimeEnvelope.Duration) < UnityVectorExtensions.Epsilon)
-                return;
+                return null;
 
             CinemachineImpulseManager.ImpulseEvent e 
                 = CinemachineImpulseManager.Instance.NewImpulseEvent();
@@ -152,6 +153,8 @@ namespace Cinemachine
             e.m_DissipationDistance = m_DissipationDistance;
             e.m_PropagationSpeed = m_PropagationSpeed;
             CinemachineImpulseManager.Instance.AddImpulseEvent(e);
+
+            return e;
         }
 
         // Wrap the raw signal to handle gain, RepeatMode, randomization, and velocity

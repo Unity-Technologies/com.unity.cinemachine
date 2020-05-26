@@ -90,7 +90,7 @@ namespace Cinemachine
                 if (mCachedFollowTargetVcam != null)
                     return mCachedFollowTargetVcam.State.FinalPosition;
                 if (target != null)
-                    return target.position;
+                    return TargetPositionCache.GetTargetPosition(target);
                 return Vector3.zero;
             }
         }
@@ -112,7 +112,7 @@ namespace Cinemachine
                 if (mCachedFollowTargetVcam != null)
                     return mCachedFollowTargetVcam.State.FinalOrientation;
                 if (target != null)
-                    return target.rotation;
+                    return TargetPositionCache.GetTargetRotation(target);
                 return Quaternion.identity;
             }
         }
@@ -162,7 +162,7 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalPosition;
                 if (target != null)
-                    return target.position;
+                    return TargetPositionCache.GetTargetPosition(target);
                 return Vector3.zero;
             }
         }
@@ -179,7 +179,7 @@ namespace Cinemachine
                 if (mCachedLookAtTargetVcam != null)
                     return mCachedLookAtTargetVcam.State.FinalOrientation;
                 if (target != null)
-                    return target.rotation;
+                    return TargetPositionCache.GetTargetRotation(target);
                 return Quaternion.identity;
             }
         }
@@ -240,5 +240,12 @@ namespace Cinemachine
         /// <param name="pos">Worldspace pposition to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
+
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// Only used in editor for timeline scrubbing.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public virtual float GetMaxDampTime() { return 0; }
     }
 }

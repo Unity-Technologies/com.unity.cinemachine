@@ -93,7 +93,7 @@ namespace Cinemachine
         }
 
         // Clean up
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             m_cachedActions = null;
         }

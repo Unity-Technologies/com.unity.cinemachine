@@ -144,7 +144,11 @@ namespace Cinemachine
             get
             {
                 if (m_OutputCamera == null && !Application.isPlaying)
+#if UNITY_2019_2_OR_NEWER
+                    TryGetComponent(out m_OutputCamera);
+#else
                     m_OutputCamera = GetComponent<Camera>();
+#endif
                 return m_OutputCamera;
             }
         }
@@ -320,7 +324,7 @@ namespace Cinemachine
             if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 UpdateFrame0(deltaTime);
 
-            UpdateCurrentLiveCameras();
+            ComputeCurrentBlend(ref mCurrentLiveCameras, 0);
 
             if (m_UpdateMethod == UpdateMethod.FixedUpdate)
             {
@@ -380,7 +384,7 @@ namespace Cinemachine
                 {
                     var frame = mFrameStack[i];
                     if (frame.Active)
-                        return frame.TimeOverrideExpired ? -1 : frame.deltaTimeOverride;
+                        return frame.deltaTimeOverride;
                 }
                 return -1;
             }
@@ -474,11 +478,6 @@ namespace Cinemachine
 
             // Used by Timeline Preview for overriding the current value of deltaTime
             public float deltaTimeOverride;
-            public float timeOfOverride;
-            public bool TimeOverrideExpired
-            {
-                get { return Time.realtimeSinceStartup - timeOfOverride > Time.maximumDeltaTime; }
-            }
         }
 
         // Current game state is always frame 0, overrides are subsequent frames
@@ -529,7 +528,6 @@ namespace Cinemachine
 
             BrainFrame frame = mFrameStack[GetBrainFrame(overrideId)];
             frame.deltaTimeOverride = deltaTime;
-            frame.timeOfOverride = Time.realtimeSinceStartup;
             frame.blend.CamA = camA;
             frame.blend.CamB = camB;
             frame.blend.BlendCurve = AnimationCurve.Linear(0, 0, 1, 1);
@@ -662,11 +660,21 @@ namespace Cinemachine
             }
         }
 
-        private void UpdateCurrentLiveCameras()
+        /// <summary>
+        /// Used internally to compute the currrent blend, taking into account
+        /// the in-game camera and all the active overrides.  Caller may optionally
+        /// exclude n topmost overrides.
+        /// </summary>
+        /// <param name="outputBlend">Receives the nested blend</param>
+        /// <param name="numTopLayersToExclude">Optionaly exclude the last number 
+        /// of overrides from the blend</param>
+        public void ComputeCurrentBlend(
+            ref CinemachineBlend outputBlend, int numTopLayersToExclude)
         {
             // Resolve the current working frame states in the stack
             int lastActive = 0;
-            for (int i = 0; i < mFrameStack.Count; ++i)
+            int topLayer = Mathf.Max(1, mFrameStack.Count - numTopLayersToExclude);
+            for (int i = 0; i < topLayer; ++i)
             {
                 BrainFrame frame = mFrameStack[i];
                 if (i == 0 || frame.Active)
@@ -703,11 +711,11 @@ namespace Cinemachine
                 }
             }
             var workingBlend = mFrameStack[lastActive].workingBlend;
-            mCurrentLiveCameras.CamA = workingBlend.CamA;
-            mCurrentLiveCameras.CamB = workingBlend.CamB;
-            mCurrentLiveCameras.BlendCurve = workingBlend.BlendCurve;
-            mCurrentLiveCameras.Duration = workingBlend.Duration;
-            mCurrentLiveCameras.TimeInBlend = workingBlend.TimeInBlend;
+            outputBlend.CamA = workingBlend.CamA;
+            outputBlend.CamB = workingBlend.CamB;
+            outputBlend.BlendCurve = workingBlend.BlendCurve;
+            outputBlend.Duration = workingBlend.Duration;
+            outputBlend.TimeInBlend = workingBlend.TimeInBlend;
         }
 
         /// <summary>
@@ -810,7 +818,11 @@ namespace Cinemachine
     #if CINEMACHINE_HDRP
                     if (state.Lens.IsPhysicalCamera)
                     {
+#if UNITY_2019_2_OR_NEWER
+                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
+#else
                         var hda = cam.GetComponent<HDAdditionalCameraData>();
+#endif
                         if (hda != null)
                         {
                             hda.physicalParameters.iso = state.Lens.Iso;

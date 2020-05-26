@@ -180,6 +180,15 @@ namespace Cinemachine
             m_CameraOrientationPrevFrame = rot;
         }
         
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(m_HorizontalDamping, m_VerticalDamping); 
+        }
+
         public override void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime)
         {
             if (IsValid && curState.HasLookAt)

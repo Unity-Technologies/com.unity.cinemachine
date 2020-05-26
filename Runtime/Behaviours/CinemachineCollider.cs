@@ -152,9 +152,19 @@ namespace Cinemachine
         /// target obstruction</returns>
         public bool CameraWasDisplaced(ICinemachineCamera vcam)
         {
-            return GetExtraState<VcamExtraState>(vcam).colliderDisplacement > 0;
+            return GetCameraDisplacementDistance(vcam) > 0;
         }
 
+        /// <summary>See how far the virtual camera wa moved nby the collider</summary>
+        /// <param name="vcam">The virtual camera in question.  This might be different from the
+        /// virtual camera that owns the collider, in the event that the camera has children</param>
+        /// <returns>True if the virtual camera has been displaced due to collision or
+        /// target obstruction</returns>
+        public float GetCameraDisplacementDistance(ICinemachineCamera vcam)
+        {
+            return GetExtraState<VcamExtraState>(vcam).colliderDisplacement;
+        }
+        
         private void OnValidate()
         {
             m_DistanceLimit = Mathf.Max(0, m_DistanceLimit);
@@ -238,6 +248,15 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
+        }
+        
         /// <summary>Callback to do the collision resolution and shot evaluation</summary>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,

@@ -118,6 +118,13 @@ namespace Cinemachine
         public virtual bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) { return false; }
 
+        /// <summary>
+        /// Report maximum damping time needed for this extension.
+        /// Only used in editor for timeline scrubbing.
+        /// </summary>
+        /// <returns>Highest damping setting in this extension</returns>
+        public virtual float GetMaxDampTime() { return 0; }
+
         /// <summary>Because extensions can be placed on manager cams and will in that
         /// case be called for all the vcam children, vcam-specific state information
         /// should be stored here.  Just define a class to hold your state info

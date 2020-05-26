@@ -231,13 +231,14 @@ namespace Cinemachine
             return b;
         }
 
-        private static BoundingSphere WeightedMemberBounds(Target t, Vector3 avgPos, float maxWeight)
+        private static BoundingSphere WeightedMemberBounds(
+            Target t, Vector3 avgPos, float maxWeight)
         {
             float w = 0;
             Vector3 pos = avgPos;
             if (t.target != null)
             {
-                pos = t.target.position;
+                pos = TargetPositionCache.GetTargetPosition(t.target);
                 w = Mathf.Max(0, t.weight);
                 if (maxWeight > UnityVectorExtensions.Epsilon && w < maxWeight)
                     w /= maxWeight;
@@ -289,7 +290,8 @@ namespace Cinemachine
                 if (m_Targets[i].target != null)
                 {
                     weight += m_Targets[i].weight;
-                    pos += m_Targets[i].target.position * m_Targets[i].weight;
+                    pos += TargetPositionCache.GetTargetPosition(m_Targets[i].target) 
+                        * m_Targets[i].weight;
                     maxWeight = Mathf.Max(maxWeight, m_Targets[i].weight);
                 }
             }
@@ -314,7 +316,8 @@ namespace Cinemachine
                 if (m_Targets[i].target != null)
                 {
                     float scaledWeight = m_Targets[i].weight / mMaxWeight;
-                    r *= Quaternion.Slerp(Quaternion.identity, m_Targets[i].target.rotation, scaledWeight);
+                    var rot = TargetPositionCache.GetTargetRotation(m_Targets[i].target);
+                    r *= Quaternion.Slerp(Quaternion.identity, rot, scaledWeight);
                     weightedAverage += scaledWeight;
                 }
             }

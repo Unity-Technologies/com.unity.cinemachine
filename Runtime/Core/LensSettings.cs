@@ -124,7 +124,11 @@ namespace Cinemachine
                 if (lens.IsPhysicalCamera)
                 {
                     var pc = new HDPhysicalCamera();
+#if UNITY_2019_2_OR_NEWER
+                    fromCamera.TryGetComponent<HDAdditionalCameraData>(out var hda);
+#else
                     var hda = fromCamera.GetComponent<HDAdditionalCameraData>();
+#endif
                     if (hda != null)
                         pc = hda.physicalParameters;
                     lens.Iso = pc.iso;
