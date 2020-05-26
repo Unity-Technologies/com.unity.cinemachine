@@ -67,7 +67,8 @@ namespace Cinemachine
                         if (!string.IsNullOrEmpty(toCameraName)
                             && blendParams.m_To == toCameraName)
                         {
-                            anyToMe = blendParams.m_Blend;
+                            if (!gotAnyToMe)
+                                anyToMe = blendParams.m_Blend;
                             gotAnyToMe = true;
                         }
                         else if (blendParams.m_To == kBlendFromAnyCameraLabel)
@@ -77,7 +78,8 @@ namespace Cinemachine
                              && !string.IsNullOrEmpty(fromCameraName)
                              && blendParams.m_From == fromCameraName)
                     {
-                        meToAny = blendParams.m_Blend;
+                        if (!gotMeToAny)
+                            meToAny = blendParams.m_Blend;
                         gotMeToAny = true;
                     }
                 }
