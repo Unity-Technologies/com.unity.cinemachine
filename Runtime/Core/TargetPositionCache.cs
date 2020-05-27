@@ -52,6 +52,7 @@ namespace Cinemachine
 
             public float StartTime;
             public float StepSize;
+            public int Count => m_Cache.Count;
  
             List<Item> m_Cache;
 
@@ -72,12 +73,12 @@ namespace Cinemachine
                 else
                 {
                     int index = Mathf.FloorToInt((time - StartTime) / StepSize);
+                    var range = (float)(index - lastIndex)
+                        + ((time - StartTime) - (index * StepSize)) / StepSize;
                     var lastItem = m_Cache[lastIndex];
                     var lastTime = StartTime + lastIndex * StepSize;
                     for (int i = lastIndex + 1; i <= index; ++i)
-                        m_Cache.Add(Item.Lerp(
-                            lastItem, item, 
-                            (float)(i - lastIndex) / (float)(index - lastIndex)));
+                        m_Cache.Add(Item.Lerp(lastItem, item, (float)(i - lastIndex) / range));
                 }
             }
 
@@ -108,18 +109,20 @@ namespace Cinemachine
                 public int CompareTo(RecordingItem other) { return Time.CompareTo(other.Time); }
             }
             List<RecordingItem> RawItems = new List<RecordingItem>();
+            RecordingItem LastRawItem;
 
-            const float kResolution = 0.033f;
+            const float kResolution = 1 / 60.0f;
 
             public void AddRawItem(float time, Transform target)
             {
                 var n = RawItems.Count;
+                LastRawItem = new RecordingItem
+                {
+                    Time = time,
+                    Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
+                };
                 if (n == 0 || Mathf.Abs(RawItems[n-1].Time - time) >= kResolution)
-                    RawItems.Add(new RecordingItem
-                    {
-                        Time = time,
-                        Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
-                    });
+                    RawItems.Add(LastRawItem);
             }
 
             public void CreateCurves()
@@ -128,17 +131,25 @@ namespace Cinemachine
 
                 int numItems = RawItems.Count;
                 float startTime = numItems == 0 ? 0 : RawItems[0].Time;
-                float endTime = numItems == 0 ? 0 : RawItems[numItems-1].Time;
+                float endTime = numItems == 0 ? 0 : LastRawItem.Time;
                 Curve = new CacheCurve(startTime, endTime, kResolution);
 
-                float time = float.MaxValue;
+                var lastAddedItem = new RecordingItem { Time = float.MaxValue };
                 for (int i = 0; i < numItems; ++i)
                 {
                     var item = RawItems[i];
-                    if (Mathf.Abs(item.Time - time) < kResolution)
+                    if (Mathf.Abs(item.Time - lastAddedItem.Time) < kResolution)
                         continue;
-                    time = item.Time;
-                    Curve.Add(item.Item, time);
+                    Curve.Add(item.Item, item.Time);
+                    lastAddedItem = item;
+                }
+                if (numItems > 0)
+                {
+                    var r = LastRawItem.Time - lastAddedItem.Time;
+                    var step = kResolution * 1.9f;
+                    if (r > 0.0001f)
+                        Curve.Add(CacheCurve.Item.Lerp(lastAddedItem.Item, LastRawItem.Item, step / r), 
+                            lastAddedItem.Time + step);
                 }
                 RawItems.Clear();
             }
