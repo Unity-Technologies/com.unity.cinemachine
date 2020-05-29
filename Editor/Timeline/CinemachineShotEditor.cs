@@ -27,7 +27,7 @@ using Cinemachine;
         }
 
 #if UNITY_2019_2_OR_NEWER
-        static string kUseScrubbingCache = "CNMCN_Timeeline_UseTimelineScrubbingCache";
+        static string kUseScrubbingCache = "CNMCN_Timeline_UseScrubbingCache";
         public static bool UseScrubbingCache
         {
             get { return EditorPrefs.GetBool(kUseScrubbingCache, true); }
@@ -41,12 +41,27 @@ using Cinemachine;
             }
         }
 
+        static string kScrubbingCacheResolution = "CNMCN_Timeline_ScrubbingCacheResolution";
+        public static int ScrubbingCacheResolution
+        {
+            get { return EditorPrefs.GetInt(kScrubbingCacheResolution, TargetPositionCache.kMaxResolution); }
+            set
+            {
+                if (ScrubbingCacheResolution != value)
+                {
+                    EditorPrefs.SetInt(kScrubbingCacheResolution, value);
+                    TargetPositionCache.Resolution = value;
+                }
+            }
+        }
+
         [InitializeOnLoad]
         public class SyncCacheEnabledSetting
         {
             static SyncCacheEnabledSetting()
             {
                 TargetPositionCache.UseCache = UseScrubbingCache;
+                TargetPositionCache.Resolution = ScrubbingCacheResolution;
             }
         }
 #endif
@@ -81,6 +96,10 @@ using Cinemachine;
             "For preview scrubbing, use a cache to approximate damping "
                 + "and noise playback.  Cache is built when timeline is played forward, "
                 + "and used when timeline is scrubbed within the cached zone. "
+                + "This is a global setting.");
+        private static readonly GUIContent kScrubbingCacheResolutionLabel = new GUIContent(
+            " ",
+            "Cache resolution: higher numbers improve accuracy but may degrade performance.  "
                 + "This is a global setting.");
 #endif
 
@@ -119,8 +138,17 @@ using Cinemachine;
                 EditorGUI.Toggle(r, kScrubbingCacheLabel, false);
             else
                 UseScrubbingCache = EditorGUI.Toggle(r, kScrubbingCacheLabel, UseScrubbingCache);
-            r.x += r.width; r.width = rect.width - r.width;
-            EditorGUI.LabelField(r, "(experimental)");
+            if (UseScrubbingCache)
+            {
+                var lw = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight;
+                r.x += r.width; r.width = rect.width - r.width;
+                TargetPositionCache.Resolution = EditorGUI.IntSlider(
+                    r, kScrubbingCacheResolutionLabel, 
+                    TargetPositionCache.Resolution, 1, TargetPositionCache.kMaxResolution);
+                EditorGUIUtility.labelWidth = lw;
+            }
+            //EditorGUI.LabelField(r, "(experimental)");
             GUI.enabled = true;
 #endif
 

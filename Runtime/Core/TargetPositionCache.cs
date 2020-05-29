@@ -7,6 +7,12 @@ namespace Cinemachine
     internal class TargetPositionCache
     {
         public static bool UseCache { get; set; }
+
+        public static int kMaxResolution = 5;
+        public static int Resolution { get; set; }
+
+        public static float CacheStepSize => kMaxResolution / (Mathf.Max(1, (float)Resolution) * 60.0f);
+
         public enum Mode { Disabled, Record, Playback }
         
         static Mode m_CacheMode = Mode.Disabled;
@@ -111,8 +117,6 @@ namespace Cinemachine
             List<RecordingItem> RawItems = new List<RecordingItem>();
             RecordingItem LastRawItem;
 
-            const float kResolution = 1 / 60.0f;
-
             public void AddRawItem(float time, Transform target)
             {
                 var n = RawItems.Count;
@@ -121,7 +125,7 @@ namespace Cinemachine
                     Time = time,
                     Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
                 };
-                if (n == 0 || Mathf.Abs(RawItems[n-1].Time - time) >= kResolution)
+                if (n == 0 || Mathf.Abs(RawItems[n-1].Time - time) >= CacheStepSize)
                     RawItems.Add(LastRawItem);
             }
 
@@ -132,13 +136,13 @@ namespace Cinemachine
                 int numItems = RawItems.Count;
                 float startTime = numItems == 0 ? 0 : RawItems[0].Time;
                 float endTime = numItems == 0 ? 0 : LastRawItem.Time;
-                Curve = new CacheCurve(startTime, endTime, kResolution);
+                Curve = new CacheCurve(startTime, endTime, CacheStepSize);
 
                 var lastAddedItem = new RecordingItem { Time = float.MaxValue };
                 for (int i = 0; i < numItems; ++i)
                 {
                     var item = RawItems[i];
-                    if (Mathf.Abs(item.Time - lastAddedItem.Time) < kResolution)
+                    if (Mathf.Abs(item.Time - lastAddedItem.Time) < CacheStepSize)
                         continue;
                     Curve.Add(item.Item, item.Time);
                     lastAddedItem = item;
@@ -146,7 +150,7 @@ namespace Cinemachine
                 if (numItems > 0)
                 {
                     var r = LastRawItem.Time - lastAddedItem.Time;
-                    var step = kResolution * 1.9f;
+                    var step = CacheStepSize * 1.9f;
                     if (r > 0.0001f)
                         Curve.Add(CacheCurve.Item.Lerp(lastAddedItem.Item, LastRawItem.Item, step / r), 
                             lastAddedItem.Time + step);
@@ -240,6 +244,8 @@ namespace Cinemachine
                 }
                 return target.position;
             }
+            if (entry.Curve == null)
+                return target.position;
             return entry.Curve.Evaluate(CurrentTime).Pos;
         }
 

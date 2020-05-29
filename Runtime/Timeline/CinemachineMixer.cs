@@ -59,7 +59,7 @@ using System.Collections.Generic;
                     }
                 }
                 // Impose upper limit on damping time, to avoid simulating too many frames
-                return Mathf.Min(maxDampingTime, 2.0f); 
+                return Mathf.Min(maxDampingTime, 4.0f); 
             }
 
             public void ScrubToHere(
@@ -72,17 +72,19 @@ using System.Collections.Generic;
                 if (cacheMode != TargetPositionCache.Mode.Playback)
                     return;
             
-                const float kStepsPerSecond = 30;
-                const float kStepSize = 1.0f / kStepsPerSecond;
+                float stepSize = TargetPositionCache.CacheStepSize;
 
-                int numSteps = Mathf.CeilToInt(GetMaxDampTime() * kStepsPerSecond);
-                float endTime = TargetPositionCache.CurrentTime;
-
+                var up = brain.DefaultWorldUp;
+                var endTime = TargetPositionCache.CurrentTime;
+                var startTime = Mathf.Max(
+                    TargetPositionCache.CacheTimeRange.Start, endTime - GetMaxDampTime());
+                var numSteps = Mathf.FloorToInt((endTime - startTime) / stepSize);
                 for (int step = numSteps; step >= 0; --step)
                 {
-                    var t = endTime - step * kStepSize;
-                    var deltaTime = (step == numSteps) ? -1 : kStepSize;
+                    var t = Mathf.Max(startTime, endTime - step * stepSize);
                     TargetPositionCache.CurrentTime = t;
+                    var deltaTime = (step == numSteps) ? -1 
+                        : (t - startTime < stepSize ? t - startTime : stepSize);
 
                     // Update all relevant vcams, leaf-most first
                     for (int i = mAllCamerasForScrubbing.Count - 1; i >= 0; --i)
@@ -91,7 +93,11 @@ using System.Collections.Generic;
                         for (int j = sublist.Count - 1; j >= 0; --j)
                         {
                             var vcam = sublist[j];
-                            vcam.InternalUpdateCameraState(brain.DefaultWorldUp, deltaTime);
+                            vcam.InternalUpdateCameraState(up, deltaTime);
+                            if (deltaTime < 0)
+                                vcam.ForceCameraPosition(
+                                    TargetPositionCache.GetTargetPosition(vcam.transform), 
+                                    TargetPositionCache.GetTargetRotation(vcam.transform));
                         }
                     }
                 }
