@@ -24,7 +24,7 @@ If you already installed Cinemachine from the Unity Asset Store, you can upgrade
 
 To upgrade to the Cinemachine Package:
 
-1. In Unity Editor, 2018.1 or later, open your project.
+1. In Unity Editor, 2018.4.17f1 or later, open your project.
 
 2. Save the current Scene you are working on.
 
@@ -36,16 +36,19 @@ To upgrade to the Cinemachine Package:
 
 ## Requirements
 
-Cinemachine has no external dependencies. Just install it and start using it. If you are also using the Post Processing Stack (version 2), then adapter modules are provided - protected by `ifdef` directives which auto-define if the presence of the Post Processing Stack is detected.
+Cinemachine has no external dependencies. Just install it and start using it. If you are also using the Post Processing Stack (version 2), then adapter modules are provided - protected by `ifdef` directives which auto-define if the presence of the Post Processing Stack is detected.  
 
-This Cinemachine version 2.4 is compatible with the following versions of the Unity Editor:
+There are similar `ifdef`-proteced behaviours for other packages, such as HDRP Volumes, Timeline, and Pixel-Perfect.
 
-* 2017.1 and later
+This Cinemachine version 2.6 is compatible with the following versions of the Unity Editor:
+
+* 2018.4.17f1 and later
 
 ## Revision History
 
 | **Date:** | **Reason:** |
 |:---|:---|
+| May 01, 2020 | Updated for 2.6. |
 | Nov 15, 2019 | Updated for 2.4. Restructured Table of Contents and added Pixel Perfect extension. |
 | July 3, 2018 | Updated for 2.2.6. |
 | February 15, 2018 | Updated for 2.1.11. |

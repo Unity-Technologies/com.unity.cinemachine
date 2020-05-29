@@ -34,7 +34,8 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | | _Inherit Position_ | When this virtual camera goes Live, attempt to force the position to be the same as the current position of the Unity Camera, allowing the virtual camera to apply its damping to accomplish the blend |
 | | _Camera Activated_ | This event is invoked when the Virtual Camera becomes live.  Attach custom handlers here if you need them. |
 | __Y Axis, X Axis__ || The vertical and horizontal axes for blending between rigs. For Y Axis the Value range is 0 to 1 and represents the blend position between the Top, Middle, and Bottom rigs. The value 0.5 represents the middle rig.  For X Axis, the Value is the angular deviation (in degrees) of the camera from directly behind the target. |
-| | _Max Speed_ | The maximum speed of this axis in units/second. |
+| | _Max Speed_ | The maximum speed of this axis in degrees/second, or the multipler for the input value if Speed Mode is set to _InputValueGain_. |
+| | _Speed Mode_ | How the axis responds to input.  _MaxSpeed_ (the default) clamps the maximum speed at which the axis can change, regardless of the input.  _Input Value Gain_ multiplies the input value by MaxSpeed. |
 | | _Accel Time_ | The amount of time in seconds to accelerate to Max Speed. |
 | | _Decel Time_ | The amount of time in seconds to decelerate to zero. |
 | | _Input Axis Name_ | The name of this axis as specified in Unity Input manager. Setting to an empty string disables the automatic updating of the axis. |

@@ -6,6 +6,8 @@ Storyboard simplifies animatics for your team. Start with still images to pre-vi
 
 Use the properties in the Storyboard component to hide and show the image to compare it to the actual rendering of the Unity camera.
 
+Storyboards can be muted at a global level - completely disabling them.  To toggle this, go to the Cinemachine main menu and select _Storyboard Global Mute_.
+
 ## Properties:
 
 | **Property:** || **Function:** |

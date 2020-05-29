@@ -2,11 +2,11 @@
 
 This Virtual Camera __Body__ algorithm moves the camera in a fixed screen-space relationship to the __Follow__ target. You can also specify offsets, damping, and composition rules. __Framing Transposer__ only changes the camera’s position in space. It does not re-orient or otherwise aim the camera.
 
-__Framing Transposer__ is designed for 2D and orthographic cameras. But it works equally well with perspective cameras and 3D environments.
+__Framing Transposer__ is designed for 2D and orthographic cameras. But it works also with perspective cameras and 3D environments.
 
 This algorithm first moves the camera along the camera Z axis until the __Follow__ target is at the desired distance from the camera’s X-Y plane. It then moves the camera in its X-Y plane until the __Follow__ target is at the desired point on the camera’s screen.
 
-**Note**: To use __Framing Transposer__, the __Look At__ property must be empty.
+**Note**: __Framing Transposer__ ignores the LookAt target - only the Follow target is used.
 
 If the __Follow__ target is a [Target Group](CinemachineTargetGroup.html), then additional properties are available to frame the entire group.
 
@@ -20,6 +20,7 @@ If the __Follow__ target is a [Target Group](CinemachineTargetGroup.html), then 
 | __X Damping__ || How responsively the camera tries to maintain the offset in the x-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  Using different settings per axis can yield a wide range of camera behaviors. |
 | __Y Damping__ || How responsively the camera tries to maintain the offset in the y-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.   |
 | __Z Damping__ || How responsively the camera tries to maintain the offset in the z-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.   |
+| __Target Movement Only__ || If this is enabled, then damping only applies to the motion of the target.  Camera rotation changes will bypass damping. |
 | __Screen X__ || Horizontal screen position for target. The camera moves to position the tracked object here. |
 | __Screen Y__ || Vertical screen position for target, The camera moves to position the tracked object here. |
 | __Camera Distance__ || The distance to maintain along the camera axis from the Follow target. |

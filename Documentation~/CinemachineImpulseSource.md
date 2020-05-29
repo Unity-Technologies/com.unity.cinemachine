@@ -82,3 +82,4 @@ These properties define a zone in the Scene. The impulses from this Impulse Sour
 ||Soft Decay|The signal dissipates slowly at the beginning of the **Dissipation Distance**, more quickly in the middle, and slowly again as it reaches the end.|
 || Exponential Decay|The signal dissipates very quickly at the beginning of the **Dissipation Distance**, then more and more slowly as it reaches the end.|
 |**Dissipation Distance**||Set the distance beyond the impact radius over which the signal decays from full strength to nothing.|
+|**Propagation Speed**||The speed (m/s) at which the impulse propagates through space.  High speeds allow listeners to react instantaneously, while slower speeds allow listeners in the scene to react as if to a wave spreading from the source. |
