@@ -92,10 +92,10 @@ using Cinemachine;
                 + "This is a global setting");
 #if UNITY_2019_2_OR_NEWER
         private static readonly GUIContent kScrubbingCacheLabel = new GUIContent(
-            "Use Scrubbing Cache",
-            "For preview scrubbing, use a cache to approximate damping "
-                + "and noise playback.  Cache is built when timeline is played forward, "
-                + "and used when timeline is scrubbed within the cached zone. "
+            "Use Scrub Bubble",
+            "For preview scrubbing, pre-simulate each frame to approximate damping "
+                + "and noise playback.  Target position cache is built when timeline is "
+                + "played forward, and used when timeline is scrubbed within the indicated zone. "
                 + "This is a global setting.");
         private static readonly GUIContent kScrubbingCacheResolutionLabel = new GUIContent(
             " ",
