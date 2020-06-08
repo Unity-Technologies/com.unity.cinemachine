@@ -1,0 +1,10 @@
+{
+    "Exceptions":
+    [
+        {
+             "ValidationTest": "API Validation",
+             "ExceptionError": "System.InvalidCastException: Specified cast is not valid.",
+             "PackageVersion": "2.6.0"
+       }
+    ]
+}
