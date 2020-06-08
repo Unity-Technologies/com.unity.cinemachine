@@ -12,6 +12,8 @@ namespace Cinemachine.Utility
 
         public float Smoothing { get; set; }
 
+        public bool IsEmpty() { return !m_HavePos; }
+
         public void ApplyTransformDelta(Vector3 positionDelta) { m_Pos += positionDelta; }
 
         public void Reset() 

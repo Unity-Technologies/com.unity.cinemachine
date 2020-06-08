@@ -129,7 +129,15 @@ namespace Cinemachine
 
         /// <summary>Generate an impulse event at a location in space, 
         /// and broadcast it on the appropriate impulse channel</summary>
-        public CinemachineImpulseManager.ImpulseEvent CreateEvent(
+        public void CreateEvent(
+            Vector3 position, Vector3 velocity)
+        {
+            CreateAndReturnEvent(position, velocity);
+        }
+        
+        /// <summary>Generate an impulse event at a location in space, 
+        /// and broadcast it on the appropriate impulse channel</summary>
+        public CinemachineImpulseManager.ImpulseEvent CreateAndReturnEvent(
             Vector3 position, Vector3 velocity)
         {
             if (m_RawSignal == null || Mathf.Abs(m_TimeEnvelope.Duration) < UnityVectorExtensions.Epsilon)

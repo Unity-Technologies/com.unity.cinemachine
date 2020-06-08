@@ -10,7 +10,12 @@ namespace Cinemachine.PostFX
 #if !CINEMACHINE_POST_PROCESSING_V2
     // Workaround for Unity scripting bug
     [AddComponentMenu("")] // Hide in menu
-    public class CinemachinePostProcessing : MonoBehaviour {}
+    public class CinemachinePostProcessing : CinemachineExtension 
+    {
+        protected override void PostPipelineStageCallback(
+            CinemachineVirtualCameraBase vcam,
+            CinemachineCore.Stage stage, ref CameraState state, float deltaTime) {}
+    }
 #else
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
