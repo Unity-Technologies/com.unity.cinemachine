@@ -1,3 +1,6 @@
+<size=20><b>Version 2.6.1</b></size>
+- Bugfix: vertical group composition was not composing properly
+
 <size=20><b>Version 2.6.0</b></size>
 - Added AxisState.IInputProvider API to better support custom input systems
 - Added CinemachineInpiutProvider behaviour to support Unity's new input system

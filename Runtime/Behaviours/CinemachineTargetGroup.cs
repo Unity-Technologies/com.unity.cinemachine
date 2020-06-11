@@ -415,10 +415,10 @@ namespace Cinemachine
             var pMin = b.min;
             var pMax = b.max;
             minAngles = new Vector2(
-                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMin.y, 1), Vector3.right),
+                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMin.y, 1), Vector3.left),
                 Vector3.SignedAngle(Vector3.forward, new Vector3(pMin.x, 0, 1), Vector3.up));
             maxAngles = new Vector2(
-                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMax.y, 1), Vector3.right),
+                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMax.y, 1), Vector3.left),
                 Vector3.SignedAngle(Vector3.forward, new Vector3(pMax.x, 0, 1), Vector3.up));
         }
     }
