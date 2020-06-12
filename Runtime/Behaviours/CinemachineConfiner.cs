@@ -70,6 +70,7 @@ namespace Cinemachine
         [Range(0, 10)]
         public float m_CornerDamping = 0;
         private float m_CornerAngleTreshold = 10f;
+        private bool m_Cornerring = false;
 
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
@@ -167,8 +168,9 @@ namespace Cinemachine
                     if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                     { 
                         var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                        if (m_CornerDamping > 0 && (displacementAngle > m_CornerAngleTreshold))
+                        if (m_CornerDamping > 0 && (m_Cornerring || displacementAngle > m_CornerAngleTreshold))
                         {
+                            m_Cornerring = displacementAngle > 1f;
                             Vector3 delta = displacement - extra.m_previousDisplacement;
                             delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
                             displacement = extra.m_previousDisplacement + delta;
