@@ -167,7 +167,6 @@ namespace Cinemachine
                     if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                     { 
                         var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                        Debug.Log(displacementAngle);
                         if (m_CornerDamping > 0 && (displacementAngle > m_CornerAngleTreshold))
                         {
                             Vector3 delta = displacement - extra.m_previousDisplacement;
