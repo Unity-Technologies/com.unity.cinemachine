@@ -69,6 +69,9 @@ namespace Cinemachine
                  + "Higher numbers produce more smooth cornering.")]
         [Range(0, 10)]
         public float m_CornerDamping = 0;
+
+        [Tooltip("After going through the corner should the camera return smoothly or snap?")]
+        public bool m_SnapFromCorner = true;
         private float m_CornerAngleTreshold = 10f;
         private bool m_Cornerring = false;
 
@@ -170,7 +173,9 @@ namespace Cinemachine
                         var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
                         if (m_CornerDamping > 0 && (m_Cornerring || displacementAngle > m_CornerAngleTreshold))
                         {
-                            m_Cornerring = displacementAngle > 1f;
+                            if (!m_SnapFromCorner) {
+                                m_Cornerring = displacementAngle > 1f;
+                            }
                             Vector3 delta = displacement - extra.m_previousDisplacement;
                             delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
                             displacement = extra.m_previousDisplacement + delta;
