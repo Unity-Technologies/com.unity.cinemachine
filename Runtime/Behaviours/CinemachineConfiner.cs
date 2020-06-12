@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Cinemachine
 {
@@ -63,6 +64,17 @@ namespace Cinemachine
             + "Higher numbers are more gradual.")]
         [Range(0, 10)]
         public float m_Damping = 0;
+
+        [Tooltip("Damping applied automatically around corners to avoid jumps.  "
+                 + "Higher numbers produce more smooth cornering.")]
+        [Range(0, 10)]
+        public float m_CornerDamping = 0;
+
+        [Tooltip("Corner angle threshold. Determines ")]
+        [Range(0, 180)]
+        public float m_CornerAngleTreshold = 20f;
+
+        private float m_previousDisplacementAngle;
 
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
@@ -155,13 +167,31 @@ namespace Cinemachine
                         displacement = ConfineScreenEdges(vcam, ref state);
                     else
                         displacement = ConfinePoint(state.CorrectedPosition);
+                    
+                   
+                    if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
+                    { 
+                        var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
+                        Debug.Log(displacementAngle);
+                        Debug.Log(m_previousDisplacementAngle);
+                        if (m_CornerDamping > 0 && (displacementAngle > m_CornerAngleTreshold || 
+                                                    m_previousDisplacementAngle > Epsilon))
+                        {
+                            m_previousDisplacementAngle = (m_previousDisplacementAngle + displacementAngle) / 2f;
 
-                    if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-                    {
-                        Vector3 delta = displacement - extra.m_previousDisplacement;
-                        delta = Damper.Damp(delta, m_Damping, deltaTime);
-                        displacement = extra.m_previousDisplacement + delta;
+                            Vector3 delta = displacement - extra.m_previousDisplacement;
+                            delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
+                            displacement = extra.m_previousDisplacement + delta;
+                        }
+                        
+                        if (m_Damping > 0)
+                        {
+                            Vector3 delta = displacement - extra.m_previousDisplacement;
+                            delta = Damper.Damp(delta, m_Damping, deltaTime);
+                            displacement = extra.m_previousDisplacement + delta;
+                        }
                     }
+                    
                     extra.m_previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
                     extra.confinerDisplacement = displacement.magnitude;
