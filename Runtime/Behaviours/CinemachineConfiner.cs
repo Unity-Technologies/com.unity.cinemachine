@@ -74,7 +74,7 @@ namespace Cinemachine
         [Range(0, 180)]
         public float m_CornerAngleTreshold = 20f;
 
-        private float m_previousDisplacementAngle;
+        private float m_prevDeltaSqrMag;
 
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
@@ -172,19 +172,21 @@ namespace Cinemachine
                     if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                     { 
                         var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                        Debug.Log(displacementAngle);
-                        Debug.Log(m_previousDisplacementAngle);
-                        if (m_CornerDamping > 0 && (displacementAngle > m_CornerAngleTreshold || 
-                                                    m_previousDisplacementAngle > Epsilon))
+                        if (m_CornerDamping > 0 && (displacementAngle > m_CornerAngleTreshold ||
+                                                    m_prevDeltaSqrMag > Epsilon))
                         {
-                            m_previousDisplacementAngle = (m_previousDisplacementAngle + displacementAngle) / 2f;
-
                             Vector3 delta = displacement - extra.m_previousDisplacement;
-                            delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
+                            m_prevDeltaSqrMag = delta.sqrMagnitude;
+                            var DampingFinisher = 1f;
+                            if (displacementAngle <= Epsilon)
+                            {
+                                DampingFinisher = m_prevDeltaSqrMag;
+                            }
+                            Debug.Log(DampingFinisher);
+                            delta = Damper.Damp(delta, m_CornerDamping * DampingFinisher, deltaTime);
                             displacement = extra.m_previousDisplacement + delta;
                         }
-                        
-                        if (m_Damping > 0)
+                        else if (m_Damping > 0)
                         {
                             Vector3 delta = displacement - extra.m_previousDisplacement;
                             delta = Damper.Damp(delta, m_Damping, deltaTime);
