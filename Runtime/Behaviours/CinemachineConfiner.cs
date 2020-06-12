@@ -7,7 +7,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using System;
-using System.Runtime.CompilerServices;
 
 namespace Cinemachine
 {
