@@ -69,12 +69,7 @@ namespace Cinemachine
                  + "Higher numbers produce more smooth cornering.")]
         [Range(0, 10)]
         public float m_CornerDamping = 0;
-
-        [Tooltip("Corner angle threshold. Determines ")]
-        [Range(0, 180)]
-        public float m_CornerAngleTreshold = 20f;
-
-        private float m_prevDeltaSqrMag;
+        private float m_CornerAngleTreshold = 10f;
 
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
@@ -172,18 +167,11 @@ namespace Cinemachine
                     if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                     { 
                         var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                        if (m_CornerDamping > 0 && (displacementAngle > m_CornerAngleTreshold ||
-                                                    m_prevDeltaSqrMag > Epsilon))
+                        Debug.Log(displacementAngle);
+                        if (m_CornerDamping > 0 && (displacementAngle > m_CornerAngleTreshold))
                         {
                             Vector3 delta = displacement - extra.m_previousDisplacement;
-                            m_prevDeltaSqrMag = delta.sqrMagnitude;
-                            var DampingFinisher = 1f;
-                            if (displacementAngle <= Epsilon)
-                            {
-                                DampingFinisher = m_prevDeltaSqrMag;
-                            }
-                            Debug.Log(DampingFinisher);
-                            delta = Damper.Damp(delta, m_CornerDamping * DampingFinisher, deltaTime);
+                            delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
                             displacement = extra.m_previousDisplacement + delta;
                         }
                         else if (m_Damping > 0)
