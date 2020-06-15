@@ -9,6 +9,7 @@ using System.Linq;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVirtualCamera))]
+    [CanEditMultipleObjects]
     internal class CinemachineVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {

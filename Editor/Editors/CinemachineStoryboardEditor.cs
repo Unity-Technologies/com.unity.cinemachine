@@ -48,6 +48,7 @@ namespace Cinemachine.Editor
     }
 
     [CustomEditor(typeof(CinemachineStoryboard))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
         public void OnDisable()

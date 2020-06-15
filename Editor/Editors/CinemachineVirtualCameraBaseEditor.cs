@@ -3,6 +3,7 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -13,6 +14,12 @@ namespace Cinemachine.Editor
     public class CinemachineVirtualCameraBaseEditor<T>
         : BaseEditor<T> where T : CinemachineVirtualCameraBase
     {
+        public static class Styles
+        {
+            public static GUIContent addExtensionLabel = new GUIContent("Add Extension");
+            public static GUIContent virtualCameraChildrenInfoMsg = new GUIContent("The Virtual Camera Children field displays the child objects of a given parent object, thus this field is not available when multiple objects are selected.");
+        }
+        
         static Type[] sExtensionTypes;  // First entry is null
         static string[] sExtensionNames;
         bool IsPrefabBase { get; set; }
@@ -111,14 +118,27 @@ namespace Cinemachine.Editor
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Extensions", EditorStyles.boldLabel);
                 Rect rect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                rect = EditorGUI.PrefixLabel(rect, new GUIContent("Add Extension"));
+                rect = EditorGUI.PrefixLabel(rect, Styles.addExtensionLabel);
 
                 int selection = EditorGUI.Popup(rect, 0, sExtensionNames);
                 if (selection > 0)
                 {
                     Type extType = sExtensionTypes[selection];
-                    if (Target.GetComponent(extType) == null)
-                        Undo.AddComponent(Target.gameObject, extType);
+
+                    if (Selection.objects.Length == 1)
+                    {
+                        if (Target.GetComponent(extType) == null)
+                            Undo.AddComponent(Target.gameObject, extType);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < targets.Length; i++)
+                        {
+                            var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject; 
+                            if (targetGO != null && targetGO.GetComponent(extType) == null)
+                                Undo.AddComponent(targetGO, extType);
+                        }
+                    }
                 }
                 ExcludeProperty("Extensions");
             }
@@ -126,6 +146,9 @@ namespace Cinemachine.Editor
 
         protected void DrawCameraStatusInInspector()
         {
+            if (Selection.objects.Length > 1)
+                return;
+            
             // Is the camera navel-gazing?
             CameraState state = Target.State;
             if (state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero())

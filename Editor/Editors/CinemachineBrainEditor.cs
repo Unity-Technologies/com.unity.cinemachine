@@ -7,6 +7,7 @@ using System.IO;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBrain))]
+    [CanEditMultipleObjects]
     public sealed class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;

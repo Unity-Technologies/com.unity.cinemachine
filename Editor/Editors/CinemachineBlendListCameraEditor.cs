@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBlendListCamera))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineBlendListCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineBlendListCamera>
     {
@@ -49,13 +50,21 @@ namespace Cinemachine.Editor
             EditorGUILayout.Separator();
             mInstructionList.DoLayoutList();
 
-            // vcam children
             EditorGUILayout.Separator();
-            mChildList.DoLayoutList();
-            if (EditorGUI.EndChangeCheck())
+
+            if (Selection.objects.Length == 1)
             {
-                serializedObject.ApplyModifiedProperties();
-                Target.ValidateInstructions();
+                
+                mChildList.DoLayoutList();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    serializedObject.ApplyModifiedProperties();
+                    Target.ValidateInstructions();
+                }   
+            }
+            else
+            {
+                EditorGUILayout.HelpBox(Styles.virtualCameraChildrenInfoMsg.text, MessageType.Info);
             }
 
             // Extensions

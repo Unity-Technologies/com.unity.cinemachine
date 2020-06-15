@@ -11,6 +11,7 @@ namespace Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineCollider))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
     {
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
