@@ -16,12 +16,9 @@ namespace Cinemachine
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public PolygonCollider2D m_BoundingShape2D;
-        private PolygonCollider2D m_internal_BoundingShape2D;
 
-        /// <summary>If camera is orthographic, screen edges will be confined to the volume.</summary>
-        [Tooltip("If camera is orthographic, screen edges will be confined to the volume.  "
-            + "If not checked, then only the camera center will be confined")]
-        public bool m_ConfineScreenEdges = true;
+        public PolygonCollider2D m_OutputBoundingShape2D;
+        private PolygonCollider2D m_internal_BoundingShape2D;
 
         /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
@@ -117,7 +114,7 @@ namespace Cinemachine
             {
                 if (m_ConfinerBakery == null)
                 {
-                    m_ConfinerBakery = new ConfinerBakery(ref m_BoundingShape2D);
+                    m_ConfinerBakery = new ConfinerBakery(ref m_BoundingShape2D, ref m_OutputBoundingShape2D);
                 }
                 m_ConfinerBakery.InputConfiner = m_BoundingShape2D;
                 if (m_ConfinerBakery.Bake())
@@ -131,11 +128,7 @@ namespace Cinemachine
                     ||
                     (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
                 {
-                    Vector3 displacement;
-                    if (m_ConfineScreenEdges && state.Lens.Orthographic)
-                        displacement = ConfineScreenEdges(vcam, ref state);
-                    else
-                        displacement = ConfinePoint(state.CorrectedPosition);
+                    Vector3 displacement = ConfinePoint(state.CorrectedPosition);
                     
                    
                     if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
@@ -227,42 +220,6 @@ namespace Cinemachine
                 }
             }
             return closest - p;
-        }
-
-        // Camera must be orthographic
-        private Vector3 ConfineScreenEdges(CinemachineVirtualCameraBase vcam, ref CameraState state)
-        {
-            Quaternion rot = Quaternion.Inverse(state.CorrectedOrientation);
-            float dy = state.Lens.OrthographicSize;
-            float dx = dy * state.Lens.Aspect;
-            Vector3 vx = (rot * Vector3.right) * dx;
-            Vector3 vy = (rot * Vector3.up) * dy;
-
-            Vector3 displacement = Vector3.zero;
-            Vector3 camPos = state.CorrectedPosition;
-            Vector3 lastD = Vector3.zero;
-            const int kMaxIter = 12;
-            for (int i = 0; i < kMaxIter; ++i)
-            {
-                Vector3 d = ConfinePoint((camPos - vy) - vx);
-                if (d.AlmostZero())
-                    d = ConfinePoint((camPos + vy) + vx);
-                if (d.AlmostZero())
-                    d = ConfinePoint((camPos - vy) + vx);
-                if (d.AlmostZero())
-                    d = ConfinePoint((camPos + vy) - vx);
-                if (d.AlmostZero())
-                    break;
-                if ((d + lastD).AlmostZero())
-                {
-                    displacement += d * 0.5f;  // confiner too small: center it
-                    break;
-                }
-                displacement += d;
-                camPos += d;
-                lastD = d;
-            }
-            return displacement;
         }
     }
 }
