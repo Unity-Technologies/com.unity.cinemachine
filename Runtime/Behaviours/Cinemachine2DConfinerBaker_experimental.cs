@@ -1,13 +1,26 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Cinemachine;
 using Cinemachine.Utility;
-using UnityEditor;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
-namespace Cinemachine { 
-    
+
+namespace Cinemachine {
+    /// <summary>
+    /// EXPERIMENTAL FEATURE in development - MAY NOT WORK AS EXPECTED.
+    /// Should work without error with any polygon collider, BUT the result may not be correct.
+    /// Cases, where it may not work properly:
+    /// - Consecutive undersized areas - happens when the camera ortho size is big, and your map has a lot of spaces
+    /// narrower than the camera ortho window.
+    /// - Non-rectangular maps with curvy polygon colliders in undersized areas.
+    /// - At acute angle (0-90) corners, especially if this is within an undersized area.
+    /// 
+    /// An add-on module for Cinemachine Virtual Camera that prebakes the confiner area
+    /// to confine the vcam based on only one point. Consequently, making the confining algorithm
+    /// faster at run-time.
+    ///
+    /// EXPERIMENTAL FEATURE in development - MAY NOT WORK AS EXPECTED.
+    /// </summary>
+    /// 
 [ExecuteInEditMode]
 public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
 {
@@ -284,7 +297,8 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
 
     private void InitializeOutputConfiner(ref PolygonCollider2D OutputConfiner)
     {
-        if (OutputConfiner == null)
+        if (OutputConfiner == null || 
+            InputConfiner.transform != OutputConfiner.gameObject.transform.parent)
         {
             var polygonCollider2Ds = InputConfiner.GetComponentsInChildren<PolygonCollider2D>();
             for (int i = 0; i < polygonCollider2Ds.Length; ++i)
