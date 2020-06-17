@@ -319,6 +319,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
 
     private bool FindOffsetKnots(ref List<Intersection> knots, ref List<ConfinerPoint> confinerPoints)
     {
+        // TODO: definitely needs rewrite
         List<int> knotIndex = new List<int>();
         List<int> confinerPointIndex = new List<int>();
         for (int i = 0; i < knots.Count; ++i)
@@ -354,7 +355,8 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         {
             for (int j = i + 1; j < knotIndex.Count; ++j)
             {
-                if (knotIndex[i] >= knots.Count || knotIndex[j] >= knots.Count)
+                if (knotIndex[i] >= knots.Count || knotIndex[j] >= knots.Count ||
+                    knots[knotIndex[i]].removed || knots[knotIndex[j]].removed)
                 {
                     continue;
                 }
@@ -372,10 +374,18 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
                     // knots[knotIndex[i]].e2 = knots[knotIndex[j]].e1;
                     knots[knotIndex[i]].s1 = knots[knotIndex[j]].s1;
                     knots[knotIndex[i]].e1 = knots[knotIndex[j]].e1;
-                    
-                    knots.RemoveAt(knotIndex[j]);
+
+                    knots[knotIndex[j]].removed = true;
                     break;
                 }
+            }
+        }
+
+        for (int i = knots.Count - 1; i >= 0; --i)
+        {
+            if (knots[i].removed)
+            {
+                knots.RemoveAt(i);
             }
         }
 
@@ -684,6 +694,8 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         public int e1;
         public int s2;
         public int e2;
+
+        public bool removed;
     }
 
     private List<Intersection> FindKnots(in List<ConfinerPoint> confinerPoints)
@@ -721,6 +733,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
                         e1 = e1,
                         s2 = s2,
                         e2 = e2,
+                        removed = false,
                     });
                 }
             }
