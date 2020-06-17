@@ -7,8 +7,9 @@ using Vector2 = UnityEngine.Vector2;
 namespace Cinemachine {
     /// <summary>
     /// EXPERIMENTAL FEATURE in development - MAY NOT WORK AS EXPECTED.
-    /// Should work without error with any polygon collider, BUT the result may not be correct.
-    /// Cases, where it may not work properly:
+    /// Should work without error with any input polygon collider that has no intersections,
+    /// BUT the result may not be correct.
+    /// Cases, where it may not correct:
     /// - Consecutive undersized areas - happens when the camera ortho size is big, and your map has a lot of spaces
     /// narrower than the camera ortho window.
     /// - Non-rectangular maps with curvy polygon colliders in undersized areas.
@@ -986,6 +987,10 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
     private List<Vector2> Midline(in List<Vector2> line1, in List<Vector2> line2)
     {
         List<Vector2> midLine = new List<Vector2>(UnderSizedAreaResolution);
+        if (line1.Count == 0 || line2.Count == 0)
+        {
+            return midLine;
+        }
 
         float line1Length = LineLength(line1);
         float line1SubsegmentLength = line1Length / UnderSizedAreaResolution;
@@ -1005,7 +1010,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         }
         else
         {
-            for (int i = 0; i <= UnderSizedAreaResolution; ++i)
+            for (int i = 0; i < Mathf.Min(line1Subdivided.Count, line2Subdivided.Count); ++i)
             {
                 midLine.Add((line1Subdivided[i] + line2Subdivided[i]) / 2f);
             }
@@ -1031,7 +1036,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
             while (true)
             {
                 var direction = line[i + 1] - startingPoint;
-                if (direction.magnitude >= (segmentLength - leftOver))
+                if (direction.magnitude > (segmentLength - leftOver))
                 {
                     startingPoint += direction.normalized * (segmentLength - leftOver);
                     subdividedLine.Add(startingPoint);
