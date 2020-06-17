@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
@@ -38,6 +39,39 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
 
     private int RollCount;
     
+    public void InvalidateCache()
+    {
+        IsCacheValid = false;
+    }
+
+    private void OnValidate()
+    {
+        InvalidateCache();
+    }
+
+    protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
+        CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
+    {
+        if (!IsCacheValid || IngredientsChanged())
+        {
+            Bake();
+
+            if (m_confiner == null)
+            {
+                m_confiner = GetComponent<CinemachineConfiner>();
+                if (m_confiner == null)
+                {
+                    m_confiner = m_vcam.gameObject.AddComponent<CinemachineConfiner>();
+                    m_vcam.AddExtension(m_confiner);
+                }
+            }
+
+            m_confiner.m_ConfineMode = CinemachineConfiner.Mode.Confine2D;
+            m_confiner.m_ConfineScreenEdges = false;
+            m_confiner.m_BoundingShape2D = OutputConfiner;
+        }
+    }
+    
     private struct ConfinerIngredients
     {
         public Quaternion CorrectedOrientation;
@@ -45,7 +79,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         public float LensAspect;
     }
 
-    public class ConfinerPoint
+    private class ConfinerPoint
     {
         public Vector2 point;
         public Vector2 normal;
@@ -61,7 +95,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         public bool IsInsideKnot;
     }
 
-    public class NewPoints
+    private class NewPoints
     {
         public int ID;
         public List<Vector2> points0;
@@ -87,11 +121,6 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
 
     // Vcam that is being confined is changed -> invalidate
     //     - because the lens settings may change
-    public void InvalidateCache()
-    {
-        IsCacheValid = false;
-    }
-
     private void GatherIngredients()
     {
         ingredients = new ConfinerIngredients();
@@ -253,7 +282,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         IsCacheValid = true;
     }
 
-    void InitializeOutputConfiner(ref PolygonCollider2D OutputConfiner)
+    private void InitializeOutputConfiner(ref PolygonCollider2D OutputConfiner)
     {
         if (OutputConfiner == null)
         {
@@ -314,11 +343,10 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
                 {
                     continue;
                 }
-                FindIntersection(
+                UnityVectorExtensions.FindIntersection(
                     confinerPoints[confinerPointIndex[i]].point, confinerPoints[confinerPointIndex[i]].borderPoint,
                     confinerPoints[confinerPointIndex[j]].point, confinerPoints[confinerPointIndex[j]].borderPoint,
-                    out bool linesIntersect, out bool segmentsIntersect, out Vector2 intersection,
-                    out Vector2 closeP1, out Vector2 closeP2);
+                    out bool linesIntersect, out bool segmentsIntersect, out Vector2 intersection);
 
                 if (segmentsIntersect)
                 {
@@ -370,11 +398,10 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         {
             for (int i = 0; i < cameraViewOffsetsFromMid.Length; ++i)
             {
-                FindIntersection(
+                UnityVectorExtensions.FindIntersection(
                     p1, p1 + cameraViewOffsetsFromMid[i],
                     confinerPoints[j].point, confinerPoints[(j + 1) % confinerPoints.Count].point,
-                    out bool linesIntersect, out bool segmentsIntersect, out Vector2 intersection,
-                    out Vector2 closeP1, out Vector2 closeP2);
+                    out bool linesIntersect, out bool segmentsIntersect, out Vector2 intersection);
 
                 if (segmentsIntersect)
                 {
@@ -390,8 +417,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
 
         return false;
     }
-        
-
+    
     private void DivideEntanglementsIntoSingleAndDoubleKnots(
         in List<ConfinerPoint> confinerPoints, in List<Intersection> knots, int numOfPoints,
         out List<Intersection> singleKnots, out List<Intersection> doubleKnots)
@@ -509,7 +535,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         knots[knots.Count - 1] = first;
     }
 
-    int FindCleanIndexForDoubleKnots(in List<Intersection> doubleKnots, int numberOfPoints)
+    private int FindCleanIndexForDoubleKnots(in List<Intersection> doubleKnots, int numberOfPoints)
     {
         // double knots can be defined by the first not single knot after a single knot must be the start of a double knot.
         // or if index is not part of a not single knot, then the next index part of a knot is a start index
@@ -540,7 +566,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         return cleanIndex;
     }
 
-    bool IsKnotBetween(in List<Intersection> knots, int ignoreKnot, int start, int end, int numOfPoints)
+    private bool IsKnotBetween(in List<Intersection> knots, int ignoreKnot, int start, int end, int numOfPoints)
     {
         int index = (start + 1) % numOfPoints;
         while (index != end)
@@ -578,8 +604,9 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         {
             start = startOfLine;
         }
-    } 
-    void SortPointsAlongLine(ref List<Vector2> points, in Vector2 startOfLine)
+    }
+
+    private void SortPointsAlongLine(ref List<Vector2> points, in Vector2 startOfLine)
     {
         points.Sort(new SortBasedOnDistanceFromStartPointComparer(startOfLine));
     }
@@ -630,7 +657,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         return cameraViewDiagonalOffsetsFromMid[index];
     }
 
-    public class Intersection
+    private class Intersection
     {
         public Vector2 intersectionPoint;
         // public int s1; // segment1StartIndex
@@ -663,12 +690,11 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
                     continue;
                 }
                 
-                FindIntersection(
+                UnityVectorExtensions.FindIntersection(
                     confinerPoints[s1].borderPoint, confinerPoints[e1].borderPoint, 
                     confinerPoints[s2].borderPoint, confinerPoints[e2].borderPoint,
                     out bool lines_intersect, out bool segments_intersect,
-                    out Vector2 intersection,
-                    out Vector2 close_p1, out Vector2 close_p2);
+                    out Vector2 intersection);
 
                 
                 if (segments_intersect)
@@ -729,13 +755,12 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         if (GetClosestOffsetIntersectionBetweenExclusive(confinerPoints, start, end, 
             out Vector2 point, out int indexP1, out int indexP2))
         {
-            var edgeNormal = confinerPoints[indexP1].edgeNormal;
-            FindIntersection(
-                confinerPoints[indexP1].borderPoint, 
-                confinerPoints[indexP2].borderPoint,
-                point, point + edgeNormal,
-                out bool lines_intersect, out bool segment_intersect, out Vector2 ip, 
-                out Vector2 close_p1, out Vector2 close_p2);
+            // var edgeNormal = confinerPoints[indexP1].edgeNormal;
+            // UnityVectorExtensions.FindIntersection(
+            //     confinerPoints[indexP1].borderPoint, 
+            //     confinerPoints[indexP2].borderPoint,
+            //     point, point + edgeNormal,
+            //     out bool lines_intersect, out bool segment_intersect, out Vector2 ip);
             
             line1 = GetPointsInPathBetweenExclusive(confinerPoints, start, indexP1);
             line1.Insert(0, intersectionPoint);
@@ -753,7 +778,8 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         }
     }
 
-    private bool BisectLineIntoTwoEqualLengthLines(in List<Vector2> line, out List<Vector2> line1, out List<Vector2> line2)
+    private bool BisectLineIntoTwoEqualLengthLines(in List<Vector2> line, 
+        out List<Vector2> line1, out List<Vector2> line2)
     {
         float lineLength = LineLength(line);
         line1 = new List<Vector2>();
@@ -1025,11 +1051,10 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
             {
                 indexP1 = i;
                 indexP2 = (i + 1) % confinerPoints.Count;
-                FindIntersection(
+                UnityVectorExtensions.FindIntersection(
                     confinerPoints[indexP1].point, confinerPoints[indexP1].borderPoint,
                     confinerPoints[indexP2].point, confinerPoints[indexP2].borderPoint,
-                    out bool lines_intersect, out bool segment_intersect, out intersection, 
-                    out Vector2 close_p1, out Vector2 close_p2);
+                    out bool lines_intersect, out bool segment_intersect, out intersection);
 
                 if (segment_intersect)
                 {
@@ -1040,11 +1065,10 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
             {
                 indexP1 = i;
                 indexP2 = (i + 1) % confinerPoints.Count;
-                FindIntersection(
+                UnityVectorExtensions.FindIntersection(
                     confinerPoints[indexP1].point, confinerPoints[indexP1].borderPoint,
                     confinerPoints[indexP2].point, confinerPoints[indexP2].borderPoint,
-                    out bool lines_intersect, out bool segment_intersect, out intersection, 
-                    out Vector2 close_p1, out Vector2 close_p2);
+                    out bool lines_intersect, out bool segment_intersect, out intersection);
                 
                 if (segment_intersect)
                 {
@@ -1058,11 +1082,10 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
             {
                 indexP1 = i;
                 indexP2 = (i + 1) % confinerPoints.Count;
-                FindIntersection(
+                UnityVectorExtensions.FindIntersection(
                     confinerPoints[indexP1].point, confinerPoints[indexP1].borderPoint,
                     confinerPoints[indexP2].point, confinerPoints[indexP2].borderPoint,
-                    out bool lines_intersect, out bool segment_intersect, out intersection, 
-                    out Vector2 close_p1, out Vector2 close_p2);
+                    out bool lines_intersect, out bool segment_intersect, out intersection);
                 
                 if (segment_intersect)
                 {
@@ -1074,7 +1097,8 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         return false;
     }
     
-    private List<Vector2> GetPointsInPathBetweenExclusive(in List<ConfinerPoint> confinerPoints, in int start, in int end)
+    private List<Vector2> GetPointsInPathBetweenExclusive(in List<ConfinerPoint> confinerPoints, 
+        in int start, in int end)
     {
         List<Vector2> points = new List<Vector2>();
         if (start > end)
@@ -1098,7 +1122,8 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         return points;
     }
     
-    private void MarkPointsRemovedInPathBetweenExclusive(ref List<ConfinerPoint> confinerPoints, in int start, in int end)
+    private void MarkPointsRemovedInPathBetweenExclusive(ref List<ConfinerPoint> confinerPoints, 
+        in int start, in int end)
     {
         if (start > end)
         {
@@ -1130,70 +1155,6 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         return average / vectors.Count;
     }
     
-    private void FindIntersection(
-        in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4,
-        out bool lines_intersect, out bool segments_intersect,
-        out Vector2 intersection,
-        out Vector2 close_p1, out Vector2 close_p2)
-    {
-        // Segment 1 = p1-p2
-        // Segment 2 = p3-p4
-        
-        // Get the segments' parameters.
-        float dx12 = p2.x - p1.x;
-        float dy12 = p2.y - p1.y;
-        float dx34 = p4.x - p3.x;
-        float dy34 = p4.y - p3.y;
-
-        // Solve for t1 and t2
-        float denominator = (dy12 * dx34 - dx12 * dy34);
-
-        float t1 =
-            ((p1.x - p3.x) * dy34 + (p3.y - p1.y) * dx34)
-            / denominator;
-        if (float.IsInfinity(t1))
-        {
-            // The lines are parallel (or close enough to it).
-            lines_intersect = false;
-            segments_intersect = false;
-            intersection = Vector2.positiveInfinity;
-            close_p1 = Vector2.positiveInfinity;
-            close_p2 = Vector2.positiveInfinity;
-            return;
-        }
-        lines_intersect = true;
-
-        float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
-
-        // Find the point of intersection.
-        intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
-
-        // The segments intersect if t1 and t2 are between 0 and 1.
-        segments_intersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
-
-        // Find the closest points on the segments.
-        if (t1 < 0)
-        {
-            t1 = 0;
-        }
-        else if (t1 > 1)
-        {
-            t1 = 1;
-        }
-
-        if (t2 < 0)
-        {
-            t2 = 0;
-        }
-        else if (t2 > 1)
-        {
-            t2 = 1;
-        }
-
-        close_p1 = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
-        close_p2 = new Vector2(p3.x + dx34 * t2, p3.y + dy34 * t2);
-    }
-
     private Vector2 Vector2SelectMin(in Vector2 a, in Vector2 b)
     {
         return a.sqrMagnitude < b.sqrMagnitude ? a : b;
@@ -1295,33 +1256,6 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
             }
             
             pointNormals.Add(normal.normalized);
-        }
-    }
-
-    private void OnValidate()
-    {
-        InvalidateCache();
-    }
-
-    protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
-    {
-        if (!IsCacheValid || IngredientsChanged())
-        {
-            Bake();
-
-            if (m_confiner == null)
-            {
-                m_confiner = GetComponent<CinemachineConfiner>();
-                if (m_confiner == null)
-                {
-                    m_confiner = m_vcam.gameObject.AddComponent<CinemachineConfiner>();
-                    m_vcam.AddExtension(m_confiner);
-                }
-            }
-
-            m_confiner.m_ConfineMode = CinemachineConfiner.Mode.Confine2D;
-            m_confiner.m_ConfineScreenEdges = false;
-            m_confiner.m_BoundingShape2D = OutputConfiner;
         }
     }
 }

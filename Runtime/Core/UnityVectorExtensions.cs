@@ -51,6 +51,53 @@ namespace Cinemachine.Utility
         {
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
+        
+        /// <summary>
+        /// Calculates the intersection point defined by line_1 (p1, p2), and line_2 (p3, p4).
+        /// </summary>
+        /// <param name="p1">line_1 is defined by (p1, p2)</param>
+        /// <param name="p2">line_1 is defined by (p1, p2)</param>
+        /// <param name="p3">line_2 is defined by (p3, p4)</param>
+        /// <param name="p4">line_2 is defined by (p3, p4)</param>
+        /// <param name="lines_intersect">True, if line_1 and line_2 intersect. False, otherwise.</param>
+        /// <param name="segments_intersect">True, if line_1 and line_2 intersect within the line segments defined by p1,p2 and p3,p4. False, otherwise.</param>
+        /// <param name="intersection">If lines intersect, then this will hold the intersection point. Otherwise, it will be Vector2.positiveInfinity.</param>
+        /// <returns></returns>
+        public static void FindIntersection(
+            in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4,
+            out bool lines_intersect, out bool segments_intersect,
+            out Vector2 intersection)
+        {
+            // Get the segments' parameters.
+            float dx12 = p2.x - p1.x;
+            float dy12 = p2.y - p1.y;
+            float dx34 = p4.x - p3.x;
+            float dy34 = p4.y - p3.y;
+
+            // Solve for t1 and t2
+            float denominator = (dy12 * dx34 - dx12 * dy34);
+
+            float t1 =
+                ((p1.x - p3.x) * dy34 + (p3.y - p1.y) * dx34)
+                / denominator;
+            if (float.IsInfinity(t1))
+            {
+                // The lines are parallel (or close enough to it).
+                lines_intersect = false;
+                segments_intersect = false;
+                intersection = Vector2.positiveInfinity;
+                return;
+            }
+            lines_intersect = true;
+
+            float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
+
+            // Find the point of intersection.
+            intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
+
+            // The segments intersect if t1 and t2 are between 0 and 1.
+            segments_intersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
+        }
 
         /// <summary>
         /// Component-wise absolute value
@@ -61,6 +108,8 @@ namespace Cinemachine.Utility
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
+        
+        
 
         /// <summary>Is the vector within Epsilon of zero length?</summary>
         /// <param name="v"></param>
