@@ -5,15 +5,14 @@ using Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
-namespace Cinemachine {
+namespace Cinemachine { 
+    
 [ExecuteInEditMode]
 public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
 {
     private bool IsCacheValid = false;
     private CinemachineVirtualCamera m_vcam;
 
-    // public CinemachineVirtualCamera vcam;
-    // public float CameraOrthoSize;
     [Tooltip("Undersized areas will be replaced by lines. The resolution of this line depends on this parameter.")]
     [Range(4, 100)]
     public int UnderSizedAreaResolution = 10;
@@ -38,8 +37,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
     private Vector2[] cameraViewOffsetsFromMid;
 
     private int RollCount;
-
-
+    
     private struct ConfinerIngredients
     {
         public Quaternion CorrectedOrientation;
@@ -57,7 +55,6 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
         public Vector2 offset;
         public Vector2 borderPoint;
 
-        //public List<Vector2> newPoints;
         public List<int> newPointsSorting;
         public List<NewPoints> newPoints;
 
@@ -87,8 +84,6 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
     }
 
     private ConfinerIngredients ingredients;
-
-   
 
     // Vcam that is being confined is changed -> invalidate
     //     - because the lens settings may change
@@ -172,14 +167,6 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
             IsCacheValid = true;
             return;
         }
-        // 0. Definitions
-        // Intersection point = I
-        // SingleKnot I_1 = I_2
-        // DoubleKnot I_1 != I_2
-        // Detect SingleKnot -> Found I_1 and I_2 -> == check
-        // 1. Solve SingleKnot, because otherwise it is impossible to tell what's a SingleKnot and what's a DoubleKnot.
-        // They depend on the human's vision
-        // 2. Solve DoubleKnot
         
         DivideEntanglementsIntoSingleAndDoubleKnots(confinerPoints, knots, confinerPoints.Count,
             out List<Intersection> singleKnots, out List<Intersection> doubleKnots);
@@ -203,10 +190,6 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
                 borderPath.Add(confinerPoints[cp].borderPoint);
             }
             
-            // TODO: newPoints need to be sorted with respect to cp
-            // newPoints i1.e1 <-- sort using this
-            // e1 < e1 < e1 < cp
-            // sort by distance from ei to cp.
             if (confinerPoints[cp].newPoints.Count > 1)
             {
                 confinerPoints[cp].newPoints.Sort((a, b) =>
@@ -229,9 +212,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
                     return a.ID.CompareTo(b.ID);
                 });
             }
-            // int lastElementIndex = confinerPoints[cp].newPoints.Count - 1;
-            // if (lastElementIndex < 0) continue;
-            // first add all elements except the last, then add the last
+            
             int selfIndex = -1;
             if (confinerPoints[cp].newPoints.Count <= 0)
             {
