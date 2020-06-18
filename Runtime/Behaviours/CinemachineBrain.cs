@@ -498,7 +498,10 @@ namespace Cinemachine
 
         // Current Brain State - result of all frames.  Blend camB is "current" camera always
         CinemachineBlend mCurrentLiveCameras = new CinemachineBlend(null, null, null, 0, 0);
-
+        
+        // To avoid GC memory alloc every frame
+        private static readonly AnimationCurve mDefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        
         /// <summary>
         /// This API is specifically for Timeline.  Do not use it.
         /// Override the current camera and current blend.  This setting will trump
@@ -530,7 +533,7 @@ namespace Cinemachine
             frame.deltaTimeOverride = deltaTime;
             frame.blend.CamA = camA;
             frame.blend.CamB = camB;
-            frame.blend.BlendCurve = AnimationCurve.Linear(0, 0, 1, 1);
+            frame.blend.BlendCurve = mDefaultLinearAnimationCurve;
             frame.blend.Duration = 1;
             frame.blend.TimeInBlend = weightB;
 
