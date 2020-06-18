@@ -35,6 +35,9 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
     public PolygonCollider2D InputConfiner;
     private PolygonCollider2D OutputConfiner;
 
+    [Tooltip("If true, we'll update the baked confiner if input parameters change. If false, you have to call ForceBake manually.")]
+    public bool AutomaticUpdate = true;
+
     private CinemachineConfiner m_confiner;
     
     private bool ClockwiseOrientation = true;
@@ -66,24 +69,29 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
     protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
         CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
     {
-        if (!IsCacheValid || IngredientsChanged())
+        if (AutomaticUpdate && (!IsCacheValid || IngredientsChanged()))
         {
-            Bake();
+            ForceBake();
+        }
+    }
 
+    public void ForceBake()
+    {
+        Bake();
+
+        if (m_confiner == null)
+        {
+            m_confiner = GetComponent<CinemachineConfiner>();
             if (m_confiner == null)
             {
-                m_confiner = GetComponent<CinemachineConfiner>();
-                if (m_confiner == null)
-                {
-                    m_confiner = m_vcam.gameObject.AddComponent<CinemachineConfiner>();
-                    m_vcam.AddExtension(m_confiner);
-                }
+                m_confiner = m_vcam.gameObject.AddComponent<CinemachineConfiner>();
+                m_vcam.AddExtension(m_confiner);
             }
-
-            m_confiner.m_ConfineMode = CinemachineConfiner.Mode.Confine2D;
-            m_confiner.m_ConfineScreenEdges = false;
-            m_confiner.m_BoundingShape2D = OutputConfiner;
         }
+
+        m_confiner.m_ConfineMode = CinemachineConfiner.Mode.Confine2D;
+        m_confiner.m_ConfineScreenEdges = false;
+        m_confiner.m_BoundingShape2D = OutputConfiner;
     }
     
     private struct ConfinerIngredients
