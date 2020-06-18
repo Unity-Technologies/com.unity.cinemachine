@@ -15,9 +15,9 @@ namespace Cinemachine {
     /// - Non-rectangular maps with curvy polygon colliders in undersized areas.
     /// - At acute angle (0-90) corners, especially if this is within an undersized area.
     /// 
-    /// An add-on module for Cinemachine Virtual Camera that prebakes the confiner area
+    /// An add-on module for Cinemachine Virtual Camera that bakes the confiner area
     /// to confine the vcam based on only one point. Consequently, making the confining algorithm
-    /// faster at run-time.
+    /// simpler and faster at run-time.
     ///
     /// EXPERIMENTAL FEATURE in development - MAY NOT WORK AS EXPECTED.
     /// </summary>
@@ -210,7 +210,7 @@ public class Cinemachine2DConfinerBaker_experimental : CinemachineExtension
             IsCacheValid = true;
             return;
         }
-        
+
         DivideEntanglementsIntoSingleAndDoubleKnots(confinerPoints, knots, confinerPoints.Count,
             out List<Intersection> singleKnots, out List<Intersection> doubleKnots);
         OrderDoubleKnots(ref doubleKnots, confinerPoints.Count);
