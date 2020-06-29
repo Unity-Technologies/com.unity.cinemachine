@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.6.1] - 2020-00-00
 ### New Bugfixes
 - Bugfix: vertical group composition was not composing properly
-
+- Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
 
 ## [2.6.0] - 2020-06-04
 ### New Features and Bugfixes
