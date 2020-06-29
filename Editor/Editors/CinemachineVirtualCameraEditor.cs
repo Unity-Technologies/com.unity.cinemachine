@@ -181,6 +181,7 @@ namespace Cinemachine.Editor
                             ++EditorGUI.indentLevel;
                             EditorGUILayout.Separator();
                             e.OnInspectorGUI();
+
                             EditorGUILayout.Separator();
                             --EditorGUI.indentLevel;
                         }
@@ -218,7 +219,7 @@ namespace Cinemachine.Editor
             }
             return null;
         }
-
+        
         /// <summary>
         /// Register with CinemachineVirtualCamera to create the pipeline in an undo-friendly manner
         /// </summary>
@@ -260,40 +261,43 @@ namespace Cinemachine.Editor
             Undo.SetCurrentGroupName("Cinemachine pipeline change");
 
             // Get the existing components
-            Transform owner = Target.GetComponentOwner();
-            if (owner == null)
-                return; // maybe it's a prefab
-
-            CinemachineComponentBase[] components = owner.GetComponents<CinemachineComponentBase>();
-            if (components == null)
-                components = new CinemachineComponentBase[0];
-
-            // Find an appropriate insertion point
-            int numComponents = components.Length;
-            int insertPoint = 0;
-            for (insertPoint = 0; insertPoint < numComponents; ++insertPoint)
-                if (components[insertPoint].Stage >= stage)
-                    break;
-
-            // Remove the existing components at that stage
-            for (int i = numComponents - 1; i >= 0; --i)
+            for(int j = 0; j < targets.Length; j++)
             {
-                if (components[i].Stage == stage)
+                Transform owner = (targets[j] as CinemachineVirtualCamera).GetComponentOwner();
+                if (owner == null)
+                    continue; // maybe it's a prefab
+
+                CinemachineComponentBase[] components = owner.GetComponents<CinemachineComponentBase>();
+                if (components == null)
+                    components = new CinemachineComponentBase[0];
+
+                // Find an appropriate insertion point
+                int numComponents = components.Length;
+                int insertPoint = 0;
+                for (insertPoint = 0; insertPoint < numComponents; ++insertPoint)
+                    if (components[insertPoint].Stage >= stage)
+                        break;
+
+                // Remove the existing components at that stage
+                for (int i = numComponents - 1; i >= 0; --i)
                 {
-                    Undo.DestroyObjectImmediate(components[i]);
-                    components[i] = null;
-                    --numComponents;
-                    if (i < insertPoint)
-                        --insertPoint;
+                    if (components[i].Stage == stage)
+                    {
+                        Undo.DestroyObjectImmediate(components[i]);
+                        components[i] = null;
+                        --numComponents;
+                        if (i < insertPoint)
+                            --insertPoint;
+                    }
                 }
-            }
 
-            // Add the new stage
-            if (type != null)
-            {
-                MonoBehaviour b = Undo.AddComponent(owner.gameObject, type) as MonoBehaviour;
-                while (numComponents-- > insertPoint)
-                    UnityEditorInternal.ComponentUtility.MoveComponentDown(b);
+                // Add the new stage
+                if (type != null)
+                {
+                    MonoBehaviour b = Undo.AddComponent(owner.gameObject, type) as MonoBehaviour;
+                    while (numComponents-- > insertPoint)
+                        UnityEditorInternal.ComponentUtility.MoveComponentDown(b);
+                }
             }
         }
 
@@ -357,6 +361,7 @@ namespace Cinemachine.Editor
         void UpdateInstanceData()
         {
             // Invalidate the target's cache - this is to support Undo
+          
             Target.InvalidateComponentPipeline();
             UpdateComponentEditors();
             UpdateStageState(m_components);
@@ -386,18 +391,42 @@ namespace Cinemachine.Editor
                     foreach (UnityEditor.Editor e in m_componentEditors)
                         if (e != null)
                             UnityEngine.Object.DestroyImmediate(e);
-
+                
                 // Create new editors
                 m_componentEditors = new UnityEditor.Editor[numComponents];
                 for (int i = 0; i < numComponents; ++i)
                 {
-                    MonoBehaviour b = components[i] as MonoBehaviour;
-                    if (b != null)
-                        CreateCachedEditor(b, null, ref m_componentEditors[i]);
+                    List<MonoBehaviour> behaviours = new List<MonoBehaviour>();
+                    for (int j = 0; j < targets.Length; j++)
+                    {
+                        var cinemachineVirtualCamera = targets[j] as CinemachineVirtualCamera;
+                        if (cinemachineVirtualCamera == null)
+                            continue;
+                        
+                        var behaviour = cinemachineVirtualCamera.GetCinemachineComponent(components[i].Stage) as MonoBehaviour;
+                        if (behaviour != null)
+                            behaviours.Add(behaviour);
+                    }
+
+                    var behaviourArray = behaviours.ToArray();
+                    if (behaviourArray.Length > 0 && behaviourArray[0] != null && CheckIfComponentTypesMatch(behaviourArray))
+                        CreateCachedEditor(behaviourArray, null, ref m_componentEditors[i]);
                 }
             }
         }
 
+        bool CheckIfComponentTypesMatch(MonoBehaviour[] behaviours)
+        {
+            var type = behaviours[0].GetType();
+            for (int i = 1; i < behaviours.Length; i++)
+            {
+                if (type != behaviours[i].GetType())
+                    return false;
+            }
+
+            return true;
+        }
+        
         void UpdateStageState(CinemachineComponentBase[] components)
         {
             m_stageState = new int[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
