@@ -27,6 +27,7 @@ namespace Cinemachine.Editor
             public GUIContent[] PopupOptions;
         }
         static StageData[] sStageData = null;
+        static bool[] hasSameStageDataTypes = null;
 
         // Instance data - call UpdateInstanceData() to refresh this
         int[] m_stageState = null;
@@ -41,6 +42,7 @@ namespace Cinemachine.Editor
             base.OnEnable();
             IsPrefab = Target.gameObject.scene.name == null; // causes a small GC alloc
             UpdateStaticData();
+            UpdateStageDataTypeMatchesForMultiSelection();
         }
 
         protected override void OnDisable()
@@ -154,8 +156,14 @@ namespace Cinemachine.Editor
                 EditorGUI.LabelField(r, label);
                 r = rect; r.width -= labelWidth; r.x += labelWidth;
                 GUI.enabled = !StageIsLocked(stage);
+
+                if (targets.Length > 1)
+                    EditorGUI.showMixedValue = index < m_components.Length && !hasSameStageDataTypes[index];
+
                 int newSelection = EditorGUI.Popup(r, m_stageState[index], sStageData[index].PopupOptions);
                 GUI.enabled = true;
+
+                EditorGUI.showMixedValue = false;
 
                 Type type = sStageData[index].types[newSelection];
                 if (newSelection != m_stageState[index])
@@ -163,7 +171,11 @@ namespace Cinemachine.Editor
                     SetPipelineStage(stage, type);
                     if (newSelection != 0)
                         sStageData[index].IsExpanded = true;
+                    ResetTarget(); // to allow multi-selection correctly adjust every target 
                     UpdateInstanceData(); // because we changed it
+                    
+                    if(targets.Length > 1)
+                        UpdateStageDataTypeMatchesForMultiSelection();
                     return;
                 }
                 if (type != null)
@@ -358,6 +370,31 @@ namespace Cinemachine.Editor
             }
         }
 
+        void UpdateStageDataTypeMatchesForMultiSelection()
+        {
+            CinemachineComponentBase[] components = Target.GetComponentPipeline();
+            int numComponents = components != null ? components.Length : 0;
+            hasSameStageDataTypes = new bool[numComponents];
+
+            for (int i = 0; i < numComponents; ++i)
+            {
+                List<MonoBehaviour> behaviours = new List<MonoBehaviour>();
+                for (int j = 0; j < targets.Length; j++)
+                {
+                    var cinemachineVirtualCamera = targets[j] as CinemachineVirtualCamera;
+                    if (cinemachineVirtualCamera == null)
+                        continue;
+                        
+                    var behaviour = cinemachineVirtualCamera.GetCinemachineComponent(components[i].Stage) as MonoBehaviour;
+                    if (behaviour != null)
+                        behaviours.Add(behaviour);
+                }
+
+                var behaviourArray = behaviours.ToArray();
+                hasSameStageDataTypes[i] = CheckIfComponentTypesMatch(behaviourArray);
+            }
+        }
+
         void UpdateInstanceData()
         {
             // Invalidate the target's cache - this is to support Undo
@@ -502,6 +539,9 @@ namespace Cinemachine.Editor
             var pipeline = vcam.GetComponentPipeline();
             foreach (var c in pipeline)
             {
+                if (c == null)
+                    continue;
+                
                 MethodInfo method;
                 if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
                 {
