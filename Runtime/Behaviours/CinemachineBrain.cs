@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
@@ -214,15 +215,24 @@ namespace Cinemachine
 
             // We check in after the physics system has had a chance to move things
             mPhysicsCoroutine = StartCoroutine(AfterPhysics());
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloded;
         }
 
         private void OnDisable()
         {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloded;
+
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineCore.Instance.RemoveActiveBrain(this);
             mFrameStack.Clear();
             StopCoroutine(mPhysicsCoroutine);
         }
+
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { ManualUpdate(); }
+        void OnSceneUnloded(Scene scene) { ManualUpdate(); }
 
         private void Start()
         {
