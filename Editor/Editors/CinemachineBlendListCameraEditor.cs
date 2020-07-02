@@ -44,17 +44,16 @@ namespace Cinemachine.Editor
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawRemainingPropertiesInInspector();
 
-            // Instructions
-            UpdateCameraCandidates();
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.Separator();
-            mInstructionList.DoLayoutList();
-
-            EditorGUILayout.Separator();
-
-            if (Selection.objects.Length == 1)
+            if (targets.Length == 1)
             {
-                
+                // Instructions
+                UpdateCameraCandidates();
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.Separator();
+                mInstructionList.DoLayoutList();
+
+                EditorGUILayout.Separator();
+
                 mChildList.DoLayoutList();
                 if (EditorGUI.EndChangeCheck())
                 {

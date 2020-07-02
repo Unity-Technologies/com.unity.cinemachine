@@ -59,6 +59,23 @@ namespace Cinemachine.Editor
         const float FastWaveformUpdateInterval = 0.1f;
         float mLastSplitScreenEventTime = 0;
 
+        bool AreSyncToggleValuesDifferentInSelection(SerializedProperty property)
+        {
+            var so = new SerializedObject(serializedObject.targetObjects[0]);
+            SerializedProperty prop = so.FindProperty(property.propertyPath);
+            var initialValue = prop.boolValue;
+            
+            for(int i = 1; i  < serializedObject.targetObjects.Length; i++)
+            {
+                so = new SerializedObject(serializedObject.targetObjects[i]);
+                prop = so.FindProperty(property.propertyPath);
+                if (initialValue != prop.boolValue)
+                    return true;
+            }
+
+            return false;
+        }
+        
         public override void OnInspectorGUI()
         {
             float now = Time.realtimeSinceStartup;
@@ -94,7 +111,9 @@ namespace Cinemachine.Editor
                 rect.width /= 3;
                 var prop = FindProperty(x => x.m_SyncScale);
                 GUIContent syncLabel = new GUIContent("Sync", prop.tooltip);
+                EditorGUI.showMixedValue = AreSyncToggleValuesDifferentInSelection(prop); // prop.hasMultipleDifferentValues is always false here for some reason, thus this function
                 prop.boolValue = EditorGUI.ToggleLeft(rect, syncLabel, prop.boolValue);
+                EditorGUI.showMixedValue = false;
                 rect.x += rect.width;
                 if (prop.boolValue)
                 {

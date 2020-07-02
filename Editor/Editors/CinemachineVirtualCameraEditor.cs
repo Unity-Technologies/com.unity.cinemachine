@@ -391,7 +391,8 @@ namespace Cinemachine.Editor
                 }
 
                 var behaviourArray = behaviours.ToArray();
-                hasSameStageDataTypes[i] = CheckIfComponentTypesMatch(behaviourArray);
+                if(behaviourArray.Length > 0 && behaviourArray[0] != null)
+                    hasSameStageDataTypes[i] = CheckIfComponentTypesMatch(behaviourArray);
             }
         }
 
