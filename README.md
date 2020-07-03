@@ -21,7 +21,7 @@ across numerous genres. The Cinemachine team has an award winning cinematographe
 a senior engineer with heavy math skills. Also, we love this stuff to bits.
 
 ## Mission
-Our mission with Cinemachine is to build an entirely unifed camera system bridging
+Our mission with Cinemachine is to build an entirely unified camera system bridging
 gameplay, cutscenes, from fully procedural cameras to entirely canned sequences and
 everything in between.
 
