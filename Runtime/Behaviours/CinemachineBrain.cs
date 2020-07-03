@@ -217,13 +217,13 @@ namespace Cinemachine
             mPhysicsCoroutine = StartCoroutine(AfterPhysics());
 
             SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.sceneUnloaded += OnSceneUnloded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
-            SceneManager.sceneUnloaded -= OnSceneUnloded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
 
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineCore.Instance.RemoveActiveBrain(this);
@@ -232,7 +232,7 @@ namespace Cinemachine
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode) { ManualUpdate(); }
-        void OnSceneUnloded(Scene scene) { ManualUpdate(); }
+        void OnSceneUnloaded(Scene scene) { ManualUpdate(); }
 
         private void Start()
         {
