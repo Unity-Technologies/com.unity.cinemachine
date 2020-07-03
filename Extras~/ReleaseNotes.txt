@@ -1,6 +1,7 @@
 <size=20><b>Version 2.6.1</b></size>
 - Bugfix: vertical group composition was not composing properly
 - Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
+- Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
 - Bugfix: brain updates on scene loaded or unloaded
 
 <size=20><b>Version 2.6.0</b></size>

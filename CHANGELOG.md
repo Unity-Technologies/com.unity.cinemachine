@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: vertical group composition was not composing properly
 - Bugfix: brain updates on scene loaded or unloaded
 - Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
+- Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
 
 ## [2.6.0] - 2020-06-04
 ### New Features and Bugfixes

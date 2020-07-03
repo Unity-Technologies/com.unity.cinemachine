@@ -423,22 +423,14 @@ namespace Cinemachine
             {
                 // Force "current" state to be the state we're transitioning to
                 AnimatorStateInfo info = m_AnimatedTarget.GetNextAnimatorStateInfo(m_LayerIndex);
-                hash = info.fullPathHash;
-                if (m_AnimatedTarget.GetNextAnimatorClipInfoCount(m_LayerIndex) > 1)
-                {
-                    m_AnimatedTarget.GetNextAnimatorClipInfo(m_LayerIndex, m_clipInfoList);
-                    hash = GetClipHash(info.fullPathHash, m_clipInfoList);
-                }
+                m_AnimatedTarget.GetNextAnimatorClipInfo(m_LayerIndex, m_clipInfoList);
+                hash = GetClipHash(info.fullPathHash, m_clipInfoList);
             }
             else
             {
                 AnimatorStateInfo info = m_AnimatedTarget.GetCurrentAnimatorStateInfo(m_LayerIndex);
-                hash = info.fullPathHash;
-                if (m_AnimatedTarget.GetCurrentAnimatorClipInfoCount(m_LayerIndex) > 1)
-                {
-                    m_AnimatedTarget.GetCurrentAnimatorClipInfo(m_LayerIndex, m_clipInfoList);
-                    hash = GetClipHash(info.fullPathHash, m_clipInfoList);
-                }
+                m_AnimatedTarget.GetCurrentAnimatorClipInfo(m_LayerIndex, m_clipInfoList);
+                hash = GetClipHash(info.fullPathHash, m_clipInfoList);
             }
 
             // If we don't have an instruction for this state, find a suitable default
@@ -515,19 +507,16 @@ namespace Cinemachine
 
         int GetClipHash(int hash, List<AnimatorClipInfo> clips)
         {
-            // Is there an animation clip substate?
-            if (clips.Count > 1)
-            {
-                // Find the strongest-weighted one
-                int bestClip = -1;
-                for (int i = 0; i < clips.Count; ++i)
-                    if (bestClip < 0 || clips[i].weight > clips[bestClip].weight)
-                        bestClip = i;
+            // Find the strongest-weighted animation clip substate
+            int bestClip = -1;
+            for (int i = 0; i < clips.Count; ++i)
+                if (bestClip < 0 || clips[i].weight > clips[bestClip].weight)
+                    bestClip = i;
 
-                // Use its hash
-                if (bestClip >= 0 && clips[bestClip].weight > 0)
-                    hash = LookupFakeHash(hash, clips[bestClip].clip);
-            }
+            // Use its hash
+            if (bestClip >= 0 && clips[bestClip].weight > 0)
+                hash = LookupFakeHash(hash, clips[bestClip].clip);
+
             return hash;
         }
 
