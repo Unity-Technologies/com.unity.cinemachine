@@ -258,10 +258,7 @@ namespace Cinemachine
                 if (child.GetComponent<CinemachinePipeline>() != null)
                     oldPipeline.Add(child);
 
-#if UNITY_EDITOR
-            bool isPrefab = gameObject.scene.name == null; // causes a small GC alloc
-            if (!isPrefab)
-#endif
+            if (!RuntimeUtility.IsPrefab(gameObject))
             {
                 foreach (Transform child in oldPipeline)
                 {
@@ -391,12 +388,11 @@ namespace Cinemachine
         [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;   // serialized to handle copy/paste
         void UpdateComponentPipeline()
         {
-            bool isPrefab = false;
+            bool isPrefab = RuntimeUtility.IsPrefab(gameObject);
 #if UNITY_EDITOR
             // Did we just get copy/pasted?
             if (m_ComponentOwner != null && m_ComponentOwner.parent != transform)
             {
-                isPrefab = gameObject.scene.name == null; // causes a small GC alloc
                 if (!isPrefab) // can't paste to a prefab
                 {
                     CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
@@ -427,7 +423,6 @@ namespace Cinemachine
             }
 
             // Make sure we have a pipeline owner
-            isPrefab = gameObject.scene.name == null; // causes a small GC alloc
             if (m_ComponentOwner == null && !isPrefab)
                 m_ComponentOwner = CreatePipeline(null);
 

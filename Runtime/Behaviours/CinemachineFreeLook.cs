@@ -214,9 +214,7 @@ namespace Cinemachine
         void Reset()
         {
 #if UNITY_EDITOR
-            bool isPrefab = gameObject.scene.name == null; // causes a small GC alloc
-            if (isPrefab || UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject)
-                    != UnityEditor.PrefabInstanceStatus.NotAPrefab)
+            if (RuntimeUtility.IsPrefab(gameObject))
             {
                 Debug.Log("You cannot reset a prefab instance.  "
                     + "First disconnect this instance from the prefab, or enter Prefab Edit mode");
@@ -586,14 +584,13 @@ namespace Cinemachine
             if (mIsDestroyed)
                 return;
 
-            bool isPrefab = false;
+            bool isPrefab = RuntimeUtility.IsPrefab(gameObject);
 
 #if UNITY_EDITOR
             // Special condition: Did we just get copy/pasted?
             if (m_Rigs != null && m_Rigs.Length == 3
                 && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
             {
-                isPrefab = gameObject.scene.name == null; // causes a small GC alloc
                 if (!isPrefab) // can't paste to a prefab
                 {
                     var copyFrom = m_Rigs;
@@ -611,7 +608,6 @@ namespace Cinemachine
                 return;
 
             // Locate existing rigs, and recreate them if any are missing
-            isPrefab = gameObject.scene.name == null; // causes a small GC alloc
             if (LocateExistingRigs(RigNames, false) != 3 && !isPrefab)
             {
                 DestroyRigs();
