@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
 - Bugfix: brain updates on scene loaded or unloaded
 - Bugfix (1260385): check for prefab instances correctly
+- Regression Fix: PostProcessing/VolumeSettings FocusTracksTarget was not accounting for lookAt target offset
 
 ## [2.6.0] - 2020-06-04
 ### New Features and Bugfixes
