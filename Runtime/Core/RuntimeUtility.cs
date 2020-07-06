@@ -31,7 +31,24 @@ namespace Cinemachine
             }
         }
 
-#if CINEMACHINE_PHYSICS
+        /// <summary>
+        /// Check whether a GameObject is a prefab.  
+        /// For editor only - some things are disallowed if prefab.  In runtime, will always return false.
+        /// </summary>
+        /// <param name="gameObject">the object to check</param>
+        /// <returns>If editor, checks if object is a prefab or prefab instance.  
+        /// In runtime, returns false always</returns>
+        public static bool IsPrefab(GameObject gameObject)
+        {
+#if UNITY_EDITOR
+            return UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject)
+                    != UnityEditor.PrefabInstanceStatus.NotAPrefab;
+#else
+            return false;
+#endif
+        }
+        
+        #if CINEMACHINE_PHYSICS
         public static bool RaycastIgnoreTag(
             Ray ray, out RaycastHit hitInfo, float rayLength, int layerMask, in string ignoreTag)
         {
