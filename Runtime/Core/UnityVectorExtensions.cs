@@ -60,13 +60,14 @@ namespace Cinemachine.Utility
         /// <param name="p3">line_2 is defined by (p3, p4)</param>
         /// <param name="p4">line_2 is defined by (p3, p4)</param>
         /// <param name="lines_intersect">True, if line_1 and line_2 intersect. False, otherwise.</param>
-        /// <param name="segments_intersect">True, if line_1 and line_2 intersect within the line segments defined by p1,p2 and p3,p4. False, otherwise.</param>
+        /// <param name="segments_intersect">True, if line_1 and line_2 intersect within the line segments defined by [p1,p2] and [p3,p4]. False, otherwise.</param>
+        /// <param name="segments_nicely_intersect">True, if line_1 and line_2 intersect within the line segments defined by (p1,p2) and (p3,p4); not on p1, p2, p3 or p4. False, otherwise.</param>
         /// <param name="intersection">If lines intersect, then this will hold the intersection point. Otherwise, it will be Vector2.positiveInfinity.</param>
         /// <returns></returns>
         public static void FindIntersection(
             in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4,
             out bool lines_intersect, out bool segments_intersect,
-            out Vector2 intersection)
+            out bool segments_nicely_intersect, out Vector2 intersection)
         {
             // Get the segments' parameters.
             float dx12 = p2.x - p1.x;
@@ -85,6 +86,7 @@ namespace Cinemachine.Utility
                 // The lines are parallel (or close enough to it).
                 lines_intersect = false;
                 segments_intersect = false;
+                segments_nicely_intersect = false;
                 intersection = Vector2.positiveInfinity;
                 return;
             }
@@ -97,6 +99,7 @@ namespace Cinemachine.Utility
 
             // The segments intersect if t1 and t2 are between 0 and 1.
             segments_intersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
+            segments_nicely_intersect = t1 > 0 && t1 < 1 && t2 > 0 && t2 < 1;
         }
 
         /// <summary>
