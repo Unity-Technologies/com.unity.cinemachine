@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
             public GUIContent[] PopupOptions;
         }
         static StageData[] sStageData = null;
-        static bool[] hasSameStageDataTypes = null;
+        bool[] hasSameStageDataTypes = null;
 
         // Instance data - call UpdateInstanceData() to refresh this
         int[] m_stageState = null;
@@ -158,24 +158,27 @@ namespace Cinemachine.Editor
                 GUI.enabled = !StageIsLocked(stage);
 
                 if (targets.Length > 1)
-                    EditorGUI.showMixedValue = index < m_components.Length && !hasSameStageDataTypes[index];
+                    EditorGUI.showMixedValue = !hasSameStageDataTypes[index];
 
+                EditorGUI.BeginChangeCheck();
                 int newSelection = EditorGUI.Popup(r, m_stageState[index], sStageData[index].PopupOptions);
                 GUI.enabled = true;
 
                 EditorGUI.showMixedValue = false;
 
                 Type type = sStageData[index].types[newSelection];
-                if (newSelection != m_stageState[index])
+
+                if (EditorGUI.EndChangeCheck())
                 {
                     SetPipelineStage(stage, type);
                     if (newSelection != 0)
                         sStageData[index].IsExpanded = true;
                     ResetTarget(); // to allow multi-selection correctly adjust every target 
                     UpdateInstanceData(); // because we changed it
-                    
-                    if(targets.Length > 1)
-                        UpdateStageDataTypeMatchesForMultiSelection();
+
+                    if (targets.Length > 1)
+                        hasSameStageDataTypes[index] = true;
+
                     return;
                 }
                 if (type != null)
@@ -372,37 +375,36 @@ namespace Cinemachine.Editor
 
         void UpdateStageDataTypeMatchesForMultiSelection()
         {
-            CinemachineComponentBase[] components = Target.GetComponentPipeline();
-            int numComponents = components != null ? components.Length : 0;
-            hasSameStageDataTypes = new bool[numComponents];
+            hasSameStageDataTypes = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+            hasSameStageDataTypes = hasSameStageDataTypes.Select(t => t = true).ToArray();
 
-            for (int i = 0; i < numComponents; ++i)
-            {
-                List<MonoBehaviour> behaviours = new List<MonoBehaviour>();
-                for (int j = 0; j < targets.Length; j++)
+            foreach (var stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+            {                
+                var index = (int)stage;
+                if (sStageData[index].PopupOptions.Length <= 1)
+                    break;
+
+                var firstVal = (serializedObject.targetObjects[0] as CinemachineVirtualCamera).m_Stages[index];
+                for (int i = 1; i < serializedObject.targetObjects.Length; i++)
                 {
-                    var cinemachineVirtualCamera = targets[j] as CinemachineVirtualCamera;
-                    if (cinemachineVirtualCamera == null)
-                        continue;
-                        
-                    var behaviour = cinemachineVirtualCamera.GetCinemachineComponent(components[i].Stage) as MonoBehaviour;
-                    if (behaviour != null)
-                        behaviours.Add(behaviour);
+                    var secondVal = (serializedObject.targetObjects[i] as CinemachineVirtualCamera).m_Stages[index];
+                    if (firstVal == null || secondVal == null) 
+                        hasSameStageDataTypes[index] = firstVal == secondVal;
+                    else if (firstVal.GetType() != secondVal.GetType())
+                        hasSameStageDataTypes[index] = false;
                 }
-
-                var behaviourArray = behaviours.ToArray();
-                if(behaviourArray.Length > 0 && behaviourArray[0] != null)
-                    hasSameStageDataTypes[i] = CheckIfComponentTypesMatch(behaviourArray);
             }
         }
 
         void UpdateInstanceData()
         {
             // Invalidate the target's cache - this is to support Undo
-          
+
             Target.InvalidateComponentPipeline();
             UpdateComponentEditors();
             UpdateStageState(m_components);
+
+            UpdateStageDataTypeMatchesForMultiSelection();
         }
 
         // This code dynamically builds editors for the pipeline components.
@@ -429,7 +431,7 @@ namespace Cinemachine.Editor
                     foreach (UnityEditor.Editor e in m_componentEditors)
                         if (e != null)
                             UnityEngine.Object.DestroyImmediate(e);
-                
+
                 // Create new editors
                 m_componentEditors = new UnityEditor.Editor[numComponents];
                 for (int i = 0; i < numComponents; ++i)
@@ -440,31 +442,19 @@ namespace Cinemachine.Editor
                         var cinemachineVirtualCamera = targets[j] as CinemachineVirtualCamera;
                         if (cinemachineVirtualCamera == null)
                             continue;
-                        
+
                         var behaviour = cinemachineVirtualCamera.GetCinemachineComponent(components[i].Stage) as MonoBehaviour;
                         if (behaviour != null)
                             behaviours.Add(behaviour);
                     }
 
                     var behaviourArray = behaviours.ToArray();
-                    if (behaviourArray.Length > 0 && behaviourArray[0] != null && CheckIfComponentTypesMatch(behaviourArray))
+                    if (behaviourArray.Length > 0 && behaviourArray[0] != null && (hasSameStageDataTypes[(int)components[i].Stage] || targets.Length == 1))
                         CreateCachedEditor(behaviourArray, null, ref m_componentEditors[i]);
                 }
             }
         }
 
-        bool CheckIfComponentTypesMatch(MonoBehaviour[] behaviours)
-        {
-            var type = behaviours[0].GetType();
-            for (int i = 1; i < behaviours.Length; i++)
-            {
-                if (type != behaviours[i].GetType())
-                    return false;
-            }
-
-            return true;
-        }
-        
         void UpdateStageState(CinemachineComponentBase[] components)
         {
             m_stageState = new int[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
