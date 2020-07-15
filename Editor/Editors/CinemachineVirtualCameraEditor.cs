@@ -43,6 +43,13 @@ namespace Cinemachine.Editor
             IsPrefab = Target.gameObject.scene.name == null; // causes a small GC alloc
             UpdateStaticData();
             UpdateStageDataTypeMatchesForMultiSelection();
+            Undo.undoRedoPerformed += ResetTargetOnUndo;
+        }
+
+        void ResetTargetOnUndo() 
+        {
+            UpdateInstanceData();
+            ResetTarget();
         }
 
         protected override void OnDisable()
@@ -160,21 +167,20 @@ namespace Cinemachine.Editor
                 if (targets.Length > 1)
                     EditorGUI.showMixedValue = !hasSameStageDataTypes[index];
 
+                GUI.enabled = true;
                 EditorGUI.BeginChangeCheck();
                 int newSelection = EditorGUI.Popup(r, m_stageState[index], sStageData[index].PopupOptions);
-                GUI.enabled = true;
 
                 EditorGUI.showMixedValue = false;
 
                 Type type = sStageData[index].types[newSelection];
-
                 if (EditorGUI.EndChangeCheck())
                 {
                     SetPipelineStage(stage, type);
                     if (newSelection != 0)
                         sStageData[index].IsExpanded = true;
-                    ResetTarget(); // to allow multi-selection correctly adjust every target 
                     UpdateInstanceData(); // because we changed it
+                    ResetTarget(); // to allow multi-selection correctly adjust every target 
 
                     if (targets.Length > 1)
                         hasSameStageDataTypes[index] = true;
@@ -389,7 +395,7 @@ namespace Cinemachine.Editor
                 {
                     var secondVal = (serializedObject.targetObjects[i] as CinemachineVirtualCamera).m_Stages[index];
                     if (firstVal == null || secondVal == null) 
-                        hasSameStageDataTypes[index] = firstVal == secondVal;
+                        hasSameStageDataTypes[index] = firstVal == null && secondVal == null;
                     else if (firstVal.GetType() != secondVal.GetType())
                         hasSameStageDataTypes[index] = false;
                 }
@@ -399,7 +405,6 @@ namespace Cinemachine.Editor
         void UpdateInstanceData()
         {
             // Invalidate the target's cache - this is to support Undo
-
             Target.InvalidateComponentPipeline();
             UpdateComponentEditors();
             UpdateStageState(m_components);
