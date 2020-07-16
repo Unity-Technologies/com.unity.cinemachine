@@ -284,7 +284,8 @@ namespace Cinemachine.Editor
             // Get the existing components
             for(int j = 0; j < targets.Length; j++)
             {
-                Transform owner = (targets[j] as CinemachineVirtualCamera).GetComponentOwner();
+                var vCam = targets[j] as CinemachineVirtualCamera;
+                Transform owner = vCam.GetComponentOwner();
                 if (owner == null)
                     continue; // maybe it's a prefab
 
@@ -316,6 +317,8 @@ namespace Cinemachine.Editor
                 if (type != null)
                 {
                     MonoBehaviour b = Undo.AddComponent(owner.gameObject, type) as MonoBehaviour;
+                    vCam.m_Stages[(int)stage] = b as CinemachineComponentBase;
+
                     while (numComponents-- > insertPoint)
                         UnityEditorInternal.ComponentUtility.MoveComponentDown(b);
                 }
@@ -406,10 +409,9 @@ namespace Cinemachine.Editor
         {
             // Invalidate the target's cache - this is to support Undo
             Target.InvalidateComponentPipeline();
+            UpdateStageDataTypeMatchesForMultiSelection();
             UpdateComponentEditors();
             UpdateStageState(m_components);
-
-            UpdateStageDataTypeMatchesForMultiSelection();
         }
 
         // This code dynamically builds editors for the pipeline components.
