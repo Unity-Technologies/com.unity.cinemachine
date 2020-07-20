@@ -397,8 +397,8 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public T AddCinemachineComponent<T>() where T : CinemachineComponentBase
         {
-            T c = gameObject.AddComponent<T>();
             var components = ComponentCache;
+            T c = gameObject.AddComponent<T>();
             var oldC = components[(int)c.Stage];
             if (oldC != null)
             {
