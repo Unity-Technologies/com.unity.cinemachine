@@ -175,8 +175,10 @@ namespace Cinemachine
         /// <summary>Call this if the bounding shape's points change at runtime</summary>
         public void InvalidatePathCache()
         {
+#if CINEMACHINE_PHYSICS_2D
             m_pathCache = null;
             m_BoundingShape2DCache = null;
+#endif
         }
 
         bool ValidatePathCache()
