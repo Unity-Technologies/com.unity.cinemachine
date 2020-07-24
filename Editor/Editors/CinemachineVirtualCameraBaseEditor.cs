@@ -3,7 +3,6 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
-using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -17,7 +16,7 @@ namespace Cinemachine.Editor
         public static class Styles
         {
             public static GUIContent addExtensionLabel = new GUIContent("Add Extension");
-            public static GUIContent virtualCameraChildrenInfoMsg = new GUIContent("The Virtual Camera Children field displays the child objects of a given parent object, thus this field is not available when multiple objects are selected.");
+            public static GUIContent virtualCameraChildrenInfoMsg = new GUIContent("The Virtual Camera Children field is not available when multiple objects are selected.");
         }
         
         static Type[] sExtensionTypes;  // First entry is null
@@ -124,20 +123,11 @@ namespace Cinemachine.Editor
                 if (selection > 0)
                 {
                     Type extType = sExtensionTypes[selection];
-
-                    if (Selection.objects.Length == 1)
+                    for (int i = 0; i < targets.Length; i++)
                     {
-                        if (Target.GetComponent(extType) == null)
-                            Undo.AddComponent(Target.gameObject, extType);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < targets.Length; i++)
-                        {
-                            var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject; 
-                            if (targetGO != null && targetGO.GetComponent(extType) == null)
-                                Undo.AddComponent(targetGO, extType);
-                        }
+                        var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject;
+                        if (targetGO != null && targetGO.GetComponent(extType) == null)
+                            Undo.AddComponent(targetGO, extType);
                     }
                 }
                 ExcludeProperty("Extensions");

@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
             public GUIContent[] PopupOptions;
         }
         static StageData[] sStageData = null;
-        bool[] hasSameStageDataTypes = null;
+        bool[] m_hasSameStageDataTypes = null;
 
         // Instance data - call UpdateInstanceData() to refresh this
         int[] m_stageState = null;
@@ -55,6 +55,7 @@ namespace Cinemachine.Editor
         protected override void OnDisable()
         {
             base.OnDisable();
+            Undo.undoRedoPerformed -= ResetTargetOnUndo;
             // Must destroy editors or we get exceptions
             if (m_componentEditors != null)
                 foreach (UnityEditor.Editor e in m_componentEditors)
@@ -163,11 +164,9 @@ namespace Cinemachine.Editor
                 EditorGUI.LabelField(r, label);
                 r = rect; r.width -= labelWidth; r.x += labelWidth;
                 GUI.enabled = !StageIsLocked(stage);
+                
+                EditorGUI.showMixedValue = !m_hasSameStageDataTypes[index];
 
-                if (targets.Length > 1)
-                    EditorGUI.showMixedValue = !hasSameStageDataTypes[index];
-
-                GUI.enabled = true;
                 EditorGUI.BeginChangeCheck();
                 int newSelection = EditorGUI.Popup(r, m_stageState[index], sStageData[index].PopupOptions);
 
@@ -181,9 +180,6 @@ namespace Cinemachine.Editor
                         sStageData[index].IsExpanded = true;
                     UpdateInstanceData(); // because we changed it
                     ResetTarget(); // to allow multi-selection correctly adjust every target 
-
-                    if (targets.Length > 1)
-                        hasSameStageDataTypes[index] = true;
 
                     return;
                 }
@@ -317,7 +313,6 @@ namespace Cinemachine.Editor
                 if (type != null)
                 {
                     MonoBehaviour b = Undo.AddComponent(owner.gameObject, type) as MonoBehaviour;
-                    vCam.m_Stages[(int)stage] = b as CinemachineComponentBase;
 
                     while (numComponents-- > insertPoint)
                         UnityEditorInternal.ComponentUtility.MoveComponentDown(b);
@@ -382,25 +377,55 @@ namespace Cinemachine.Editor
             }
         }
 
+        List<CinemachineComponentBase> GetSortedPipelineComponentsForCamera(UnityEngine.Object targetObject)
+        {
+            var camera = targetObject as CinemachineVirtualCamera;
+            if (camera == null)
+                return null;
+
+            var cameraComponents = new List<CinemachineComponentBase>();
+            var cameraComponentArray = camera.GetComponentPipeline();
+
+            foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+            {
+                for (int i = 0; i < cameraComponentArray.Length; i++)
+                {
+                    if (cameraComponentArray[i].Stage == stage)
+                    {
+                        cameraComponents.Add(cameraComponentArray[i]);
+                    }
+                }
+
+                if (cameraComponents.Count < (int)stage + 1)
+                    cameraComponents.Add(null);
+            }
+
+            return cameraComponents;
+        }
+
         void UpdateStageDataTypeMatchesForMultiSelection()
         {
-            hasSameStageDataTypes = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
-            hasSameStageDataTypes = hasSameStageDataTypes.Select(t => t = true).ToArray();
+            m_hasSameStageDataTypes = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+            m_hasSameStageDataTypes = m_hasSameStageDataTypes.Select(t => t = true).ToArray();
 
-            foreach (var stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
-            {                
-                var index = (int)stage;
-                if (sStageData[index].PopupOptions.Length <= 1)
-                    break;
+            if (targets.Length == 1)
+                return;
 
-                var firstVal = (serializedObject.targetObjects[0] as CinemachineVirtualCamera).m_Stages[index];
-                for (int i = 1; i < serializedObject.targetObjects.Length; i++)
+            var sortedPipelineForFirstTarget = GetSortedPipelineComponentsForCamera(serializedObject.targetObjects[0]);
+
+            for (int i = 1; i < serializedObject.targetObjects.Length; i++)
+            {
+                var sortedPipelineForSecondTarget = GetSortedPipelineComponentsForCamera(serializedObject.targetObjects[i]);
+                foreach (var stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
                 {
-                    var secondVal = (serializedObject.targetObjects[i] as CinemachineVirtualCamera).m_Stages[index];
-                    if (firstVal == null || secondVal == null) 
-                        hasSameStageDataTypes[index] = firstVal == null && secondVal == null;
-                    else if (firstVal.GetType() != secondVal.GetType())
-                        hasSameStageDataTypes[index] = false;
+                    var index = (int)stage;
+                    if (sStageData[index].PopupOptions.Length <= 1)
+                        break;
+
+                    if (sortedPipelineForFirstTarget[index] == null || sortedPipelineForSecondTarget[index] == null)
+                        m_hasSameStageDataTypes[index] = sortedPipelineForFirstTarget[index] == null && sortedPipelineForSecondTarget[index] == null;
+                    else (sortedPipelineForFirstTarget[index].GetType() != sortedPipelineForSecondTarget[index].GetType())
+                        m_hasSameStageDataTypes[index] = false;
                 }
             }
         }
@@ -456,7 +481,7 @@ namespace Cinemachine.Editor
                     }
 
                     var behaviourArray = behaviours.ToArray();
-                    if (behaviourArray.Length > 0 && behaviourArray[0] != null && (hasSameStageDataTypes[(int)components[i].Stage] || targets.Length == 1))
+                    if (behaviourArray.Length > 0 && m_hasSameStageDataTypes[(int)components[i].Stage])
                         CreateCachedEditor(behaviourArray, null, ref m_componentEditors[i]);
                 }
             }

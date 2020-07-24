@@ -191,7 +191,7 @@ namespace Cinemachine
 
         public override void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (this != null && IsValid && curState.HasLookAt)
+            if (IsValid && curState.HasLookAt)
                 curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(
                     curState.ReferenceLookAt, curState.ReferenceUp, deltaTime);
         }

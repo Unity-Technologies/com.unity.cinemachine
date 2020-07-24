@@ -95,10 +95,6 @@ namespace Cinemachine
         [SerializeField] [HideInInspector]
         [FormerlySerializedAs("m_BlendHint")]
         [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
-
-        [SerializeField]
-        [HideInInspector]
-        internal CinemachineComponentBase[] m_Stages;
         
         /// <summary>This is the name of the hidden GameObject that will be created as a child object
         /// of the virtual camera.  This hidden game object acts as a container for the polymorphic
@@ -180,8 +176,6 @@ namespace Cinemachine
                 if (LookAt != null && GetCinemachineComponent(CinemachineCore.Stage.Aim) == null)
                     AddCinemachineComponent<CinemachineHardLookAt>();
             }
-
-            m_Stages = new CinemachineComponentBase[3];
         }
 
         /// <summary>Calls the DestroyPipelineDelegate for destroying the hidden
@@ -445,17 +439,6 @@ namespace Cinemachine
                 // Sort the pipeline
                 list.Sort((c1, c2) => (int)c1.Stage - (int)c2.Stage);
                 m_ComponentPipeline = list.ToArray();
-            }
-
-            // update serialized stage properties with changed data
-            Dictionary<CinemachineCore.Stage, CinemachineComponentBase> componentToStageMap = new Dictionary<CinemachineCore.Stage, CinemachineComponentBase>();
-            foreach (CinemachineComponentBase c in m_ComponentPipeline)
-                componentToStageMap.Add(c.Stage, c);
-
-            foreach (CinemachineCore.Stage stage in System.Enum.GetValues(typeof(CinemachineCore.Stage))) 
-            {
-                if (componentToStageMap.ContainsKey(stage))
-                    m_Stages[(int)stage] = componentToStageMap[stage];
             }
         }
 
