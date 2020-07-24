@@ -6,7 +6,7 @@ To preserve aiming accuracy, this extension deliberately cancels out all rotatio
 
 See the __AimingRig__ sample scene for an example of this.
 
-Additionally, if _Aim Target Reticle_ is non-null, this extension will project a ray from the Follow target's position and find the first object that collides with that ray.  The Aim Target Reticle object will then be placed on that point in the game view, to indicate what the player would hit if a shot were to be fired.  This point may be different from what the camera is looking at, if the the found object is close enough to be affected by parallax as a result of the offset between player and camera.
+Additionally, if _Aim Target Reticle_ is non-null, this extension will project a ray from the Follow target's position and find the first object that collides with that ray.  The Aim Target Reticle object will then be placed on that point in the game view, to indicate what the player would hit if a shot were to be fired.  This point may be different from what the camera is looking at, if the found object is close enough to be affected by parallax as a result of the offset between player and camera.
 
 
 ## Properties:
