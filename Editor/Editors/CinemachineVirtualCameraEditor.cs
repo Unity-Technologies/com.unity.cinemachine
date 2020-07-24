@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
             public GUIContent[] PopupOptions;
         }
         static StageData[] sStageData = null;
-        bool[] m_hasSameStageDataTypes = null;
+        bool[] m_hasSameStageDataTypes = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
 
         // Instance data - call UpdateInstanceData() to refresh this
         int[] m_stageState = null;
@@ -41,6 +41,7 @@ namespace Cinemachine.Editor
             // Build static menu arrays via reflection
             base.OnEnable();
             IsPrefab = Target.gameObject.scene.name == null; // causes a small GC alloc
+
             UpdateStaticData();
             UpdateStageDataTypeMatchesForMultiSelection();
             Undo.undoRedoPerformed += ResetTargetOnUndo;
@@ -405,11 +406,11 @@ namespace Cinemachine.Editor
 
         void UpdateStageDataTypeMatchesForMultiSelection()
         {
-            m_hasSameStageDataTypes = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
-            m_hasSameStageDataTypes = m_hasSameStageDataTypes.Select(t => t = true).ToArray();
-
             if (targets.Length == 1)
+            {
+                m_hasSameStageDataTypes = m_hasSameStageDataTypes.Select(t => t = true).ToArray();
                 return;
+            }
 
             var sortedPipelineForFirstTarget = GetSortedPipelineComponentsForCamera(serializedObject.targetObjects[0]);
 
@@ -424,7 +425,9 @@ namespace Cinemachine.Editor
 
                     if (sortedPipelineForFirstTarget[index] == null || sortedPipelineForSecondTarget[index] == null)
                         m_hasSameStageDataTypes[index] = sortedPipelineForFirstTarget[index] == null && sortedPipelineForSecondTarget[index] == null;
-                    else (sortedPipelineForFirstTarget[index].GetType() != sortedPipelineForSecondTarget[index].GetType())
+                    else if (sortedPipelineForFirstTarget[index].GetType() == sortedPipelineForSecondTarget[index].GetType())
+                        m_hasSameStageDataTypes[index] = true;
+                    else
                         m_hasSameStageDataTypes[index] = false;
                 }
             }
