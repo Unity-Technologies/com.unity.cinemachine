@@ -418,7 +418,8 @@ namespace Cinemachine.Editor
             for (int i = 0; i < targets.Length; i++)
             {
                 var cam = targets[i] as CinemachineVirtualCamera;
-                cam?.InvalidateComponentPipeline();
+                if(cam != null)
+                    cam.InvalidateComponentPipeline();
             }
             UpdateStageDataTypeMatchesForMultiSelection();
             UpdateComponentEditors();
