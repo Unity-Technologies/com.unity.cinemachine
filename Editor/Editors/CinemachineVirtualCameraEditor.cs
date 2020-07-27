@@ -378,57 +378,36 @@ namespace Cinemachine.Editor
             }
         }
 
-        List<CinemachineComponentBase> GetSortedPipelineComponentsForCamera(UnityEngine.Object targetObject)
+        void GetPipelineTypes(CinemachineVirtualCamera vcam, ref Type[] types)
         {
-            var camera = targetObject as CinemachineVirtualCamera;
-            if (camera == null)
-                return null;
-
-            var cameraComponents = new List<CinemachineComponentBase>();
-            var cameraComponentArray = camera.GetComponentPipeline();
-
-            foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+            for (int i = 0; i < types.Length; ++i)
+                types[i] = null;
+            if (vcam != null)
             {
-                for (int i = 0; i < cameraComponentArray.Length; i++)
-                {
-                    if (cameraComponentArray[i].Stage == stage)
-                    {
-                        cameraComponents.Add(cameraComponentArray[i]);
-                    }
-                }
-
-                if (cameraComponents.Count < (int)stage + 1)
-                    cameraComponents.Add(null);
+                var components = vcam.GetComponentPipeline();
+                for (int j = 0; j < components.Length; ++j)
+                    types[(int)components[j].Stage] = components[j].GetType();
             }
-
-            return cameraComponents;
         }
+
+        // scratch buffers for pipeline types
+        Type[] m_PipelineTypeCache0 = new Type[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+        Type[] m_PipelineTypeCacheN = new Type[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
 
         void UpdateStageDataTypeMatchesForMultiSelection()
         {
-            if (targets.Length == 1)
-            {
-                m_hasSameStageDataTypes = m_hasSameStageDataTypes.Select(t => t = true).ToArray();
-                return;
-            }
+            for (int i = 0; i < m_hasSameStageDataTypes.Length; ++i)
+                m_hasSameStageDataTypes[i] = true;
 
-            var sortedPipelineForFirstTarget = GetSortedPipelineComponentsForCamera(serializedObject.targetObjects[0]);
-
-            for (int i = 1; i < serializedObject.targetObjects.Length; i++)
+            if (targets.Length > 1)
             {
-                var sortedPipelineForSecondTarget = GetSortedPipelineComponentsForCamera(serializedObject.targetObjects[i]);
-                foreach (var stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
+                GetPipelineTypes(serializedObject.targetObjects[0] as CinemachineVirtualCamera, ref m_PipelineTypeCache0);
+                for (int i = 1; i < targets.Length; ++i)
                 {
-                    var index = (int)stage;
-                    if (sStageData[index].PopupOptions.Length <= 1)
-                        break;
-
-                    if (sortedPipelineForFirstTarget[index] == null || sortedPipelineForSecondTarget[index] == null)
-                        m_hasSameStageDataTypes[index] = sortedPipelineForFirstTarget[index] == null && sortedPipelineForSecondTarget[index] == null;
-                    else if (sortedPipelineForFirstTarget[index].GetType() == sortedPipelineForSecondTarget[index].GetType())
-                        m_hasSameStageDataTypes[index] = true;
-                    else
-                        m_hasSameStageDataTypes[index] = false;
+                    GetPipelineTypes(serializedObject.targetObjects[i] as CinemachineVirtualCamera, ref m_PipelineTypeCacheN);
+                    for (int j = 0; j < m_PipelineTypeCache0.Length; ++j)
+                        if (m_PipelineTypeCache0[j] != m_PipelineTypeCacheN[j])
+                            m_hasSameStageDataTypes[j] = false;
                 }
             }
         }
@@ -436,7 +415,11 @@ namespace Cinemachine.Editor
         void UpdateInstanceData()
         {
             // Invalidate the target's cache - this is to support Undo
-            Target.InvalidateComponentPipeline();
+            for (int i = 0; i < targets.Length; i++)
+            {
+                var cam = targets[i] as CinemachineVirtualCamera;
+                cam?.InvalidateComponentPipeline();
+            }
             UpdateStageDataTypeMatchesForMultiSelection();
             UpdateComponentEditors();
             UpdateStageState(m_components);
