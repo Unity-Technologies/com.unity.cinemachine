@@ -13,10 +13,15 @@ using System.Collections.Generic;
 
     internal sealed class CinemachineMixer : PlayableBehaviour
     {
+        public delegate PlayableDirector MasterDirectorDelegate();
+
+        static public MasterDirectorDelegate GetMasterPlayableDirector;
+        static public MasterDirectorDelegate GetInspectedPlayableDirector;
+
         // The brain that this track controls
         private CinemachineBrain mBrain;
         private int mBrainOverrideId = -1;
-        private bool mPlaying;
+        private bool mPreviewPlay;
 
 #if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
         class ScrubbingCacheHelper
@@ -63,15 +68,16 @@ using System.Collections.Generic;
             }
 
             public void ScrubToHere(
-                float currentTime, TargetPositionCache.Mode cacheMode, CinemachineBrain brain)
+                double currentTime, TargetPositionCache.Mode cacheMode, CinemachineBrain brain)
             {
                 if (brain == null)
                     return;
+
                 TargetPositionCache.CacheMode = cacheMode;
-                TargetPositionCache.CurrentTime = currentTime;
+                TargetPositionCache.CurrentTime = (float)currentTime;
                 if (cacheMode != TargetPositionCache.Mode.Playback)
                     return;
-            
+
                 float stepSize = TargetPositionCache.CacheStepSize;
 
                 var up = brain.DefaultWorldUp;
@@ -93,11 +99,11 @@ using System.Collections.Generic;
                         for (int j = sublist.Count - 1; j >= 0; --j)
                         {
                             var vcam = sublist[j];
-                            vcam.InternalUpdateCameraState(up, deltaTime);
                             if (deltaTime < 0)
                                 vcam.ForceCameraPosition(
                                     TargetPositionCache.GetTargetPosition(vcam.transform), 
                                     TargetPositionCache.GetTargetRotation(vcam.transform));
+                            vcam.InternalUpdateCameraState(up, deltaTime);
                         }
                     }
                 }
@@ -126,21 +132,33 @@ using System.Collections.Generic;
 
         public override void PrepareFrame(Playable playable, FrameData info)
         {
-            mPlaying = info.evaluationType == FrameData.EvaluationType.Playback;
+            mPreviewPlay = false;
 #if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
+            if (!Application.isPlaying && GetMasterPlayableDirector != null)
+            {
+                var d = GetMasterPlayableDirector();
+                if (d != null && d.playableGraph.IsValid())
+                    mPreviewPlay = GetMasterPlayableDirector().playableGraph.IsPlaying();
+            }
             if (Application.isPlaying || !TargetPositionCache.UseCache)
                 TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;
             else
             {
-                if (m_ScrubbingCacheHelper == null)
+                // Use cache only if we are being inspected
+                var inspected = GetInspectedPlayableDirector != null ? GetInspectedPlayableDirector() : null;
+                if (GetInspectedPlayableDirector() == (PlayableDirector)playable.GetGraph().GetResolver())
                 {
-                    m_ScrubbingCacheHelper = new ScrubbingCacheHelper();
-                    m_ScrubbingCacheHelper.Init(playable);
+                    if (m_ScrubbingCacheHelper == null)
+                    {
+                        m_ScrubbingCacheHelper = new ScrubbingCacheHelper();
+                        m_ScrubbingCacheHelper.Init(playable);
+                    }
+                    var master = GetMasterPlayableDirector != null ? GetMasterPlayableDirector() : null;
+                    m_ScrubbingCacheHelper.ScrubToHere(
+                        master != null ? master.time : inspected.time, 
+                        mPreviewPlay ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback,
+                        mBrain);
                 }
-                m_ScrubbingCacheHelper.ScrubToHere(
-                    (float)playable.GetGraph().GetRootPlayable(0).GetTime(), 
-                    mPlaying ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback,
-                    mBrain);
             }
 #else
             TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;
@@ -216,7 +234,7 @@ using System.Collections.Generic;
 
         float GetDeltaTime(float deltaTime)
         {
-            if (mPlaying || Application.isPlaying)
+            if (mPreviewPlay || Application.isPlaying)
                 return deltaTime;
 
             // We're scrubbing or paused
