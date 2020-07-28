@@ -7,22 +7,16 @@ namespace Cinemachine
     /// <summary>Converts List of graph states to CompositeCollider2Ds that will be used by CinemachineConfiner.</summary>
     class GraphToCompositeCollider
     {
-        private CompositeCollider2D _compositeCollider2D;
+        private GameObject confinerHolder;
         
         /// <summary>
         /// Initializes GraphToCompositeCollider and creates the collider holders BakedConfiner parented to parent.
         /// </summary>
         internal GraphToCompositeCollider(Transform parent)
         {
-            var confinerHolder = new GameObject("BakedConfiner");
+            confinerHolder = new GameObject("BakedConfiner");
             confinerHolder.transform.parent = parent;
-
-            var rigidbody2D = confinerHolder.AddComponent<Rigidbody2D>();
-            rigidbody2D.bodyType = RigidbodyType2D.Static;
-            rigidbody2D.simulated = false;
-
-            _compositeCollider2D = confinerHolder.AddComponent<CompositeCollider2D>();
-            _compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
+            confinerHolder.transform.localPosition = Vector3.zero;
         }
         
         // TODO: then test if lerping works -> works completely in parallel
@@ -37,10 +31,19 @@ namespace Cinemachine
             for (var gs = 0; gs < confinerStates.Count; gs++)
             {
                 var confinerState = confinerStates[gs];
-                var polygonHolder = new GameObject("PolygonCollider2Ds - " + confinerState.cameraWindowDiagonal);
-                polygonHolder.transform.position = graphOffset;
-                polygonHolder.transform.parent = _compositeCollider2D.transform;
+                var compositeHolder = new GameObject("CompositeCollider2D - " + confinerState.cameraWindowDiagonal);
+                compositeHolder.transform.position = graphOffset;
+                compositeHolder.transform.parent = confinerHolder.transform;
+                var rigidbody2D = compositeHolder.AddComponent<Rigidbody2D>();
+                rigidbody2D.bodyType = RigidbodyType2D.Static;
+                rigidbody2D.simulated = false;
+                var compositeCollider2D = compositeHolder.AddComponent<CompositeCollider2D>();
+                compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
                 
+                var polygonHolder = new GameObject("PolygonCollider2Ds");
+                polygonHolder.transform.parent = compositeHolder.transform;
+                polygonHolder.transform.localPosition = Vector3.zero;
+
                 foreach (var graph in confinerState.graphs)
                 {
                     var polygon = polygonHolder.AddComponent<PolygonCollider2D>();
