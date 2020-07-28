@@ -10,7 +10,6 @@ namespace Cinemachine
     {
         /// <summary>Inputs represent areas within the virtual camera can operate the camera.
         /// Distance from the border depends the camera view window size.</summary>
-        public PolygonCollider2D Input;
         public bool Bake;
 
         public int DEBUG_iterationCount = 10;
@@ -62,10 +61,7 @@ namespace Cinemachine
         
         internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio)
         {
-            if (Input.pathCount <= 0)
-            {
-                return;
-            }
+            
 
             graphs = CreateGraphs(inputPath, sensorRatio);
             int graphs_index = 0;
@@ -237,72 +233,80 @@ namespace Cinemachine
                     state = graphs[i].Count,
                 });
             }
+            
+            for (int i = 0; i < confinerStates.Count; i += 2)
+            {
+                if (confinerStates[i + 1].state != confinerStates[i].state)
+                {
+                    confinerStates.Insert(i + 1, confinerStates[i]);
+                }
+            }
 
             return confinerStates;
         }
         
-        void OnDrawGizmosSelected()
-        {
-            if (GIZMOS_currentGraphs == null)
-            {
-                return;
-            }
-
-            Vector2 offset = Input.transform.position;
-
-            // original input
-            for (int i = 0; i < GIZMOS_input.Count - 1; ++i)
-            {
-                Gizmos.color = Color.black;
-                Gizmos.DrawLine(offset + GIZMOS_input[i], offset + GIZMOS_input[i + 1]);
-            }
-
-            // graphs
-            for (int i = 0; i < GIZMOS_subGraphs.Count; ++i)
-            {
-                float color = ((float) i / (float) GIZMOS_subGraphs.Count) * 0.8f;
-
-                Gizmos.color = new Color(i % 2, 0.9f - color, 0.25f);
-                for (int j = 0; j < GIZMOS_subGraphs[i].points.Count; ++j)
-                {
-                    if (j == 0)
-                    {
-                        Handles.Label(offset + GIZMOS_subGraphs[i].points[j].position, i.ToString());
-                    }
-
-                    Gizmos.DrawLine(offset + GIZMOS_subGraphs[i].points[j].position,
-                        offset + GIZMOS_subGraphs[i].points[(j + 1) % GIZMOS_subGraphs[i].points.Count].position);
-                }
-
-                if (GIZMOS_drawIntersection)
-                    foreach (var t in GIZMOS_subGraphs[i].intersectionPoints)
-                    {
-                        Gizmos.DrawSphere(offset + t, 1f);
-                    }
-
-                // graph connections
-                foreach (var t in GIZMOS_subGraphs[i].intersectionPoints)
-                {
-                    Vector2 closestPoint = GIZMOS_subGraphs[i].ClosestPoint(t);
-                    Gizmos.DrawLine(offset + t, offset + closestPoint);
-                }
-            }
-
-            // graph normals
-            for (int i = 0; i < GIZMOS_subGraphs.Count; ++i)
-            {
-                Gizmos.color = Color.magenta;
-                for (int j = 0; j < GIZMOS_subGraphs[i].points.Count; ++j)
-                {
-                    Gizmos.DrawLine(offset + GIZMOS_subGraphs[i].points[j].position,
-                        offset + GIZMOS_subGraphs[i].points[j].position + GIZMOS_subGraphs[i].points[j].normal);
-                }
-            }
-        }
-
-        private void OnValidate()
-        {
-            Bake = true;
-        }
+        // void OnDrawGizmosSelected()
+        // {
+        //     if (GIZMOS_currentGraphs == null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     Vector2 offset = Input.transform.position;
+        //
+        //     // original input
+        //     for (int i = 0; i < GIZMOS_input.Count - 1; ++i)
+        //     {
+        //         Gizmos.color = Color.black;
+        //         Gizmos.DrawLine(offset + GIZMOS_input[i], offset + GIZMOS_input[i + 1]);
+        //     }
+        //
+        //     // graphs
+        //     for (int i = 0; i < GIZMOS_subGraphs.Count; ++i)
+        //     {
+        //         float color = ((float) i / (float) GIZMOS_subGraphs.Count) * 0.8f;
+        //
+        //         Gizmos.color = new Color(i % 2, 0.9f - color, 0.25f);
+        //         for (int j = 0; j < GIZMOS_subGraphs[i].points.Count; ++j)
+        //         {
+        //             if (j == 0)
+        //             {
+        //                 Handles.Label(offset + GIZMOS_subGraphs[i].points[j].position, i.ToString());
+        //             }
+        //
+        //             Gizmos.DrawLine(offset + GIZMOS_subGraphs[i].points[j].position,
+        //                 offset + GIZMOS_subGraphs[i].points[(j + 1) % GIZMOS_subGraphs[i].points.Count].position);
+        //         }
+        //
+        //         if (GIZMOS_drawIntersection)
+        //             foreach (var t in GIZMOS_subGraphs[i].intersectionPoints)
+        //             {
+        //                 Gizmos.DrawSphere(offset + t, 1f);
+        //             }
+        //
+        //         // graph connections
+        //         foreach (var t in GIZMOS_subGraphs[i].intersectionPoints)
+        //         {
+        //             Vector2 closestPoint = GIZMOS_subGraphs[i].ClosestPoint(t);
+        //             Gizmos.DrawLine(offset + t, offset + closestPoint);
+        //         }
+        //     }
+        //
+        //     // graph normals
+        //     for (int i = 0; i < GIZMOS_subGraphs.Count; ++i)
+        //     {
+        //         Gizmos.color = Color.magenta;
+        //         for (int j = 0; j < GIZMOS_subGraphs[i].points.Count; ++j)
+        //         {
+        //             Gizmos.DrawLine(offset + GIZMOS_subGraphs[i].points[j].position,
+        //                 offset + GIZMOS_subGraphs[i].points[j].position + GIZMOS_subGraphs[i].points[j].normal);
+        //         }
+        //     }
+        // }
+        //
+        // private void OnValidate()
+        // {
+        //     Bake = true;
+        // }
     }
 }

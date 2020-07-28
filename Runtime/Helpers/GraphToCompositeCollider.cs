@@ -81,7 +81,28 @@ namespace Cinemachine
         // TODO: return List< FOV, List<List<Vector>> >
         internal List<FovBakedConfiners> GetBakedConfiners()
         {
-            return null;
+            // todo: cache this
+            List<FovBakedConfiners> bakedConfiners = new List<FovBakedConfiners>();
+            foreach (var compositeCollider in compositeColliders)
+            {
+                var compositeCollider2D = compositeCollider.GetComponent<CompositeCollider2D>();
+                List<List<Vector2>> pathPoints = new List<List<Vector2>>();
+                for (int i = 0; i < compositeCollider2D.pathCount; ++i)
+                {
+                    Vector2[] points = new Vector2[compositeCollider2D.pointCount];
+                    compositeCollider2D.GetPath(i, points);
+                    
+                    pathPoints.Add(new List<Vector2>(points));
+                }
+                
+                bakedConfiners.Add(new FovBakedConfiners
+                {
+                    fov = 1,
+                    path = pathPoints,
+                });
+            }
+
+            return bakedConfiners;
         }
     }
 }

@@ -21,8 +21,8 @@ namespace Cinemachine
 
         private List<List<Graph>> graphs;
         private List<ConfinerState> confinerStates;
-        private ConfinerOven confinerBaker;
-        private GraphToCompositeCollider graphToCompositeCollider;
+        private ConfinerOven confinerBaker = null;
+        private GraphToCompositeCollider graphToCompositeCollider = null;
         
         /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
@@ -55,16 +55,36 @@ namespace Cinemachine
                 ||
                 (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
             {
-                if (state.Lens.FieldOfView != currentFOV)
+                ValidatePathCache();
+                
+                var stateLensFieldOfView = Mathf.Abs(state.Lens.FieldOfView);
+                // TODO: float comparison granulity
+                if (Math.Abs(stateLensFieldOfView - currentFOV) > UnityVectorExtensions.Epsilon)
                 {
-                    currentFOV = state.Lens.FieldOfView;
+                    currentFOV = stateLensFieldOfView;
                     for (int i = 0; i < fovConfiners.Count; ++i)
                     {
                         if (fovConfiners[i].fov <= currentFOV)
                         {
-                            // TODO: lerp between i, and i + 1
-                            // need to make sure, i and i+1 are lerpable
-                            m_currentPathCache = fovConfiners[i].path;
+                            if (i == fovConfiners.Count)
+                            {
+                                m_currentPathCache = fovConfiners[i].path;
+                            }
+                            else if (i % 2 == 0)
+                            {
+                                m_currentPathCache = 
+                                    PathLerp(fovConfiners[i].path, fovConfiners[i+1].path, 
+                                    Mathf.InverseLerp(fovConfiners[i].fov, fovConfiners[i + 1].fov, currentFOV));
+                            }
+                            else
+                            {
+                                m_currentPathCache = 
+                                    Mathf.Abs(fovConfiners[i].fov - currentFOV) < 
+                                    Mathf.Abs(fovConfiners[i + 1].fov - currentFOV) ? 
+                                    fovConfiners[i].path : 
+                                    fovConfiners[i+1].path;
+                            }
+                            
                             break;
                         }
                     }
@@ -97,6 +117,35 @@ namespace Cinemachine
                 extra.confinerDisplacement = displacement.magnitude;
             }
         }
+
+        private List<List<Vector2>> PathLerp(in List<List<Vector2>> left, in List<List<Vector2>> right, float lerp)
+        {
+            if (left.Count != right.Count)
+            {
+                Debug.Log("SOMETHINGS NOT RIGHT 1 - PathLerp");
+                return left;
+            }
+            for (int i = 0; i < left.Count; ++i)
+            {
+                if (left[i].Count != right[i].Count)
+                {
+                    Debug.Log("SOMETHINGS NOT RIGHT 2 - PathLerp");
+                    return left;
+                }
+            }
+
+            List<List<Vector2>> result = new List<List<Vector2>>(left.Count);
+            for (int i = 0; i < left.Count; ++i)
+            {
+                var r = new List<Vector2>(left[i].Count);
+                for (int j = 0; j < left[i].Count; ++j)
+                {
+                    r.Add(Vector2.Lerp(left[i][j], right[i][j], lerp));
+                }
+                result.Add(r);
+            }
+            return result;
+        }
         
          
         private void Start()
@@ -116,15 +165,15 @@ namespace Cinemachine
                 return Vector3.zero;
 
             float bestDistance = float.MaxValue;
-            for (int i = 0; i < m_originalPathCache.Count; ++i)
+            for (int i = 0; i < m_currentPathCache.Count; ++i)
             {
-                int numPoints = m_originalPathCache[i].Count;
+                int numPoints = m_currentPathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(m_originalPathCache[i][numPoints - 1]);
+                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(m_currentPathCache[i][numPoints - 1]);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_originalPathCache[i][j]);
+                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_currentPathCache[i][j]);
                         Vector2 c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
                         float d = Vector2.SqrMagnitude(p - c);
                         if (d < bestDistance)
@@ -147,10 +196,10 @@ namespace Cinemachine
 
         bool ValidatePathCache()
         {
-            if (m_BoundingShape2DCache == m_BoundingShape2D)
-            {
-                return true;
-            }
+            // if (m_BoundingShape2DCache == m_BoundingShape2D)
+            // {
+            //     return true;
+            // }
             
             InvalidatePathCache();
             m_BoundingShape2DCache = m_BoundingShape2D;
@@ -201,11 +250,19 @@ namespace Cinemachine
                 return false;
             }
 
-            var sensorRatio = 1f;
+            var sensorRatio = 1f; // TODO:
+            if (confinerBaker == null)
+            {
+                confinerBaker = new ConfinerOven();
+            }
             confinerBaker.BakeConfiner(m_originalPathCache, sensorRatio);
+            if (graphToCompositeCollider == null)
+            {
+                graphToCompositeCollider = new GraphToCompositeCollider(this.transform);
+            }
             graphToCompositeCollider.Convert(confinerBaker.GetStateGraphs(), Vector2.zero);
             fovConfiners = graphToCompositeCollider.GetBakedConfiners();
-
+            m_currentPathCache = new List<List<Vector2>>();
             return true;
         }
     }
