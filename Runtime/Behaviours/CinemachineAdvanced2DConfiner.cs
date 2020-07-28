@@ -14,6 +14,10 @@ namespace Cinemachine
         private Collider2D m_BoundingShape2DCache;
         private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
+        
+        private List<GraphToCompositeCollider.FovBakedConfiners> fovConfiners;
+        private float currentFOV;
+        private List<List<Vector2>> m_currentPathCache;
 
         private List<List<Graph>> graphs;
         private List<ConfinerState> confinerStates;
@@ -51,6 +55,21 @@ namespace Cinemachine
                 ||
                 (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
             {
+                if (state.Lens.FieldOfView != currentFOV)
+                {
+                    currentFOV = state.Lens.FieldOfView;
+                    for (int i = 0; i < fovConfiners.Count; ++i)
+                    {
+                        if (fovConfiners[i].fov <= currentFOV)
+                        {
+                            // TODO: lerp between i, and i + 1
+                            // need to make sure, i and i+1 are lerpable
+                            m_currentPathCache = fovConfiners[i].path;
+                            break;
+                        }
+                    }
+                    
+                }
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
                 
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
@@ -184,8 +203,8 @@ namespace Cinemachine
 
             var sensorRatio = 1f;
             confinerBaker.BakeConfiner(m_originalPathCache, sensorRatio);
-            graphToCompositeCollider.Convert(confinerBaker.GetStateGraphs(), Vector2.zero); 
-            // TODO: getCompositeCollider poly result -> get points -> m_PathCache
+            graphToCompositeCollider.Convert(confinerBaker.GetStateGraphs(), Vector2.zero);
+            fovConfiners = graphToCompositeCollider.GetBakedConfiners();
 
             return true;
         }

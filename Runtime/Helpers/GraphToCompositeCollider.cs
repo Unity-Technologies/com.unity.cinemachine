@@ -8,6 +8,7 @@ namespace Cinemachine
     class GraphToCompositeCollider
     {
         private GameObject confinerHolder;
+        private List<GameObject> compositeColliders;
         
         /// <summary>
         /// Initializes GraphToCompositeCollider and creates the collider holders BakedConfiner parented to parent.
@@ -28,6 +29,7 @@ namespace Cinemachine
         /// </summary>
         internal void Convert(in List<ConfinerState> confinerStates, in Vector2 graphOffset)
         {
+            compositeColliders = new List<GameObject>(confinerStates.Count);
             for (var gs = 0; gs < confinerStates.Count; gs++)
             {
                 var confinerState = confinerStates[gs];
@@ -39,6 +41,7 @@ namespace Cinemachine
                 rigidbody2D.simulated = false;
                 var compositeCollider2D = compositeHolder.AddComponent<CompositeCollider2D>();
                 compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
+                compositeColliders.Add(compositeHolder);
                 
                 var polygonHolder = new GameObject("PolygonCollider2Ds");
                 polygonHolder.transform.parent = compositeHolder.transform;
@@ -67,6 +70,18 @@ namespace Cinemachine
                     }
                 }
             }
+        }
+
+        public class FovBakedConfiners
+        {
+            public float fov;
+            public List<List<Vector2>> path;
+        }
+
+        // TODO: return List< FOV, List<List<Vector>> >
+        internal List<FovBakedConfiners> GetBakedConfiners()
+        {
+            return null;
         }
     }
 }
