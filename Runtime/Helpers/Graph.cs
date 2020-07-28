@@ -10,8 +10,8 @@ namespace Cinemachine
         public float cameraWindowDiagonal;
         public int state;
     }
-    
-    class Point2
+
+    public class Point2
     {
         public Vector2 position;
         public Vector2 normal;
@@ -31,7 +31,7 @@ namespace Cinemachine
     /// <summary>
     /// Graph represent a list of <points, and their normals> that can shrink down to it's skeleton.  
     /// </summary>
-    class Graph
+    public class Graph
     {
         internal List<Point2> points;
         internal bool ClockwiseOrientation;
