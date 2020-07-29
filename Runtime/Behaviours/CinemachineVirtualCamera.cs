@@ -133,6 +133,7 @@ namespace Cinemachine
         public override float GetMaxDampTime()
         {
             float maxDamp = base.GetMaxDampTime();
+            UpdateComponentPipeline();
             if (m_ComponentPipeline != null)
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
                     maxDamp = Mathf.Max(maxDamp, m_ComponentPipeline[i].GetMaxDampTime());

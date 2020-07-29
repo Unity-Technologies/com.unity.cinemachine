@@ -69,9 +69,6 @@ using System.Collections.Generic;
             public void ScrubToHere(
                 double currentTime, TargetPositionCache.Mode cacheMode, CinemachineBrain brain)
             {
-                if (brain == null)
-                    return;
-
                 TargetPositionCache.CacheMode = cacheMode;
                 TargetPositionCache.CurrentTime = (float)currentTime;
                 if (cacheMode != TargetPositionCache.Mode.Playback)
@@ -79,7 +76,7 @@ using System.Collections.Generic;
 
                 float stepSize = TargetPositionCache.CacheStepSize;
 
-                var up = brain.DefaultWorldUp;
+                var up = (brain != null) ? brain.DefaultWorldUp : Vector3.up;
                 var endTime = TargetPositionCache.CurrentTime;
                 var startTime = Mathf.Max(
                     TargetPositionCache.CacheTimeRange.Start, endTime - GetMaxDampTime());
@@ -139,7 +136,7 @@ using System.Collections.Generic;
                 if (d != null && d.playableGraph.IsValid())
                     mPreviewPlay = GetMasterPlayableDirector().playableGraph.IsPlaying();
             }
-            if (Application.isPlaying || !TargetPositionCache.UseCache || GetMasterPlayableDirector == null)
+            if (Application.isPlaying || !TargetPositionCache.UseCache)
                 TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;
             else
             {
