@@ -38,7 +38,7 @@ To upgrade to the Cinemachine Package:
 
 Cinemachine has no external dependencies. Just install it and start using it. If you are also using the Post Processing Stack (version 2), then adapter modules are provided - protected by `ifdef` directives which auto-define if the presence of the Post Processing Stack is detected.  
 
-There are similar `ifdef`-proteced behaviours for other packages, such as HDRP Volumes, Timeline, and Pixel-Perfect.
+There are similar `ifdef`-protected behaviours for other packages, such as HDRP Volumes, Timeline, and Pixel-Perfect.
 
 This Cinemachine version 2.6 is compatible with the following versions of the Unity Editor:
 
