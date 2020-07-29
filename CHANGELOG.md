@@ -5,13 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.6.1] - 2020-00-00
-### New Bugfixes
+### Bugfixes
 - Bugfix: vertical group composition was not composing properly
 - Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
 - Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
 - Bugfix: brain updates on scene loaded or unloaded
 - Bugfix (1260385): check for prefab instances correctly
 - Regression Fix: PostProcessing/VolumeSettings FocusTracksTarget was not accounting for lookAt target offset
+- Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
+- Bugfix: removed compile errors when Physics2D module is disabled
+- Added Multi-object edit capabilities to virtual cameras and extensions 
 
 ## [2.6.0] - 2020-06-04
 ### New Features and Bugfixes

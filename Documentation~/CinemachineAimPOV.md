@@ -8,7 +8,7 @@ This Virtual Camera __Aim__ algorithm aims the camera in response to the user’
 |:---|:---|:---|
 | __Vertical Axis__ || Controls the vertical orientation of the Virtual Camera’s aim.  |
 | | _Value_ | The current value of the axis to aim the camera at, in degrees. Accepted values are -90 to 90.  |
-| | _Value Range_ | The minimum and maximum values for the vertrial axis of the Virtual Camera. |
+| | _Value Range_ | The minimum and maximum values for the vertical axis of the Virtual Camera. |
 | | _Wrap_ | If checked, the axis wraps around the Value Range values, forming a loop. |
 | | _Max Speed_ | The maximum speed of this axis in degrees/second, or the multipler for the input value if Speed Mode is set to _InputValueGain_. |
 | | _Speed Mode_ | How the axis responds to input.  _MaxSpeed_ (the default) clamps the maximum speed at which the axis can change, regardless of the input.  _Input Value Gain_ multiplies the input value by MaxSpeed. |

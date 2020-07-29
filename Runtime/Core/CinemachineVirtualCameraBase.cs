@@ -53,7 +53,8 @@ namespace Cinemachine
         /// state of other cameras and this camera.  Higher numbers have greater priority.
         /// </summary>
         [NoSaveDuringPlay]
-        [Tooltip("The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority.")]
+        [Tooltip("The priority will determine which camera becomes active based on the state of "
+            + "other cameras and this camera.  Higher numbers have greater priority.")]
         public int m_Priority = 10;
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace Cinemachine
         [Tooltip("When the virtual camera is not live, this is how often the virtual camera will be updated.  "
             + "Set this to tune for performance. Most of the time Never is fine, "
             + "unless the virtual camera is doing shot evaluation.")]
-        public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.RoundRobin;
+        public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.Never;
 
         /// <summary>
         /// Query components and extensions for the maximum damping time.

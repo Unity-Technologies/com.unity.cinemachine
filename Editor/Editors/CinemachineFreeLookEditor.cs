@@ -7,6 +7,7 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineFreeLook))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
     {
@@ -69,20 +70,23 @@ namespace Cinemachine
                 serializedObject.ApplyModifiedProperties();
 
             // Rigs
-            UpdateRigEditors();
-            for (int i = 0; i < m_editors.Length; ++i)
+            if (Selection.objects.Length == 1)
             {
-                if (m_editors[i] == null)
-                    continue;
-                EditorGUILayout.Separator();
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorGUILayout.LabelField(RigNames[i], EditorStyles.boldLabel);
-                ++EditorGUI.indentLevel;
-                m_editors[i].OnInspectorGUI();
-                --EditorGUI.indentLevel;
-                EditorGUILayout.EndVertical();
+                UpdateRigEditors();
+                for (int i = 0; i < m_editors.Length; ++i)
+                {
+                    if (m_editors[i] == null)
+                        continue;
+                    EditorGUILayout.Separator();
+                    EditorGUILayout.BeginVertical(GUI.skin.box);
+                    EditorGUILayout.LabelField(RigNames[i], EditorStyles.boldLabel);
+                    ++EditorGUI.indentLevel;
+                    m_editors[i].OnInspectorGUI();
+                    --EditorGUI.indentLevel;
+                    EditorGUILayout.EndVertical();
+                }
             }
-
+            
             // Extensions
             DrawExtensionsWidgetInInspector();
         }

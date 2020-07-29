@@ -345,6 +345,7 @@ namespace Cinemachine
                     return list[i].hash;
             int newHash = CreateFakeHash(parentHash, clip);
             list.Add(new HashPair() { parentHash = parentHash, hash = newHash });
+            mStateParentLookup[newHash] = parentHash;
             return newHash;
         }
 
@@ -395,6 +396,7 @@ namespace Cinemachine
                     mStateParentLookup[i.m_Hash] = i.m_ParentHash;
 
             // Zap the cached current instructions
+            mHashCache = null;
             mActivationTime = mPendingActivationTime = 0;
             mActiveBlend = null;
         }
