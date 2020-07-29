@@ -5,6 +5,9 @@
 - Bugfix: brain updates on scene loaded or unloaded
 - Bugfix (1260385): check for prefab instances correctly
 - Regression Fix: PostProcessing/VolumeSettings FocusTracksTarget was not accounting for lookAt target offset
+- Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
+- Bugfix: removed compile errors when Physics2D module is disabled
+- Added Multi-object edit capabilities to virtual cameras and extensions 
 
 <size=20><b>Version 2.6.0</b></size>
 - Added AxisState.IInputProvider API to better support custom input systems
