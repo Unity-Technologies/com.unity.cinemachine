@@ -127,6 +127,13 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// Instead of normalizing a vector in a circle with a set a radius, this function normalizes the vector to be
+        /// within a rectangle with sides (a, 1). Meaning, the maximum length is a and 1 for the x and y components of the
+        /// vector respectively.
+        /// </summary>
+        /// <param name="normal">Normal to SquareNormalize</param>
+        /// <returns>SquareNormalized normal</returns>
         internal Vector2 SquareNormalize(Vector2 normal)
         {
             Vector2 n = normal.normalized * sensorRatio;
@@ -137,14 +144,32 @@ namespace Cinemachine
                 Mathf.Clamp(n.y, -rectDiagonal, rectDiagonal);
             return n;
         }
-        
 
+        /// <summary>
+        /// Flips normals in the graph.
+        /// </summary>
         internal void FlipNormals()
         {
             for (int i = 0; i < points.Count; ++i)
             {
                 points[i].normal = -points[i].normal;
             }
+        }
+
+        /// <summary>
+        /// Graph is shrinkable if it has at least one non-zero normal.
+        /// </summary>
+        /// <returns>True, if graph is shrinkable. False, otherwise.</returns>
+        internal bool IsShrinkable()
+        {
+            for (int i = 0; i < points.Count; ++i)
+            {
+                if (points[i].normal != Vector2.zero)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         internal void Shrink(float shrinkAmount)

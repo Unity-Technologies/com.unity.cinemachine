@@ -14,7 +14,7 @@ namespace Cinemachine
         private Collider2D m_BoundingShape2DCache;
         private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
-        
+
         private List<GraphToCompositeCollider.FovBakedConfiners> fovConfiners;
         private float currentFOV;
         private List<List<Vector2>> m_currentPathCache;
@@ -147,11 +147,6 @@ namespace Cinemachine
             return result;
         }
         
-         
-        private void Start()
-        {
-            graphToCompositeCollider = new GraphToCompositeCollider(this.transform);
-        }
         
         private Vector3 ConfinePoint(Vector3 camPos)
         {
@@ -196,11 +191,10 @@ namespace Cinemachine
 
         bool ValidatePathCache()
         {
-            // if (m_BoundingShape2DCache == m_BoundingShape2D)
-            // {
-            //     return true;
-            // }
-            
+            if (m_BoundingShape2DCache == m_BoundingShape2D)
+            {
+                return true;
+            }
             InvalidatePathCache();
             m_BoundingShape2DCache = m_BoundingShape2D;
             
@@ -256,14 +250,18 @@ namespace Cinemachine
             {
                 confinerBaker = new ConfinerOven();
             }
-            confinerBaker.BakeConfiner(m_originalPathCache, sensorRatio);
-            if (graphToCompositeCollider == null)
+            bool rebake = confinerBaker.BakeConfiner(m_originalPathCache, sensorRatio);
+            if (rebake)
             {
-                graphToCompositeCollider = new GraphToCompositeCollider(this.transform);
+                if (graphToCompositeCollider == null)
+                {
+                    graphToCompositeCollider = new GraphToCompositeCollider();
+                }
+                graphToCompositeCollider.Convert(confinerBaker.GetStateGraphs(), Vector2.zero);
+                fovConfiners = graphToCompositeCollider.GetBakedConfiners();
+                m_currentPathCache = new List<List<Vector2>>();
             }
-            graphToCompositeCollider.Convert(confinerBaker.GetStateGraphs(), Vector2.zero);
-            fovConfiners = graphToCompositeCollider.GetBakedConfiners();
-            m_currentPathCache = new List<List<Vector2>>();
+            
             return true;
         }
     }

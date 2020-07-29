@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
@@ -10,10 +11,8 @@ namespace Cinemachine
     {
         /// <summary>Inputs represent areas within the virtual camera can operate the camera.
         /// Distance from the border depends the camera view window size.</summary>
-        public bool Bake;
 
-        public int DEBUG_iterationCount = 10;
-        public float DEBUG_shrinkAmount;
+        private float shrinkAmount = 0.03f; // TODO: have a resolution parameter
 
         private List<List<Graph>> graphs;
 
@@ -58,16 +57,70 @@ namespace Cinemachine
             //     ConvertToCompositeCollider = false;
             // }
         }
-        
-        internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio)
-        {
-            
 
+        private bool IsCacheValid(in List<List<Vector2>> inputPath, in float sensorRatio)
+        {
+            if (Math.Abs(sensorRatio - sensorRatioCache) > UnityVectorExtensions.Epsilon)
+            {
+                inputPathCache = inputPath;
+                sensorRatioCache = sensorRatio;
+                return false;
+            }
+            
+            if (inputPathCache == null)
+            {
+                inputPathCache = inputPath;
+                sensorRatioCache = sensorRatio;
+                return false;
+            }
+            if (inputPathCache.Count == inputPath.Count)
+            {
+                for (int i = 0; i < inputPath.Count; ++i)
+                {
+                    if (inputPath[i].Count == inputPathCache[i].Count)
+                    {
+                        for (int j = 0; j < inputPath[i].Count; ++j)
+                        {
+                            if (inputPath[i][j] != inputPathCache[i][j])
+                            {
+                                inputPathCache = inputPath;
+                                sensorRatioCache = sensorRatio;
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        inputPathCache = inputPath;
+                        sensorRatioCache = sensorRatio;
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                inputPathCache = inputPath;
+                sensorRatioCache = sensorRatio;
+                return false;
+            }
+
+            return true;
+        }
+
+        private List<List<Vector2>> inputPathCache = null;
+        private float sensorRatioCache = 0;
+        internal bool BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio)
+        {
+            if (IsCacheValid(inputPath, sensorRatio))
+            {
+                return false;
+            }
+            
             graphs = CreateGraphs(inputPath, sensorRatio);
             int graphs_index = 0;
 
-            int iterationCount = DEBUG_iterationCount; // TODO: go until no change in graph
-            while (iterationCount > 0)
+            bool shrinking = true;
+            while (shrinking)
             {
                 GIZMOS_currentGraphs = graphs[graphs_index];
                 List<Graph> nextGraphsIteration = new List<Graph>();
@@ -104,7 +157,7 @@ namespace Cinemachine
                         // graph.Simplify(); // TODO: need to explore this option more
                     }
                     
-                    graph.Shrink(DEBUG_shrinkAmount);
+                    graph.Shrink(shrinkAmount);
 
                     /// 2. DO until Graph G has intersections
                     /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
@@ -117,8 +170,17 @@ namespace Cinemachine
                 ++graphs_index;
                 GIZMOS_subGraphs = nextGraphsIteration;
 
-                iterationCount--;
+                foreach (var graph in graphs[graphs_index])
+                {
+                    if (!graph.IsShrinkable())
+                    {
+                        shrinking = false;
+                        break;
+                    }
+                }
             }
+            
+            return true;
         }
         
         private List<Graph> CreateGraph(in Vector2[] path, in float sensorRatio)
@@ -236,7 +298,7 @@ namespace Cinemachine
             
             for (int i = 0; i < confinerStates.Count; i += 2)
             {
-                if (confinerStates[i + 1].state != confinerStates[i].state)
+                if (i + 1 == confinerStates.Count || confinerStates[i + 1].state != confinerStates[i].state)
                 {
                     confinerStates.Insert(i + 1, confinerStates[i]);
                 }

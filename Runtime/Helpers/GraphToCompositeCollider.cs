@@ -8,16 +8,20 @@ namespace Cinemachine
     class GraphToCompositeCollider
     {
         private GameObject confinerHolder;
+        private Transform parent;
         private List<GameObject> compositeColliders;
         
         /// <summary>
         /// Initializes GraphToCompositeCollider and creates the collider holders BakedConfiner parented to parent.
         /// </summary>
-        internal GraphToCompositeCollider(Transform parent)
+
+        private void CleanBakedConfiner()
         {
-            confinerHolder = new GameObject("BakedConfiner");
-            confinerHolder.transform.parent = parent;
-            confinerHolder.transform.localPosition = Vector3.zero;
+            if (confinerHolder != null)
+                GameObject.Destroy(confinerHolder);
+            
+            confinerHolder = new GameObject("CMBakedConfiner");
+            confinerHolder.transform.position = Vector3.zero;
         }
         
         // TODO: then test if lerping works -> works completely in parallel
@@ -29,6 +33,8 @@ namespace Cinemachine
         /// </summary>
         internal void Convert(in List<ConfinerState> confinerStates, in Vector2 graphOffset)
         {
+            CleanBakedConfiner();
+            
             compositeColliders = new List<GameObject>(confinerStates.Count);
             for (var gs = 0; gs < confinerStates.Count; gs++)
             {
