@@ -250,6 +250,7 @@ namespace Cinemachine
                 return false;
             }
 
+            
             var sensorRatio = 1f; // TODO:
             if (confinerBaker == null)
             {
