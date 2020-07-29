@@ -17,13 +17,8 @@ public class CinemachineShotClipEditor : ClipEditor
     [InitializeOnLoad]
     class EditorInitialize 
     { 
-        static EditorInitialize() 
-        { 
-            CinemachineMixer.GetMasterPlayableDirector = GetMasterDirector; 
-            CinemachineMixer.GetInspectedPlayableDirector = GetInspectedDirector; 
-        } 
+        static EditorInitialize() { CinemachineMixer.GetMasterPlayableDirector = GetMasterDirector; } 
         static PlayableDirector GetMasterDirector() { return TimelineEditor.masterDirector; }
-        static PlayableDirector GetInspectedDirector() { return TimelineEditor.inspectedDirector; }
     }
 
     public override ClipDrawOptions GetClipOptions(TimelineClip clip)

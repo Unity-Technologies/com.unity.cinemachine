@@ -203,7 +203,7 @@ namespace Cinemachine.Utility
                 Item item = new Item();
                 item.velocity = velocity;
                 item.weight = weight;
-                item.time = Time.time;
+                item.time = CinemachineCore.CurrentTime;
                 if (mCount == FilterSize)
                     PopBottom();
                 ++mCount;
@@ -222,7 +222,7 @@ namespace Cinemachine.Utility
         {
             if (mCount > 0)
             {
-                float time = Time.time;
+                float time = CinemachineCore.CurrentTime;
                 Item item = mHistory[mBottom];
                 if (++mBottom == FilterSize)
                     mBottom = 0;
@@ -239,7 +239,7 @@ namespace Cinemachine.Utility
         /// <summary>Decay the history.  This should be called every frame.</summary>
         public void DecayHistory()
         {
-            float time = Time.time;
+            float time = CinemachineCore.CurrentTime;
             float decay = Decay(time - mWeightTime);
             mWeightSum *= decay;
             mWeightTime = time;

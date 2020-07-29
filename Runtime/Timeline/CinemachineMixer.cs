@@ -16,7 +16,6 @@ using System.Collections.Generic;
         public delegate PlayableDirector MasterDirectorDelegate();
 
         static public MasterDirectorDelegate GetMasterPlayableDirector;
-        static public MasterDirectorDelegate GetInspectedPlayableDirector;
 
         // The brain that this track controls
         private CinemachineBrain mBrain;
@@ -140,25 +139,19 @@ using System.Collections.Generic;
                 if (d != null && d.playableGraph.IsValid())
                     mPreviewPlay = GetMasterPlayableDirector().playableGraph.IsPlaying();
             }
-            if (Application.isPlaying || !TargetPositionCache.UseCache)
+            if (Application.isPlaying || !TargetPositionCache.UseCache || GetMasterPlayableDirector == null)
                 TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;
             else
             {
-                // Use cache only if we are being inspected
-                var inspected = GetInspectedPlayableDirector != null ? GetInspectedPlayableDirector() : null;
-                if (GetInspectedPlayableDirector() == (PlayableDirector)playable.GetGraph().GetResolver())
+                if (m_ScrubbingCacheHelper == null)
                 {
-                    if (m_ScrubbingCacheHelper == null)
-                    {
-                        m_ScrubbingCacheHelper = new ScrubbingCacheHelper();
-                        m_ScrubbingCacheHelper.Init(playable);
-                    }
-                    var master = GetMasterPlayableDirector != null ? GetMasterPlayableDirector() : null;
-                    m_ScrubbingCacheHelper.ScrubToHere(
-                        master != null ? master.time : inspected.time, 
-                        mPreviewPlay ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback,
-                        mBrain);
+                    m_ScrubbingCacheHelper = new ScrubbingCacheHelper();
+                    m_ScrubbingCacheHelper.Init(playable);
                 }
+                m_ScrubbingCacheHelper.ScrubToHere(
+                    GetMasterPlayableDirector().time, 
+                    mPreviewPlay ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback,
+                    mBrain);
             }
 #else
             TargetPositionCache.CacheMode = TargetPositionCache.Mode.Disabled;

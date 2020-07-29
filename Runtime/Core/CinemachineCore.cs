@@ -70,6 +70,22 @@ namespace Cinemachine
         public static float UniformDeltaTimeOverride = -1;
 
         /// <summary>
+        /// Replacement for Time.deltaTime, taking UniformDeltaTimeOverride into account.
+        /// </summary>
+        public static float DeltaTime => UniformDeltaTimeOverride >= 0 ? UniformDeltaTimeOverride : Time.deltaTime;
+
+        /// <summary>
+        /// If non-negative, cinemachine willuse this value whenever it wants current game time.
+        /// Usage is for master timelines in manual update mode, for deterministic behaviour.
+        /// </summary>
+        public static float CurrentTimeOverride = -1;
+
+        /// <summary>
+        /// Replacement for Time.time, taking CurrentTimeTimeOverride into account.
+        /// </summary>
+        public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
+
+        /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.
         /// A handler can either return the default blend, or a new blend specific to
         /// current conditions.
@@ -214,7 +230,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase currentRoundRobin = mRoundRobinVcamLastFrame;
 
             // Update the fixed frame count
-            float now = Time.time;
+            float now = CinemachineCore.CurrentTime;
             if (now != mLastUpdateTime)
             {
                 mLastUpdateTime = now;

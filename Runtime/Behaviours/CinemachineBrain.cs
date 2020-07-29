@@ -186,7 +186,7 @@ namespace Cinemachine
             set
             {
                 if (value != null && !CinemachineCore.Instance.IsLive(value))
-                    value.OnTransitionFromCamera(null, Vector3.up, Time.deltaTime);
+                    value.OnTransitionFromCamera(null, Vector3.up, CinemachineCore.DeltaTime);
                 mSoloCamera = value;
             }
         }
