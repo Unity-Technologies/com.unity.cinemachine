@@ -266,7 +266,8 @@ namespace Cinemachine
                 {
                     graphToCompositeCollider = new GraphToCompositeCollider();
                 }
-                graphToCompositeCollider.Convert(confinerBaker.GetStateGraphs(), Vector2.zero);
+                Debug.Log(m_BoundingShape2D.transform.position);
+                graphToCompositeCollider.Convert(confinerBaker.GetStateGraphs(), m_BoundingShape2D.transform.position);
                 fovConfiners = graphToCompositeCollider.GetBakedConfiners();
                 m_currentPathCache = new List<List<Vector2>>();
             }

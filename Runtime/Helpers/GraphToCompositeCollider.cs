@@ -53,7 +53,7 @@ namespace Cinemachine
                 
                 var polygonHolder = new GameObject("PolygonCollider2Ds");
                 polygonHolder.transform.parent = compositeHolder.transform;
-                polygonHolder.transform.localPosition = Vector3.zero;
+                polygonHolder.transform.localPosition = graphOffset;
 
                 foreach (var graph in confinerState.graphs)
                 {
