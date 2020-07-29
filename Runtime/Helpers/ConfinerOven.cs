@@ -101,7 +101,7 @@ namespace Cinemachine
                             // or center of mass -> does not wokr
                             graph.points[i].normal = Vector2.zero; // stops shrinking when area is very small -> line
                         }
-                        // graph.Simplify();
+                        // graph.Simplify(); // TODO: need to explore this option more
                     }
                     
                     graph.Shrink(DEBUG_shrinkAmount);
