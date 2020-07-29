@@ -15,8 +15,10 @@ namespace Cinemachine
         private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
 
+        public bool Bake = false;
+
         private List<GraphToCompositeCollider.FovBakedConfiners> fovConfiners;
-        private float currentFOV;
+        private float currentOrthographicSize;
         private List<List<Vector2>> m_currentPathCache;
 
         private List<List<Graph>> graphs;
@@ -57,14 +59,14 @@ namespace Cinemachine
             {
                 ValidatePathCache();
                 
-                var stateLensFieldOfView = Mathf.Abs(state.Lens.FieldOfView);
+                var stateLensOrthographicSize = Mathf.Abs(state.Lens.OrthographicSize);
                 // TODO: float comparison granulity
-                if (Math.Abs(stateLensFieldOfView - currentFOV) > UnityVectorExtensions.Epsilon)
+                if (true || Math.Abs(stateLensOrthographicSize - currentOrthographicSize) > UnityVectorExtensions.Epsilon)
                 {
-                    currentFOV = stateLensFieldOfView;
+                    currentOrthographicSize = stateLensOrthographicSize;
                     for (int i = 0; i < fovConfiners.Count; ++i)
                     {
-                        if (fovConfiners[i].fov <= currentFOV)
+                        if (fovConfiners[i].orthographicSize <= currentOrthographicSize)
                         {
                             if (i == fovConfiners.Count)
                             {
@@ -74,13 +76,13 @@ namespace Cinemachine
                             {
                                 m_currentPathCache = 
                                     PathLerp(fovConfiners[i].path, fovConfiners[i+1].path, 
-                                    Mathf.InverseLerp(fovConfiners[i].fov, fovConfiners[i + 1].fov, currentFOV));
+                                    Mathf.InverseLerp(fovConfiners[i].orthographicSize, fovConfiners[i + 1].orthographicSize, currentOrthographicSize));
                             }
                             else
                             {
                                 m_currentPathCache = 
-                                    Mathf.Abs(fovConfiners[i].fov - currentFOV) < 
-                                    Mathf.Abs(fovConfiners[i + 1].fov - currentFOV) ? 
+                                    Mathf.Abs(fovConfiners[i].orthographicSize - currentOrthographicSize) < 
+                                    Mathf.Abs(fovConfiners[i + 1].orthographicSize - currentOrthographicSize) ? 
                                     fovConfiners[i].path : 
                                     fovConfiners[i+1].path;
                             }
@@ -191,12 +193,17 @@ namespace Cinemachine
 
         bool ValidatePathCache()
         {
-            if (m_BoundingShape2DCache == m_BoundingShape2D)
+            if (!Bake)
             {
-                return true;
+                return false;
             }
-            InvalidatePathCache();
-            m_BoundingShape2DCache = m_BoundingShape2D;
+            Bake = false;
+            // if (m_BoundingShape2DCache == m_BoundingShape2D)
+            // {
+            //     return true;
+            // }
+            // InvalidatePathCache();
+            // m_BoundingShape2DCache = m_BoundingShape2D;
             
             Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
             if (colliderType == typeof(PolygonCollider2D))
@@ -250,7 +257,9 @@ namespace Cinemachine
             {
                 confinerBaker = new ConfinerOven();
             }
-            bool rebake = confinerBaker.BakeConfiner(m_originalPathCache, sensorRatio);
+
+            bool rebake = true;
+            confinerBaker.BakeConfiner(m_originalPathCache, sensorRatio);
             if (rebake)
             {
                 if (graphToCompositeCollider == null)
@@ -263,6 +272,18 @@ namespace Cinemachine
             }
             
             return true;
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.red;
+            foreach (var path in m_currentPathCache)
+            {
+                for (var index = 0; index < path.Count; index++)
+                {
+                    Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
+                }
+            }
         }
     }
 }

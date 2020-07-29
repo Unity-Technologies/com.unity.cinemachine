@@ -18,7 +18,9 @@ namespace Cinemachine
         private void CleanBakedConfiner()
         {
             if (confinerHolder != null)
-                GameObject.Destroy(confinerHolder);
+            {
+                Object.DestroyImmediate(confinerHolder);
+            }
             
             confinerHolder = new GameObject("CMBakedConfiner");
             confinerHolder.transform.position = Vector3.zero;
@@ -80,7 +82,7 @@ namespace Cinemachine
 
         public class FovBakedConfiners
         {
-            public float fov;
+            public float orthographicSize;
             public List<List<Vector2>> path;
         }
 
@@ -92,6 +94,8 @@ namespace Cinemachine
             foreach (var compositeCollider in compositeColliders)
             {
                 var compositeCollider2D = compositeCollider.GetComponent<CompositeCollider2D>();
+                var fovStr = compositeCollider2D.name.Substring("CompositeCollider2D - ".Length);
+                var FOV = float.Parse(fovStr);
                 List<List<Vector2>> pathPoints = new List<List<Vector2>>();
                 for (int i = 0; i < compositeCollider2D.pathCount; ++i)
                 {
@@ -103,7 +107,7 @@ namespace Cinemachine
                 
                 bakedConfiners.Add(new FovBakedConfiners
                 {
-                    fov = 1,
+                    orthographicSize = FOV,
                     path = pathPoints,
                 });
             }
