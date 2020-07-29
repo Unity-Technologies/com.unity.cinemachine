@@ -12,6 +12,7 @@ namespace Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineConfiner))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>
     {
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)

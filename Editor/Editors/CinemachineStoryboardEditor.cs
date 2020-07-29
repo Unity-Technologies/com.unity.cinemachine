@@ -48,6 +48,7 @@ namespace Cinemachine.Editor
     }
 
     [CustomEditor(typeof(CinemachineStoryboard))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
         public void OnDisable()
@@ -57,7 +58,7 @@ namespace Cinemachine.Editor
 
         const float FastWaveformUpdateInterval = 0.1f;
         float mLastSplitScreenEventTime = 0;
-
+        
         public override void OnInspectorGUI()
         {
             float now = Time.realtimeSinceStartup;
@@ -91,21 +92,30 @@ namespace Cinemachine.Editor
                 EditorGUI.LabelField(rect, "Scale");
                 rect.x += EditorGUIUtility.labelWidth; rect.width -= EditorGUIUtility.labelWidth;
                 rect.width /= 3;
+                serializedObject.SetIsDifferentCacheDirty(); // prop.hasMultipleDifferentValues always results in false if the SO isn't refreshed here
                 var prop = FindProperty(x => x.m_SyncScale);
+                var syncHasDifferentValues = prop.hasMultipleDifferentValues;
                 GUIContent syncLabel = new GUIContent("Sync", prop.tooltip);
+                EditorGUI.showMixedValue = syncHasDifferentValues;
                 prop.boolValue = EditorGUI.ToggleLeft(rect, syncLabel, prop.boolValue);
+                EditorGUI.showMixedValue = false;
                 rect.x += rect.width;
-                if (prop.boolValue)
+                if (prop.boolValue || targets.Length > 1 && syncHasDifferentValues)
                 {
                     prop = FindProperty(x => x.m_Scale);
                     float[] values = new float[1] { prop.vector2Value.x };
+                    EditorGUI.showMixedValue = prop.hasMultipleDifferentValues;
                     EditorGUI.MultiFloatField(rect, new GUIContent[1] { new GUIContent("X") }, values);
+                    EditorGUI.showMixedValue = false;
                     prop.vector2Value = new Vector2(values[0], values[0]);
                 }
                 else
                 {
                     rect.width *= 2;
-                    EditorGUI.PropertyField(rect, FindProperty(x => x.m_Scale), GUIContent.none);
+                    prop = FindProperty(x => x.m_Scale);
+                    EditorGUI.showMixedValue = prop.hasMultipleDifferentValues;
+                    EditorGUI.PropertyField(rect, prop, GUIContent.none);
+                    EditorGUI.showMixedValue = false;
                 }
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
             }

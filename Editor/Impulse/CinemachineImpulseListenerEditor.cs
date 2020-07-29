@@ -3,6 +3,7 @@
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineImpulseListener))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineImpulseListenerEditor 
         : BaseEditor<CinemachineImpulseListener>
     {

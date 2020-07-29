@@ -95,7 +95,7 @@ namespace Cinemachine
         [SerializeField] [HideInInspector]
         [FormerlySerializedAs("m_BlendHint")]
         [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
-
+        
         /// <summary>This is the name of the hidden GameObject that will be created as a child object
         /// of the virtual camera.  This hidden game object acts as a container for the polymorphic
         /// CinemachineComponent pipeline.  The Inspector UI for the Virtual Camera

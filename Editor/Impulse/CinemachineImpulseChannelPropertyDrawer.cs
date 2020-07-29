@@ -33,12 +33,16 @@ namespace Cinemachine.Editor
             UpdateLayerList();
             float addWidth = GUI.skin.button.CalcSize(mAddLabel).x;
             rect.width -= addWidth + hSpace;
+            
+            EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
+            EditorGUI.BeginChangeCheck();
             int value = EditorGUI.MaskField(rect, label, property.intValue, mLayerList);
-            if (value != property.intValue)
+            if (EditorGUI.EndChangeCheck())
             {
                 property.intValue  = value;
                 property.serializedObject.ApplyModifiedProperties();
             }
+            EditorGUI.showMixedValue = false;
 
             rect.x += rect.width + hSpace; rect.width = addWidth; rect.height -= 1;
             if (GUI.Button(rect, mAddLabel))
