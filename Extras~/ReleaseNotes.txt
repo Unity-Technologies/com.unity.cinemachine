@@ -1,4 +1,5 @@
 <size=20><b>Version 2.6.1</b></size>
+
 - Bugfix: vertical group composition was not composing properly
 - Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
 - Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
@@ -8,8 +9,12 @@
 - Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
 - Bugfix: removed compile errors when Physics2D module is disabled
 - Added Multi-object edit capabilities to virtual cameras and extensions 
+- Timeline Scrub Bubble now supports nested timelines, with some known limitations to be addressed with a future Tiemline package release
+- Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
+
 
 <size=20><b>Version 2.6.0</b></size>
+
 - Added AxisState.IInputProvider API to better support custom input systems
 - Added CinemachineInpiutProvider behaviour to support Unity's new input system
 - Added Timeline Scrubbing cache: when enabled, simulates damping and noise when scrubbing in timeline
@@ -52,6 +57,7 @@
 
 
 <size=20><b>Version 2.5.0</b></size>
+
 - Accommodate simultaneous precesnce of HDRP and URP
 - Regression fix: Axis was always recentered in Edit mode, even if recentering is off
 

@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
 - Bugfix: removed compile errors when Physics2D module is disabled
 - Added Multi-object edit capabilities to virtual cameras and extensions 
+- Timeline Scrub Bubble now supports nested timelines, with some known limitations to be addressed with a future Tiemline package release
+- Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
 
 ## [2.6.0] - 2020-06-04
 ### New Features and Bugfixes

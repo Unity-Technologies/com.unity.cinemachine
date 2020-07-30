@@ -21,6 +21,10 @@ public class CinemachineShotClipEditor : ClipEditor
         static PlayableDirector GetMasterDirector() { return TimelineEditor.masterDirector; }
     }
 
+    public delegate double TimelineGlobalToLocalTimeDelegate(double globalTime);
+    public static TimelineGlobalToLocalTimeDelegate TimelineGlobalToLocalTime = NoTimeConversion;
+    public static double NoTimeConversion(double time) { return time; }
+
     public override ClipDrawOptions GetClipOptions(TimelineClip clip)
     {
         var shotClip = (CinemachineShot) clip.asset;
@@ -83,9 +87,7 @@ public class CinemachineShotClipEditor : ClipEditor
 
         if (Application.isPlaying || !TargetPositionCache.UseCache 
             || TargetPositionCache.CacheMode == TargetPositionCache.Mode.Disabled
-            || TimelineEditor.inspectedDirector == null
-            // GML temp until we get a Timeline API to convert master time to inspected time
-            || TimelineEditor.masterDirector != TimelineEditor.inspectedDirector) 
+            || TimelineEditor.inspectedDirector == null)
         {
             return;
         }
@@ -94,6 +96,9 @@ public class CinemachineShotClipEditor : ClipEditor
         var cacheRange = TargetPositionCache.CacheTimeRange;
         if (!cacheRange.IsEmpty)
         {
+            cacheRange.Start = (float)TimelineGlobalToLocalTime(cacheRange.Start);
+            cacheRange.End = (float)TimelineGlobalToLocalTime(cacheRange.End);
+
             // Clip cacheRange to rect
             float start = (float)region.startTime;
             float end = (float)region.endTime;
@@ -112,7 +117,7 @@ public class CinemachineShotClipEditor : ClipEditor
         if (!TargetPositionCache.IsRecording && !TargetPositionCache.CurrentPlaybackTimeValid)
         {
             var r = region.position;
-            var t = clip.ToLocalTime(TimelineEditor.masterDirector.time);
+            var t = clip.ToLocalTime(TimelineGlobalToLocalTime(TimelineEditor.masterDirector.time));
             var pos = r.x + r.width 
                 * (float)((t - region.startTime) / (region.endTime - region.startTime));
     
