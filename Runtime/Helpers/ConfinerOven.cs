@@ -12,8 +12,6 @@ namespace Cinemachine
         /// <summary>Inputs represent areas within the virtual camera can operate the camera.
         /// Distance from the border depends the camera view window size.</summary>
 
-        private float shrinkAmount = 0.03f; // TODO: have a resolution parameter
-
         private List<List<Graph>> graphs;
 
         public bool ConvertToCompositeCollider;
@@ -109,7 +107,7 @@ namespace Cinemachine
 
         private List<List<Vector2>> inputPathCache = null;
         private float sensorRatioCache = 0;
-        internal bool BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio)
+        internal bool BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
         {
             if (IsCacheValid(inputPath, sensorRatio))
             {

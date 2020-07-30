@@ -11,15 +11,15 @@ namespace Cinemachine
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
-        private Collider2D m_BoundingShape2DCache;
+
+        [Tooltip("TODO: is it needed? -= Defines the prebaked confiner step resolution. Decrease this, if you feel the confiner is does not change smoothly enough.")]
+        public float m_bakedConfinerResolution = 0.03f;
 
         private Collider2D m_BoundingCompositeShape2D;
         
         private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
-
-        public bool Bake = true;
-
+        
         private List<ConfinerStateToPath.FovBakedConfiners> fovConfiners;
         private float currentOrthographicSize;
         private List<List<Vector2>> m_currentPathCache;
@@ -81,21 +81,15 @@ namespace Cinemachine
                 ||
                 (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
             {
-                
-                ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y);
+
+                if (!ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y))
+                {
+                    return; // invalid path
+                }
                 
                 var stateLensOrthographicSize = Mathf.Abs(state.Lens.OrthographicSize);
-                // TODO: float comparison granulity
-                
-                //  TODO: this needs to be done on the lerped graph
-                // TODO:
-                // 1. based on ortho size find 2 states. Lerp between these 2 states to find desired collider set
-                // 2. turn this collider set into composite
-                // 3. push the composite points into m_currentPathCache
-                // _confinerStateToPath
-
-                if (true || Math.Abs(stateLensOrthographicSize - currentOrthographicSize) >
-                    UnityVectorExtensions.Epsilon) // TODO: replace with resolution from user
+                if (Math.Abs(stateLensOrthographicSize - currentOrthographicSize) >
+                    m_bakedConfinerResolution)
                 {
                     currentOrthographicSize = stateLensOrthographicSize;
                     confinerCache = confinerOven().GetConfinerAtOrthoSize(currentOrthographicSize);
@@ -107,6 +101,7 @@ namespace Cinemachine
                 
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
+                    // TODO: fix orthosize - window size shrink consistency
                     var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
                     if (m_CornerDamping > 0 && (m_Cornerring || displacementAngle > m_CornerAngleTreshold))
                     {
@@ -165,76 +160,78 @@ namespace Cinemachine
             }
             return closest - p;
         }
-        
+
+        private float sensorRatioCache;
+        private Collider2D m_BoundingShape2DCache;
         public void InvalidatePathCache()
         {
             m_originalPathCache = null;
             m_BoundingShape2DCache = null;
+            sensorRatioCache = 0;
         }
 
         bool ValidatePathCache(float sensorRatio)
         {
-            // TODO: for caching check sensorsize change, original path change ... 
-            // if (!Bake)
-            // {
-            //     return false;
-            // }
-            // Bake = false;
-            // if (m_BoundingShape2DCache == m_BoundingShape2D)
-            // {
-            //     return true;
-            // }
-            // InvalidatePathCache();
-            // m_BoundingShape2DCache = m_BoundingShape2D;
-            
-            Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
-            if (colliderType == typeof(PolygonCollider2D))
+            if (m_BoundingShape2DCache == m_BoundingShape2D &&
+                Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon)
             {
-                PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                if (m_originalPathCache == null || m_originalPathCache.Count != poly.pathCount || m_originalPathTotalPointCount != poly.GetTotalPointCount())
+                return true;
+            }
+
+            if (m_BoundingShape2DCache != m_BoundingShape2D)
+            {
+                Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
+                if (colliderType == typeof(PolygonCollider2D))
                 {
-                    m_originalPathCache = new List<List<Vector2>>();
-                    for (int i = 0; i < poly.pathCount; ++i)
-                    {
-                        Vector2[] path = poly.GetPath(i);
-                        List<Vector2> dst = new List<Vector2>();
-                        for (int j = 0; j < path.Length; ++j)
-                            dst.Add(path[j]);
-                        m_originalPathCache.Add(dst);
+                    PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
+                    if (m_originalPathCache == null || m_originalPathCache.Count != poly.pathCount || m_originalPathTotalPointCount != poly.GetTotalPointCount())
+                    { 
+                        m_originalPathCache = new List<List<Vector2>>();
+                        for (int i = 0; i < poly.pathCount; ++i)
+                        {
+                            Vector2[] path = poly.GetPath(i);
+                            List<Vector2> dst = new List<Vector2>();
+                            for (int j = 0; j < path.Length; ++j)
+                                dst.Add(path[j]);
+                            m_originalPathCache.Add(dst);
+                        }
+                        m_originalPathTotalPointCount = poly.GetTotalPointCount();
                     }
-                    m_originalPathTotalPointCount = poly.GetTotalPointCount();
+                }
+                else if (colliderType == typeof(CompositeCollider2D))
+                {
+                    CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
+                    if (m_originalPathCache == null || m_originalPathCache.Count != poly.pathCount || m_originalPathTotalPointCount != poly.pointCount)
+                    {
+                        m_originalPathCache = new List<List<Vector2>>();
+                        Vector2[] path = new Vector2[poly.pointCount];
+                        var lossyScale = m_BoundingShape2D.transform.lossyScale;
+                        Vector2 revertCompositeColliderScale = new Vector2(
+                            1f / lossyScale.x, 
+                            1f / lossyScale.y);
+                        for (int i = 0; i < poly.pathCount; ++i)
+                        {
+                            int numPoints = poly.GetPath(i, path);
+                            List<Vector2> dst = new List<Vector2>();
+                            for (int j = 0; j < numPoints; ++j)
+                                dst.Add(path[j] * revertCompositeColliderScale);
+                            m_originalPathCache.Add(dst);
+                        }
+                        m_originalPathTotalPointCount = poly.pointCount;
+                    }
+                }
+                else
+                {
+                    InvalidatePathCache();
+                    return false;
                 }
             }
-            else if (colliderType == typeof(CompositeCollider2D))
-            {
-                CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                if (m_originalPathCache == null || m_originalPathCache.Count != poly.pathCount || m_originalPathTotalPointCount != poly.pointCount)
-                {
-                    m_originalPathCache = new List<List<Vector2>>();
-                    Vector2[] path = new Vector2[poly.pointCount];
-                    var lossyScale = m_BoundingShape2D.transform.lossyScale;
-                    Vector2 revertCompositeColliderScale = new Vector2(
-                        1f / lossyScale.x, 
-                        1f / lossyScale.y);
-                    for (int i = 0; i < poly.pathCount; ++i)
-                    {
-                        int numPoints = poly.GetPath(i, path);
-                        List<Vector2> dst = new List<Vector2>();
-                        for (int j = 0; j < numPoints; ++j)
-                            dst.Add(path[j] * revertCompositeColliderScale);
-                        m_originalPathCache.Add(dst);
-                    }
-                    m_originalPathTotalPointCount = poly.pointCount;
-                }
-            }
-            else
-            {
-                InvalidatePathCache();
-                return false;
-            }
             
-            confinerOven().BakeConfiner(m_originalPathCache, sensorRatio);
+            confinerOven().BakeConfiner(m_originalPathCache, sensorRatio, m_bakedConfinerResolution);
             confinerOven().TrimGraphs();
+            
+            sensorRatioCache = sensorRatio;
+            m_BoundingShape2DCache = m_BoundingShape2D;
 
             return true;
         }

@@ -136,12 +136,9 @@ namespace Cinemachine
         /// <returns>SquareNormalized normal</returns>
         internal Vector2 SquareNormalize(Vector2 normal)
         {
-            Vector2 n = normal.normalized * sensorRatio;
-            float rectDiagonal = Mathf.Sqrt(sensorRatio * sensorRatio + 1);
-            n.x =
-                Mathf.Clamp(n.x, -rectDiagonal, rectDiagonal);
-            n.y =
-                Mathf.Clamp(n.y, -rectDiagonal, rectDiagonal);
+            Vector2 n = normal.normalized * 10 * sensorRatio;
+            n.x = Mathf.Clamp(n.x, -sensorRatio, sensorRatio);
+            n.y = Mathf.Clamp(n.y, -1, 1);
             return n;
         }
 
