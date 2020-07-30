@@ -56,10 +56,11 @@ namespace Cinemachine.Editor
                 CinemachinePathBase path = target.m_Path;
                 if (path != null)
                 {
-                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor);
+                    var isActive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
+                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
                     Vector3 pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
                     Color oldColor = Gizmos.color;
-                    Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+                    Gizmos.color = isActive
                         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                         : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
                     Gizmos.DrawLine(pos, target.VirtualCamera.State.RawPosition);
