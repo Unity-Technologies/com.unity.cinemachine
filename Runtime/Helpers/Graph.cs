@@ -7,7 +7,7 @@ namespace Cinemachine
     public class ConfinerState
     {
         public List<Graph> graphs;
-        public float cameraWindowDiagonal;
+        public float windowSize;
         public int state;
     }
 

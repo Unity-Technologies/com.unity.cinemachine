@@ -17,7 +17,7 @@ namespace Cinemachine
         private List<List<Graph>> graphs;
 
         public bool ConvertToCompositeCollider;
-        private GraphToCompositeCollider graphToCompositeCollider;
+        private ConfinerStateToPath _confinerStateToPath;
         
         public CinemachineVirtualCamera VcamToBakeFor;
 
@@ -53,7 +53,7 @@ namespace Cinemachine
             //     // TODO: trimmed graph must only have state0 (min, max), state1 (min, max), ... stateN(min, max) -> 2N List<graphs>s 
             //     // TODO: possible we can extand graph by a parameter representing graph state min, max orthographicSize values.
             //     // TODO: Then we can lerp between min and max.
-            //     graphToCompositeCollider.Convert(confinerStates, offset);
+            //     _confinerStateToPath.Convert(confinerStates, offset);
             //     ConvertToCompositeCollider = false;
             // }
         }
@@ -119,6 +119,7 @@ namespace Cinemachine
             graphs = CreateGraphs(inputPath, sensorRatio);
             int graphs_index = 0;
 
+            int counter = 0;
             bool shrinking = true;
             while (shrinking)
             {
@@ -170,14 +171,23 @@ namespace Cinemachine
                 ++graphs_index;
                 GIZMOS_subGraphs = nextGraphsIteration;
 
-                shrinking = false;
-                foreach (var graph in graphs[graphs_index])
+                // shrinking = false;
+                // foreach (var graph in graphs[graphs_index])
+                // {
+                //     if (graph.IsShrinkable())
+                //     {
+                //         shrinking = true;
+                //         break;
+                //     }
+                // }
+                
+                // TODO: fix this shrinking thing
+                // TODO: fix lerping
+                // TODO: fix CMBakedConfiner not getting destroyed problem...
+                counter++;
+                if (counter > 10000)
                 {
-                    if (graph.IsShrinkable())
-                    {
-                        shrinking = true;
-                        break;
-                    }
+                    break;
                 }
             }
             
@@ -258,12 +268,82 @@ namespace Cinemachine
         }
 
 
-        internal List<ConfinerState> GetStateGraphs()
+        internal ConfinerState GetConfinerAtOrthoSize(float orthographicSize)
         {
-            return TrimGraphs(ref graphs);
+            ConfinerState result = new ConfinerState();
+            for (int i = confinerStates.Count - 1; i >= 0; --i)
+            {
+                if (confinerStates[i].windowSize <= orthographicSize)
+                {
+                    if (i == confinerStates.Count - 1)
+                    {
+                        result = confinerStates[i];
+                    }
+                    else if (i % 2 == 0)
+                    {
+                        result = 
+                            ConfinerStateLerp(confinerStates[i], confinerStates[i+1], 
+                                Mathf.InverseLerp(confinerStates[i].windowSize, confinerStates[i + 1].windowSize, orthographicSize));
+                    }
+                    else
+                    {
+                        result = 
+                            Mathf.Abs(confinerStates[i].windowSize - orthographicSize) < 
+                            Mathf.Abs(confinerStates[i + 1].windowSize - orthographicSize) ? 
+                                confinerStates[i] : 
+                                confinerStates[i+1];
+                    }
+                            
+                    break;
+                }
+            }
+
+            return result;
         }
+
+        private ConfinerState ConfinerStateLerp(in ConfinerState left, in ConfinerState right, float lerp)
+        {
+            if (left.graphs.Count != right.graphs.Count)
+            {
+                Debug.Log("SOMETHINGS NOT RIGHT 1 - PathLerp");
+                return left;
+            }
+            for (int i = 0; i < left.graphs.Count; ++i)
+            {
+                if (left.graphs[i].points.Count != right.graphs[i].points.Count)
+                {
+                    Debug.Log("SOMETHINGS NOT RIGHT 2 - PathLerp");
+                    return left;
+                }
+            }
+
+            ConfinerState result = new ConfinerState
+            {
+                graphs = new List<Graph>(left.graphs.Count),
+            };
+            for (int i = 0; i < left.graphs.Count; ++i)
+            {
+                var r = new Graph
+                {
+                    points = new List<Point2>(left.graphs[i].points.Count),
+                };
+                for (int j = 0; j < left.graphs[i].points.Count; ++j)
+                {
+                    r.intersectionPoints = left.graphs[i].intersectionPoints;
+                    r.points.Add(new Point2
+                    {
+                        position = Vector2.Lerp(left.graphs[i].points[j].position, right.graphs[i].points[j].position, lerp),
+                    });
+                }
+                result.graphs.Add(r);
+            }
+            return result;
+        }
+
+
         
-        private List<ConfinerState> TrimGraphs(ref List<List<Graph>> graphs)
+        private List<ConfinerState> confinerStates;
+        internal void TrimGraphs()
         {
             // TODO: List<Graph> should hace a state marker -> managed by the graph division -> incerement state when state change happens
             // todo: statechange (intersection, or skeleton skrinking)
@@ -286,12 +366,12 @@ namespace Cinemachine
                 }
             }
 
-            var confinerStates = new List<ConfinerState>();
+            confinerStates = new List<ConfinerState>();
             for (int i = 0; i < graphs.Count; ++i)
             {
                 confinerStates.Add(new ConfinerState
                 {
-                    cameraWindowDiagonal = graphs[i][0].windowDiagonal,
+                    windowSize = graphs[i][0].windowDiagonal,
                     graphs = graphs[i],
                     state = graphs[i].Count,
                 });
@@ -304,8 +384,6 @@ namespace Cinemachine
                     confinerStates.Insert(i + 1, confinerStates[i]);
                 }
             }
-
-            return confinerStates;
         }
         
         void OnDrawGizmosSelected()
