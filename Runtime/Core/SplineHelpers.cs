@@ -17,7 +17,7 @@ namespace Cinemachine.Utility
             float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
             t = Mathf.Clamp01(t);
-            return (-3f * p0 + 9f * p1 - 9f * p2 + 3f * p3) * t * t
+            return (-3f * p0 + 9f * p1 - 9f * p2 + 3f * p3) * (t * t)
                 +  (6f * p0 - 12f * p1 + 6f * p2) * t
                 -  3f * p0 + 3f * p1;
         }
