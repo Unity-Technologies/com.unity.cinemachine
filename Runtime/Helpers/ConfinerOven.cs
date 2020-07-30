@@ -23,39 +23,7 @@ namespace Cinemachine
         private List<Graph> GIZMOS_subGraphs;
         private List<Vector2> GIZMOS_input;
         public bool GIZMOS_drawIntersection;
-
-        void Update()
-        {
-            // if (Bake)
-            // {
-            //     // ingredients.CorrectedOrientation = CmBrain.CurrentCameraState.CorrectedOrientation;
-            //     // ingredients.LensOrthographicSize = CmBrain.CurrentCameraState.Lens.OrthographicSize;
-            //     // ingredients.LensAspect = CmBrain.CurrentCameraState.Lens.Aspect;
-            //     // Quaternion rot = Quaternion.Inverse(ingredients.CorrectedOrientation);
-            //     // float dy = ingredients.LensOrthographicSize * scaleCamera;
-            //     // float dx = dy * ingredients.LensAspect;
-            //     var sensorSize= VcamToBakeFor.m_Lens.SensorSize;
-            //     float sensorRatio = sensorSize.x / sensorSize.y;
-            //     
-            //     BakeConfiner(sensorRatio);
-            //     Bake = false;
-            // }
-
-            // TODO:
-            // if (ConvertToCompositeCollider)
-            // {
-            //     Vector2 offset = Input.transform.position;
-            //
-            //     List<ConfinerState> confinerStates = TrimGraphs(ref graphs);
-            //     // TODO: replace GIZMOS_subGraphs with graphs, but before we need to trim graphs
-            //     // TODO: trimmed graph must only have state0 (min, max), state1 (min, max), ... stateN(min, max) -> 2N List<graphs>s 
-            //     // TODO: possible we can extand graph by a parameter representing graph state min, max orthographicSize values.
-            //     // TODO: Then we can lerp between min and max.
-            //     _confinerStateToPath.Convert(confinerStates, offset);
-            //     ConvertToCompositeCollider = false;
-            // }
-        }
-
+        
         private bool IsCacheValid(in List<List<Vector2>> inputPath, in float sensorRatio)
         {
             if (Math.Abs(sensorRatio - sensorRatioCache) > UnityVectorExtensions.Epsilon)
@@ -169,23 +137,14 @@ namespace Cinemachine
                 ++graphs_index;
                 GIZMOS_subGraphs = nextGraphsIteration;
 
-                // shrinking = false;
-                // foreach (var graph in graphs[graphs_index])
-                // {
-                //     if (graph.IsShrinkable())
-                //     {
-                //         shrinking = true;
-                //         break;
-                //     }
-                // }
-                
-                // TODO: fix this shrinking thing
-                // TODO: fix lerping
-                // TODO: fix CMBakedConfiner not getting destroyed problem...
-                counter++;
-                if (counter > 10000)
+                shrinking = false;
+                foreach (var graph in graphs[graphs_index])
                 {
-                    break;
+                    if (graph.IsShrinkable())
+                    {
+                        shrinking = true;
+                        break;
+                    }
                 }
             }
             
