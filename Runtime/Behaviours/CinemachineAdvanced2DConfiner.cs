@@ -12,6 +12,9 @@ namespace Cinemachine
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
         private Collider2D m_BoundingShape2DCache;
+
+        private Collider2D m_BoundingCompositeShape2D;
+        
         private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
 
@@ -78,6 +81,7 @@ namespace Cinemachine
                 ||
                 (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
             {
+                
                 ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y);
                 
                 var stateLensOrthographicSize = Mathf.Abs(state.Lens.OrthographicSize);
@@ -96,7 +100,7 @@ namespace Cinemachine
                     currentOrthographicSize = stateLensOrthographicSize;
                     confinerCache = confinerOven().GetConfinerAtOrthoSize(currentOrthographicSize);
                     confinerStateToPath().Convert(confinerCache, m_BoundingShape2D.transform.position,
-                        out m_currentPathCache, out m_BoundingShape2D);
+                        out m_currentPathCache, out m_BoundingCompositeShape2D);
                 }
                 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
@@ -126,43 +130,13 @@ namespace Cinemachine
                 extra.confinerDisplacement = displacement.magnitude;
             }
         }
-
-        private List<List<Vector2>> PathLerp(in List<List<Vector2>> left, in List<List<Vector2>> right, float lerp)
-        {
-            if (left.Count != right.Count)
-            {
-                Debug.Log("SOMETHINGS NOT RIGHT 1 - PathLerp");
-                return left;
-            }
-            for (int i = 0; i < left.Count; ++i)
-            {
-                if (left[i].Count != right[i].Count)
-                {
-                    Debug.Log("SOMETHINGS NOT RIGHT 2 - PathLerp");
-                    return left;
-                }
-            }
-
-            List<List<Vector2>> result = new List<List<Vector2>>(left.Count);
-            for (int i = 0; i < left.Count; ++i)
-            {
-                var r = new List<Vector2>(left[i].Count);
-                for (int j = 0; j < left[i].Count; ++j)
-                {
-                    r.Add(Vector2.Lerp(left[i][j], right[i][j], lerp));
-                }
-                result.Add(r);
-            }
-            return result;
-        }
-        
-        
+ 
         private Vector3 ConfinePoint(Vector3 camPos)
         {
             // 2D version
             Vector2 p = camPos;
             Vector2 closest = p;
-            if (m_BoundingShape2D.OverlapPoint(camPos))
+            if (m_BoundingCompositeShape2D.OverlapPoint(camPos))
                 return Vector3.zero;
             // Find the nearest point on the shape's boundary
             // if (!ValidatePathCache())
@@ -174,10 +148,10 @@ namespace Cinemachine
                 int numPoints = m_currentPathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(m_currentPathCache[i][numPoints - 1]);
+                    Vector2 v0 = m_BoundingCompositeShape2D.transform.TransformPoint(m_currentPathCache[i][numPoints - 1]);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_currentPathCache[i][j]);
+                        Vector2 v = m_BoundingCompositeShape2D.transform.TransformPoint(m_currentPathCache[i][j]);
                         Vector2 c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
                         float d = Vector2.SqrMagnitude(p - c);
                         if (d < bestDistance)
@@ -201,11 +175,11 @@ namespace Cinemachine
         bool ValidatePathCache(float sensorRatio)
         {
             // TODO: for caching check sensorsize change, original path change ... 
-            if (!Bake)
-            {
-                return false;
-            }
-            Bake = false;
+            // if (!Bake)
+            // {
+            //     return false;
+            // }
+            // Bake = false;
             // if (m_BoundingShape2DCache == m_BoundingShape2D)
             // {
             //     return true;
@@ -267,12 +241,16 @@ namespace Cinemachine
 
         void OnDrawGizmosSelected()
         {
+            if (m_currentPathCache == null) return;
+            
             Gizmos.color = Color.red;
             foreach (var path in m_currentPathCache)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
-                    Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
+                    Gizmos.DrawLine(
+                        m_BoundingCompositeShape2D.transform.TransformPoint(path[index]), 
+                        m_BoundingCompositeShape2D.transform.TransformPoint(path[(index + 1) % path.Count]));
                 }
             }
         }

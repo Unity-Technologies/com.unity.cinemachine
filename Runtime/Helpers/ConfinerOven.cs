@@ -113,7 +113,7 @@ namespace Cinemachine
         {
             if (IsCacheValid(inputPath, sensorRatio))
             {
-                return false;
+                //return false;
             }
             
             graphs = CreateGraphs(inputPath, sensorRatio);
