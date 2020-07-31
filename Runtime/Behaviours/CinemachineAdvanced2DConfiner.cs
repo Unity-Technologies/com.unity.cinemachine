@@ -34,26 +34,6 @@ namespace Cinemachine
         private ConfinerOven _confinerBaker = null;
         private ConfinerStateToPath _confinerStateConverter = null;
 
-        private ConfinerStateToPath confinerStateToPath()
-        {
-            if (_confinerStateConverter == null)
-            {
-                _confinerStateConverter = new ConfinerStateToPath(gameObject.name);
-            }
-
-            return _confinerStateConverter;
-        }
-
-        private ConfinerOven confinerOven()
-        {
-            if (_confinerBaker == null)
-            {
-                _confinerBaker = new ConfinerOven();
-            }
-
-            return _confinerBaker;
-        }
-        
         /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
                  + "Higher numbers are more gradual.")]
@@ -68,7 +48,6 @@ namespace Cinemachine
 
         [Tooltip("Stops any kind of damping when the camera gets back inside the confiner area.  ")]
         public bool m_StopDampingWithinConfiner = false;
-        private float m_DampingStopper;
         
         class VcamExtraState
         {
@@ -96,6 +75,7 @@ namespace Cinemachine
                 if (Math.Abs(stateLensOrthographicSize - currentOrthographicSize) >
                     m_bakedConfinerResolution)
                 {
+                    // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                     currentOrthographicSize = stateLensOrthographicSize;
                     confinerCache = confinerOven().GetConfinerAtOrthoSize(currentOrthographicSize);
                     confinerStateToPath().Convert(confinerCache, m_BoundingShape2D.transform.position,
@@ -168,14 +148,15 @@ namespace Cinemachine
         private float sensorRatioCache;
         private Collider2D m_BoundingShape2DCache;
         private float bakedConfinerResolutionCache;
-        public void InvalidatePathCache()
+
+        private void InvalidatePathCache()
         {
             m_originalPath = null;
             m_BoundingShape2DCache = null;
             sensorRatioCache = 0;
         }
 
-        bool ValidatePathCache(float sensorRatio)
+        private bool ValidatePathCache(float sensorRatio)
         {
             if (m_originalPath != null && m_BoundingShape2DCache == m_BoundingShape2D &&
                 Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon &&
@@ -242,6 +223,26 @@ namespace Cinemachine
             return true;
         }
 
+        private ConfinerStateToPath confinerStateToPath()
+        {
+            if (_confinerStateConverter == null)
+            {
+                _confinerStateConverter = new ConfinerStateToPath(gameObject.name);
+            }
+
+            return _confinerStateConverter;
+        }
+
+        private ConfinerOven confinerOven()
+        {
+            if (_confinerBaker == null)
+            {
+                _confinerBaker = new ConfinerOven();
+            }
+
+            return _confinerBaker;
+        }
+        
         void OnDrawGizmosSelected()
         {
             if (m_currentPathCache == null) return;

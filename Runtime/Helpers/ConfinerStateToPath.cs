@@ -48,13 +48,13 @@ namespace Cinemachine
         {
             CleanBakedConfiner();
             compositeColliderHolder = new GameObject("CMBakedConfiner for " + nametag);
-            compositeColliderHolder.hideFlags = HideFlags.NotEditable;
+            compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
             compositeColliderHolder.transform.position = graphOffset;
             
             var rigidbody2D = compositeColliderHolder.AddComponent<Rigidbody2D>();
             rigidbody2D.bodyType = RigidbodyType2D.Static;
             rigidbody2D.simulated = false;
-            rigidbody2D.hideFlags = HideFlags.NotEditable;
+            rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
             var compositeCollider2D = compositeColliderHolder.AddComponent<CompositeCollider2D>();
             compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
             
