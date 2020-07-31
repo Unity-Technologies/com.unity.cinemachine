@@ -8,6 +8,7 @@
 - Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
 - Bugfix: removed compile errors when Physics2D module is disabled
 - Added Multi-object edit capabilities to virtual cameras and extensions 
+- Improved performance of path gizmo drawing
 
 <size=20><b>Version 2.6.0</b></size>
 - Added AxisState.IInputProvider API to better support custom input systems
