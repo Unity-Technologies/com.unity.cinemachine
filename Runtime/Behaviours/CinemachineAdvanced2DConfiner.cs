@@ -5,7 +5,13 @@ using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace Cinemachine
-{
+{ 
+    [SaveDuringPlay]
+#if UNITY_2018_3_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
@@ -20,7 +26,6 @@ namespace Cinemachine
         private List<List<Vector2>> m_originalPath;
         private int m_originalPathTotalPointCount;
         
-        private List<ConfinerStateToPath.FovBakedConfiners> fovConfiners;
         private float currentOrthographicSize;
         private List<List<Vector2>> m_currentPathCache;
 
@@ -33,7 +38,7 @@ namespace Cinemachine
         {
             if (_confinerStateConverter == null)
             {
-                _confinerStateConverter = new ConfinerStateToPath();
+                _confinerStateConverter = new ConfinerStateToPath(gameObject.name);
             }
 
             return _confinerStateConverter;
