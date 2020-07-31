@@ -26,7 +26,7 @@ namespace Cinemachine
         private List<List<Vector2>> m_originalPath;
         private int m_originalPathTotalPointCount;
         
-        private float currentOrthographicSize;
+        private float windowSizeCache;
         private List<List<Vector2>> m_currentPathCache;
 
         private List<List<Graph>> graphs;
@@ -68,16 +68,31 @@ namespace Cinemachine
 
                 if (!ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y))
                 {
+                    // TODO: what to do?
                     return; // invalid path
                 }
-                
-                var stateLensOrthographicSize = Mathf.Abs(state.Lens.OrthographicSize);
-                if (Math.Abs(stateLensOrthographicSize - currentOrthographicSize) >
-                    m_bakedConfinerResolution)
+
+                float frustumHeight;
+                if (state.Lens.Orthographic)
+                {
+                    frustumHeight = Mathf.Abs(state.Lens.OrthographicSize);
+                }
+                else
+                {
+                    Vector3 objectOfInterest = vcam.Follow != null ? vcam.Follow.position :
+                        vcam.LookAt != null ? vcam.LookAt.position :
+                        vcam.transform.position + vcam.transform.forward * 10;
+
+                    float distance = (objectOfInterest - vcam.transform.position).magnitude;
+                    frustumHeight = 2.0f * distance * Mathf.Tan(state.Lens.FieldOfView * 0.25f * Mathf.Deg2Rad);
+                }
+
+                if (m_currentPathCache == null || m_BoundingCompositeShape2D == null || 
+                    Math.Abs(frustumHeight - windowSizeCache) > m_bakedConfinerResolution)
                 {
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
-                    currentOrthographicSize = stateLensOrthographicSize;
-                    confinerCache = confinerOven().GetConfinerAtOrthoSize(currentOrthographicSize);
+                    windowSizeCache = frustumHeight;
+                    confinerCache = confinerOven().GetConfinerAtOrthoSize(windowSizeCache);
                     confinerStateToPath().Convert(confinerCache, m_BoundingShape2D.transform.position,
                         out m_currentPathCache, out m_BoundingCompositeShape2D);
                 }
@@ -213,7 +228,8 @@ namespace Cinemachine
                     return false;
                 }
             }
-            
+
+            bakedConfinerResolutionCache = m_bakedConfinerResolution;
             confinerOven().BakeConfiner(m_originalPath, sensorRatio, m_bakedConfinerResolution);
             confinerOven().TrimGraphs();
             
