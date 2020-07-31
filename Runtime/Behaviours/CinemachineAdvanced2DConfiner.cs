@@ -64,11 +64,11 @@ namespace Cinemachine
                  + "Higher numbers produce more smooth cornering.")]
         [Range(0, 10)]
         public float m_CornerDamping = 0;
-
-        [Tooltip("After going through the corner should the camera return smoothly or snap?")]
-        public bool m_SnapFromCorner = true;
         private float m_CornerAngleTreshold = 10f;
-        private bool m_Cornerring = false;
+
+        [Tooltip("Stops any kind of damping when the camera gets back inside the confiner area.  ")]
+        public bool m_StopDampingWithinConfiner = false;
+        private float m_DampingStopper;
         
         class VcamExtraState
         {
@@ -106,13 +106,10 @@ namespace Cinemachine
                 
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
-                    // TODO: fix orthosize - window size shrink consistency
+                    var originalDisplacement = displacement;
                     var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                    if (m_CornerDamping > 0 && (m_Cornerring || displacementAngle > m_CornerAngleTreshold))
+                    if (m_CornerDamping > 0 && displacementAngle > m_CornerAngleTreshold)
                     {
-                        if (!m_SnapFromCorner) {
-                            m_Cornerring = displacementAngle > 1f;
-                        }
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
                         displacement = extra.m_previousDisplacement + delta;
@@ -122,6 +119,11 @@ namespace Cinemachine
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, m_Damping, deltaTime);
                         displacement = extra.m_previousDisplacement + delta;
+                    }
+                    
+                    if (m_StopDampingWithinConfiner && ConfinePoint(state.CorrectedPosition + displacement).sqrMagnitude <= UnityVectorExtensions.Epsilon)
+                    {
+                        displacement = originalDisplacement;
                     }
                 }
                 
@@ -138,9 +140,6 @@ namespace Cinemachine
             Vector2 closest = p;
             if (m_BoundingCompositeShape2D.OverlapPoint(camPos))
                 return Vector3.zero;
-            // Find the nearest point on the shape's boundary
-            // if (!ValidatePathCache())
-            //     return Vector3.zero;
 
             float bestDistance = float.MaxValue;
             for (int i = 0; i < m_currentPathCache.Count; ++i)
