@@ -14,12 +14,16 @@ namespace Cinemachine
 #endif
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
+        // TODO: OnValidate parameters (e.g. m_bakedConfinerResolution)
+        
+        
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
 
         [Tooltip("TODO: is it needed? -= Defines the prebaked confiner step resolution. Decrease this, if you feel the confiner is does not change smoothly enough.")]
-        public float m_bakedConfinerResolution = 0.03f;
+        [Range(0.005f, 1f)]
+        private float m_bakedConfinerResolution = 0.025f;
 
         private Collider2D m_BoundingCompositeShape2D;
         
@@ -65,8 +69,7 @@ namespace Cinemachine
                 ||
                 (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
             {
-
-                if (!ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y))
+                if (!ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y, out bool pathChanged))
                 {
                     // TODO: what to do?
                     return; // invalid path
@@ -87,7 +90,9 @@ namespace Cinemachine
                     frustumHeight = 2.0f * distance * Mathf.Tan(state.Lens.FieldOfView * 0.25f * Mathf.Deg2Rad);
                 }
 
-                if (m_currentPathCache == null || m_BoundingCompositeShape2D == null || 
+                if (m_currentPathCache == null || 
+                    m_BoundingCompositeShape2D == null || 
+                    pathChanged ||
                     Math.Abs(frustumHeight - windowSizeCache) > m_bakedConfinerResolution)
                 {
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
@@ -171,14 +176,18 @@ namespace Cinemachine
             sensorRatioCache = 0;
         }
 
-        private bool ValidatePathCache(float sensorRatio)
+        private bool ValidatePathCache(float sensorRatio, out bool pathChanged)
         {
-            if (m_originalPath != null && m_BoundingShape2DCache == m_BoundingShape2D &&
+            if (m_originalPath != null && 
+                m_BoundingShape2DCache == m_BoundingShape2D &&
                 Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon &&
                 Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon)
             {
+                pathChanged = false;
                 return true;
             }
+            pathChanged = true;
+
 
             if (m_originalPath == null || m_BoundingShape2DCache != m_BoundingShape2D)
             {
@@ -230,10 +239,10 @@ namespace Cinemachine
             }
 
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
-            confinerOven().BakeConfiner(m_originalPath, sensorRatio, m_bakedConfinerResolution);
+            sensorRatioCache = sensorRatio;
+            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache);
             confinerOven().TrimGraphs();
             
-            sensorRatioCache = sensorRatio;
             m_BoundingShape2DCache = m_BoundingShape2D;
 
             return true;

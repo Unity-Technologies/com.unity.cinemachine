@@ -24,12 +24,20 @@ namespace Cinemachine
         private List<Vector2> GIZMOS_input;
         public bool GIZMOS_drawIntersection;
         
-        private bool IsCacheValid(in List<List<Vector2>> inputPath, in float sensorRatio)
+        private bool IsCacheValid(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
         {
             if (Math.Abs(sensorRatio - sensorRatioCache) > UnityVectorExtensions.Epsilon)
             {
                 inputPathCache = inputPath;
                 sensorRatioCache = sensorRatio;
+                shrinkAmountCache = shrinkAmount;
+                return false;
+            }
+            if (Math.Abs(shrinkAmount - shrinkAmountCache) > UnityVectorExtensions.Epsilon)
+            {
+                inputPathCache = inputPath;
+                sensorRatioCache = sensorRatio;
+                shrinkAmountCache = shrinkAmount;
                 return false;
             }
             
@@ -37,6 +45,7 @@ namespace Cinemachine
             {
                 inputPathCache = inputPath;
                 sensorRatioCache = sensorRatio;
+                shrinkAmountCache = shrinkAmount;
                 return false;
             }
             if (inputPathCache.Count == inputPath.Count)
@@ -51,6 +60,7 @@ namespace Cinemachine
                             {
                                 inputPathCache = inputPath;
                                 sensorRatioCache = sensorRatio;
+                                shrinkAmountCache = shrinkAmount;
                                 return false;
                             }
                         }
@@ -59,6 +69,7 @@ namespace Cinemachine
                     {
                         inputPathCache = inputPath;
                         sensorRatioCache = sensorRatio;
+                        shrinkAmountCache = shrinkAmount;
                         return false;
                     }
                 }
@@ -67,6 +78,7 @@ namespace Cinemachine
             {
                 inputPathCache = inputPath;
                 sensorRatioCache = sensorRatio;
+                shrinkAmountCache = shrinkAmount;
                 return false;
             }
 
@@ -75,9 +87,10 @@ namespace Cinemachine
 
         private List<List<Vector2>> inputPathCache = null;
         private float sensorRatioCache = 0;
+        private float shrinkAmountCache = 0;
         internal bool BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
         {
-            if (IsCacheValid(inputPath, sensorRatio))
+            if (IsCacheValid(inputPath, sensorRatio, shrinkAmount))
             {
                 //return false;
             }
