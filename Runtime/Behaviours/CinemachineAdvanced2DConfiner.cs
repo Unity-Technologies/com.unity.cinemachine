@@ -17,7 +17,7 @@ namespace Cinemachine
 
         private Collider2D m_BoundingCompositeShape2D;
         
-        private List<List<Vector2>> m_originalPathCache;
+        private List<List<Vector2>> m_originalPath;
         private int m_originalPathTotalPointCount;
         
         private List<ConfinerStateToPath.FovBakedConfiners> fovConfiners;
@@ -163,37 +163,39 @@ namespace Cinemachine
 
         private float sensorRatioCache;
         private Collider2D m_BoundingShape2DCache;
+        private float bakedConfinerResolutionCache;
         public void InvalidatePathCache()
         {
-            m_originalPathCache = null;
+            m_originalPath = null;
             m_BoundingShape2DCache = null;
             sensorRatioCache = 0;
         }
 
         bool ValidatePathCache(float sensorRatio)
         {
-            if (m_BoundingShape2DCache == m_BoundingShape2D &&
-                Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon)
+            if (m_originalPath != null && m_BoundingShape2DCache == m_BoundingShape2D &&
+                Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon &&
+                Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon)
             {
                 return true;
             }
 
-            if (m_BoundingShape2DCache != m_BoundingShape2D)
+            if (m_originalPath == null || m_BoundingShape2DCache != m_BoundingShape2D)
             {
                 Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                    if (m_originalPathCache == null || m_originalPathCache.Count != poly.pathCount || m_originalPathTotalPointCount != poly.GetTotalPointCount())
+                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || m_originalPathTotalPointCount != poly.GetTotalPointCount())
                     { 
-                        m_originalPathCache = new List<List<Vector2>>();
+                        m_originalPath = new List<List<Vector2>>();
                         for (int i = 0; i < poly.pathCount; ++i)
                         {
                             Vector2[] path = poly.GetPath(i);
                             List<Vector2> dst = new List<Vector2>();
                             for (int j = 0; j < path.Length; ++j)
                                 dst.Add(path[j]);
-                            m_originalPathCache.Add(dst);
+                            m_originalPath.Add(dst);
                         }
                         m_originalPathTotalPointCount = poly.GetTotalPointCount();
                     }
@@ -201,9 +203,9 @@ namespace Cinemachine
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
                     CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                    if (m_originalPathCache == null || m_originalPathCache.Count != poly.pathCount || m_originalPathTotalPointCount != poly.pointCount)
+                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || m_originalPathTotalPointCount != poly.pointCount)
                     {
-                        m_originalPathCache = new List<List<Vector2>>();
+                        m_originalPath = new List<List<Vector2>>();
                         Vector2[] path = new Vector2[poly.pointCount];
                         var lossyScale = m_BoundingShape2D.transform.lossyScale;
                         Vector2 revertCompositeColliderScale = new Vector2(
@@ -215,7 +217,7 @@ namespace Cinemachine
                             List<Vector2> dst = new List<Vector2>();
                             for (int j = 0; j < numPoints; ++j)
                                 dst.Add(path[j] * revertCompositeColliderScale);
-                            m_originalPathCache.Add(dst);
+                            m_originalPath.Add(dst);
                         }
                         m_originalPathTotalPointCount = poly.pointCount;
                     }
@@ -227,7 +229,7 @@ namespace Cinemachine
                 }
             }
             
-            confinerOven().BakeConfiner(m_originalPathCache, sensorRatio, m_bakedConfinerResolution);
+            confinerOven().BakeConfiner(m_originalPath, sensorRatio, m_bakedConfinerResolution);
             confinerOven().TrimGraphs();
             
             sensorRatioCache = sensorRatio;

@@ -97,7 +97,6 @@ namespace Cinemachine
                     var area = graph.ComputeArea();
                     if (area < UnityVectorExtensions.Epsilon)
                     {
-                        var test = Vector2.zero; 
                         for (int i = 0; i < graph.points.Count; ++i)
                         {
                             // TODO: check that points closest to graph.intersectionPoints not to be considered
@@ -105,13 +104,6 @@ namespace Cinemachine
                                 graph.IsClosestPointToAnyIntersection(i + 1))
                             {
                                 continue;
-                            }
-                            
-                            var vector = graph.points[i].position - graph.points[(i+1) % graph.points.Count].position;
-                            
-                            if (vector.sqrMagnitude > UnityVectorExtensions.Epsilon)
-                            {
-                                test += vector;
                             }
                         }
                         for (int i = 0; i < graph.points.Count; ++i)
