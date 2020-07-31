@@ -164,15 +164,13 @@ namespace Cinemachine.Editor
                 Rect r = rect; r.width = labelWidth;
                 EditorGUI.LabelField(r, label);
                 r = rect; r.width -= labelWidth; r.x += labelWidth;
-                GUI.enabled = !StageIsLocked(stage);
-                
-                EditorGUI.showMixedValue = !m_hasSameStageDataTypes[index];
 
                 EditorGUI.BeginChangeCheck();
+                GUI.enabled = !StageIsLocked(stage);
+                EditorGUI.showMixedValue = !m_hasSameStageDataTypes[index];
                 int newSelection = EditorGUI.Popup(r, m_stageState[index], sStageData[index].PopupOptions);
-
                 EditorGUI.showMixedValue = false;
-
+                GUI.enabled = true;
                 Type type = sStageData[index].types[newSelection];
                 if (EditorGUI.EndChangeCheck())
                 {
