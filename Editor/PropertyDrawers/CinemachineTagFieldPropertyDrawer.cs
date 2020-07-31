@@ -21,15 +21,13 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             tagValue = EditorGUI.TagField(rect, label, tagValue);
             if (EditorGUI.EndChangeCheck())
-            {
                 property.stringValue = tagValue;
-            }
             EditorGUI.showMixedValue = false;
 
             rect.x += rect.width + hSpace; rect.width = textDimensions.x; rect.height -=1;
             GUI.enabled = tagValue.Length > 0;
             if (GUI.Button(rect, clearText))
-                tagValue = string.Empty;
+                property.stringValue = string.Empty;
             GUI.enabled = true;
         }
     }
