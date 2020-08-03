@@ -395,7 +395,15 @@ namespace Cinemachine
             /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
             /// done.
             subgraphs = new List<Graph>();
-            while (DivideGraph(ref graph, ref subgraphs)) {};
+            int maxIteration = 5000;
+            while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs))
+            {
+                maxIteration--;
+            };
+            if (maxIteration <= 0)
+            {
+                Debug.Log("Exited with max iteration safety!");
+            }
             subgraphs.Add(graph); // add remaining graph
         }
         

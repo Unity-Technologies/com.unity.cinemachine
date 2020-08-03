@@ -19,11 +19,6 @@ namespace Cinemachine
         
         public CinemachineVirtualCamera VcamToBakeFor;
 
-        private List<Graph> GIZMOS_currentGraphs;
-        private List<Graph> GIZMOS_subGraphs;
-        private List<Vector2> GIZMOS_input;
-        public bool GIZMOS_drawIntersection;
-        
         private bool IsCacheValid(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
         {
             if (Math.Abs(sensorRatio - sensorRatioCache) > UnityVectorExtensions.Epsilon)
@@ -92,7 +87,7 @@ namespace Cinemachine
         {
             if (IsCacheValid(inputPath, sensorRatio, shrinkAmount))
             {
-                //return false;
+                return false;
             }
             
             graphs = CreateGraphs(inputPath, sensorRatio);
@@ -102,7 +97,6 @@ namespace Cinemachine
             bool shrinking = true;
             while (shrinking)
             {
-                GIZMOS_currentGraphs = graphs[graphs_index];
                 List<Graph> nextGraphsIteration = new List<Graph>();
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
@@ -140,7 +134,6 @@ namespace Cinemachine
 
                 graphs.Add(nextGraphsIteration);
                 ++graphs_index;
-                GIZMOS_subGraphs = nextGraphsIteration;
 
                 shrinking = false;
                 foreach (var graph in graphs[graphs_index])
@@ -347,69 +340,5 @@ namespace Cinemachine
                 }
             }
         }
-        
-        void OnDrawGizmosSelected()
-        {
-            if (GIZMOS_currentGraphs == null)
-            {
-                return;
-            }
-
-            Vector2 offset = Vector2.zero;
-        
-            // original input
-            for (int i = 0; i < GIZMOS_input.Count - 1; ++i)
-            {
-                Gizmos.color = Color.black;
-                Gizmos.DrawLine(offset + GIZMOS_input[i], offset + GIZMOS_input[i + 1]);
-            }
-        
-            // graphs
-            for (int i = 0; i < GIZMOS_subGraphs.Count; ++i)
-            {
-                float color = ((float) i / (float) GIZMOS_subGraphs.Count) * 0.8f;
-        
-                Gizmos.color = new Color(i % 2, 0.9f - color, 0.25f);
-                for (int j = 0; j < GIZMOS_subGraphs[i].points.Count; ++j)
-                {
-                    if (j == 0)
-                    {
-                        Handles.Label(offset + GIZMOS_subGraphs[i].points[j].position, i.ToString());
-                    }
-        
-                    Gizmos.DrawLine(offset + GIZMOS_subGraphs[i].points[j].position,
-                        offset + GIZMOS_subGraphs[i].points[(j + 1) % GIZMOS_subGraphs[i].points.Count].position);
-                }
-        
-                if (GIZMOS_drawIntersection)
-                    foreach (var t in GIZMOS_subGraphs[i].intersectionPoints)
-                    {
-                        Gizmos.DrawSphere(offset + t, 1f);
-                    }
-        
-                // graph connections
-                foreach (var t in GIZMOS_subGraphs[i].intersectionPoints)
-                {
-                    Vector2 closestPoint = GIZMOS_subGraphs[i].ClosestPoint(t);
-                    Gizmos.DrawLine(offset + t, offset + closestPoint);
-                }
-            }
-        
-            // graph normals
-            for (int i = 0; i < GIZMOS_subGraphs.Count; ++i)
-            {
-                Gizmos.color = Color.magenta;
-                for (int j = 0; j < GIZMOS_subGraphs[i].points.Count; ++j)
-                {
-                    Gizmos.DrawLine(offset + GIZMOS_subGraphs[i].points[j].position,
-                        offset + GIZMOS_subGraphs[i].points[j].position + GIZMOS_subGraphs[i].points[j].normal);
-                }
-            }
-        }
-        
-        // private void OnValidate()
-        // {
-        //     Bake = true;
-        // }
     }
 }
