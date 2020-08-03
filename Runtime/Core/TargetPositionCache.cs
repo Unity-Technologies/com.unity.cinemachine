@@ -17,6 +17,11 @@ namespace Cinemachine
         
         static Mode m_CacheMode = Mode.Disabled;
 
+#if UNITY_EDITOR
+        static TargetPositionCache() { UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded; }
+        static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) { ClearCache(); }
+#endif
+
         public static Mode CacheMode
         {
             get => m_CacheMode;

@@ -386,7 +386,7 @@ namespace Cinemachine
         /// This is the Impulse system's current time.  
         /// Takes into accoount whether impulse is ignoring time scale.
         /// </summary>
-        public float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : Time.time; } }
+        public float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : CinemachineCore.CurrentTime; } }
 
         /// <summary>Get a new ImpulseEvent</summary>
         public ImpulseEvent NewImpulseEvent()

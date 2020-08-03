@@ -439,7 +439,7 @@ namespace Cinemachine
             while (hash != 0 && !mInstructionDictionary.ContainsKey(hash))
                 hash = mStateParentLookup.ContainsKey(hash) ? mStateParentLookup[hash] : 0;
 
-            float now = Time.time;
+            float now = CinemachineCore.CurrentTime;
             if (mActivationTime != 0)
             {
                 // Is it active now?

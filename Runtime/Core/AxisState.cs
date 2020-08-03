@@ -365,7 +365,7 @@ namespace Cinemachine
             /// <summary>Cancel any recenetering in progress.</summary>
             public void CancelRecentering()
             {
-                mLastAxisInputTime = Time.time;
+                mLastAxisInputTime = CinemachineCore.CurrentTime;
                 mRecenteringVelocity = 0;
             }
 
@@ -395,7 +395,7 @@ namespace Cinemachine
                 if (delta == 0)
                     return;
 
-                if (Time.time < (mLastAxisInputTime + m_WaitTime))
+                if (CinemachineCore.CurrentTime < (mLastAxisInputTime + m_WaitTime))
                     return;
 
                 // Determine the direction
