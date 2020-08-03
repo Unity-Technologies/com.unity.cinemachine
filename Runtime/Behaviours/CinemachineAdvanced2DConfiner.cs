@@ -7,11 +7,11 @@ using UnityEngine;
 namespace Cinemachine
 { 
     [SaveDuringPlay]
-#if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
+// #if UNITY_2018_3_OR_NEWER
+//     [ExecuteAlways]
+// #else
+//     [ExecuteInEditMode]
+// #endif
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
         // TODO: OnValidate parameters (e.g. m_bakedConfinerResolution)

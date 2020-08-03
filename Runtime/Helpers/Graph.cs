@@ -66,7 +66,7 @@ namespace Cinemachine
             return deepCopy;
         }
 
-        internal float ComputeArea()
+        internal float ComputeSignedArea()
         {
             area = 0;
             for (int i = 0; i < points.Count; ++i)
@@ -118,7 +118,7 @@ namespace Cinemachine
             {
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
                 Vector2 normal = (edgeNormals[i] + edgeNormals[prevIndex]) / 2f;
-                points[i].normal = SquareNormalize(normal);
+                points[i].normal = RectangleNormalize(normal);
                 // points[i].normal = normal.normalized;
                 // points[i].normal.x =
                 //     Mathf.Clamp(points[i].normal.x, -oneOverSquarerootOfTwo, oneOverSquarerootOfTwo);
@@ -132,11 +132,11 @@ namespace Cinemachine
         /// within a rectangle with sides (a, 1). Meaning, the maximum length is a and 1 for the x and y components of the
         /// vector respectively.
         /// </summary>
-        /// <param name="normal">Normal to SquareNormalize</param>
-        /// <returns>SquareNormalized normal</returns>
-        internal Vector2 SquareNormalize(Vector2 normal)
+        /// <param name="normal">Normal to RectangleNormalize</param>
+        /// <returns>RectangleNormalized normal</returns>
+        internal Vector2 RectangleNormalize(Vector2 normal)
         {
-            Vector2 n = normal.normalized * 10 * sensorRatio;
+            Vector2 n = normal.normalized * 100;
             n.x = Mathf.Clamp(n.x, -sensorRatio, sensorRatio);
             n.y = Mathf.Clamp(n.y, -1, 1);
             return n;
@@ -265,7 +265,7 @@ namespace Cinemachine
         // internal bool SetOrientationClockwise()
         // {
         //     // NOTE: invalidates normals!
-        //     if (!ComputeArea(points.ToArray()))
+        //     if (!ComputeSignedArea(points.ToArray()))
         //     {
         //         //points.Reverse();
         //         return true;

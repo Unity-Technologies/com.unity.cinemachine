@@ -101,24 +101,39 @@ namespace Cinemachine
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
                     var graph = graphs[graphs_index][g].DeepCopy();
-                    var area = graph.ComputeArea();
+                    var area = graph.ComputeSignedArea();
                     if (area < UnityVectorExtensions.Epsilon)
                     {
+                        var minX = float.PositiveInfinity;
+                        var minY = float.PositiveInfinity;
+                        var maxX = float.NegativeInfinity;
+                        var maxY = float.NegativeInfinity;
                         for (int i = 0; i < graph.points.Count; ++i)
                         {
-                            // TODO: check that points closest to graph.intersectionPoints not to be considered
-                            if (graph.IsClosestPointToAnyIntersection(i) ||
-                                graph.IsClosestPointToAnyIntersection(i + 1))
-                            {
-                                continue;
-                            }
+                            minX = Mathf.Min(graph.points[i].position.x, minX);
+                            minY = Mathf.Min(graph.points[i].position.y, minY);
+                            maxX = Mathf.Max(graph.points[i].position.x, maxX);
+                            maxY = Mathf.Max(graph.points[i].position.y, maxY);
                         }
-                        for (int i = 0; i < graph.points.Count; ++i)
+                        
                         {
-                            // TODO: find end point of line, and dont set the normal to zero there, so the line can get shorter
-                            // todo: or flipping normals back and forth should also work 
-                            // or center of mass -> does not wokr
-                            graph.points[i].normal = Vector2.zero; // stops shrinking when area is very small -> line
+                            Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
+                            for (int i = 0; i < graph.points.Count; ++i)
+                            {
+                                // TODO: find end point of line, and dont set the normal to zero there, so the line can get shorter
+                                // todo: or flipping normals back and forth should also work 
+                                // or center of mass -> does not wokr
+                                graph.points[i].normal = graph.RectangleNormalize(center - graph.points[i].position);
+                                
+                                if (Math.Abs(maxX - minX) < 0.5f)
+                                {
+                                    graph.points[i].normal.x = 0;
+                                }
+                                if (Math.Abs(maxY - minY) < 0.5f)
+                                {
+                                    graph.points[i].normal.y = 0;
+                                }
+                            }
                         }
                         // graph.Simplify(); // TODO: need to explore this option more
                     }
@@ -173,11 +188,11 @@ namespace Cinemachine
             graph.sensorRatio = sensorRatio;
             graph.ComputeNormals();
             graph.FlipNormals();
-            graph.ComputeArea();
+            graph.ComputeSignedArea();
             if (!graph.ClockwiseOrientation)
             {
                 graph.FlipNormals();
-                graph.ComputeArea();
+                graph.ComputeSignedArea();
             }
             return new List<Graph> {graph};
         }
@@ -210,11 +225,11 @@ namespace Cinemachine
                 newGraph.sensorRatio = sensorRatio;
                 newGraph.ComputeNormals();
                 newGraph.FlipNormals();
-                newGraph.ComputeArea();
+                newGraph.ComputeSignedArea();
                 if (!newGraph.ClockwiseOrientation)
                 {
                     newGraph.FlipNormals();
-                    newGraph.ComputeArea();
+                    newGraph.ComputeSignedArea();
                 }
                 newGraphs.Add(new List<Graph> { newGraph });
             }
