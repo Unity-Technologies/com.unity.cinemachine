@@ -95,18 +95,15 @@ namespace Cinemachine
                     pathChanged ||
                     Math.Abs(frustumHeight - windowSizeCache) > m_bakedConfinerResolution)
                 {
-                    Debug.Log("3");
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                     windowSizeCache = frustumHeight;
                     confinerCache = confinerOven().GetConfinerAtOrthoSize(windowSizeCache);
                     confinerStateToPath().Convert(confinerCache, m_BoundingShape2D.transform.position,
                         out m_currentPathCache, out m_BoundingCompositeShape2D);
-                    Debug.Log("4");
                 }
                 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
                 
-                Debug.Log("5");
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     var originalDisplacement = displacement;
@@ -129,7 +126,6 @@ namespace Cinemachine
                         displacement = originalDisplacement;
                     }
                 }
-                Debug.Log("6");
                 extra.m_previousDisplacement = displacement;
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
@@ -243,10 +239,8 @@ namespace Cinemachine
 
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
             sensorRatioCache = sensorRatio;
-            Debug.Log("1");
             confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache);
             confinerOven().TrimGraphs();
-            Debug.Log("2");
             
             m_BoundingShape2DCache = m_BoundingShape2D;
 
