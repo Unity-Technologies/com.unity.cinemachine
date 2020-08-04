@@ -8,7 +8,7 @@ namespace Cinemachine
     {
         public List<Graph> graphs;
         public float windowSize;
-        public int state;
+        public float state;
     }
 
     public class Point2
@@ -38,6 +38,10 @@ namespace Cinemachine
         internal float area;
         internal float windowDiagonal;
         internal float sensorRatio;
+        internal int state;
+        private bool normalDirectionTowardsCenter;
+        private bool zeroNormalsXdirection;
+        private bool zeroNormalsYdirection;
 
         internal List<Vector2> intersectionPoints;
 
@@ -47,6 +51,43 @@ namespace Cinemachine
             intersectionPoints = new List<Vector2>();
             area = 0;
             windowDiagonal = 0;
+            state = 0;
+            normalDirectionTowardsCenter = false;
+            zeroNormalsXdirection = false;
+            zeroNormalsYdirection = false;
+        }
+
+        public bool SetNormalDirectionTowardsCenter()
+        {
+            if (!normalDirectionTowardsCenter)
+            {
+                normalDirectionTowardsCenter = true;
+                state++;
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetZeroNormalsXdirection()
+        {
+            if (!zeroNormalsXdirection)
+            {
+                zeroNormalsXdirection = true;
+                state++;
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetZeroNormalsYdirection()
+        {
+            if (!zeroNormalsYdirection)
+            {
+                zeroNormalsYdirection = true;
+                state++;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -54,7 +95,7 @@ namespace Cinemachine
         /// </summary>
         /// <returns>Deep copy of this graph</returns>
         public Graph DeepCopy()
-        {
+        {// TODO : {} constructor call
             Graph deepCopy = new Graph();
             deepCopy.points = this.points.ConvertAll(point => new Point2(point.position, point.normal));
             deepCopy.ClockwiseOrientation = this.ClockwiseOrientation;
@@ -63,6 +104,10 @@ namespace Cinemachine
                 new Vector2(intersection.x, intersection.y));
             deepCopy.windowDiagonal = windowDiagonal;
             deepCopy.sensorRatio = sensorRatio;
+            deepCopy.normalDirectionTowardsCenter = normalDirectionTowardsCenter;
+            deepCopy.zeroNormalsXdirection = zeroNormalsXdirection;
+            deepCopy.zeroNormalsYdirection = zeroNormalsYdirection;
+            deepCopy.state = state;
             return deepCopy;
         }
 
@@ -119,11 +164,6 @@ namespace Cinemachine
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
                 Vector2 normal = (edgeNormals[i] + edgeNormals[prevIndex]) / 2f;
                 points[i].normal = RectangleNormalize(normal);
-                // points[i].normal = normal.normalized;
-                // points[i].normal.x =
-                //     Mathf.Clamp(points[i].normal.x, -oneOverSquarerootOfTwo, oneOverSquarerootOfTwo);
-                // points[i].normal.y =
-                //     Mathf.Clamp(points[i].normal.y, -oneOverSquarerootOfTwo, oneOverSquarerootOfTwo);
             }
         }
 
@@ -253,7 +293,7 @@ namespace Cinemachine
             {
                 for (int j = i + 1; j < points.Count; ++j)
                 {
-                    if ((points[i].position - points[j].position).sqrMagnitude <= 0.1f)
+                    if ((points[i].position - points[j].position).sqrMagnitude <= 0.5f)
                     {
                         points.RemoveAt(j);
                     }
@@ -312,6 +352,7 @@ namespace Cinemachine
                             g1.sensorRatio = graph.sensorRatio;
                             g1.windowDiagonal = graph.windowDiagonal;
                             g1.intersectionPoints.Add(intersection);
+                            g1.state = graph.state + 1;
 
                             // g1 -> intersection j+1 ... i
                             List<Point2> points = new List<Point2>();
@@ -326,10 +367,7 @@ namespace Cinemachine
                             {
                                 points.Add(graph.points[k]);
                             }
-
-                            // TODO: instead of Roll To LeftMost we need to roll to closest point to prev graph, see TestComplex (1) why
-                            // points[0].normal = (points[1].normal + points[points.Count - 1].normal) / 2f; // normal at intersection
-                            //Graph.ComputeNormalAt(0, points);
+                            
                             g1.points = RotateListToLeftmost(points);
                             g1.ComputeNormals();
                             g1.FlipNormals();
@@ -341,6 +379,7 @@ namespace Cinemachine
                             g2.sensorRatio = graph.sensorRatio;
                             g2.windowDiagonal = graph.windowDiagonal;
                             g2.intersectionPoints.Add(intersection);
+                            g2.state = graph.state + 1;
 
                             // g2 -> intersection i+1 ... j
                             List<Point2> points = new List<Point2>();
@@ -395,7 +434,7 @@ namespace Cinemachine
             /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
             /// done.
             subgraphs = new List<Graph>();
-            int maxIteration = 5000;
+            int maxIteration = 500;
             while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs))
             {
                 maxIteration--;

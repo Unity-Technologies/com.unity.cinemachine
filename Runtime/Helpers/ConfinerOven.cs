@@ -97,11 +97,19 @@ namespace Cinemachine
             bool shrinking = true;
             while (shrinking)
             {
+                bool normalsTowardsCenter = false;
+                bool normalsXZero = false;
+                bool normalsYZero = false;
                 List<Graph> nextGraphsIteration = new List<Graph>();
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
                     var graph = graphs[graphs_index][g].DeepCopy();
                     var area = graph.ComputeSignedArea();
+                    if (area < 0)
+                    {
+                        graph.FlipNormals();
+                        area = graph.ComputeSignedArea();
+                    }
                     if (area < UnityVectorExtensions.Epsilon)
                     {
                         var minX = float.PositiveInfinity;
@@ -117,22 +125,33 @@ namespace Cinemachine
                         }
                         // TODO: state changes when we change normals!
                         {
+                            normalsTowardsCenter = true;
                             Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
                             for (int i = 0; i < graph.points.Count; ++i)
                             {
                                 graph.points[i].normal = graph.RectangleNormalize(center - graph.points[i].position);
-                                
                                 if (Math.Abs(maxX - minX) < 0.5f)
                                 {
                                     graph.points[i].normal.x = 0;
+                                    normalsXZero = true;
                                 }
                                 if (Math.Abs(maxY - minY) < 0.5f)
                                 {
                                     graph.points[i].normal.y = 0;
+                                    normalsYZero = true;
                                 }
                             }
                         }
-                        // graph.Simplify(); // TODO: need to explore this option more
+                        //graph.Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
+                    }
+                    
+                    
+                    if (normalsTowardsCenter && graph.SetNormalDirectionTowardsCenter() |
+                        normalsXZero && graph.SetZeroNormalsXdirection() |
+                        normalsYZero && graph.SetZeroNormalsYdirection())
+                    {
+                        nextGraphsIteration.Add(graph);
+                        continue;
                     }
                     
                     graph.Shrink(shrinkAmount);
@@ -310,7 +329,7 @@ namespace Cinemachine
 
         
         private List<ConfinerState> confinerStates;
-        internal void TrimGraphs()
+        internal List<ConfinerState> TrimGraphs()
         {
             // TODO: List<Graph> should hace a state marker -> managed by the graph division -> incerement state when state change happens
             // todo: statechange (intersection, or skeleton skrinking)
@@ -319,7 +338,19 @@ namespace Cinemachine
             // going backwards, so we can remove without problems
             for (int i = graphs.Count - 2; i >= 0; --i)
             {
-                if (graphs[stateStart].Count != graphs[i].Count || i == 0)
+                bool stateChanged = graphs[stateStart].Count != graphs[i].Count;
+                if (graphs[stateStart].Count == graphs[i].Count)
+                {
+                    for (int j = 0; j < graphs[stateStart].Count; ++j)
+                    {
+                        if (graphs[stateStart][j].state != graphs[i][j].state)
+                        {
+                            stateChanged = true;
+                            break;
+                        }
+                    }
+                }
+                if (stateChanged || i == 0)
                 {
                     // state0_min, ..., state0_max, state1_min, ... state1_max
                     // ... parts need to be removed
@@ -336,21 +367,31 @@ namespace Cinemachine
             confinerStates = new List<ConfinerState>();
             for (int i = 0; i < graphs.Count; ++i)
             {
+                float stateAverage = graphs[i].Count;
+                for (var index = 0; index < graphs[i].Count; index++)
+                {
+                    stateAverage += graphs[i][index].state;
+                }
+                stateAverage /= graphs[i].Count + 1;
+
                 confinerStates.Add(new ConfinerState
                 {
                     windowSize = graphs[i][0].windowDiagonal,
                     graphs = graphs[i],
-                    state = graphs[i].Count,
+                    state = stateAverage//graphs[i].Count,
                 });
             }
             
             for (int i = 0; i < confinerStates.Count; i += 2)
             {
-                if (i + 1 == confinerStates.Count || confinerStates[i + 1].state != confinerStates[i].state)
+                if (i + 1 == confinerStates.Count || 
+                    Math.Abs(confinerStates[i + 1].state - confinerStates[i].state) > UnityVectorExtensions.Epsilon)
                 {
                     confinerStates.Insert(i + 1, confinerStates[i]);
                 }
             }
+
+            return confinerStates;
         }
     }
 }

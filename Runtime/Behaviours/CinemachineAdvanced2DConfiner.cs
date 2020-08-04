@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEditor;
 using UnityEditor.Graphs;
 using UnityEngine;
 
@@ -240,7 +241,7 @@ namespace Cinemachine
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
             sensorRatioCache = sensorRatio;
             confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache);
-            confinerOven().TrimGraphs();
+            confinerStates = confinerOven().TrimGraphs();
             
             m_BoundingShape2DCache = m_BoundingShape2D;
 
@@ -271,7 +272,7 @@ namespace Cinemachine
         {
             if (m_currentPathCache == null) return;
             
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.cyan;
             foreach (var path in m_currentPathCache)
             {
                 for (var index = 0; index < path.Count; index++)
@@ -279,6 +280,40 @@ namespace Cinemachine
                     Gizmos.DrawLine(
                         m_BoundingCompositeShape2D.transform.TransformPoint(path[index]), 
                         m_BoundingCompositeShape2D.transform.TransformPoint(path[(index + 1) % path.Count]));
+                }
+            }
+        }
+        
+        private void OnDrawGizmos()
+        {
+            if (confinerStates != null && m_BoundingShape2D != null)
+            {
+                Vector2 offset = m_BoundingShape2D.transform.position;
+                for (var index = 0; index < confinerStates.Count; index++)
+                {
+                    var confinerState = confinerStates[index];
+                    for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
+                    {
+                        Gizmos.color = new Color((float) index / (float) confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
+                        var g = confinerState.graphs[index1];
+                        Handles.Label(offset + g.points[0].position, index + "|" + index1);
+                        for (int i = 0; i < g.points.Count; ++i)
+                        {
+                            Gizmos.DrawLine(offset + g.points[i].position, offset + g.points[(i + 1) % g.points.Count].position);
+                        }
+                    }
+                }
+
+                Gizmos.color = Color.white;
+                foreach (var confinerState in confinerStates)
+                {
+                    foreach (var g in confinerState.graphs)
+                    {
+                        for (int i = 0; i < g.points.Count; ++i)
+                        {
+                            Gizmos.DrawLine(offset + g.points[i].position, offset + g.points[i].position + g.points[i].normal);
+                        }
+                    }
                 }
             }
         }
