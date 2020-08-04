@@ -493,27 +493,34 @@ namespace Cinemachine
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
                     m_ComponentPipeline[i].PrePipelineMutateCameraState(ref state, deltaTime);
 
-                CinemachineComponentBase postAimBody = null;
                 int componentIndex = 0;
+                CinemachineComponentBase postAimBody = null;
                 for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
                 {
-                    if (stage == CinemachineCore.Stage.Finalize && postAimBody != null)
-                        postAimBody.MutateCameraState(ref state, deltaTime);
-
                     var c = componentIndex < m_ComponentPipeline.Length 
                         ? m_ComponentPipeline[componentIndex] : null;
                     if (c != null && stage == c.Stage)
                     {
                         ++componentIndex;
                         if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
+                        {
                             postAimBody = c;
-                        else
-                            c.MutateCameraState(ref state, deltaTime);
+                            continue; // do the body stage of the pipeline later
+                        }
+                        c.MutateCameraState(ref state, deltaTime);
                     }
-                    else if (stage == CinemachineCore.Stage.Aim)
-                        state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
-
                     InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
+
+                    if (stage == CinemachineCore.Stage.Aim)
+                    {
+                        if (c == null)
+                            state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
+                        if (postAimBody != null)
+                        {
+                            postAimBody.MutateCameraState(ref state, deltaTime);
+                            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
+                        }
+                    }
                 }
             }
             return state;

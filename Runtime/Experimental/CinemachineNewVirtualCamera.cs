@@ -248,21 +248,27 @@ namespace Cinemachine
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
-                if (stage == CinemachineCore.Stage.Finalize && postAimBody != null)
-                    postAimBody.MutateCameraState(ref state, deltaTime);
-
                 var c = m_Components[(int)stage];
                 if (c != null)
                 {
                     if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
+                    {
                         postAimBody = c;
-                    else
-                        c.MutateCameraState(ref state, deltaTime);
+                        continue; // do the body stage of the pipeline later
+                    }
+                    c.MutateCameraState(ref state, deltaTime);
                 }
-                else if (stage == CinemachineCore.Stage.Aim)
-                    state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
-
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
+                if (stage == CinemachineCore.Stage.Aim)
+                {
+                    if (c == null)
+                        state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
+                    if (postAimBody != null)
+                    {
+                        postAimBody.MutateCameraState(ref state, deltaTime);
+                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
+                    }
+                }
             }
 
             return state;
