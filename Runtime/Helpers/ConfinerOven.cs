@@ -105,12 +105,7 @@ namespace Cinemachine
                 {
                     var graph = graphs[graphs_index][g].DeepCopy();
                     var area = graph.ComputeSignedArea();
-                    if (area < 0)
-                    {
-                        graph.FlipNormals();
-                        area = graph.ComputeSignedArea();
-                    }
-                    if (area < UnityVectorExtensions.Epsilon)
+                    if (Mathf.Abs(area) < 1f)
                     {
                         var minX = float.PositiveInfinity;
                         var minY = float.PositiveInfinity;
@@ -125,6 +120,7 @@ namespace Cinemachine
                         }
                         // TODO: state changes when we change normals!
                         {
+                            Debug.Log(area);
                             normalsTowardsCenter = true;
                             Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
                             for (int i = 0; i < graph.points.Count; ++i)

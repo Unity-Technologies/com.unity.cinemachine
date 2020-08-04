@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
 
@@ -213,9 +214,29 @@ namespace Cinemachine
         {
             windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
+            float areaBefore = Mathf.Abs(ComputeSignedArea());
             for (int i = 0; i < points.Count; ++i)
             {
                 points[i].position += points[i].normal * shrinkAmount;
+            }
+            float areaAfter = Mathf.Abs(ComputeSignedArea());
+            if (areaAfter > areaBefore)
+            {
+                FlipNormals();
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    points[i].position += points[i].normal * (shrinkAmount * 2f);
+                }
+            }
+            float areaAfterAfter = Mathf.Abs(ComputeSignedArea());
+            if (areaAfterAfter > areaAfter)
+            {
+                FlipNormals();
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    points[i].position += points[i].normal * (shrinkAmount);
+                    points[i].normal = Vector2.zero;
+                }
             }
         }
 
