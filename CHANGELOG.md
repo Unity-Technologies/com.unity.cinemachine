@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.1] - 2020-00-00
+## [2.6.1] - 2020-08-04
 ### Bugfixes
 - Bugfix: vertical group composition was not composing properly
 - Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
