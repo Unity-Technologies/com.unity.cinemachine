@@ -26,6 +26,8 @@ namespace Cinemachine
         [Range(0.005f, 1f)]
         private float m_bakedConfinerResolution = 0.03f;
 
+        public bool DrawGizmosDebug = false;
+
         private Collider2D m_BoundingCompositeShape2D;
         
         private List<List<Vector2>> m_originalPath;
@@ -286,6 +288,7 @@ namespace Cinemachine
         
         private void OnDrawGizmos()
         {
+            if (!DrawGizmosDebug) return;
             if (confinerStates != null && m_BoundingShape2D != null)
             {
                 Vector2 offset = m_BoundingShape2D.transform.position;

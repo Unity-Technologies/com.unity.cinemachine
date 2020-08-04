@@ -226,7 +226,7 @@ namespace Cinemachine
             bool normalsTowardsCenter = false;
             bool normalsXZero = false;
             bool normalsYZero = false;
-            if (Math.Abs(maxX - minX) < 0.5f)
+            if (Math.Abs(maxX - minX) < 1f)
             {
                 for (int i = 0; i < points.Count; ++i)
                 {
@@ -234,7 +234,7 @@ namespace Cinemachine
                     normalsXZero = true;
                 }
             }
-            if (Math.Abs(maxY - minY) < 0.5f)
+            if (Math.Abs(maxY - minY) < 1f)
             {
                 for (int i = 0; i < points.Count; ++i)
                 {
@@ -244,7 +244,7 @@ namespace Cinemachine
             }
             
             ComputeSignedArea();
-            if (!normalsXZero && !normalsYZero && Mathf.Abs(area) < 0.00001f)
+            if (!normalsXZero && !normalsYZero && Mathf.Abs(area) < 2f)
             {
                 normalsTowardsCenter = true;
                 Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
@@ -252,7 +252,7 @@ namespace Cinemachine
                 {
                     points[i].normal = RectangleNormalize(center - points[i].position);
                 }
-                    //graph.Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
+                    // Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
             }
 
 
