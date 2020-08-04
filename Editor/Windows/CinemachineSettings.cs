@@ -248,7 +248,7 @@ namespace Cinemachine.Editor
             public static readonly GUIContent sComposerHardBoundsOverlay = new GUIContent("Hard Bounds Overlay", "The colour of the composer overlay's hard bounds region");
             public static readonly GUIContent sComposerSoftBoundsOverlay = new GUIContent("Soft Bounds Overlay", "The colour of the composer overlay's soft bounds region");
             public static readonly GUIContent sComposerTargetOverlay = new GUIContent("Composer Target", "The colour of the composer overlay's target");
-            public static readonly GUIContent sComposerTargetOverlayPixels = new GUIContent("Composer Target Size(px)", "The size of the composer overlay's target box in pixels");
+            public static readonly GUIContent sComposerTargetOverlayPixels = new GUIContent("Target Size (px)", "The size of the composer overlay's target box in pixels");
         }
 
         private const string kCinemachineHeaderPath = "cinemachine_header.tif";
@@ -288,7 +288,7 @@ namespace Cinemachine.Editor
             //CinemachineCore.sShowHiddenObjects
             //    = EditorGUILayout.Toggle("Show Hidden Objects", CinemachineCore.sShowHiddenObjects);
 
-            ShowCoreSettings = EditorGUILayout.Foldout(ShowCoreSettings, "Runtime Settings");
+            ShowCoreSettings = EditorGUILayout.Foldout(ShowCoreSettings, "Runtime Settings", true);
             if (ShowCoreSettings)
             {
                 EditorGUI.indentLevel++;
@@ -327,7 +327,7 @@ namespace Cinemachine.Editor
                 EditorGUI.indentLevel--;
             }
 
-            ShowComposerSettings = EditorGUILayout.Foldout(ShowComposerSettings, "Composer Settings");
+            ShowComposerSettings = EditorGUILayout.Foldout(ShowComposerSettings, "Composer Settings", true);
             if (ShowComposerSettings)
             {
                 EditorGUI.indentLevel++;

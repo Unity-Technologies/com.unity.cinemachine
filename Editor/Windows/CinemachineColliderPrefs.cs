@@ -63,7 +63,7 @@ namespace Cinemachine
 
         private static void DrawColliderSettings()
         {
-            SettingsFoldedOut = EditorGUILayout.Foldout(SettingsFoldedOut, "Collider Settings");
+            SettingsFoldedOut = EditorGUILayout.Foldout(SettingsFoldedOut, "Collider Settings", true);
             if (SettingsFoldedOut)
             {
                 EditorGUI.indentLevel++;

@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Improved performance of path gizmo drawing
 - Timeline Scrub Bubble now supports nested timelines, with some known limitations to be addressed with a future Timeline package release
 - Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
+- Bugfix (1266191) Clicking on foldout labels in preferences panel toggles their expanded state
+- Bugfix (1266196) Composer target Size label in preferences panel too big
 
 ## [2.6.0] - 2020-06-04
 ### New Features and Bugfixes
