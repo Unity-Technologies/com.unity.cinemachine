@@ -8,7 +8,7 @@ To add a Volume Settings profile to a Virtual Camera
 
 1. Select your Virtual Camera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
 
-2. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), choose __Add Extension > CinemachineVolumeSettings__, then configre the Profile asset to have the effects you want when this virtual camera is live.
+2. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), choose __Add Extension > CinemachineVolumeSettings__, then configure the Profile asset to have the effects you want when this virtual camera is live.
 
 ## Properties:
 
