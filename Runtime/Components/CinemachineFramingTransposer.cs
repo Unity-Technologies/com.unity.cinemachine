@@ -32,6 +32,17 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class CinemachineFramingTransposer : CinemachineComponentBase
     {
+        /// <summary>
+        /// Offset from the Follow Target object (in target-local co-ordinates).  The camera will attempt to
+        /// frame the point which is the target's position plus this offset.  Use it to correct for
+        /// cases when the target's origin is not the point of interest for the camera.
+        /// </summary>
+        [Tooltip("Offset from the Follow Target object (in target-local co-ordinates).  "
+            + "The camera will attempt to frame the point which is the target's position plus "
+            + "this offset.  Use it to correct for cases when the target's origin is not the "
+            + "point of interest for the camera.")]
+        public Vector3 m_TargetOffset;
+
         /// <summary>This setting will instruct the composer to adjust its target offset based
         /// on the motion of the target.  The composer will look at a point where it estimates
         /// the target will be this many seconds into the future.  Note that this setting is sensitive
@@ -45,6 +56,7 @@ namespace Cinemachine
             + "If the camera jitters unacceptably when the target is in motion, turn down this "
             + "setting, or animate the target more smoothly.")]
         [Range(0f, 1f)]
+        [Space]
         public float m_LookaheadTime = 0;
 
         /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out
@@ -97,7 +109,7 @@ namespace Cinemachine
         /// the rotation changes</summary>
         [Tooltip("If set, damping will apply  only to target motion, but not to camera "
             + "rotation changes.  Turn this on to get an instant response when the rotation changes.  ")]
-        public bool m_TargetMovementOnly;
+        public bool m_TargetMovementOnly = true;
 
         /// <summary>Horizontal screen position for target. The camera will move to position the tracked object here</summary>
         [Space]
@@ -422,7 +434,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             LensSettings lens = curState.Lens;
-            Vector3 followTargetPosition = FollowTargetPosition;
+            Vector3 followTargetPosition = FollowTargetPosition + (FollowTargetRotation * m_TargetOffset);
             bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
             if (!previousStateIsValid)
             {
