@@ -148,7 +148,7 @@ namespace Cinemachine
         public interface IInputAxisProvider
         {
             /// <summary>Get the value of the input axis</summary>
-            /// <param name="axis">Which axis to query: 0, 1, or 2 - representing, respectively, X, Y, and Z axes</param>
+            /// <param name="axis">Which axis to query: 0, 1, or 2.  These represent, respectively, the X, Y, and Z axes</param>
             /// <returns>The input value of the axis queried</returns>
             float GetAxisValue(int axis);
         }
