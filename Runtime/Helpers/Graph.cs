@@ -210,8 +210,65 @@ namespace Cinemachine
             return false;
         }
 
-        internal void Shrink(float shrinkAmount)
+        internal bool Shrink(float shrinkAmount)
         {
+            var minX = float.PositiveInfinity;
+            var minY = float.PositiveInfinity;
+            var maxX = float.NegativeInfinity;
+            var maxY = float.NegativeInfinity;
+            for (int i = 0; i < points.Count; ++i)
+            {
+                minX = Mathf.Min(points[i].position.x, minX);
+                minY = Mathf.Min(points[i].position.y, minY);
+                maxX = Mathf.Max(points[i].position.x, maxX);
+                maxY = Mathf.Max(points[i].position.y, maxY);
+            }
+            bool normalsTowardsCenter = false;
+            bool normalsXZero = false;
+            bool normalsYZero = false;
+            if (Math.Abs(maxX - minX) < 0.5f)
+            {
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    points[i].normal.x = 0;
+                    normalsXZero = true;
+                }
+            }
+            if (Math.Abs(maxY - minY) < 0.5f)
+            {
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    points[i].normal.y = 0;
+                    normalsYZero = true;
+                }
+            }
+            
+            ComputeSignedArea();
+            if (!normalsXZero && !normalsYZero && Mathf.Abs(area) < 0.00001f)
+            {
+                normalsTowardsCenter = true;
+                Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    points[i].normal = RectangleNormalize(center - points[i].position);
+                }
+                    //graph.Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
+            }
+
+
+            if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
+            {
+                return false;
+            }
+            if (normalsXZero && SetZeroNormalsXdirection())
+            {
+                return false;
+            } 
+            if (normalsYZero && SetZeroNormalsYdirection())
+            {
+                return false;
+            }
+
             windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float areaBefore = Mathf.Abs(ComputeSignedArea());
@@ -238,6 +295,8 @@ namespace Cinemachine
                     points[i].normal = Vector2.zero;
                 }
             }
+
+            return true;
         }
 
         /// <summary></summary>

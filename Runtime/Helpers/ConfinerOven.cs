@@ -97,66 +97,22 @@ namespace Cinemachine
             bool shrinking = true;
             while (shrinking)
             {
-                bool normalsTowardsCenter = false;
-                bool normalsXZero = false;
-                bool normalsYZero = false;
                 List<Graph> nextGraphsIteration = new List<Graph>();
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
                     var graph = graphs[graphs_index][g].DeepCopy();
-                    var area = graph.ComputeSignedArea();
-                    if (Mathf.Abs(area) < 1f)
+                    if (graph.Shrink(shrinkAmount))
                     {
-                        var minX = float.PositiveInfinity;
-                        var minY = float.PositiveInfinity;
-                        var maxX = float.NegativeInfinity;
-                        var maxY = float.NegativeInfinity;
-                        for (int i = 0; i < graph.points.Count; ++i)
-                        {
-                            minX = Mathf.Min(graph.points[i].position.x, minX);
-                            minY = Mathf.Min(graph.points[i].position.y, minY);
-                            maxX = Mathf.Max(graph.points[i].position.x, maxX);
-                            maxY = Mathf.Max(graph.points[i].position.y, maxY);
-                        }
-                        // TODO: state changes when we change normals!
-                        {
-                            Debug.Log(area);
-                            normalsTowardsCenter = true;
-                            Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
-                            for (int i = 0; i < graph.points.Count; ++i)
-                            {
-                                graph.points[i].normal = graph.RectangleNormalize(center - graph.points[i].position);
-                                if (Math.Abs(maxX - minX) < 0.5f)
-                                {
-                                    graph.points[i].normal.x = 0;
-                                    normalsXZero = true;
-                                }
-                                if (Math.Abs(maxY - minY) < 0.5f)
-                                {
-                                    graph.points[i].normal.y = 0;
-                                    normalsYZero = true;
-                                }
-                            }
-                        }
-                        //graph.Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
+                        /// 2. DO until Graph G has intersections
+                        /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
+                        /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
+                        Graph.DivideAlongIntersections(graph, out List<Graph> subgraphs);
+                        nextGraphsIteration.AddRange(subgraphs);
                     }
-                    
-                    
-                    if (normalsTowardsCenter && graph.SetNormalDirectionTowardsCenter() |
-                        normalsXZero && graph.SetZeroNormalsXdirection() |
-                        normalsYZero && graph.SetZeroNormalsYdirection())
+                    else
                     {
                         nextGraphsIteration.Add(graph);
-                        continue;
                     }
-                    
-                    graph.Shrink(shrinkAmount);
-
-                    /// 2. DO until Graph G has intersections
-                    /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
-                    /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
-                    Graph.DivideAlongIntersections(graph, out List<Graph> subgraphs);
-                    nextGraphsIteration.AddRange(subgraphs);
                 }
 
                 graphs.Add(nextGraphsIteration);
