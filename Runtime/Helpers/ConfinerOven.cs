@@ -115,14 +115,11 @@ namespace Cinemachine
                             maxX = Mathf.Max(graph.points[i].position.x, maxX);
                             maxY = Mathf.Max(graph.points[i].position.y, maxY);
                         }
-                        
+                        // TODO: state changes when we change normals!
                         {
                             Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
                             for (int i = 0; i < graph.points.Count; ++i)
                             {
-                                // TODO: find end point of line, and dont set the normal to zero there, so the line can get shorter
-                                // todo: or flipping normals back and forth should also work 
-                                // or center of mass -> does not wokr
                                 graph.points[i].normal = graph.RectangleNormalize(center - graph.points[i].position);
                                 
                                 if (Math.Abs(maxX - minX) < 0.5f)
