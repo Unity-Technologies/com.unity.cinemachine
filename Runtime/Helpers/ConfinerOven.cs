@@ -321,9 +321,15 @@ namespace Cinemachine
                 }
                 stateAverage /= graphs[i].Count + 1;
 
+                var maxWindowDiagonal = graphs[i][0].windowDiagonal;
+                for (var index = 1; index < graphs[i].Count; index++)
+                {
+                    maxWindowDiagonal = Mathf.Max(graphs[i][index].windowDiagonal, maxWindowDiagonal);
+                }
+                
                 confinerStates.Add(new ConfinerState
                 {
-                    windowSize = graphs[i][0].windowDiagonal,
+                    windowSize = maxWindowDiagonal,
                     graphs = graphs[i],
                     state = stateAverage//graphs[i].Count,
                 });

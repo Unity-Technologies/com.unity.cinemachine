@@ -317,7 +317,8 @@ namespace Cinemachine
                     {
                         Gizmos.color = new Color((float) index / (float) confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
                         var g = confinerState.graphs[index1];
-                        Handles.Label(offset + g.points[0].position, "A="+g.ComputeSignedArea());
+                        //Handles.Label(offset + g.points[0].position, "A="+g.ComputeSignedArea());
+                        Handles.Label(offset + g.points[0].position, "W="+g.windowDiagonal);
                         for (int i = 0; i < g.points.Count; ++i)
                         {
                             Gizmos.DrawLine(offset + g.points[i].position, offset + g.points[(i + 1) % g.points.Count].position);
