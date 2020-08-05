@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Timeline Scrub Bubble now supports nested timelines, with some known limitations to be addressed with a future Timeline package release
 - Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
 - Added Target Offset field to Framing Transposer
+- Regression fix: Confiner no longer confines noise and impulse
 - Bugfix (1266191) Clicking on foldout labels in preferences panel toggles their expanded state
 - Bugfix (1266196) Composer target Size label in preferences panel too big
 
