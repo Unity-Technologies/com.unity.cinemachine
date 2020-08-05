@@ -41,7 +41,7 @@ namespace Cinemachine
             + "The camera will attempt to frame the point which is the target's position plus "
             + "this offset.  Use it to correct for cases when the target's origin is not the "
             + "point of interest for the camera.")]
-        public Vector3 m_TargetOffset;
+        public Vector3 m_TrackedObjectOffset;
 
         /// <summary>This setting will instruct the composer to adjust its target offset based
         /// on the motion of the target.  The composer will look at a point where it estimates
@@ -434,7 +434,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             LensSettings lens = curState.Lens;
-            Vector3 followTargetPosition = FollowTargetPosition + (FollowTargetRotation * m_TargetOffset);
+            Vector3 followTargetPosition = FollowTargetPosition + (FollowTargetRotation * m_TrackedObjectOffset);
             bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
             if (!previousStateIsValid)
             {
