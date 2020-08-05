@@ -242,21 +242,13 @@ namespace Cinemachine
 
             return result;
         }
-
+        
         private ConfinerState ConfinerStateLerp(in ConfinerState left, in ConfinerState right, float lerp)
         {
             if (left.graphs.Count != right.graphs.Count)
             {
                 Debug.Log("SOMETHINGS NOT RIGHT 1 - PathLerp");
                 return left;
-            }
-            for (int i = 0; i < left.graphs.Count; ++i)
-            {
-                if (left.graphs[i].points.Count != right.graphs[i].points.Count)
-                {
-                    Debug.Log("SOMETHINGS NOT RIGHT 2 - PathLerp");
-                    return left;
-                }
             }
 
             ConfinerState result = new ConfinerState
@@ -272,17 +264,16 @@ namespace Cinemachine
                 for (int j = 0; j < left.graphs[i].points.Count; ++j)
                 {
                     r.intersectionPoints = left.graphs[i].intersectionPoints;
+                    var rightPoint = right.graphs[i].ClosestPoint(left.graphs[i].points[j].position);
                     r.points.Add(new Point2
                     {
-                        position = Vector2.Lerp(left.graphs[i].points[j].position, right.graphs[i].points[j].position, lerp),
+                        position = Vector2.Lerp(left.graphs[i].points[j].position, rightPoint, lerp),
                     });
                 }
-                result.graphs.Add(r);
+                result.graphs.Add(r);   
             }
             return result;
         }
-
-
         
         private List<ConfinerState> confinerStates;
         internal List<ConfinerState> TrimGraphs()

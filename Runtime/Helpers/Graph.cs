@@ -294,7 +294,7 @@ namespace Cinemachine
                 {
                     points[i].normal = RectangleNormalize(center - points[i].position);
                 }
-                    // Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
+                    Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
             }
             if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
             {
