@@ -93,7 +93,6 @@ namespace Cinemachine
             graphs = CreateGraphs(inputPath, sensorRatio);
             int graphs_index = 0;
 
-            int counter = 0;
             bool shrinking = true;
             while (shrinking)
             {
@@ -101,12 +100,16 @@ namespace Cinemachine
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
                     var graph = graphs[graphs_index][g].DeepCopy();
-                    if (graph.Shrink(shrinkAmount))
+                    if (graph.Shrink(shrinkAmount, out bool woobly))
                     {
+                        if (woobly)
+                        {
+                            int a = 3;
+                        }
                         /// 2. DO until Graph G has intersections
                         /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
                         /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
-                        Graph.DivideAlongIntersections(graph, out List<Graph> subgraphs);
+                        Graph.DivideAlongIntersections(graph, woobly, out List<Graph> subgraphs);
                         nextGraphsIteration.AddRange(subgraphs);
                     }
                     else
@@ -119,8 +122,9 @@ namespace Cinemachine
                 ++graphs_index;
 
                 shrinking = false;
-                foreach (var graph in graphs[graphs_index])
+                for (var index = 0; index < graphs[graphs_index].Count; index++)
                 {
+                    var graph = graphs[graphs_index][index];
                     if (graph.IsShrinkable())
                     {
                         shrinking = true;

@@ -210,8 +210,10 @@ namespace Cinemachine
             return false;
         }
 
-        internal bool Shrink(float shrinkAmount)
+        internal bool Shrink(float shrinkAmount, out bool woobly)
         {
+            woobly = false;
+            
             var minX = float.PositiveInfinity;
             var minY = float.PositiveInfinity;
             var maxX = float.NegativeInfinity;
@@ -242,9 +244,49 @@ namespace Cinemachine
                     normalsYZero = true;
                 }
             }
+            if (normalsXZero && SetZeroNormalsXdirection())
+            {
+                return false;
+            } 
+            if (normalsYZero && SetZeroNormalsYdirection())
+            {
+                return false;
+            }
+
+            bool allNormalsAreNonZero = false;
+            for (int i = 0; i < points.Count; ++i)
+            {
+                if (points[i].normal.sqrMagnitude > UnityVectorExtensions.Epsilon)
+                {
+                    allNormalsAreNonZero = true;
+                }
+                else
+                {
+                    points[i].normal = Vector2.zero;
+                }
+            }
+
+            if (!allNormalsAreNonZero)
+            {
+                if (!normalsXZero)
+                {
+                    normalsXZero = true;
+                    SetZeroNormalsXdirection();
+                }
+
+                if (!normalsYZero)
+                {
+                    normalsYZero = true;
+                    SetZeroNormalsYdirection();
+                }
+            }
+            if (normalsXZero && normalsYZero)
+            {
+                return false;
+            }
             
             ComputeSignedArea();
-            if (!normalsXZero && !normalsYZero && Mathf.Abs(area) < 2f)
+            if (!normalsXZero && !normalsYZero && Mathf.Abs(area) > 0.5f && Mathf.Abs(area) < 2f)
             {
                 normalsTowardsCenter = true;
                 Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
@@ -254,20 +296,12 @@ namespace Cinemachine
                 }
                     // Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
             }
-
-
             if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
             {
                 return false;
             }
-            if (normalsXZero && SetZeroNormalsXdirection())
-            {
-                return false;
-            } 
-            if (normalsYZero && SetZeroNormalsYdirection())
-            {
-                return false;
-            }
+            
+            // todo: 3 point case
 
             windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
@@ -286,7 +320,7 @@ namespace Cinemachine
                 }
             }
             float areaAfterAfter = Mathf.Abs(ComputeSignedArea());
-            if (areaAfterAfter > areaAfter)
+            if (areaAfterAfter > areaAfter || areaBefore < 0.02f)
             {
                 FlipNormals();
                 for (int i = 0; i < points.Count; ++i)
@@ -296,6 +330,17 @@ namespace Cinemachine
                 }
             }
 
+            woobly = areaBefore < areaAfter && areaBefore < areaAfterAfter;
+
+            if (woobly)
+            {
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    points[i].normal = Vector2.zero;
+                }
+
+                int a = 3;
+            }
             return true;
         }
 
@@ -401,7 +446,7 @@ namespace Cinemachine
         /// after cutting off the graph part 'left' of the intersection.</param>
         /// <param name="subgraphs">Resulting subgraphs from dividing graph.</param>
         /// <returns>True, if found intersection. False, otherwise.</returns>
-        private static bool DivideGraph(ref Graph graph, ref List<Graph> subgraphs)
+        private static bool DivideGraph(ref Graph graph, ref List<Graph> subgraphs, bool woobly)
         {
             // for each edge in graph, but not edges that directly connect (e.g. 0-1, 1-2) check for intersections.
             // if we intersect, we need to divide the graph into two graphs (g1,g2) to remove the intersection within a graph.
@@ -416,6 +461,7 @@ namespace Cinemachine
                     UnityVectorExtensions.FindIntersection(
                         graph.points[i].position, graph.points[(i + 1) % graph.points.Count].position,
                         graph.points[j].position, graph.points[(j + 1) % graph.points.Count].position,
+                        woobly,
                         out bool linesIntersect, out bool segmentsIntersect,
                         out Vector2 intersection);
                     
@@ -507,7 +553,7 @@ namespace Cinemachine
             return false; // graph does not have nice intersections
         }
 
-        internal static void DivideAlongIntersections(Graph graph, out List<Graph> subgraphs)
+        internal static void DivideAlongIntersections(Graph graph, bool woobly, out List<Graph> subgraphs)
         {
             /// 2. DO until Graph G has intersections
             /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
@@ -515,7 +561,7 @@ namespace Cinemachine
             /// done.
             subgraphs = new List<Graph>();
             int maxIteration = 500;
-            while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs))
+            while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs, woobly))
             {
                 maxIteration--;
             };
