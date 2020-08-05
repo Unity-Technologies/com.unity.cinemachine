@@ -35,7 +35,8 @@ namespace Cinemachine
 
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
-        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
+        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the "
+            + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
         [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
 
@@ -254,7 +255,7 @@ namespace Cinemachine
                     if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
                     {
                         postAimBody = c;
-                        continue; // do the body stage of the pipeline later
+                        continue; // do the body stage of the pipeline after Aim
                     }
                     c.MutateCameraState(ref state, deltaTime);
                 }
@@ -263,6 +264,7 @@ namespace Cinemachine
                 {
                     if (c == null)
                         state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
+                     // If we have saved a Body for after Aim, do it now
                     if (postAimBody != null)
                     {
                         postAimBody.MutateCameraState(ref state, deltaTime);
