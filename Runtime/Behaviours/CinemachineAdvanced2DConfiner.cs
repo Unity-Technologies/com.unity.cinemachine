@@ -284,6 +284,24 @@ namespace Cinemachine
                         m_BoundingCompositeShape2D.transform.TransformPoint(path[(index + 1) % path.Count]));
                 }
             }
+            
+            Vector2 offset = m_BoundingShape2D.transform.position;
+            {
+                var index = 0;
+                var confinerState = confinerStates[index];
+                for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
+                {
+                    Gizmos.color = new Color((float) index / (float) confinerStates.Count,
+                        (float) index1 / (float) confinerState.graphs.Count, 0.2f);
+                    var g = confinerState.graphs[index1];
+                    Handles.Label(offset + g.points[0].position, "A=" + g.ComputeSignedArea());
+                    for (int i = 0; i < g.points.Count; ++i)
+                    {
+                        Gizmos.DrawLine(offset + g.points[i].position,
+                            offset + g.points[(i + 1) % g.points.Count].position);
+                    }
+                }
+            }
         }
         
         private void OnDrawGizmos()
