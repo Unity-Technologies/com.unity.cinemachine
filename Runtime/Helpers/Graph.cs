@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Cinemachine.Utility;
 using UnityEngine;
-
+//TODO: fix disconnectivity - when lines are so thin the composite collider ignores them
+//
 namespace Cinemachine
 {
     public class ConfinerState
@@ -97,19 +98,21 @@ namespace Cinemachine
         /// </summary>
         /// <returns>Deep copy of this graph</returns>
         public Graph DeepCopy()
-        {// TODO : {} constructor call
-            Graph deepCopy = new Graph();
-            deepCopy.points = this.points.ConvertAll(point => new Point2(point.position, point.normal));
-            deepCopy.ClockwiseOrientation = this.ClockwiseOrientation;
-            deepCopy.area = this.area;
-            deepCopy.intersectionPoints = this.intersectionPoints.ConvertAll(intersection => 
-                new Vector2(intersection.x, intersection.y));
-            deepCopy.windowDiagonal = windowDiagonal;
-            deepCopy.sensorRatio = sensorRatio;
-            deepCopy.normalDirectionTowardsCenter = normalDirectionTowardsCenter;
-            deepCopy.zeroNormalsXdirection = zeroNormalsXdirection;
-            deepCopy.zeroNormalsYdirection = zeroNormalsYdirection;
-            deepCopy.state = state;
+        {
+            Graph deepCopy = new Graph
+            {
+                points = this.points.ConvertAll(point => new Point2(point.position, point.normal)),
+                ClockwiseOrientation = this.ClockwiseOrientation,
+                area = this.area,
+                intersectionPoints = this.intersectionPoints.ConvertAll(intersection =>
+                    new Vector2(intersection.x, intersection.y)),
+                windowDiagonal = this.windowDiagonal,
+                sensorRatio = this.sensorRatio,
+                normalDirectionTowardsCenter = this.normalDirectionTowardsCenter,
+                zeroNormalsXdirection = this.zeroNormalsXdirection,
+                zeroNormalsYdirection = this.zeroNormalsYdirection,
+                state = this.state,
+            };
             return deepCopy;
         }
 
@@ -295,14 +298,12 @@ namespace Cinemachine
                 {
                     points[i].normal = RectangleNormalize(center - points[i].position);
                 }
-                    Simplify(); // TODO: need to explore this option more -> need to set up connectivity for this to work
+                    Simplify();
             }
             if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
             {
                 return false;
             }
-            
-            // todo: 3 point case
 
             windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
@@ -727,9 +728,6 @@ namespace Cinemachine
         /// Order of points of the original List is preserved</returns>
         public static List<Point2> RotateListToLeftmost(List<Point2> points)
         {
-            // TODO: instead of Roll To LeftMost we need to roll to closest point to prev graph, see TestComplex (1) and (2) for why
-            // so RollListTo(List<Vector2> points, Vector2 P); where P will be left intersection point...
-            // todo: better connectivity
             int leftMostPointIndex = 0;
             Vector2 leftMostPoint = points[0].position;
             for (int i = 1; i < points.Count; ++i)

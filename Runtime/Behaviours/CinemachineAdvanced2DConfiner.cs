@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
-using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace Cinemachine
