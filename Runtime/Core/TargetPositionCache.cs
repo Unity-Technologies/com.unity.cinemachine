@@ -7,14 +7,9 @@ namespace Cinemachine
     internal class TargetPositionCache
     {
         public static bool UseCache { get; set; }
-
-        public static int kMaxResolution = 5;
-        public static int Resolution { get; set; }
-
-        public static float CacheStepSize => kMaxResolution / (Mathf.Max(1, (float)Resolution) * 60.0f);
-
+        public const float CacheStepSize = 1 / 60.0f;
         public enum Mode { Disabled, Record, Playback }
-        
+       
         static Mode m_CacheMode = Mode.Disabled;
 
 #if UNITY_EDITOR
@@ -44,6 +39,10 @@ namespace Cinemachine
 
         public static float CurrentTime { get; set; }
 
+        // These are used during recording to manage camera cuts
+        public static int CurrentFrame { get; set; }
+        public static bool IsCameraCut { get; set; }
+
         class CacheCurve
         {
             public struct Item
@@ -59,6 +58,7 @@ namespace Cinemachine
                         Rot = Quaternion.SlerpUnclamped(a.Rot, b.Rot, t)
                     };
                 }
+                public static Item Empty => new Item { Rot = Quaternion.identity };
             }
 
             public float StartTime;
@@ -71,25 +71,28 @@ namespace Cinemachine
             {
                 StepSize = stepSize;
                 StartTime = startTime;
-                m_Cache = new List<Item>(Mathf.CeilToInt((endTime - startTime) / StepSize));
+                m_Cache = new List<Item>(Mathf.CeilToInt((StepSize * 0.5f + endTime - startTime) / StepSize));
             }
 
-            public void Add(Item item, float time)
+            public void Add(Item item) => m_Cache.Add(item);
+
+            public void AddUntil(Item item, float time, bool isCut)
             {
-                if (time < StartTime)
-                    return;
-                var lastIndex = m_Cache.Count - 1;
-                if (lastIndex < 0)
-                    m_Cache.Add(item);
+                var prevIndex = m_Cache.Count - 1;
+                var prevTime = prevIndex * StepSize;
+                var timeRange = time - StartTime - prevTime;
+
+                // If this sample is the first after a camera cut, we don't want to lerp the positions
+                // in the event that some frames got skipped by timeline and the targets were
+                // warped at the cut
+                if (isCut)
+                    for (float t = StepSize; t <= timeRange; t += StepSize)
+                        Add(item);
                 else
                 {
-                    int index = Mathf.FloorToInt((time - StartTime) / StepSize);
-                    var range = (float)(index - lastIndex)
-                        + ((time - StartTime) - (index * StepSize)) / StepSize;
-                    var lastItem = m_Cache[lastIndex];
-                    var lastTime = StartTime + lastIndex * StepSize;
-                    for (int i = lastIndex + 1; i <= index; ++i)
-                        m_Cache.Add(Item.Lerp(lastItem, item, (float)(i - lastIndex) / range));
+                    var prev = m_Cache[prevIndex];
+                    for (float t = StepSize; t <= timeRange; t += StepSize)
+                        Add(Item.Lerp(prev, item, t / timeRange));
                 }
             }
 
@@ -97,15 +100,13 @@ namespace Cinemachine
             {
                 var numItems = m_Cache.Count;
                 if (numItems == 0)
-                    return new Item { Rot = Quaternion.identity };
-
+                    return Item.Empty;
                 var s = time - StartTime;
-                var index = Mathf.Max(Mathf.FloorToInt(s / StepSize), 0);
-                if (index >= numItems - 1)
-                    return m_Cache[numItems - 1];
-
-                float t = (s - (index * StepSize)) / StepSize;
-                return Item.Lerp(m_Cache[index], m_Cache[index + 1], t);
+                var index = Mathf.Clamp(Mathf.FloorToInt(s / StepSize), 0, numItems - 1);
+                var v = m_Cache[index];
+                if (index == numItems - 1)
+                    return v;
+                return Item.Lerp(v, m_Cache[index + 1], (s - index * StepSize) / StepSize);
             }
         }
 
@@ -113,53 +114,56 @@ namespace Cinemachine
         {
             public CacheCurve Curve;
 
-            struct RecordingItem : IComparable<RecordingItem>
+            struct RecordingItem 
             {
                 public float Time;
+                public bool IsCut;
                 public CacheCurve.Item Item;
-                public int CompareTo(RecordingItem other) { return Time.CompareTo(other.Time); }
             }
             List<RecordingItem> RawItems = new List<RecordingItem>();
-            RecordingItem LastRawItem;
 
-            public void AddRawItem(float time, Transform target)
+            public void AddRawItem(float time, bool isCut, Transform target)
             {
-                var n = RawItems.Count;
-                LastRawItem = new RecordingItem
+                // Preserve monotonic ordering
+                var endTime = time - CacheStepSize;
+                var maxItem = RawItems.Count - 1;
+                var lastToKeep = maxItem;
+                while (lastToKeep >= 0 && RawItems[lastToKeep].Time > endTime)
+                    --lastToKeep;
+                if (lastToKeep == maxItem)
                 {
-                    Time = time,
-                    Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
-                };
-                if (n == 0 || Mathf.Abs(RawItems[n-1].Time - time) >= CacheStepSize)
-                    RawItems.Add(LastRawItem);
+                    // Append only, nothing to remove
+                    RawItems.Add(new RecordingItem
+                    {
+                        Time = time,
+                        IsCut = isCut,
+                        Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
+                    });
+                }
+                else 
+                {
+                    // Trim off excess, overwrite the one after lastToKeep
+                    int trimStart = lastToKeep + 2;
+                    if (trimStart <= maxItem)
+                        RawItems.RemoveRange(trimStart, RawItems.Count - trimStart);
+                    RawItems[lastToKeep + 1] = new RecordingItem
+                    {
+                        Time = time,
+                        IsCut = isCut,
+                        Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
+                    };
+                }
             }
 
             public void CreateCurves()
             {
-                RawItems.Sort();
-
-                int numItems = RawItems.Count;
-                float startTime = numItems == 0 ? 0 : RawItems[0].Time;
-                float endTime = numItems == 0 ? 0 : LastRawItem.Time;
+                int maxItem = RawItems.Count - 1;
+                float startTime = maxItem < 0 ? 0 : RawItems[0].Time;
+                float endTime = maxItem < 0 ? 0 : RawItems[maxItem].Time;
                 Curve = new CacheCurve(startTime, endTime, CacheStepSize);
-
-                var lastAddedItem = new RecordingItem { Time = float.MaxValue };
-                for (int i = 0; i < numItems; ++i)
-                {
-                    var item = RawItems[i];
-                    if (Mathf.Abs(item.Time - lastAddedItem.Time) < CacheStepSize)
-                        continue;
-                    Curve.Add(item.Item, item.Time);
-                    lastAddedItem = item;
-                }
-                if (numItems > 0)
-                {
-                    var r = LastRawItem.Time - lastAddedItem.Time;
-                    var step = CacheStepSize * 1.9f;
-                    if (r > 0.0001f)
-                        Curve.Add(CacheCurve.Item.Lerp(lastAddedItem.Item, LastRawItem.Item, step / r), 
-                            lastAddedItem.Time + step);
-                }
+                Curve.Add(maxItem < 0 ? CacheCurve.Item.Empty : RawItems[0].Item);
+                for (int i = 1; i <= maxItem; ++i)
+                    Curve.AddUntil(RawItems[i].Item, RawItems[i].Time, RawItems[i].IsCut);
                 RawItems.Clear();
             }
         }
@@ -190,12 +194,15 @@ namespace Cinemachine
         {
             m_Cache = null;
             m_CacheTimeRange = TimeRange.Empty;
+            CurrentTime = 0;
+            CurrentFrame = 0;
+            IsCameraCut = false;
         }
 
         static void InitCache()
         {
+            ClearCache();
             m_Cache = new Dictionary<Transform, CacheEntry>();
-            m_CacheTimeRange = TimeRange.Empty;
         }
 
         static void CreatePlaybackCurves()
@@ -225,7 +232,6 @@ namespace Cinemachine
                 && !m_CacheTimeRange.IsEmpty 
                 && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
-                ClearCache();
                 InitCache();
             }
 
@@ -242,11 +248,8 @@ namespace Cinemachine
             }
             if (CacheMode == Mode.Record)
             {
-                if (m_CacheTimeRange.End <= CurrentTime)
-                {
-                    entry.AddRawItem(CurrentTime, target);
-                    m_CacheTimeRange.Include(CurrentTime);
-                }
+                entry.AddRawItem(CurrentTime, IsCameraCut, target);
+                m_CacheTimeRange.Include(CurrentTime);
                 return target.position;
             }
             if (entry.Curve == null)
@@ -270,7 +273,6 @@ namespace Cinemachine
                 && !m_CacheTimeRange.IsEmpty 
                 && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
-                ClearCache();
                 InitCache();
             }
 
@@ -289,7 +291,7 @@ namespace Cinemachine
             {
                 if (m_CacheTimeRange.End <= CurrentTime)
                 {
-                    entry.AddRawItem(CurrentTime, target);
+                    entry.AddRawItem(CurrentTime, IsCameraCut, target);
                     m_CacheTimeRange.Include(CurrentTime);
                 }
                 return target.rotation;

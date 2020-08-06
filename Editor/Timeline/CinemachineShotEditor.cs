@@ -41,27 +41,12 @@ using Cinemachine;
             }
         }
 
-        static string kScrubbingCacheResolution = "CNMCN_Timeline_ScrubbingCacheResolution";
-        public static int ScrubbingCacheResolution
-        {
-            get { return EditorPrefs.GetInt(kScrubbingCacheResolution, TargetPositionCache.kMaxResolution); }
-            set
-            {
-                if (ScrubbingCacheResolution != value)
-                {
-                    EditorPrefs.SetInt(kScrubbingCacheResolution, value);
-                    TargetPositionCache.Resolution = value;
-                }
-            }
-        }
-
         [InitializeOnLoad]
         public class SyncCacheEnabledSetting
         {
             static SyncCacheEnabledSetting()
             {
                 TargetPositionCache.UseCache = UseScrubbingCache;
-                TargetPositionCache.Resolution = ScrubbingCacheResolution;
             }
         }
 #endif
@@ -138,17 +123,8 @@ using Cinemachine;
                 EditorGUI.Toggle(r, kScrubbingCacheLabel, false);
             else
                 UseScrubbingCache = EditorGUI.Toggle(r, kScrubbingCacheLabel, UseScrubbingCache);
-            if (UseScrubbingCache)
-            {
-                var lw = EditorGUIUtility.labelWidth;
-                EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight;
-                r.x += r.width; r.width = rect.width - r.width;
-                TargetPositionCache.Resolution = EditorGUI.IntSlider(
-                    r, kScrubbingCacheResolutionLabel, 
-                    TargetPositionCache.Resolution, 1, TargetPositionCache.kMaxResolution);
-                EditorGUIUtility.labelWidth = lw;
-            }
-            //EditorGUI.LabelField(r, "(experimental)");
+            r.x += r.width; r.width = rect.width - r.width;
+            EditorGUI.LabelField(r, "(experimental)");
             GUI.enabled = true;
 #endif
 
