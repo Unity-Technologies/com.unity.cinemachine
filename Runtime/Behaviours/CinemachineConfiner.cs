@@ -87,6 +87,11 @@ namespace Cinemachine
             m_Damping = Mathf.Max(0, m_Damping);
         }
 
+        protected override void ConnectToVcam(bool connect)
+        {
+            base.ConnectToVcam(connect);
+        }
+
         class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
