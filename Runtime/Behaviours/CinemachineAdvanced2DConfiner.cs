@@ -284,7 +284,7 @@ namespace Cinemachine
                         m_BoundingCompositeShape2D.transform.TransformPoint(path[(index + 1) % path.Count]));
                 }
             }
-            
+
             Vector2 offset = m_BoundingShape2D.transform.position;
             {
                 var index = 0;

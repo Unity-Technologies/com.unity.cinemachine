@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Cinemachine.Utility;
 using UnityEngine;
 
@@ -346,7 +347,7 @@ namespace Cinemachine
 
         /// <summary></summary>
         /// <param name="p">Point in space.</param>
-        /// <returns>Squared distance to 'p' from closest point to 'p' in the graph</returns>
+        /// <returns>Squared distance to 'P' from closest point to 'P' in the graph</returns>
         internal float SqrDistanceTo(Vector2 p)
         {
             float minDistance = float.MaxValue;
@@ -358,7 +359,12 @@ namespace Cinemachine
             return minDistance;
         }
 
-        internal Vector2 ClosestPoint(Vector2 p)
+        /// <summary>
+        /// Returns the closest point to the graph from P. The point returned is going to be one of the points of the graph.
+        /// </summary>
+        /// <param name="p">Point from which the distance is calculated.</param>
+        /// <returns>A point that is part of the graph points and is closest to P.</returns>
+        internal Vector2 ClosestGraphPoint(Vector2 p)
         {
             float minDistance = float.MaxValue;
             Vector2 closestPoint = Vector2.zero;
@@ -370,6 +376,113 @@ namespace Cinemachine
                     minDistance = sqrDistance;
                     closestPoint = points[i].position;
                 }
+            }
+
+            return closestPoint;
+        }
+
+        /// <summary>
+        /// Returns the closest point to the graph from P. The point returned can be an edge point.
+        /// </summary>
+        /// <param name="P">Point from which the distance is calculated.</param>
+        /// <returns>Point that is closest to P.</returns>
+        internal Vector2 ClosestPoint(Vector2 P)
+        {
+            float minDistance = float.MaxValue;
+            int closestPointIndex = 0;
+            for (int i = 0; i < points.Count; ++i)
+            {
+                float sqrDistance = (points[i].position - P).sqrMagnitude;
+                if (minDistance > sqrDistance)
+                {
+                    minDistance = sqrDistance;
+                    closestPointIndex = i;
+                }
+            }
+
+            Vector2 Q = points[closestPointIndex].position;
+            Vector2 R;
+            
+            var P1 = points[closestPointIndex == 0 ? points.Count - 1 : closestPointIndex - 1].position;
+            var P2 = points[closestPointIndex == points.Count - 1 ? 0 : closestPointIndex + 1].position;
+            // var distToP1 = (P - P1).sqrMagnitude;
+            // var distToP2 = (P - P2).sqrMagnitude;
+            // R = distToP1 < distToP2 ? P1 : P2;
+
+
+             var a1= GetIntersection(P, Q, P1, false, minDistance, out bool i1);
+             var a2= GetIntersection(P, Q, P1, true, minDistance, out bool i2);
+             var b1= GetIntersection(P, Q, P2, false, minDistance, out bool i3);
+             var b2= GetIntersection(P, Q, P2, true, minDistance, out bool i4);
+
+             var closestPoint = a1;
+             if (i1)
+             {
+                 closestPoint = a1;
+             }
+             if (i2)
+             {
+                 closestPoint = a2;
+             }
+             if (i3)
+             {
+                 closestPoint = b1;
+             }
+             if (i4)
+             {
+                 closestPoint = b2;
+             }
+            //
+            // var normal_QR = R - Q;
+            // normal_QR = new Vector2(-normal_QR.y, normal_QR.x).normalized;
+            // normal_QR *= minDistance;
+            // UnityVectorExtensions.FindIntersection(Q, R, P, P + normal_QR, false, 
+            //     out bool lines_intersect,
+            //     out bool segments_intersect, 
+            //     out Vector2 intersection);
+            //
+            // Vector2 closestPoint;
+            // if (segments_intersect)
+            // {
+            //     closestPoint = intersection;
+            // }
+            // else
+            // {
+            //     closestPoint = Q;
+            // }
+            
+
+
+            return closestPoint;
+        }
+        
+        private Vector2 GetIntersection(in Vector2 P, in Vector2 Q, in Vector2 R, bool normal, in float minDistance, out bool intersect)
+        {
+            var normal_QR = R - Q;
+            if (normal)
+            {
+                normal_QR = new Vector2(-normal_QR.y, normal_QR.x).normalized;
+            }
+            else
+            {
+                normal_QR = new Vector2(normal_QR.y, -normal_QR.x).normalized;
+            }
+            normal_QR *= minDistance;
+            UnityVectorExtensions.FindIntersection(Q, R, P, P + normal_QR, false, 
+                out bool lines_intersect,
+                out bool segments_intersect, 
+                out Vector2 intersection);
+
+            intersect = segments_intersect;
+            
+            Vector2 closestPoint;
+            if (segments_intersect)
+            {
+                closestPoint = intersection;
+            }
+            else
+            {
+                closestPoint = Q;
             }
 
             return closestPoint;
@@ -448,7 +561,7 @@ namespace Cinemachine
         /// <returns>True, if found intersection. False, otherwise.</returns>
         private static bool DivideGraph(ref Graph graph, ref List<Graph> subgraphs, bool woobly)
         {
-            // for each edge in graph, but not edges that directly connect (e.g. 0-1, 1-2) check for intersections.
+            // for each edge in graph, but not edges that directly connect (e.P. 0-1, 1-2) check for intersections.
             // if we intersect, we need to divide the graph into two graphs (g1,g2) to remove the intersection within a graph.
             // g1 will be 'left' of the intersection, g2 will be 'right' of the intersection.
             // g2 may contain additional intersections.
@@ -615,7 +728,7 @@ namespace Cinemachine
         public static List<Point2> RotateListToLeftmost(List<Point2> points)
         {
             // TODO: instead of Roll To LeftMost we need to roll to closest point to prev graph, see TestComplex (1) and (2) for why
-            // so RollListTo(List<Vector2> points, Vector2 p); where p will be left intersection point...
+            // so RollListTo(List<Vector2> points, Vector2 P); where P will be left intersection point...
             // todo: better connectivity
             int leftMostPointIndex = 0;
             Vector2 leftMostPoint = points[0].position;

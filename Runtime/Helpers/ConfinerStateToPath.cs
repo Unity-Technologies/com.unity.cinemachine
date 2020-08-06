@@ -71,7 +71,7 @@ namespace Cinemachine
 
                 foreach (var intersectionPoint in graph.intersectionPoints)
                 {
-                    Vector2 closestPoint = graph.ClosestPoint(intersectionPoint);
+                    Vector2 closestPoint = graph.ClosestGraphPoint(intersectionPoint);
                     var intersectionPolygon = polygonHolder.AddComponent<PolygonCollider2D>();
                     intersectionPolygon.usedByComposite = true;
 

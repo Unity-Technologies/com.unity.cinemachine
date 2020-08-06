@@ -264,7 +264,7 @@ namespace Cinemachine
                 for (int j = 0; j < left.graphs[i].points.Count; ++j)
                 {
                     r.intersectionPoints = left.graphs[i].intersectionPoints;
-                    var rightPoint = right.graphs[i].ClosestPoint(left.graphs[i].points[j].position);
+                    var rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].points[j].position);
                     r.points.Add(new Point2
                     {
                         position = Vector2.Lerp(left.graphs[i].points[j].position, rightPoint, lerp),
