@@ -87,15 +87,16 @@ namespace Cinemachine.Editor
         /// Called "magically" by the vcam editor, so don't change the signature.
         private void OnVcamPositionDragged(Vector3 delta)
         {
-            Undo.RegisterCompleteObjectUndo(Target, "Camera drag"); // GML do we need this?
-            Quaternion targetOrientation = Target.GetReferenceOrientation(Target.VcamState.ReferenceUp);
-            targetOrientation = targetOrientation * Quaternion.Euler(0, Target.m_Heading.m_Bias, 0);
-            Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-            localOffset.x = 0;
-            FindProperty(x => x.m_FollowOffset).vector3Value += localOffset;
-            serializedObject.ApplyModifiedProperties();
-            FindProperty(x => x.m_FollowOffset).vector3Value = Target.EffectiveOffset;
-            serializedObject.ApplyModifiedProperties();
+            if (Target.FollowTarget != null)
+            {
+                Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
+                Quaternion targetOrientation = Target.GetReferenceOrientation(Target.VcamState.ReferenceUp);
+                targetOrientation = targetOrientation * Quaternion.Euler(0, Target.m_Heading.m_Bias, 0);
+                Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
+                localOffset.x = 0;
+                Target.m_FollowOffset += localOffset;
+                Target.m_FollowOffset = Target.EffectiveOffset;
+            }
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]

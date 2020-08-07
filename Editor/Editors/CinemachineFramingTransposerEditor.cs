@@ -117,6 +117,23 @@ namespace Cinemachine.Editor
             mScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
         }
 
+
+        /// Process a position drag from the user.
+        /// Called "magically" by the vcam editor, so don't change the signature.
+        public void OnVcamPositionDragged(Vector3 delta)
+        {
+            if (Target.FollowTarget != null)
+            {
+                Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
+                var fwd = Target.transform.forward;
+                var zComponent = Vector3.Dot(fwd, delta);
+                delta -= fwd * zComponent;
+                Vector3 localOffset = Quaternion.Inverse(Target.FollowTarget.rotation) * delta;
+                Target.m_TrackedObjectOffset += localOffset;
+                Target.m_CameraDistance  = Mathf.Max(0.01f, Target.m_CameraDistance - zComponent);
+            }
+        }
+        
         protected virtual void OnGUI()
         {
             if (Target == null)
