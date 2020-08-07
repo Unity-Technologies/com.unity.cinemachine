@@ -30,7 +30,7 @@ using Cinemachine;
         static string kUseScrubbingCache = "CNMCN_Timeline_UseScrubbingCache";
         public static bool UseScrubbingCache
         {
-            get { return EditorPrefs.GetBool(kUseScrubbingCache, true); }
+            get { return EditorPrefs.GetBool(kUseScrubbingCache, false); }
             set
             {
                 if (UseScrubbingCache != value)
