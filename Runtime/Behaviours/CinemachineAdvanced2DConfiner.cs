@@ -27,7 +27,7 @@ namespace Cinemachine
 
         public bool DrawGizmosDebug = false;
 
-        private Collider2D m_BoundingCompositeShape2D;
+        private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
         
         private List<List<Vector2>> m_originalPath;
         private int m_originalPathTotalPointCount;
@@ -84,13 +84,19 @@ namespace Cinemachine
                 }
                 else
                 {
-                    // TODO: calculate distance to bounding collider instead!
+                    // m_BoundingCompositeShape2D
                     Vector3 objectOfInterest = vcam.Follow != null ? vcam.Follow.position :
                         vcam.LookAt != null ? vcam.LookAt.position :
                         vcam.transform.position + vcam.transform.forward * 10;
+                    
+                    // TODO: calculate distance to bounding collider instead!
+                    // TODO: need to calculate plane of bounding collider and distance from that
+                    // TODO: rotate to identity, apply this R to camera -> then just Z distance.
+                    // Vector3 objectOfInterest = m_BoundingShape2D.transform.position + (Vector3)m_BoundingShape2D.offset;
 
                     float distance = (objectOfInterest - vcam.transform.position).magnitude;
-                    frustumHeight = 2.0f * distance * Mathf.Tan(state.Lens.FieldOfView * 0.25f * Mathf.Deg2Rad);
+                    float fov = Camera.main.fieldOfView;
+                    frustumHeight = distance * Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
                 }
 
                 if (m_currentPathCache == null || 
