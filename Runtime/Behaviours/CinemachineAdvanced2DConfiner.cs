@@ -84,6 +84,7 @@ namespace Cinemachine
                 }
                 else
                 {
+                    // TODO: calculate distance to bounding collider instead!
                     Vector3 objectOfInterest = vcam.Follow != null ? vcam.Follow.position :
                         vcam.LookAt != null ? vcam.LookAt.position :
                         vcam.transform.position + vcam.transform.forward * 10;
