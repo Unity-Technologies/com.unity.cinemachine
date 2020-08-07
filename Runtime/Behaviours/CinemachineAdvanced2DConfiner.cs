@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Cinemachine
 { 
@@ -84,19 +85,19 @@ namespace Cinemachine
                 }
                 else
                 {
-                    // m_BoundingCompositeShape2D
+                    // TODO: check if we rely on vcam.Follow or LookAt anywhere
+                    var vcamPosition = vcam.transform.position;
                     Vector3 objectOfInterest = vcam.Follow != null ? vcam.Follow.position :
                         vcam.LookAt != null ? vcam.LookAt.position :
-                        vcam.transform.position + vcam.transform.forward * 10;
+                        vcamPosition + vcam.transform.forward * 10;
+                    float distance2 = (objectOfInterest - vcamPosition).magnitude;
                     
-                    // TODO: calculate distance to bounding collider instead!
-                    // TODO: need to calculate plane of bounding collider and distance from that
-                    // TODO: rotate to identity, apply this R to camera -> then just Z distance.
-                    // Vector3 objectOfInterest = m_BoundingShape2D.transform.position + (Vector3)m_BoundingShape2D.offset;
-
-                    float distance = (objectOfInterest - vcam.transform.position).magnitude;
-                    float fov = Camera.main.fieldOfView;
-                    frustumHeight = distance * Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
+                    var R = Quaternion.Inverse(m_BoundingShape2D.transform.rotation);
+                    var planePosition = R * m_BoundingShape2D.transform.position;
+                    var cameraPosition = R * vcamPosition;
+                    var distance = Mathf.Abs(planePosition.z - cameraPosition.z);
+                    Debug.Log("d:"+distance+" |-| d2:"+distance2);
+                    frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
                 }
 
                 if (m_currentPathCache == null || 
