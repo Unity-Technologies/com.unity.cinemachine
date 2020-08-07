@@ -66,7 +66,9 @@ using System.Collections.Generic;
                             int nestLevel = 0;
                             for (ICinemachineCamera p = vcam.ParentCamera; 
                                     p != null && p != (ICinemachineCamera)mainVcam; p = p.ParentCamera)
+                            {
                                 ++nestLevel;
+                            }
                             while (cs.Cameras.Count <= nestLevel)
                                 cs.Cameras.Add(new List<CinemachineVirtualCameraBase>());
                             cs.Cameras[nestLevel].Add(vcam);
@@ -233,9 +235,7 @@ using System.Collections.Generic;
             }
             if (incomingIsA)
             {
-                int temp = clipIndexA;
-                clipIndexA = clipIndexB;
-                clipIndexB = temp;
+                (clipIndexA, clipIndexB) = (clipIndexB, clipIndexA);
                 weightB = 1 - weightB;
             }
 

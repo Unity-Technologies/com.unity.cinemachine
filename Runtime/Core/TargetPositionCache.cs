@@ -143,7 +143,7 @@ namespace Cinemachine
                 else 
                 {
                     // Trim off excess, overwrite the one after lastToKeep
-                    int trimStart = lastToKeep + 2;
+                    var trimStart = lastToKeep + 2;
                     if (trimStart <= maxItem)
                         RawItems.RemoveRange(trimStart, RawItems.Count - trimStart);
                     RawItems[lastToKeep + 1] = new RecordingItem
