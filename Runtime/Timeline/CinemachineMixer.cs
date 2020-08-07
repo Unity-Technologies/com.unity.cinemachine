@@ -198,6 +198,7 @@ using System.Collections.Generic;
             int clipIndexA = -1;
             int clipIndexB = -1;
             bool incomingIsA = false; // Assume that incoming clip is clip B
+            float weightB = 1;
             for (int i = 0; i < playable.GetInputCount(); ++i)
             {
                 float weight = playable.GetInputWeight(i);
@@ -209,6 +210,7 @@ using System.Collections.Generic;
                 {
                     clipIndexA = clipIndexB;
                     clipIndexB = i;
+                    weightB = weight;
                     if (++activeInputs == 2)
                     {
                         // Deduce which clip is incoming (timeline doesn't know)
@@ -223,12 +225,12 @@ using System.Collections.Generic;
                 }
             }
 
-            float weightB = activeInputs == 1 ? playable.GetInputWeight(clipIndexB) : 1;
-
             // Special case: check for only one clip that's fading out - it must be outgoing
             if (activeInputs == 1 && weightB < 1 
                     && playable.GetInput(clipIndexB).GetTime() > playable.GetInput(clipIndexB).GetDuration() / 2)
+            {
                 incomingIsA = true;
+            }
             if (incomingIsA)
             {
                 int temp = clipIndexA;
