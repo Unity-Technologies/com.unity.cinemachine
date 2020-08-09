@@ -298,7 +298,7 @@ namespace Cinemachine
                 {
                     points[i].normal = RectangleNormalize(center - points[i].position);
                 }
-                    Simplify();
+                Simplify();
             }
             if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
             {
@@ -469,7 +469,7 @@ namespace Cinemachine
                 normal_QR = new Vector2(normal_QR.y, -normal_QR.x).normalized;
             }
             normal_QR *= minDistance;
-            UnityVectorExtensions.FindIntersection(Q, R, P, P + normal_QR, false, 
+            FindIntersection(Q, R, P, P + normal_QR, false, 
                 out bool lines_intersect,
                 out bool segments_intersect, 
                 out Vector2 intersection);
@@ -572,7 +572,7 @@ namespace Cinemachine
                 {
                     if (i == (j + 1) % graph.points.Count) continue;
 
-                    UnityVectorExtensions.FindIntersection(
+                    FindIntersection(
                         graph.points[i].position, graph.points[(i + 1) % graph.points.Count].position,
                         graph.points[j].position, graph.points[(j + 1) % graph.points.Count].position,
                         woobly,
@@ -751,6 +751,48 @@ namespace Cinemachine
             }
 
             return point_rolledToStartAtLeftmostpoint;
+        }
+        
+        private static void FindIntersection(
+            in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4, in bool woobly,
+            out bool lines_intersect, out bool segments_intersect, out Vector2 intersection)
+        {
+            // Get the segments' parameters.
+            float dx12 = p2.x - p1.x;
+            float dy12 = p2.y - p1.y;
+            float dx34 = p4.x - p3.x;
+            float dy34 = p4.y - p3.y;
+
+            // Solve for t1 and t2
+            float denominator = (dy12 * dx34 - dx12 * dy34);
+
+            float t1 =
+                ((p1.x - p3.x) * dy34 + (p3.y - p1.y) * dx34)
+                / denominator;
+            if (float.IsInfinity(t1))
+            {
+                // The lines are parallel (or close enough to it).
+                lines_intersect = false;
+                segments_intersect = false;
+                intersection = Vector2.positiveInfinity;
+                return;
+            }
+            lines_intersect = true;
+
+            float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
+
+            // Find the point of intersection.
+            intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
+
+            // The segments intersect if t1 and t2 are between 0 and 1.
+            if (woobly)
+            {
+                segments_intersect = t1 >= -0.3f && t1 <= 1.3f && t2 >= -0.3f && t2 <= 1.3f;
+            }
+            else
+            {
+                segments_intersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
+            }
         }
 
     }

@@ -65,7 +65,7 @@ namespace Cinemachine.Utility
         /// <param name="intersection">If lines intersect, then this will hold the intersection point. Otherwise, it will be Vector2.positiveInfinity.</param>
         /// <returns></returns>
         public static void FindIntersection(
-            in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4, in bool woobly,
+            in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4,
             out bool lines_intersect, out bool segments_intersect, out Vector2 intersection)
         {
             // Get the segments' parameters.
@@ -94,16 +94,8 @@ namespace Cinemachine.Utility
 
             // Find the point of intersection.
             intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
-
-            // The segments intersect if t1 and t2 are between 0 and 1.
-            if (woobly)
-            {
-                segments_intersect = t1 >= -0.3f && t1 <= 1.3f && t2 >= -0.3f && t2 <= 1.3f;
-            }
-            else
-            {
-                segments_intersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
-            }
+            
+            segments_intersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
         }
 
         /// <summary>
