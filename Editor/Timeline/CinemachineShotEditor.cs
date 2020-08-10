@@ -86,6 +86,8 @@ using Cinemachine;
             " ",
             "Cache resolution: higher numbers improve accuracy but may degrade performance.  "
                 + "This is a global setting.");
+
+        GUIContent m_ClearText = new GUIContent("Clear", "Clear the scrub bubble cache");
 #endif
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -124,7 +126,13 @@ using Cinemachine;
             else
                 UseScrubbingCache = EditorGUI.Toggle(r, kScrubbingCacheLabel, UseScrubbingCache);
             r.x += r.width; r.width = rect.width - r.width;
+            var buttonWidth = GUI.skin.button.CalcSize(m_ClearText).x;
+            r.width -= buttonWidth;
             EditorGUI.LabelField(r, "(experimental)");
+            r.x += r.width; r.width =buttonWidth;
+            GUI.enabled &= !TargetPositionCache.IsEmpty;
+            if (GUI.Button(r, m_ClearText))
+                TargetPositionCache.ClearCache();
             GUI.enabled = true;
 #endif
 

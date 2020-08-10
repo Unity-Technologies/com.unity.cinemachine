@@ -96,6 +96,9 @@ using System.Collections.Generic;
                     return;
                 }
 
+                if (!TargetPositionCache.HasHurrentTime)
+                    return;
+
                 var cs = CachedObjects[playableIndex];
                 float stepSize = TargetPositionCache.CacheStepSize;
 
