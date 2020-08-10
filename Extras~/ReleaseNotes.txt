@@ -1,21 +1,23 @@
 <size=20><b>Version 2.6.1</b></size>
 
-- Bugfix: vertical group composition was not composing properly
-- Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
-- Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
-- Bugfix: brain updates on scene loaded or unloaded
-- Bugfix (1260385): check for prefab instances correctly
 - Regression Fix: PostProcessing/VolumeSettings FocusTracksTarget was not accounting for lookAt target offset
+- Regression fix: Confiner no longer confines noise and impulse
+- Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
+- Bugfix: vertical group composition was not composing properly
 - Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
 - Bugfix: removed compile errors when Physics2D module is disabled
-- Added Multi-object edit capabilities to virtual cameras and extensions 
-- Improved performance of path gizmo drawing
-- Timeline Scrub Bubble now supports nested timelines, with some known limitations to be addressed with a future Timeline package release
-- Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
-- Added Target Offset field to Framing Transposer
-- Regression fix: Confiner no longer confines noise and impulse
+- Bugfix: brain updates on scene loaded or unloaded
+- Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
+- Bugfix (1260385): check for prefab instances correctly
 - Bugfix (1266191) Clicking on foldout labels in preferences panel toggles their expanded state
 - Bugfix (1266196) Composer target Size label in preferences panel too big
+- Bugfix: Scrub bubble as locking virtual camera transforms beyond the cache range
+- Improved performance of path gizmo drawing
+- Timeline Scrub Bubble supports nested timelines, with some known limitations to be addressed with a future Timeline package release
+- Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
+- Added Target Offset field to Framing Transposer
+- Added Multi-object edit capabilities to virtual cameras and extensions 
+- Added inspector button to clear the Scrub Bubble
 
 <size=20><b>Version 2.6.0</b></size>
 
