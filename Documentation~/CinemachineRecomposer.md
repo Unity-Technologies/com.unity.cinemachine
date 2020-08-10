@@ -11,7 +11,7 @@ All of these properties can be animated within the Timeline.
 | __Apply After__ | The Volume Settings profile to activate when this Virtual Camera is live. |
 | _Body_ | Camera has been positioned but not yet rotated |
 |  _Aim_ | Camera has been rotated and positioned, but no noise or collision resolution applied |
-|  _Noise_ | Camera has been position, rotated, and noise and other corrections applied |
+|  _Noise_ | Camera has been positioned, rotated, and noise and other corrections applied |
 |  _Finalize_ | Default setting.  Applied after all standard virtual camera processing has occurred |
 | __Tilt__ | Add a vertical rotation to the camera's current rotation |
 | __Pan__ | Add a horizontal rotation to the camera's current rotation |
