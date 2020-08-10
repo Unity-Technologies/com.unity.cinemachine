@@ -27,7 +27,7 @@ using Cinemachine;
         }
 
 #if UNITY_2019_2_OR_NEWER
-        static string kUseScrubbingCache = "CNMCN_Timeline_UseScrubbingCache";
+        static string kUseScrubbingCache = "CNMCN_Timeline_UseScrubBubble";
         public static bool UseScrubbingCache
         {
             get { return EditorPrefs.GetBool(kUseScrubbingCache, false); }
