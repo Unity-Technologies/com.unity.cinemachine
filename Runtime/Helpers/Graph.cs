@@ -277,9 +277,8 @@ namespace Cinemachine
 
             R.x *= sensorRatio; 
             
-            //
-            // R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
-            // R.y = Mathf.Clamp(R.y, -1, 1);
+            R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
+            R.y = Mathf.Clamp(R.y, -1, 1);
             return R;
         }
 
@@ -310,97 +309,103 @@ namespace Cinemachine
             return false;
         }
 
-        internal bool Shrink(float shrinkAmount, out bool woobly)
+        internal bool Shrink(float shrinkAmount, bool dontShrinkToPoint, out bool woobly)
         {
             woobly = false;
-            
-            var minX = float.PositiveInfinity;
-            var minY = float.PositiveInfinity;
-            var maxX = float.NegativeInfinity;
-            var maxY = float.NegativeInfinity;
-            for (int i = 0; i < points.Count; ++i)
+            if (!dontShrinkToPoint)
             {
-                minX = Mathf.Min(points[i].position.x, minX);
-                minY = Mathf.Min(points[i].position.y, minY);
-                maxX = Mathf.Max(points[i].position.x, maxX);
-                maxY = Mathf.Max(points[i].position.y, maxY);
-            }
-            bool normalsTowardsCenter = false;
-            bool normalsXZero = false;
-            bool normalsYZero = false;
-            if (Math.Abs(maxX - minX) < 1f)
-            {
+                var minX = float.PositiveInfinity;
+                var minY = float.PositiveInfinity;
+                var maxX = float.NegativeInfinity;
+                var maxY = float.NegativeInfinity;
                 for (int i = 0; i < points.Count; ++i)
                 {
-                    points[i].normal.x = 0;
-                    normalsXZero = true;
+                    minX = Mathf.Min(points[i].position.x, minX);
+                    minY = Mathf.Min(points[i].position.y, minY);
+                    maxX = Mathf.Max(points[i].position.x, maxX);
+                    maxY = Mathf.Max(points[i].position.y, maxY);
                 }
-            }
-            if (Math.Abs(maxY - minY) < 1f)
-            {
+
+                bool normalsTowardsCenter = false;
+                bool normalsXZero = false;
+                bool normalsYZero = false;
+                if (Math.Abs(maxX - minX) < 1f)
+                {
+                    for (int i = 0; i < points.Count; ++i)
+                    {
+                        points[i].normal.x = 0;
+                        normalsXZero = true;
+                    }
+                }
+
+                if (Math.Abs(maxY - minY) < 1f)
+                {
+                    for (int i = 0; i < points.Count; ++i)
+                    {
+                        points[i].normal.y = 0;
+                        normalsYZero = true;
+                    }
+                }
+
+                if (normalsXZero && SetZeroNormalsXdirection())
+                {
+                    return false;
+                }
+
+                if (normalsYZero && SetZeroNormalsYdirection())
+                {
+                    return false;
+                }
+
+                bool allNormalsAreNonZero = false;
                 for (int i = 0; i < points.Count; ++i)
                 {
-                    points[i].normal.y = 0;
-                    normalsYZero = true;
-                }
-            }
-            if (normalsXZero && SetZeroNormalsXdirection())
-            {
-                return false;
-            } 
-            if (normalsYZero && SetZeroNormalsYdirection())
-            {
-                return false;
-            }
-
-            bool allNormalsAreNonZero = false;
-            for (int i = 0; i < points.Count; ++i)
-            {
-                if (points[i].normal.sqrMagnitude > UnityVectorExtensions.Epsilon)
-                {
-                    allNormalsAreNonZero = true;
-                }
-                else
-                {
-                    points[i].normal = Vector2.zero;
-                }
-            }
-
-            if (!allNormalsAreNonZero)
-            {
-                if (!normalsXZero)
-                {
-                    normalsXZero = true;
-                    SetZeroNormalsXdirection();
+                    if (points[i].normal.sqrMagnitude > UnityVectorExtensions.Epsilon)
+                    {
+                        allNormalsAreNonZero = true;
+                    }
+                    else
+                    {
+                        points[i].normal = Vector2.zero;
+                    }
                 }
 
-                if (!normalsYZero)
+                if (!allNormalsAreNonZero)
                 {
-                    normalsYZero = true;
-                    SetZeroNormalsYdirection();
-                }
-            }
-            if (normalsXZero && normalsYZero)
-            {
-                return false;
-            }
-            
-            ComputeSignedArea();
-            if (!normalsXZero && !normalsYZero && Mathf.Abs(area) > 0.5f && Mathf.Abs(area) < 2f)
-            {
-                normalsTowardsCenter = true;
-                Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
-                for (int i = 0; i < points.Count; ++i)
-                {
-                    points[i].normal = RectangleNormalize(center - points[i].position);
-                }
-                Simplify();
-            }
-            if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
-            {
-                return false;
-            }
+                    if (!normalsXZero)
+                    {
+                        normalsXZero = true;
+                        SetZeroNormalsXdirection();
+                    }
 
+                    if (!normalsYZero)
+                    {
+                        normalsYZero = true;
+                        SetZeroNormalsYdirection();
+                    }
+                }
+
+                if (normalsXZero && normalsYZero)
+                {
+                    return false;
+                }
+
+                ComputeSignedArea();
+                if (!normalsXZero && !normalsYZero && Mathf.Abs(area) > 0.5f && Mathf.Abs(area) < 2f)
+                {
+                    normalsTowardsCenter = true;
+                    Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
+                    for (int i = 0; i < points.Count; ++i)
+                    {
+                        points[i].normal = RectangleNormalize(center - points[i].position);
+                    }
+                    Simplify();
+                }
+                if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
+                {
+                    return false;
+                }
+            }
             windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float areaBefore = Mathf.Abs(ComputeSignedArea());

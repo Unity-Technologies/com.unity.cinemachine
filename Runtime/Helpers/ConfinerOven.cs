@@ -82,7 +82,7 @@ namespace Cinemachine
         private List<List<Vector2>> inputPathCache = null;
         private float sensorRatioCache = 0;
         private float shrinkAmountCache = 0;
-        internal bool BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
+        internal bool BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, in bool dontShrinkToPoint)
         {
             if (IsCacheValid(inputPath, sensorRatio, shrinkAmount))
             {
@@ -99,12 +99,8 @@ namespace Cinemachine
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
                     var graph = graphs[graphs_index][g].DeepCopy();
-                    if (graph.Shrink(shrinkAmount, out bool woobly))
+                    if (graph.Shrink(shrinkAmount, dontShrinkToPoint, out bool woobly))
                     {
-                        if (woobly)
-                        {
-                            int a = 3;
-                        }
                         /// 2. DO until Graph G has intersections
                         /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
                         /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.

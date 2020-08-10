@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -14,7 +15,10 @@ namespace Cinemachine.Editor
             ShowOffsetSettings = EditorGUILayout.Foldout(ShowOffsetSettings, "Advanced Settings", true);
             if (ShowOffsetSettings)
             {
-                EditorGUILayout.PropertyField(FindProperty(x => x.ShrinkSubgraphsToPoint));
+                var shriokToSkeletomGUI = new GUIContent("Shrink to Skeleton",
+                    "If this is true, then the confiner is going to shrink down to the polygon skeleton and not further. " +
+                    "If this is false, then Confiner will locally continue to shrink bones of the skeleton to a point");
+                EditorGUILayout.PropertyField(FindProperty(x => x.shrinkUntilSkeleton), shriokToSkeletomGUI);
                 EditorGUILayout.PropertyField(FindProperty(x => x.DrawGizmosDebug));
             }
             serializedObject.ApplyModifiedProperties();

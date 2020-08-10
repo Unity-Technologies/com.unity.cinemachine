@@ -26,7 +26,7 @@ namespace Cinemachine
         [Range(0.005f, 1f)]
         private float m_bakedConfinerResolution = 0.03f;
 
-        [HideInInspector] public bool ShrinkSubgraphsToPoint;
+        [HideInInspector] public bool shrinkUntilSkeleton;
         [HideInInspector] public bool DrawGizmosDebug = false;
 
         private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
@@ -110,7 +110,7 @@ namespace Cinemachine
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                     windowSizeCache = frustumHeight;
                     confinerCache = confinerOven().GetConfinerAtOrthoSize(windowSizeCache);
-                    confinerStateToPath().Convert(confinerCache, m_BoundingShape2D.transform, 
+                    confinerStateToPath().Convert(confinerCache, 
                         out m_currentPathCache, out m_BoundingCompositeShape2D);
                 }
                 
@@ -214,7 +214,7 @@ namespace Cinemachine
                             for (int j = 0; j < path.Length; ++j)
                             {
                                
-                                dst.Add(path[j]);
+                                dst.Add(m_BoundingShape2D.transform.TransformPoint(path[j]));
                             }
                             m_originalPath.Add(dst);
                         }
@@ -237,7 +237,10 @@ namespace Cinemachine
                             int numPoints = poly.GetPath(i, path);
                             List<Vector2> dst = new List<Vector2>();
                             for (int j = 0; j < numPoints; ++j)
-                                dst.Add(path[j] * revertCompositeColliderScale);
+                            {
+                                dst.Add(m_BoundingShape2D.transform.TransformPoint(
+                                    path[j] * revertCompositeColliderScale));
+                            }
                             m_originalPath.Add(dst);
                         }
                         m_originalPathTotalPointCount = poly.pointCount;
@@ -252,7 +255,7 @@ namespace Cinemachine
 
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
             sensorRatioCache = sensorRatio;
-            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache);
+            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache, shrinkUntilSkeleton);
             confinerStates = confinerOven().TrimGraphs();
             
             m_BoundingShape2DCache = m_BoundingShape2D;
@@ -290,8 +293,8 @@ namespace Cinemachine
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_BoundingCompositeShape2D.transform.TransformPoint(path[index]), 
-                        m_BoundingCompositeShape2D.transform.TransformPoint(path[(index + 1) % path.Count]));
+                        path[index], 
+                        path[(index + 1) % path.Count]);
                 }
             }
 
@@ -303,14 +306,12 @@ namespace Cinemachine
                     Gizmos.color = new Color((float) index / (float) confinerStates.Count,
                         (float) index1 / (float) confinerState.graphs.Count, 0.2f);
                     var g = confinerState.graphs[index1];
-                    Handles.Label(m_BoundingShape2D.transform.
-                        TransformPoint(g.points[0].position), "A=" + g.ComputeSignedArea());
+                    Handles.Label(g.points[0].position, "A=" + g.ComputeSignedArea());
                     for (int i = 0; i < g.points.Count; ++i)
                     {
                         Gizmos.DrawLine(
-                            m_BoundingShape2D.transform.TransformPoint(g.points[i].position),
-                            m_BoundingShape2D.transform.
-                                TransformPoint(g.points[(i + 1) % g.points.Count].position));
+                            g.points[i].position,
+                            g.points[(i + 1) % g.points.Count].position);
                     }
                 }
             }
