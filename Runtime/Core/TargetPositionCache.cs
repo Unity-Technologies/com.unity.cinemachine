@@ -25,7 +25,7 @@ namespace Cinemachine
                 if (value == m_CacheMode)
                     return;
                 m_CacheMode = value;
-                switch (m_CacheMode)
+                switch (value)
                 {
                     default: case Mode.Disabled: ClearCache(); break;
                     case Mode.Record: InitCache(); break;
@@ -36,6 +36,7 @@ namespace Cinemachine
 
         public static bool IsRecording => UseCache && m_CacheMode == Mode.Record;
         public static bool CurrentPlaybackTimeValid => UseCache && m_CacheMode == Mode.Playback && HasHurrentTime;
+        public static bool IsEmpty => CacheTimeRange.IsEmpty;
 
         public static float CurrentTime { get; set; }
 
@@ -190,7 +191,7 @@ namespace Cinemachine
         public static TimeRange CacheTimeRange { get => m_CacheTimeRange; }
         public static bool HasHurrentTime { get => m_CacheTimeRange.Contains(CurrentTime); }
 
-        static void ClearCache()
+        public static void ClearCache()
         {
             m_Cache = null;
             m_CacheTimeRange = TimeRange.Empty;
