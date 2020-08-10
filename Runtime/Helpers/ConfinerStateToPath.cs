@@ -43,13 +43,14 @@ namespace Cinemachine
         /// different states in pairs: 0-1 is one state, 2-3 another, etc. Between states we can lerp.
         /// The inner list of graphs represent polygon colliders that need to be unioned.
         /// </summary>
-        internal void Convert(ConfinerState confinerState, in Vector2 graphOffset, 
+        internal void Convert(ConfinerState confinerState, in Transform inputTransform, 
             out List<List<Vector2>> path, out Collider2D collider2D)
         {
             CleanBakedConfiner();
             compositeColliderHolder = new GameObject("CMBakedConfiner for " + nametag);
             compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
-            compositeColliderHolder.transform.position = graphOffset;
+            compositeColliderHolder.transform.position = inputTransform.position;
+            compositeColliderHolder.transform.rotation = Quaternion.identity;
             
             var rigidbody2D = compositeColliderHolder.AddComponent<Rigidbody2D>();
             rigidbody2D.bodyType = RigidbodyType2D.Static;
@@ -61,6 +62,7 @@ namespace Cinemachine
             var polygonHolder = new GameObject("PolygonCollider2Ds");
             polygonHolder.transform.parent = compositeColliderHolder.transform;
             polygonHolder.transform.localPosition = Vector2.zero;
+            polygonHolder.transform.localRotation = inputTransform.rotation;
             polygonHolder.hideFlags = HideFlags.NotEditable;
 
             foreach (var graph in confinerState.graphs)

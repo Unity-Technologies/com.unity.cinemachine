@@ -107,7 +107,7 @@ namespace Cinemachine
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                     windowSizeCache = frustumHeight;
                     confinerCache = confinerOven().GetConfinerAtOrthoSize(windowSizeCache);
-                    confinerStateToPath().Convert(confinerCache, m_BoundingShape2D.transform.position,
+                    confinerStateToPath().Convert(confinerCache, m_BoundingShape2D.transform, 
                         out m_currentPathCache, out m_BoundingCompositeShape2D);
                 }
                 
@@ -176,7 +176,6 @@ namespace Cinemachine
         private float sensorRatioCache;
         private Collider2D m_BoundingShape2DCache;
         private float bakedConfinerResolutionCache;
-
         private void InvalidatePathCache()
         {
             m_originalPath = null;
@@ -212,7 +211,7 @@ namespace Cinemachine
                             for (int j = 0; j < path.Length; ++j)
                             {
                                
-                                dst.Add(m_BoundingShape2D.transform.rotation * path[j]);
+                                dst.Add(path[j]);
                             }
                             m_originalPath.Add(dst);
                         }
@@ -280,7 +279,7 @@ namespace Cinemachine
         
         void OnDrawGizmosSelected()
         {
-            if (m_currentPathCache == null) return;
+            if (m_currentPathCache == null || m_BoundingShape2DCache == null) return;
             
             Gizmos.color = Color.cyan;
             foreach (var path in m_currentPathCache)
@@ -293,8 +292,7 @@ namespace Cinemachine
                 }
             }
 
-            Vector2 offset = m_BoundingShape2D.transform.position;
-            {
+            if (confinerStates != null && m_BoundingShape2D != null) {
                 var index = 0;
                 var confinerState = confinerStates[index];
                 for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
@@ -302,11 +300,14 @@ namespace Cinemachine
                     Gizmos.color = new Color((float) index / (float) confinerStates.Count,
                         (float) index1 / (float) confinerState.graphs.Count, 0.2f);
                     var g = confinerState.graphs[index1];
-                    Handles.Label(offset + g.points[0].position, "A=" + g.ComputeSignedArea());
+                    Handles.Label(m_BoundingShape2D.transform.
+                        TransformPoint(g.points[0].position), "A=" + g.ComputeSignedArea());
                     for (int i = 0; i < g.points.Count; ++i)
                     {
-                        Gizmos.DrawLine(offset + g.points[i].position,
-                            offset + g.points[(i + 1) % g.points.Count].position);
+                        Gizmos.DrawLine(
+                            m_BoundingShape2D.transform.TransformPoint(g.points[i].position),
+                            m_BoundingShape2D.transform.
+                                TransformPoint(g.points[(i + 1) % g.points.Count].position));
                     }
                 }
             }

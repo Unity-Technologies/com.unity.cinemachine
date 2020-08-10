@@ -47,19 +47,6 @@ namespace Cinemachine
         private bool zeroNormalsYdirection;
 
         internal List<Vector2> intersectionPoints;
-
-        private static readonly List<Vector2> normalDirections = new List<Vector2>
-        {
-            Vector2.up,
-            Vector2.up + Vector2.right,
-            Vector2.right,
-            Vector2.right + Vector2.down,
-            Vector2.down,
-            Vector2.down + Vector2.left,
-            Vector2.left,
-            Vector2.left + Vector2.up,
-        };
-
         public Graph()
         {
             points = new List<Point2>();
@@ -193,23 +180,107 @@ namespace Cinemachine
         /// <returns>RectangleNormalized normal</returns>
         internal Vector2 RectangleNormalize(Vector2 normal)
         {
-            Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
-            if (-sensorRatio <= R.x && R.x <= sensorRatio &&
-                -1 <= R.y && R.y <= 1)
+            // Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
+            // if (-sensorRatio <= R.x && R.x <= sensorRatio &&
+            //     -1 <= R.y && R.y <= 1)
+            // {
+            //     return R;
+            // }
+            //
+            // var ratio = 0.6264821f;//1f / Mathf.Abs(R.y);
+            // Debug.Log(sensorRatio / Mathf.Abs(R.x) + "|" + 1f / Mathf.Abs(R.y));
+            // R *= ratio;
+            // return R;
+            List<Vector2> normalDirections = new List<Vector2>
             {
-                return R;
+                new Vector2(0, 1),
+                new Vector2(sensorRatio, 1),
+                new Vector2(sensorRatio, 0),
+                new Vector2(sensorRatio, -1),
+                new Vector2(0, -1),
+                new Vector2(-sensorRatio, -1),
+                new Vector2(-sensorRatio, 0),
+                new Vector2(-sensorRatio, 1),
+            };
+            
+            
+            Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
+            float angle = Vector2.SignedAngle(R, normalDirections[0]);
+            if (-15 <= angle && angle <= 15)
+            {
+                R = normalDirections[0];
+            }
+            else if (15 < angle && angle < 30)
+            {
+                R = Vector2.Lerp(normalDirections[0], normalDirections[1], (angle - 15) / 15f);
+            }
+            else if (30 <= angle && angle <= 60)
+            {
+                R = normalDirections[1];
+            }
+            else if (60 < angle && angle < 75)
+            {
+                R = Vector2.Lerp(normalDirections[1], normalDirections[2], (angle - 60) / 15f);
+            }
+            else if (75 <= angle && angle <= 105)
+            {
+                R = normalDirections[2];
+            }
+            else if (105 < angle && angle < 120)
+            {
+                R = Vector2.Lerp(normalDirections[2], normalDirections[3], (angle - 105) / 15f);
+            }
+            else if (120 <= angle && angle <= 150)
+            {
+                R = normalDirections[3];
+            }
+            else if (150 < angle && angle < 165)
+            {
+                R = Vector2.Lerp(normalDirections[3], normalDirections[4], (angle - 150) / 15f);
+            }
+            else if (165 <= angle && angle <= 180 || -180 <= angle && angle <= -165)
+            {
+                R = normalDirections[4];
+            }
+            else if (-165 < angle && angle < -150)
+            {
+                R = Vector2.Lerp(normalDirections[4], normalDirections[5], (angle + 165) / 15f);
+            }
+            else if (-150 <= angle && angle <= -120)
+            {
+                R = normalDirections[5];
+            }
+            else if (-120 < angle && angle < -105)
+            {
+                R = Vector2.Lerp(normalDirections[5], normalDirections[6], (angle + 120) / 15f);
+            }
+            else if (-105 <= angle && angle <= -75)
+            {
+                R = normalDirections[6];
+            }
+            else if (-75 < angle && angle < -60)
+            {
+                R = Vector2.Lerp(normalDirections[6], normalDirections[7], (angle + 75) / 15f);
+            }
+            else if (-60 <= angle && angle <= -30)
+            {
+                R = normalDirections[7];
+            }
+            else if (-30 < angle && angle < -15)
+            {
+                R = Vector2.Lerp(normalDirections[7], normalDirections[0], (angle + 30) / 15f);
+            }
+            else
+            {
+                Debug.Log("angle not between [-180, 180]");
             }
 
-            var ratio = 0.6264821f;//1f / Mathf.Abs(R.y);
-            Debug.Log(sensorRatio / Mathf.Abs(R.x) + "|" + 1f / Mathf.Abs(R.y));
-            R *= ratio;
-            return R;
+            R.x *= sensorRatio; 
             
             //
-            // Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
             // R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
             // R.y = Mathf.Clamp(R.y, -1, 1);
-            // return R;
+            return R;
         }
 
         /// <summary>
