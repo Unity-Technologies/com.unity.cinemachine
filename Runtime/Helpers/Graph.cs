@@ -48,6 +48,18 @@ namespace Cinemachine
 
         internal List<Vector2> intersectionPoints;
 
+        private static readonly List<Vector2> normalDirections = new List<Vector2>
+        {
+            Vector2.up,
+            Vector2.up + Vector2.right,
+            Vector2.right,
+            Vector2.right + Vector2.down,
+            Vector2.down,
+            Vector2.down + Vector2.left,
+            Vector2.left,
+            Vector2.left + Vector2.up,
+        };
+
         public Graph()
         {
             points = new List<Point2>();
@@ -181,10 +193,23 @@ namespace Cinemachine
         /// <returns>RectangleNormalized normal</returns>
         internal Vector2 RectangleNormalize(Vector2 normal)
         {
-            Vector2 n = normal.normalized * 100;
-            n.x = Mathf.Clamp(n.x, -sensorRatio, sensorRatio);
-            n.y = Mathf.Clamp(n.y, -1, 1);
-            return n;
+            Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
+            if (-sensorRatio <= R.x && R.x <= sensorRatio &&
+                -1 <= R.y && R.y <= 1)
+            {
+                return R;
+            }
+
+            var ratio = 0.6264821f;//1f / Mathf.Abs(R.y);
+            Debug.Log(sensorRatio / Mathf.Abs(R.x) + "|" + 1f / Mathf.Abs(R.y));
+            R *= ratio;
+            return R;
+            
+            //
+            // Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
+            // R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
+            // R.y = Mathf.Clamp(R.y, -1, 1);
+            // return R;
         }
 
         /// <summary>

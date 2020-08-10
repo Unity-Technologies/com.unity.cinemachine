@@ -96,7 +96,6 @@ namespace Cinemachine
                     var planePosition = R * m_BoundingShape2D.transform.position;
                     var cameraPosition = R * vcamPosition;
                     var distance = Mathf.Abs(planePosition.z - cameraPosition.z);
-                    Debug.Log("d:"+distance+" |-| d2:"+distance2);
                     frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
                 }
 
@@ -196,8 +195,7 @@ namespace Cinemachine
                 return true;
             }
             pathChanged = true;
-
-
+            
             if (m_originalPath == null || m_BoundingShape2DCache != m_BoundingShape2D)
             {
                 Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
@@ -212,7 +210,10 @@ namespace Cinemachine
                             Vector2[] path = poly.GetPath(i);
                             List<Vector2> dst = new List<Vector2>();
                             for (int j = 0; j < path.Length; ++j)
-                                dst.Add(path[j]);
+                            {
+                               
+                                dst.Add(m_BoundingShape2D.transform.rotation * path[j]);
+                            }
                             m_originalPath.Add(dst);
                         }
                         m_originalPathTotalPointCount = poly.GetTotalPointCount();
