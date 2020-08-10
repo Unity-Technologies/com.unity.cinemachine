@@ -26,7 +26,8 @@ namespace Cinemachine
         [Range(0.005f, 1f)]
         private float m_bakedConfinerResolution = 0.03f;
 
-        public bool DrawGizmosDebug = false;
+        [HideInInspector] public bool ShrinkSubgraphsToPoint;
+        [HideInInspector] public bool DrawGizmosDebug = false;
 
         private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
         
@@ -40,6 +41,8 @@ namespace Cinemachine
         private List<ConfinerState> confinerStates;
         private ConfinerOven _confinerBaker = null;
         private ConfinerStateToPath _confinerStateConverter = null;
+        
+        
 
         /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
