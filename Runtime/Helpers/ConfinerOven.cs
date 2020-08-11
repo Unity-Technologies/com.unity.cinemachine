@@ -271,38 +271,43 @@ namespace Cinemachine
         }
         
         private List<ConfinerState> confinerStates;
-        internal List<ConfinerState> TrimGraphs()
+        internal List<ConfinerState> TrimGraphs(bool skipTrimming)
         {
             // TODO: List<Graph> should hace a state marker -> managed by the graph division -> incerement state when state change happens
             // todo: statechange (intersection, or skeleton skrinking)
-            
-            int stateStart = graphs.Count - 1;
-            // going backwards, so we can remove without problems
-            for (int i = graphs.Count - 2; i >= 0; --i)
+            if (!skipTrimming)
             {
-                bool stateChanged = graphs[stateStart].Count != graphs[i].Count;
-                if (graphs[stateStart].Count == graphs[i].Count)
+                int stateStart = graphs.Count - 1;
+                // going backwards, so we can remove without problems
+                for (int i = graphs.Count - 2; i >= 0; --i)
                 {
-                    for (int j = 0; j < graphs[stateStart].Count; ++j)
+                    bool stateChanged = graphs[stateStart].Count != graphs[i].Count;
+                    if (graphs[stateStart].Count == graphs[i].Count)
                     {
-                        if (graphs[stateStart][j].state != graphs[i][j].state)
+                        for (int j = 0; j < graphs[stateStart].Count; ++j)
                         {
-                            stateChanged = true;
-                            break;
+                            if (graphs[stateStart][j].state != graphs[i][j].state)
+                            {
+                                stateChanged = true;
+                                break;
+                            }
                         }
                     }
-                }
-                if (stateChanged || i == 0)
-                {
-                    // state0_min, ..., state0_max, state1_min, ... state1_max
-                    // ... parts need to be removed
-                    // when graphs[i].Count != graphs[j].Count, then we are at state0_max
-                    // so remove all between state0_max + 2, to state1_max - 1.
-                    var stateEnd = i != 0 ? i + 2 : 1;
-                    if (stateEnd < stateStart) {
-                        graphs.RemoveRange(stateEnd, stateStart - stateEnd);
+
+                    if (stateChanged || i == 0)
+                    {
+                        // state0_min, ..., state0_max, state1_min, ... state1_max
+                        // ... parts need to be removed
+                        // when graphs[i].Count != graphs[j].Count, then we are at state0_max
+                        // so remove all between state0_max + 2, to state1_max - 1.
+                        var stateEnd = i != 0 ? i + 2 : 1;
+                        if (stateEnd < stateStart)
+                        {
+                            graphs.RemoveRange(stateEnd, stateStart - stateEnd);
+                        }
+
+                        stateStart = i;
                     }
-                    stateStart = i;
                 }
             }
 

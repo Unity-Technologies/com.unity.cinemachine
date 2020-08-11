@@ -26,8 +26,10 @@ namespace Cinemachine
         [Range(0.005f, 1f)]
         private float m_bakedConfinerResolution = 0.03f;
 
-        [HideInInspector] public bool shrinkUntilSkeleton;
+        // advanced features
+        [HideInInspector] public bool ShrinkUntilSkeleton;
         [HideInInspector] public bool DrawGizmosDebug = false;
+        [HideInInspector] public bool SkipTrimming = false;
 
         private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
         
@@ -255,8 +257,8 @@ namespace Cinemachine
 
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
             sensorRatioCache = sensorRatio;
-            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache, shrinkUntilSkeleton);
-            confinerStates = confinerOven().TrimGraphs();
+            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache, ShrinkUntilSkeleton);
+            confinerStates = confinerOven().TrimGraphs(SkipTrimming);
             
             m_BoundingShape2DCache = m_BoundingShape2D;
 

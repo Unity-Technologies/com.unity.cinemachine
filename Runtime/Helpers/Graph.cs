@@ -202,8 +202,16 @@ namespace Cinemachine
                 new Vector2(-sensorRatio, 0),
                 new Vector2(-sensorRatio, 1),
             };
-            
-            
+
+            for (var i = 0; i < normalDirections.Count; ++i)
+            {
+                if (Vector2.Angle(normal, normalDirections[i]) < 5)
+                {
+                    return normalDirections[i];
+                }
+            }
+
+
             Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
             float angle = Vector2.SignedAngle(R, normalDirections[0]);
             if (-15 <= angle && angle <= 15)
