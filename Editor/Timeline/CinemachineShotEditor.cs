@@ -27,7 +27,7 @@ using Cinemachine;
         }
 
 #if UNITY_2019_2_OR_NEWER
-        static string kUseScrubbingCache = "CNMCN_Timeline_UseScrubBubble";
+        static string kUseScrubbingCache = "CNMCN_Timeline_CachedScrubbing";
         public static bool UseScrubbingCache
         {
             get { return EditorPrefs.GetBool(kUseScrubbingCache, false); }
@@ -77,17 +77,12 @@ using Cinemachine;
                 + "This is a global setting");
 #if UNITY_2019_2_OR_NEWER
         private static readonly GUIContent kScrubbingCacheLabel = new GUIContent(
-            "Use Scrub Bubble",
-            "For preview scrubbing, pre-simulate each frame to approximate damping "
-                + "and noise playback.  Target position cache is built when timeline is "
+            "Cached Scrubbing",
+            "For preview scrubbing, caches target positions and pre-simulates each frame to "
+                + "approximate damping and noise playback.  Target position cache is built when timeline is "
                 + "played forward, and used when timeline is scrubbed within the indicated zone. "
-                + "This is a global setting.");
-        private static readonly GUIContent kScrubbingCacheResolutionLabel = new GUIContent(
-            " ",
-            "Cache resolution: higher numbers improve accuracy but may degrade performance.  "
-                + "This is a global setting.");
-
-        GUIContent m_ClearText = new GUIContent("Clear", "Clear the scrub bubble cache");
+                + "This is a global setting,.");
+        GUIContent m_ClearText = new GUIContent("Clear", "Clear the target position scrubbing cache");
 #endif
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)

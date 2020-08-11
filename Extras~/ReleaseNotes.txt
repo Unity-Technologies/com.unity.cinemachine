@@ -11,13 +11,13 @@
 - Bugfix (1260385): check for prefab instances correctly
 - Bugfix (1266191) Clicking on foldout labels in preferences panel toggles their expanded state
 - Bugfix (1266196) Composer target Size label in preferences panel too big
-- Bugfix: Scrub bubble as locking virtual camera transforms beyond the cache range
+- Bugfix: Scrubing Cache as locking virtual camera transforms beyond the cache range
 - Improved performance of path gizmo drawing
-- Timeline Scrub Bubble supports nested timelines, with some known limitations to be addressed with a future Timeline package release
+- Timeline Scrubing Cache supports nested timelines, with some known limitations to be addressed with a future Timeline package release
 - Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
 - Added Target Offset field to Framing Transposer
 - Added Multi-object edit capabilities to virtual cameras and extensions 
-- Added inspector button to clear the Scrub Bubble
+- Added inspector button to clear the Scrubing Cache
 
 <size=20><b>Version 2.6.0</b></size>
 
