@@ -322,7 +322,7 @@ namespace Cinemachine
             if (!DrawGizmosDebug) return;
             if (confinerStates != null && m_BoundingShape2D != null)
             {
-                Vector2 offset = m_BoundingShape2D.transform.position;
+                Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.position;
                 for (var index = 0; index < confinerStates.Count; index++)
                 {
                     var confinerState = confinerStates[index];
