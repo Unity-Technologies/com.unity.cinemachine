@@ -428,6 +428,11 @@ namespace Cinemachine.Editor
         // Expansion state is cached statically to preserve foldout state.
         void UpdateComponentEditors()
         {
+            if (Target == null)
+            {
+                m_components = new CinemachineComponentBase[0];
+                return;
+            }
             CinemachineComponentBase[] components = Target.GetComponentPipeline();
             int numComponents = components != null ? components.Length : 0;
             if (m_components == null || m_components.Length != numComponents)
