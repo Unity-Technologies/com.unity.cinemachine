@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.1-preview.3] - 2020-08-11
+## [2.6.1-preview.4] - 2020-08-12
 ### Bugfixes
 - Regression Fix: PostProcessing/VolumeSettings FocusTracksTarget was not accounting for lookAt target offset
 - Regression fix: Confiner no longer confines noise and impulse
@@ -16,14 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
 - Bugfix (1260385): check for prefab instances correctly
 - Bugfix (1266191) Clicking on foldout labels in preferences panel toggles their expanded state
-- Bugfix (1266196) Composer target Size label in preferences panel too big
-- Bugfix: Scrubing Cache as locking virtual camera transforms beyond the cache range
+- Bugfix (1266196) Composer target Size label in preferences panel was too big
+- Bugfix: Scrubbing Cache was locking virtual camera transforms beyond the cache range
 - Improved performance of path gizmo drawing
-- Timeline Scrubing Cache supports nested timelines, with some known limitations to be addressed with a future Timeline package release
+- Timeline Scrubbing Cache supports nested timelines, with some known limitations to be addressed with a future Timeline package release
 - Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
 - Added Target Offset field to Framing Transposer
 - Added Multi-object edit capabilities to virtual cameras and extensions 
-- Added inspector button to clear the Scrubing Cache
+- Added inspector button to clear the Scrubbing Cache
 
 
 ## [2.6.0] - 2020-06-04
