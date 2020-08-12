@@ -28,7 +28,7 @@ namespace Cinemachine
                 switch (value)
                 {
                     default: case Mode.Disabled: ClearCache(); break;
-                    case Mode.Record: InitCache(); break;
+                    case Mode.Record: ClearCache(); break;
                     case Mode.Playback: CreatePlaybackCurves(); break;
                 }
             }
@@ -193,17 +193,11 @@ namespace Cinemachine
 
         public static void ClearCache()
         {
-            m_Cache = null;
+            m_Cache = CacheMode == Mode.Disabled ? null : new Dictionary<Transform, CacheEntry>();
             m_CacheTimeRange = TimeRange.Empty;
             CurrentTime = 0;
             CurrentFrame = 0;
             IsCameraCut = false;
-        }
-
-        static void InitCache()
-        {
-            ClearCache();
-            m_Cache = new Dictionary<Transform, CacheEntry>();
         }
 
         static void CreatePlaybackCurves()
@@ -233,7 +227,7 @@ namespace Cinemachine
                 && !m_CacheTimeRange.IsEmpty 
                 && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
-                InitCache();
+                ClearCache();
             }
 
             if (CacheMode == Mode.Playback && !HasHurrentTime)
@@ -274,7 +268,7 @@ namespace Cinemachine
                 && !m_CacheTimeRange.IsEmpty 
                 && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
-                InitCache();
+                ClearCache();
             }
 
             if (CacheMode == Mode.Playback && !HasHurrentTime)
