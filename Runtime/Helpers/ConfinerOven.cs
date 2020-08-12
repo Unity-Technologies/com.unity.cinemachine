@@ -98,6 +98,7 @@ namespace Cinemachine
                 List<Graph> nextGraphsIteration = new List<Graph>();
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
+                    graphs[graphs_index][g].ComputeNormals();
                     var graph = graphs[graphs_index][g].DeepCopy();
                     if (graph.Shrink(shrinkAmount, dontShrinkToPoint, out bool woobly))
                     {

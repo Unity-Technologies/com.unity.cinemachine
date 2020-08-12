@@ -718,8 +718,8 @@ namespace Cinemachine
                             }
                             
                             g1.points = RotateListToLeftmost(points);
-                            g1.ComputeNormals();
-                            g1.FlipNormals();
+                            // g1.ComputeNormals();
+                            // g1.FlipNormals();
                         }
                         subgraphs.Add(g1);
 
@@ -747,8 +747,8 @@ namespace Cinemachine
                             // points[0].normal = (points[1].normal + points[points.Count - 1].normal) / 2f; // normal at intersection
                             //Graph.ComputeNormalAt(0, points);
                             g2.points = RollListToStartClosestToPoint(points, intersection);
-                            g2.ComputeNormals();
-                            g2.FlipNormals();
+                            // g2.ComputeNormals();
+                            // g2.FlipNormals();
                         }
 
                         // we need to move the intersection points from the parent graph
