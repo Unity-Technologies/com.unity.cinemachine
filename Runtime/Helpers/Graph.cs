@@ -245,15 +245,18 @@ namespace Cinemachine
                 {
                     // case 1a - 2 point intersection with camera window's bottom
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
-                    var D1D2 = normalDirections[7] - normalDirections[5];
+                    var D1D2 = normalDirections[3] - normalDirections[5];
                     var D1C = C - B;
-                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
-                    var D2D1 = normalDirections[5] - normalDirections[7];
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[5] - normalDirections[3];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
-                    var beta = 180 - (gamma + alpha);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
 
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -275,8 +278,12 @@ namespace Cinemachine
                     var D2D1 = normalDirections[5] - normalDirections[7];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
                     
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -298,8 +305,12 @@ namespace Cinemachine
                     var D2D1 = normalDirections[7] - normalDirections[3];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
 
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -307,7 +318,7 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var rectangleMidPoint = (M1 + M2) / 2;
                     
-                    R = rectangleMidPoint;
+                    R = rectangleMidPoint - C;
                     return R;
                 }
                 else
@@ -331,13 +342,16 @@ namespace Cinemachine
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
                     var D1D2 = normalDirections[1] - normalDirections[7];
                     var D1C = C - B;
-                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
                     var D2D1 = normalDirections[7] - normalDirections[1];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
-                    var beta = 180 - (gamma + alpha);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
                     
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -359,8 +373,12 @@ namespace Cinemachine
                     var D2D1 = normalDirections[5] - normalDirections[7];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
                     
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -382,8 +400,12 @@ namespace Cinemachine
                     var D2D1 = normalDirections[5] - normalDirections[1];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
 
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -391,7 +413,7 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var rectangleMidPoint = (M1 + M2) / 2;
                     
-                    R = rectangleMidPoint;
+                    R = rectangleMidPoint - C;
                     return R;
                 }
                 else
@@ -412,13 +434,16 @@ namespace Cinemachine
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
                     var D1D2 = normalDirections[1] - normalDirections[7];
                     var D1C = C - B;
-                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
                     var D2D1 = normalDirections[7] - normalDirections[1];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
-                    var beta = 180 - (gamma + alpha);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
                     
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -440,8 +465,12 @@ namespace Cinemachine
                     var D2D1 = normalDirections[3] - normalDirections[1];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
                     
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -463,16 +492,20 @@ namespace Cinemachine
                     var D2D1 = normalDirections[7] - normalDirections[3];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
 
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
                     var M1 = C + CB.normalized * Mathf.Abs(a);
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var rectangleMidPoint = (M1 + M2) / 2;
-                    
-                    R = rectangleMidPoint;
+
+                    R = rectangleMidPoint - C;
                     return R;
                 }
                 else
@@ -493,13 +526,16 @@ namespace Cinemachine
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
                     var D1D2 = normalDirections[7] - normalDirections[5];
                     var D1C = C - B;
-                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
                     var D2D1 = normalDirections[5] - normalDirections[7];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
-                    var beta = 180 - (gamma + alpha);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
                     
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -521,8 +557,12 @@ namespace Cinemachine
                     var D2D1 = normalDirections[3] - normalDirections[1];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
                     
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -544,8 +584,12 @@ namespace Cinemachine
                     var D2D1 = normalDirections[5] - normalDirections[1];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+                    {
+                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                    }
 
-                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -553,7 +597,7 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var rectangleMidPoint = (M1 + M2) / 2;
                     
-                    R = rectangleMidPoint;
+                    R = rectangleMidPoint - C;
                     return R;
                 }
                 else
