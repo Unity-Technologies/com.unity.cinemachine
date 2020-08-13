@@ -150,8 +150,7 @@ namespace Cinemachine
         }
 
         private static float oneOverSquarerootOfTwo = 0.70710678f;
-        /// <summary> Computes square-normalized normals for all points,
-        /// which means the normals are clamped to the square defined by the 4 normalized corner-diagonals.
+        /// <summary> Computes normalized normals for all points
         /// </summary>
         internal void ComputeNormals()
         {
@@ -159,19 +158,30 @@ namespace Cinemachine
             for (int i = 0; i < points.Count; ++i)
             {
                 Vector2 edge = points[(i + 1) % points.Count].position - points[i].position;
-                Vector2 normal = ClockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x);
+                Vector2 normal = ClockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x); 
                 edgeNormals.Add(normal.normalized);
             }
+            
+            for (int i = 0; i < points.Count; ++i)
+            {
+                int prevIndex = i == 0 ? points.Count - 1 : i - 1;
+                points[i].normal = (edgeNormals[i] + edgeNormals[prevIndex]) / 2f;
+                points[i].normal.Normalize();
+            }
+        }
+        
+        internal void ComputeRectangulizedNormals()
+        {
+            ComputeNormals();
 
             for (int i = 0; i < points.Count; ++i)
             {
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
-                Vector2 normal = (edgeNormals[i] + edgeNormals[prevIndex]) / 2f;
-                // points[i].normal = RectangleNormalize(normal);
-                points[i].normal = RectangleNormalize(normal, 
-                    points[prevIndex].position, points[i].position, points[(i + 1) % points.Count].position,
+                int nextIndex = i == points.Count - 1 ? 0 : i + 1;
+                points[i].normal = RectangulizeNormal(points[i].normal, 
+                    points[prevIndex].position, points[i].position, points[nextIndex].position,
                     windowDiagonal, 0.03f, sensorRatio); // TODO: replace 0.03f - feed shrink amount
-
+            
             }
         }
 
@@ -180,9 +190,9 @@ namespace Cinemachine
         /// within a rectangle with sides (a, 1). Meaning, the maximum length is a and 1 for the x and y components of the
         /// vector respectively.
         /// </summary>
-        /// <param name="normal">Normal to RectangleNormalize</param>
+        /// <param name="normal">Normal to RectangulizeNormal</param>
         /// <returns>RectangleNormalized normal</returns>
-        internal Vector2 RectangleNormalize(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint, 
+        private Vector2 RectangulizeNormal(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint, 
             float windowDiagonal, float stepSize, float windowRatio)
         {
             var A = prevPoint;
@@ -226,7 +236,7 @@ namespace Cinemachine
             //   |
             if (0 < angle && angle < 90)
             {
-                if (angle - angle1_abs <= 0 && 90 <= angle + angle2_abs)
+                if (angle - angle1_abs <= 1f && 89 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
                     R = normalDirections[1];
@@ -242,8 +252,8 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     var beta = 180 - (gamma + alpha);
-                    
-                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -266,7 +276,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     
-                    var c = D1D2.magnitude;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -289,7 +299,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
 
-                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -310,7 +320,7 @@ namespace Cinemachine
             //   | x
             else if (90 < angle && angle < 180)
             {
-                if (angle - angle1_abs <= 90 && 180 <= angle + angle2_abs)
+                if (angle - angle1_abs <= 91 && 179 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
                     R = normalDirections[3];
@@ -327,7 +337,7 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     var beta = 180 - (gamma + alpha);
                     
-                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -350,7 +360,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     
-                    var c = D1D2.magnitude;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -373,7 +383,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
 
-                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -391,7 +401,7 @@ namespace Cinemachine
             }
             else if (-180 < angle && angle < -90)
             {
-                if (angle - angle1_abs <= -180 && -90 <= angle + angle2_abs)
+                if (angle - angle1_abs <= -179 && -91 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
                     R = normalDirections[5];
@@ -408,7 +418,7 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     var beta = 180 - (gamma + alpha);
                     
-                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -431,7 +441,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     
-                    var c = D1D2.magnitude;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -454,7 +464,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
 
-                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -472,10 +482,10 @@ namespace Cinemachine
             }
             else if (-90 < angle && angle < 0)
             {
-                if (angle - angle1_abs <= -90 && 0 <= angle + angle2_abs)
+                if (angle - angle1_abs <= -89 && -1 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = normalDirections[1];
+                    R = normalDirections[7];
                 }
                 else if (angle - angle1_abs <= -90 && angle + angle2_abs < 0)
                 {
@@ -489,7 +499,7 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     var beta = 180 - (gamma + alpha);
                     
-                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -512,7 +522,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     
-                    var c = D1D2.magnitude;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -535,7 +545,7 @@ namespace Cinemachine
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
 
-                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var c = windowDiagonal + stepSize;//D1D2.magnitude;//windowDiagonal + stepSize;
                     var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
                     var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
 
@@ -675,7 +685,7 @@ namespace Cinemachine
             //         Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
             //         for (int i = 0; i < points.Count; ++i)
             //         {
-            //             points[i].normal = RectangleNormalize(center - points[i].position);
+            //             points[i].normal = RectangulizeNormal(center - points[i].position);
             //         }
             //         Simplify();
             //     }

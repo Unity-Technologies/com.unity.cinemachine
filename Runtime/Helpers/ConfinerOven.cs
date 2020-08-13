@@ -98,7 +98,7 @@ namespace Cinemachine
                 List<Graph> nextGraphsIteration = new List<Graph>();
                 for (var g = 0; g < graphs[graphs_index].Count; ++g)
                 {
-                    graphs[graphs_index][g].ComputeNormals();
+                    graphs[graphs_index][g].ComputeRectangulizedNormals();
                     var graph = graphs[graphs_index][g].DeepCopy();
                     if (graph.Shrink(shrinkAmount, dontShrinkToPoint, out bool woobly))
                     {
@@ -192,7 +192,6 @@ namespace Cinemachine
                 Graph newGraph = new Graph { points = points };
                 newGraph.sensorRatio = sensorRatio;
                 newGraph.ComputeNormals();
-                newGraph.FlipNormals();
                 newGraph.ComputeSignedArea();
                 if (!newGraph.ClockwiseOrientation)
                 {
