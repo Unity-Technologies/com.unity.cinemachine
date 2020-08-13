@@ -96,7 +96,7 @@ namespace Cinemachine
         [Tooltip("When the virtual camera is not live, this is how often the virtual camera will be updated.  "
             + "Set this to tune for performance. Most of the time Never is fine, "
             + "unless the virtual camera is doing shot evaluation.")]
-        public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.Never;
+        public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.RoundRobin;
 
         /// <summary>
         /// Query components and extensions for the maximum damping time.
