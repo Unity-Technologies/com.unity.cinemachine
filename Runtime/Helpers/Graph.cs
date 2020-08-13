@@ -167,7 +167,11 @@ namespace Cinemachine
             {
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
                 Vector2 normal = (edgeNormals[i] + edgeNormals[prevIndex]) / 2f;
-                points[i].normal = RectangleNormalize(normal);
+                // points[i].normal = RectangleNormalize(normal);
+                points[i].normal = RectangleNormalize(normal, 
+                    points[prevIndex].position, points[i].position, points[(i + 1) % points.Count].position,
+                    windowDiagonal, 0.03f, sensorRatio); // TODO: replace 0.03f - feed shrink amount
+
             }
         }
 
@@ -178,19 +182,12 @@ namespace Cinemachine
         /// </summary>
         /// <param name="normal">Normal to RectangleNormalize</param>
         /// <returns>RectangleNormalized normal</returns>
-        internal Vector2 RectangleNormalize(Vector2 normal)
+        internal Vector2 RectangleNormalize(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint, 
+            float windowDiagonal, float stepSize, float windowRatio)
         {
-            // Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
-            // if (-sensorRatio <= R.x && R.x <= sensorRatio &&
-            //     -1 <= R.y && R.y <= 1)
-            // {
-            //     return R;
-            // }
-            //
-            // var ratio = 0.6264821f;//1f / Mathf.Abs(R.y);
-            // Debug.Log(sensorRatio / Mathf.Abs(R.x) + "|" + 1f / Mathf.Abs(R.y));
-            // R *= ratio;
-            // return R;
+            var A = prevPoint;
+            var B = nextPoint;
+            var C = thisPoint;
             List<Vector2> normalDirections = new List<Vector2>
             {
                 new Vector2(0, 1),
@@ -202,91 +199,364 @@ namespace Cinemachine
                 new Vector2(-sensorRatio, 0),
                 new Vector2(-sensorRatio, 1),
             };
+            
+            
+            // for (var i = 0; i < normalDirections.Count; ++i)
+            // {
+            //     if (Vector2.Angle(normal, normalDirections[i]) < 5)
+            //     {
+            //         return normalDirections[i];
+            //     }
+            // }
 
-            for (var i = 0; i < normalDirections.Count; ++i)
-            {
-                if (Vector2.Angle(normal, normalDirections[i]) < 5)
-                {
-                    return normalDirections[i];
-                }
-            }
-
+            Vector2 CA = (A - C);
+            Vector2 CB = (B - C);
+            
+            
+            var angle1 = Vector2.SignedAngle(CA, normal);
+            var angle1_abs = Math.Abs(angle1);
+            var angle2 = Vector2.SignedAngle(CB, normal);
+            var angle2_abs = Math.Abs(angle2);
 
             Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
             float angle = Vector2.SignedAngle(R, normalDirections[0]);
-            if (-15 <= angle && angle <= 15)
+            
+            //    | x
+            // -------
+            //   |
+            if (0 < angle && angle < 90)
             {
-                R = normalDirections[0];
+                if (angle - angle1_abs <= 0 && 90 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[1];
+                }
+                else if (angle - angle1_abs <= 0 && angle + angle2_abs < 90)
+                {
+                    // case 1a - 2 point intersection with camera window's bottom
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[7] - normalDirections[5];
+                    var D1C = C - B;
+                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[5] - normalDirections[7];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    var beta = 180 - (gamma + alpha);
+                    
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // // bottom side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[0];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (0 < angle - angle1_abs && 90 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's left side
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[7] - normalDirections[5];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[5] - normalDirections[7];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    
+                    var c = D1D2.magnitude;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // left side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[2];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (0 < angle - angle1_abs && angle + angle2_abs < 90)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[3] - normalDirections[7];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[7] - normalDirections[3];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+
+                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var rectangleMidPoint = (M1 + M2) / 2;
+                    
+                    R = rectangleMidPoint;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
             }
-            else if (15 < angle && angle < 30)
+            //    | 
+            // -------
+            //   | x
+            else if (90 < angle && angle < 180)
             {
-                R *= Vector2.Lerp(normalDirections[0], normalDirections[1], (angle - 15) / 15f).magnitude;
+                if (angle - angle1_abs <= 90 && 180 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[3];
+                }
+                else if (angle - angle1_abs <= 90 && angle + angle2_abs < 180)
+                {
+                    // case 1a - 2 point intersection with camera window's top
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[1] - normalDirections[7];
+                    var D1C = C - B;
+                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[7] - normalDirections[1];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    var beta = 180 - (gamma + alpha);
+                    
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // // bottom side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[0];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (90 < angle - angle1_abs && 180 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's left side
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[7] - normalDirections[5];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[5] - normalDirections[7];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    
+                    var c = D1D2.magnitude;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // left side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[2];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (90 < angle - angle1_abs && angle + angle2_abs < 180)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[1] - normalDirections[5];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[5] - normalDirections[1];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+
+                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var rectangleMidPoint = (M1 + M2) / 2;
+                    
+                    R = rectangleMidPoint;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
             }
-            else if (30 <= angle && angle <= 60)
+            else if (-180 < angle && angle < -90)
             {
-                R = normalDirections[1];
+                if (angle - angle1_abs <= -180 && -90 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[5];
+                }
+                else if (angle - angle1_abs <= -180 && angle + angle2_abs < -90)
+                {
+                    // case 1a - 2 point intersection with camera window's top
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[1] - normalDirections[7];
+                    var D1C = C - B;
+                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[7] - normalDirections[1];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    var beta = 180 - (gamma + alpha);
+                    
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // // bottom side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[0];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-180 < angle - angle1_abs && -90 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's right side
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[1] - normalDirections[3];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[3] - normalDirections[1];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    
+                    var c = D1D2.magnitude;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // left side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[2];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-180 < angle - angle1_abs && angle + angle2_abs < -90)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[3] - normalDirections[7];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[7] - normalDirections[3];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+
+                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var rectangleMidPoint = (M1 + M2) / 2;
+                    
+                    R = rectangleMidPoint;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
             }
-            else if (60 < angle && angle < 75)
+            else if (-90 < angle && angle < 0)
             {
-                R *= Vector2.Lerp(normalDirections[1], normalDirections[2], (angle - 60) / 15f).magnitude;
-            }
-            else if (75 <= angle && angle <= 105)
-            {
-                R = normalDirections[2];
-            }
-            else if (105 < angle && angle < 120)
-            {
-                R *= Vector2.Lerp(normalDirections[2], normalDirections[3], (angle - 105) / 15f).magnitude;
-            }
-            else if (120 <= angle && angle <= 150)
-            {
-                R = normalDirections[3];
-            }
-            else if (150 < angle && angle < 165)
-            {
-                R *= Vector2.Lerp(normalDirections[3], normalDirections[4], (angle - 150) / 15f).magnitude;
-            }
-            else if (165 <= angle && angle <= 180 || -180 <= angle && angle <= -165)
-            {
-                R = normalDirections[4];
-            }
-            else if (-165 < angle && angle < -150)
-            {
-                R *= Vector2.Lerp(normalDirections[4], normalDirections[5], (angle + 165) / 15f).magnitude;
-            }
-            else if (-150 <= angle && angle <= -120)
-            {
-                R = normalDirections[5];
-            }
-            else if (-120 < angle && angle < -105)
-            {
-                R *= Vector2.Lerp(normalDirections[5], normalDirections[6], (angle + 120) / 15f).magnitude;
-            }
-            else if (-105 <= angle && angle <= -75)
-            {
-                R = normalDirections[6];
-            }
-            else if (-75 < angle && angle < -60)
-            {
-                R *= Vector2.Lerp(normalDirections[6], normalDirections[7], (angle + 75) / 15f).magnitude;
-            }
-            else if (-60 <= angle && angle <= -30)
-            {
-                R = normalDirections[7];
-            }
-            else if (-30 < angle && angle < -15)
-            {
-                R *= Vector2.Lerp(normalDirections[7], normalDirections[0], (angle + 30) / 15f).magnitude;
+                if (angle - angle1_abs <= -90 && 0 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[1];
+                }
+                else if (angle - angle1_abs <= -90 && angle + angle2_abs < 0)
+                {
+                    // case 1a - 2 point intersection with camera window's bottom
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[7] - normalDirections[5];
+                    var D1C = C - B;
+                    //var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[5] - normalDirections[7];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    var beta = 180 - (gamma + alpha);
+                    
+                    var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // // bottom side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[0];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-90 < angle - angle1_abs && 0 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's right side
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[1] - normalDirections[3];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[3] - normalDirections[1];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                    
+                    var c = D1D2.magnitude;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var M = (M1 + M2) / 2; // left side's mid point
+
+                    var rectangleMidPoint = M + normalDirections[2];
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-90 < angle - angle1_abs && angle + angle2_abs < 0)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
+                    var gamma = UnityVectorExtensions.Angle(CA, CB);
+                    var D1D2 = normalDirections[1] - normalDirections[5];
+                    var D1C = C - B;
+                    var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                    var D2D1 = normalDirections[5] - normalDirections[1];
+                    var D2C = C - A;
+                    var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+
+                    var c = D1D2.magnitude;//windowDiagonal + stepSize;
+                    var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+                    var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+                    var M1 = C + CB.normalized * Mathf.Abs(a);
+                    var M2 = C + CA.normalized * Mathf.Abs(b);
+                    var rectangleMidPoint = (M1 + M2) / 2;
+                    
+                    R = rectangleMidPoint;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
             }
             else
             {
-                Debug.Log("angle not between [-180, 180]");
+                R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
+                R.y = Mathf.Clamp(R.y, -1, 1);
             }
-            //
-            // R.x *= sensorRatio; 
-            //
-            // R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
-            // R.y = Mathf.Clamp(R.y, -1, 1);
+            
             return R;
         }
 
@@ -320,100 +590,100 @@ namespace Cinemachine
         internal bool Shrink(float shrinkAmount, bool dontShrinkToPoint, out bool woobly)
         {
             woobly = false;
-            if (!dontShrinkToPoint)
-            {
-                var minX = float.PositiveInfinity;
-                var minY = float.PositiveInfinity;
-                var maxX = float.NegativeInfinity;
-                var maxY = float.NegativeInfinity;
-                for (int i = 0; i < points.Count; ++i)
-                {
-                    minX = Mathf.Min(points[i].position.x, minX);
-                    minY = Mathf.Min(points[i].position.y, minY);
-                    maxX = Mathf.Max(points[i].position.x, maxX);
-                    maxY = Mathf.Max(points[i].position.y, maxY);
-                }
-
-                bool normalsTowardsCenter = false;
-                bool normalsXZero = false;
-                bool normalsYZero = false;
-                if (Math.Abs(maxX - minX) < 1f)
-                {
-                    for (int i = 0; i < points.Count; ++i)
-                    {
-                        points[i].normal.x = 0;
-                        normalsXZero = true;
-                    }
-                }
-
-                if (Math.Abs(maxY - minY) < 1f)
-                {
-                    for (int i = 0; i < points.Count; ++i)
-                    {
-                        points[i].normal.y = 0;
-                        normalsYZero = true;
-                    }
-                }
-
-                if (normalsXZero && SetZeroNormalsXdirection())
-                {
-                    return false;
-                }
-
-                if (normalsYZero && SetZeroNormalsYdirection())
-                {
-                    return false;
-                }
-
-                bool allNormalsAreNonZero = false;
-                for (int i = 0; i < points.Count; ++i)
-                {
-                    if (points[i].normal.sqrMagnitude > UnityVectorExtensions.Epsilon)
-                    {
-                        allNormalsAreNonZero = true;
-                    }
-                    else
-                    {
-                        points[i].normal = Vector2.zero;
-                    }
-                }
-
-                if (!allNormalsAreNonZero)
-                {
-                    if (!normalsXZero)
-                    {
-                        normalsXZero = true;
-                        SetZeroNormalsXdirection();
-                    }
-
-                    if (!normalsYZero)
-                    {
-                        normalsYZero = true;
-                        SetZeroNormalsYdirection();
-                    }
-                }
-
-                if (normalsXZero && normalsYZero)
-                {
-                    return false;
-                }
-
-                ComputeSignedArea();
-                if (!normalsXZero && !normalsYZero && Mathf.Abs(area) > 0.5f && Mathf.Abs(area) < 2f)
-                {
-                    normalsTowardsCenter = true;
-                    Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
-                    for (int i = 0; i < points.Count; ++i)
-                    {
-                        points[i].normal = RectangleNormalize(center - points[i].position);
-                    }
-                    Simplify();
-                }
-                if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
-                {
-                    return false;
-                }
-            }
+            //if (!dontShrinkToPoint)
+            // {
+            //     var minX = float.PositiveInfinity;
+            //     var minY = float.PositiveInfinity;
+            //     var maxX = float.NegativeInfinity;
+            //     var maxY = float.NegativeInfinity;
+            //     for (int i = 0; i < points.Count; ++i)
+            //     {
+            //         minX = Mathf.Min(points[i].position.x, minX);
+            //         minY = Mathf.Min(points[i].position.y, minY);
+            //         maxX = Mathf.Max(points[i].position.x, maxX);
+            //         maxY = Mathf.Max(points[i].position.y, maxY);
+            //     }
+            //
+            //     bool normalsTowardsCenter = false;
+            //     bool normalsXZero = false;
+            //     bool normalsYZero = false;
+            //     if (Math.Abs(maxX - minX) < 1f)
+            //     {
+            //         for (int i = 0; i < points.Count; ++i)
+            //         {
+            //             points[i].normal.x = 0;
+            //             normalsXZero = true;
+            //         }
+            //     }
+            //
+            //     if (Math.Abs(maxY - minY) < 1f)
+            //     {
+            //         for (int i = 0; i < points.Count; ++i)
+            //         {
+            //             points[i].normal.y = 0;
+            //             normalsYZero = true;
+            //         }
+            //     }
+            //
+            //     if (normalsXZero && SetZeroNormalsXdirection())
+            //     {
+            //         return false;
+            //     }
+            //
+            //     if (normalsYZero && SetZeroNormalsYdirection())
+            //     {
+            //         return false;
+            //     }
+            //
+            //     bool allNormalsAreNonZero = false;
+            //     for (int i = 0; i < points.Count; ++i)
+            //     {
+            //         if (points[i].normal.sqrMagnitude > UnityVectorExtensions.Epsilon)
+            //         {
+            //             allNormalsAreNonZero = true;
+            //         }
+            //         else
+            //         {
+            //             points[i].normal = Vector2.zero;
+            //         }
+            //     }
+            //
+            //     if (!allNormalsAreNonZero)
+            //     {
+            //         if (!normalsXZero)
+            //         {
+            //             normalsXZero = true;
+            //             SetZeroNormalsXdirection();
+            //         }
+            //
+            //         if (!normalsYZero)
+            //         {
+            //             normalsYZero = true;
+            //             SetZeroNormalsYdirection();
+            //         }
+            //     }
+            //
+            //     if (normalsXZero && normalsYZero)
+            //     {
+            //         return false;
+            //     }
+            //
+            //     ComputeSignedArea();
+            //     if (!normalsXZero && !normalsYZero && Mathf.Abs(area) > 0.5f && Mathf.Abs(area) < 2f)
+            //     {
+            //         normalsTowardsCenter = true;
+            //         Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
+            //         for (int i = 0; i < points.Count; ++i)
+            //         {
+            //             points[i].normal = RectangleNormalize(center - points[i].position);
+            //         }
+            //         Simplify();
+            //     }
+            //     if (normalsTowardsCenter && SetNormalDirectionTowardsCenter())
+            //     {
+            //         return false;
+            //     }
+            // }
             windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float areaBefore = Mathf.Abs(ComputeSignedArea());
