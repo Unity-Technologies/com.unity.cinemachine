@@ -24,7 +24,7 @@ namespace Cinemachine
 
         [Tooltip("TODO: is it needed? -= Defines the prebaked confiner step resolution. Decrease this, if you feel the confiner does not change smoothly enough.")]
         [Range(0.001f, 1f)]
-        public static float m_bakedConfinerResolution = 0.001f;
+        public static readonly float m_bakedConfinerResolution = 0.025f;
 
         // advanced features
         [HideInInspector] public bool ShrinkUntilSkeleton;
