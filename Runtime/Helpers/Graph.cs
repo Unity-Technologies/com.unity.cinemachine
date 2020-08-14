@@ -338,12 +338,12 @@ namespace Cinemachine
                 }
                 else if (angle - angle1_abs <= 90 && angle + angle2_abs < 180)
                 {
-                    // case 1a - 2 point intersection with camera window's top
+                    // case 1a - 2 point intersection with camera window's left // fixed from top
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
-                    var D1D2 = normalDirections[1] - normalDirections[7];
+                    var D1D2 = normalDirections[0] - normalDirections[4]; // fixed from 1-7
                     var D1C = C - B;
                     var beta = UnityVectorExtensions.Angle(D1C, D1D2);
-                    var D2D1 = normalDirections[7] - normalDirections[1];
+                    var D2D1 = normalDirections[4] - normalDirections[0];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
@@ -359,18 +359,18 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var M = (M1 + M2) / 2; // // bottom side's mid point
 
-                    var rectangleMidPoint = M + normalDirections[0];
+                    var rectangleMidPoint = M + normalDirections[2]; // fixed from 0
                     R = rectangleMidPoint - C;
                     return R;
                 }
                 else if (90 < angle - angle1_abs && 180 <= angle + angle2_abs)
                 {
-                    // case 1b - 2 point intersection with camera window's left side
+                    // case 1b - 2 point intersection with camera window's top side // fixed from left
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
-                    var D1D2 = normalDirections[7] - normalDirections[5];
+                    var D1D2 = normalDirections[1] - normalDirections[7]; // fixed from 7-5
                     var D1C = C - B;
                     var beta = UnityVectorExtensions.Angle(D1C, D1D2);
-                    var D2D1 = normalDirections[5] - normalDirections[7];
+                    var D2D1 = normalDirections[7] - normalDirections[1];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
@@ -386,7 +386,7 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var M = (M1 + M2) / 2; // left side's mid point
 
-                    var rectangleMidPoint = M + normalDirections[2];
+                    var rectangleMidPoint = M + normalDirections[4];
                     R = rectangleMidPoint - C;
                     return R;
                 }
@@ -432,10 +432,10 @@ namespace Cinemachine
                 {
                     // case 1a - 2 point intersection with camera window's top
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
-                    var D1D2 = normalDirections[1] - normalDirections[7];
+                    var D1D2 = normalDirections[7] - normalDirections[1]; // fixed from 1-7
                     var D1C = C - B;
                     var beta = UnityVectorExtensions.Angle(D1C, D1D2);
-                    var D2D1 = normalDirections[7] - normalDirections[1];
+                    var D2D1 = normalDirections[1] - normalDirections[7];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
@@ -451,7 +451,7 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var M = (M1 + M2) / 2; // // bottom side's mid point
 
-                    var rectangleMidPoint = M + normalDirections[0];
+                    var rectangleMidPoint = M + normalDirections[4]; // fixed from 0
                     R = rectangleMidPoint - C;
                     return R;
                 }
@@ -478,7 +478,7 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var M = (M1 + M2) / 2; // left side's mid point
 
-                    var rectangleMidPoint = M + normalDirections[2];
+                    var rectangleMidPoint = M + normalDirections[6]; // fixed from 2
                     R = rectangleMidPoint - C;
                     return R;
                 }
@@ -522,7 +522,7 @@ namespace Cinemachine
                 }
                 else if (angle - angle1_abs <= -90 && angle + angle2_abs < 0)
                 {
-                    // case 1a - 2 point intersection with camera window's bottom
+                    // case 1a - 2 point intersection with camera window's right side // fixed from bottom
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
                     var D1D2 = normalDirections[7] - normalDirections[5];
                     var D1C = C - B;
@@ -543,18 +543,18 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var M = (M1 + M2) / 2; // // bottom side's mid point
 
-                    var rectangleMidPoint = M + normalDirections[0];
+                    var rectangleMidPoint = M + normalDirections[6]; // fixed from 0 to 6
                     R = rectangleMidPoint - C;
                     return R;
                 }
                 else if (-90 < angle - angle1_abs && 0 <= angle + angle2_abs)
                 {
-                    // case 1b - 2 point intersection with camera window's right side
+                    // case 1b - 2 point intersection with camera window's bottom side // fixed from right
                     var gamma = UnityVectorExtensions.Angle(CA, CB);
-                    var D1D2 = normalDirections[1] - normalDirections[3];
+                    var D1D2 = normalDirections[3] - normalDirections[5]; // fixed from 1-3
                     var D1C = C - B;
                     var beta = UnityVectorExtensions.Angle(D1C, D1D2);
-                    var D2D1 = normalDirections[3] - normalDirections[1];
+                    var D2D1 = normalDirections[5] - normalDirections[3];
                     var D2C = C - A;
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
@@ -570,7 +570,7 @@ namespace Cinemachine
                     var M2 = C + CA.normalized * Mathf.Abs(b);
                     var M = (M1 + M2) / 2; // left side's mid point
 
-                    var rectangleMidPoint = M + normalDirections[2];
+                    var rectangleMidPoint = M + normalDirections[0];
                     R = rectangleMidPoint - C;
                     return R;
                 }
