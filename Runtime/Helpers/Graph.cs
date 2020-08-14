@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Cinemachine.Utility;
 using UnityEngine;
+using Object = UnityEngine.Object;
+
 //TODO: fix disconnectivity - when lines are so thin the composite collider ignores them
 //
 namespace Cinemachine
@@ -169,7 +171,7 @@ namespace Cinemachine
                 points[i].normal.Normalize();
             }
         }
-        
+    
         internal void ComputeRectangulizedNormals()
         {
             ComputeNormals();
@@ -180,7 +182,7 @@ namespace Cinemachine
                 int nextIndex = i == points.Count - 1 ? 0 : i + 1;
                 points[i].normal = RectangulizeNormal(points[i].normal, 
                     points[prevIndex].position, points[i].position, points[nextIndex].position,
-                    windowDiagonal, 0.03f, sensorRatio); // TODO: replace 0.03f - feed shrink amount
+                    windowDiagonal, CinemachineAdvanced2DConfiner.m_bakedConfinerResolution, sensorRatio);
             
             }
         }
@@ -253,7 +255,7 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
+                        Debug.Log("Angles are wrong - RectangulizeNormal"); // TODO: reverse D1D2
                     }
 
                     var c = D1D2.magnitude; // TODO: shoild this be exact diagonal? windowDiagonal

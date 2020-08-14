@@ -22,9 +22,9 @@ namespace Cinemachine
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
 
-        [Tooltip("TODO: is it needed? -= Defines the prebaked confiner step resolution. Decrease this, if you feel the confiner is does not change smoothly enough.")]
-        [Range(0.005f, 1f)]
-        private float m_bakedConfinerResolution = 0.03f;
+        [Tooltip("TODO: is it needed? -= Defines the prebaked confiner step resolution. Decrease this, if you feel the confiner does not change smoothly enough.")]
+        [Range(0.001f, 1f)]
+        public static float m_bakedConfinerResolution = 0.001f;
 
         // advanced features
         [HideInInspector] public bool ShrinkUntilSkeleton;
