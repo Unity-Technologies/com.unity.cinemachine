@@ -1,4 +1,4 @@
-#Cinemachine Impulse Listener
+# Cinemachine Impulse Listener
 
 Impulse [signals](CinemachineImpulseRawSignal.md) and [sources](CinemachineImpulseSourceOverview.md) don’t do anything on their own. An **Impulse Listener** is a Cinemachine extension that allows a virtual camera to “hear” impulse vibration signals and react to them.  
 
@@ -20,7 +20,7 @@ In the real world, some cameras are mounted less rigidly than others, and tend t
 
 >**TIP:** You can create your own Impulse Listener to interpret vibration signals any way you like.
 
-By default, an Impulse Listener reacts to every Impulse Source in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make a Listener react to some some Sources and ignore others.
+By default, an Impulse Listener reacts to every Impulse Source in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make a Listener respond to some Sources and ignore others.
 
 ##Properties:
 
