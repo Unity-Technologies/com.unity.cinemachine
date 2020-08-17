@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Cinemachine.Utility;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -168,6 +169,20 @@ namespace Cinemachine
             {
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
                 points[i].normal = (edgeNormals[i] + edgeNormals[prevIndex]) / 2f;
+                var angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevIndex]);
+                
+                if (angle > 0) // 89.999999.99999
+                {
+                    // var gameObject = new GameObject("big pos angle - " + angle);
+                    // gameObject.transform.position = points[i].position;
+                    // GameObject.Destroy(gameObject, 1);
+                }
+                if (angle < 0) // -89.999999.99999 <------
+                {
+                    // var gameObject = new GameObject("big neg angle - " + angle);
+                    // gameObject.transform.position = points[i].position;
+                    // GameObject.Destroy(gameObject, 1);
+                }
                 points[i].normal.Normalize();
             }
         }
@@ -181,8 +196,7 @@ namespace Cinemachine
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
                 int nextIndex = i == points.Count - 1 ? 0 : i + 1;
                 points[i].normal = RectangulizeNormal(points[i].normal, 
-                    points[prevIndex].position, points[i].position, points[nextIndex].position,
-                    windowDiagonal, CinemachineAdvanced2DConfiner.m_bakedConfinerResolution, sensorRatio);
+                    points[prevIndex].position, points[i].position, points[nextIndex].position);
             
             }
         }
@@ -194,8 +208,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="normal">Normal to RectangulizeNormal</param>
         /// <returns>RectangleNormalized normal</returns>
-        private Vector2 RectangulizeNormal(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint, 
-            float windowDiagonal, float stepSize, float windowRatio)
+        private Vector2 RectangulizeNormal(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint)
         {
             var A = prevPoint;
             var B = nextPoint;
