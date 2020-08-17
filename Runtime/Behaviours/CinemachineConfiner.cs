@@ -104,12 +104,12 @@ namespace Cinemachine
             get
             {
 #if CINEMACHINE_PHYSICS && !CINEMACHINE_PHYSICS_2D
-                return m_BoundingVolume != null && m_BoundingVolume.enabled;
+                return m_BoundingVolume != null && m_BoundingVolume.enabled && m_BoundingVolume.gameObject.activeInHierarchy;
 #elif CINEMACHINE_PHYSICS_2D && !CINEMACHINE_PHYSICS
-                return m_BoundingShape2D != null && m_BoundingShape2D.enabled;
+                return m_BoundingShape2D != null && m_BoundingShape2D.enabled && m_BoundingShape2D.gameObject.activeInHierarchy;
 #else
-                return (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null && m_BoundingVolume.enabled)
-                       || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null && m_BoundingShape2D.enabled);
+                return (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null && m_BoundingVolume.enabled && m_BoundingVolume.gameObject.activeInHierarchy)
+                       || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null && m_BoundingShape2D.enabled && m_BoundingShape2D.gameObject.activeInHierarchy);
 #endif
             }
         }
