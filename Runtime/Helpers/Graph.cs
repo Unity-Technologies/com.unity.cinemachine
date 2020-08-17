@@ -189,6 +189,7 @@ namespace Cinemachine
                             position = Vector2.Lerp(points[i].position, points[prevIndex].position, 0.01f),
                             normal = points[i].normal
                         });
+                        points.RemoveAt(nextIndex); // remove original
                     }
                 }
             }
@@ -275,7 +276,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal"); // TODO: reverse D1D2
                         D1D2 = normalDirections[5] - normalDirections[3];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -308,7 +308,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[5] - normalDirections[7];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -341,7 +340,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[7] - normalDirections[3];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -388,7 +386,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[4] - normalDirections[0];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -421,7 +418,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[7] - normalDirections[1]; // fixed from 7-5
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -454,7 +450,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[5] - normalDirections[1];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -498,7 +493,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[1] - normalDirections[7]; // fixed from 1-7
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -531,7 +525,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[3] - normalDirections[1];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -564,7 +557,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[7] - normalDirections[3];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -608,7 +600,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[5] - normalDirections[7];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -641,7 +632,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[5] - normalDirections[3]; // fixed from 1-3
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -674,7 +664,6 @@ namespace Cinemachine
                     var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
                     if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
                     {
-                        Debug.Log("Angles are wrong - RectangulizeNormal");
                         D1D2 = normalDirections[5] - normalDirections[1];
                         D1C = C - B;
                         beta = UnityVectorExtensions.Angle(D1C, D1D2);
