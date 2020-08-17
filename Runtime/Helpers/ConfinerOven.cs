@@ -132,38 +132,38 @@ namespace Cinemachine
             return true;
         }
         
-        private List<Graph> CreateGraph(in Vector2[] path, in float sensorRatio)
-        {
-            if (path == null || path.Length == 0)
-            {
-                return new List<Graph>();
-            }
-
-            List<Point2> pathPoints = new List<Point2>();
-            foreach (var p in path)
-            {
-                pathPoints.Add(new Point2
-                {
-                    position = p,
-                });
-            }
-
-            List<Point2> points = Graph.RotateListToLeftmost(pathPoints);
-            Graph graph = new Graph
-            {
-                points = points,
-            };
-            graph.sensorRatio = sensorRatio;
-            graph.ComputeNormals();
-            graph.FlipNormals();
-            graph.ComputeSignedArea();
-            if (!graph.ClockwiseOrientation)
-            {
-                graph.FlipNormals();
-                graph.ComputeSignedArea();
-            }
-            return new List<Graph> {graph};
-        }
+        // private List<Graph> CreateGraph(in Vector2[] path, in float sensorRatio)
+        // {
+        //     if (path == null || path.Length == 0)
+        //     {
+        //         return new List<Graph>();
+        //     }
+        //
+        //     List<Point2> pathPoints = new List<Point2>();
+        //     foreach (var p in path)
+        //     {
+        //         pathPoints.Add(new Point2
+        //         {
+        //             position = p,
+        //         });
+        //     }
+        //
+        //     List<Point2> points = Graph.RotateListToLeftmost(pathPoints);
+        //     Graph graph = new Graph
+        //     {
+        //         points = points,
+        //     };
+        //     graph.sensorRatio = sensorRatio;
+        //     graph.ComputeNormals();
+        //     graph.FlipNormals();
+        //     graph.ComputeSignedArea();
+        //     if (!graph.ClockwiseOrientation)
+        //     {
+        //         graph.FlipNormals();
+        //         graph.ComputeSignedArea();
+        //     }
+        //     return new List<Graph> {graph};
+        // }
 
         private List<List<Graph>> CreateGraphs(in List<List<Vector2>> paths, in float sensorRatio)
         {
@@ -191,7 +191,7 @@ namespace Cinemachine
             {
                 Graph newGraph = new Graph { points = points };
                 newGraph.sensorRatio = sensorRatio;
-                newGraph.ComputeNormals();
+                newGraph.ComputeNormals(true);
                 newGraph.ComputeSignedArea();
                 if (!newGraph.ClockwiseOrientation)
                 {

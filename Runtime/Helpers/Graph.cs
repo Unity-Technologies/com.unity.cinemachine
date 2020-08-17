@@ -155,7 +155,7 @@ namespace Cinemachine
         private static float oneOverSquarerootOfTwo = 0.70710678f;
         /// <summary> Computes normalized normals for all points
         /// </summary>
-        internal void ComputeNormals()
+        internal void ComputeNormals(bool fixBigCornerAngles)
         {
             var edgeNormals = new List<Vector2>(points.Count);
             for (int i = 0; i < points.Count; ++i)
@@ -165,31 +165,38 @@ namespace Cinemachine
                 edgeNormals.Add(normal.normalized);
             }
             
-            for (int i = 0; i < points.Count; ++i)
+            
+            for (int i = points.Count - 1; i >= 0; --i)
             {
-                int prevIndex = i == 0 ? points.Count - 1 : i - 1;
-                points[i].normal = (edgeNormals[i] + edgeNormals[prevIndex]) / 2f;
-                var angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevIndex]);
-                
-                if (angle > 0) // 89.999999.99999
-                {
-                    // var gameObject = new GameObject("big pos angle - " + angle);
-                    // gameObject.transform.position = points[i].position;
-                    // GameObject.Destroy(gameObject, 1);
-                }
-                if (angle < 0) // -89.999999.99999 <------
-                {
-                    // var gameObject = new GameObject("big neg angle - " + angle);
-                    // gameObject.transform.position = points[i].position;
-                    // GameObject.Destroy(gameObject, 1);
-                }
+                int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
+                points[i].normal = (edgeNormals[i] + edgeNormals[prevEdgeIndex]) / 2f;
                 points[i].normal.Normalize();
+
+                if (fixBigCornerAngles)
+                {
+                    var angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevEdgeIndex]);
+                    if (angle < -89.99f) // -89.999999.99999 <------
+                    {
+                        int prevIndex = i == 0 ? points.Count - 1 : i - 1;
+                        int nextIndex = i == points.Count - 1 ? 0 : i + 1;
+                        points.Insert(nextIndex, new Point2
+                        {
+                            position = Vector2.Lerp(points[i].position, points[nextIndex].position, 0.01f),
+                            normal = points[i].normal
+                        });
+                        points.Insert(i, new Point2
+                        {
+                            position = Vector2.Lerp(points[i].position, points[prevIndex].position, 0.01f),
+                            normal = points[i].normal
+                        });
+                    }
+                }
             }
         }
     
         internal void ComputeRectangulizedNormals()
         {
-            ComputeNormals();
+            ComputeNormals(false);
 
             for (int i = 0; i < points.Count; ++i)
             {
