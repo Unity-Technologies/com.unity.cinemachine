@@ -153,7 +153,8 @@ namespace Cinemachine
         }
 
         private static float oneOverSquarerootOfTwo = 0.70710678f;
-        /// <summary> Computes normalized normals for all points
+        /// <summary> Computes normalized normals for all points, and adds additional points for corners
+        /// with reflex angles to ensure correct offset
         /// </summary>
         internal void ComputeNormals(bool fixBigCornerAngles)
         {

@@ -36,7 +36,7 @@ namespace Cinemachine
         private List<List<Vector2>> m_originalPath;
         private int m_originalPathTotalPointCount;
         
-        private float windowSizeCache;
+        private float frustumHeightCache;
         private List<List<Vector2>> m_currentPathCache;
 
         private List<List<Graph>> graphs;
@@ -90,16 +90,9 @@ namespace Cinemachine
                 }
                 else
                 {
-                    // TODO: check if we rely on vcam.Follow or LookAt anywhere
-                    var vcamPosition = vcam.transform.position;
-                    Vector3 objectOfInterest = vcam.Follow != null ? vcam.Follow.position :
-                        vcam.LookAt != null ? vcam.LookAt.position :
-                        vcamPosition + vcam.transform.forward * 10;
-                    float distance2 = (objectOfInterest - vcamPosition).magnitude;
-                    
                     var R = Quaternion.Inverse(m_BoundingShape2D.transform.rotation);
                     var planePosition = R * m_BoundingShape2D.transform.position;
-                    var cameraPosition = R * vcamPosition;
+                    var cameraPosition = R * vcam.transform.position;
                     var distance = Mathf.Abs(planePosition.z - cameraPosition.z);
                     frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
                 }
@@ -107,17 +100,16 @@ namespace Cinemachine
                 if (m_currentPathCache == null || 
                     m_BoundingCompositeShape2D == null || 
                     pathChanged ||
-                    Math.Abs(frustumHeight - windowSizeCache) > m_bakedConfinerResolution)
+                    Math.Abs(frustumHeight - frustumHeightCache) > m_bakedConfinerResolution)
                 {
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
-                    windowSizeCache = frustumHeight;
-                    confinerCache = confinerOven().GetConfinerAtOrthoSize(windowSizeCache);
+                    frustumHeightCache = frustumHeight;
+                    confinerCache = confinerOven().GetConfinerAtOrthoSize(frustumHeightCache);
                     confinerStateToPath().Convert(confinerCache, 
                         out m_currentPathCache, out m_BoundingCompositeShape2D);
                 }
                 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
-                
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     var originalDisplacement = displacement;

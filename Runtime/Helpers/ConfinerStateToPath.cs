@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Cinemachine
 {
@@ -12,32 +14,56 @@ namespace Cinemachine
     {
         private Transform parent;
         private GameObject compositeColliderHolder;
+        private CompositeCollider2D compositeCollider2D;
 
         private string nametag;
+        private static int ID = 0;
+        private int myID = 0;
 
         public ConfinerStateToPath(string vcamNametag)
         {
             nametag = vcamNametag;
-            compositeColliderHolder = GameObject.Find("CMBakedConfiner for " + nametag);
+            compositeColliderHolder = GameObject.Find("CMBakedConfiner for " + nametag +" - "+ myID);
         }
 
-        /// <summary>
-        /// Initializes ConfinerStateToPath and creates the collider holders BakedConfiner parented to parent.
-        /// </summary>
-        private void CleanBakedConfiner()
+        void InitializeCompositeColliderHolder()
         {
-            if (compositeColliderHolder != null)
+            if (compositeColliderHolder == null)
             {
-                if (Application.isEditor)
+                myID = ID; ID++;
+                compositeColliderHolder = new GameObject("CMBakedConfiner for " + nametag +" - "+ myID);
+                // compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
+            
+                var rigidbody2D = compositeColliderHolder.AddComponent<Rigidbody2D>();
+                rigidbody2D.bodyType = RigidbodyType2D.Static;
+                rigidbody2D.simulated = false;
+                // rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
+            }
+
+            if (compositeCollider2D == null)
+            {
+                compositeCollider2D = compositeColliderHolder.GetComponent<CompositeCollider2D>();
+                if (compositeCollider2D == null)
                 {
-                    Object.DestroyImmediate(compositeColliderHolder);
+                    compositeCollider2D = compositeColliderHolder.AddComponent<CompositeCollider2D>();
+                    compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
+                }
+            }
+            
+            var childs = compositeColliderHolder.transform.childCount;
+            for (var i = childs - 1; i >= 0; --i)
+            {
+                if (Application.isPlaying)
+                {
+                    Object.Destroy(compositeColliderHolder.transform.GetChild(i).gameObject);
                 }
                 else
                 {
-                    Object.Destroy(compositeColliderHolder);
+                    Object.DestroyImmediate(compositeColliderHolder.transform.GetChild(i).gameObject);
                 }
             }
         }
+        
         
         /// <summary>Converts a List<List<Graph> into composite colliders. The outher list represents
         /// different states in pairs: 0-1 is one state, 2-3 another, etc. Between states we can lerp.
@@ -46,23 +72,9 @@ namespace Cinemachine
         internal void Convert(ConfinerState confinerState,
             out List<List<Vector2>> path, out Collider2D collider2D)
         {
-            CleanBakedConfiner();
-            compositeColliderHolder = new GameObject("CMBakedConfiner for " + nametag);
-            compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
-            // compositeColliderHolder.transform.position = inputTransform.position;
-            // compositeColliderHolder.transform.rotation = Quaternion.identity;
-            
-            var rigidbody2D = compositeColliderHolder.AddComponent<Rigidbody2D>();
-            rigidbody2D.bodyType = RigidbodyType2D.Static;
-            rigidbody2D.simulated = false;
-            rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
-            var compositeCollider2D = compositeColliderHolder.AddComponent<CompositeCollider2D>();
-            compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
-            
+            InitializeCompositeColliderHolder();
             var polygonHolder = new GameObject("PolygonCollider2Ds");
             polygonHolder.transform.parent = compositeColliderHolder.transform;
-            // polygonHolder.transform.localPosition = Vector2.zero;
-            // polygonHolder.transform.localRotation = inputTransform.rotation;
             polygonHolder.hideFlags = HideFlags.NotEditable;
 
             foreach (var graph in confinerState.graphs)
