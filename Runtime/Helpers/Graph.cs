@@ -204,19 +204,14 @@ namespace Cinemachine
             {
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
                 int nextIndex = i == points.Count - 1 ? 0 : i + 1;
-                points[i].normal = RectangulizeNormal(points[i].normal, 
+
+                points[i].normal = RectangulizeNormal2(points[i].normal, 
                     points[prevIndex].position, points[i].position, points[nextIndex].position);
-            
+
             }
         }
 
-        /// <summary>
-        /// Instead of normalizing a vector in a circle with a set a radius, this function normalizes the vector to be
-        /// within a rectangle with sides (a, 1). Meaning, the maximum length is a and 1 for the x and y components of the
-        /// vector respectively.
-        /// </summary>
-        /// <param name="normal">Normal to RectangulizeNormal</param>
-        /// <returns>RectangleNormalized normal</returns>
+        
         private Vector2 RectangulizeNormal(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint)
         {
             var A = prevPoint;
@@ -233,24 +228,11 @@ namespace Cinemachine
                 new Vector2(-sensorRatio, 0),
                 new Vector2(-sensorRatio, 1),
             };
-            
-            
-            // for (var i = 0; i < normalDirections.Count; ++i)
-            // {
-            //     if (Vector2.Angle(normal, normalDirections[i]) < 5)
-            //     {
-            //         return normalDirections[i];
-            //     }
-            // }
 
             Vector2 CA = (A - C);
             Vector2 CB = (B - C);
-            
-            
-            var angle1 = Vector2.SignedAngle(CA, normal);
-            var angle1_abs = Math.Abs(angle1);
-            var angle2 = Vector2.SignedAngle(CB, normal);
-            var angle2_abs = Math.Abs(angle2);
+            var angle1_abs = Math.Abs(Vector2.SignedAngle(CA, normal));
+            var angle2_abs = Math.Abs(Vector2.SignedAngle(CB, normal));
 
             Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
             float angle = Vector2.SignedAngle(R, normalDirections[0]);
@@ -697,6 +679,224 @@ namespace Cinemachine
             
             return R;
         }
+
+        private Vector2 FindMidPoint(Vector2 A, Vector2 B, Vector2 C, Vector2 NormalDir1, Vector2 NormalDir2)
+        {
+            Vector2 CA = (A - C);
+            Vector2 CB = (B - C);
+
+            var gamma = UnityVectorExtensions.Angle(CA, CB);
+            var D1D2 = NormalDir1 - NormalDir2;
+            var D1C = C - B;
+            var beta = UnityVectorExtensions.Angle(D1C, D1D2);
+            var D2D1 = NormalDir2 - NormalDir1;
+            var D2C = C - A;
+            var alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+            if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
+            {
+                D1D2 = NormalDir2 - NormalDir1;
+                D1C = C - B;
+                beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                D2D1 = NormalDir1 - NormalDir2;
+                D2C = C - A;
+                alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+            }
+
+            var c = D1D2.magnitude;
+            var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
+            var b = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(beta * Mathf.Deg2Rad);
+
+            var M1 = C + CB.normalized * Mathf.Abs(a);
+            var M2 = C + CA.normalized * Mathf.Abs(b);
+            return (M1 + M2) / 2; // midpoint
+        }
+        
+        private Vector2 RectangulizeNormal2(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint)
+        {
+            var A = prevPoint;
+            var B = nextPoint;
+            var C = thisPoint;
+            List<Vector2> normalDirections = new List<Vector2>
+            {
+                new Vector2(0, 1),
+                new Vector2(sensorRatio, 1),
+                new Vector2(sensorRatio, 0),
+                new Vector2(sensorRatio, -1),
+                new Vector2(0, -1),
+                new Vector2(-sensorRatio, -1),
+                new Vector2(-sensorRatio, 0),
+                new Vector2(-sensorRatio, 1),
+            };
+            
+            
+            // for (var i = 0; i < normalDirections.Count; ++i)
+            // {
+            //     if (Vector2.Angle(normal, normalDirections[i]) < 5)
+            //     {
+            //         return normalDirections[i];
+            //     }
+            // }
+
+            Vector2 CA = (A - C);
+            Vector2 CB = (B - C);
+            
+            
+            var angle1 = Vector2.SignedAngle(CA, normal);
+            var angle1_abs = Math.Abs(angle1);
+            var angle2 = Vector2.SignedAngle(CB, normal);
+            var angle2_abs = Math.Abs(angle2);
+
+            Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
+            float angle = Vector2.SignedAngle(R, normalDirections[0]);
+            if (0 < angle && angle < 90)
+            {
+                if (angle - angle1_abs <= 1f && 89 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[1];
+                }
+                else if (angle - angle1_abs <= 0 && angle + angle2_abs < 90)
+                {
+                    // case 1a - 2 point intersection with camera window's bottom
+                    var M = FindMidPoint(A, B, C, normalDirections[3], normalDirections[5]); // bottom side's midpoint
+                    var rectangleMidPoint = M + normalDirections[0]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (0 < angle - angle1_abs && 90 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's left side
+                    var M = FindMidPoint(A, B, C, normalDirections[7], normalDirections[5]); // left side's midpoint
+                    var rectangleMidPoint = M + normalDirections[2]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (0 < angle - angle1_abs && angle + angle2_abs < 90)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
+                    var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[3], normalDirections[7]); // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
+            }
+            else if (90 < angle && angle < 180)
+            {
+                if (angle - angle1_abs <= 91 && 179 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[3];
+                }
+                else if (angle - angle1_abs <= 90 && angle + angle2_abs < 180)
+                {
+                    // case 1a - 2 point intersection with camera window's left
+                    var M = FindMidPoint(A, B, C, normalDirections[0], normalDirections[4]); // left side's midpoint
+                    var rectangleMidPoint = M + normalDirections[2]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (90 < angle - angle1_abs && 180 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's top side
+                    var M = FindMidPoint(A, B, C, normalDirections[1], normalDirections[7]); // top side's midpoint
+                    var rectangleMidPoint = M + normalDirections[4]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (90 < angle - angle1_abs && angle + angle2_abs < 180)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
+                    var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[1], normalDirections[5]); // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
+            }
+            else if (-180 < angle && angle < -90)
+            {
+                if (angle - angle1_abs <= -179 && -91 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[5];
+                }
+                else if (angle - angle1_abs <= -180 && angle + angle2_abs < -90)
+                {
+                    // case 1a - 2 point intersection with camera window's top
+                    var M = FindMidPoint(A, B, C, normalDirections[7], normalDirections[1]); // top side's midpoint
+                    var rectangleMidPoint = M + normalDirections[4]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-180 < angle - angle1_abs && -90 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's right side
+                    var M = FindMidPoint(A, B, C, normalDirections[1], normalDirections[3]); // right side's midpoint
+                    var rectangleMidPoint = M + normalDirections[6]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-180 < angle - angle1_abs && angle + angle2_abs < -90)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
+                    var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[3], normalDirections[7]); // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
+            }
+            else if (-90 < angle && angle < 0)
+            {
+                if (angle - angle1_abs <= -89 && -1 <= angle + angle2_abs)
+                {
+                    // case 0 - 1 point intersection with camera window
+                    R = normalDirections[7];
+                }
+                else if (angle - angle1_abs <= -90 && angle + angle2_abs < 0)
+                {
+                    // case 1a - 2 point intersection with camera window's right side
+                    var M = FindMidPoint(A, B, C, normalDirections[7], normalDirections[5]); // right side's midpoint
+                    var rectangleMidPoint = M + normalDirections[6]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-90 < angle - angle1_abs && 0 <= angle + angle2_abs)
+                {
+                    // case 1b - 2 point intersection with camera window's bottom side
+                    var M = FindMidPoint(A, B, C, normalDirections[5], normalDirections[3]); // bottom side's mid point
+                    var rectangleMidPoint = M + normalDirections[0]; // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else if (-90 < angle - angle1_abs && angle + angle2_abs < 0)
+                {
+                    // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
+                    var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[1], normalDirections[5]); // rectangle's midpoint
+                    R = rectangleMidPoint - C;
+                    return R;
+                }
+                else
+                {
+                    Debug.Log("Should never happen!");
+                }
+            }
+            else
+            {
+                R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
+                R.y = Mathf.Clamp(R.y, -1, 1);
+            }
+            
+            return R;
+        }
+
 
         /// <summary>
         /// Flips normals in the graph.
