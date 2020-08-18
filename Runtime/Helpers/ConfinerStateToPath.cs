@@ -15,6 +15,7 @@ namespace Cinemachine
         private Transform parent;
         private GameObject compositeColliderHolder;
         private CompositeCollider2D compositeCollider2D;
+        private GameObject polygonHolder;
 
         private string nametag;
         private static int ID = 0;
@@ -26,10 +27,29 @@ namespace Cinemachine
             compositeColliderHolder = GameObject.Find("CMBakedConfiner for " + nametag +" - "+ myID);
         }
 
-        void InitializeCompositeColliderHolder()
+        private void Cleanup()
         {
-            if (compositeColliderHolder == null)
+            if (compositeColliderHolder != null)
+                if (Application.isPlaying)
+                {
+                    Object.Destroy(compositeColliderHolder.gameObject);
+                }
+                else
+                {
+                    Object.DestroyImmediate(compositeColliderHolder.gameObject);
+                }
+
+            compositeColliderHolder = null;
+            compositeCollider2D = null;
+            polygonHolder = null;
+        }
+        
+        private void InitializeCompositeColliderHolder()
+        {
+            if (compositeColliderHolder == null || compositeCollider2D == null)
             {
+                Cleanup();
+                
                 myID = ID; ID++;
                 compositeColliderHolder = new GameObject("CMBakedConfiner for " + nametag +" - "+ myID);
                 // compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
@@ -38,28 +58,20 @@ namespace Cinemachine
                 rigidbody2D.bodyType = RigidbodyType2D.Static;
                 rigidbody2D.simulated = false;
                 // rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
+                
+                compositeCollider2D = compositeColliderHolder.AddComponent<CompositeCollider2D>();
+                compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
             }
 
-            if (compositeCollider2D == null)
-            {
-                compositeCollider2D = compositeColliderHolder.GetComponent<CompositeCollider2D>();
-                if (compositeCollider2D == null)
-                {
-                    compositeCollider2D = compositeColliderHolder.AddComponent<CompositeCollider2D>();
-                    compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
-                }
-            }
-            
-            var childs = compositeColliderHolder.transform.childCount;
-            for (var i = childs - 1; i >= 0; --i)
+            if (polygonHolder != null)
             {
                 if (Application.isPlaying)
                 {
-                    Object.Destroy(compositeColliderHolder.transform.GetChild(i).gameObject);
+                    Object.Destroy(polygonHolder.gameObject);
                 }
                 else
                 {
-                    Object.DestroyImmediate(compositeColliderHolder.transform.GetChild(i).gameObject);
+                    Object.DestroyImmediate(polygonHolder.gameObject);
                 }
             }
         }
@@ -73,16 +85,16 @@ namespace Cinemachine
             out List<List<Vector2>> path, out Collider2D collider2D)
         {
             InitializeCompositeColliderHolder();
-            var polygonHolder = new GameObject("PolygonCollider2Ds");
+            
+            polygonHolder = new GameObject("PolygonCollider2Ds");
             polygonHolder.transform.parent = compositeColliderHolder.transform;
             polygonHolder.hideFlags = HideFlags.NotEditable;
-
             foreach (var graph in confinerState.graphs)
             {
                 var polygon = polygonHolder.AddComponent<PolygonCollider2D>();
                 polygon.usedByComposite = true;
                 polygon.points = graph.points.Select(x => x.position).ToArray();
-
+                
                 foreach (var intersectionPoint in graph.intersectionPoints)
                 {
                     Vector2 closestPoint = graph.ClosestGraphPoint(intersectionPoint);

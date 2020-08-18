@@ -242,7 +242,8 @@ namespace Cinemachine
         {
             if (left.graphs.Count != right.graphs.Count)
             {
-                Debug.Log("SOMETHINGS NOT RIGHT 1 - PathLerp");
+                // should never happen
+                Debug.Log("Error in ConfinerStateLerp - Let us know on the forums please!");
                 return left;
             }
 
@@ -259,7 +260,7 @@ namespace Cinemachine
                 for (int j = 0; j < left.graphs[i].points.Count; ++j)
                 {
                     r.intersectionPoints = left.graphs[i].intersectionPoints;
-                    var rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].points[j].position);
+                    var rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].points[j]);
                     r.points.Add(new Point2
                     {
                         position = Vector2.Lerp(left.graphs[i].points[j].position, rightPoint, lerp),
@@ -273,8 +274,6 @@ namespace Cinemachine
         private List<ConfinerState> confinerStates;
         internal List<ConfinerState> TrimGraphs(bool skipTrimming)
         {
-            // TODO: List<Graph> should hace a state marker -> managed by the graph division -> incerement state when state change happens
-            // todo: statechange (intersection, or skeleton skrinking)
             if (!skipTrimming)
             {
                 int stateStart = graphs.Count - 1;

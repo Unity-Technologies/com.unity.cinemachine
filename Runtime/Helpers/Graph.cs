@@ -170,7 +170,7 @@ namespace Cinemachine
             for (int i = points.Count - 1; i >= 0; --i)
             {
                 int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
-                points[i].normal = (edgeNormals[i] + edgeNormals[prevEdgeIndex]) / 2f;
+                points[i].normal = edgeNormals[i] + edgeNormals[prevEdgeIndex];
                 points[i].normal.Normalize();
 
                 if (fixBigCornerAngles)
@@ -190,7 +190,7 @@ namespace Cinemachine
                             position = Vector2.Lerp(points[i].position, points[prevIndex].position, 0.01f),
                             normal = points[i].normal
                         });
-                        points.RemoveAt(nextIndex); // remove original
+                        // points.RemoveAt(nextIndex); // remove original
                     }
                 }
             }
@@ -896,6 +896,43 @@ namespace Cinemachine
                 }
             }
 
+            return closestPoint;
+        }
+        internal Vector2 ClosestGraphPoint(Point2 p)
+        {
+            bool foundWithNormal = false;
+            float minDistance = float.MaxValue;
+            Vector2 closestPoint = Vector2.zero;
+            for (int i = 0; i < points.Count; ++i)
+            {
+                var diff = points[i].position - p.position;
+                var angle = Vector2.Angle(p.normal, diff);
+                if (angle < 5 || 175 < angle)
+                {
+                    foundWithNormal = true;
+                    float sqrDistance = diff.sqrMagnitude;
+                    if (minDistance > sqrDistance)
+                    {
+                        minDistance = sqrDistance;
+                        closestPoint = points[i].position;
+                    }
+                }
+            }
+            if (foundWithNormal)
+            {
+                return closestPoint;
+            }
+
+            for (int i = 0; i < points.Count; ++i)
+            {
+                var diff = points[i].position - p.position;
+                float sqrDistance = diff.sqrMagnitude;
+                if (minDistance > sqrDistance)
+                {
+                    minDistance = sqrDistance;
+                    closestPoint = points[i].position;
+                }
+            }
             return closestPoint;
         }
 
