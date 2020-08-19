@@ -242,8 +242,7 @@ namespace Cinemachine
         {
             if (left.graphs.Count != right.graphs.Count)
             {
-                // should never happen
-                Debug.Log("Error in ConfinerStateLerp - Let us know on the forums please!");
+                Debug.Log("Error in ConfinerStateLerp - Let us know on the Cinemachine forum please!"); // should never happen
                 return left;
             }
 

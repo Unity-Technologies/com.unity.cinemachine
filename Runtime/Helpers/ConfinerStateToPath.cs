@@ -84,6 +84,11 @@ namespace Cinemachine
         internal void Convert(ConfinerState confinerState,
             out List<List<Vector2>> path, out Collider2D collider2D)
         {
+            // TODO: performance optimization!
+            // instead of creating these colliders, we could do polygon union directly
+            // -> need to implement or port from Core.
+            // Then, in ConfinePoint algorithm, we need to write our
+            // own (m_BoundingCompositeShape2D.OverlapPoint(camPos)) instead of relying on the collider
             InitializeCompositeColliderHolder();
             
             polygonHolder = new GameObject("PolygonCollider2Ds");

@@ -323,7 +323,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Should never happen!");
+                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (90 < angle && angle < 180)
@@ -358,7 +358,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Should never happen!");
+                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (-180 < angle && angle < -90)
@@ -393,7 +393,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Should never happen!");
+                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (-90 < angle && angle < 0)
@@ -428,7 +428,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Should never happen!");
+                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else
@@ -919,7 +919,7 @@ namespace Cinemachine
             };
             if (maxIteration <= 0)
             {
-                Debug.Log("Exited with max iteration safety!");
+                Debug.Log("Exited with max iteration safety! - Let us know on the Cinemachine forums please!"); // never happened to me in my tests
             }
             subgraphs.Add(graph); // add remaining graph
         }

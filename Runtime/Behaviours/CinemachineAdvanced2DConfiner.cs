@@ -102,6 +102,7 @@ namespace Cinemachine
                     pathChanged ||
                     Math.Abs(frustumHeight - frustumHeightCache) > m_bakedConfinerResolution)
                 {
+                    // TODO: performance optimization
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                     frustumHeightCache = frustumHeight;
                     confinerCache = confinerOven().GetConfinerAtOrthoSize(frustumHeightCache);
