@@ -971,7 +971,7 @@ namespace Cinemachine
             /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
             /// done.
             subgraphs = new List<Graph>();
-            int maxIteration = 500;
+            int maxIteration = 100;
             while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs, woobly))
             {
                 maxIteration--;
