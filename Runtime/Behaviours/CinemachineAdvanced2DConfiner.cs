@@ -28,8 +28,8 @@ namespace Cinemachine
 
         // advanced features
         [HideInInspector] public bool ShrinkUntilSkeleton;
-        [HideInInspector] public bool DrawGizmosDebug = false;
-        [HideInInspector] public bool SkipTrimming = false;
+        public bool DrawGizmosDebug = false;
+        public bool SkipTrimming = false;
 
         private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
         

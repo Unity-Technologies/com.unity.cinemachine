@@ -100,12 +100,12 @@ namespace Cinemachine
                 {
                     graphs[graphs_index][g].ComputeRectangulizedNormals();
                     var graph = graphs[graphs_index][g].DeepCopy();
-                    if (graph.Shrink(shrinkAmount, dontShrinkToPoint, out bool woobly))
+                    if (graph.Shrink(shrinkAmount, dontShrinkToPoint))
                     {
                         /// 2. DO until Graph G has intersections
                         /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
                         /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
-                        Graph.DivideAlongIntersections(graph, woobly, out List<Graph> subgraphs);
+                        Graph.DivideAlongIntersections(graph, out List<Graph> subgraphs);
                         nextGraphsIteration.AddRange(subgraphs);
                     }
                     else

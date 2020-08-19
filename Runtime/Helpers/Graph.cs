@@ -468,9 +468,8 @@ namespace Cinemachine
             return false;
         }
 
-        internal bool Shrink(float shrinkAmount, bool dontShrinkToPoint, out bool woobly)
+        internal bool Shrink(float shrinkAmount, bool dontShrinkToPoint)
         {
-            woobly = false;
             //if (!dontShrinkToPoint)
             // {
             //     var minX = float.PositiveInfinity;
@@ -566,14 +565,18 @@ namespace Cinemachine
             //     }
             // }
             windowDiagonal += shrinkAmount;
+            if (windowDiagonal > 1.6)
+            {
+                int a = 3;
+            }
             // TODO: optimize shrink - shrink until intersection instead of steps
-            float areaBefore = Mathf.Abs(ComputeSignedArea());
+            float area1 = Mathf.Abs(ComputeSignedArea());
             for (int i = 0; i < points.Count; ++i)
             {
                 points[i].position += points[i].normal * shrinkAmount;
             }
-            float areaAfter = Mathf.Abs(ComputeSignedArea());
-            if (areaAfter > areaBefore)
+            float area2 = Mathf.Abs(ComputeSignedArea());
+            if (area2 > area1)
             {
                 FlipNormals();
                 for (int i = 0; i < points.Count; ++i)
@@ -581,8 +584,9 @@ namespace Cinemachine
                     points[i].position += points[i].normal * (shrinkAmount * 2f);
                 }
             }
-            float areaAfterAfter = Mathf.Abs(ComputeSignedArea());
-            if (areaAfterAfter > areaAfter || areaBefore < 0.02f)
+            float area3 = Mathf.Abs(ComputeSignedArea());
+            if (area3 > area2 || area1 < 0.02f ||
+                area1 < area2 && area1 < area3)
             {
                 FlipNormals();
                 for (int i = 0; i < points.Count; ++i)
@@ -590,18 +594,6 @@ namespace Cinemachine
                     points[i].position += points[i].normal * (shrinkAmount);
                     points[i].normal = Vector2.zero;
                 }
-            }
-
-            woobly = areaBefore < areaAfter && areaBefore < areaAfterAfter;
-
-            if (woobly)
-            {
-                for (int i = 0; i < points.Count; ++i)
-                {
-                    points[i].normal = Vector2.zero;
-                }
-
-                int a = 3;
             }
             return true;
         }
@@ -766,9 +758,9 @@ namespace Cinemachine
                 normal_QR = new Vector2(normal_QR.y, -normal_QR.x).normalized;
             }
             normal_QR *= minDistance;
-            FindIntersection(Q, R, P, P + normal_QR, false, 
+            UnityVectorExtensions.FindIntersection(Q, R, P, P + normal_QR,
                 out bool lines_intersect,
-                out bool segments_intersect, 
+                out bool segments_intersect,
                 out Vector2 intersection);
 
             intersect = segments_intersect;
@@ -786,42 +778,6 @@ namespace Cinemachine
             return closestPoint;
         }
 
-        internal bool IsClosestPointToAnyIntersection(int pointIndex)
-        {
-            for (int i = 0; i < intersectionPoints.Count; ++i)
-            {
-                int closestIndex = 0;
-                float minDistance = float.MaxValue;
-                for (int j = 0; j < points.Count; ++j)
-                {
-                    float distance = (intersectionPoints[i] - points[j].position).sqrMagnitude;
-                    if (minDistance > distance)
-                    {
-                        minDistance = distance;
-                        closestIndex = j;
-                    }
-                }
-
-                if (closestIndex == pointIndex)
-                {
-                    return true;
-                }
-            }
-
-            return true;
-        }
-
-        internal Vector2 CenterOfMass()
-        {
-            Vector2 center = Vector2.zero;
-            for (int i = 0; i < points.Count; ++i)
-            {
-                center += points[i].position;
-            }
-
-            return center / points.Count;
-        }
-
         // Removes point that are the same or very close
         internal void Simplify()
         {
@@ -837,27 +793,13 @@ namespace Cinemachine
             }
         }
 
-
-        // internal bool SetOrientationClockwise()
-        // {
-        //     // NOTE: invalidates normals!
-        //     if (!ComputeSignedArea(points.ToArray()))
-        //     {
-        //         //points.Reverse();
-        //         return true;
-        //     }
-        //
-        //     return false;
-        // }
-
-        
         // TODO: refine summary outside and within this function - DivideGraph and also DivideAlongIntersections
         /// <summary>Divides graph into subgraphs if there are intersections.</summary>
         /// <param name="graph">Graph to divide. Graph will be overwritten by a graph with possible intersections,
         /// after cutting off the graph part 'left' of the intersection.</param>
         /// <param name="subgraphs">Resulting subgraphs from dividing graph.</param>
         /// <returns>True, if found intersection. False, otherwise.</returns>
-        private static bool DivideGraph(ref Graph graph, ref List<Graph> subgraphs, bool woobly)
+        private static bool DivideGraph(ref Graph graph, ref List<Graph> subgraphs)
         {
             // for each edge in graph, but not edges that directly connect (e.P. 0-1, 1-2) check for intersections.
             // if we intersect, we need to divide the graph into two graphs (g1,g2) to remove the intersection within a graph.
@@ -869,10 +811,9 @@ namespace Cinemachine
                 {
                     if (i == (j + 1) % graph.points.Count) continue;
 
-                    FindIntersection(
-                        graph.points[i].position, graph.points[(i + 1) % graph.points.Count].position,
+                    UnityVectorExtensions.FindIntersection(graph.points[i].position,
+                        graph.points[(i + 1) % graph.points.Count].position,
                         graph.points[j].position, graph.points[(j + 1) % graph.points.Count].position,
-                        woobly,
                         out bool linesIntersect, out bool segmentsIntersect,
                         out Vector2 intersection);
                     
@@ -964,15 +905,15 @@ namespace Cinemachine
             return false; // graph does not have nice intersections
         }
 
-        internal static void DivideAlongIntersections(Graph graph, bool woobly, out List<Graph> subgraphs)
+        internal static void DivideAlongIntersections(Graph graph, out List<Graph> subgraphs)
         {
             /// 2. DO until Graph G has intersections
             /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
             /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
             /// done.
             subgraphs = new List<Graph>();
-            int maxIteration = 100;
-            while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs, woobly))
+            int maxIteration = 10;
+            while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs))
             {
                 maxIteration--;
             };
@@ -1049,48 +990,5 @@ namespace Cinemachine
 
             return point_rolledToStartAtLeftmostpoint;
         }
-        
-        private static void FindIntersection(
-            in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4, in bool woobly,
-            out bool lines_intersect, out bool segments_intersect, out Vector2 intersection)
-        {
-            // Get the segments' parameters.
-            float dx12 = p2.x - p1.x;
-            float dy12 = p2.y - p1.y;
-            float dx34 = p4.x - p3.x;
-            float dy34 = p4.y - p3.y;
-
-            // Solve for t1 and t2
-            float denominator = (dy12 * dx34 - dx12 * dy34);
-
-            float t1 =
-                ((p1.x - p3.x) * dy34 + (p3.y - p1.y) * dx34)
-                / denominator;
-            if (float.IsInfinity(t1))
-            {
-                // The lines are parallel (or close enough to it).
-                lines_intersect = false;
-                segments_intersect = false;
-                intersection = Vector2.positiveInfinity;
-                return;
-            }
-            lines_intersect = true;
-
-            float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
-
-            // Find the point of intersection.
-            intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
-
-            // The segments intersect if t1 and t2 are between 0 and 1.
-            if (woobly)
-            {
-                segments_intersect = t1 >= -0.3f && t1 <= 1.3f && t2 >= -0.3f && t2 <= 1.3f;
-            }
-            else
-            {
-                segments_intersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
-            }
-        }
-
     }
 }
