@@ -21,15 +21,17 @@ namespace Cinemachine
     {
         public Vector2 position;
         public Vector2 normal;
+        public bool canIntersect;
 
         internal Point2()
         {
         }
 
-        internal Point2(Vector2 position, Vector2 normal)
+        internal Point2(Vector2 position, Vector2 normal, bool canIntersect)
         {
             this.position = position;
             this.normal = normal;
+            canIntersect = canIntersect;
         }
         
     }
@@ -103,7 +105,7 @@ namespace Cinemachine
         {
             Graph deepCopy = new Graph
             {
-                points = this.points.ConvertAll(point => new Point2(point.position, point.normal)),
+                points = this.points.ConvertAll(point => new Point2(point.position, point.normal, point.canIntersect)),
                 ClockwiseOrientation = this.ClockwiseOrientation,
                 area = this.area,
                 intersectionPoints = this.intersectionPoints.ConvertAll(intersection =>
@@ -176,7 +178,7 @@ namespace Cinemachine
                 if (fixBigCornerAngles)
                 {
                     var angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevEdgeIndex]);
-                    if (angle < -89.99f) // -89.999999.99999 <------
+                    if (angle < 0)
                     {
                         int prevIndex = i == 0 ? points.Count - 1 : i - 1;
                         int nextIndex = i == points.Count - 1 ? 0 : i + 1;
@@ -222,6 +224,10 @@ namespace Cinemachine
             Vector2 CB = (B - C);
 
             var gamma = UnityVectorExtensions.Angle(CA, CB);
+            if (gamma <= 0.05f || 179.95f <= gamma) 
+            { 
+                return (A + B) / 2; // too narrow angle, so just return the mid point
+            }
             var D1D2 = D1 - D2;
             var D1C = C - B;
             var beta = UnityVectorExtensions.Angle(D1C, D1D2);
@@ -237,6 +243,11 @@ namespace Cinemachine
                 D2C = C - A;
                 alpha = UnityVectorExtensions.Angle(D2C, D2D1);
             }
+            if (alpha <= 0.05f || 179.95f <= alpha || 
+                beta <= 0.05f || 179.95f <= beta)
+            {
+                return (A + B) / 2; // too narrow angle, so just return the mid point
+            }
 
             var c = D1D2.magnitude;
             var a = (c / Mathf.Sin(gamma * Mathf.Deg2Rad)) * Mathf.Sin(alpha * Mathf.Deg2Rad);
@@ -244,6 +255,14 @@ namespace Cinemachine
 
             var M1 = C + CB.normalized * Mathf.Abs(a);
             var M2 = C + CA.normalized * Mathf.Abs(b);
+
+            var dist1 = (A + B) / 2 - C;
+            var dist2 = (M1 + M2) / 2 - C;
+            if (dist1.sqrMagnitude < dist2.sqrMagnitude)
+            {
+                return (A + B) / 2;
+            }
+            
             return (M1 + M2) / 2; // midpoint
         }
         
@@ -304,7 +323,6 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[3], normalDirections[5]); // bottom side's midpoint
                     var rectangleMidPoint = M + normalDirections[0]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (0 < angle - angle1_abs && 90 <= angle + angle2_abs)
                 {
@@ -312,14 +330,12 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[7], normalDirections[5]); // left side's midpoint
                     var rectangleMidPoint = M + normalDirections[2]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (0 < angle - angle1_abs && angle + angle2_abs < 90)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
                     var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[3], normalDirections[7]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else
                 {
@@ -339,7 +355,6 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[0], normalDirections[4]); // left side's midpoint
                     var rectangleMidPoint = M + normalDirections[2]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (90 < angle - angle1_abs && 180 <= angle + angle2_abs)
                 {
@@ -347,14 +362,12 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[1], normalDirections[7]); // top side's midpoint
                     var rectangleMidPoint = M + normalDirections[4]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (90 < angle - angle1_abs && angle + angle2_abs < 180)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
                     var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[1], normalDirections[5]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else
                 {
@@ -374,7 +387,6 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[7], normalDirections[1]); // top side's midpoint
                     var rectangleMidPoint = M + normalDirections[4]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (-180 < angle - angle1_abs && -90 <= angle + angle2_abs)
                 {
@@ -382,14 +394,12 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[1], normalDirections[3]); // right side's midpoint
                     var rectangleMidPoint = M + normalDirections[6]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (-180 < angle - angle1_abs && angle + angle2_abs < -90)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
                     var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[3], normalDirections[7]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else
                 {
@@ -409,7 +419,6 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[7], normalDirections[5]); // right side's midpoint
                     var rectangleMidPoint = M + normalDirections[6]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (-90 < angle - angle1_abs && 0 <= angle + angle2_abs)
                 {
@@ -417,14 +426,12 @@ namespace Cinemachine
                     var M = FindMidPoint(A, B, C, normalDirections[5], normalDirections[3]); // bottom side's mid point
                     var rectangleMidPoint = M + normalDirections[0]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else if (-90 < angle - angle1_abs && angle + angle2_abs < 0)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
                     var rectangleMidPoint = FindMidPoint(A, B, C, normalDirections[1], normalDirections[5]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
-                    return R;
                 }
                 else
                 {
@@ -436,7 +443,7 @@ namespace Cinemachine
                 R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
                 R.y = Mathf.Clamp(R.y, -1, 1);
             }
-            
+
             return R;
         }
 
@@ -564,11 +571,7 @@ namespace Cinemachine
             //         return false;
             //     }
             // }
-            windowDiagonal += shrinkAmount;
-            if (windowDiagonal > 1.6)
-            {
-                int a = 3;
-            }
+             windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float area1 = Mathf.Abs(ComputeSignedArea());
             for (int i = 0; i < points.Count; ++i)
@@ -807,13 +810,16 @@ namespace Cinemachine
             // g2 may contain additional intersections.
             for (int i = 0; i < graph.points.Count; ++i)
             {
+                int nextI = (i + 1) % graph.points.Count;
+                
                 for (int j = i + 2; j < graph.points.Count; ++j)
                 {
-                    if (i == (j + 1) % graph.points.Count) continue;
+                    int nextJ = (j + 1) % graph.points.Count;
+                    if (i == nextJ) continue;
 
                     UnityVectorExtensions.FindIntersection(graph.points[i].position,
-                        graph.points[(i + 1) % graph.points.Count].position,
-                        graph.points[j].position, graph.points[(j + 1) % graph.points.Count].position,
+                        graph.points[nextI].position,
+                        graph.points[j].position, graph.points[nextJ].position,
                         out bool linesIntersect, out bool segmentsIntersect,
                         out Vector2 intersection);
                     

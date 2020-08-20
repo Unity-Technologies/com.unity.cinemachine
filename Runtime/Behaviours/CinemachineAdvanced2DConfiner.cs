@@ -13,6 +13,13 @@ namespace Cinemachine
 // #else
 //     [ExecuteInEditMode]
 // #endif
+
+    /// <summary>
+    /// Advanced 2D confiner prebakes a confiner for ...
+    ///
+    /// If you have extremely narrow corners (less than 3 degrees),
+    /// then the prebaked confiner is going to be imprecise in that part of the confiner.
+    /// </summary>
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
         // TODO: OnValidate parameters (e.g. m_bakedConfinerResolution)
@@ -44,9 +51,6 @@ namespace Cinemachine
         private ConfinerOven _confinerBaker = null;
         private ConfinerStateToPath _confinerStateConverter = null;
         
-        
-
-        /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
                  + "Higher numbers are more gradual.")]
         [Range(0, 10)]
@@ -79,7 +83,6 @@ namespace Cinemachine
             {
                 if (!ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y, out bool pathChanged))
                 {
-                    // TODO: what to do?
                     return; // invalid path
                 }
 
@@ -208,7 +211,6 @@ namespace Cinemachine
                             List<Vector2> dst = new List<Vector2>();
                             for (int j = 0; j < path.Length; ++j)
                             {
-                               
                                 dst.Add(m_BoundingShape2D.transform.TransformPoint(path[j]));
                             }
                             m_originalPath.Add(dst);
