@@ -21,17 +21,17 @@ namespace Cinemachine
     {
         public Vector2 position;
         public Vector2 normal;
-        public bool canIntersect;
+        public bool cantIntersect;
 
         internal Point2()
         {
         }
 
-        internal Point2(Vector2 position, Vector2 normal, bool canIntersect)
+        internal Point2(Vector2 position, Vector2 normal, bool cantIntersect)
         {
             this.position = position;
             this.normal = normal;
-            canIntersect = canIntersect;
+            this.cantIntersect = cantIntersect;
         }
         
     }
@@ -105,7 +105,7 @@ namespace Cinemachine
         {
             Graph deepCopy = new Graph
             {
-                points = this.points.ConvertAll(point => new Point2(point.position, point.normal, point.canIntersect)),
+                points = this.points.ConvertAll(point => new Point2(point.position, point.normal, point.cantIntersect)),
                 ClockwiseOrientation = this.ClockwiseOrientation,
                 area = this.area,
                 intersectionPoints = this.intersectionPoints.ConvertAll(intersection =>
@@ -167,8 +167,7 @@ namespace Cinemachine
                 Vector2 normal = ClockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x); 
                 edgeNormals.Add(normal.normalized);
             }
-            
-            
+
             for (int i = points.Count - 1; i >= 0; --i)
             {
                 int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
@@ -185,12 +184,14 @@ namespace Cinemachine
                         points.Insert(nextIndex, new Point2
                         {
                             position = Vector2.Lerp(points[i].position, points[nextIndex].position, 0.01f),
-                            normal = points[i].normal
+                            normal = points[i].normal,
+                            cantIntersect = true,
                         });
                         points.Insert(i, new Point2
                         {
                             position = Vector2.Lerp(points[i].position, points[prevIndex].position, 0.01f),
-                            normal = points[i].normal
+                            normal = points[i].normal,
+                            cantIntersect = true,
                         });
                         // points.RemoveAt(nextIndex); // remove original
                     }
@@ -784,15 +785,43 @@ namespace Cinemachine
         // Removes point that are the same or very close
         internal void Simplify()
         {
-            for (int i = 0; i < points.Count; ++i)
+            if (points.Count <= 4)
             {
-                for (int j = i + 1; j < points.Count; ++j)
+                return;
+            }
+            
+            var canSimplify = true;
+            while (canSimplify)
+            {
+                canSimplify = false;
+                for (int i = 0; i < points.Count; ++i)
                 {
-                    if ((points[i].position - points[j].position).sqrMagnitude <= 0.5f)
+                    for (int j = i + 1; j < points.Count; ++j)
                     {
-                        points.RemoveAt(j);
+                        if (!points[i].cantIntersect && !points[j].cantIntersect) continue;
+                        if ((points[i].position - points[j].position).sqrMagnitude <= 0.1f)
+                        {
+                            if (points[i].cantIntersect)
+                            {
+                                points.RemoveAt(i);
+                            }
+                            else if (points[j].cantIntersect)
+                            {
+                                points.RemoveAt(j);
+                            }
+                            else
+                            {
+                                points.RemoveAt(j);
+                                points.RemoveAt(i);
+                            }
+
+                            canSimplify = true;
+                            goto CONTINUE_WHILE;
+                        }
                     }
                 }
+
+                CONTINUE_WHILE: ;
             }
         }
 
@@ -853,8 +882,6 @@ namespace Cinemachine
                             }
                             
                             g1.points = RotateListToLeftmost(points);
-                            // g1.ComputeNormals();
-                            // g1.FlipNormals();
                         }
                         subgraphs.Add(g1);
 
@@ -879,11 +906,7 @@ namespace Cinemachine
                                 points.Add(graph.points[k]);
                             }
 
-                            // points[0].normal = (points[1].normal + points[points.Count - 1].normal) / 2f; // normal at intersection
-                            //Graph.ComputeNormalAt(0, points);
                             g2.points = RollListToStartClosestToPoint(points, intersection);
-                            // g2.ComputeNormals();
-                            // g2.FlipNormals();
                         }
 
                         // we need to move the intersection points from the parent graph

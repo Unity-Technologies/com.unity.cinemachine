@@ -102,6 +102,7 @@ namespace Cinemachine
                     var graph = graphs[graphs_index][g].DeepCopy();
                     if (graph.Shrink(shrinkAmount, dontShrinkToPoint))
                     {
+                        if (graph.windowDiagonal > 0.1f) graph.Simplify();
                         /// 2. DO until Graph G has intersections
                         /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
                         /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
