@@ -31,7 +31,7 @@ namespace Cinemachine
 
         [Tooltip("TODO: is it needed? -= Defines the prebaked confiner step resolution. Decrease this, if you feel the confiner does not change smoothly enough.")]
         [Range(0.001f, 1f)]
-        public static readonly float m_bakedConfinerResolution = 0.025f;
+        private static readonly float m_bakedConfinerResolution = 0.025f;
 
         // advanced features
         [HideInInspector] public bool ShrinkUntilSkeleton;
@@ -186,23 +186,28 @@ namespace Cinemachine
 
         private bool ValidatePathCache(float sensorRatio, out bool pathChanged)
         {
-            if (m_originalPath != null && 
-                m_BoundingShape2DCache == m_BoundingShape2D &&
-                Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon &&
-                Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon)
+            if (m_originalPath != null && // first time?
+                m_BoundingShape2DCache == m_BoundingShape2D && // confiner base collider changed?
+                m_BoundingShape2DCache.gameObject.transform == m_BoundingShape2D.transform && // confiner was moved or rotated or scaled?
+                Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
+                Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon) // resolution changed?
             {
                 pathChanged = false;
                 return true;
             }
             pathChanged = true;
+
+            var boundingShapeChanged = m_BoundingShape2DCache != m_BoundingShape2D ||
+                                       m_BoundingShape2DCache.gameObject.transform != m_BoundingShape2D.transform;
             
-            if (m_originalPath == null || m_BoundingShape2DCache != m_BoundingShape2D)
+            if (m_originalPath == null || boundingShapeChanged)
             {
                 Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || m_originalPathTotalPointCount != poly.GetTotalPointCount())
+                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || 
+                        m_originalPathTotalPointCount != poly.GetTotalPointCount() || boundingShapeChanged)
                     { 
                         m_originalPath = new List<List<Vector2>>();
                         for (int i = 0; i < poly.pathCount; ++i)
@@ -221,7 +226,8 @@ namespace Cinemachine
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
                     CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || m_originalPathTotalPointCount != poly.pointCount)
+                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || 
+                        m_originalPathTotalPointCount != poly.pointCount || boundingShapeChanged)
                     {
                         m_originalPath = new List<List<Vector2>>();
                         Vector2[] path = new Vector2[poly.pointCount];

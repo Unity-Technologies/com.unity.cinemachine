@@ -799,7 +799,7 @@ namespace Cinemachine
                     for (int j = i + 1; j < points.Count; ++j)
                     {
                         if (!points[i].cantIntersect && !points[j].cantIntersect) continue;
-                        if ((points[i].position - points[j].position).sqrMagnitude <= 0.1f)
+                        if ((points[i].position - points[j].position).sqrMagnitude <= 0.01f)
                         {
                             if (points[i].cantIntersect)
                             {

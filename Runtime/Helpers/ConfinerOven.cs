@@ -82,12 +82,12 @@ namespace Cinemachine
         private List<List<Vector2>> inputPathCache = null;
         private float sensorRatioCache = 0;
         private float shrinkAmountCache = 0;
-        internal bool BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, in bool dontShrinkToPoint)
+        internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, in bool dontShrinkToPoint)
         {
-            if (IsCacheValid(inputPath, sensorRatio, shrinkAmount))
-            {
-                return false;
-            }
+            // if (IsCacheValid(inputPath, sensorRatio, shrinkAmount))
+            // {
+            //     return;
+            // }
             
             graphs = CreateGraphs(inputPath, sensorRatio);
             int graphs_index = 0;
@@ -129,8 +129,6 @@ namespace Cinemachine
                     }
                 }
             }
-            
-            return true;
         }
         
         // private List<Graph> CreateGraph(in Vector2[] path, in float sensorRatio)
@@ -208,6 +206,7 @@ namespace Cinemachine
 
         internal ConfinerState GetConfinerAtOrthoSize(float orthographicSize)
         {
+            // TODO: no need to lerp, at i % 2 == 0 - remove this part
             ConfinerState result = new ConfinerState();
             for (int i = confinerStates.Count - 1; i >= 0; --i)
             {
@@ -217,12 +216,11 @@ namespace Cinemachine
                     {
                         result = confinerStates[i];
                     }
-                    else if (i % 2 == 0)
-                    {
-                        result = 
-                            ConfinerStateLerp(confinerStates[i], confinerStates[i+1], 
-                                Mathf.InverseLerp(confinerStates[i].windowSize, confinerStates[i + 1].windowSize, orthographicSize));
-                    }
+                    // else if (i % 2 == 0)
+                    // {
+                    //     result = 
+                    //         ConfinerStateLerp(confinerStates[i], confinerStates[i+1], Mathf.InverseLerp(confinerStates[i].windowSize, confinerStates[i + 1].windowSize, orthographicSize));
+                    // }
                     else
                     {
                         result = 
