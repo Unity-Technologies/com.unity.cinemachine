@@ -84,11 +84,6 @@ namespace Cinemachine
         private float shrinkAmountCache = 0;
         internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, in bool dontShrinkToPoint)
         {
-            // if (IsCacheValid(inputPath, sensorRatio, shrinkAmount))
-            // {
-            //     return;
-            // }
-            
             graphs = CreateGraphs(inputPath, sensorRatio);
             int graphs_index = 0;
 
@@ -270,7 +265,7 @@ namespace Cinemachine
         }
         
         private List<ConfinerState> confinerStates;
-        internal List<ConfinerState> TrimGraphs(bool skipTrimming)
+        internal List<ConfinerState> GetGraphsAsConfinerStates(bool skipTrimming)
         {
             if (!skipTrimming)
             {

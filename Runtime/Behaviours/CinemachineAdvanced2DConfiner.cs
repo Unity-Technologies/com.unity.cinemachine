@@ -199,15 +199,14 @@ namespace Cinemachine
 
             var boundingShapeChanged = m_BoundingShape2DCache != m_BoundingShape2D ||
                                        m_BoundingShape2DCache.gameObject.transform != m_BoundingShape2D.transform;
-            
-            if (m_originalPath == null || boundingShapeChanged)
+            if (boundingShapeChanged || m_originalPath == null)
             {
                 Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || 
-                        m_originalPathTotalPointCount != poly.GetTotalPointCount() || boundingShapeChanged)
+                    if (boundingShapeChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
+                        m_originalPathTotalPointCount != poly.GetTotalPointCount())
                     { 
                         m_originalPath = new List<List<Vector2>>();
                         for (int i = 0; i < poly.pathCount; ++i)
@@ -226,8 +225,8 @@ namespace Cinemachine
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
                     CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                    if (m_originalPath == null || m_originalPath.Count != poly.pathCount || 
-                        m_originalPathTotalPointCount != poly.pointCount || boundingShapeChanged)
+                    if (boundingShapeChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
+                        m_originalPathTotalPointCount != poly.pointCount)
                     {
                         m_originalPath = new List<List<Vector2>>();
                         Vector2[] path = new Vector2[poly.pointCount];
@@ -259,7 +258,7 @@ namespace Cinemachine
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
             sensorRatioCache = sensorRatio;
             confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache, ShrinkUntilSkeleton);
-            confinerStates = confinerOven().TrimGraphs(SkipTrimming);
+            confinerStates = confinerOven().GetGraphsAsConfinerStates(SkipTrimming);
             
             m_BoundingShape2DCache = m_BoundingShape2D;
 
