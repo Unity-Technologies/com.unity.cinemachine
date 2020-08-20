@@ -23,20 +23,21 @@ namespace Cinemachine
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
         // TODO: OnValidate parameters (e.g. m_bakedConfinerResolution)
-        
-        
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
-
-        [Tooltip("TODO: is it needed? -= Defines the prebaked confiner step resolution. Decrease this, if you feel the confiner does not change smoothly enough.")]
-        [Range(0.001f, 1f)]
+        
         private static readonly float m_bakedConfinerResolution = 0.025f;
 
         // advanced features
-        [HideInInspector] public bool ShrinkUntilSkeleton;
+        public bool ShrinkUntilSkeleton;
         public bool DrawGizmosDebug = false;
         public bool SkipTrimming = false;
+
+        [HideInInspector] public bool AutoBake = true;
+        [HideInInspector, SerializeField] public bool TriggerBake = false;
+        internal enum BakeProgressEnum {EMPTY, BAKING, BAKED, INVALID_CACHE}
+        [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
 
         private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
         
@@ -184,15 +185,45 @@ namespace Cinemachine
             sensorRatioCache = 0;
         }
 
+        /// <summary>
+        /// Checks if we have a valid path cache. Calculates it if needed.
+        /// </summary>
+        /// <param name="sensorRatio">CameraWindow ratio (width / height)</param>
+        /// <param name="pathChanged">True, if the baked path has changed. False, otherwise.</param>
+        /// <returns>True, if path is baked and valid. False, if path is invalid or non-existent.</returns>
         private bool ValidatePathCache(float sensorRatio, out bool pathChanged)
         {
-            if (m_originalPath != null && // first time?
+            pathChanged = false;
+            var cacheIsValid = 
+                m_originalPath != null && // first time?
                 m_BoundingShape2DCache == m_BoundingShape2D && // confiner base collider changed?
                 m_BoundingShape2DCache.gameObject.transform == m_BoundingShape2D.transform && // confiner was moved or rotated or scaled?
                 Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
-                Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon) // resolution changed?
+                Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon; // resolution changed?
+            if (!AutoBake && !TriggerBake)
             {
-                pathChanged = false;
+                if (!cacheIsValid)
+                {
+                    BakeProgress = BakeProgressEnum.INVALID_CACHE;
+                    return true;
+                }
+                else if (confinerStates != null)
+                {
+                    BakeProgress = BakeProgressEnum.BAKED;
+                    return true;
+                }
+                else
+                {
+                    BakeProgress = BakeProgressEnum.EMPTY;
+                    return false; // if confinerStates is null, then we don't have path -> false
+                }
+            }
+            TriggerBake = false;
+            BakeProgress = BakeProgressEnum.BAKING;
+
+            if (cacheIsValid)
+            {
+                BakeProgress = BakeProgressEnum.BAKED;
                 return true;
             }
             pathChanged = true;
@@ -250,6 +281,7 @@ namespace Cinemachine
                 }
                 else
                 {
+                    BakeProgress = BakeProgressEnum.INVALID_CACHE;
                     InvalidatePathCache();
                     return false;
                 }
@@ -262,6 +294,7 @@ namespace Cinemachine
             
             m_BoundingShape2DCache = m_BoundingShape2D;
 
+            BakeProgress = BakeProgressEnum.BAKED;
             return true;
         }
 
