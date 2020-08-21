@@ -27,31 +27,6 @@ namespace Cinemachine
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
         
-        private static readonly float m_bakedConfinerResolution = 0.025f;
-
-        // advanced features
-        public bool ShrinkUntilSkeleton;
-        public bool DrawGizmosDebug = false;
-        public bool SkipTrimming = false;
-
-        [HideInInspector] public bool AutoBake = true;
-        [HideInInspector, SerializeField] public bool TriggerBake = false;
-        internal enum BakeProgressEnum {EMPTY, BAKING, BAKED, INVALID_CACHE}
-        [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
-
-        private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
-        
-        private List<List<Vector2>> m_originalPath;
-        private int m_originalPathTotalPointCount;
-        
-        private float frustumHeightCache;
-        private List<List<Vector2>> m_currentPathCache;
-
-        private List<List<Graph>> graphs;
-        private List<ConfinerState> confinerStates;
-        private ConfinerOven _confinerBaker = null;
-        private ConfinerStateToPath _confinerStateConverter = null;
-        
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
                  + "Higher numbers are more gradual.")]
         [Range(0, 10)]
@@ -66,12 +41,49 @@ namespace Cinemachine
         [Tooltip("Stops any kind of damping when the camera gets back inside the confiner area.  ")]
         public bool m_StopDampingWithinConfiner = false;
         
-        class VcamExtraState
+        // advanced features
+        public bool ShrinkUntilSkeleton = false;
+        public bool DrawGizmosDebug = false;
+        public bool SkipTrimming = false;
+        [HideInInspector, SerializeField] internal bool AutoBake = true;
+        [HideInInspector, SerializeField] internal bool TriggerBake = false;
+        
+        private static readonly float m_bakedConfinerResolution = 0.025f;
+        
+        internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE }
+        [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
+
+        private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
+        
+        private List<List<Vector2>> m_originalPath;
+        private int m_originalPathTotalPointCount;
+        
+        private float frustumHeightCache;
+        private List<List<Vector2>> m_currentPathCache;
+
+        private List<List<Graph>> graphs;
+        private List<ConfinerState> confinerStates;
+        private ConfinerOven _confinerBaker = null;
+        private ConfinerStateToPath _confinerStateConverter = null;
+
+        /// <summary>
+        /// Trigger rebake process manually.
+        /// The confiner rebakes iff an input parameter affecting the outcome of the baked result.
+        /// </summary>
+        public void Bake()
         {
-            public Vector3 m_previousDisplacement;
-            public float confinerDisplacement;
-            public bool applyAfterAim;
-        };
+            TriggerBake = true;
+        }
+
+        /// <summary>
+        /// Trigger force rebake process manually.
+        /// The confiner rebakes even if no input was changed.
+        /// </summary>
+        public void ForceBake()
+        {
+            InvalidatePathCache();
+            Bake();
+        }
 
         private ConfinerState confinerCache;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
@@ -85,6 +97,11 @@ namespace Cinemachine
                 if (!ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y, out bool pathChanged))
                 {
                     return; // invalid path
+                }
+
+                if (BakeProgress == BakeProgressEnum.EMPTY || BakeProgress == BakeProgressEnum.BAKING)
+                {
+                    return; // need to wait until we have a baked cache
                 }
 
                 float frustumHeight;
@@ -101,9 +118,9 @@ namespace Cinemachine
                     frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
                 }
 
-                if (m_currentPathCache == null || 
-                    m_BoundingCompositeShape2D == null || 
-                    pathChanged ||
+                if (pathChanged ||
+                    m_currentPathCache == null || 
+                    m_BoundingCompositeShape2D == null ||
                     Math.Abs(frustumHeight - frustumHeightCache) > m_bakedConfinerResolution)
                 {
                     // TODO: performance optimization
@@ -174,6 +191,13 @@ namespace Cinemachine
             }
             return closest - p;
         }
+        
+        private class VcamExtraState
+        {
+            public Vector3 m_previousDisplacement;
+            public float confinerDisplacement;
+            public bool applyAfterAim;
+        };
 
         private float sensorRatioCache;
         private Collider2D m_BoundingShape2DCache;
@@ -193,39 +217,41 @@ namespace Cinemachine
         /// <returns>True, if path is baked and valid. False, if path is invalid or non-existent.</returns>
         private bool ValidatePathCache(float sensorRatio, out bool pathChanged)
         {
+            // TODO: turn this and subsequent functions calls into courotines, to not block ui
+            // TODO: before calling this make sure to stop any running courotine 
+            // runningCoroutine = StartCoroutine(MyCoroutine());
+            // StopCoroutine(runningCoroutine);
+            // or async? naw, just set return values as members - this couritne runs alone always
+
             pathChanged = false;
+            var cacheIsEmpty = confinerStates == null;
             var cacheIsValid = 
                 m_originalPath != null && // first time?
+                !cacheIsEmpty && // has a prev. baked result?
                 m_BoundingShape2DCache == m_BoundingShape2D && // confiner base collider changed?
                 m_BoundingShape2DCache.gameObject.transform == m_BoundingShape2D.transform && // confiner was moved or rotated or scaled?
                 Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
                 Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon; // resolution changed?
             if (!AutoBake && !TriggerBake)
             {
-                if (!cacheIsValid)
-                {
-                    BakeProgress = BakeProgressEnum.INVALID_CACHE;
-                    return true;
-                }
-                else if (confinerStates != null)
-                {
-                    BakeProgress = BakeProgressEnum.BAKED;
-                    return true;
-                }
-                else
+                if (cacheIsEmpty)
                 {
                     BakeProgress = BakeProgressEnum.EMPTY;
                     return false; // if confinerStates is null, then we don't have path -> false
                 }
+                else if (!cacheIsValid)
+                {
+                    BakeProgress = BakeProgressEnum.INVALID_CACHE;
+                    return true;
+                }
+                else
+                {
+                    BakeProgress = BakeProgressEnum.BAKED;
+                    return true;
+                }
             }
             TriggerBake = false;
             BakeProgress = BakeProgressEnum.BAKING;
-
-            if (cacheIsValid)
-            {
-                BakeProgress = BakeProgressEnum.BAKED;
-                return true;
-            }
             pathChanged = true;
 
             var boundingShapeChanged = m_BoundingShape2DCache != m_BoundingShape2D ||
