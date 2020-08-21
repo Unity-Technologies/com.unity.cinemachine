@@ -781,15 +781,18 @@ namespace Cinemachine
 
             return closestPoint;
         }
-
-        // Removes point that are the same or very close
+        
+        /// <summary>
+        /// Removes point that are the same or very close
+        /// </summary>
         internal void Simplify()
         {
+            // TODO: remove goto with other function 
             if (points.Count <= 4)
             {
                 return;
             }
-            
+
             var canSimplify = true;
             while (canSimplify)
             {
@@ -799,6 +802,7 @@ namespace Cinemachine
                     for (int j = i + 1; j < points.Count; ++j)
                     {
                         if (!points[i].cantIntersect && !points[j].cantIntersect) continue;
+                        if (points[i].cantIntersect && points[j].cantIntersect) continue;
                         if ((points[i].position - points[j].position).sqrMagnitude <= 0.01f)
                         {
                             if (points[i].cantIntersect)
