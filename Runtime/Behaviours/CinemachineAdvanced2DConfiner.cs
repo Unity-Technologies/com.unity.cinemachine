@@ -8,11 +8,11 @@ using UnityEngine.UIElements;
 namespace Cinemachine
 { 
     [SaveDuringPlay]
-// #if UNITY_2018_3_OR_NEWER
-//     [ExecuteAlways]
-// #else
-//     [ExecuteInEditMode]
-// #endif
+#if UNITY_2018_3_OR_NEWER
+    [ExecuteAlways]
+#else
+    [ExecuteInEditMode]
+#endif
 
     /// <summary>
     /// Advanced 2D confiner prebakes a confiner for ...
@@ -250,6 +250,12 @@ namespace Cinemachine
                     return true;
                 }
             }
+            else if (!cacheIsEmpty && cacheIsValid)
+            {
+                BakeProgress = BakeProgressEnum.BAKED;
+                return true;
+            }
+            
             TriggerBake = false;
             BakeProgress = BakeProgressEnum.BAKING;
             pathChanged = true;
