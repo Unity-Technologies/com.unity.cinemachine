@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using Cinemachine.Utility;
 using UnityEditor;
@@ -47,9 +48,6 @@ namespace Cinemachine
         internal float windowDiagonal;
         internal float sensorRatio;
         internal int state;
-        private bool normalDirectionTowardsCenter;
-        private bool zeroNormalsXdirection;
-        private bool zeroNormalsYdirection;
 
         internal List<Vector2> intersectionPoints;
         public Graph()
@@ -59,42 +57,6 @@ namespace Cinemachine
             area = 0;
             windowDiagonal = 0;
             state = 0;
-            normalDirectionTowardsCenter = false;
-            zeroNormalsXdirection = false;
-            zeroNormalsYdirection = false;
-        }
-
-        public bool SetNormalDirectionTowardsCenter()
-        {
-            if (!normalDirectionTowardsCenter)
-            {
-                normalDirectionTowardsCenter = true;
-                state++;
-                return true;
-            }
-            return false;
-        }
-
-        public bool SetZeroNormalsXdirection()
-        {
-            if (!zeroNormalsXdirection)
-            {
-                zeroNormalsXdirection = true;
-                state++;
-                return true;
-            }
-            return false;
-        }
-
-        public bool SetZeroNormalsYdirection()
-        {
-            if (!zeroNormalsYdirection)
-            {
-                zeroNormalsYdirection = true;
-                state++;
-                return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -112,9 +74,6 @@ namespace Cinemachine
                     new Vector2(intersection.x, intersection.y)),
                 windowDiagonal = this.windowDiagonal,
                 sensorRatio = this.sensorRatio,
-                normalDirectionTowardsCenter = this.normalDirectionTowardsCenter,
-                zeroNormalsXdirection = this.zeroNormalsXdirection,
-                zeroNormalsYdirection = this.zeroNormalsYdirection,
                 state = this.state,
             };
             return deepCopy;
@@ -155,9 +114,11 @@ namespace Cinemachine
         }
 
         private static float oneOverSquarerootOfTwo = 0.70710678f;
-        /// <summary> Computes normalized normals for all points, and adds additional points for corners
+        /// <summary>
+        /// Computes normalized normals for all points. If fixBigCornerAngles is true, then adds additional points for corners
         /// with reflex angles to ensure correct offset
         /// </summary>
+        /// <param name="fixBigCornerAngles"></param>
         internal void ComputeNormals(bool fixBigCornerAngles)
         {
             var edgeNormals = new List<Vector2>(points.Count);
@@ -201,6 +162,9 @@ namespace Cinemachine
     
         internal void ComputeRectangulizedNormals()
         {
+            List<Vector2> normalsBefore = new List<Vector2>();
+            normalsBefore.AddRange(points.Select(point => point.normal));
+            
             ComputeNormals(false);
 
             for (int i = 0; i < points.Count; ++i)
@@ -210,7 +174,18 @@ namespace Cinemachine
 
                 points[i].normal = RectangulizeNormal(points[i].normal, 
                     points[prevIndex].position, points[i].position, points[nextIndex].position);
-
+            }
+            
+            List<Vector2> normalsAfter = new List<Vector2>();
+            normalsAfter.AddRange(points.Select(point => point.normal));
+            
+            for (var index = 0; index < normalsBefore.Count; index++)
+            {
+                if (normalsBefore[index] != normalsAfter[index])
+                {
+                    state++;
+                    break;
+                }
             }
         }
 

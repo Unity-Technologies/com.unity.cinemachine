@@ -211,20 +211,21 @@ namespace Cinemachine
                     {
                         result = confinerStates[i];
                     }
-                    // else if (i % 2 == 0)
-                    // {
-                    //     result = 
-                    //         ConfinerStateLerp(confinerStates[i], confinerStates[i+1], Mathf.InverseLerp(confinerStates[i].windowSize, confinerStates[i + 1].windowSize, orthographicSize));
-                    // }
+                    else if (Math.Abs(confinerStates[i].state - confinerStates[i + 1].state) < 1e-6f)
+                    {
+                        // blend between confinerStates with same state
+                        result = ConfinerStateLerp(confinerStates[i], confinerStates[i+1], Mathf.InverseLerp(
+                            confinerStates[i].windowSize, confinerStates[i + 1].windowSize, orthographicSize));
+                    }
                     else
                     {
+                        // choose confinerStates with windowSize closer to orthographicSize
                         result = 
                             Mathf.Abs(confinerStates[i].windowSize - orthographicSize) < 
                             Mathf.Abs(confinerStates[i + 1].windowSize - orthographicSize) ? 
                                 confinerStates[i] : 
                                 confinerStates[i+1];
                     }
-                            
                     break;
                 }
             }
@@ -265,43 +266,9 @@ namespace Cinemachine
         }
         
         private List<ConfinerState> confinerStates;
-        internal List<ConfinerState> GetGraphsAsConfinerStates(bool skipTrimming)
+        internal List<ConfinerState> GetGraphsAsConfinerStates()
         {
-            if (!skipTrimming)
-            {
-                int stateStart = graphs.Count - 1;
-                // going backwards, so we can remove without problems
-                for (int i = graphs.Count - 2; i >= 0; --i)
-                {
-                    bool stateChanged = graphs[stateStart].Count != graphs[i].Count;
-                    if (graphs[stateStart].Count == graphs[i].Count)
-                    {
-                        for (int j = 0; j < graphs[stateStart].Count; ++j)
-                        {
-                            if (graphs[stateStart][j].state != graphs[i][j].state)
-                            {
-                                stateChanged = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (stateChanged || i == 0)
-                    {
-                        // state0_min, ..., state0_max, state1_min, ... state1_max
-                        // ... parts need to be removed
-                        // when graphs[i].Count != graphs[j].Count, then we are at state0_max
-                        // so remove all between state0_max + 2, to state1_max - 1.
-                        var stateEnd = i != 0 ? i + 2 : 1;
-                        if (stateEnd < stateStart)
-                        {
-                            graphs.RemoveRange(stateEnd, stateStart - stateEnd);
-                        }
-
-                        stateStart = i;
-                    }
-                }
-            }
+            TrimGraphs();
 
             confinerStates = new List<ConfinerState>();
             for (int i = 0; i < graphs.Count; ++i)
@@ -323,20 +290,47 @@ namespace Cinemachine
                 {
                     windowSize = maxWindowDiagonal,
                     graphs = graphs[i],
-                    state = stateAverage//graphs[i].Count,
+                    state = stateAverage,
                 });
-            }
-            
-            for (int i = 0; i < confinerStates.Count; i += 2)
-            {
-                if (i + 1 == confinerStates.Count || 
-                    Math.Abs(confinerStates[i + 1].state - confinerStates[i].state) > UnityVectorExtensions.Epsilon)
-                {
-                    confinerStates.Insert(i + 1, confinerStates[i]);
-                }
             }
 
             return confinerStates;
+        }
+
+        private void TrimGraphs()
+        {
+            int stateStart = graphs.Count - 1;
+            // going backwards, so we can remove without problems
+            for (int i = graphs.Count - 2; i >= 0; --i)
+            {
+                bool stateChanged = graphs[stateStart].Count != graphs[i].Count;
+                if (graphs[stateStart].Count == graphs[i].Count)
+                {
+                    for (int j = 0; j < graphs[stateStart].Count; ++j)
+                    {
+                        if (graphs[stateStart][j].state != graphs[i][j].state)
+                        {
+                            stateChanged = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (stateChanged || i == 0)
+                {
+                    // state0_min, ..., state0_max, state1_min, ... state1_max
+                    // ... parts need to be removed
+                    // when graphs[i].Count != graphs[j].Count, then we are at state0_max
+                    // so remove all between state0_max + 2, to state1_max - 1.
+                    var stateEnd = i != 0 ? i + 2 : 1;
+                    if (stateEnd < stateStart)
+                    {
+                        graphs.RemoveRange(stateEnd, stateStart - stateEnd);
+                    }
+
+                    stateStart = i;
+                }
+            }
         }
     }
 }

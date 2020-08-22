@@ -44,7 +44,6 @@ namespace Cinemachine
         // advanced features
         public bool ShrinkUntilSkeleton = false;
         public bool DrawGizmosDebug = false;
-        public bool SkipTrimming = false;
         [HideInInspector, SerializeField] internal bool AutoBake = true;
         [HideInInspector, SerializeField] internal bool TriggerBake = false;
         
@@ -322,7 +321,7 @@ namespace Cinemachine
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
             sensorRatioCache = sensorRatio;
             confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache, ShrinkUntilSkeleton);
-            confinerStates = confinerOven().GetGraphsAsConfinerStates(SkipTrimming);
+            confinerStates = confinerOven().GetGraphsAsConfinerStates();
             
             m_BoundingShape2DCache = m_BoundingShape2D;
 
