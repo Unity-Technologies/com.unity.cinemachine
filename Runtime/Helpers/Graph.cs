@@ -162,11 +162,9 @@ namespace Cinemachine
     
         internal void ComputeRectangulizedNormals()
         {
-            List<Vector2> normalsBefore = new List<Vector2>();
-            normalsBefore.AddRange(points.Select(point => point.normal));
+            List<Vector2> normalsBefore = points.Select(point => point.normal).ToList();
             
             ComputeNormals(false);
-
             for (int i = 0; i < points.Count; ++i)
             {
                 int prevIndex = i == 0 ? points.Count - 1 : i - 1;
@@ -175,16 +173,20 @@ namespace Cinemachine
                 points[i].normal = RectangulizeNormal(points[i].normal, 
                     points[prevIndex].position, points[i].position, points[nextIndex].position);
             }
-            
-            List<Vector2> normalsAfter = new List<Vector2>();
-            normalsAfter.AddRange(points.Select(point => point.normal));
-            
-            for (var index = 0; index < normalsBefore.Count; index++)
+
+            if (normalsBefore.Count != points.Count)
             {
-                if (normalsBefore[index] != normalsAfter[index])
+                state++; // state change if more points where added
+            }
+            else
+            {
+                for (var index = 0; index < normalsBefore.Count; index++)
                 {
-                    state++;
-                    break;
+                    if (normalsBefore[index] != points[index].normal)
+                    {
+                        state++; // state change when even one normal has been changed
+                        break;
+                    }
                 }
             }
         }
@@ -265,19 +267,9 @@ namespace Cinemachine
                 new Vector2(-sensorRatio, 0),
                 new Vector2(-sensorRatio, 1),
             };
-            
-            
-            // for (var i = 0; i < normalDirections.Count; ++i)
-            // {
-            //     if (Vector2.Angle(normal, normalDirections[i]) < 5)
-            //     {
-            //         return normalDirections[i];
-            //     }
-            // }
 
             Vector2 CA = (A - C);
             Vector2 CB = (B - C);
-            
             
             var angle1 = Vector2.SignedAngle(CA, normal);
             var angle1_abs = Math.Abs(angle1);
