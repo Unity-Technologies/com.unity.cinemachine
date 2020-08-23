@@ -13,76 +13,12 @@ namespace Cinemachine
 
         private List<List<Graph>> graphs;
 
-        public bool ConvertToCompositeCollider;
         private ConfinerStateToPath _confinerStateToPath;
         
-        public CinemachineVirtualCamera VcamToBakeFor;
-
-        private bool IsCacheValid(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
-        {
-            if (Math.Abs(sensorRatio - sensorRatioCache) > UnityVectorExtensions.Epsilon)
-            {
-                inputPathCache = inputPath;
-                sensorRatioCache = sensorRatio;
-                shrinkAmountCache = shrinkAmount;
-                return false;
-            }
-            if (Math.Abs(shrinkAmount - shrinkAmountCache) > UnityVectorExtensions.Epsilon)
-            {
-                inputPathCache = inputPath;
-                sensorRatioCache = sensorRatio;
-                shrinkAmountCache = shrinkAmount;
-                return false;
-            }
-            
-            if (inputPathCache == null)
-            {
-                inputPathCache = inputPath;
-                sensorRatioCache = sensorRatio;
-                shrinkAmountCache = shrinkAmount;
-                return false;
-            }
-            if (inputPathCache.Count == inputPath.Count)
-            {
-                for (int i = 0; i < inputPath.Count; ++i)
-                {
-                    if (inputPath[i].Count == inputPathCache[i].Count)
-                    {
-                        for (int j = 0; j < inputPath[i].Count; ++j)
-                        {
-                            if (inputPath[i][j] != inputPathCache[i][j])
-                            {
-                                inputPathCache = inputPath;
-                                sensorRatioCache = sensorRatio;
-                                shrinkAmountCache = shrinkAmount;
-                                return false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        inputPathCache = inputPath;
-                        sensorRatioCache = sensorRatio;
-                        shrinkAmountCache = shrinkAmount;
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                inputPathCache = inputPath;
-                sensorRatioCache = sensorRatio;
-                shrinkAmountCache = shrinkAmount;
-                return false;
-            }
-
-            return true;
-        }
-
         private List<List<Vector2>> inputPathCache = null;
         private float sensorRatioCache = 0;
         private float shrinkAmountCache = 0;
-        internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, in bool dontShrinkToPoint)
+        internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
         {
             graphs = CreateGraphs(inputPath, sensorRatio);
             int graphs_index = 0;
@@ -95,7 +31,7 @@ namespace Cinemachine
                 {
                     graphs[graphs_index][g].ComputeRectangulizedNormals();
                     var graph = graphs[graphs_index][g].DeepCopy();
-                    if (graph.Shrink(shrinkAmount, dontShrinkToPoint))
+                    if (graph.Shrink(shrinkAmount))
                     {
                         if (graph.windowDiagonal > 0.1f) graph.Simplify();
                         /// 2. DO until Graph G has intersections
@@ -125,40 +61,7 @@ namespace Cinemachine
                 }
             }
         }
-        
-        // private List<Graph> CreateGraph(in Vector2[] path, in float sensorRatio)
-        // {
-        //     if (path == null || path.Length == 0)
-        //     {
-        //         return new List<Graph>();
-        //     }
-        //
-        //     List<Point2> pathPoints = new List<Point2>();
-        //     foreach (var p in path)
-        //     {
-        //         pathPoints.Add(new Point2
-        //         {
-        //             position = p,
-        //         });
-        //     }
-        //
-        //     List<Point2> points = Graph.RotateListToLeftmost(pathPoints);
-        //     Graph graph = new Graph
-        //     {
-        //         points = points,
-        //     };
-        //     graph.sensorRatio = sensorRatio;
-        //     graph.ComputeNormals();
-        //     graph.FlipNormals();
-        //     graph.ComputeSignedArea();
-        //     if (!graph.ClockwiseOrientation)
-        //     {
-        //         graph.FlipNormals();
-        //         graph.ComputeSignedArea();
-        //     }
-        //     return new List<Graph> {graph};
-        // }
-
+     
         private List<List<Graph>> CreateGraphs(in List<List<Vector2>> paths, in float sensorRatio)
         {
             if (paths == null)

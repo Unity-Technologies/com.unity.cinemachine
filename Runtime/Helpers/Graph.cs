@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Cinemachine.Utility;
-using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-//TODO: fix disconnectivity - when lines are so thin the composite collider ignores them
-//
 namespace Cinemachine
 {
     public class ConfinerState
@@ -443,9 +438,9 @@ namespace Cinemachine
             return false;
         }
 
-        internal bool Shrink(float shrinkAmount, bool dontShrinkToPoint)
+        internal bool Shrink(float shrinkAmount)
         {
-            //if (!dontShrinkToPoint)
+            //if (shrinkBonesToPoint)
             // {
             //     var minX = float.PositiveInfinity;
             //     var minY = float.PositiveInfinity;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Cinemachine
 { 
@@ -42,7 +41,6 @@ namespace Cinemachine
         public bool m_StopDampingWithinConfiner = false;
         
         // advanced features
-        public bool ShrinkUntilSkeleton = false;
         public bool DrawGizmosDebug = false;
         [HideInInspector, SerializeField] internal bool AutoBake = true;
         [HideInInspector, SerializeField] internal bool TriggerBake = false;
@@ -251,6 +249,7 @@ namespace Cinemachine
             }
             else if (!cacheIsEmpty && cacheIsValid)
             {
+                TriggerBake = false;
                 BakeProgress = BakeProgressEnum.BAKED;
                 return true;
             }
@@ -320,7 +319,7 @@ namespace Cinemachine
 
             bakedConfinerResolutionCache = m_bakedConfinerResolution;
             sensorRatioCache = sensorRatio;
-            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache, ShrinkUntilSkeleton);
+            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache);
             confinerStates = confinerOven().GetGraphsAsConfinerStates();
             
             m_BoundingShape2DCache = m_BoundingShape2D;
