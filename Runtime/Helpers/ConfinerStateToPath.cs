@@ -51,12 +51,12 @@ namespace Cinemachine
                 
                 myID = ID; ID++;
                 compositeColliderHolder = new GameObject("CMBakedConfiner for " + nametag +" - "+ myID);
-                // compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
+                compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
             
                 var rigidbody2D = compositeColliderHolder.AddComponent<Rigidbody2D>();
                 rigidbody2D.bodyType = RigidbodyType2D.Static;
                 rigidbody2D.simulated = false;
-                // rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
+                rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
                 
                 compositeCollider2D = compositeColliderHolder.AddComponent<CompositeCollider2D>();
                 compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
