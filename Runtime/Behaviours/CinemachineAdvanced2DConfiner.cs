@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace Cinemachine
@@ -16,8 +17,8 @@ namespace Cinemachine
     /// <summary>
     /// Advanced 2D confiner prebakes a confiner for ...
     ///
-    /// If you have extremely narrow corners (less than 3 degrees),
-    /// then the prebaked confiner is going to be imprecise in that part of the confiner.
+    /// todo...
+    /// If you change the input collider's points (without changing the number of points or ...)
     /// </summary>
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
@@ -44,6 +45,7 @@ namespace Cinemachine
         public bool DrawGizmosDebug = false;
         [HideInInspector, SerializeField] internal bool AutoBake = true;
         [HideInInspector, SerializeField] internal bool TriggerBake = false;
+        [HideInInspector, SerializeField] internal bool TriggerClearCache = false;
         
         private static readonly float m_bakedConfinerResolution = 0.025f;
         
@@ -53,6 +55,7 @@ namespace Cinemachine
         private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
         
         private List<List<Vector2>> m_originalPath;
+        private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
         
         private float frustumHeightCache;
@@ -197,13 +200,25 @@ namespace Cinemachine
         };
 
         private float sensorRatioCache;
-        private Collider2D m_BoundingShape2DCache;
         private float bakedConfinerResolutionCache;
+        private Vector3 boundingShapePositionCache;
+        private Vector3 boundingShapeScaleCache;
+        private Quaternion boundingShapeRotationCache;
         private void InvalidatePathCache()
         {
             m_originalPath = null;
-            m_BoundingShape2DCache = null;
+            m_originalPathCache = null;
             sensorRatioCache = 0;
+            boundingShapePositionCache = Vector3.negativeInfinity;
+            boundingShapeScaleCache = Vector3.negativeInfinity;
+            boundingShapeRotationCache = new Quaternion(0,0,0,0);
+        }
+
+        bool DidBoundingShapeTransformChange()
+        {
+            return boundingShapePositionCache != m_BoundingShape2D.transform.position ||
+                   boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
+                   boundingShapeRotationCache != m_BoundingShape2D.transform.rotation;
         }
 
         /// <summary>
@@ -220,13 +235,18 @@ namespace Cinemachine
             // StopCoroutine(runningCoroutine);
             // or async? naw, just set return values as members - this couritne runs alone always
 
+            if (TriggerClearCache)
+            {
+                InvalidatePathCache();
+                TriggerClearCache = false;
+            }
+            
             pathChanged = false;
             var cacheIsEmpty = confinerStates == null;
             var cacheIsValid = 
                 m_originalPath != null && // first time?
                 !cacheIsEmpty && // has a prev. baked result?
-                m_BoundingShape2DCache == m_BoundingShape2D && // confiner base collider changed?
-                m_BoundingShape2DCache.gameObject.transform == m_BoundingShape2D.transform && // confiner was moved or rotated or scaled?
+                !DidBoundingShapeTransformChange() && // confiner was moved or rotated or scaled?
                 Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
                 Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon; // resolution changed?
             if (!AutoBake && !TriggerBake)
@@ -258,15 +278,14 @@ namespace Cinemachine
             BakeProgress = BakeProgressEnum.BAKING;
             pathChanged = true;
 
-            var boundingShapeChanged = m_BoundingShape2DCache != m_BoundingShape2D ||
-                                       m_BoundingShape2DCache.gameObject.transform != m_BoundingShape2D.transform;
-            if (boundingShapeChanged || m_originalPath == null)
+            bool boundingShapeTransformChanged = DidBoundingShapeTransformChange();
+            if (boundingShapeTransformChanged || m_originalPath == null)
             {
                 Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                    if (boundingShapeChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
+                    if (boundingShapeTransformChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
                         m_originalPathTotalPointCount != poly.GetTotalPointCount())
                     { 
                         m_originalPath = new List<List<Vector2>>();
@@ -286,7 +305,7 @@ namespace Cinemachine
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
                     CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                    if (boundingShapeChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
+                    if (boundingShapeTransformChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
                         m_originalPathTotalPointCount != poly.pointCount)
                     {
                         m_originalPath = new List<List<Vector2>>();
@@ -321,8 +340,10 @@ namespace Cinemachine
             sensorRatioCache = sensorRatio;
             confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache);
             confinerStates = confinerOven().GetGraphsAsConfinerStates();
-            
-            m_BoundingShape2DCache = m_BoundingShape2D;
+
+            boundingShapePositionCache = m_BoundingShape2D.transform.position;
+            boundingShapeRotationCache = m_BoundingShape2D.transform.rotation;
+            boundingShapeScaleCache = m_BoundingShape2D.transform.localScale;
 
             BakeProgress = BakeProgressEnum.BAKED;
             return true;
@@ -350,7 +371,7 @@ namespace Cinemachine
         
         void OnDrawGizmosSelected()
         {
-            if (m_currentPathCache == null || m_BoundingShape2DCache == null) return;
+            if (m_currentPathCache == null || m_BoundingShape2D == null) return;
             
             Gizmos.color = Color.cyan;
             foreach (var path in m_currentPathCache)
