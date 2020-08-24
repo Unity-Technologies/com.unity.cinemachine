@@ -6,18 +6,20 @@ using Vector2 = UnityEngine.Vector2;
 
 namespace Cinemachine
 {
+    /// <summary>
+    /// Responsible for baking confiners via BakeConfiner function.
+    /// </summary>
     public class ConfinerOven
     {
-        /// <summary>Inputs represent areas within the virtual camera can operate the camera.
-        /// Distance from the border depends the camera view window size.</summary>
-
         private List<List<Graph>> graphs;
-
         private ConfinerStateToPath _confinerStateToPath;
         
-        private List<List<Vector2>> inputPathCache = null;
-        private float sensorRatioCache = 0;
-        private float shrinkAmountCache = 0;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputPath"></param>
+        /// <param name="sensorRatio"></param>
+        /// <param name="shrinkAmount"></param>
         internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
         {
             graphs = CreateGraphs(inputPath, sensorRatio);
@@ -62,6 +64,9 @@ namespace Cinemachine
             }
         }
      
+        /// <summary>
+        /// Converts and returns List<List<Graph>> from a List<List<Vector2>
+        /// </summary>
         private List<List<Graph>> CreateGraphs(in List<List<Vector2>> paths, in float sensorRatio)
         {
             if (paths == null)
@@ -100,8 +105,10 @@ namespace Cinemachine
 
             return newGraphs;
         }
-
-
+        
+        /// <summary>
+        /// Converts and returns a prebaked ConfinerState for the input orthographicSize.
+        /// </summary>
         internal ConfinerState GetConfinerAtOrthoSize(float orthographicSize)
         {
             // TODO: no need to lerp, at i % 2 == 0 - remove this part
@@ -136,6 +143,9 @@ namespace Cinemachine
             return result;
         }
         
+        /// <summary>
+        /// Linearly interpolates between ConfinerStates.
+        /// </summary>
         private ConfinerState ConfinerStateLerp(in ConfinerState left, in ConfinerState right, float lerp)
         {
             if (left.graphs.Count != right.graphs.Count)
@@ -169,6 +179,9 @@ namespace Cinemachine
         }
         
         private List<ConfinerState> confinerStates;
+        /// <summary>
+        /// Converts and returns graphs into List<ConfinerState>
+        /// </summary>
         internal List<ConfinerState> GetGraphsAsConfinerStates()
         {
             TrimGraphs();
@@ -200,6 +213,10 @@ namespace Cinemachine
             return confinerStates;
         }
 
+        /// <summary>
+        /// Removes graphs from the precalculated graphs that are redundant,
+        /// because they are lerpable between two other graphs.
+        /// </summary>
         private void TrimGraphs()
         {
             int stateStart = graphs.Count - 1;

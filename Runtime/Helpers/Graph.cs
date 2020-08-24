@@ -29,11 +29,10 @@ namespace Cinemachine
             this.normal = normal;
             this.cantIntersect = cantIntersect;
         }
-        
     }
 
     /// <summary>
-    /// Graph represent a list of <points, and their normals> that can shrink down to it's skeleton.  
+    /// Graph represent a points with normals that can shrink down to it's skeleton.  
     /// </summary>
     public class Graph
     {
@@ -74,6 +73,10 @@ namespace Cinemachine
             return deepCopy;
         }
 
+        /// <summary>
+        /// Computes signed area and determines whether a graph is oriented clockwise or counter-clockwise.
+        /// </summary>
+        /// <returns>Area of the graph</returns>
         internal float ComputeSignedArea()
         {
             area = 0;
@@ -88,26 +91,7 @@ namespace Cinemachine
             ClockwiseOrientation = area > 0;
             return area;
         }
-
-        internal static void ComputeNormalAt(int index, List<Point2> points)
-        {
-            Vector2 pointBefore = points[index == 0 ? points.Count - 1 : index - 1].position;
-            Vector2 point = points[index].position;
-            Vector2 pointAfter = points[(index + 1) % points.Count].position;
-
-            bool ClockwiseOrientation = true;
-            Vector2 edgeBefore = point - pointBefore;
-            Vector2 edgeBefore_normal = ClockwiseOrientation
-                ? new Vector2(edgeBefore.y, -edgeBefore.x)
-                : new Vector2(-edgeBefore.y, edgeBefore.x);
-            Vector2 edgeAfter = pointAfter - point;
-            Vector2 edgeAfter_normal = ClockwiseOrientation
-                ? new Vector2(edgeAfter.y, -edgeAfter.x)
-                : new Vector2(-edgeAfter.y, edgeAfter.x);
-
-            points[index].normal = (edgeBefore_normal + edgeAfter_normal).normalized;
-        }
-
+        
         private static float oneOverSquarerootOfTwo = 0.70710678f;
         /// <summary>
         /// Computes normalized normals for all points. If fixBigCornerAngles is true, then adds additional points for corners
@@ -155,6 +139,10 @@ namespace Cinemachine
             }
         }
     
+        /// <summary>
+        /// Computes normals that point towards the camera window midpoint,
+        /// if the camera window were to be placed to touch the normal's point.
+        /// </summary>
         internal void ComputeRectangulizedNormals()
         {
             List<Vector2> normalsBefore = points.Select(point => point.normal).ToList();
@@ -438,6 +426,9 @@ namespace Cinemachine
             return false;
         }
 
+        /// <summary>
+        /// Shrink graphs points towards their normal by shrinkAmount.
+        /// </summary>
         internal bool Shrink(float shrinkAmount)
         {
             //if (shrinkBonesToPoint)
@@ -599,6 +590,12 @@ namespace Cinemachine
 
             return closestPoint;
         }
+        
+        /// <summary>
+        /// Returns point closest to p that is a point of the graph.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns>Closest point to p in Graph</returns>
         internal Vector2 ClosestGraphPoint(Point2 p)
         {
             bool foundWithNormal = false;
@@ -638,7 +635,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Removes point that are the same or very close
+        /// Removes points that are the same or very close.
         /// </summary>
         internal void Simplify()
         {
