@@ -47,7 +47,7 @@ namespace Cinemachine
         [HideInInspector, SerializeField] internal bool TriggerBake = false;
         [HideInInspector, SerializeField] internal bool TriggerClearCache = false;
         
-        private static readonly float m_bakedConfinerResolution = 0.025f;
+        private static readonly float m_bakedConfinerResolution = 0.005f;
         
         internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE }
         [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
