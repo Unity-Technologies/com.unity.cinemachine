@@ -528,6 +528,15 @@ namespace Cinemachine
              windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float area1 = Mathf.Abs(ComputeSignedArea());
+            if (area1 < 1.3f)
+            {
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    points[i].normal = Vector2.zero;
+                }
+
+                return false;
+            }
             for (int i = 0; i < points.Count; ++i)
             {
                 points[i].position += points[i].normal * shrinkAmount;
