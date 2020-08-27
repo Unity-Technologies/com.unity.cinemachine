@@ -18,6 +18,7 @@
 - Added Target Offset field to Framing Transposer
 - Added Multi-object edit capabilities to virtual cameras and extensions 
 - Added inspector button to clear the Scrubbing Cache
+- Bugfix (1272146): Checking for null pipeline, before drawing gizmos.
 
 <size=20><b>Version 2.6.0</b></size>
 

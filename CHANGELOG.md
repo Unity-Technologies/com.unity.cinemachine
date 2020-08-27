@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Target Offset field to Framing Transposer
 - Added Multi-object edit capabilities to virtual cameras and extensions 
 - Added inspector button to clear the Scrubbing Cache
+- Bugfix (1272146): Checking for null pipeline, before drawing gizmos.
 
 
 ## [2.6.0] - 2020-06-04
