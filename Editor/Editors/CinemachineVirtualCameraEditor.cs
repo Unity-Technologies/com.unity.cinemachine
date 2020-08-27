@@ -550,16 +550,19 @@ namespace Cinemachine.Editor
         internal static void DrawVirtualCameraGizmos(CinemachineVirtualCamera vcam, GizmoType selectionType)
         {
             var pipeline = vcam.GetComponentPipeline();
-            foreach (var c in pipeline)
+            if (pipeline != null)
             {
-                if (c == null)
-                    continue;
-                
-                MethodInfo method;
-                if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
+                foreach (var c in pipeline)
                 {
-                    if (method != null)
-                        method.Invoke(null, new object[] { c, selectionType });
+                    if (c == null)
+                        continue;
+
+                    MethodInfo method;
+                    if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
+                    {
+                        if (method != null)
+                            method.Invoke(null, new object[] {c, selectionType});
+                    }
                 }
             }
         }
