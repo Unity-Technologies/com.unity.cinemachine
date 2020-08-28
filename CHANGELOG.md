@@ -4,7 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.1-preview.6] - 2020-08-13
+## [2.6.2-preview.1] - 2020-08-28
+### Bugfixes
+- Regression fix: OnCameraCut Memory leak when using Cinemachine with PostProcessing package
+- Bugfix (1272146): Checking for null pipeline, before drawing gizmos.
+- Add support for disabling Physics module
+
+
+## [2.6.1] - 2020-08-13
 ### Bugfixes
 - Regression Fix: PostProcessing/VolumeSettings FocusTracksTarget was not accounting for lookAt target offset
 - Regression fix: Confiner no longer confines noise and impulse
@@ -24,7 +31,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Target Offset field to Framing Transposer
 - Added Multi-object edit capabilities to virtual cameras and extensions 
 - Added inspector button to clear the Scrubbing Cache
-- Bugfix (1272146): Checking for null pipeline, before drawing gizmos.
 
 
 ## [2.6.0] - 2020-06-04

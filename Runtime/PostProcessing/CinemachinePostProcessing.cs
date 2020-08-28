@@ -311,7 +311,7 @@ namespace Cinemachine.PostFX
                     brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
 #if UNITY_EDITOR
                 // Never add null in edit mode in case user adds a layer dynamically
-                if (Application.isPlaying)  
+                if (Application.isPlaying || layer != null)  
 #endif
                     mBrainToLayer[brain] = layer;
             }
