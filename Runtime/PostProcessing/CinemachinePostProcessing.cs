@@ -116,9 +116,9 @@ namespace Cinemachine.PostFX
                 list[i].DestroyProfileCopy();
         }
 
-        protected override void Awake()
+        protected override void OnEnable()
         {
-            base.Awake();
+            base.OnEnable();
 
             // Map legacy m_FocusTracksTarget to focus mode
             if (m_FocusTracksTarget)
@@ -162,16 +162,20 @@ namespace Cinemachine.PostFX
                         if (profile.TryGetSettings(out dof))
                         {
                             float focusDistance = m_FocusOffset;
-                            Transform focusTarget = null;
-                            switch (m_FocusTracking)
+                            if (m_FocusTracking == FocusTrackingMode.LookAtTarget)
+                                focusDistance += (state.FinalPosition - state.ReferenceLookAt).magnitude;
+                            else
                             {
-                                default: break;
-                                case FocusTrackingMode.LookAtTarget: focusTarget = VirtualCamera.LookAt; break;
-                                case FocusTrackingMode.FollowTarget: focusTarget = VirtualCamera.Follow; break;
-                                case FocusTrackingMode.CustomTarget: focusTarget = m_FocusTarget; break;
+                                Transform focusTarget = null;
+                                switch (m_FocusTracking)
+                                {
+                                    default: break;
+                                    case FocusTrackingMode.FollowTarget: focusTarget = VirtualCamera.Follow; break;
+                                    case FocusTrackingMode.CustomTarget: focusTarget = m_FocusTarget; break;
+                                }
+                                if (focusTarget != null)
+                                    focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
                             }
-                            if (focusTarget != null)
-                                focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
                             dof.focusDistance.value = Mathf.Max(0, focusDistance);
                         }
                     }
@@ -307,7 +311,7 @@ namespace Cinemachine.PostFX
                     brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
 #if UNITY_EDITOR
                 // Never add null in edit mode in case user adds a layer dynamically
-                if (Application.isPlaying)  
+                if (Application.isPlaying || layer != null)  
 #endif
                     mBrainToLayer[brain] = layer;
             }

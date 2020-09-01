@@ -21,7 +21,8 @@ namespace Cinemachine
         /// <summary>
         /// Serialized property for referencing a NoiseSettings asset
         /// </summary>
-        [Tooltip("The asset containing the Noise Profile.  Define the frequencies and amplitudes there to make a characteristic noise profile.  Make your own or just use one of the many presets.")]
+        [Tooltip("The asset containing the Noise Profile.  Define the frequencies and amplitudes "
+            + "there to make a characteristic noise profile.  Make your own or just use one of the many presets.")]
         [FormerlySerializedAs("m_Definition")]
         [NoiseSettingsProperty]
         public NoiseSettings m_NoiseProfile;
@@ -35,13 +36,15 @@ namespace Cinemachine
         /// <summary>
         /// Gain to apply to the amplitudes defined in the settings asset.
         /// </summary>
-        [Tooltip("Gain to apply to the amplitudes defined in the NoiseSettings asset.  1 is normal.  Setting this to 0 completely mutes the noise.")]
+        [Tooltip("Gain to apply to the amplitudes defined in the NoiseSettings asset.  1 is normal.  "
+            + "Setting this to 0 completely mutes the noise.")]
         public float m_AmplitudeGain = 1f;
 
         /// <summary>
         /// Scale factor to apply to the frequencies defined in the settings asset.
         /// </summary>
-        [Tooltip("Scale factor to apply to the frequencies defined in the NoiseSettings asset.  1 is normal.  Larger magnitudes will make the noise shake more rapidly.")]
+        [Tooltip("Scale factor to apply to the frequencies defined in the NoiseSettings asset.  1 is normal.  "
+            + "Larger magnitudes will make the noise shake more rapidly.")]
         public float m_FrequencyGain = 1f;
 
         /// <summary>True if the component is valid, i.e. it has a noise definition and is enabled.</summary>
@@ -59,7 +62,10 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             if (!IsValid || deltaTime < 0)
+            {
+                mInitialized = false;
                 return;
+            }
 
             if (!mInitialized)
                 Initialize();
@@ -101,7 +107,7 @@ namespace Cinemachine
         void Initialize()
         {
             mInitialized = true;
-            mNoiseTime = 0;
+            mNoiseTime = CinemachineCore.CurrentTime * m_FrequencyGain;
             if (mNoiseOffsets == Vector3.zero)
                 ReSeed();
         }

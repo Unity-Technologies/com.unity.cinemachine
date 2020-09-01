@@ -27,10 +27,10 @@ using Cinemachine;
         }
 
 #if UNITY_2019_2_OR_NEWER
-        static string kUseScrubbingCache = "CNMCN_Timeline_UseScrubbingCache";
+        static string kUseScrubbingCache = "CNMCN_Timeline_CachedScrubbing";
         public static bool UseScrubbingCache
         {
-            get { return EditorPrefs.GetBool(kUseScrubbingCache, true); }
+            get { return EditorPrefs.GetBool(kUseScrubbingCache, false); }
             set
             {
                 if (UseScrubbingCache != value)
@@ -41,27 +41,12 @@ using Cinemachine;
             }
         }
 
-        static string kScrubbingCacheResolution = "CNMCN_Timeline_ScrubbingCacheResolution";
-        public static int ScrubbingCacheResolution
-        {
-            get { return EditorPrefs.GetInt(kScrubbingCacheResolution, TargetPositionCache.kMaxResolution); }
-            set
-            {
-                if (ScrubbingCacheResolution != value)
-                {
-                    EditorPrefs.SetInt(kScrubbingCacheResolution, value);
-                    TargetPositionCache.Resolution = value;
-                }
-            }
-        }
-
         [InitializeOnLoad]
         public class SyncCacheEnabledSetting
         {
             static SyncCacheEnabledSetting()
             {
                 TargetPositionCache.UseCache = UseScrubbingCache;
-                TargetPositionCache.Resolution = ScrubbingCacheResolution;
             }
         }
 #endif
@@ -92,15 +77,12 @@ using Cinemachine;
                 + "This is a global setting");
 #if UNITY_2019_2_OR_NEWER
         private static readonly GUIContent kScrubbingCacheLabel = new GUIContent(
-            "Use Scrub Bubble",
-            "For preview scrubbing, pre-simulate each frame to approximate damping "
-                + "and noise playback.  Target position cache is built when timeline is "
+            "Cached Scrubbing",
+            "For preview scrubbing, caches target positions and pre-simulates each frame to "
+                + "approximate damping and noise playback.  Target position cache is built when timeline is "
                 + "played forward, and used when timeline is scrubbed within the indicated zone. "
-                + "This is a global setting.");
-        private static readonly GUIContent kScrubbingCacheResolutionLabel = new GUIContent(
-            " ",
-            "Cache resolution: higher numbers improve accuracy but may degrade performance.  "
-                + "This is a global setting.");
+                + "This is a global setting,.");
+        GUIContent m_ClearText = new GUIContent("Clear", "Clear the target position scrubbing cache");
 #endif
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -138,17 +120,14 @@ using Cinemachine;
                 EditorGUI.Toggle(r, kScrubbingCacheLabel, false);
             else
                 UseScrubbingCache = EditorGUI.Toggle(r, kScrubbingCacheLabel, UseScrubbingCache);
-            if (UseScrubbingCache)
-            {
-                var lw = EditorGUIUtility.labelWidth;
-                EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight;
-                r.x += r.width; r.width = rect.width - r.width;
-                TargetPositionCache.Resolution = EditorGUI.IntSlider(
-                    r, kScrubbingCacheResolutionLabel, 
-                    TargetPositionCache.Resolution, 1, TargetPositionCache.kMaxResolution);
-                EditorGUIUtility.labelWidth = lw;
-            }
-            //EditorGUI.LabelField(r, "(experimental)");
+            r.x += r.width; r.width = rect.width - r.width;
+            var buttonWidth = GUI.skin.button.CalcSize(m_ClearText).x;
+            r.width -= buttonWidth;
+            EditorGUI.LabelField(r, "(experimental)");
+            r.x += r.width; r.width =buttonWidth;
+            GUI.enabled &= !TargetPositionCache.IsEmpty;
+            if (GUI.Button(r, m_ClearText))
+                TargetPositionCache.ClearCache();
             GUI.enabled = true;
 #endif
 

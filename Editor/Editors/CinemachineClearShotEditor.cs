@@ -10,6 +10,7 @@ namespace Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineClearShot))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineClearShotEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineClearShot>
     {
@@ -85,11 +86,19 @@ namespace Cinemachine.Editor
 
             // vcam children
             EditorGUILayout.Separator();
-            EditorGUI.BeginChangeCheck();
-            mChildList.DoLayoutList();
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
 
+            if (Selection.objects.Length == 1)
+            {
+                EditorGUI.BeginChangeCheck();
+                mChildList.DoLayoutList();
+                if (EditorGUI.EndChangeCheck())
+                    serializedObject.ApplyModifiedProperties();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox(Styles.virtualCameraChildrenInfoMsg.text, MessageType.Info);
+            }
+            
             // Extensions
             DrawExtensionsWidgetInInspector();
         }

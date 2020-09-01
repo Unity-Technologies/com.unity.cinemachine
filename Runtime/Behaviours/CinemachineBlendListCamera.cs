@@ -155,7 +155,7 @@ namespace Cinemachine
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
-            mActivationTime = Time.time;
+            mActivationTime = CinemachineCore.CurrentTime;
             mCurrentInstruction = 0;
             LiveChild = null;
             mActiveBlend = null;
@@ -339,7 +339,7 @@ namespace Cinemachine
                 return;
             }
 
-            float now = Time.time;
+            float now = CinemachineCore.CurrentTime;
             if (mCurrentInstruction < 0 || deltaTime < 0)
             {
                 mActivationTime = now;

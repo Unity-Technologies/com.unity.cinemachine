@@ -9,6 +9,7 @@ using System.Linq;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVirtualCamera))]
+    [CanEditMultipleObjects]
     internal class CinemachineVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {
@@ -26,6 +27,7 @@ namespace Cinemachine.Editor
             public GUIContent[] PopupOptions;
         }
         static StageData[] sStageData = null;
+        bool[] m_hasSameStageDataTypes = new bool[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
 
         // Instance data - call UpdateInstanceData() to refresh this
         int[] m_stageState = null;
@@ -39,12 +41,22 @@ namespace Cinemachine.Editor
             // Build static menu arrays via reflection
             base.OnEnable();
             IsPrefab = Target.gameObject.scene.name == null; // causes a small GC alloc
+
             UpdateStaticData();
+            UpdateStageDataTypeMatchesForMultiSelection();
+            Undo.undoRedoPerformed += ResetTargetOnUndo;
+        }
+
+        void ResetTargetOnUndo() 
+        {
+            UpdateInstanceData();
+            ResetTarget();
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
+            Undo.undoRedoPerformed -= ResetTargetOnUndo;
             // Must destroy editors or we get exceptions
             if (m_componentEditors != null)
                 foreach (UnityEditor.Editor e in m_componentEditors)
@@ -152,17 +164,22 @@ namespace Cinemachine.Editor
                 Rect r = rect; r.width = labelWidth;
                 EditorGUI.LabelField(r, label);
                 r = rect; r.width -= labelWidth; r.x += labelWidth;
-                GUI.enabled = !StageIsLocked(stage);
-                int newSelection = EditorGUI.Popup(r, m_stageState[index], sStageData[index].PopupOptions);
-                GUI.enabled = true;
 
+                EditorGUI.BeginChangeCheck();
+                GUI.enabled = !StageIsLocked(stage);
+                EditorGUI.showMixedValue = !m_hasSameStageDataTypes[index];
+                int newSelection = EditorGUI.Popup(r, m_stageState[index], sStageData[index].PopupOptions);
+                EditorGUI.showMixedValue = false;
+                GUI.enabled = true;
                 Type type = sStageData[index].types[newSelection];
-                if (newSelection != m_stageState[index])
+                if (EditorGUI.EndChangeCheck())
                 {
                     SetPipelineStage(stage, type);
                     if (newSelection != 0)
                         sStageData[index].IsExpanded = true;
                     UpdateInstanceData(); // because we changed it
+                    ResetTarget(); // to allow multi-selection correctly adjust every target 
+
                     return;
                 }
                 if (type != null)
@@ -180,6 +197,7 @@ namespace Cinemachine.Editor
                             ++EditorGUI.indentLevel;
                             EditorGUILayout.Separator();
                             e.OnInspectorGUI();
+
                             EditorGUILayout.Separator();
                             --EditorGUI.indentLevel;
                         }
@@ -217,7 +235,7 @@ namespace Cinemachine.Editor
             }
             return null;
         }
-
+        
         /// <summary>
         /// Register with CinemachineVirtualCamera to create the pipeline in an undo-friendly manner
         /// </summary>
@@ -259,40 +277,45 @@ namespace Cinemachine.Editor
             Undo.SetCurrentGroupName("Cinemachine pipeline change");
 
             // Get the existing components
-            Transform owner = Target.GetComponentOwner();
-            if (owner == null)
-                return; // maybe it's a prefab
-
-            CinemachineComponentBase[] components = owner.GetComponents<CinemachineComponentBase>();
-            if (components == null)
-                components = new CinemachineComponentBase[0];
-
-            // Find an appropriate insertion point
-            int numComponents = components.Length;
-            int insertPoint = 0;
-            for (insertPoint = 0; insertPoint < numComponents; ++insertPoint)
-                if (components[insertPoint].Stage >= stage)
-                    break;
-
-            // Remove the existing components at that stage
-            for (int i = numComponents - 1; i >= 0; --i)
+            for(int j = 0; j < targets.Length; j++)
             {
-                if (components[i].Stage == stage)
+                var vCam = targets[j] as CinemachineVirtualCamera;
+                Transform owner = vCam.GetComponentOwner();
+                if (owner == null)
+                    continue; // maybe it's a prefab
+
+                CinemachineComponentBase[] components = owner.GetComponents<CinemachineComponentBase>();
+                if (components == null)
+                    components = new CinemachineComponentBase[0];
+
+                // Find an appropriate insertion point
+                int numComponents = components.Length;
+                int insertPoint = 0;
+                for (insertPoint = 0; insertPoint < numComponents; ++insertPoint)
+                    if (components[insertPoint].Stage >= stage)
+                        break;
+
+                // Remove the existing components at that stage
+                for (int i = numComponents - 1; i >= 0; --i)
                 {
-                    Undo.DestroyObjectImmediate(components[i]);
-                    components[i] = null;
-                    --numComponents;
-                    if (i < insertPoint)
-                        --insertPoint;
+                    if (components[i].Stage == stage)
+                    {
+                        Undo.DestroyObjectImmediate(components[i]);
+                        components[i] = null;
+                        --numComponents;
+                        if (i < insertPoint)
+                            --insertPoint;
+                    }
                 }
-            }
 
-            // Add the new stage
-            if (type != null)
-            {
-                MonoBehaviour b = Undo.AddComponent(owner.gameObject, type) as MonoBehaviour;
-                while (numComponents-- > insertPoint)
-                    UnityEditorInternal.ComponentUtility.MoveComponentDown(b);
+                // Add the new stage
+                if (type != null)
+                {
+                    MonoBehaviour b = Undo.AddComponent(owner.gameObject, type) as MonoBehaviour;
+
+                    while (numComponents-- > insertPoint)
+                        UnityEditorInternal.ComponentUtility.MoveComponentDown(b);
+                }
             }
         }
 
@@ -353,10 +376,50 @@ namespace Cinemachine.Editor
             }
         }
 
+        void GetPipelineTypes(CinemachineVirtualCamera vcam, ref Type[] types)
+        {
+            for (int i = 0; i < types.Length; ++i)
+                types[i] = null;
+            if (vcam != null)
+            {
+                var components = vcam.GetComponentPipeline();
+                for (int j = 0; j < components.Length; ++j)
+                    types[(int)components[j].Stage] = components[j].GetType();
+            }
+        }
+
+        // scratch buffers for pipeline types
+        Type[] m_PipelineTypeCache0 = new Type[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+        Type[] m_PipelineTypeCacheN = new Type[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+
+        void UpdateStageDataTypeMatchesForMultiSelection()
+        {
+            for (int i = 0; i < m_hasSameStageDataTypes.Length; ++i)
+                m_hasSameStageDataTypes[i] = true;
+
+            if (targets.Length > 1)
+            {
+                GetPipelineTypes(serializedObject.targetObjects[0] as CinemachineVirtualCamera, ref m_PipelineTypeCache0);
+                for (int i = 1; i < targets.Length; ++i)
+                {
+                    GetPipelineTypes(serializedObject.targetObjects[i] as CinemachineVirtualCamera, ref m_PipelineTypeCacheN);
+                    for (int j = 0; j < m_PipelineTypeCache0.Length; ++j)
+                        if (m_PipelineTypeCache0[j] != m_PipelineTypeCacheN[j])
+                            m_hasSameStageDataTypes[j] = false;
+                }
+            }
+        }
+
         void UpdateInstanceData()
         {
             // Invalidate the target's cache - this is to support Undo
-            Target.InvalidateComponentPipeline();
+            for (int i = 0; i < targets.Length; i++)
+            {
+                var cam = targets[i] as CinemachineVirtualCamera;
+                if(cam != null)
+                    cam.InvalidateComponentPipeline();
+            }
+            UpdateStageDataTypeMatchesForMultiSelection();
             UpdateComponentEditors();
             UpdateStageState(m_components);
         }
@@ -365,6 +428,11 @@ namespace Cinemachine.Editor
         // Expansion state is cached statically to preserve foldout state.
         void UpdateComponentEditors()
         {
+            if (Target == null)
+            {
+                m_components = new CinemachineComponentBase[0];
+                return;
+            }
             CinemachineComponentBase[] components = Target.GetComponentPipeline();
             int numComponents = components != null ? components.Length : 0;
             if (m_components == null || m_components.Length != numComponents)
@@ -390,9 +458,21 @@ namespace Cinemachine.Editor
                 m_componentEditors = new UnityEditor.Editor[numComponents];
                 for (int i = 0; i < numComponents; ++i)
                 {
-                    MonoBehaviour b = components[i] as MonoBehaviour;
-                    if (b != null)
-                        CreateCachedEditor(b, null, ref m_componentEditors[i]);
+                    List<MonoBehaviour> behaviours = new List<MonoBehaviour>();
+                    for (int j = 0; j < targets.Length; j++)
+                    {
+                        var cinemachineVirtualCamera = targets[j] as CinemachineVirtualCamera;
+                        if (cinemachineVirtualCamera == null)
+                            continue;
+
+                        var behaviour = cinemachineVirtualCamera.GetCinemachineComponent(components[i].Stage) as MonoBehaviour;
+                        if (behaviour != null)
+                            behaviours.Add(behaviour);
+                    }
+
+                    var behaviourArray = behaviours.ToArray();
+                    if (behaviourArray.Length > 0 && m_hasSameStageDataTypes[(int)components[i].Stage])
+                        CreateCachedEditor(behaviourArray, null, ref m_componentEditors[i]);
                 }
             }
         }
@@ -470,13 +550,19 @@ namespace Cinemachine.Editor
         internal static void DrawVirtualCameraGizmos(CinemachineVirtualCamera vcam, GizmoType selectionType)
         {
             var pipeline = vcam.GetComponentPipeline();
-            foreach (var c in pipeline)
+            if (pipeline != null)
             {
-                MethodInfo method;
-                if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
+                foreach (var c in pipeline)
                 {
-                    if (method != null)
-                        method.Invoke(null, new object[] { c, selectionType });
+                    if (c == null)
+                        continue;
+
+                    MethodInfo method;
+                    if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
+                    {
+                        if (method != null)
+                            method.Invoke(null, new object[] {c, selectionType});
+                    }
                 }
             }
         }

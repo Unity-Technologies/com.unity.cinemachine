@@ -1,3 +1,8 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+#endif
+
 using System;
 using UnityEngine;
 using Cinemachine.Utility;
@@ -243,7 +248,9 @@ namespace Cinemachine
 
         private Vector3 mLastTargetPosition = Vector3.zero;
         private HeadingTracker mHeadingTracker;
+#if CINEMACHINE_PHYSICS
         private Rigidbody mTargetRigidBody = null;
+#endif
         private Transform PreviousTarget { get; set; }
         private Vector3 mLastCameraPosition;
 
@@ -335,7 +342,9 @@ namespace Cinemachine
             if (FollowTarget != PreviousTarget)
             {
                 PreviousTarget = FollowTarget;
+#if CINEMACHINE_PHYSICS
                 mTargetRigidBody = (PreviousTarget == null) ? null : PreviousTarget.GetComponent<Rigidbody>();
+#endif
                 mLastTargetPosition = (PreviousTarget == null) ? Vector3.zero : PreviousTarget.position;
                 mHeadingTracker = null;
             }
@@ -414,17 +423,21 @@ namespace Cinemachine
                 return currentHeading;
 
             var headingDef = m_Heading.m_Definition;
+#if CINEMACHINE_PHYSICS
             if (headingDef == Heading.HeadingDefinition.Velocity && mTargetRigidBody == null)
                 headingDef = Heading.HeadingDefinition.PositionDelta;
+#endif
 
             Vector3 velocity = Vector3.zero;
             switch (headingDef)
             {
+                case Heading.HeadingDefinition.Velocity:
+#if CINEMACHINE_PHYSICS
+                    velocity = mTargetRigidBody.velocity;
+                    break;
+#endif
                 case Heading.HeadingDefinition.PositionDelta:
                     velocity = FollowTargetPosition - mLastTargetPosition;
-                    break;
-                case Heading.HeadingDefinition.Velocity:
-                    velocity = mTargetRigidBody.velocity;
                     break;
                 case Heading.HeadingDefinition.TargetForward:
                     velocity = FollowTargetRotation * Vector3.forward;

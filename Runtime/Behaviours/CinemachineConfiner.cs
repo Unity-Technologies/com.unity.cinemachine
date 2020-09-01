@@ -92,11 +92,15 @@ namespace Cinemachine
             m_Damping = Mathf.Max(0, m_Damping);
         }
 
+        protected override void ConnectToVcam(bool connect)
+        {
+            base.ConnectToVcam(connect);
+        }
+
         class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
             public float confinerDisplacement;
-            public bool applyAfterAim;
         };
 
         /// <summary>Check if the bounding volume is defined</summary>
@@ -115,25 +119,6 @@ namespace Cinemachine
             }
         }
 
-        protected override void ConnectToVcam(bool connect)
-        {
-            base.ConnectToVcam(connect);
-
-            CinemachineVirtualCamera vcam = VirtualCamera as CinemachineVirtualCamera;
-            if (vcam == null) return;
-            
-            var components = vcam.GetComponentPipeline();
-            foreach (var component in components)
-            {
-                if (component.BodyAppliesAfterAim)
-                {
-                    var extraState = GetExtraState<VcamExtraState>(vcam);
-                    extraState.applyAfterAim = true;
-                    break;
-                }
-            }
-        }
-        
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
@@ -148,44 +133,24 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (IsValid)
+            if (IsValid && stage == CinemachineCore.Stage.Body)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                if ((extra.applyAfterAim && stage == CinemachineCore.Stage.Finalize)
-                    ||
-                    (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
+                Vector3 displacement;
+                if (m_ConfineScreenEdges && state.Lens.Orthographic)
+                    displacement = ConfineScreenEdges(vcam, ref state);
+                else
+                    displacement = ConfinePoint(state.CorrectedPosition);
+
+                if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
-                    Vector3 displacement;
-                    if (m_ConfineScreenEdges && state.Lens.Orthographic)
-                        displacement = ConfineScreenEdges(vcam, ref state);
-                    else
-                        displacement = ConfinePoint(state.CorrectedPosition);
-                    
-                   
-                    if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
-                    { 
-                        var displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                        if (m_CornerDamping > 0 && (m_Cornerring || displacementAngle > m_CornerAngleTreshold))
-                        {
-                            if (!m_SnapFromCorner) {
-                                m_Cornerring = displacementAngle > 1f;
-                            }
-                            Vector3 delta = displacement - extra.m_previousDisplacement;
-                            delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
-                            displacement = extra.m_previousDisplacement + delta;
-                        }
-                        else if (m_Damping > 0)
-                        {
-                            Vector3 delta = displacement - extra.m_previousDisplacement;
-                            delta = Damper.Damp(delta, m_Damping, deltaTime);
-                            displacement = extra.m_previousDisplacement + delta;
-                        }
-                    }
-                    
-                    extra.m_previousDisplacement = displacement;
-                    state.PositionCorrection += displacement;
-                    extra.confinerDisplacement = displacement.magnitude;
+                    Vector3 delta = displacement - extra.m_previousDisplacement;
+                    delta = Damper.Damp(delta, m_Damping, deltaTime);
+                    displacement = extra.m_previousDisplacement + delta;
                 }
+                extra.m_previousDisplacement = displacement;
+                state.PositionCorrection += displacement;
+                extra.confinerDisplacement = displacement.magnitude;
             }
         }
 
@@ -195,8 +160,10 @@ namespace Cinemachine
         /// <summary>Call this if the bounding shape's points change at runtime</summary>
         public void InvalidatePathCache()
         {
+#if CINEMACHINE_PHYSICS_2D
             m_pathCache = null;
             m_BoundingShape2DCache = null;
+#endif
         }
 
         bool ValidatePathCache()

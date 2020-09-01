@@ -53,7 +53,8 @@ namespace Cinemachine
         /// state of other cameras and this camera.  Higher numbers have greater priority.
         /// </summary>
         [NoSaveDuringPlay]
-        [Tooltip("The priority will determine which camera becomes active based on the state of other cameras and this camera.  Higher numbers have greater priority.")]
+        [Tooltip("The priority will determine which camera becomes active based on the state of "
+            + "other cameras and this camera.  Higher numbers have greater priority.")]
         public int m_Priority = 10;
 
         /// <summary>

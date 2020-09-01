@@ -24,7 +24,7 @@ The 3rd-person Follow module has a built-in collision resolution system, so that
 | __Shoulder Offset__ || Position of the shoulder pivot relative to the Follow target origin.  This offset is in target-local space. |
 | __Vertical Arm Length__ || Vertical offset of the hand in relation to the shoulder.  Arm length will affect the follow target's screen position when the camera rotates vertically.  |
 | __Camera Side__ || Specifies which shoulder (left, right, or in-between) the camera is on.   |
-| __Camera Distance__ || How far baehind the hand the camera will be placed.   |
+| __Camera Distance__ || How far behind the hand the camera will be placed.   |
 | __Camera Collision Filter__ || Camera will avoid obstacles on these layers.  |
 | __Ignore Tag__ || Obstacles with this tag will be ignored.  It is a good idea to set this field to the target's tag. |
 | __Camera Radius__ || Specifies how close the camera can get to obstacles.  |

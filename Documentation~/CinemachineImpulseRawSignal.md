@@ -2,7 +2,7 @@
 
 Raw vibration signals are curves that vibrate as a function of time. Cinemachine provides two types of raw signal Asset:
 
-- A 6D (x, y, z, pitch, roll, and yaw) noise profile. See [Using Noise Pofiles](CinemachineImpulseNoiseProfiles.md) for details.
+- A 6D (x, y, z, pitch, roll, and yaw) noise profile. See [Using Noise Profiles](CinemachineImpulseNoiseProfiles.md) for details.
 
 - A 3D Fixed Signal. See [Using Fixed Signals](CinemachineImpulseFixedSignals.md) for details.
 

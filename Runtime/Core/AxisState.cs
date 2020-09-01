@@ -148,8 +148,8 @@ namespace Cinemachine
         public interface IInputAxisProvider
         {
             /// <summary>Get the value of the input axis</summary>
-            /// <param name="index">Which axis to query: 0, 1, or 2.</param>
-            /// <returns>The input value of the axis</returns>
+            /// <param name="axis">Which axis to query: 0, 1, or 2.  These represent, respectively, the X, Y, and Z axes</param>
+            /// <returns>The input value of the axis queried</returns>
             float GetAxisValue(int axis);
         }
         IInputAxisProvider m_InputAxisProvider;
@@ -365,7 +365,7 @@ namespace Cinemachine
             /// <summary>Cancel any recenetering in progress.</summary>
             public void CancelRecentering()
             {
-                mLastAxisInputTime = Time.time;
+                mLastAxisInputTime = CinemachineCore.CurrentTime;
                 mRecenteringVelocity = 0;
             }
 
@@ -395,7 +395,7 @@ namespace Cinemachine
                 if (delta == 0)
                     return;
 
-                if (Time.time < (mLastAxisInputTime + m_WaitTime))
+                if (CinemachineCore.CurrentTime < (mLastAxisInputTime + m_WaitTime))
                     return;
 
                 // Determine the direction

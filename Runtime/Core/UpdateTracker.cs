@@ -121,7 +121,7 @@ namespace Cinemachine
         public static void OnUpdate(UpdateClock currentClock)
         {
             // Do something only if we are the first controller processing this frame
-            float now = Time.time;
+            float now = CinemachineCore.CurrentTime;
             if (now != mLastUpdateTime)
             {
                 mLastUpdateTime = now;

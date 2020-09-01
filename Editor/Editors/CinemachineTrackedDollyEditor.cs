@@ -40,12 +40,11 @@ namespace Cinemachine.Editor
         /// Called "magically" by the vcam editor, so don't change the signature.
         public void OnVcamPositionDragged(Vector3 delta)
         {
-            Undo.RegisterCompleteObjectUndo(Target, "Camera drag"); // GML do we need this?
+            Undo.RegisterCompleteObjectUndo(Target, "Camera drag"); 
             Quaternion targetOrientation = Target.m_Path.EvaluateOrientationAtUnit(
                 Target.m_PathPosition, Target.m_PositionUnits);
             Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-            FindProperty(x => x.m_PathOffset).vector3Value += localOffset;
-            serializedObject.ApplyModifiedProperties();
+            Target.m_PathOffset += localOffset;
         }
         
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineTrackedDolly))]
@@ -56,10 +55,11 @@ namespace Cinemachine.Editor
                 CinemachinePathBase path = target.m_Path;
                 if (path != null)
                 {
-                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor);
+                    var isActive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
+                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
                     Vector3 pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
                     Color oldColor = Gizmos.color;
-                    Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+                    Gizmos.color = isActive
                         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                         : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
                     Gizmos.DrawLine(pos, target.VirtualCamera.State.RawPosition);

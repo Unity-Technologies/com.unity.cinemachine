@@ -351,7 +351,7 @@ namespace Cinemachine
             }
             mRandomizeNow = false;
 
-            float now = Time.time;
+            float now = CinemachineCore.CurrentTime;
             if (mActivationTime != 0)
             {
                 // Is it active now?

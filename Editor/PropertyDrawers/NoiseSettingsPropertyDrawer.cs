@@ -14,7 +14,9 @@ namespace Cinemachine.Editor
             float iconSize = rect.height + 4;
             rect.width -= iconSize;
             int preset = sNoisePresets.IndexOf((NoiseSettings)property.objectReferenceValue);
+            EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
             preset = EditorGUI.Popup(rect, label, preset, sNoisePresetNames);
+            EditorGUI.showMixedValue = false;
             string labelText = label.text;
             NoiseSettings newProfile = preset < 0 ? null : sNoisePresets[preset] as NoiseSettings;
             if ((NoiseSettings)property.objectReferenceValue != newProfile)

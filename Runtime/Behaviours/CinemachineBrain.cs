@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
@@ -185,7 +186,7 @@ namespace Cinemachine
             set
             {
                 if (value != null && !CinemachineCore.Instance.IsLive(value))
-                    value.OnTransitionFromCamera(null, Vector3.up, Time.deltaTime);
+                    value.OnTransitionFromCamera(null, Vector3.up, CinemachineCore.DeltaTime);
                 mSoloCamera = value;
             }
         }
@@ -214,15 +215,24 @@ namespace Cinemachine
 
             // We check in after the physics system has had a chance to move things
             mPhysicsCoroutine = StartCoroutine(AfterPhysics());
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 
         private void OnDisable()
         {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineCore.Instance.RemoveActiveBrain(this);
             mFrameStack.Clear();
             StopCoroutine(mPhysicsCoroutine);
         }
+
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { ManualUpdate(); }
+        void OnSceneUnloaded(Scene scene) { ManualUpdate(); }
 
         private void Start()
         {
@@ -498,7 +508,10 @@ namespace Cinemachine
 
         // Current Brain State - result of all frames.  Blend camB is "current" camera always
         CinemachineBlend mCurrentLiveCameras = new CinemachineBlend(null, null, null, 0, 0);
-
+        
+        // To avoid GC memory alloc every frame
+        private static readonly AnimationCurve mDefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        
         /// <summary>
         /// This API is specifically for Timeline.  Do not use it.
         /// Override the current camera and current blend.  This setting will trump
@@ -530,7 +543,7 @@ namespace Cinemachine
             frame.deltaTimeOverride = deltaTime;
             frame.blend.CamA = camA;
             frame.blend.CamB = camB;
-            frame.blend.BlendCurve = AnimationCurve.Linear(0, 0, 1, 1);
+            frame.blend.BlendCurve = mDefaultLinearAnimationCurve;
             frame.blend.Duration = 1;
             frame.blend.TimeInBlend = weightB;
 

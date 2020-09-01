@@ -4,9 +4,33 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.1] - 2020-00-00
-### New Bugfixes
+## [2.6.2-preview.1] - 2020-08-28
+### Bugfixes
+- Regression fix: OnCameraCut Memory leak when using Cinemachine with PostProcessing package
+- Bugfix (1272146): Checking for null pipeline, before drawing gizmos.
+- Add support for disabling Physics module
+
+
+## [2.6.1] - 2020-08-13
+### Bugfixes
+- Regression Fix: PostProcessing/VolumeSettings FocusTracksTarget was not accounting for lookAt target offset
+- Regression fix: Confiner no longer confines noise and impulse
+- Bugfix: StateDrivenCamera was choosing parent state if only 1 clip in blendstate, even though there was a vcam assigned to that clip
 - Bugfix: vertical group composition was not composing properly
+- Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
+- Bugfix: removed compile errors when Physics2D module is disabled
+- Bugfix: brain updates on scene loaded or unloaded
+- Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
+- Bugfix (1260385): check for prefab instances correctly
+- Bugfix (1266191) Clicking on foldout labels in preferences panel toggles their expanded state
+- Bugfix (1266196) Composer target Size label in preferences panel was too big
+- Bugfix: Scrubbing Cache was locking virtual camera transforms beyond the cache range
+- Improved performance of path gizmo drawing
+- Timeline Scrubbing Cache supports nested timelines, with some known limitations to be addressed with a future Timeline package release
+- Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
+- Added Target Offset field to Framing Transposer
+- Added Multi-object edit capabilities to virtual cameras and extensions 
+- Added inspector button to clear the Scrubbing Cache
 
 
 ## [2.6.0] - 2020-06-04

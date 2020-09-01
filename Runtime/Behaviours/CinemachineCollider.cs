@@ -211,7 +211,7 @@ namespace Cinemachine
             {
                 if (m_SmoothedTime != 0 && smoothingTime > Epsilon)
                 {
-                    float now = Time.timeSinceLevelLoad;
+                    float now = CinemachineCore.CurrentTime;
                     if (now - m_SmoothedTime < smoothingTime)
                         return Mathf.Min(distance, m_SmoothedDistance);
                 }
@@ -219,7 +219,7 @@ namespace Cinemachine
             }
             public void UpdateDistanceSmoothing(float distance, float smoothingTime)
             {
-                float now = Time.timeSinceLevelLoad;
+                float now = CinemachineCore.CurrentTime;
                 if (m_SmoothedDistance == 0 || distance <= m_SmoothedDistance)
                 {
                     m_SmoothedDistance = distance;
@@ -228,7 +228,7 @@ namespace Cinemachine
             }
             public void ResetDistanceSmoothing(float smoothingTime)
             {
-                float now = Time.timeSinceLevelLoad;
+                float now = CinemachineCore.CurrentTime;
                 if (now - m_SmoothedTime >= smoothingTime)
                     m_SmoothedDistance = m_SmoothedTime = 0;
             }
@@ -281,7 +281,7 @@ namespace Cinemachine
                     displacement = PreserveLignOfSight(ref state, ref extra);
                     if (m_MinimumOcclusionTime > Epsilon)
                     {
-                        float now = Time.timeSinceLevelLoad;
+                        float now = CinemachineCore.CurrentTime;
                         if (displacement.sqrMagnitude < Epsilon)
                             extra.occlusionStartTime = 0;
                         else

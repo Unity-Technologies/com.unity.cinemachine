@@ -7,6 +7,7 @@ using System.IO;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBrain))]
+    [CanEditMultipleObjects]
     public sealed class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
@@ -58,19 +59,22 @@ namespace Cinemachine.Editor
             // Normal properties
             DrawRemainingPropertiesInInspector();
 
-            // Blender
-            m_BlendsEditor.DrawEditorCombo(
-                "Create New Blender Asset",
-                Target.gameObject.name + " Blends", "asset", string.Empty,
-                "Custom Blends", false);
-
-            mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events", true);
-            if (mEventsExpanded)
+            if (targets.Length == 1)
             {
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraCutEvent));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraActivatedEvent));
+                // Blender
+                m_BlendsEditor.DrawEditorCombo(
+                    "Create New Blender Asset",
+                    Target.gameObject.name + " Blends", "asset", string.Empty,
+                    "Custom Blends", false);
+
+                mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events", true);
+                if (mEventsExpanded)
+                {
+                    EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraCutEvent));
+                    EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraActivatedEvent));
+                }
+                serializedObject.ApplyModifiedProperties(); 
             }
-            serializedObject.ApplyModifiedProperties();
         }
 
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected, typeof(CinemachineBrain))]

@@ -4,6 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineExternalCamera))]
+    [CanEditMultipleObjects]
     internal class CinemachineExternalCameraEditor 
         : CinemachineVirtualCameraBaseEditor<CinemachineExternalCamera>
     {

@@ -40,7 +40,7 @@ Updates the state of this axis based on the axis defined by AxisState.m_AxisName
 | --- | --- | --- |
 | **deltaTime** | Single | Delta time in seconds. |
 
-_Returns:_ Returns true if this axis' input was non-zero this Update, flase otherwise.
+_Returns:_ Returns true if this axis' input was non-zero this Update, false otherwise.
 
 
 ### AxisState.Recentering
@@ -70,11 +70,11 @@ Call this from OnValidate().
 
 ``Void CancelRecentering()``
 
-Cancel any recenetering in progress.
+Cancel any recentering in progress.
 
 ``Void DoRecentering(AxisState& axis, Single deltaTime, Single recenterTarget)``
 
-Bring the axis back to the cenetered state.
+Bring the axis back to the centered state.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -231,7 +231,7 @@ This is a virtual camera "manager" that owns and manages a collection of child V
 
 | _Name_ | _Type_ | _Description_ |
 | --- | --- | --- |
-| **Description** | String | _[Get]_ Gets a brief debug description of this virtual camera, for use when displayiong debug info. |
+| **Description** | String | _[Get]_ Gets a brief debug description of this virtual camera, for use when displaying debug info. |
 | **LiveChild** | ICinemachineCamera | _[Get,Set]_ Get the current "best" child virtual camera, that would be chosen if the State Driven Camera were active. |
 | **LiveChildOrSelf** | ICinemachineCamera | _[Get]_ Return the live child. |
 | **State** | CameraState | _[Get]_ The State of the current live child. |
@@ -272,7 +272,7 @@ Check whether the vcam a live child of this camera.
 _Returns:_ True if the vcam is currently actively influencing the state of this vcam.
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessy.
+This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -406,7 +406,7 @@ You can also define custom blends between the ClearShot children.
 
 | _Name_ | _Type_ | _Description_ |
 | --- | --- | --- |
-| **Description** | String | _[Get]_ Gets a brief debug description of this virtual camera, for use when displayiong debug info. |
+| **Description** | String | _[Get]_ Gets a brief debug description of this virtual camera, for use when displaying debug info. |
 | **LiveChild** | ICinemachineCamera | _[Get,Set]_ Get the current "best" child virtual camera, that would be chosen if the ClearShot camera were active. |
 | **State** | CameraState | _[Get]_ The CameraState of the currently live child. |
 | **LiveChildOrSelf** | ICinemachineCamera | _[Get]_ Return the live child. |
@@ -450,7 +450,7 @@ Check whether the vcam a live child of this camera.
 _Returns:_ True if the vcam is currently actively influencing the state of this vcam.
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessy.
+This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -539,7 +539,7 @@ Additionally, the Collider can be used to assess the shot quality and report thi
 
 ``Boolean IsTargetObscured(ICinemachineCamera vcam)``
 
-See wheter an object is blocking the camera's view of the target.
+See whether an object is blocking the camera's view of the target.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -549,7 +549,7 @@ See wheter an object is blocking the camera's view of the target.
 _Returns:_ True if something is blocking the view.
 ``Boolean CameraWasDisplaced(CinemachineVirtualCameraBase vcam)``
 
-See whether the virtual camera has been moved nby the collider.
+See whether the virtual camera has been moved by the collider.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -563,7 +563,7 @@ Cleanup.
 
 ``protected virtual Void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, Stage stage, CameraState& state, Single deltaTime)``
 
-Callcack to to the collision resolution and shot evaluation.
+Callback to to the collision resolution and shot evaluation.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -636,7 +636,7 @@ Apply the target offsets to the target location.  Also set the TrackedPoint prop
 _Returns:_ The LookAt point with the offset applied.
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessy.
+This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -857,7 +857,7 @@ For this component to work properly, the vcam's LookAt target must be null.  The
 
 If the Follow target is a CinemachineTargetGroup, then additional controls will be available to dynamically adjust the camera's view in order to frame the entire group.
 
-Although this component was designed for orthographic cameras, it works equally well with persective cameras and can be used in 3D environments.
+Although this component was designed for orthographic cameras, it works equally well with perspective cameras and can be used in 3D environments.
 
 #### Properties
 
@@ -892,7 +892,7 @@ Although this component was designed for orthographic cameras, it works equally 
 | **m_DeadZoneWidth** | Single | Camera will not move horizontally if the target is within this range of the position. |
 | **m_DeadZoneHeight** | Single | Camera will not move vertically if the target is within this range of the position. |
 | **m_DeadZoneDepth** | Single | The camera will not move along its z-axis if the Follow target is within this distance of the specified camera distance. |
-| **m_UnlimitedSoftZone** | Boolean | If checked, then then soft zone will be unlimited in size. |
+| **m_UnlimitedSoftZone** | Boolean | If checked, then soft zone will be unlimited in size. |
 | **m_SoftZoneWidth** | Single | When target is within this region, camera will gradually move horizontally to re-align towards the desired position, depending on the damping speed. |
 | **m_SoftZoneHeight** | Single | When target is within this region, camera will gradually move vertically to re-align towards the desired position, depending on the damping speed. |
 | **m_BiasX** | Single | A non-zero bias will move the target position horizontally away from the center of the soft zone. |
@@ -914,7 +914,7 @@ Although this component was designed for orthographic cameras, it works equally 
 
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessy.
+This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -953,7 +953,7 @@ A Cinemachine Camera geared towards a 3rd person camera experience.  The camera 
 | _Name_ | _Type_ | _Description_ |
 | --- | --- | --- |
 | **RigNames** | String[] | _(static)_ _[Get]_ Names of the 3 child rigs. |
-| **State** | CameraState | _[Get]_ The cacmera state, which will be a blend of the child rig states. |
+| **State** | CameraState | _[Get]_ The camera state, which will be a blend of the child rig states. |
 | **LookAt** | Transform | _[Get,Set]_ Get the current LookAt target.  Returns parent's LookAt if parent is non-null and no specific LookAt defined for this camera. |
 | **Follow** | Transform | _[Get,Set]_ Get the current Follow target.  Returns parent's Follow if parent is non-null and no specific Follow defined for this camera. |
 | **LiveChildOrSelf** | ICinemachineCamera | _[Get]_ Returns the rig with the greatest weight. |
@@ -1019,7 +1019,7 @@ Check whether the vcam a live child of this camera.  Returns true if the child i
 _Returns:_ True if the vcam is currently actively influencing the state of this vcam.
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessy.
+This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -1289,7 +1289,7 @@ Set the weight of the child CinemachineVirtualCameraBase.
 
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessy.
+This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -1329,7 +1329,7 @@ Rebuild the cached list of child cameras.
 
 ``virtual Void InternalUpdateCameraState(Vector3 worldUp, Single deltaTime)``
 
-Internal use only.  Do not call this methid.  Called by CinemachineCore at designated update time so the vcam can position itself and track its targets.  This implementation computes and caches the weighted blend of the tracked cameras.
+Internal use only.  Do not call this method.  Called by CinemachineCore at designated update time so the vcam can position itself and track its targets.  This implementation computes and caches the weighted blend of the tracked cameras.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -1348,7 +1348,7 @@ _Namespace:_ Cinemachine
 _Inherits:_ CinemachineTransposer
 
 
-This is a CinemachineComponent in the the Body section of the component pipeline.  Its job is to position the camera in a variable relationship to a the vcam's Follow target object, with offsets and damping.
+This is a CinemachineComponent in the Body section of the component pipeline.  Its job is to position the camera in a variable relationship to a the vcam's Follow target object, with offsets and damping.
 
 This component is typically used to implement a camera that follows its target.  It can accept player input from an input device, which allows the player to dynamically control the relationship between the camera and the target, for example with a joystick.
 
@@ -1395,7 +1395,7 @@ Update the X axis and calculate the heading.  This can be called by a delegate w
 _Returns:_ Axis value.
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessy.
+This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -1518,7 +1518,7 @@ A waypoint along the path.
 | --- | --- | --- |
 | **position** | Vector3 | Position in path-local space. |
 | **tangent** | Vector3 | Offset from the position, which defines the tangent of the curve at the waypoint.  The length of the tangent encodes the strength of the bezier handle.  The same handle is used symmetrically on both sides of the waypoint, to ensure smoothness. |
-| **roll** | Single | Defines the roll of the path at this waypoint.  The other orientation axes are inferred from the tangent and world up. |
+| **roll** | Single | Defines the role of the path at this waypoint.  The other orientation axes are inferred from the tangent and world up. |
 
 
 
@@ -1735,7 +1735,7 @@ In order to use this behaviour, you must have an animated target (i.e.  an objec
 
 | _Name_ | _Type_ | _Description_ |
 | --- | --- | --- |
-| **Description** | String | _[Get]_ Gets a brief debug description of this virtual camera, for use when displayiong debug info. |
+| **Description** | String | _[Get]_ Gets a brief debug description of this virtual camera, for use when displaying debug info. |
 | **LiveChild** | ICinemachineCamera | _[Get,Set]_ Get the current "best" child virtual camera, that would be chosen if the State Driven Camera were active. |
 | **LiveChildOrSelf** | ICinemachineCamera | _[Get]_ Return the live child. |
 | **State** | CameraState | _[Get]_ The State of the current live child. |
@@ -1781,7 +1781,7 @@ Check whether the vcam a live child of this camera.
 _Returns:_ True if the vcam is currently actively influencing the state of this vcam.
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessy.
+This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -2036,7 +2036,7 @@ _Inherits:_ CinemachineComponentBase
 
 This is a CinemachineComponent in the Body section of the component pipeline.  Its job is to position the camera in a fixed relationship to the vcam's Follow target object, with offsets and damping.
 
-The Tansposer will only change the camera's position in space.  It will not re-orient or otherwise aim the camera.  To to that, you need to instruct the vcam in the Aim section of its pipeline.
+The Transposer will only change the camera's position in space.  It will not re-orient or otherwise aim the camera.  To that, you need to instruct the vcam in the Aim section of its pipeline.
 
 #### Properties
 
@@ -2081,7 +2081,7 @@ Positions the virtual camera according to the transposer rules.
 
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessy.
+This is called to notify the us that a target got warped, so that we can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |
@@ -2221,7 +2221,7 @@ Get the hidden CinemachinePipeline child object.
 
 ``CinemachineComponentBase[] GetComponentPipeline()``
 
-Get the component pipeline owned by the hidden child pipline container.  For most purposes, it is preferable to use the GetCinemachineComponent method.
+Get the component pipeline owned by the hidden child pipeline container.  For most purposes, it is preferable to use the GetCinemachineComponent method.
 
 ``CinemachineComponentBase GetCinemachineComponent(Stage stage)``
 
@@ -2247,7 +2247,7 @@ Remove a component from the cinemachine pipeline.
 
 ``virtual Void OnTargetObjectWarped(Transform target, Vector3 positionDelta)``
 
-This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessy.
+This is called to notify the vcam that a target got warped, so that the vcam can update its internal state to make the camera also warp seamlessly.
 
 
 | _Param_ | _Type_ | _Description_ |

@@ -35,7 +35,8 @@ namespace Cinemachine
 
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
-        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
+        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the "
+            + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
         [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
 
@@ -248,21 +249,28 @@ namespace Cinemachine
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
-                if (stage == CinemachineCore.Stage.Finalize && postAimBody != null)
-                    postAimBody.MutateCameraState(ref state, deltaTime);
-
                 var c = m_Components[(int)stage];
                 if (c != null)
                 {
                     if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
+                    {
                         postAimBody = c;
-                    else
-                        c.MutateCameraState(ref state, deltaTime);
+                        continue; // do the body stage of the pipeline after Aim
+                    }
+                    c.MutateCameraState(ref state, deltaTime);
                 }
-                else if (stage == CinemachineCore.Stage.Aim)
-                    state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
-
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
+                if (stage == CinemachineCore.Stage.Aim)
+                {
+                    if (c == null)
+                        state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
+                     // If we have saved a Body for after Aim, do it now
+                    if (postAimBody != null)
+                    {
+                        postAimBody.MutateCameraState(ref state, deltaTime);
+                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
+                    }
+                }
             }
 
             return state;
@@ -397,8 +405,8 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public T AddCinemachineComponent<T>() where T : CinemachineComponentBase
         {
-            T c = gameObject.AddComponent<T>();
             var components = ComponentCache;
+            T c = gameObject.AddComponent<T>();
             var oldC = components[(int)c.Stage];
             if (oldC != null)
             {
