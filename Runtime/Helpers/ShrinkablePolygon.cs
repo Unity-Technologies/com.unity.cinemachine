@@ -6,168 +6,179 @@ using UnityEngine;
 
 namespace Cinemachine
 {
-    public class ConfinerState
-    {
-        public List<Graph> graphs;
-        public float windowSize;
-        public float state;
-    }
-
-    public class Point2
-    {
-        public Vector2 position;
-        public Vector2 normal;
-        public bool cantIntersect;
-
-        internal Point2()
-        {
-        }
-
-        internal Point2(Vector2 position, Vector2 normal, bool cantIntersect)
-        {
-            this.position = position;
-            this.normal = normal;
-            this.cantIntersect = cantIntersect;
-        }
-    }
-
     /// <summary>
-    /// Graph represent a points with normals that can shrink down to it's skeleton.  
+    /// ShrinkablePolygon represent a m_points with normals that can shrink down to it's skeleton.  
     /// </summary>
-    public class Graph
+    internal class ShrinkablePolygon
     {
-        internal List<Point2> points;
-        internal bool ClockwiseOrientation;
-        internal float area;
-        internal float windowDiagonal;
-        internal float sensorRatio;
-        internal int state;
-
-        internal List<Vector2> intersectionPoints;
-        public Graph()
+        internal class ShrinkablePoint2
         {
-            points = new List<Point2>();
-            intersectionPoints = new List<Vector2>();
-            area = 0;
-            windowDiagonal = 0;
-            state = 0;
+            public Vector2 m_position;
+            public Vector2 m_shrinkDirection;
+            public bool m_cantIntersect;
+
+            internal ShrinkablePoint2()
+            {
+            }
+
+            internal ShrinkablePoint2(Vector2 mPosition, Vector2 mShrinkDirection, bool mCantIntersect)
+            {
+                this.m_position = mPosition;
+                this.m_shrinkDirection = mShrinkDirection;
+                this.m_cantIntersect = mCantIntersect;
+            }
+        }
+
+        internal List<ShrinkablePoint2> m_points;
+        internal bool m_clockwiseOrientation;
+        internal float m_windowDiagonal;
+        internal float m_aspectRatio;
+        internal int m_state;
+        private float m_area;
+
+        internal List<Vector2> m_intersectionPoints;
+        public ShrinkablePolygon(List<Vector2> points, float aspectRatio) : this()
+        {
+            m_points = new List<ShrinkablePoint2>(points.Count);
+            for (int i = 0; i < points.Count; ++i)
+            {
+                m_points.Add(new ShrinkablePoint2 { m_position = points[i] });
+            }
+            m_aspectRatio = aspectRatio;
+            ComputeNormals(true);
+            ComputeSignedArea();
+            if (!m_clockwiseOrientation)
+            {
+                FlipNormals();
+                ComputeSignedArea();
+            }
+        }
+
+        public ShrinkablePolygon()
+        {
+            m_points = new List<ShrinkablePoint2>();
+            m_intersectionPoints = new List<Vector2>();
+            m_area = 0;
+            m_windowDiagonal = 0;
+            m_state = 0;
         }
 
         /// <summary>
-        /// Creates and returns a deep copy of this graph.
+        /// Creates and returns a deep copy of this shrinkablePolygon.
         /// </summary>
-        /// <returns>Deep copy of this graph</returns>
-        public Graph DeepCopy()
+        /// <returns>Deep copy of this shrinkablePolygon</returns>
+        public ShrinkablePolygon DeepCopy()
         {
-            Graph deepCopy = new Graph
+            ShrinkablePolygon deepCopy = new ShrinkablePolygon
             {
-                points = this.points.ConvertAll(point => new Point2(point.position, point.normal, point.cantIntersect)),
-                ClockwiseOrientation = this.ClockwiseOrientation,
-                area = this.area,
-                intersectionPoints = this.intersectionPoints.ConvertAll(intersection =>
+                m_points = this.m_points.ConvertAll(point => new ShrinkablePoint2(point.m_position, point.m_shrinkDirection, point.m_cantIntersect)),
+                m_clockwiseOrientation = this.m_clockwiseOrientation,
+                m_area = this.m_area,
+                m_intersectionPoints = this.m_intersectionPoints.ConvertAll(intersection =>
                     new Vector2(intersection.x, intersection.y)),
-                windowDiagonal = this.windowDiagonal,
-                sensorRatio = this.sensorRatio,
-                state = this.state,
+                m_windowDiagonal = this.m_windowDiagonal,
+                m_aspectRatio = this.m_aspectRatio,
+                m_state = this.m_state,
             };
             return deepCopy;
         }
 
         /// <summary>
-        /// Computes signed area and determines whether a graph is oriented clockwise or counter-clockwise.
+        /// Computes signed m_area and determines whether a shrinkablePolygon is oriented clockwise or counter-clockwise.
         /// </summary>
-        /// <returns>Area of the graph</returns>
+        /// <returns>Area of the shrinkablePolygon</returns>
         internal float ComputeSignedArea()
         {
-            area = 0;
-            for (int i = 0; i < points.Count; ++i)
+            m_area = 0;
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                var p1 = points[i];
-                var p2 = points[(i + 1) % points.Count];
+                var p1 = m_points[i];
+                var p2 = m_points[(i + 1) % m_points.Count];
 
-                area += (p2.position.x - p1.position.x) * (p2.position.y + p1.position.y);
+                m_area += (p2.m_position.x - p1.m_position.x) * (p2.m_position.y + p1.m_position.y);
             }
 
-            ClockwiseOrientation = area > 0;
-            return area;
+            m_clockwiseOrientation = m_area > 0;
+            return m_area;
         }
         
-        private static float oneOverSquarerootOfTwo = 0.70710678f;
+        private static float m_oneOverSquarerootOfTwo = 0.70710678f;
         /// <summary>
-        /// Computes normalized normals for all points. If fixBigCornerAngles is true, then adds additional points for corners
+        /// Computes normalized normals for all m_points. If fixBigCornerAngles is true, then adds additional m_points for corners
         /// with reflex angles to ensure correct offset
         /// </summary>
         /// <param name="fixBigCornerAngles"></param>
         internal void ComputeNormals(bool fixBigCornerAngles)
         {
-            var edgeNormals = new List<Vector2>(points.Count);
-            for (int i = 0; i < points.Count; ++i)
+            var edgeNormals = new List<Vector2>(m_points.Count);
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                Vector2 edge = points[(i + 1) % points.Count].position - points[i].position;
-                Vector2 normal = ClockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x); 
+                Vector2 edge = m_points[(i + 1) % m_points.Count].m_position - m_points[i].m_position;
+                Vector2 normal = m_clockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x); 
                 edgeNormals.Add(normal.normalized);
             }
 
-            for (int i = points.Count - 1; i >= 0; --i)
+            for (int i = m_points.Count - 1; i >= 0; --i)
             {
                 int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
-                points[i].normal = edgeNormals[i] + edgeNormals[prevEdgeIndex];
-                points[i].normal.Normalize();
+                m_points[i].m_shrinkDirection = edgeNormals[i] + edgeNormals[prevEdgeIndex];
+                m_points[i].m_shrinkDirection.Normalize();
 
                 if (fixBigCornerAngles)
                 {
                     var angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevEdgeIndex]);
                     if (angle < 0)
                     {
-                        int prevIndex = i == 0 ? points.Count - 1 : i - 1;
-                        int nextIndex = i == points.Count - 1 ? 0 : i + 1;
-                        points.Insert(nextIndex, new Point2
+                        int prevIndex = i == 0 ? m_points.Count - 1 : i - 1;
+                        int nextIndex = i == m_points.Count - 1 ? 0 : i + 1;
+                        m_points.Insert(nextIndex, new ShrinkablePoint2
                         {
-                            position = Vector2.Lerp(points[i].position, points[nextIndex].position, 0.01f),
-                            normal = points[i].normal,
-                            cantIntersect = true,
+                            m_position = Vector2.Lerp(m_points[i].m_position, m_points[nextIndex].m_position, 0.01f),
+                            m_shrinkDirection = m_points[i].m_shrinkDirection,
+                            m_cantIntersect = true,
                         });
-                        points.Insert(i, new Point2
+                        m_points.Insert(i, new ShrinkablePoint2
                         {
-                            position = Vector2.Lerp(points[i].position, points[prevIndex].position, 0.01f),
-                            normal = points[i].normal,
-                            cantIntersect = true,
+                            m_position = Vector2.Lerp(m_points[i].m_position, m_points[prevIndex].m_position, 0.01f),
+                            m_shrinkDirection = m_points[i].m_shrinkDirection,
+                            m_cantIntersect = true,
                         });
-                        // points.RemoveAt(nextIndex); // remove original
+                        // m_points.RemoveAt(nextIndex); // remove original
                     }
                 }
             }
         }
     
         /// <summary>
-        /// Computes normals that point towards the camera window midpoint,
-        /// if the camera window were to be placed to touch the normal's point.
+        /// Computes normals that respect the aspect ratio of the camera. If the camera window is a square,
+        /// then the normals will be the usual normals.
+        /// This normals will determine the shrink direction of their m_points.
         /// </summary>
-        internal void ComputeRectangulizedNormals()
+        internal void ComputeAspectBasedNormals()
         {
-            List<Vector2> normalsBefore = points.Select(point => point.normal).ToList();
+            List<Vector2> normalsBefore = m_points.Select(point => point.m_shrinkDirection).ToList();
             
             ComputeNormals(false);
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                int prevIndex = i == 0 ? points.Count - 1 : i - 1;
-                int nextIndex = i == points.Count - 1 ? 0 : i + 1;
+                int prevIndex = i == 0 ? m_points.Count - 1 : i - 1;
+                int nextIndex = i == m_points.Count - 1 ? 0 : i + 1;
 
-                points[i].normal = RectangulizeNormal(points[i].normal, 
-                    points[prevIndex].position, points[i].position, points[nextIndex].position);
+                m_points[i].m_shrinkDirection = CalculateShrinkNormal(m_points[i].m_shrinkDirection, 
+                    m_points[prevIndex].m_position, m_points[i].m_position, m_points[nextIndex].m_position);
             }
 
-            if (normalsBefore.Count != points.Count)
+            if (normalsBefore.Count != m_points.Count)
             {
-                state++; // state change if more points where added
+                m_state++; // m_state change if more m_points where added
             }
             else
             {
                 for (var index = 0; index < normalsBefore.Count; index++)
                 {
-                    if (normalsBefore[index] != points[index].normal)
+                    if (normalsBefore[index] != m_points[index].m_shrinkDirection)
                     {
-                        state++; // state change when even one normal has been changed
+                        m_state++; // m_state change when even one m_shrinkDirection has been changed
                         break;
                     }
                 }
@@ -228,13 +239,11 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// Instead of normalizing a vector in a circle with a set a radius, this function normalizes the vector to be
-        /// within a rectangle with sides (a, 1). Meaning, the maximum length is a and 1 for the x and y components of the
-        /// vector respectively.
+        /// 
         /// </summary>
-        /// <param name="normal">Normal to RectangulizeNormal</param>
-        /// <returns>RectangleNormalized normal</returns>
-        private Vector2 RectangulizeNormal(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint)
+        /// <param name="normal">Normal to CalculateShrinkNormal</param>
+        /// <returns>RectangleNormalized m_shrinkDirection</returns>
+        private Vector2 CalculateShrinkNormal(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint)
         {
             var A = prevPoint;
             var B = nextPoint;
@@ -242,13 +251,13 @@ namespace Cinemachine
             List<Vector2> normalDirections = new List<Vector2>
             {
                 new Vector2(0, 1),
-                new Vector2(sensorRatio, 1),
-                new Vector2(sensorRatio, 0),
-                new Vector2(sensorRatio, -1),
+                new Vector2(m_aspectRatio, 1),
+                new Vector2(m_aspectRatio, 0),
+                new Vector2(m_aspectRatio, -1),
                 new Vector2(0, -1),
-                new Vector2(-sensorRatio, -1),
-                new Vector2(-sensorRatio, 0),
-                new Vector2(-sensorRatio, 1),
+                new Vector2(-m_aspectRatio, -1),
+                new Vector2(-m_aspectRatio, 0),
+                new Vector2(-m_aspectRatio, 1),
             };
 
             Vector2 CA = (A - C);
@@ -259,7 +268,7 @@ namespace Cinemachine
             var angle2 = Vector2.SignedAngle(CB, normal);
             var angle2_abs = Math.Abs(angle2);
 
-            Vector2 R = normal.normalized * Mathf.Sqrt(sensorRatio*sensorRatio + 1);
+            Vector2 R = normal.normalized * Mathf.Sqrt(m_aspectRatio*m_aspectRatio + 1);
             float angle = Vector2.SignedAngle(R, normalDirections[0]);
             if (0 < angle && angle < 90)
             {
@@ -290,7 +299,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (90 < angle && angle < 180)
@@ -322,7 +331,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (-180 < angle && angle < -90)
@@ -354,7 +363,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (-90 < angle && angle < 0)
@@ -386,12 +395,12 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in RectangulizeNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else
             {
-                R.x = Mathf.Clamp(R.x, -sensorRatio, sensorRatio);
+                R.x = Mathf.Clamp(R.x, -m_aspectRatio, m_aspectRatio);
                 R.y = Mathf.Clamp(R.y, -1, 1);
             }
 
@@ -400,25 +409,25 @@ namespace Cinemachine
 
 
         /// <summary>
-        /// Flips normals in the graph.
+        /// Flips normals in the shrinkablePolygon.
         /// </summary>
         internal void FlipNormals()
         {
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                points[i].normal = -points[i].normal;
+                m_points[i].m_shrinkDirection = -m_points[i].m_shrinkDirection;
             }
         }
 
         /// <summary>
-        /// Graph is shrinkable if it has at least one non-zero normal.
+        /// ShrinkablePolygon is shrinkable if it has at least one non-zero m_shrinkDirection.
         /// </summary>
-        /// <returns>True, if graph is shrinkable. False, otherwise.</returns>
+        /// <returns>True, if shrinkablePolygon is shrinkable. False, otherwise.</returns>
         internal bool IsShrinkable()
         {
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                if (points[i].normal != Vector2.zero)
+                if (m_points[i].m_shrinkDirection != Vector2.zero)
                 {
                     return true;
                 }
@@ -427,7 +436,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Shrink graphs points towards their normal by shrinkAmount.
+        /// Shrink graphs m_points towards their m_shrinkDirection by shrinkAmount.
         /// </summary>
         internal bool Shrink(float shrinkAmount)
         {
@@ -437,12 +446,12 @@ namespace Cinemachine
             //     var minY = float.PositiveInfinity;
             //     var maxX = float.NegativeInfinity;
             //     var maxY = float.NegativeInfinity;
-            //     for (int i = 0; i < points.Count; ++i)
+            //     for (int i = 0; i < m_points.Count; ++i)
             //     {
-            //         minX = Mathf.Min(points[i].position.x, minX);
-            //         minY = Mathf.Min(points[i].position.y, minY);
-            //         maxX = Mathf.Max(points[i].position.x, maxX);
-            //         maxY = Mathf.Max(points[i].position.y, maxY);
+            //         minX = Mathf.Min(m_points[i].m_position.x, minX);
+            //         minY = Mathf.Min(m_points[i].m_position.y, minY);
+            //         maxX = Mathf.Max(m_points[i].m_position.x, maxX);
+            //         maxY = Mathf.Max(m_points[i].m_position.y, maxY);
             //     }
             //
             //     bool normalsTowardsCenter = false;
@@ -450,18 +459,18 @@ namespace Cinemachine
             //     bool normalsYZero = false;
             //     if (Math.Abs(maxX - minX) < 1f)
             //     {
-            //         for (int i = 0; i < points.Count; ++i)
+            //         for (int i = 0; i < m_points.Count; ++i)
             //         {
-            //             points[i].normal.x = 0;
+            //             m_points[i].m_shrinkDirection.x = 0;
             //             normalsXZero = true;
             //         }
             //     }
             //
             //     if (Math.Abs(maxY - minY) < 1f)
             //     {
-            //         for (int i = 0; i < points.Count; ++i)
+            //         for (int i = 0; i < m_points.Count; ++i)
             //         {
-            //             points[i].normal.y = 0;
+            //             m_points[i].m_shrinkDirection.y = 0;
             //             normalsYZero = true;
             //         }
             //     }
@@ -477,15 +486,15 @@ namespace Cinemachine
             //     }
             //
             //     bool allNormalsAreNonZero = false;
-            //     for (int i = 0; i < points.Count; ++i)
+            //     for (int i = 0; i < m_points.Count; ++i)
             //     {
-            //         if (points[i].normal.sqrMagnitude > UnityVectorExtensions.Epsilon)
+            //         if (m_points[i].m_shrinkDirection.sqrMagnitude > UnityVectorExtensions.Epsilon)
             //         {
             //             allNormalsAreNonZero = true;
             //         }
             //         else
             //         {
-            //             points[i].normal = Vector2.zero;
+            //             m_points[i].m_shrinkDirection = Vector2.zero;
             //         }
             //     }
             //
@@ -510,13 +519,13 @@ namespace Cinemachine
             //     }
             //
             //     ComputeSignedArea();
-            //     if (!normalsXZero && !normalsYZero && Mathf.Abs(area) > 0.5f && Mathf.Abs(area) < 2f)
+            //     if (!normalsXZero && !normalsYZero && Mathf.Abs(m_area) > 0.5f && Mathf.Abs(m_area) < 2f)
             //     {
             //         normalsTowardsCenter = true;
             //         Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
-            //         for (int i = 0; i < points.Count; ++i)
+            //         for (int i = 0; i < m_points.Count; ++i)
             //         {
-            //             points[i].normal = RectangulizeNormal(center - points[i].position);
+            //             m_points[i].m_shrinkDirection = CalculateShrinkNormal(center - m_points[i].m_position);
             //         }
             //         Simplify();
             //     }
@@ -525,29 +534,29 @@ namespace Cinemachine
             //         return false;
             //     }
             // }
-             windowDiagonal += shrinkAmount;
+             m_windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float area1 = Mathf.Abs(ComputeSignedArea());
             if (area1 < 1.3f)
             {
-                for (int i = 0; i < points.Count; ++i)
+                for (int i = 0; i < m_points.Count; ++i)
                 {
-                    points[i].normal = Vector2.zero;
+                    m_points[i].m_shrinkDirection = Vector2.zero;
                 }
 
                 return false;
             }
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                points[i].position += points[i].normal * shrinkAmount;
+                m_points[i].m_position += m_points[i].m_shrinkDirection * shrinkAmount;
             }
             float area2 = Mathf.Abs(ComputeSignedArea());
             if (area2 > area1)
             {
                 FlipNormals();
-                for (int i = 0; i < points.Count; ++i)
+                for (int i = 0; i < m_points.Count; ++i)
                 {
-                    points[i].position += points[i].normal * (shrinkAmount * 2f);
+                    m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount * 2f);
                 }
             }
             float area3 = Mathf.Abs(ComputeSignedArea());
@@ -555,10 +564,10 @@ namespace Cinemachine
                 area1 < area2 && area1 < area3)
             {
                 FlipNormals();
-                for (int i = 0; i < points.Count; ++i)
+                for (int i = 0; i < m_points.Count; ++i)
                 {
-                    points[i].position += points[i].normal * (shrinkAmount);
-                    points[i].normal = Vector2.zero;
+                    m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount);
+                    m_points[i].m_shrinkDirection = Vector2.zero;
                 }
             }
             return true;
@@ -566,34 +575,34 @@ namespace Cinemachine
 
         /// <summary></summary>
         /// <param name="p">Point in space.</param>
-        /// <returns>Squared distance to 'P' from closest point to 'P' in the graph</returns>
+        /// <returns>Squared distance to 'P' from closest point to 'P' in the shrinkablePolygon</returns>
         internal float SqrDistanceTo(Vector2 p)
         {
             float minDistance = float.MaxValue;
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                minDistance = Mathf.Min(minDistance, (points[i].position - p).sqrMagnitude);
+                minDistance = Mathf.Min(minDistance, (m_points[i].m_position - p).sqrMagnitude);
             }
 
             return minDistance;
         }
 
         /// <summary>
-        /// Returns the closest point to the graph from P. The point returned is going to be one of the points of the graph.
+        /// Returns the closest point to the shrinkablePolygon from P. The point returned is going to be one of the m_points of the shrinkablePolygon.
         /// </summary>
         /// <param name="p">Point from which the distance is calculated.</param>
-        /// <returns>A point that is part of the graph points and is closest to P.</returns>
+        /// <returns>A point that is part of the shrinkablePolygon m_points and is closest to P.</returns>
         internal Vector2 ClosestGraphPoint(Vector2 p)
         {
             float minDistance = float.MaxValue;
             Vector2 closestPoint = Vector2.zero;
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                float sqrDistance = (points[i].position - p).sqrMagnitude;
+                float sqrDistance = (m_points[i].m_position - p).sqrMagnitude;
                 if (minDistance > sqrDistance)
                 {
                     minDistance = sqrDistance;
-                    closestPoint = points[i].position;
+                    closestPoint = m_points[i].m_position;
                 }
             }
 
@@ -601,19 +610,19 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// Returns point closest to p that is a point of the graph.
+        /// Returns point closest to p that is a point of the shrinkablePolygon.
         /// </summary>
         /// <param name="p"></param>
-        /// <returns>Closest point to p in Graph</returns>
-        internal Vector2 ClosestGraphPoint(Point2 p)
+        /// <returns>Closest point to p in ShrinkablePolygon</returns>
+        internal Vector2 ClosestGraphPoint(ShrinkablePoint2 p)
         {
             bool foundWithNormal = false;
             float minDistance = float.MaxValue;
             Vector2 closestPoint = Vector2.zero;
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                var diff = points[i].position - p.position;
-                var angle = Vector2.Angle(p.normal, diff);
+                var diff = m_points[i].m_position - p.m_position;
+                var angle = Vector2.Angle(p.m_shrinkDirection, diff);
                 if (angle < 5 || 175 < angle)
                 {
                     foundWithNormal = true;
@@ -621,7 +630,7 @@ namespace Cinemachine
                     if (minDistance > sqrDistance)
                     {
                         minDistance = sqrDistance;
-                        closestPoint = points[i].position;
+                        closestPoint = m_points[i].m_position;
                     }
                 }
             }
@@ -630,26 +639,26 @@ namespace Cinemachine
                 return closestPoint;
             }
 
-            for (int i = 0; i < points.Count; ++i)
+            for (int i = 0; i < m_points.Count; ++i)
             {
-                var diff = points[i].position - p.position;
+                var diff = m_points[i].m_position - p.m_position;
                 float sqrDistance = diff.sqrMagnitude;
                 if (minDistance > sqrDistance)
                 {
                     minDistance = sqrDistance;
-                    closestPoint = points[i].position;
+                    closestPoint = m_points[i].m_position;
                 }
             }
             return closestPoint;
         }
 
         /// <summary>
-        /// Removes points that are the same or very close.
+        /// Removes m_points that are the same or very close.
         /// </summary>
         internal void Simplify()
         {
             // TODO: remove goto with other function 
-            if (points.Count <= 4)
+            if (m_points.Count <= 4)
             {
                 return;
             }
@@ -658,26 +667,26 @@ namespace Cinemachine
             while (canSimplify)
             {
                 canSimplify = false;
-                for (int i = 0; i < points.Count; ++i)
+                for (int i = 0; i < m_points.Count; ++i)
                 {
-                    for (int j = i + 1; j < points.Count; ++j)
+                    for (int j = i + 1; j < m_points.Count; ++j)
                     {
-                        if (!points[i].cantIntersect && !points[j].cantIntersect) continue;
-                        if (points[i].cantIntersect && points[j].cantIntersect) continue;
-                        if ((points[i].position - points[j].position).sqrMagnitude <= 0.01f)
+                        if (!m_points[i].m_cantIntersect && !m_points[j].m_cantIntersect) continue;
+                        if (m_points[i].m_cantIntersect && m_points[j].m_cantIntersect) continue;
+                        if ((m_points[i].m_position - m_points[j].m_position).sqrMagnitude <= 0.01f)
                         {
-                            if (points[i].cantIntersect)
+                            if (m_points[i].m_cantIntersect)
                             {
-                                points.RemoveAt(i);
+                                m_points.RemoveAt(i);
                             }
-                            else if (points[j].cantIntersect)
+                            else if (m_points[j].m_cantIntersect)
                             {
-                                points.RemoveAt(j);
+                                m_points.RemoveAt(j);
                             }
                             else
                             {
-                                points.RemoveAt(j);
-                                points.RemoveAt(i);
+                                m_points.RemoveAt(j);
+                                m_points.RemoveAt(i);
                             }
 
                             canSimplify = true;
@@ -691,123 +700,123 @@ namespace Cinemachine
         }
 
         // TODO: refine summary outside and within this function - DivideGraph and also DivideAlongIntersections
-        /// <summary>Divides graph into subgraphs if there are intersections.</summary>
-        /// <param name="graph">Graph to divide. Graph will be overwritten by a graph with possible intersections,
-        /// after cutting off the graph part 'left' of the intersection.</param>
-        /// <param name="subgraphs">Resulting subgraphs from dividing graph.</param>
+        /// <summary>Divides shrinkablePolygon into subgraphs if there are intersections.</summary>
+        /// <param name="shrinkablePolygon">ShrinkablePolygon to divide. ShrinkablePolygon will be overwritten by a shrinkablePolygon with possible intersections,
+        /// after cutting off the shrinkablePolygon part 'left' of the intersection.</param>
+        /// <param name="subgraphs">Resulting subgraphs from dividing shrinkablePolygon.</param>
         /// <returns>True, if found intersection. False, otherwise.</returns>
-        private static bool DivideGraph(ref Graph graph, ref List<Graph> subgraphs)
+        private static bool DivideGraph(ref ShrinkablePolygon shrinkablePolygon, ref List<ShrinkablePolygon> subgraphs)
         {
-            // for each edge in graph, but not edges that directly connect (e.P. 0-1, 1-2) check for intersections.
-            // if we intersect, we need to divide the graph into two graphs (g1,g2) to remove the intersection within a graph.
+            // for each edge in shrinkablePolygon, but not edges that directly connect (e.P. 0-1, 1-2) check for intersections.
+            // if we intersect, we need to divide the shrinkablePolygon into two graphs (g1,g2) to remove the intersection within a shrinkablePolygon.
             // g1 will be 'left' of the intersection, g2 will be 'right' of the intersection.
             // g2 may contain additional intersections.
-            for (int i = 0; i < graph.points.Count; ++i)
+            for (int i = 0; i < shrinkablePolygon.m_points.Count; ++i)
             {
-                int nextI = (i + 1) % graph.points.Count;
+                int nextI = (i + 1) % shrinkablePolygon.m_points.Count;
                 
-                for (int j = i + 2; j < graph.points.Count; ++j)
+                for (int j = i + 2; j < shrinkablePolygon.m_points.Count; ++j)
                 {
-                    int nextJ = (j + 1) % graph.points.Count;
+                    int nextJ = (j + 1) % shrinkablePolygon.m_points.Count;
                     if (i == nextJ) continue;
 
-                    UnityVectorExtensions.FindIntersection(graph.points[i].position,
-                        graph.points[nextI].position,
-                        graph.points[j].position, graph.points[nextJ].position,
+                    UnityVectorExtensions.FindIntersection(shrinkablePolygon.m_points[i].m_position,
+                        shrinkablePolygon.m_points[nextI].m_position,
+                        shrinkablePolygon.m_points[j].m_position, shrinkablePolygon.m_points[nextJ].m_position,
                         out bool linesIntersect, out bool segmentsIntersect,
                         out Vector2 intersection);
                     
                     if (segmentsIntersect)
                     {
                         // TODO: check orientation of g1, g2
-                        // divide graph into g1, g2. Then graph = g2
+                        // divide shrinkablePolygon into g1, g2. Then shrinkablePolygon = g2
 
-                        // TODO: starting index of new graph should be the left-most index
+                        // TODO: starting index of new shrinkablePolygon should be the left-most index
                         
                         // g1 will be left from the intersection, g2 will be right of the intersection.
-                        Graph g1 = new Graph();
+                        ShrinkablePolygon g1 = new ShrinkablePolygon();
                         {
-                            g1.sensorRatio = graph.sensorRatio;
-                            g1.windowDiagonal = graph.windowDiagonal;
-                            g1.intersectionPoints.Add(intersection);
-                            g1.state = graph.state + 1;
+                            g1.m_aspectRatio = shrinkablePolygon.m_aspectRatio;
+                            g1.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
+                            g1.m_intersectionPoints.Add(intersection);
+                            g1.m_state = shrinkablePolygon.m_state + 1;
 
                             // g1 -> intersection j+1 ... i
-                            List<Point2> points = new List<Point2>();
-                            points.Add(new Point2
+                            List<ShrinkablePoint2> points = new List<ShrinkablePoint2>();
+                            points.Add(new ShrinkablePoint2
                             {
-                                position = intersection,
-                                normal = Vector2.zero,
+                                m_position = intersection,
+                                m_shrinkDirection = Vector2.zero,
                             });
-                            for (int k = (j + 1) % graph.points.Count;
-                                k != (i + 1) % graph.points.Count;
-                                k = (k + 1) % graph.points.Count)
+                            for (int k = (j + 1) % shrinkablePolygon.m_points.Count;
+                                k != (i + 1) % shrinkablePolygon.m_points.Count;
+                                k = (k + 1) % shrinkablePolygon.m_points.Count)
                             {
-                                points.Add(graph.points[k]);
+                                points.Add(shrinkablePolygon.m_points[k]);
                             }
                             
-                            g1.points = RotateListToLeftmost(points);
+                            g1.m_points = RotateListToLeftmost(points);
                         }
                         subgraphs.Add(g1);
 
-                        Graph g2 = new Graph();
+                        ShrinkablePolygon g2 = new ShrinkablePolygon();
                         {
-                            g2.sensorRatio = graph.sensorRatio;
-                            g2.windowDiagonal = graph.windowDiagonal;
-                            g2.intersectionPoints.Add(intersection);
-                            g2.state = graph.state + 1;
+                            g2.m_aspectRatio = shrinkablePolygon.m_aspectRatio;
+                            g2.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
+                            g2.m_intersectionPoints.Add(intersection);
+                            g2.m_state = shrinkablePolygon.m_state + 1;
 
                             // g2 -> intersection i+1 ... j
-                            List<Point2> points = new List<Point2>();
-                            points.Add(new Point2
+                            List<ShrinkablePoint2> points = new List<ShrinkablePoint2>();
+                            points.Add(new ShrinkablePoint2
                             {
-                                position = intersection,
-                                normal = Vector2.zero,
+                                m_position = intersection,
+                                m_shrinkDirection = Vector2.zero,
                             });
-                            for (int k = (i + 1) % graph.points.Count;
-                                k != (j + 1) % graph.points.Count;
-                                k = (k + 1) % graph.points.Count)
+                            for (int k = (i + 1) % shrinkablePolygon.m_points.Count;
+                                k != (j + 1) % shrinkablePolygon.m_points.Count;
+                                k = (k + 1) % shrinkablePolygon.m_points.Count)
                             {
-                                points.Add(graph.points[k]);
+                                points.Add(shrinkablePolygon.m_points[k]);
                             }
 
-                            g2.points = RollListToStartClosestToPoint(points, intersection);
+                            g2.m_points = RollListToStartClosestToPoint(points, intersection);
                         }
 
-                        // we need to move the intersection points from the parent graph
+                        // we need to move the intersection m_points from the parent shrinkablePolygon
                         // to g1 and g2 graphs, depending on which is closer to the intersection point.
-                        for (int k = 0; k < graph.intersectionPoints.Count; ++k)
+                        for (int k = 0; k < shrinkablePolygon.m_intersectionPoints.Count; ++k)
                         {
-                            float g1Dist = g1.SqrDistanceTo(graph.intersectionPoints[k]);
-                            float g2Dist = g2.SqrDistanceTo(graph.intersectionPoints[k]);
+                            float g1Dist = g1.SqrDistanceTo(shrinkablePolygon.m_intersectionPoints[k]);
+                            float g2Dist = g2.SqrDistanceTo(shrinkablePolygon.m_intersectionPoints[k]);
                             if (g1Dist < g2Dist)
                             {
-                                g1.intersectionPoints.Add(graph.intersectionPoints[k]);
+                                g1.m_intersectionPoints.Add(shrinkablePolygon.m_intersectionPoints[k]);
                             }
                             else
                             {
-                                g2.intersectionPoints.Add(graph.intersectionPoints[k]);
+                                g2.m_intersectionPoints.Add(shrinkablePolygon.m_intersectionPoints[k]);
                             }
                         }
 
-                        graph = g2;
-                        return true; // graph has nice intersections
+                        shrinkablePolygon = g2;
+                        return true; // shrinkablePolygon has nice intersections
                     }
                 }
             }
 
-            return false; // graph does not have nice intersections
+            return false; // shrinkablePolygon does not have nice intersections
         }
 
-        internal static void DivideAlongIntersections(Graph graph, out List<Graph> subgraphs)
+        internal static void DivideAlongIntersections(ShrinkablePolygon shrinkablePolygon, out List<ShrinkablePolygon> subgraphs)
         {
-            /// 2. DO until Graph G has intersections
+            /// 2. DO until ShrinkablePolygon G has intersections
             /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
             /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
             /// done.
-            subgraphs = new List<Graph>();
+            subgraphs = new List<ShrinkablePolygon>();
             int maxIteration = 10;
-            while (maxIteration > 0 && DivideGraph(ref graph, ref subgraphs))
+            while (maxIteration > 0 && DivideGraph(ref shrinkablePolygon, ref subgraphs))
             {
                 maxIteration--;
             };
@@ -815,7 +824,7 @@ namespace Cinemachine
             {
                 Debug.Log("Exited with max iteration safety! - Let us know on the Cinemachine forums please!"); // never happened to me in my tests
             }
-            subgraphs.Add(graph); // add remaining graph
+            subgraphs.Add(shrinkablePolygon); // add remaining shrinkablePolygon
         }
         
         /// <summary>
@@ -824,21 +833,21 @@ namespace Cinemachine
         /// <param name="point">List will rotate so it's 0th element is as close to point as possible.</param>
         /// <param name="points">List to rotate</param>
         /// <returns>List, in which the 0 element is the closest point in the List to point in 2D space.
-        /// Order of points of the original List is preserved</returns>
-        private static List<Point2> RollListToStartClosestToPoint(in List<Point2> points, in Vector2 point)
+        /// Order of m_points of the original List is preserved</returns>
+        private static List<ShrinkablePoint2> RollListToStartClosestToPoint(in List<ShrinkablePoint2> points, in Vector2 point)
         {
             int closestIndex = 0;
-            Vector2 closestPoint = points[0].position;
+            Vector2 closestPoint = points[0].m_position;
             for (int i = 1; i < points.Count; ++i)
             {
-                if ((closestPoint - point).sqrMagnitude > (closestPoint - points[i].position).sqrMagnitude)
+                if ((closestPoint - point).sqrMagnitude > (closestPoint - points[i].m_position).sqrMagnitude)
                 {
                     closestIndex = i;
-                    closestPoint = points[i].position;
+                    closestPoint = points[i].m_position;
                 }
             }
 
-            var point_rolledToStartAtClosestPoint = new List<Point2>(points.Count);
+            var point_rolledToStartAtClosestPoint = new List<ShrinkablePoint2>(points.Count);
             for (int i = closestIndex; i < points.Count; ++i)
             {
                 point_rolledToStartAtClosestPoint.Add(points[i]);
@@ -857,21 +866,21 @@ namespace Cinemachine
         /// </summary>
         /// <param name="points">List to rotate</param>
         /// <returns>List, in which the 0 element is the left-most in 2D space.
-        /// Order of points of the original List is preserved</returns>
-        public static List<Point2> RotateListToLeftmost(List<Point2> points)
+        /// Order of m_points of the original List is preserved</returns>
+        public static List<ShrinkablePoint2> RotateListToLeftmost(List<ShrinkablePoint2> points)
         {
             int leftMostPointIndex = 0;
-            Vector2 leftMostPoint = points[0].position;
+            Vector2 leftMostPoint = points[0].m_position;
             for (int i = 1; i < points.Count; ++i)
             {
-                if (leftMostPoint.x > points[i].position.x)
+                if (leftMostPoint.x > points[i].m_position.x)
                 {
                     leftMostPointIndex = i;
-                    leftMostPoint = points[i].position;
+                    leftMostPoint = points[i].m_position;
                 }
             }
 
-            var point_rolledToStartAtLeftmostpoint = new List<Point2>(points.Count);
+            var point_rolledToStartAtLeftmostpoint = new List<ShrinkablePoint2>(points.Count);
             for (int i = leftMostPointIndex; i < points.Count; ++i)
             {
                 point_rolledToStartAtLeftmostpoint.Add(points[i]);
