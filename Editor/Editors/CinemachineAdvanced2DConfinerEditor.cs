@@ -18,12 +18,12 @@ namespace Cinemachine.Editor
         
         void OnEnable()
         {
-            autoBakeProperty = FindProperty(x => x.AutoBake);
+            autoBakeProperty = FindProperty(x => x.m_AutoBake);
             autoBakeTooltip = new GUIContent("Automatically rebakes the confiner, if input parameters " +
                                                   "(CameraWindowRatio, InputCollider, Resolution) - that affect " +
                                                   "the outcome - change. True is on, False is off.");
 
-            triggerBakeProperty = FindProperty(x => x.TriggerBake);
+            triggerBakeProperty = FindProperty(x => x.m_TriggerBake);
             bakeProgressProperty = FindProperty(x => x.BakeProgress);
             bakeProgressPropertyEnumNames = bakeProgressProperty.enumNames;
         }

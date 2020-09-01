@@ -18,7 +18,7 @@ namespace Cinemachine
     /// Advanced 2D confiner prebakes a confiner for ...
     ///
     /// todo...
-    /// If you change the input collider's points (without changing the number of points or ...)
+    /// If you change the input collider's m_points (without changing the number of m_points or ...)
     /// </summary>
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
@@ -38,14 +38,14 @@ namespace Cinemachine
         public float m_CornerDamping = 0;
         private float m_CornerAngleTreshold = 10f;
 
-        [Tooltip("Stops any kind of damping when the camera gets back inside the confiner area.  ")]
+        [Tooltip("Stops any kind of damping when the camera gets back inside the confiner m_area.  ")]
         public bool m_StopDampingWithinConfiner = false;
         
         // advanced features
-        public bool DrawGizmosDebug = false;
-        [HideInInspector, SerializeField] internal bool AutoBake = true;
-        [HideInInspector, SerializeField] internal bool TriggerBake = false;
-        [HideInInspector, SerializeField] internal bool TriggerClearCache = false;
+        public bool m_DrawGizmosDebug = false;
+        [HideInInspector, SerializeField] internal bool m_AutoBake = true;
+        [HideInInspector, SerializeField] internal bool m_TriggerBake = false;
+        [HideInInspector, SerializeField] internal bool m_TriggerClearCache = false;
         
         private static readonly float m_bakedConfinerResolution = 0.005f;
         
@@ -58,13 +58,13 @@ namespace Cinemachine
         private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
         
-        private float frustumHeightCache;
+        private float m_frustumHeightCache;
         private List<List<Vector2>> m_currentPathCache;
 
-        private List<List<Graph>> graphs;
-        private List<ConfinerState> confinerStates;
-        private ConfinerOven _confinerBaker = null;
-        private ConfinerStateToPath _confinerStateConverter = null;
+        private List<List<ShrinkablePolygon>> m_graphs;
+        private List<ConfinerOven.ConfinerState> m_confinerStates;
+        private ConfinerOven m_confinerBaker = null;
+        private ConfinerStateToPath m_confinerStateConverter = null;
 
         /// <summary>
         /// Trigger rebake process manually.
@@ -72,7 +72,7 @@ namespace Cinemachine
         /// </summary>
         public void Bake()
         {
-            TriggerBake = true;
+            m_TriggerBake = true;
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Cinemachine
             Bake();
         }
 
-        private ConfinerState confinerCache;
+        private ConfinerOven.ConfinerState m_confinerCache;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -121,13 +121,13 @@ namespace Cinemachine
                 if (pathChanged ||
                     m_currentPathCache == null || 
                     m_BoundingCompositeShape2D == null ||
-                    Math.Abs(frustumHeight - frustumHeightCache) > m_bakedConfinerResolution)
+                    Math.Abs(frustumHeight - m_frustumHeightCache) > m_bakedConfinerResolution)
                 {
                     // TODO: performance optimization
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
-                    frustumHeightCache = frustumHeight;
-                    confinerCache = confinerOven().GetConfinerAtOrthoSize(frustumHeightCache);
-                    confinerStateToPath().Convert(confinerCache, 
+                    m_frustumHeightCache = frustumHeight;
+                    m_confinerCache = confinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
+                    confinerStateToPath().Convert(m_confinerCache, 
                         out m_currentPathCache, out m_BoundingCompositeShape2D);
                 }
                 
@@ -199,26 +199,26 @@ namespace Cinemachine
             public bool applyAfterAim;
         };
 
-        private float sensorRatioCache;
-        private float bakedConfinerResolutionCache;
-        private Vector3 boundingShapePositionCache;
-        private Vector3 boundingShapeScaleCache;
-        private Quaternion boundingShapeRotationCache;
+        private float m_sensorRatioCache;
+        private float m_bakedConfinerResolutionCache;
+        private Vector3 m_boundingShapePositionCache;
+        private Vector3 m_boundingShapeScaleCache;
+        private Quaternion m_boundingShapeRotationCache;
         private void InvalidatePathCache()
         {
             m_originalPath = null;
             m_originalPathCache = null;
-            sensorRatioCache = 0;
-            boundingShapePositionCache = Vector3.negativeInfinity;
-            boundingShapeScaleCache = Vector3.negativeInfinity;
-            boundingShapeRotationCache = new Quaternion(0,0,0,0);
+            m_sensorRatioCache = 0;
+            m_boundingShapePositionCache = Vector3.negativeInfinity;
+            m_boundingShapeScaleCache = Vector3.negativeInfinity;
+            m_boundingShapeRotationCache = new Quaternion(0,0,0,0);
         }
 
         bool DidBoundingShapeTransformChange()
         {
-            return boundingShapePositionCache != m_BoundingShape2D.transform.position ||
-                   boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
-                   boundingShapeRotationCache != m_BoundingShape2D.transform.rotation;
+            return m_boundingShapePositionCache != m_BoundingShape2D.transform.position ||
+                   m_boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
+                   m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation;
         }
 
         /// <summary>
@@ -235,26 +235,26 @@ namespace Cinemachine
             // StopCoroutine(runningCoroutine);
             // or async? naw, just set return values as members - this couritne runs alone always
 
-            if (TriggerClearCache)
+            if (m_TriggerClearCache)
             {
                 InvalidatePathCache();
-                TriggerClearCache = false;
+                m_TriggerClearCache = false;
             }
             
             pathChanged = false;
-            var cacheIsEmpty = confinerStates == null;
+            var cacheIsEmpty = m_confinerStates == null;
             var cacheIsValid = 
                 m_originalPath != null && // first time?
                 !cacheIsEmpty && // has a prev. baked result?
                 !DidBoundingShapeTransformChange() && // confiner was moved or rotated or scaled?
-                Math.Abs(sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
-                Math.Abs(m_bakedConfinerResolution - bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon; // resolution changed?
-            if (!AutoBake && !TriggerBake)
+                Math.Abs(m_sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
+                Math.Abs(m_bakedConfinerResolution - m_bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon; // resolution changed?
+            if (!m_AutoBake && !m_TriggerBake)
             {
                 if (cacheIsEmpty)
                 {
                     BakeProgress = BakeProgressEnum.EMPTY;
-                    return false; // if confinerStates is null, then we don't have path -> false
+                    return false; // if m_confinerStates is null, then we don't have path -> false
                 }
                 else if (!cacheIsValid)
                 {
@@ -269,12 +269,12 @@ namespace Cinemachine
             }
             else if (!cacheIsEmpty && cacheIsValid)
             {
-                TriggerBake = false;
+                m_TriggerBake = false;
                 BakeProgress = BakeProgressEnum.BAKED;
                 return true;
             }
             
-            TriggerBake = false;
+            m_TriggerBake = false;
             BakeProgress = BakeProgressEnum.BAKING;
             pathChanged = true;
 
@@ -336,14 +336,14 @@ namespace Cinemachine
                 }
             }
 
-            bakedConfinerResolutionCache = m_bakedConfinerResolution;
-            sensorRatioCache = sensorRatio;
-            confinerOven().BakeConfiner(m_originalPath, sensorRatioCache, bakedConfinerResolutionCache);
-            confinerStates = confinerOven().GetGraphsAsConfinerStates();
+            m_bakedConfinerResolutionCache = m_bakedConfinerResolution;
+            m_sensorRatioCache = sensorRatio;
+            confinerOven().BakeConfiner(m_originalPath, m_sensorRatioCache, m_bakedConfinerResolutionCache);
+            m_confinerStates = confinerOven().GetGraphsAsConfinerStates();
 
-            boundingShapePositionCache = m_BoundingShape2D.transform.position;
-            boundingShapeRotationCache = m_BoundingShape2D.transform.rotation;
-            boundingShapeScaleCache = m_BoundingShape2D.transform.localScale;
+            m_boundingShapePositionCache = m_BoundingShape2D.transform.position;
+            m_boundingShapeRotationCache = m_BoundingShape2D.transform.rotation;
+            m_boundingShapeScaleCache = m_BoundingShape2D.transform.localScale;
 
             BakeProgress = BakeProgressEnum.BAKED;
             return true;
@@ -351,24 +351,30 @@ namespace Cinemachine
 
         private ConfinerStateToPath confinerStateToPath()
         {
-            if (_confinerStateConverter == null)
+            if (m_confinerStateConverter == null)
             {
-                _confinerStateConverter = new ConfinerStateToPath(gameObject.name);
+                m_confinerStateConverter = new ConfinerStateToPath(gameObject.name);
             }
 
-            return _confinerStateConverter;
+            return m_confinerStateConverter;
         }
 
         private ConfinerOven confinerOven()
         {
-            if (_confinerBaker == null)
+            if (m_confinerBaker == null)
             {
-                _confinerBaker = new ConfinerOven();
+                m_confinerBaker = new ConfinerOven();
             }
 
-            return _confinerBaker;
+            return m_confinerBaker;
         }
-        
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            InvalidatePathCache();
+        }
+
         void OnDrawGizmosSelected()
         {
             if (m_currentPathCache == null || m_BoundingShape2D == null) return;
@@ -384,20 +390,20 @@ namespace Cinemachine
                 }
             }
 
-            if (confinerStates != null && m_BoundingShape2D != null) {
+            if (m_confinerStates != null && m_BoundingShape2D != null) {
                 var index = 0;
-                var confinerState = confinerStates[index];
+                var confinerState = m_confinerStates[index];
                 for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
                 {
-                    Gizmos.color = new Color((float) index / (float) confinerStates.Count,
+                    Gizmos.color = new Color((float) index / (float) m_confinerStates.Count,
                         (float) index1 / (float) confinerState.graphs.Count, 0.2f);
                     var g = confinerState.graphs[index1];
-                    Handles.Label(g.points[0].position, "A=" + g.ComputeSignedArea());
-                    for (int i = 0; i < g.points.Count; ++i)
+                    Handles.Label(g.m_points[0].m_position, "A=" + g.ComputeSignedArea());
+                    for (int i = 0; i < g.m_points.Count; ++i)
                     {
                         Gizmos.DrawLine(
-                            g.points[i].position,
-                            g.points[(i + 1) % g.points.Count].position);
+                            g.m_points[i].m_position,
+                            g.m_points[(i + 1) % g.m_points.Count].m_position);
                     }
                 }
             }
@@ -405,37 +411,37 @@ namespace Cinemachine
         
         private void OnDrawGizmos()
         {
-            if (!DrawGizmosDebug) return;
-            if (confinerStates != null && m_BoundingShape2D != null)
+            if (!m_DrawGizmosDebug) return;
+            if (m_confinerStates != null && m_BoundingShape2D != null)
             {
-                Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.position;
-                for (var index = 0; index < confinerStates.Count; index++)
+                Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.m_position;
+                for (var index = 0; index < m_confinerStates.Count; index++)
                 {
-                    var confinerState = confinerStates[index];
+                    var confinerState = m_confinerStates[index];
                     for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
                     {
-                        Gizmos.color = new Color((float) index / (float) confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
+                        Gizmos.color = new Color((float) index / (float) m_confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
                         var g = confinerState.graphs[index1];
-                        //Handles.Label(offset + g.points[0].position, "A="+g.ComputeSignedArea());
-                        //Handles.Label(offset + g.points[0].position, "W="+g.windowDiagonal);
-                        for (int i = 0; i < g.points.Count; ++i)
+                        //Handles.Label(offset + g.m_points[0].m_position, "A="+g.ComputeSignedArea());
+                        //Handles.Label(offset + g.m_points[0].m_position, "W="+g.m_windowDiagonal);
+                        for (int i = 0; i < g.m_points.Count; ++i)
                         {
-                            Gizmos.DrawLine(offset + g.points[i].position, offset + g.points[(i + 1) % g.points.Count].position);
+                            Gizmos.DrawLine(offset + g.m_points[i].m_position, offset + g.m_points[(i + 1) % g.m_points.Count].m_position);
                         }
                     }
                 }
 
                 Gizmos.color = Color.white;
-                // for (var index = 0; index < confinerStates.Count; index++)
+                // for (var index = 0; index < m_confinerStates.Count; index++)
                 {
-                    // var confinerState = confinerStates[index];
-                    var confinerState = confinerStates[0];
+                    // var confinerState = m_confinerStates[index];
+                    var confinerState = m_confinerStates[0];
                     foreach (var g in confinerState.graphs)
                     {
-                        for (int i = 0; i < g.points.Count; ++i)
+                        for (int i = 0; i < g.m_points.Count; ++i)
                         {
-                            Gizmos.DrawLine(offset + g.points[i].position,
-                                offset + g.points[i].position + g.points[i].normal);
+                            Gizmos.DrawLine(offset + g.m_points[i].m_position,
+                                offset + g.m_points[i].m_position + g.m_points[i].m_shrinkDirection);
                         }
                     }
                 }

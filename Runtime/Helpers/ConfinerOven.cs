@@ -11,8 +11,15 @@ namespace Cinemachine
     /// </summary>
     public class ConfinerOven
     {
-        private List<List<Graph>> graphs;
-        private ConfinerStateToPath _confinerStateToPath;
+        internal class ConfinerState
+        {
+            public List<ShrinkablePolygon> graphs;
+            public float windowSize;
+            public float state;
+        }
+        
+        private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
+        private ConfinerStateToPath m_confinerStateToPath;
         
         /// <summary>
         /// 
@@ -22,24 +29,24 @@ namespace Cinemachine
         /// <param name="shrinkAmount"></param>
         internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
         {
-            graphs = CreateGraphs(inputPath, sensorRatio);
+            m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, sensorRatio);
             int graphs_index = 0;
 
             bool shrinking = true;
             while (shrinking)
             {
-                List<Graph> nextGraphsIteration = new List<Graph>();
-                for (var g = 0; g < graphs[graphs_index].Count; ++g)
+                List<ShrinkablePolygon> nextGraphsIteration = new List<ShrinkablePolygon>();
+                for (var g = 0; g < m_shrinkablePolygons[graphs_index].Count; ++g)
                 {
-                    graphs[graphs_index][g].ComputeRectangulizedNormals();
-                    var graph = graphs[graphs_index][g].DeepCopy();
+                    m_shrinkablePolygons[graphs_index][g].ComputeAspectBasedNormals();
+                    var graph = m_shrinkablePolygons[graphs_index][g].DeepCopy();
                     if (graph.Shrink(shrinkAmount))
                     {
-                        if (graph.windowDiagonal > 0.1f) graph.Simplify();
+                        if (graph.m_windowDiagonal > 0.1f) graph.Simplify();
                         /// 2. DO until Graph G has intersections
                         /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
                         /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
-                        Graph.DivideAlongIntersections(graph, out List<Graph> subgraphs);
+                        ShrinkablePolygon.DivideAlongIntersections(graph, out List<ShrinkablePolygon> subgraphs);
                         nextGraphsIteration.AddRange(subgraphs);
                     }
                     else
@@ -48,13 +55,13 @@ namespace Cinemachine
                     }
                 }
 
-                graphs.Add(nextGraphsIteration);
+                m_shrinkablePolygons.Add(nextGraphsIteration);
                 ++graphs_index;
 
                 shrinking = false;
-                for (var index = 0; index < graphs[graphs_index].Count; index++)
+                for (var index = 0; index < m_shrinkablePolygons[graphs_index].Count; index++)
                 {
-                    var graph = graphs[graphs_index][index];
+                    var graph = m_shrinkablePolygons[graphs_index][index];
                     if (graph.IsShrinkable())
                     {
                         shrinking = true;
@@ -67,43 +74,21 @@ namespace Cinemachine
         /// <summary>
         /// Converts and returns List<List<Graph>> from a List<List<Vector2>
         /// </summary>
-        private List<List<Graph>> CreateGraphs(in List<List<Vector2>> paths, in float sensorRatio)
+        private List<List<ShrinkablePolygon>> CreateShrinkablePolygons(in List<List<Vector2>> paths, in float aspectRatio)
         {
             if (paths == null)
             {
-                return new List<List<Graph>>();
+                return new List<List<ShrinkablePolygon>>();
             }
 
-            List<List<Point2>> pathPoints = new List<List<Point2>>();
-            foreach (var path in paths)
+            List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>();
+            foreach (var points in paths)
             {
-                var points = new List<Point2>();
-                foreach (var point in path)
-                {
-                    points.Add(new Point2
-                    {
-                        position = point,
-                    });
-                }
-                pathPoints.Add(Graph.RotateListToLeftmost(points));
+                var newShrinkablePolygon = new ShrinkablePolygon(points, aspectRatio);
+                shrinkablePolygons.Add(new List<ShrinkablePolygon> { newShrinkablePolygon });
             }
 
-            List<List<Graph>> newGraphs = new List<List<Graph>>();
-            foreach (var points in pathPoints)
-            {
-                Graph newGraph = new Graph { points = points };
-                newGraph.sensorRatio = sensorRatio;
-                newGraph.ComputeNormals(true);
-                newGraph.ComputeSignedArea();
-                if (!newGraph.ClockwiseOrientation)
-                {
-                    newGraph.FlipNormals();
-                    newGraph.ComputeSignedArea();
-                }
-                newGraphs.Add(new List<Graph> { newGraph });
-            }
-
-            return newGraphs;
+            return shrinkablePolygons;
         }
         
         /// <summary>
@@ -113,28 +98,28 @@ namespace Cinemachine
         {
             // TODO: no need to lerp, at i % 2 == 0 - remove this part
             ConfinerState result = new ConfinerState();
-            for (int i = confinerStates.Count - 1; i >= 0; --i)
+            for (int i = m_confinerStates.Count - 1; i >= 0; --i)
             {
-                if (confinerStates[i].windowSize <= orthographicSize)
+                if (m_confinerStates[i].windowSize <= orthographicSize)
                 {
-                    if (i == confinerStates.Count - 1)
+                    if (i == m_confinerStates.Count - 1)
                     {
-                        result = confinerStates[i];
+                        result = m_confinerStates[i];
                     }
-                    else if (Math.Abs(confinerStates[i].state - confinerStates[i + 1].state) < 1e-6f)
+                    else if (Math.Abs(m_confinerStates[i].state - m_confinerStates[i + 1].state) < 1e-6f)
                     {
-                        // blend between confinerStates with same state
-                        result = ConfinerStateLerp(confinerStates[i], confinerStates[i+1], Mathf.InverseLerp(
-                            confinerStates[i].windowSize, confinerStates[i + 1].windowSize, orthographicSize));
+                        // blend between m_confinerStates with same m_state
+                        result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], Mathf.InverseLerp(
+                            m_confinerStates[i].windowSize, m_confinerStates[i + 1].windowSize, orthographicSize));
                     }
                     else
                     {
-                        // choose confinerStates with windowSize closer to orthographicSize
+                        // choose m_confinerStates with windowSize closer to orthographicSize
                         result = 
-                            Mathf.Abs(confinerStates[i].windowSize - orthographicSize) < 
-                            Mathf.Abs(confinerStates[i + 1].windowSize - orthographicSize) ? 
-                                confinerStates[i] : 
-                                confinerStates[i+1];
+                            Mathf.Abs(m_confinerStates[i].windowSize - orthographicSize) < 
+                            Mathf.Abs(m_confinerStates[i + 1].windowSize - orthographicSize) ? 
+                                m_confinerStates[i] : 
+                                m_confinerStates[i+1];
                     }
                     break;
                 }
@@ -156,21 +141,21 @@ namespace Cinemachine
 
             ConfinerState result = new ConfinerState
             {
-                graphs = new List<Graph>(left.graphs.Count),
+                graphs = new List<ShrinkablePolygon>(left.graphs.Count),
             };
             for (int i = 0; i < left.graphs.Count; ++i)
             {
-                var r = new Graph
+                var r = new ShrinkablePolygon
                 {
-                    points = new List<Point2>(left.graphs[i].points.Count),
+                    m_points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.graphs[i].m_points.Count),
                 };
-                for (int j = 0; j < left.graphs[i].points.Count; ++j)
+                for (int j = 0; j < left.graphs[i].m_points.Count; ++j)
                 {
-                    r.intersectionPoints = left.graphs[i].intersectionPoints;
-                    var rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].points[j]);
-                    r.points.Add(new Point2
+                    r.m_intersectionPoints = left.graphs[i].m_intersectionPoints;
+                    var rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].m_points[j]);
+                    r.m_points.Add(new ShrinkablePolygon.ShrinkablePoint2
                     {
-                        position = Vector2.Lerp(left.graphs[i].points[j].position, rightPoint, lerp),
+                        m_position = Vector2.Lerp(left.graphs[i].m_points[j].m_position, rightPoint, lerp),
                     });
                 }
                 result.graphs.Add(r);   
@@ -178,57 +163,57 @@ namespace Cinemachine
             return result;
         }
         
-        private List<ConfinerState> confinerStates;
+        private List<ConfinerState> m_confinerStates;
         /// <summary>
-        /// Converts and returns graphs into List<ConfinerState>
+        /// Converts and returns m_shrinkablePolygons into List<ConfinerState>
         /// </summary>
         internal List<ConfinerState> GetGraphsAsConfinerStates()
         {
             TrimGraphs();
 
-            confinerStates = new List<ConfinerState>();
-            for (int i = 0; i < graphs.Count; ++i)
+            m_confinerStates = new List<ConfinerState>();
+            for (int i = 0; i < m_shrinkablePolygons.Count; ++i)
             {
-                float stateAverage = graphs[i].Count;
-                for (var index = 0; index < graphs[i].Count; index++)
+                float stateAverage = m_shrinkablePolygons[i].Count;
+                for (var index = 0; index < m_shrinkablePolygons[i].Count; index++)
                 {
-                    stateAverage += graphs[i][index].state;
+                    stateAverage += m_shrinkablePolygons[i][index].m_state;
                 }
-                stateAverage /= graphs[i].Count + 1;
+                stateAverage /= m_shrinkablePolygons[i].Count + 1;
 
-                var maxWindowDiagonal = graphs[i][0].windowDiagonal;
-                for (var index = 1; index < graphs[i].Count; index++)
+                var maxWindowDiagonal = m_shrinkablePolygons[i][0].m_windowDiagonal;
+                for (var index = 1; index < m_shrinkablePolygons[i].Count; index++)
                 {
-                    maxWindowDiagonal = Mathf.Max(graphs[i][index].windowDiagonal, maxWindowDiagonal);
+                    maxWindowDiagonal = Mathf.Max(m_shrinkablePolygons[i][index].m_windowDiagonal, maxWindowDiagonal);
                 }
                 
-                confinerStates.Add(new ConfinerState
+                m_confinerStates.Add(new ConfinerState
                 {
                     windowSize = maxWindowDiagonal,
-                    graphs = graphs[i],
+                    graphs = m_shrinkablePolygons[i],
                     state = stateAverage,
                 });
             }
 
-            return confinerStates;
+            return m_confinerStates;
         }
 
         /// <summary>
-        /// Removes graphs from the precalculated graphs that are redundant,
-        /// because they are lerpable between two other graphs.
+        /// Removes m_shrinkablePolygons from the precalculated m_shrinkablePolygons that are redundant,
+        /// because they are lerpable between two other m_shrinkablePolygons.
         /// </summary>
         private void TrimGraphs()
         {
-            int stateStart = graphs.Count - 1;
+            int stateStart = m_shrinkablePolygons.Count - 1;
             // going backwards, so we can remove without problems
-            for (int i = graphs.Count - 2; i >= 0; --i)
+            for (int i = m_shrinkablePolygons.Count - 2; i >= 0; --i)
             {
-                bool stateChanged = graphs[stateStart].Count != graphs[i].Count;
-                if (graphs[stateStart].Count == graphs[i].Count)
+                bool stateChanged = m_shrinkablePolygons[stateStart].Count != m_shrinkablePolygons[i].Count;
+                if (m_shrinkablePolygons[stateStart].Count == m_shrinkablePolygons[i].Count)
                 {
-                    for (int j = 0; j < graphs[stateStart].Count; ++j)
+                    for (int j = 0; j < m_shrinkablePolygons[stateStart].Count; ++j)
                     {
-                        if (graphs[stateStart][j].state != graphs[i][j].state)
+                        if (m_shrinkablePolygons[stateStart][j].m_state != m_shrinkablePolygons[i][j].m_state)
                         {
                             stateChanged = true;
                             break;
@@ -240,12 +225,12 @@ namespace Cinemachine
                 {
                     // state0_min, ..., state0_max, state1_min, ... state1_max
                     // ... parts need to be removed
-                    // when graphs[i].Count != graphs[j].Count, then we are at state0_max
+                    // when m_shrinkablePolygons[i].Count != m_shrinkablePolygons[j].Count, then we are at state0_max
                     // so remove all between state0_max + 2, to state1_max - 1.
                     var stateEnd = i != 0 ? i + 2 : 1;
                     if (stateEnd < stateStart)
                     {
-                        graphs.RemoveRange(stateEnd, stateStart - stateEnd);
+                        m_shrinkablePolygons.RemoveRange(stateEnd, stateStart - stateEnd);
                     }
 
                     stateStart = i;

@@ -6,81 +6,81 @@ using Object = UnityEngine.Object;
 namespace Cinemachine
 {
     /// <summary>
-    /// Converts confiner state to CompositeCollider2Ds to calculate the union of the graphs making up the confiner state.
-    /// Then, it converts the CompositeCollider2D into a List of points.
+    /// Converts confiner m_state to CompositeCollider2Ds to calculate the union of the graphs making up the confiner m_state.
+    /// Then, it converts the CompositeCollider2D into a List of m_points.
     /// </summary>
     class ConfinerStateToPath
     {
-        private Transform parent;
-        private GameObject compositeColliderHolder;
-        private CompositeCollider2D compositeCollider2D;
-        private GameObject polygonHolder;
+        private Transform m_parent;
+        private GameObject m_compositeColliderHolder;
+        private CompositeCollider2D m_compositeCollider2D;
+        private GameObject m_polygonHolder;
 
-        private string nametag;
-        private static int ID = 0;
-        private int myID = 0;
+        private string m_nametag;
+        private static int m_ID = 0;
+        private int m_myID = 0;
 
-        public ConfinerStateToPath(string vcamNametag)
+        public ConfinerStateToPath(string vcamMNametag)
         {
-            nametag = vcamNametag;
-            compositeColliderHolder = GameObject.Find("CMBakedConfiner for " + nametag +" - "+ myID);
+            m_nametag = vcamMNametag;
+            m_compositeColliderHolder = GameObject.Find("CMBakedConfiner for " + m_nametag +" - "+ m_myID);
         }
 
         private void Cleanup()
         {
-            if (compositeColliderHolder != null)
+            if (m_compositeColliderHolder != null)
                 if (Application.isPlaying)
                 {
-                    Object.Destroy(compositeColliderHolder.gameObject);
+                    Object.Destroy(m_compositeColliderHolder.gameObject);
                 }
                 else
                 {
-                    Object.DestroyImmediate(compositeColliderHolder.gameObject);
+                    Object.DestroyImmediate(m_compositeColliderHolder.gameObject);
                 }
 
-            compositeColliderHolder = null;
-            compositeCollider2D = null;
-            polygonHolder = null;
+            m_compositeColliderHolder = null;
+            m_compositeCollider2D = null;
+            m_polygonHolder = null;
         }
         
         private void InitializeCompositeColliderHolder()
         {
-            if (compositeColliderHolder == null || compositeCollider2D == null)
+            if (m_compositeColliderHolder == null || m_compositeCollider2D == null)
             {
                 Cleanup();
                 
-                myID = ID; ID++;
-                compositeColliderHolder = new GameObject("CMBakedConfiner for " + nametag +" - "+ myID);
-                compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
+                m_myID = m_ID; m_ID++;
+                m_compositeColliderHolder = new GameObject("CMBakedConfiner for " + m_nametag +" - "+ m_myID);
+                m_compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
             
-                var rigidbody2D = compositeColliderHolder.AddComponent<Rigidbody2D>();
+                var rigidbody2D = m_compositeColliderHolder.AddComponent<Rigidbody2D>();
                 rigidbody2D.bodyType = RigidbodyType2D.Static;
                 rigidbody2D.simulated = false;
                 rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
                 
-                compositeCollider2D = compositeColliderHolder.AddComponent<CompositeCollider2D>();
-                compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
+                m_compositeCollider2D = m_compositeColliderHolder.AddComponent<CompositeCollider2D>();
+                m_compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
             }
 
-            if (polygonHolder != null)
+            if (m_polygonHolder != null)
             {
                 if (Application.isPlaying)
                 {
-                    Object.Destroy(polygonHolder.gameObject);
+                    Object.Destroy(m_polygonHolder.gameObject);
                 }
                 else
                 {
-                    Object.DestroyImmediate(polygonHolder.gameObject);
+                    Object.DestroyImmediate(m_polygonHolder.gameObject);
                 }
             }
         }
         
         
         /// <summary>Converts a List<List<Graph> into composite colliders. The outher list represents
-        /// different states in pairs: 0-1 is one state, 2-3 another, etc. Between states we can lerp.
+        /// different states in pairs: 0-1 is one m_state, 2-3 another, etc. Between states we can lerp.
         /// The inner list of graphs represent polygon colliders that need to be unioned.
         /// </summary>
-        internal void Convert(ConfinerState confinerState,
+        internal void Convert(ConfinerOven.ConfinerState confinerState,
             out List<List<Vector2>> path, out Collider2D collider2D)
         {
             // TODO: performance optimization!
@@ -90,19 +90,19 @@ namespace Cinemachine
             // own (m_BoundingCompositeShape2D.OverlapPoint(camPos)) instead of relying on the collider
             InitializeCompositeColliderHolder();
             
-            polygonHolder = new GameObject("PolygonCollider2Ds");
-            polygonHolder.transform.parent = compositeColliderHolder.transform;
-            polygonHolder.hideFlags = HideFlags.NotEditable;
+            m_polygonHolder = new GameObject("PolygonCollider2Ds");
+            m_polygonHolder.transform.parent = m_compositeColliderHolder.transform;
+            m_polygonHolder.hideFlags = HideFlags.NotEditable;
             foreach (var graph in confinerState.graphs)
             {
-                var polygon = polygonHolder.AddComponent<PolygonCollider2D>();
+                var polygon = m_polygonHolder.AddComponent<PolygonCollider2D>();
                 polygon.usedByComposite = true;
-                polygon.points = graph.points.Select(x => x.position).ToArray();
+                polygon.points = graph.m_points.Select(x => x.m_position).ToArray();
                 
-                foreach (var intersectionPoint in graph.intersectionPoints)
+                foreach (var intersectionPoint in graph.m_intersectionPoints)
                 {
                     Vector2 closestPoint = graph.ClosestGraphPoint(intersectionPoint);
-                    var intersectionPolygon = polygonHolder.AddComponent<PolygonCollider2D>();
+                    var intersectionPolygon = m_polygonHolder.AddComponent<PolygonCollider2D>();
                     intersectionPolygon.usedByComposite = true;
 
                     Vector2 direction = (closestPoint - intersectionPoint).normalized;
@@ -117,15 +117,15 @@ namespace Cinemachine
             }
 
             path = new List<List<Vector2>>();
-            for (int i = 0; i < compositeCollider2D.pathCount; ++i)
+            for (int i = 0; i < m_compositeCollider2D.pathCount; ++i)
             {
-                Vector2[] points = new Vector2[compositeCollider2D.GetPathPointCount(i)];
-                compositeCollider2D.GetPath(i, points);
+                Vector2[] points = new Vector2[m_compositeCollider2D.GetPathPointCount(i)];
+                m_compositeCollider2D.GetPath(i, points);
 
                 path.Add(new List<Vector2>(points));
             }
 
-            collider2D = compositeCollider2D;
+            collider2D = m_compositeCollider2D;
         }
     }
 }
