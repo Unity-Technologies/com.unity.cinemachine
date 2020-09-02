@@ -556,7 +556,7 @@ namespace Cinemachine
                 FlipNormals();
                 for (int i = 0; i < m_points.Count; ++i)
                 {
-                    m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount * 2f);
+                    m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount * 2f); // why 2?
                 }
             }
             float area3 = Mathf.Abs(ComputeSignedArea());
@@ -666,6 +666,7 @@ namespace Cinemachine
             var canSimplify = true;
             while (canSimplify)
             {
+                // TODO: CHECK ONLY ADJACENT POINTS
                 canSimplify = false;
                 for (int i = 0; i < m_points.Count; ++i)
                 {
