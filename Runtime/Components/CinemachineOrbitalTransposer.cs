@@ -265,6 +265,7 @@ namespace Cinemachine
             if (target == FollowTarget)
             {
                 mLastTargetPosition += positionDelta;
+                mLastCameraPosition += positionDelta;
             }
         }
 
