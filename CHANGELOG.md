@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.6.3-preview.1] - 2020-09-03
 - Regression fix (1274989) - OnTargetObjectWarped broken for OrbitalTransposer
-
+- Bugfix (1276391) - CM Brain Reset did not reset Custom Blends asset in inspector
+- Bugfix (1276343) - CM Brain inspector custom blends misaligned dropdown arrow
 
 ## [2.6.2] - 2020-09-02
 ### Bugfixes

@@ -1,8 +1,11 @@
 <size=20><b>Version 2.6.3</b></size>
 
 - Regression fix (1274989) - OnTargetObjectWarped broken for OrbitalTransposer
+- Bugfix (1276391) - CM Brain Reset did not reset Custom Blends asset in inspector
+- Bugfix (1276343) - CM Brain inspector custom blends misaligned dropdown arrow
 
 <size=20><b>Version 2.6.2</b></size>
+
 - Regression fix: OnCameraCut Memory leak when using Cinemachine with PostProcessing package
 - Bugfix (1272146): Checking for null pipeline, before drawing gizmos.
 - Add support for disabling Physics module
