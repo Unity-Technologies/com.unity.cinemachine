@@ -12,6 +12,11 @@ namespace Cinemachine.PostFX
     [AddComponentMenu("")] // Hide in menu
     public class CinemachinePostProcessing : CinemachineExtension 
     {
+        /// <summary>Apply PostProcessing effects</summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime) {}
@@ -75,6 +80,9 @@ namespace Cinemachine.PostFX
             + "Offsets the sharpest point away from the location of the focus target.")]
         public float m_FocusOffset;
 
+        /// <summary>
+        /// This Post-Processing profile will be applied whenever this virtual camera is live
+        /// </summary>
         [Tooltip("This Post-Processing profile will be applied whenever this virtual camera is live")]
         public PostProcessProfile m_Profile;
 
@@ -135,6 +143,11 @@ namespace Cinemachine.PostFX
             base.OnDestroy();
         }
 
+        /// <summary>Apply PostProcessing effects</summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)

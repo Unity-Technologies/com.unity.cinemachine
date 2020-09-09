@@ -283,6 +283,9 @@ namespace Cinemachine
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
         }
 
+        /// <summary>
+        /// Uninstall the GUI handler
+        /// </summary>
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -322,6 +325,9 @@ namespace Cinemachine
         /// <summary>API for the inspector editor.  Animation module does not have hashes
         /// for state parents, so we have to invent them in order to implement nested state
         /// handling</summary>
+        /// <param name="parentHash">Parent state's hash</param>
+        /// <param name="clip">The clip to create the fake hash for</param>
+        /// <returns>The fake hash</returns>
         public static int CreateFakeHash(int parentHash, AnimationClip clip)
         {
             return Animator.StringToHash(parentHash.ToString() + "_" + clip.name);

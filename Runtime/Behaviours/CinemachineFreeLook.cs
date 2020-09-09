@@ -105,6 +105,8 @@ namespace Cinemachine
             /// <summary>Radius of orbit</summary>
             public float m_Radius;
             /// <summary>Constructor with specific values</summary>
+            /// <param name="h">Orbit height</param>
+            /// <param name="r">Orbit radius</param>
             public Orbit(float h, float r) { m_Height = h; m_Radius = r; }
         }
 
@@ -224,6 +226,7 @@ namespace Cinemachine
             DestroyRigs();
         }
 
+        /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
         public override bool PreviousStateIsValid
         {
             get { return base.PreviousStateIsValid; }

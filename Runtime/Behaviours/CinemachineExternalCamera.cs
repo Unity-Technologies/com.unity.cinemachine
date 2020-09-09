@@ -48,6 +48,8 @@ namespace Cinemachine
         public BlendHint m_BlendHint = BlendHint.None;
 
         /// <summary>Internal use only.  Do not call this method</summary>
+        /// <param name="worldUp">Effective world up</param>
+        /// <param name="deltaTime">Effective deltaTime</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             // Get the state from the camera

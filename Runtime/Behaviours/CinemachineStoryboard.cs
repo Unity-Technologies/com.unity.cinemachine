@@ -23,12 +23,21 @@ namespace Cinemachine
 #endif
     public class CinemachineStoryboard : CinemachineExtension
     {
+        /// <summary>
+        /// If checked, all storyboards are globally muted
+        /// </summary>
         [Tooltip("If checked, all storyboards are globally muted")]
         public static bool s_StoryboardGlobalMute;
 
+        /// <summary>
+        /// If checked, the specified image will be displayed as an overlay over the virtual camera's output
+        /// </summary>
         [Tooltip("If checked, the specified image will be displayed as an overlay over the virtual camera's output")]
         public bool m_ShowImage = true;
 
+        /// <summary>
+        /// The image to display
+        /// </summary>
         [Tooltip("The image to display")]
         public Texture m_Image;
 
@@ -42,28 +51,52 @@ namespace Cinemachine
             /// <summary>Image will be stretched to cover any aspect mismatch with the screen</summary>
             StretchToFit
         };
+        /// <summary>
+        /// How to handle differences between image aspect and screen aspect
+        /// </summary>
         [Tooltip("How to handle differences between image aspect and screen aspect")]
         public FillStrategy m_Aspect = FillStrategy.BestFit;
 
+        /// <summary>
+        /// The opacity of the image.  0 is transparent, 1 is opaque
+        /// </summary>
         [Tooltip("The opacity of the image.  0 is transparent, 1 is opaque")]
         [Range(0, 1)]
         public float m_Alpha = 1;
 
+        /// <summary>
+        /// The screen-space position at which to display the image.  Zero is center
+        /// </summary>
         [Tooltip("The screen-space position at which to display the image.  Zero is center")]
         public Vector2 m_Center = Vector2.zero;
 
+        /// <summary>
+        /// The screen-space rotation to apply to the image
+        /// </summary>
         [Tooltip("The screen-space rotation to apply to the image")]
         public Vector3 m_Rotation = Vector3.zero;
 
+        /// <summary>
+        /// The screen-space scaling to apply to the image
+        /// </summary>
         [Tooltip("The screen-space scaling to apply to the image")]
         public Vector2 m_Scale = Vector3.one;
 
+        /// <summary>
+        /// If checked, X and Y scale are synchronized
+        /// </summary>
         [Tooltip("If checked, X and Y scale are synchronized")]
         public bool m_SyncScale = true;
 
+        /// <summary>
+        /// If checked, Camera transform will not be controlled by this virtual camera
+        /// </summary>
         [Tooltip("If checked, Camera transform will not be controlled by this virtual camera")]
         public bool m_MuteCamera;
 
+        /// <summary>
+        /// Wipe the image on and off horizontally
+        /// </summary>
         [Range(-1, 1)]
         [Tooltip("Wipe the image on and off horizontally")]
         public float m_SplitView = 0f;
@@ -77,10 +110,14 @@ namespace Cinemachine
         }
         List<CanvasInfo> mCanvasInfo = new List<CanvasInfo>();
 
-        /// <summary>Standard CinemachineExtension callback</summary>
+        /// <summary>Callback to display the image</summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
-            CinemachineCore.Stage stage, ref CameraState state, float wipeAmountTime)
+            CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             // Apply to this vcam only, not the children
             if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Finalize)
@@ -92,6 +129,8 @@ namespace Cinemachine
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
 
+        /// <summary>Connect to virtual camera.  Adds/removes listener</summary>
+        /// <param name="connect">True if connecting, false if disconnecting</param>
         protected override void ConnectToVcam(bool connect)
         {
             base.ConnectToVcam(connect);

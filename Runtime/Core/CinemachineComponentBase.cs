@@ -236,7 +236,6 @@ namespace Cinemachine
         /// Force the virtual camera to assume a given position and orientation.  
         /// Procedural placement then takes over.
         /// Base class implementation does nothing.</summary>
-        /// </summary>
         /// <param name="pos">Worldspace pposition to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}

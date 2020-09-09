@@ -248,6 +248,10 @@ namespace Cinemachine
         /// other services to hook into the pipeline.
         /// See CinemachineCore.Stage.
         /// </summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="newState">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected void InvokePostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage,
             ref CameraState newState, float deltaTime)
@@ -279,6 +283,9 @@ namespace Cinemachine
         /// other services to hook into the pipeline.
         /// See CinemachineCore.Stage.
         /// </summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="newState">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected void InvokePrePipelineMutateCameraStateCallback(
             CinemachineVirtualCameraBase vcam, ref CameraState newState, float deltaTime)
         {
@@ -305,6 +312,9 @@ namespace Cinemachine
         /// <summary>
         /// Invokes the OnTransitionFromCamera for all extensions on this camera
         /// </summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         /// <returns>True to request a vcam update of internal state</returns>
         protected bool InvokeOnTransitionInExtensions(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
@@ -382,6 +392,7 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>Returns false if the object has been deleted</summary>
         public bool IsValid { get { return !(this == null); } }
 
         /// <summary>The CameraState object holds all of the information
