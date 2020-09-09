@@ -21,6 +21,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     public class CinemachineStoryboard : CinemachineExtension
     {
         [Tooltip("If checked, all storyboards are globally muted")]

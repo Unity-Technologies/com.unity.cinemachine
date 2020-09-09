@@ -17,6 +17,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera is looking at.</summary>

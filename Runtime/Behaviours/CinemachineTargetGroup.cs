@@ -58,6 +58,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup
     {
         /// <summary>Holds the information that represents a member of the group</summary>

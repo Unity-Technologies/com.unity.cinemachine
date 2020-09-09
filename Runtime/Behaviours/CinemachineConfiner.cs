@@ -24,6 +24,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     public class CinemachineConfiner : CinemachineExtension
     {
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D

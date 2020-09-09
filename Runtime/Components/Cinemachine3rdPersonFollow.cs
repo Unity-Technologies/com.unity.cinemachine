@@ -15,6 +15,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
     {
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 

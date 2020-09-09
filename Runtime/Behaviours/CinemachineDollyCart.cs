@@ -14,6 +14,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     public class CinemachineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>

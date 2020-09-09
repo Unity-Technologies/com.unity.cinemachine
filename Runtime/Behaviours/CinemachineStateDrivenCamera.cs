@@ -26,6 +26,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineStateDrivenCamera")]
+    [DisallowMultipleComponent]
     public class CinemachineStateDrivenCamera : CinemachineVirtualCameraBase
     {
         /// <summary>Default object for the camera children to look at (the aim target), if not specified in a child rig.  May be empty</summary>

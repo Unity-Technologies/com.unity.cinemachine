@@ -12,6 +12,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachineSmoothPath")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     public class CinemachineSmoothPath : CinemachinePathBase
     {
         /// <summary>If checked, then the path ends are joined to form a continuous loop</summary>
