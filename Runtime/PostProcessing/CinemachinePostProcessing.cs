@@ -41,6 +41,7 @@ namespace Cinemachine.PostFX
 #endif
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachinePostProcessing.html")]
     public class CinemachinePostProcessing : CinemachineExtension
     {
         /// <summary>This is obsolete, please use m_FocusTracking</summary>

@@ -58,6 +58,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera wants to look at (the Aim target).

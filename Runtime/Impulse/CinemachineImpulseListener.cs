@@ -15,6 +15,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseListener.html")]
     public class CinemachineImpulseListener : CinemachineExtension
     {
         /// <summary>

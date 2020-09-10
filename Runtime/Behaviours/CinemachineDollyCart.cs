@@ -14,6 +14,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
     public class CinemachineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>

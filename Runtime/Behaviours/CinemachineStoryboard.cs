@@ -21,6 +21,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineStoryboard.html")]
     public class CinemachineStoryboard : CinemachineExtension
     {
         /// <summary>

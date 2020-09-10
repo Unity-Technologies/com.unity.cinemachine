@@ -21,6 +21,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineMixingCamera.html")]
     public class CinemachineMixingCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The maximum number of tracked cameras.  If you want to add

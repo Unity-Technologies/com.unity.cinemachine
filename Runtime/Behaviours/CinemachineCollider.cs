@@ -31,6 +31,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineCollider.html")]
     public class CinemachineCollider : CinemachineExtension
     {
         /// <summary>Objects on these layers will be detected.</summary>

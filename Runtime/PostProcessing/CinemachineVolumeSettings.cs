@@ -39,6 +39,7 @@ namespace Cinemachine.PostFX
 #endif
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineVolumeSettings.html")]
     public class CinemachineVolumeSettings : CinemachineExtension
     {
         /// <summary>This is obsolete, please use m_FocusTracking</summary>

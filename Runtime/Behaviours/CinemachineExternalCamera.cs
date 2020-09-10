@@ -17,6 +17,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineExternalCamera.html")]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera is looking at.</summary>

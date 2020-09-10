@@ -24,6 +24,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineConfiner.html")]
     public class CinemachineConfiner : CinemachineExtension
     {
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D

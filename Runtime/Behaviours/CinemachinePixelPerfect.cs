@@ -12,6 +12,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachinePixelPerfect.html")]
     public class CinemachinePixelPerfect : CinemachineExtension
     {
         /// <summary>Callback to tweak the orthographic size</summary>

@@ -22,6 +22,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>

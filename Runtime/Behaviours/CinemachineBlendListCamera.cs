@@ -21,6 +21,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineBlendListCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBlendListCamera.html")]
     public class CinemachineBlendListCamera : CinemachineVirtualCameraBase
     {
         /// <summary>Default object for the camera children to look at (the aim target), 

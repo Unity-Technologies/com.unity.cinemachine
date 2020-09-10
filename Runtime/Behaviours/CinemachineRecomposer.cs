@@ -12,6 +12,7 @@ using Cinemachine;
 #else
 [ExecuteInEditMode]
 #endif
+[HelpURL(Documentation.BaseURL + "manual/CinemachineRecomposer.html")]
 public class CinemachineRecomposer : CinemachineExtension
 {
     /// <summary>

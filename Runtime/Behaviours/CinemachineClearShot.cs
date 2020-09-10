@@ -36,6 +36,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineClearShot")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineClearShot.html")]
     public class CinemachineClearShot : CinemachineVirtualCameraBase
     {
         /// <summary>Default object for the camera children to look at (the aim target), if not specified in a child camera.  May be empty.</summary>

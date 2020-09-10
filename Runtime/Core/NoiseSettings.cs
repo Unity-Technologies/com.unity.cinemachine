@@ -18,6 +18,7 @@ namespace Cinemachine
     /// asset, but it's super interesting!
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineNoiseProfiles.html")]
     public sealed class NoiseSettings : SignalSourceAsset
     {
         /// <summary>Describes the behaviour for a channel of noise</summary>

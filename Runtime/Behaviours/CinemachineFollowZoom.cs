@@ -16,6 +16,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineFollowZoom.html")]
     public class CinemachineFollowZoom : CinemachineExtension
     {
         /// <summary>The shot width to maintain, in world units, at target distance.
