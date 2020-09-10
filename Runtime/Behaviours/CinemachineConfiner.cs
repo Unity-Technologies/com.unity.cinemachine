@@ -90,6 +90,7 @@ namespace Cinemachine
         /// <summary>
         /// Called when connecting to a virtual camera
         /// </summary>
+        /// <param name="connect">True if connecting, false if disconnecting</param>
         protected override void ConnectToVcam(bool connect)
         {
             base.ConnectToVcam(connect);

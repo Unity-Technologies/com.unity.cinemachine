@@ -50,7 +50,8 @@ namespace Cinemachine
             SimpleFollowWithWorldUp = 5
         }
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
-        [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also used to set the camera's Up vector, which will be maintained when aiming the camera.")]
+        [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
+            + "used to set the camera's Up vector, which will be maintained when aiming the camera.")]
         public BindingMode m_BindingMode = BindingMode.LockToTargetWithWorldUp;
 
         /// <summary>The distance which the transposer will attempt to maintain from the transposer subject</summary>
@@ -62,7 +63,10 @@ namespace Cinemachine
         /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the X-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's x-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
+        [Tooltip("How aggressively the camera tries to maintain the offset in the X-axis.  Small numbers "
+            + "are more responsive, rapidly translating the camera to keep the target's x-axis offset.  "
+            + "Larger numbers give a more heavy slowly responding camera. Using different settings per "
+            + "axis can yield a wide range of camera behaviors.")]
         public float m_XDamping = 1f;
 
         /// <summary>How aggressively the camera tries to maintain the offset in the Y-axis.
@@ -70,7 +74,10 @@ namespace Cinemachine
         /// y-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the Y-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's y-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
+        [Tooltip("How aggressively the camera tries to maintain the offset in the Y-axis.  Small numbers "
+            + "are more responsive, rapidly translating the camera to keep the target's y-axis offset.  "
+            + "Larger numbers give a more heavy slowly responding camera. Using different settings per "
+            + "axis can yield a wide range of camera behaviors.")]
         public float m_YDamping = 1f;
 
         /// <summary>How aggressively the camera tries to maintain the offset in the Z-axis.
@@ -78,7 +85,10 @@ namespace Cinemachine
         /// target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the Z-axis.  Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
+        [Tooltip("How aggressively the camera tries to maintain the offset in the Z-axis.  "
+            + "Small numbers are more responsive, rapidly translating the camera to keep the "
+            + "target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. "
+            + "Using different settings per axis can yield a wide range of camera behaviors.")]
         public float m_ZDamping = 1f;
 
         /// <summary>How to calculate the angular damping for the target orientation</summary>
@@ -101,25 +111,29 @@ namespace Cinemachine
         /// <summary>How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  "
+            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_PitchDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  "
+            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_YawDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  "
+            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
 
         /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target's orientation.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        [Tooltip("How aggressively the camera tries to track the target's orientation.  "
+            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_AngularDamping = 0f;
 
         /// <summary>Derived classes should call this from their OnValidate() implementation</summary>
@@ -217,6 +231,8 @@ namespace Cinemachine
         }
         
         /// <summary>Initializes the state for previous frame if appropriate.</summary>
+        /// <param name="curState">The current camera state</param>
+        /// <param name="deltaTime">Current effective deltaTime.</param>
         protected void InitPrevFrameStateInfo(
             ref CameraState curState, float deltaTime)
         {
@@ -303,6 +319,12 @@ namespace Cinemachine
 
         /// <summary>Return a new damped target position that respects the minimum 
         /// distance from the real target</summary>
+        /// <param name="dampedTargetPos">The effective position of the target, after damping</param>
+        /// <param name="cameraOffset">Desired camera offset from target</param>
+        /// <param name="cameraFwd">Current camera local +Z direction</param>
+        /// <param name="up">Effective world up</param>
+        /// <param name="actualTargetPos">The real undamped target position</param>
+        /// <returns>New camera offset, potentially adjusted to respect minimum distance from target</returns>
         protected Vector3 GetOffsetForMinimumTargetDistance(
             Vector3 dampedTargetPos, Vector3 cameraOffset, 
             Vector3 cameraFwd, Vector3 up, Vector3 actualTargetPos)
@@ -377,6 +399,8 @@ namespace Cinemachine
         }
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
+        /// <param name="worldUp">Current effective world up</param>
+        /// <returns>The position of the Follow target</returns>
         public virtual Vector3 GetTargetCameraPosition(Vector3 worldUp)
         {
             if (!IsValid)
@@ -392,6 +416,9 @@ namespace Cinemachine
         Transform m_previousTarget = null;
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
+        /// <param name="worldUp">Current effective world up</param>
+        /// <returns>The rotation of the Follow target, as understood by the Transposer.  
+        /// This is not necessarily the same thing as the actual target rotation</returns>
         public Quaternion GetReferenceOrientation(Vector3 worldUp)
         {
             if (m_BindingMode == BindingMode.WorldSpace)

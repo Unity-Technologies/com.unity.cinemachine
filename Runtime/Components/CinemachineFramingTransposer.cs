@@ -77,7 +77,7 @@ namespace Cinemachine
         [Space]
         [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain the offset in the X-axis.  "
-            + " Small numbers are more responsive, rapidly translating the camera to keep the target's "
+            + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
             + "x-axis offset.  Larger numbers give a more heavy slowly responding camera.  "
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
         public float m_XDamping = 1f;
@@ -325,6 +325,9 @@ namespace Cinemachine
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
         public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+
+        /// <summary>FramingTransposer's algorithm tahes camera orientation as input, 
+        /// so even though it is a Body component, it must apply after Aim</summary>
         public override bool BodyAppliesAfterAim { get { return true; } }
 
         const float kMinimumCameraDistance = 0.01f;
@@ -377,6 +380,7 @@ namespace Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
