@@ -165,14 +165,12 @@ namespace Cinemachine.Editor
                 return;
 
             mAssetPresets = new List<ScriptableObject>();
-#if UNITY_2018_1_OR_NEWER
             if (mAssetTypes != null)
             {
                 for (int i = 0; i < mAssetTypes.Length; ++i)
                     InspectorUtility.AddAssetsFromPackageSubDirectory(
                         mAssetTypes[i], mAssetPresets, "Presets/Noise");
             }
-#endif
             List<GUIContent> presetNameList = new List<GUIContent>();
             foreach (var n in mAssetPresets)
                 presetNameList.Add(new GUIContent("Presets/" + n.name));

@@ -14,11 +14,7 @@ namespace Cinemachine
     /// aim at all times, even in the presence of positional or rotational noise.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
-    #if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-    #else
-    [ExecuteInEditMode]
-    #endif
     public class Cinemachine3rdPersonAim : CinemachineExtension
     {
         /// <summary>Objects on these layers will be detected.</summary>

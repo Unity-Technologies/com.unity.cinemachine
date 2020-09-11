@@ -37,11 +37,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [AddComponentMenu("Cinemachine/CinemachineBrain")]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
@@ -823,20 +819,19 @@ namespace Cinemachine
                     cam.fieldOfView = state.Lens.FieldOfView;
                     if (cam.orthographic)
                         cam.orthographicSize = state.Lens.OrthographicSize;
-#if UNITY_2018_2_OR_NEWER
                     else
                     {
                         cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
                         cam.lensShift = state.Lens.LensShift;
                     }
-    #if CINEMACHINE_HDRP
+#if CINEMACHINE_HDRP
                     if (state.Lens.IsPhysicalCamera)
                     {
-#if UNITY_2019_2_OR_NEWER
+    #if UNITY_2019_2_OR_NEWER
                         cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
-#else
+    #else
                         var hda = cam.GetComponent<HDAdditionalCameraData>();
-#endif
+    #endif
                         if (hda != null)
                         {
                             hda.physicalParameters.iso = state.Lens.Iso;
@@ -848,7 +843,6 @@ namespace Cinemachine
                             hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
                         }
                     }
-    #endif
 #endif
                 }
             }

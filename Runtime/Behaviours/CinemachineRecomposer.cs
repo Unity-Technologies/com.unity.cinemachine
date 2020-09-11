@@ -7,11 +7,7 @@ using Cinemachine;
 /// the output of procedural or recorded camera aiming.
 /// </summary>
 [AddComponentMenu("")] // Hide in menu
-#if UNITY_2018_3_OR_NEWER
 [ExecuteAlways]
-#else
-[ExecuteInEditMode]
-#endif
 [HelpURL(Documentation.BaseURL + "manual/CinemachineRecomposer.html")]
 public class CinemachineRecomposer : CinemachineExtension
 {
