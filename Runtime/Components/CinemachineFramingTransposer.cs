@@ -444,7 +444,7 @@ namespace Cinemachine
             {
                 m_Predictor.Reset();
                 m_PreviousCameraPosition = curState.RawPosition;
-                m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
+                m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.VerticalFOV;
                 m_prevRotation = curState.RawOrientation;
                 if (!InheritingPosition && m_CenterOnActivate)
                 {
@@ -457,6 +457,8 @@ namespace Cinemachine
                 InheritingPosition = false;
                 return;
             }
+
+            var verticalFOV = lens.VerticalFOV;
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = AbstractFollowTargetGroup;
@@ -502,7 +504,7 @@ namespace Cinemachine
                 {
                     // What distance from near edge would be needed to get the adjusted
                     // target height, at the current FOV
-                    targetDistance = targetHeight / (2f * Mathf.Tan(lens.FieldOfView * Mathf.Deg2Rad / 2f));
+                    targetDistance = targetHeight / (2f * Mathf.Tan(verticalFOV * Mathf.Deg2Rad / 2f));
 
                     // Clamp to respect min/max distance settings to the near surface of the bounds
                     targetDistance = Mathf.Clamp(targetDistance, m_MinimumDistance, m_MaximumDistance);
@@ -543,7 +545,7 @@ namespace Cinemachine
             // Move along the XY plane
             float screenSize = lens.Orthographic 
                 ? lens.OrthographicSize 
-                : Mathf.Tan(0.5f * lens.FieldOfView * Mathf.Deg2Rad) * (targetZ - cameraOffset.z);
+                : Mathf.Tan(0.5f * verticalFOV * Mathf.Deg2Rad) * (targetZ - cameraOffset.z);
             Rect softGuideOrtho = ScreenToOrtho(SoftGuideRect, screenSize, lens.Aspect);
             if (!previousStateIsValid)
             {
@@ -605,7 +607,7 @@ namespace Cinemachine
                             targetFOV - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetFOV;
 
-                    lens.FieldOfView = targetFOV;
+                    lens.VerticalFOV = targetFOV;
                     curState.Lens = lens;
                 }
             }

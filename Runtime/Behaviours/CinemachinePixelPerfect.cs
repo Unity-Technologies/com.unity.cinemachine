@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-#if CINEMACHINE_LWRP_7_1_3 || CINEMACHINE_PIXEL_PERFECT_2_0_3
+#if CINEMACHINE_LWRP_7_3_1 || CINEMACHINE_PIXEL_PERFECT_2_0_3
 
 namespace Cinemachine
 {
@@ -34,7 +34,7 @@ namespace Cinemachine
             if (brain == null || !brain.IsLive(vcam))
                 return;
 
-#if CINEMACHINE_LWRP_7_1_3
+#if CINEMACHINE_LWRP_7_3_1
             UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
 #elif CINEMACHINE_PIXEL_PERFECT_2_0_3
             UnityEngine.U2D.PixelPerfectCamera pixelPerfectCamera;

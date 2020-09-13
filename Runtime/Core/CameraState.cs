@@ -320,22 +320,42 @@ namespace Cinemachine
             else
             {
                 // Re-interpolate FOV to preserve target composition, if possible
-                float fovA = stateA.Lens.FieldOfView;
-                float fovB = stateB.Lens.FieldOfView;
-                if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0
-                    && !state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
+                if (stateA.Lens.FieldOfViewAxis == stateB.Lens.FieldOfViewAxis)
                 {
-                    LensSettings lens = state.Lens;
-                    lens.FieldOfView = InterpolateFOV(
-                            fovA, fovB,
-                            Mathf.Max((stateA.ReferenceLookAt - stateA.CorrectedPosition).magnitude, stateA.Lens.NearClipPlane),
-                            Mathf.Max((stateB.ReferenceLookAt - stateB.CorrectedPosition).magnitude, stateB.Lens.NearClipPlane), t);
-                    state.Lens = lens;
+                    float fovA = stateA.Lens.FieldOfView;
+                    float fovB = stateB.Lens.FieldOfView;
+                    if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0
+                        && !state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
+                    {
+                        LensSettings lens = state.Lens;
+                        lens.FieldOfView = InterpolateFOV(
+                                fovA, fovB,
+                                Mathf.Max((stateA.ReferenceLookAt - stateA.CorrectedPosition).magnitude, stateA.Lens.NearClipPlane),
+                                Mathf.Max((stateB.ReferenceLookAt - stateB.CorrectedPosition).magnitude, stateB.Lens.NearClipPlane), t);
+                        state.Lens = lens;
 
-                    // Make sure we preserve the screen composition through FOV changes
-                    adjustedT = Mathf.Abs((lens.FieldOfView - fovA) / (fovB - fovA));
+                        // Make sure we preserve the screen composition through FOV changes
+                        adjustedT = Mathf.Abs((lens.FieldOfView - fovA) / (fovB - fovA));
+                    }
                 }
+                else
+                {
+                    float fovA = stateA.Lens.VerticalFOV;
+                    float fovB = stateB.Lens.VerticalFOV;
+                    if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0
+                        && !state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
+                    {
+                        LensSettings lens = state.Lens;
+                        lens.VerticalFOV = InterpolateFOV(
+                                fovA, fovB,
+                                Mathf.Max((stateA.ReferenceLookAt - stateA.CorrectedPosition).magnitude, stateA.Lens.NearClipPlane),
+                                Mathf.Max((stateB.ReferenceLookAt - stateB.CorrectedPosition).magnitude, stateB.Lens.NearClipPlane), t);
+                        state.Lens = lens;
 
+                        // Make sure we preserve the screen composition through FOV changes
+                        adjustedT = Mathf.Abs((lens.VerticalFOV - fovA) / (fovB - fovA));
+                    }
+                }
                 // Linear interpolation of lookAt target point
                 state.ReferenceLookAt = Vector3.Lerp(
                         stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);

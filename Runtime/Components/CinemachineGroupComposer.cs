@@ -216,7 +216,7 @@ namespace Cinemachine
                     // What distance from near edge would be needed to get the adjusted
                     // target height, at the current FOV
                     float targetDistance = boundsDepth
-                        + targetHeight / (2f * Mathf.Tan(curState.Lens.FieldOfView * Mathf.Deg2Rad / 2f));
+                        + targetHeight / (2f * Mathf.Tan(curState.Lens.VerticalFOV * Mathf.Deg2Rad / 2f));
 
                     // Clamp to respect min/max distance settings to the near surface of the bounds
                     targetDistance = Mathf.Clamp(
@@ -254,7 +254,7 @@ namespace Cinemachine
                     m_prevFOV = targetFOV;
 
                     LensSettings lens = curState.Lens;
-                    lens.FieldOfView = targetFOV;
+                    lens.VerticalFOV = targetFOV;
                     curState.Lens = lens;
                 }
             }
