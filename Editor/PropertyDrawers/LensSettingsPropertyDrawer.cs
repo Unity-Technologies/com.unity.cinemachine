@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using System;
 
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
-    #if CINEMACHINE_HDRP_7_0_0
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+    #if CINEMACHINE_HDRP_7_3_1
     using UnityEngine.Rendering.HighDefinition;
     #else
-        #if CINEMACHINE_LWRP_7_0_0
+        #if CINEMACHINE_LWRP_7_3_1
         using UnityEngine.Rendering.Universal;
         #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
@@ -26,6 +26,7 @@ namespace Cinemachine.Editor
         const int vSpace = 2;
         LensSettings def = new LensSettings(); // to access name strings
         GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
+        float lensShiftExtraHeight;
 
 #if CINEMACHINE_HDRP
         GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
@@ -47,6 +48,8 @@ namespace Cinemachine.Editor
                     EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.OrthographicSize));
                 else
                 {
+                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.FieldOfViewAxis));
+                    rect.y += height + vSpace;
                     if (IsPhysical)
                         DrawFocalLengthControl(rect, property);
                     else
@@ -106,6 +109,7 @@ namespace Cinemachine.Editor
                         EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Anamorphism));
                         rect.y += height + vSpace;
                         EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.LensShift));
+                        rect.y += lensShiftExtraHeight;
                         --EditorGUI.indentLevel;
                     }
 #else
@@ -124,20 +128,27 @@ namespace Cinemachine.Editor
         void DrawFOVControl(Rect rect, SerializedProperty property)
         {
             var FOVProperty = property.FindPropertyRelative(() => def.FieldOfView);
+            var axisProperty = property.FindPropertyRelative(() => def.FieldOfViewAxis);
+            bool isHorizontal = axisProperty.intValue == (int)Camera.FieldOfViewAxis.Horizontal;
+            float aspect = SensorSize.x / SensorSize.y;
+
             float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 3;
             rect.width -= dropdownWidth;
             EditorGUI.PropertyField(rect, FOVProperty);
             rect.x += rect.width; rect.width = dropdownWidth;
 
             CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
-            int preset = (presets == null) ? -1 : presets.GetMatchingPreset(FOVProperty.floatValue);
+            int preset = (presets == null) ? -1 : presets.GetMatchingPreset(isHorizontal 
+                ? Camera.HorizontalToVerticalFieldOfView(FOVProperty.floatValue, aspect) 
+                : FOVProperty.floatValue);
             rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
             int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_PresetOptions);
             if (selection == m_PresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
                 Selection.activeObject = presets = CinemachineLensPresets.Instance;
             else if (selection >= 0 && selection < m_PresetOptions.Length-1)
             {
-                FOVProperty.floatValue = presets.m_Presets[selection].m_FieldOfView;
+                var vfov = presets.m_Presets[selection].m_FieldOfView;
+                FOVProperty.floatValue = isHorizontal ? Camera.VerticalToHorizontalFieldOfView(vfov, aspect) : vfov;
                 property.serializedObject.ApplyModifiedProperties();
             }
         }
@@ -261,14 +272,18 @@ namespace Cinemachine.Editor
             float height = EditorGUIUtility.singleLineHeight + vSpace;
             if (property.isExpanded)
             {
+                var numLines = IsOrtho ? 5 : 6;
                 if (!IsPhysical)
-                    height *= 5;
+                    height *= numLines;
                 else
                 {
 #if CINEMACHINE_HDRP
-                    height *= 5 + (mPhysicalExapnded ? 9 : 1);
+                    height *= numLines + (mPhysicalExapnded ? 9 : 1);
+                    lensShiftExtraHeight = mPhysicalExapnded ? EditorGUI.GetPropertyHeight(
+                        property.FindPropertyRelative(() => def.LensShift), false) - EditorGUIUtility.singleLineHeight : 0;
+                    height += lensShiftExtraHeight;
 #else
-                    height *= 5 + 1;
+                    height *= numLines + 1;
 #endif
                 }
             }

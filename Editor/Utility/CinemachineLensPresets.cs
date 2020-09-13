@@ -138,12 +138,12 @@ namespace Cinemachine.Editor
         public PhysicalPreset[] m_PhysicalPresets = new PhysicalPreset[0];
 
         /// <summary>Get the index of the preset that matches the lens settings</summary>
-        /// <param name="fov">Vertical field of view</param>
+        /// <param name="verticalFOV">Vertical field of view</param>
         /// <returns>the preset index, or -1 if no matching preset</returns>
-        public int GetMatchingPreset(float fov)
+        public int GetMatchingPreset(float verticalFOV)
         {
             for (int i = 0; i < m_Presets.Length; ++i)
-                if (Mathf.Approximately(m_Presets[i].m_FieldOfView, fov))
+                if (Mathf.Approximately(m_Presets[i].m_FieldOfView, verticalFOV))
                     return i;
             return -1;
         }

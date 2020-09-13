@@ -1,11 +1,11 @@
 using UnityEngine;
 using System;
 
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
-    #if CINEMACHINE_HDRP_7_0_0
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+    #if CINEMACHINE_HDRP_7_3_1
     using UnityEngine.Rendering.HighDefinition;
     #else
-        #if CINEMACHINE_LWRP_7_0_0
+        #if CINEMACHINE_LWRP_7_3_1
         using UnityEngine.Rendering.Universal;
         #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
@@ -27,11 +27,18 @@ namespace Cinemachine
         public static LensSettings Default = new LensSettings(40f, 10f, 0.1f, 5000f, 0);
 
         /// <summary>
-        /// This is the camera view in vertical degrees. For cinematic people, a 50mm lens
+        /// Specifies which axis to use when expressing the value for the field of view and orthographic size.
+        /// </summary>
+        [Tooltip("Specifies which axis to use when expressing the value for the "
+            + "field of view and orthographic size.")]
+        public Camera.FieldOfViewAxis FieldOfViewAxis;
+
+        /// <summary>
+        /// This is the camera view in degrees. For cinematic people, a 50mm lens
         /// on a super-35mm sensor would equal a 19.6 degree FOV
         /// </summary>
         [Range(1f, 179f)]
-        [Tooltip("This is the camera view in vertical degrees. For cinematic people, a 50mm lens "
+        [Tooltip("This is the camera view in degrees. For cinematic people, a 50mm lens "
            + "on a super-35mm sensor would equal a 19.6 degree FOV")]
         public float FieldOfView;
 
@@ -82,6 +89,24 @@ namespace Cinemachine
         /// </summary>
         public float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
 
+        /// <summary>Get the vertical field of view</summary>
+        public float VerticalFOV 
+        {
+            get => FieldOfViewAxis == Camera.FieldOfViewAxis.Vertical 
+                ? FieldOfView : Camera.HorizontalToVerticalFieldOfView(FieldOfView, Aspect);
+            set => FieldOfView = FieldOfViewAxis == Camera.FieldOfViewAxis.Vertical 
+                ? value : Camera.VerticalToHorizontalFieldOfView(FieldOfView, Aspect);
+        }
+
+        /// <summary>Get the horizontal field of view</summary>
+        public float HorizontalFOV 
+        { 
+            get => FieldOfViewAxis == Camera.FieldOfViewAxis.Horizontal 
+                ? FieldOfView : Camera.VerticalToHorizontalFieldOfView(FieldOfView, Aspect);
+            set => FieldOfView = FieldOfViewAxis == Camera.FieldOfViewAxis.Horizontal 
+                ? value : Camera.HorizontalToVerticalFieldOfView(FieldOfView, Aspect);
+        }
+
         /// <summary>
         /// This is set every frame by the virtual camera, based on the value
         /// found in the currently associated Unity camera
@@ -120,20 +145,18 @@ namespace Cinemachine
                 lens.OrthographicSize = fromCamera.orthographicSize;
                 lens.NearClipPlane = fromCamera.nearClipPlane;
                 lens.FarClipPlane = fromCamera.farClipPlane;
-#if UNITY_2018_2_OR_NEWER
                 lens.LensShift = fromCamera.lensShift;
-#endif
                 lens.SnapshotCameraReadOnlyProperties(fromCamera);
 
-#if CINEMACHINE_HDRP
+#if CINEMACHINE_HDRP // GML fixme
                 if (lens.IsPhysicalCamera)
                 {
                     var pc = new HDPhysicalCamera();
-#if UNITY_2019_2_OR_NEWER
+    #if UNITY_2019_2_OR_NEWER
                     fromCamera.TryGetComponent<HDAdditionalCameraData>(out var hda);
-#else
+    #else
                     var hda = fromCamera.GetComponent<HDAdditionalCameraData>();
-#endif
+    #endif
                     if (hda != null)
                         pc = hda.physicalParameters;
                     lens.Iso = pc.iso;
@@ -159,13 +182,11 @@ namespace Cinemachine
             {
                 Orthographic = camera.orthographic;
                 SensorSize = new Vector2(camera.aspect, 1f);
-#if UNITY_2018_2_OR_NEWER
                 IsPhysicalCamera = camera.usePhysicalProperties;
                 if (IsPhysicalCamera)
                     SensorSize = camera.sensorSize;
                 else
                     LensShift = Vector2.zero;
-#endif
             }
         }
 
@@ -177,27 +198,25 @@ namespace Cinemachine
         {
             Orthographic = lens.Orthographic;
             SensorSize = lens.SensorSize;
-#if UNITY_2018_2_OR_NEWER
             IsPhysicalCamera = lens.IsPhysicalCamera;
             if (!IsPhysicalCamera)
                 LensShift = Vector2.zero;
-#endif
         }
 
         /// <summary>
         /// Explicit constructor for this LensSettings
         /// </summary>
-        /// <param name="fov">The Vertical field of view</param>
+        /// <param name="verticalFOV">The Vertical field of view</param>
         /// <param name="orthographicSize">If orthographic, this is the half-height of the screen</param>
         /// <param name="nearClip">The near clip plane</param>
         /// <param name="farClip">The far clip plane</param>
         /// <param name="dutch">Camera roll, in degrees.  This is applied at the end
         /// after shot composition.</param>
         public LensSettings(
-            float fov, float orthographicSize,
+            float verticalFOV, float orthographicSize,
             float nearClip, float farClip, float dutch) : this()
         {
-            FieldOfView = fov;
+            FieldOfView = verticalFOV;
             OrthographicSize = orthographicSize;
             NearClipPlane = nearClip;
             FarClipPlane = farClip;
@@ -227,7 +246,13 @@ namespace Cinemachine
             LensSettings blendedLens = new LensSettings();
             blendedLens.FarClipPlane = Mathf.Lerp(lensA.FarClipPlane, lensB.FarClipPlane, t);
             blendedLens.NearClipPlane = Mathf.Lerp(lensA.NearClipPlane, lensB.NearClipPlane, t);
-            blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
+            if (lensA.FieldOfViewAxis != lensB.FieldOfViewAxis)
+                blendedLens.VerticalFOV = Mathf.Lerp(lensA.VerticalFOV, lensB.VerticalFOV, t);
+            else
+            {
+                blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
+                blendedLens.FieldOfViewAxis = lensA.FieldOfViewAxis;
+            }
             blendedLens.OrthographicSize = Mathf.Lerp(lensA.OrthographicSize, lensB.OrthographicSize, t);
             blendedLens.Dutch = Mathf.Lerp(lensA.Dutch, lensB.Dutch, t);
             blendedLens.Orthographic = lensA.Orthographic && lensB.Orthographic;
