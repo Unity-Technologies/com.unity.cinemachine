@@ -12,8 +12,15 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
+    [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachinePixelPerfect.html")]
     public class CinemachinePixelPerfect : CinemachineExtension
     {
+        /// <summary>Callback to tweak the orthographic size</summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
@@ -60,6 +67,7 @@ namespace Cinemachine
     /// sprites would appear pixel perfect when the virtual camera becomes live.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
+    [DisallowMultipleComponent]
     public class CinemachinePixelPerfect : MonoBehaviour {}
 }
 #endif

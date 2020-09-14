@@ -13,10 +13,13 @@ namespace Cinemachine.Editor
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         bool mEventsExpanded = false;
 
-        /// <summary>Obsolete, do not use</summary>
+        /// <summary>Obsolete, do not use.  Use the overload, which is more performant</summary>
+        /// <returns>List of property names to exclude</returns>
         protected override List<string> GetExcludedPropertiesInInspector() 
             { return base.GetExcludedPropertiesInInspector(); }
 
+        /// <summary>Get the property names to exclude in the inspector.</summary>
+        /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
@@ -37,6 +40,7 @@ namespace Cinemachine.Editor
                 m_BlendsEditor.OnDisable();
         }
 
+        /// <summary>Create the contents of the inspector panel</summary>
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -120,6 +124,9 @@ namespace Cinemachine.Editor
             Gizmos.color = originalGizmoColour;
         }
 
+        /// <summary>Draw the gizmo for a virtual camera in the scene view</summary>
+        /// <param name="vcam">The virtual camera</param>
+        /// <param name="selectionType">How the object is selected</param>
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineVirtualCameraBase))]
         public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {

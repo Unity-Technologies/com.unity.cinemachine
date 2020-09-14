@@ -6,12 +6,19 @@ using System.IO;
 
 namespace Cinemachine.Editor
 {
+    /// <summary>
+    /// Collection of tools and helpers for drawing inspectors
+    /// </summary>
     public class InspectorUtility
     {
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
         /// cause the property's displayName to be used as a label.  For no label at all,
         /// pass GUIContent.none.</summary>
+        /// <param name="rect">Rect in which to draw</param>
+        /// <param name="label">Main label</param>
+        /// <param name="props">Properties to place on the line</param>
+        /// <param name="subLabels">Sublabels for the properties</param>
         public static void MultiPropertyOnLine(
             Rect rect,
             GUIContent label,
@@ -84,6 +91,11 @@ namespace Cinemachine.Editor
             EditorGUI.indentLevel = indentLevel;
         }
 
+        /// <summary>
+        /// Normalize a curve so that each of X and Y axes ranges from 0 to 1
+        /// </summary>
+        /// <param name="curve">Curve to normalize</param>
+        /// <returns>The normalized curve</returns>
         public static AnimationCurve NormalizeCurve(AnimationCurve curve)
         {
             Keyframe[] keys = curve.keys;
@@ -122,6 +134,11 @@ namespace Cinemachine.Editor
             return curve;
         }
 
+        /// <summary>
+        /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify.
+        /// </summary>
+        /// <param name="name">The name to nicify</param>
+        /// <returns>The nicified name</returns>
         public static string NicifyClassName(string name)
         {
             if (name.StartsWith("Cinemachine"))
@@ -129,6 +146,12 @@ namespace Cinemachine.Editor
             return ObjectNames.NicifyVariableName(name);
         }
 
+        /// <summary>
+        /// Add to a list all assets of a given type found in a given location
+        /// </summary>
+        /// <param name="type">The asset type to look for</param>
+        /// <param name="assets">The list to add found assets to</param>
+        /// <param name="path">The location in which to look.  Path is relative to package root.</param>
         public static void AddAssetsFromPackageSubDirectory(
             Type type, List<ScriptableObject> assets, string path)
         {
@@ -154,6 +177,12 @@ namespace Cinemachine.Editor
         }
 
         // Temporarily here
+        /// <summary>
+        /// Create a game object.  Uses ObjectFactory if the Unity version is sufficient.
+        /// </summary>
+        /// <param name="name">Name to give the object</param>
+        /// <param name="types">Optional components to add</param>
+        /// <returns></returns>
         public static GameObject CreateGameObject(string name, params Type[] types)
         {
 #if UNITY_2018_3_OR_NEWER
@@ -163,6 +192,10 @@ namespace Cinemachine.Editor
 #endif
         }
 
+        /// <summary>
+        /// Force a repaint of the Game View
+        /// </summary>
+        /// <param name="unused">Like it says</param>
         public static void RepaintGameView(UnityEngine.Object unused = null)
         {
             EditorApplication.QueuePlayerLoopUpdate();

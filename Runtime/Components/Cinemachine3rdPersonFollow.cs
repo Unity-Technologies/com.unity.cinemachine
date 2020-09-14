@@ -15,6 +15,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
     {
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 
@@ -27,9 +28,9 @@ namespace Cinemachine
            + "rigid effect, larger values give a squishier one")]
         public Vector3 Damping;
 
-        [Header("Rig")]
         /// <summary>Position of the shoulder pivot relative to the Follow target origin.  
         /// This offset is in target-local space.</summary>
+        [Header("Rig")]
         [Tooltip("Position of the shoulder pivot relative to the Follow target origin.  "
             + "This offset is in target-local space")]
         public Vector3 ShoulderOffset;

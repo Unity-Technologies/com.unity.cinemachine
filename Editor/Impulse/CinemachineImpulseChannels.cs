@@ -68,6 +68,7 @@ namespace Cinemachine.Editor
                 ImpulseChannels = new string[] { "default" };
         }
 
+        /// <summary>The currently-defined Impulse channel names</summary>
         public string[] ImpulseChannels;
     }
 }

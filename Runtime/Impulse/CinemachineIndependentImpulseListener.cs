@@ -13,6 +13,7 @@ namespace Cinemachine
     /// in response to impulses.
     /// </summary>
     [SaveDuringPlay]
+    [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineIndependentImpulseListener.html")]
     public class CinemachineIndependentImpulseListener : MonoBehaviour
     {
         private Vector3 impulsePosLastFrame;

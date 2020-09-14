@@ -10,6 +10,8 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachinePath")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachinePath.html")]
     public class CinemachinePath : CinemachinePathBase
     {
         /// <summary>A waypoint along the path</summary>

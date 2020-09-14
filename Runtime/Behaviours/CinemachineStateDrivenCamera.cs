@@ -26,16 +26,24 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineStateDrivenCamera")]
+    [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineStateDrivenCamera.html")]
     public class CinemachineStateDrivenCamera : CinemachineVirtualCameraBase
     {
-        /// <summary>Default object for the camera children to look at (the aim target), if not specified in a child rig.  May be empty</summary>
-        [Tooltip("Default object for the camera children to look at (the aim target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
+        /// <summary>Default object for the camera children to look at (the aim target), 
+        /// if not specified in a child rig.  May be empty</summary>
+        [Tooltip("Default object for the camera children to look at (the aim target), "
+            + "if not specified in a child camera.  May be empty if all of the children "
+            + "define targets of their own.")]
         [NoSaveDuringPlay]
         [VcamTargetProperty]
         public Transform m_LookAt = null;
 
-        /// <summary>Default object for the camera children wants to move with (the body target), if not specified in a child rig.  May be empty</summary>
-        [Tooltip("Default object for the camera children wants to move with (the body target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
+        /// <summary>Default object for the camera children wants to move with (the body target), 
+        /// if not specified in a child rig.  May be empty</summary>
+        [Tooltip("Default object for the camera children wants to move with (the body target), "
+            + "if not specified in a child camera.  May be empty if all of the children "
+            + "define targets of their own.")]
         [NoSaveDuringPlay]
         [VcamTargetProperty]
         public Transform m_Follow = null;
@@ -51,8 +59,10 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         public int m_LayerIndex;
 
-        /// <summary>When enabled, the current camera and blend will be indicated in the game window, for debugging</summary>
-        [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
+        /// <summary>When enabled, the current camera and blend will be indicated in 
+        /// the game window, for debugging</summary>
+        [Tooltip("When enabled, the current child camera and blend will be indicated in "
+            + "the game window, for debugging")]
         public bool m_ShowDebugText = false;
 
         /// <summary>Internal API for the editor.  Do not use this field</summary>
@@ -73,7 +83,8 @@ namespace Cinemachine
             public CinemachineVirtualCameraBase m_VirtualCamera;
             /// <summary>How long to wait (in seconds) before activating the virtual camera.
             /// This filters out very short state durations</summary>
-            [Tooltip("How long to wait (in seconds) before activating the virtual camera. This filters out very short state durations")]
+            [Tooltip("How long to wait (in seconds) before activating the virtual camera. "
+                + "This filters out very short state durations")]
             public float m_ActivateAfter;
             /// <summary>The minimum length of time (in seconds) to keep a virtual camera active</summary>
             [Tooltip("The minimum length of time (in seconds) to keep a virtual camera active")]
@@ -82,7 +93,8 @@ namespace Cinemachine
 
         /// <summary>The set of instructions associating virtual cameras with states.
         /// These instructions are used to choose the live child at any given moment</summary>
-        [Tooltip("The set of instructions associating virtual cameras with states.  These instructions are used to choose the live child at any given moment")]
+        [Tooltip("The set of instructions associating virtual cameras with states.  "
+        + "These instructions are used to choose the live child at any given moment")]
         public Instruction[] m_Instructions;
 
         /// <summary>
@@ -283,6 +295,9 @@ namespace Cinemachine
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
         }
 
+        /// <summary>
+        /// Uninstall the GUI handler
+        /// </summary>
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -322,6 +337,9 @@ namespace Cinemachine
         /// <summary>API for the inspector editor.  Animation module does not have hashes
         /// for state parents, so we have to invent them in order to implement nested state
         /// handling</summary>
+        /// <param name="parentHash">Parent state's hash</param>
+        /// <param name="clip">The clip to create the fake hash for</param>
+        /// <returns>The fake hash</returns>
         public static int CreateFakeHash(int parentHash, AnimationClip clip)
         {
             return Animator.StringToHash(parentHash.ToString() + "_" + clip.name);

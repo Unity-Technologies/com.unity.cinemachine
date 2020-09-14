@@ -3,6 +3,16 @@ using System.Collections.Generic;
 
 namespace Cinemachine
 {
+    internal static class Documentation 
+    {
+        // This must be used like
+        // [HelpURL(Documentation.BaseURL + "api/some-page.html")]
+        // or
+        // [HelpURL(Documentation.BaseURL + "manual/some-page.html")]
+        // It cannot support String.Format nor string interpolation
+        public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@2.6/";
+    }
+
     /// <summary>A singleton that manages complete lists of CinemachineBrain and,
     /// Cinemachine Virtual Cameras, and the priority queue.  Provides
     /// services to keeping track of whether Cinemachine Virtual Cameras have
@@ -13,7 +23,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20170927;
 
         /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.6.0";
+        public static readonly string kVersionString = "2.6.3";
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
