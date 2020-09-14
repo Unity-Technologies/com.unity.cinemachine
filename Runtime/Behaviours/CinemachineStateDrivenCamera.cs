@@ -26,6 +26,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineStateDrivenCamera")]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineStateDrivenCamera.html")]
     public class CinemachineStateDrivenCamera : CinemachineVirtualCameraBase
     {

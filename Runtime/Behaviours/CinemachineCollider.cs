@@ -31,6 +31,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCollider.html")]
     public class CinemachineCollider : CinemachineExtension
     {

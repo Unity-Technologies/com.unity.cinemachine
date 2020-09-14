@@ -17,6 +17,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineExternalCamera.html")]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
     {

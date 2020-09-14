@@ -24,6 +24,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineConfiner.html")]
     public class CinemachineConfiner : CinemachineExtension
     {

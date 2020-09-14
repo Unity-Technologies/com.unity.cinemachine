@@ -16,6 +16,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFollowZoom.html")]
     public class CinemachineFollowZoom : CinemachineExtension
     {

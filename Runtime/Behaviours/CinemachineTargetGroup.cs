@@ -62,6 +62,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineTargetGroup.html")]
     public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup
     {

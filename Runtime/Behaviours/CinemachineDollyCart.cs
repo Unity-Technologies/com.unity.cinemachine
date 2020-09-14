@@ -14,6 +14,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
     public class CinemachineDollyCart : MonoBehaviour
     {

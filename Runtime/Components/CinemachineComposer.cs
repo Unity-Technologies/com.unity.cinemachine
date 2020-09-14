@@ -17,6 +17,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     public class CinemachineComposer : CinemachineComponentBase
     {
         /// <summary>Target offset from the object's center in LOCAL space which

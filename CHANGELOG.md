@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.6.3-preview.1] - 2020-09-03
 - Regression fix (1274989) - OnTargetObjectWarped broken for OrbitalTransposer
+- Bugfix (1256530) - disallow multiple components where appropriate
 
 
 ## [2.6.2] - 2020-09-02

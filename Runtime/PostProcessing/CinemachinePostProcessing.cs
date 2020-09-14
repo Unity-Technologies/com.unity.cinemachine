@@ -41,6 +41,7 @@ namespace Cinemachine.PostFX
 #endif
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePostProcessing.html")]
     public class CinemachinePostProcessing : CinemachineExtension
     {
