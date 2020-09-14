@@ -59,6 +59,11 @@ namespace Cinemachine
             AimTargetReticle = null;
         }
 
+        /// <summary>Notification that this virtual camera is going live.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <returns>True to request a vcam update of internal state</returns>
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
         { 
@@ -98,6 +103,14 @@ namespace Cinemachine
             return hasHit ? hitInfo.point : camPos + fwd * AimDistance;
         }
         
+        /// <summary>
+        /// Sets the ReferenceLookAt to be the result of a raycast in the direction of camera forward.
+        /// If an object is hit, point is placed there, else it is placed at AimDistance.
+        /// </summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)

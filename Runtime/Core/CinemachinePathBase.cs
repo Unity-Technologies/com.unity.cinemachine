@@ -97,7 +97,7 @@ namespace Cinemachine
                 if (!Looped)
                 {
                     start = Mathf.Max(start, MinPos);
-                    end = Mathf.Max(end, MaxPos);
+                    end = Mathf.Min(end, MaxPos);
                 }
             }
             stepsPerSegment = Mathf.RoundToInt(Mathf.Clamp(stepsPerSegment, 1f, 100f));

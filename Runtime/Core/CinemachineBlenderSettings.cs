@@ -8,6 +8,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBlending.html")]
     public sealed class CinemachineBlenderSettings : ScriptableObject
     {
         /// <summary>

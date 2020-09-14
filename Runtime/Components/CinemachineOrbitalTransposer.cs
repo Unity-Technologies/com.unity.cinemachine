@@ -73,23 +73,31 @@ namespace Cinemachine
             /// <summary>The method by which the 'default heading' is calculated if
             /// recentering to target heading is enabled</summary>
             [FormerlySerializedAs("m_HeadingDefinition")]
-            [Tooltip("How 'forward' is defined.  The camera will be placed by default behind the target.  PositionDelta will consider 'forward' to be the direction in which the target is moving.")]
+            [Tooltip("How 'forward' is defined.  The camera will be placed by default behind the target.  "
+                + "PositionDelta will consider 'forward' to be the direction in which the target is moving.")]
             public HeadingDefinition m_Definition;
 
             /// <summary>Size of the velocity sampling window for target heading filter.
             /// Used only if deriving heading from target's movement</summary>
             [Range(0, 10)]
-            [Tooltip("Size of the velocity sampling window for target heading filter.  This filters out irregularities in the target's movement.  Used only if deriving heading from target's movement (PositionDelta or Velocity)")]
+            [Tooltip("Size of the velocity sampling window for target heading filter.  This filters out "
+                + "irregularities in the target's movement.  Used only if deriving heading from target's "
+                + "movement (PositionDelta or Velocity)")]
             public int m_VelocityFilterStrength;
 
             /// <summary>Additional Y rotation applied to the target heading.
             /// When this value is 0, the camera will be placed behind the target</summary>
             [Range(-180f, 180f)]
             [FormerlySerializedAs("m_HeadingBias")]
-            [Tooltip("Where the camera is placed when the X-axis value is zero.  This is a rotation in degrees around the Y axis.  When this value is 0, the camera will be placed behind the target.  Nonzero offsets will rotate the zero position around the target.")]
+            [Tooltip("Where the camera is placed when the X-axis value is zero.  This is a rotation in "
+                + "degrees around the Y axis.  When this value is 0, the camera will be placed behind "
+                + "the target.  Nonzero offsets will rotate the zero position around the target.")]
             public float m_Bias;
 
             /// <summary>Constructor</summary>
+            /// <param name="def">The heading definition</param>
+            /// <param name="filterStrength">The strength of the heading filter</param>
+            /// <param name="bias">The heading bias</param>
             public Heading(HeadingDefinition def, int filterStrength, float bias)
             {
                 m_Definition = def;
@@ -105,12 +113,14 @@ namespace Cinemachine
         public Heading m_Heading = new Heading(Heading.HeadingDefinition.TargetForward, 4, 0);
 
         /// <summary>Parameters that control Automating Heading Recentering</summary>
-        [Tooltip("Automatic heading recentering.  The settings here defines how the camera will reposition itself in the absence of player input.")]
+        [Tooltip("Automatic heading recentering.  The settings here defines how the camera "
+            + "will reposition itself in the absence of player input.")]
         public AxisState.Recentering m_RecenterToTargetHeading = new AxisState.Recentering(true, 1, 2);
 
         /// <summary>Axis representing the current heading.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
-        [Tooltip("Heading Control.  The settings here control the behaviour of the camera in response to the player's input.")]
+        [Tooltip("Heading Control.  The settings here control the behaviour of the camera "
+            + "in response to the player's input.")]
         [AxisStateProperty]
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
@@ -118,6 +128,8 @@ namespace Cinemachine
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_Radius")] private float m_LegacyRadius = float.MaxValue;
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeightOffset")] private float m_LegacyHeightOffset = float.MaxValue;
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeadingBias")] private float m_LegacyHeadingBias = float.MaxValue;
+
+        /// <summary>Legacy support for old serialized versions</summary>
         protected override void OnValidate()
         {
             // Upgrade after a legacy deserialize
@@ -173,11 +185,11 @@ namespace Cinemachine
         /// <summary>
         /// Update the X axis and calculate the heading.  This can be called by a delegate
         /// with a custom axis.  Note that this method is obsolete.
+        /// </summary>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">World Up, set by the CinemachineBrain</param>
         /// <param name="axis"></param>
         /// <returns>Axis value</returns>
-        /// </summary>
         public float UpdateHeading(float deltaTime, Vector3 up, ref AxisState axis)
         {
             return UpdateHeading(deltaTime, up, ref axis, ref m_RecenterToTargetHeading, true);
@@ -186,13 +198,13 @@ namespace Cinemachine
         /// <summary>
         /// Update the X axis and calculate the heading.  This can be called by a delegate
         /// with a custom axis.
+        /// </summary>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">World Up, set by the CinemachineBrain</param>
         /// <param name="axis"></param>
         /// <param name="recentering"></param>
-        /// <param name="isLive"/>true if the vcam is live</param>
+        /// <param name="isLive">true if the vcam is live</param>
         /// <returns>Axis value</returns>
-        /// </summary>
         public float UpdateHeading(
             float deltaTime, Vector3 up, ref AxisState axis,
             ref AxisState.Recentering recentering, bool isLive)
@@ -287,6 +299,7 @@ namespace Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
@@ -393,6 +406,8 @@ namespace Cinemachine
         }
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
+        /// <param name="worldUp">Current effective world up</param>
+        /// <returns>The position of the Follow target</returns>
         public override Vector3 GetTargetCameraPosition(Vector3 worldUp)
         {
             if (!IsValid)

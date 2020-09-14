@@ -5,7 +5,8 @@ namespace Cinemachine
 {
     /// <summary>
     /// Base class for a Cinemachine Virtual Camera extension module.
-    /// Hooks into the Cinemachine Pipeline.
+    /// Hooks into the Cinemachine Pipeline.  Use this to add extra processing 
+    /// to the vcam, modifying its generated state
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     public abstract class CinemachineExtension : MonoBehaviour
@@ -13,7 +14,7 @@ namespace Cinemachine
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
 
-        /// <summary>Get the associated CinemachineVirtualCameraBase</summary>
+        /// <summary>Get the CinemachineVirtualCamera to which this extension is attached</summary>
         public CinemachineVirtualCameraBase VirtualCamera
         {
             get
@@ -32,7 +33,7 @@ namespace Cinemachine
             ConnectToVcam(true);
         }
 
-        /// <summary>Does nothing.  For the little checkbox in the inspector.</summary>
+        /// <summary>Does nothing.  It's here for the little checkbox in the inspector.</summary>
         protected virtual void OnEnable() {}
 
 #if UNITY_EDITOR
@@ -73,12 +74,18 @@ namespace Cinemachine
 
         /// <summary>Override this to do such things as offset the RefereceLookAt.
         /// Base class implementation does nothing.</summary>
+        /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="curState">Input state that must be mutated</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         public virtual void PrePipelineMutateCameraStateCallback(
             CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) {}
 
         /// <summary>Legacy support.  This is only here to avoid changing the API
         /// to make PostPipelineStageCallback() public</summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         public void InvokePostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
@@ -91,6 +98,10 @@ namespace Cinemachine
         /// each stage in the pipeline.  This method may modify the referenced state.
         /// If deltaTime less than 0, reset all state info and perform no damping.
         /// </summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected abstract void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime);
@@ -129,6 +140,9 @@ namespace Cinemachine
         /// case be called for all the vcam children, vcam-specific state information
         /// should be stored here.  Just define a class to hold your state info
         /// and use it exclusively when calling this.</summary>
+        /// /// <typeparam name="T">The type of the extra state class</typeparam>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <returns>The extra state, cast as type T</returns>
         protected T GetExtraState<T>(ICinemachineCamera vcam) where T : class, new()
         {
             if (mExtraState == null)
@@ -139,9 +153,11 @@ namespace Cinemachine
             return extra as T;
         }
 
-        /// <summary>Ineffeicient method to get all extra state infor for all vcams.
+        /// <summary>Inefficient method to get all extra state info for all vcams.
         /// Intended for Editor use only, not runtime!
         /// </summary>
+        /// <typeparam name="T">The extra state type</typeparam>
+        /// <returns>A dynamically-allocated list with all the extra states</returns>
         protected List<T> GetAllExtraStates<T>() where T : class, new()
         {
             var list = new List<T>();

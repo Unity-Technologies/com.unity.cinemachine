@@ -11,6 +11,7 @@ namespace Cinemachine
     /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
     /// or FreeLook that requires user input, and drag in the the desired actions.
     /// </summary>
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineAlternativeInput.html")]
     public class CinemachineInputProvider : MonoBehaviour, AxisState.IInputAxisProvider
     {
         /// <summary>

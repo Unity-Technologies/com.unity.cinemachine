@@ -44,6 +44,7 @@ namespace Cinemachine
 #endif
     [AddComponentMenu("Cinemachine/CinemachineBrain")]
     [SaveDuringPlay]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
     public class CinemachineBrain : MonoBehaviour
     {
         /// <summary>

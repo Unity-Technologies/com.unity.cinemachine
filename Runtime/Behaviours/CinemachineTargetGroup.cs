@@ -4,6 +4,10 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
+    /// <summary>
+    /// Interface representing something that can be used as a vcam target.  
+    /// It has a transform, a bounding box, and a bounding sphere.
+    /// </summary>
     public interface ICinemachineTargetGroup
     {
         /// <summary>
@@ -59,6 +63,7 @@ namespace Cinemachine
     [ExecuteInEditMode]
 #endif
     [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineTargetGroup.html")]
     public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup
     {
         /// <summary>Holds the information that represents a member of the group</summary>
@@ -67,7 +72,8 @@ namespace Cinemachine
         {
             /// <summary>The target objects.  This object's position and orientation will contribute to the
             /// group's average position and orientation, in accordance with its weight</summary>
-            [Tooltip("The target objects.  This object's position and orientation will contribute to the group's average position and orientation, in accordance with its weight")]
+            [Tooltip("The target objects.  This object's position and orientation will contribute to the "
+                + "group's average position and orientation, in accordance with its weight")]
             public Transform target;
             /// <summary>How much weight to give the target when averaging.  Cannot be negative</summary>
             [Tooltip("How much weight to give the target when averaging.  Cannot be negative")]
@@ -88,7 +94,8 @@ namespace Cinemachine
         }
 
         /// <summary>How the group's position is calculated</summary>
-        [Tooltip("How the group's position is calculated.  Select GroupCenter for the center of the bounding box, and GroupAverage for a weighted average of the positions of the members.")]
+        [Tooltip("How the group's position is calculated.  Select GroupCenter for the center of the bounding box, "
+            + "and GroupAverage for a weighted average of the positions of the members.")]
         public PositionMode m_PositionMode = PositionMode.GroupCenter;
 
         /// <summary>How the group's orientation is calculated</summary>
@@ -102,7 +109,8 @@ namespace Cinemachine
         }
 
         /// <summary>How the group's orientation is calculated</summary>
-        [Tooltip("How the group's rotation is calculated.  Select Manual to use the value in the group's transform, and GroupAverage for a weighted average of the orientations of the members.")]
+        [Tooltip("How the group's rotation is calculated.  Select Manual to use the value in the group's transform, "
+            + "and GroupAverage for a weighted average of the orientations of the members.")]
         public RotationMode m_RotationMode = RotationMode.Manual;
 
         /// <summary>This enum defines the options available for the update method.</summary>
@@ -123,7 +131,8 @@ namespace Cinemachine
         /// <summary>The target objects, together with their weights and radii, that will
         /// contribute to the group's average position, orientation, and size</summary>
         [NoSaveDuringPlay]
-        [Tooltip("The target objects, together with their weights and radii, that will contribute to the group's average position, orientation, and size.")]
+        [Tooltip("The target objects, together with their weights and radii, that will contribute to the "
+            + "group's average position, orientation, and size.")]
         public Target[] m_Targets = new Target[0];
 
         /// <summary>
@@ -159,6 +168,9 @@ namespace Cinemachine
         }
 
         /// <summary>Add a member to the group</summary>
+        /// <param name="t">The member to add</param>
+        /// <param name="weight">The new member's weight</param>
+        /// <param name="radius">The new member's radius</param>
         public void AddMember(Transform t, float weight, float radius)
         {
             int index = 0;
@@ -177,6 +189,7 @@ namespace Cinemachine
         }
 
         /// <summary>Remove a member from the group</summary>
+        /// <param name="t">The member to remove</param>
         public void RemoveMember(Transform t)
         {
             int index = FindMember(t);
@@ -191,7 +204,9 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Locate a member's index in the group. Returns -1 if not a member</summary>
+        /// <summary>Locate a member's index in the group.</summary>
+        /// <param name="t">The member to find</param>
+        /// <returns>Member index, or -1 if not a member</returns>
         public int FindMember(Transform t)
         {
             if (m_Targets != null)
@@ -208,7 +223,7 @@ namespace Cinemachine
         /// As the member's weight goes to 0, the position lerps to the group average position.
         /// </summary>
         /// <param name="index">Member index</param>
-        /// <returns></returns>
+        /// <returns>The weighted bounding sphere</returns>
         public BoundingSphere GetWeightedBoundsForMember(int index)
         {
             if (index < 0 || index >= m_Targets.Length)

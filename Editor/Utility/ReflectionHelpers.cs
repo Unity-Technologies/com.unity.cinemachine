@@ -134,6 +134,7 @@ namespace Cinemachine.Utility
         }
 #endif
         /// <summary>Cheater extension to access internal field of an object</summary>
+        /// <typeparam name="T">The field type</typeparam>
         /// <param name="type">The type of the field</param>
         /// <param name="obj">The object to access</param>
         /// <param name="memberName">The string name of the field to access</param>
@@ -158,6 +159,7 @@ namespace Cinemachine.Utility
 
 #if false
         /// <summary>Cheater extension to access internal property of an object</summary>
+        /// <typeparam name="T">The field type</typeparam>
         /// <param name="type">The type of the field</param>
         /// <param name="obj">The object to access</param>
         /// <param name="memberName">The string name of the field to access</param>
@@ -186,6 +188,7 @@ namespace Cinemachine.Utility
         /// to the object that owns the leaf field</summary>
         /// <param name="path">The name of the field, which may contain '.' separators</param>
         /// <param name="obj">the owner of the compound field</param>
+        /// <returns>The object owner of the field</returns>
         public static object GetParentObject(string path, object obj)
         {
             var fields = path.Split('.');
@@ -203,6 +206,10 @@ namespace Cinemachine.Utility
 
         /// <summary>Returns a string path from an expression - mostly used to retrieve serialized properties
         /// without hardcoding the field path. Safer, and allows for proper refactoring.</summary>
+        /// <typeparam name="TType">Magic expression</typeparam>
+        /// <typeparam name="TValue">Magic expression</typeparam>
+        /// <param name="expr">Magic expression</param>
+        /// <returns>The string version of the field path</returns>
         public static string GetFieldPath<TType, TValue>(Expression<Func<TType, TValue>> expr)
         {
             MemberExpression me;

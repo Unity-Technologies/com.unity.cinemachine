@@ -14,6 +14,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseSourceOverview.html")]
     public class CinemachineImpulseSource : MonoBehaviour
     {
         /// <summary>

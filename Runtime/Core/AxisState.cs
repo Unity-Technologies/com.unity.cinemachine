@@ -100,6 +100,15 @@ namespace Cinemachine
         private float mCurrentSpeed;
 
         /// <summary>Constructor with specific values</summary>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <param name="wrap"></param>
+        /// <param name="rangeLocked"></param>
+        /// <param name="maxSpeed"></param>
+        /// <param name="accelTime"></param>
+        /// <param name="decelTime"></param>
+        /// <param name="name"></param>
+        /// <param name="invert"></param>
         public AxisState(
             float minValue, float maxValue, bool wrap, bool rangeLocked,
             float maxSpeed, float accelTime, float decelTime,
@@ -139,12 +148,20 @@ namespace Cinemachine
 
         const float Epsilon = UnityVectorExtensions.Epsilon;
 
+        /// <summary>
+        /// Cancel current input state and reset input to 0
+        /// </summary>
         public void Reset()
         {
             m_InputAxisValue = 0;
             mCurrentSpeed = 0;
         }
 
+        /// <summary>
+        /// This is an interface to override default querying of Unity's legacy Input system.
+        /// If a befaviour implementing this interface is attached to a Cinemachine virtual camera that 
+        /// requires input, that interface will be polled for input instead of the standard Input system.
+        /// </summary>
         public interface IInputAxisProvider
         {
             /// <summary>Get the value of the input axis</summary>
@@ -335,6 +352,9 @@ namespace Cinemachine
             public float m_RecenteringTime;
 
             /// <summary>Constructor with specific field values</summary>
+            /// <param name="enabled"></param>
+            /// <param name="waitTime"></param>
+            /// <param name="recenteringTime"></param>
             public Recentering(bool enabled, float waitTime,  float recenteringTime)
             {
                 m_enabled = enabled;
@@ -355,6 +375,11 @@ namespace Cinemachine
             // Internal state
             float mLastAxisInputTime;
             float mRecenteringVelocity;
+
+            /// <summary>
+            /// Copy Recentering state from another Recentering component.
+            /// </summary>
+            /// <param name="other"></param>
             public void CopyStateFrom(ref Recentering other)
             {
                 if (mLastAxisInputTime != other.mLastAxisInputTime)
@@ -376,6 +401,9 @@ namespace Cinemachine
             }
 
             /// <summary>Bring the axis back to the centered state (only if enabled).</summary>
+            /// <param name="axis">The axis to recenter</param>
+            /// <param name="deltaTime">Current effective deltaTime</param>
+            /// <param name="recenterTarget">The value that is considered to be centered</param>
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
                 if (!m_enabled && deltaTime >= 0)

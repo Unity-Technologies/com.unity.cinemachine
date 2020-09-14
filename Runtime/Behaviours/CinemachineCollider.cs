@@ -32,6 +32,7 @@ namespace Cinemachine
     [ExecuteInEditMode]
 #endif
     [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineCollider.html")]
     public class CinemachineCollider : CinemachineExtension
     {
         /// <summary>Objects on these layers will be detected.</summary>
@@ -175,6 +176,9 @@ namespace Cinemachine
             m_OptimalTargetDistance = Mathf.Max(0, m_OptimalTargetDistance);
         }
 
+        /// <summary>
+        /// Cleanup
+        /// </summary>
         protected override void OnDestroy()
         {
             DestroyCollider();
@@ -258,7 +262,13 @@ namespace Cinemachine
             return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
         }
         
-        /// <summary>Callback to do the collision resolution and shot evaluation</summary>
+        /// <summary>
+        /// Callback to do the collision resolution and shot evaluation
+        /// </summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
