@@ -666,11 +666,12 @@ namespace Cinemachine
             var canSimplify = true;
             while (canSimplify)
             {
-                // TODO: CHECK ONLY ADJACENT POINTS
                 canSimplify = false;
                 for (int i = 0; i < m_points.Count; ++i)
                 {
-                    for (int j = i + 1; j < m_points.Count; ++j)
+                    // for (int j = i + 1; j < m_points.Count; ++j)
+                    // just check adjacent points
+                    int j = (i + 1) % m_points.Count;
                     {
                         if (!m_points[i].m_cantIntersect && !m_points[j].m_cantIntersect) continue;
                         if (m_points[i].m_cantIntersect && m_points[j].m_cantIntersect) continue;

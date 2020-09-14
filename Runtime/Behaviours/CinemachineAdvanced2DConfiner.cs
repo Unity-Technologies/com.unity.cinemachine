@@ -89,12 +89,9 @@ namespace Cinemachine
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            var extra = GetExtraState<VcamExtraState>(vcam);
-            if ((extra.applyAfterAim && stage == CinemachineCore.Stage.Finalize)
-                ||
-                (!extra.applyAfterAim && stage == CinemachineCore.Stage.Body))
+            if (stage == CinemachineCore.Stage.Body)
             {
-                if (!ValidatePathCache(state.Lens.SensorSize.x / state.Lens.SensorSize.y, out bool pathChanged))
+                if (!ValidatePathCache(state.Lens.Aspect, out bool pathChanged))
                 {
                     return; // invalid path
                 }
@@ -126,11 +123,12 @@ namespace Cinemachine
                     // TODO: performance optimization
                     // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                     m_frustumHeightCache = frustumHeight;
-                    m_confinerCache = confinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
-                    confinerStateToPath().Convert(m_confinerCache, 
+                    m_confinerCache = GetConfinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
+                    GetConfinerStateToPath().Convert(m_confinerCache, 
                         out m_currentPathCache, out m_BoundingCompositeShape2D);
                 }
                 
+                var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
@@ -338,8 +336,8 @@ namespace Cinemachine
 
             m_bakedConfinerResolutionCache = m_bakedConfinerResolution;
             m_sensorRatioCache = sensorRatio;
-            confinerOven().BakeConfiner(m_originalPath, m_sensorRatioCache, m_bakedConfinerResolutionCache);
-            m_confinerStates = confinerOven().GetGraphsAsConfinerStates();
+            GetConfinerOven().BakeConfiner(m_originalPath, m_sensorRatioCache, m_bakedConfinerResolutionCache);
+            m_confinerStates = GetConfinerOven().GetGraphsAsConfinerStates();
 
             m_boundingShapePositionCache = m_BoundingShape2D.transform.position;
             m_boundingShapeRotationCache = m_BoundingShape2D.transform.rotation;
@@ -349,7 +347,7 @@ namespace Cinemachine
             return true;
         }
 
-        private ConfinerStateToPath confinerStateToPath()
+        private ConfinerStateToPath GetConfinerStateToPath()
         {
             if (m_confinerStateConverter == null)
             {
@@ -359,7 +357,7 @@ namespace Cinemachine
             return m_confinerStateConverter;
         }
 
-        private ConfinerOven confinerOven()
+        private ConfinerOven GetConfinerOven()
         {
             if (m_confinerBaker == null)
             {
