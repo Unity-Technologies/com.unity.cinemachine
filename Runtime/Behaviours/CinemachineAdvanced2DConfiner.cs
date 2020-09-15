@@ -4,6 +4,7 @@ using Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.Graphs;
 using UnityEngine;
+using ClipperLib;
 
 namespace Cinemachine
 { 
@@ -89,6 +90,7 @@ namespace Cinemachine
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
+            Clipper c = new Clipper();
             if (stage == CinemachineCore.Stage.Body)
             {
                 if (!ValidateConfinerStateCache(state.Lens.Aspect, out bool pathChanged))

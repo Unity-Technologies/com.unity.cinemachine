@@ -51,12 +51,12 @@ namespace Cinemachine
                 
                 m_myID = m_ID; m_ID++;
                 m_compositeColliderHolder = new GameObject("CMBakedConfiner for " + m_nametag +" - "+ m_myID);
-                m_compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
+                //m_compositeColliderHolder.hideFlags = HideFlags.HideInHierarchy;
             
                 var rigidbody2D = m_compositeColliderHolder.AddComponent<Rigidbody2D>();
                 rigidbody2D.bodyType = RigidbodyType2D.Static;
                 rigidbody2D.simulated = false;
-                rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
+                //rigidbody2D.hideFlags = HideFlags.HideInHierarchy;
                 
                 m_compositeCollider2D = m_compositeColliderHolder.AddComponent<CompositeCollider2D>();
                 m_compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
@@ -92,10 +92,11 @@ namespace Cinemachine
             
             m_polygonHolder = new GameObject("PolygonCollider2Ds");
             m_polygonHolder.transform.parent = m_compositeColliderHolder.transform;
-            m_polygonHolder.hideFlags = HideFlags.NotEditable;
+            //m_polygonHolder.hideFlags = HideFlags.NotEditable;
             foreach (var graph in confinerState.graphs)
             {
                 var polygon = m_polygonHolder.AddComponent<PolygonCollider2D>();
+                polygon.isTrigger = true;
                 polygon.usedByComposite = true;
                 polygon.points = graph.m_points.Select(x => x.m_position).ToArray();
                 
