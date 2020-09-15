@@ -360,7 +360,7 @@ namespace Cinemachine
             }
 
             var holdTime = m_Instructions[mCurrentInstruction].m_Hold 
-                + m_Instructions[mCurrentInstruction].m_Blend.m_Time;
+                + m_Instructions[mCurrentInstruction].m_Blend.BlendTime;
             var minHold = mCurrentInstruction < m_Instructions.Length - 1 || m_Loop 
                 ? 0 : float.MaxValue;
             if (now - mActivationTime > Mathf.Max(minHold, holdTime))

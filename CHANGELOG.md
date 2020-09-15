@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1276391) - CM Brain Reset did not reset Custom Blends asset in inspector
 - Bugfix (1276343) - CM Brain inspector custom blends misaligned dropdown arrow
 - Bugfix (1256530) - disallow multiple components where appropriate
+- Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
 
 
 ## [2.6.2] - 2020-09-02

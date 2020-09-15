@@ -628,7 +628,7 @@ namespace Cinemachine
                 {
                     // Create a blend (curve will be null if a cut)
                     var blendDef = LookupBlend(outGoingCamera, activeCamera);
-                    if (blendDef.BlendCurve != null && blendDef.m_Time > 0)
+                    if (blendDef.BlendCurve != null && blendDef.BlendTime > 0)
                     {
                         if (frame.blend.IsComplete)
                             frame.blend.CamA = outGoingCamera;  // new blend
@@ -638,7 +638,7 @@ namespace Cinemachine
                             // with the same blend in reverse, adjust the belnd time
                             if (frame.blend.CamA == activeCamera
                                 && frame.blend.CamB == outGoingCamera
-                                && frame.blend.Duration <= blendDef.m_Time)
+                                && frame.blend.Duration <= blendDef.BlendTime)
                             {
                                 blendDef.m_Time = frame.blend.TimeInBlend;
                             }
@@ -652,7 +652,7 @@ namespace Cinemachine
                         }
                     }
                     frame.blend.BlendCurve = blendDef.BlendCurve;
-                    frame.blend.Duration = blendDef.m_Time;
+                    frame.blend.Duration = blendDef.BlendTime;
                     frame.blend.TimeInBlend = 0;
                 }
                 // Set the current active camera

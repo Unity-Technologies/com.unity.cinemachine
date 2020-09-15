@@ -174,9 +174,15 @@ namespace Cinemachine
         [Tooltip("Shape of the blend curve")]
         public Style m_Style;
 
-        /// <summary>The duration (in seconds) of the blend</summary>
+        /// <summary>The duration (in seconds) of the blend, if not a cut.  
+        /// If style is a cut, then this value is ignored.</summary>
         [Tooltip("Duration of the blend, in seconds")]
         public float m_Time;
+
+        /// <summary>
+        /// Get the duration of the blend, in seconds.  Will return 0 if blend style is a cut.
+        /// </summary>
+        public float BlendTime { get { return m_Style == Style.Cut ? 0 : m_Time; } }
 
         /// <summary>Constructor</summary>
         /// <param name="style">The shape of the blend curve.</param>
