@@ -96,7 +96,6 @@ namespace Cinemachine
         /// </summary>
         internal ConfinerState GetConfinerAtOrthoSize(float orthographicSize)
         {
-            // TODO: no need to lerp, at i % 2 == 0 - remove this part
             ConfinerState result = new ConfinerState();
             for (int i = m_confinerStates.Count - 1; i >= 0; --i)
             {

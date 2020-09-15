@@ -91,43 +91,14 @@ namespace Cinemachine
         {
             if (stage == CinemachineCore.Stage.Body)
             {
-                if (!ValidatePathCache(state.Lens.Aspect, out bool pathChanged))
+                if (!ValidateConfinerStateCache(state.Lens.Aspect, out bool pathChanged))
                 {
                     return; // invalid path
                 }
-
-                if (BakeProgress == BakeProgressEnum.EMPTY || BakeProgress == BakeProgressEnum.BAKING)
-                {
-                    return; // need to wait until we have a baked cache
-                }
-
-                float frustumHeight;
-                if (state.Lens.Orthographic)
-                {
-                    frustumHeight = Mathf.Abs(state.Lens.OrthographicSize);
-                }
-                else
-                {
-                    var R = Quaternion.Inverse(m_BoundingShape2D.transform.rotation);
-                    var planePosition = R * m_BoundingShape2D.transform.position;
-                    var cameraPosition = R * vcam.transform.position;
-                    var distance = Mathf.Abs(planePosition.z - cameraPosition.z);
-                    frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
-                }
-
-                if (pathChanged ||
-                    m_currentPathCache == null || 
-                    m_BoundingCompositeShape2D == null ||
-                    Math.Abs(frustumHeight - m_frustumHeightCache) > m_bakedConfinerResolution)
-                {
-                    // TODO: performance optimization
-                    // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
-                    m_frustumHeightCache = frustumHeight;
-                    m_confinerCache = GetConfinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
-                    GetConfinerStateToPath().Convert(m_confinerCache, 
-                        out m_currentPathCache, out m_BoundingCompositeShape2D);
-                }
                 
+                float frustumHeight = CalculateFrustumHeight(state, vcam);
+                ValidateCompositeColliderCache(pathChanged, frustumHeight);
+
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
@@ -156,6 +127,34 @@ namespace Cinemachine
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
             }
+        }
+
+        // <summary>
+        /// Calculates Frustum Height
+        /// camera window
+        ///  |----+----+  -\
+        ///  |    |    |    } frustumHeight = cameraWindowHeight / 2
+        ///  |---------+  -/
+        ///  |    |    |
+        ///  |---------|
+        /// </summary>
+        private float CalculateFrustumHeight(in CameraState state, in CinemachineVirtualCameraBase vcam)
+        {
+            float frustumHeight;
+            if (state.Lens.Orthographic)
+            {
+                frustumHeight = Mathf.Abs(state.Lens.OrthographicSize);
+            }
+            else
+            {
+                var R = Quaternion.Inverse(m_BoundingShape2D.transform.rotation);
+                var planePosition = R * m_BoundingShape2D.transform.position;
+                var cameraPosition = R * vcam.transform.position;
+                var distance = Mathf.Abs(planePosition.z - cameraPosition.z);
+                frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
+            }
+
+            return frustumHeight;
         }
  
         private Vector3 ConfinePoint(Vector3 camPos)
@@ -212,11 +211,12 @@ namespace Cinemachine
             m_boundingShapeRotationCache = new Quaternion(0,0,0,0);
         }
 
-        bool DidBoundingShapeTransformChange()
+        bool BoundingShapeTransformChanged()
         {
-            return m_boundingShapePositionCache != m_BoundingShape2D.transform.position ||
+            return m_BoundingShape2D != null && 
+                   (m_boundingShapePositionCache != m_BoundingShape2D.transform.position ||
                    m_boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
-                   m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation;
+                   m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation);
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace Cinemachine
         /// <param name="sensorRatio">CameraWindow ratio (width / height)</param>
         /// <param name="pathChanged">True, if the baked path has changed. False, otherwise.</param>
         /// <returns>True, if path is baked and valid. False, if path is invalid or non-existent.</returns>
-        private bool ValidatePathCache(float sensorRatio, out bool pathChanged)
+        private bool ValidateConfinerStateCache(float sensorRatio, out bool pathChanged)
         {
             // TODO: turn this and subsequent functions calls into courotines, to not block ui
             // TODO: before calling this make sure to stop any running courotine 
@@ -244,7 +244,7 @@ namespace Cinemachine
             var cacheIsValid = 
                 m_originalPath != null && // first time?
                 !cacheIsEmpty && // has a prev. baked result?
-                !DidBoundingShapeTransformChange() && // confiner was moved or rotated or scaled?
+                !BoundingShapeTransformChanged() && // confiner was moved or rotated or scaled?
                 Math.Abs(m_sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
                 Math.Abs(m_bakedConfinerResolution - m_bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon; // resolution changed?
             if (!m_AutoBake && !m_TriggerBake)
@@ -276,7 +276,7 @@ namespace Cinemachine
             BakeProgress = BakeProgressEnum.BAKING;
             pathChanged = true;
 
-            bool boundingShapeTransformChanged = DidBoundingShapeTransformChange();
+            bool boundingShapeTransformChanged = BoundingShapeTransformChanged();
             if (boundingShapeTransformChanged || m_originalPath == null)
             {
                 Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
@@ -345,6 +345,22 @@ namespace Cinemachine
 
             BakeProgress = BakeProgressEnum.BAKED;
             return true;
+        }
+
+        private void ValidateCompositeColliderCache(bool pathChanged, float frustumHeight)
+        {
+            if (pathChanged ||
+                m_currentPathCache == null || 
+                m_BoundingCompositeShape2D == null ||
+                Math.Abs(frustumHeight - m_frustumHeightCache) > m_bakedConfinerResolution)
+            {
+                // TODO: performance optimization
+                // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
+                m_frustumHeightCache = frustumHeight;
+                m_confinerCache = GetConfinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
+                GetConfinerStateToPath().Convert(m_confinerCache, 
+                    out m_currentPathCache, out m_BoundingCompositeShape2D);
+            }
         }
 
         private ConfinerStateToPath GetConfinerStateToPath()
@@ -420,7 +436,7 @@ namespace Cinemachine
                     {
                         Gizmos.color = new Color((float) index / (float) m_confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
                         var g = confinerState.graphs[index1];
-                        //Handles.Label(offset + g.m_points[0].m_position, "A="+g.ComputeSignedArea());
+                        Handles.Label(offset + g.m_points[0].m_position, "A="+g.ComputeSignedArea());
                         //Handles.Label(offset + g.m_points[0].m_position, "W="+g.m_windowDiagonal);
                         for (int i = 0; i < g.m_points.Count; ++i)
                         {
