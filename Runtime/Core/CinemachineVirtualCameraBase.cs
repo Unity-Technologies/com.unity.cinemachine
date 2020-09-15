@@ -682,7 +682,7 @@ namespace Cinemachine
             CinemachineBlendDefinition blendDef,
             CinemachineBlend activeBlend)
         {
-            if (blendDef.BlendCurve == null || blendDef.m_Time <= 0 || (camA == null && camB == null))
+            if (blendDef.BlendCurve == null || blendDef.BlendTime <= 0 || (camA == null && camB == null))
                 return null;
             if (activeBlend != null)
             {
@@ -690,7 +690,7 @@ namespace Cinemachine
                 // with the same blend in reverse, adjust the belnd time
                 if (activeBlend.CamA == camB
                     && activeBlend.CamB == camA
-                    && activeBlend.Duration <= blendDef.m_Time)
+                    && activeBlend.Duration <= blendDef.BlendTime)
                 {
                     blendDef.m_Time = activeBlend.TimeInBlend;
                 }
@@ -699,7 +699,7 @@ namespace Cinemachine
             else if (camA == null)
                 camA = new StaticPointVirtualCamera(State, "(none)");
             return new CinemachineBlend(
-                camA, camB, blendDef.BlendCurve, blendDef.m_Time, 0);
+                camA, camB, blendDef.BlendCurve, blendDef.BlendTime, 0);
         }
 
         /// <summary>
