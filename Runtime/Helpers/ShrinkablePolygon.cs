@@ -200,6 +200,27 @@ namespace Cinemachine
                     clip[index].Add(new IntPoint(point.m_position.x * FloatToIntScaler, point.m_position.y * FloatToIntScaler));
                 }
                 index++;
+                
+                // add a thin line to each intersection point, thus connecting disconnected polygons
+                foreach (var intersectionPoint in polygon.m_intersectionPoints)
+                {
+                    Vector2 closestPoint = polygon.ClosestGraphPoint(intersectionPoint);
+                    Vector2 direction = (closestPoint - intersectionPoint).normalized;
+                    Vector2 epsilonNormal = new Vector2(direction.y, -direction.x) * 0.01f;
+                
+                    clip.Add(new List<IntPoint>(4));
+                    Vector2 p1 = closestPoint + epsilonNormal;
+                    Vector2 p2 = intersectionPoint + epsilonNormal;
+                    Vector3 p3 = intersectionPoint - epsilonNormal;
+                    Vector3 p4 = closestPoint - epsilonNormal;
+                    
+                    clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
+                    clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
+                    clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
+                    clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
+                    
+                    index++;
+                }
             }
             
             // Merge polygons with Clipper
