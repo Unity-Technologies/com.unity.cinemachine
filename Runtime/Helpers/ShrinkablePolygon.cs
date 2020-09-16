@@ -102,15 +102,17 @@ namespace Cinemachine
             m_clockwiseOrientation = m_area > 0;
             return m_area;
         }
-        
+
+        public static List<KeyValuePair<Vector2, float>> PointAngleDebug = new List<KeyValuePair<Vector2, float>>();
         private static float m_oneOverSquarerootOfTwo = 0.70710678f;
         /// <summary>
         /// Computes normalized normals for all m_points. If fixBigCornerAngles is true, then adds additional m_points for corners
         /// with reflex angles to ensure correct offset
         /// </summary>
         /// <param name="fixBigCornerAngles"></param>
-        internal void ComputeNormals(bool fixBigCornerAngles)
+        private void ComputeNormals(bool fixBigCornerAngles)
         {
+            // TODO: this is wrong - 1 place shift
             var edgeNormals = new List<Vector2>(m_points.Count);
             for (int i = 0; i < m_points.Count; ++i)
             {
@@ -128,10 +130,14 @@ namespace Cinemachine
                 if (fixBigCornerAngles)
                 {
                     var angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevEdgeIndex]);
+                    int prevIndex = i == 0 ? m_points.Count - 1 : i - 1;
+                    int nextIndex = i == m_points.Count - 1 ? 0 : i + 1;
+                    
+                    // here instead of nextIndex we would need i - but it is shifted so corrently correct result is at nextIndex
+                    PointAngleDebug.Add(new KeyValuePair<Vector2, float>(m_points[nextIndex].m_position, angle));
                     if (angle < 0)
                     {
-                        int prevIndex = i == 0 ? m_points.Count - 1 : i - 1;
-                        int nextIndex = i == m_points.Count - 1 ? 0 : i + 1;
+                        
                         m_points.Insert(nextIndex, new ShrinkablePoint2
                         {
                             m_position = Vector2.Lerp(m_points[i].m_position, m_points[nextIndex].m_position, 0.01f),
@@ -192,37 +198,40 @@ namespace Cinemachine
             // convert shrinkable polygons points to int based points for Clipper
             List<List<IntPoint>> clip = new List<List<IntPoint>>(shrinkablePolygons.Count);
             int index = 0;
-            foreach (var polygon in shrinkablePolygons)
+            for (var polyIndex = 0; polyIndex < shrinkablePolygons.Count; polyIndex++)
             {
+                var polygon = shrinkablePolygons[polyIndex];
                 clip.Add(new List<IntPoint>(polygon.m_points.Count));
                 foreach (var point in polygon.m_points)
                 {
-                    clip[index].Add(new IntPoint(point.m_position.x * FloatToIntScaler, point.m_position.y * FloatToIntScaler));
+                    clip[index].Add(new IntPoint(point.m_position.x * FloatToIntScaler,
+                        point.m_position.y * FloatToIntScaler));
                 }
                 index++;
-                
+
                 // add a thin line to each intersection point, thus connecting disconnected polygons
                 foreach (var intersectionPoint in polygon.m_intersectionPoints)
                 {
+                    Debug.Log("intersection:" + intersectionPoint);
                     Vector2 closestPoint = polygon.ClosestGraphPoint(intersectionPoint);
                     Vector2 direction = (closestPoint - intersectionPoint).normalized;
                     Vector2 epsilonNormal = new Vector2(direction.y, -direction.x) * 0.01f;
-                
+
                     clip.Add(new List<IntPoint>(4));
                     Vector2 p1 = closestPoint + epsilonNormal;
                     Vector2 p2 = intersectionPoint + epsilonNormal;
                     Vector3 p3 = intersectionPoint - epsilonNormal;
                     Vector3 p4 = closestPoint - epsilonNormal;
-                    
+
                     clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                     clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
                     clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
                     clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
-                    
+
                     index++;
                 }
             }
-            
+
             // Merge polygons with Clipper
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
             Clipper c = new Clipper();
