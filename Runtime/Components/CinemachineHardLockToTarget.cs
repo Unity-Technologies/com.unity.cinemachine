@@ -10,7 +10,6 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [DisallowMultipleComponent]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
     {
         /// <summary>
