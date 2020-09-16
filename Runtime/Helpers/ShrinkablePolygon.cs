@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine;
+using ClipperLib;
 
 namespace Cinemachine
 {
@@ -182,6 +183,44 @@ namespace Cinemachine
                         break;
                     }
                 }
+            }
+        }
+        
+        private static readonly int FloatToIntScaler = 10000000; // same as in Physics2D
+        internal static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, out List<List<Vector2>> path)
+        {
+            // convert shrinkable polygons points to int based points for Clipper
+            List<List<IntPoint>> clip = new List<List<IntPoint>>(shrinkablePolygons.Count);
+            int index = 0;
+            foreach (var polygon in shrinkablePolygons)
+            {
+                clip.Add(new List<IntPoint>(polygon.m_points.Count));
+                foreach (var point in polygon.m_points)
+                {
+                    clip[index].Add(new IntPoint(point.m_position.x * FloatToIntScaler, point.m_position.y * FloatToIntScaler));
+                }
+                index++;
+            }
+            
+            // Merge polygons with Clipper
+            List<List<IntPoint>> solution = new List<List<IntPoint>>();
+            Clipper c = new Clipper();
+            c.AddPaths(clip, PolyType.ptClip, true);
+            c.Execute(ClipType.ctUnion, solution, 
+                PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+            
+            // Convert result to float points
+            path = new List<List<Vector2>>(solution.Count);
+            foreach (var polySegment in solution)
+            {
+                var pathSegment = new List<Vector2>(polySegment.Count);
+                for (index = 0; index < polySegment.Count; index++)
+                {
+                    var p_int = polySegment[index];
+                    var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
+                    pathSegment.Add(p);
+                }
+                path.Add(pathSegment);
             }
         }
 

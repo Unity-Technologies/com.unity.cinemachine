@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.Graphs;
 using UnityEngine;
-using ClipperLib;
 
 namespace Cinemachine
 { 
@@ -90,7 +90,6 @@ namespace Cinemachine
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            Clipper c = new Clipper();
             if (stage == CinemachineCore.Stage.Body)
             {
                 if (!ValidateConfinerStateCache(state.Lens.Aspect, out bool pathChanged))
@@ -158,15 +157,50 @@ namespace Cinemachine
 
             return frustumHeight;
         }
- 
+
         private Vector3 ConfinePoint(Vector3 camPos)
         {
-            // 2D version
-            Vector2 p = camPos;
-            Vector2 closest = p;
-            if (m_BoundingCompositeShape2D.OverlapPoint(camPos))
-                return Vector3.zero;
-
+            Vector2 camPos2D = camPos;
+            if (UseClipper)
+            {
+                float minX = Single.PositiveInfinity;
+                float maxX = Single.NegativeInfinity;
+                foreach (var path in m_currentPathCache)
+                {
+                    minX = path.Aggregate(minX, (current, point) => Mathf.Min(current, point.x));
+                    maxX = path.Aggregate(maxX, (current, point) => Mathf.Max(current, point.x));
+                }
+                var polygonXWidth = maxX - minX;
+                
+                int intersectionCount = 0;
+                var camRayEndFromCamPos2D = camPos2D + Vector2.right * polygonXWidth;
+                foreach (var path in m_currentPathCache)
+                {
+                    for (var index = 0; index < path.Count; index++)
+                    {
+                        var p1 = path[index];
+                        var p2 = path[(index + 1) % path.Count];
+                        UnityVectorExtensions.FindIntersection(camPos2D, camRayEndFromCamPos2D, p1, p2,
+                            out bool lines_intersect, out bool segments_intersect, out Vector2 intersection);
+                        if (segments_intersect)
+                        {
+                            intersectionCount++;
+                        }
+                    }
+                }
+                
+                if (intersectionCount % 2 != 0) // inside polygon when odd num of intersections
+                {
+                    return Vector3.zero;
+                }
+            }
+            else
+            {
+                if (m_BoundingCompositeShape2D.OverlapPoint(camPos))
+                    return Vector3.zero;
+            }
+            
+            Vector2 closest = camPos2D;
             float bestDistance = float.MaxValue;
             for (int i = 0; i < m_currentPathCache.Count; ++i)
             {
@@ -177,8 +211,8 @@ namespace Cinemachine
                     for (int j = 0; j < numPoints; ++j)
                     {
                         Vector2 v = m_BoundingCompositeShape2D.transform.TransformPoint(m_currentPathCache[i][j]);
-                        Vector2 c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
-                        float d = Vector2.SqrMagnitude(p - c);
+                        Vector2 c = Vector2.Lerp(v0, v, camPos2D.ClosestPointOnSegment(v0, v));
+                        float d = Vector2.SqrMagnitude(camPos2D - c);
                         if (d < bestDistance)
                         {
                             bestDistance = d;
@@ -188,7 +222,7 @@ namespace Cinemachine
                     }
                 }
             }
-            return closest - p;
+            return closest - camPos2D;
         }
         
         private class VcamExtraState
@@ -212,14 +246,7 @@ namespace Cinemachine
             m_boundingShapeScaleCache = Vector3.negativeInfinity;
             m_boundingShapeRotationCache = new Quaternion(0,0,0,0);
         }
-
-        bool BoundingShapeTransformChanged()
-        {
-            return m_BoundingShape2D != null && 
-                   (m_boundingShapePositionCache != m_BoundingShape2D.transform.position ||
-                   m_boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
-                   m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation);
-        }
+        
 
         /// <summary>
         /// Checks if we have a valid path cache. Calculates it if needed.
@@ -348,7 +375,16 @@ namespace Cinemachine
             BakeProgress = BakeProgressEnum.BAKED;
             return true;
         }
+        
+        bool BoundingShapeTransformChanged()
+        {
+            return m_BoundingShape2D != null && 
+                   (m_boundingShapePositionCache != m_BoundingShape2D.transform.position ||
+                    m_boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
+                    m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation);
+        }
 
+        public bool UseClipper = false;
         private void ValidateCompositeColliderCache(bool pathChanged, float frustumHeight)
         {
             if (pathChanged ||
@@ -360,8 +396,15 @@ namespace Cinemachine
                 // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                 m_frustumHeightCache = frustumHeight;
                 m_confinerCache = GetConfinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
-                GetConfinerStateToPath().Convert(m_confinerCache, 
-                    out m_currentPathCache, out m_BoundingCompositeShape2D);
+                if (UseClipper)
+                {
+                    ShrinkablePolygon.ConvertToPath(m_confinerCache.graphs, out m_currentPathCache);
+                }
+                else
+                {
+                    GetConfinerStateToPath().Convert(m_confinerCache,
+                        out m_currentPathCache, out m_BoundingCompositeShape2D);
+                }
             }
         }
 
