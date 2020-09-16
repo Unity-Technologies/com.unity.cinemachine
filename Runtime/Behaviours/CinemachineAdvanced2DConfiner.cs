@@ -207,10 +207,12 @@ namespace Cinemachine
                 int numPoints = m_currentPathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = m_BoundingCompositeShape2D.transform.TransformPoint(m_currentPathCache[i][numPoints - 1]);
+                    // Vector2 v0 = m_BoundingCompositeShape2D.transform.TransformPoint(m_currentPathCache[i][numPoints - 1]);
+                    Vector2 v0 = m_currentPathCache[i][numPoints - 1];
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = m_BoundingCompositeShape2D.transform.TransformPoint(m_currentPathCache[i][j]);
+                        // Vector2 v = m_BoundingCompositeShape2D.transform.TransformPoint(m_currentPathCache[i][j]);
+                        Vector2 v = m_currentPathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, camPos2D.ClosestPointOnSegment(v0, v));
                         float d = Vector2.SqrMagnitude(camPos2D - c);
                         if (d < bestDistance)
