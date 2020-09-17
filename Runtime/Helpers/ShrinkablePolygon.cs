@@ -886,12 +886,10 @@ namespace Cinemachine
                             g1.m_state = shrinkablePolygon.m_state + 1;
 
                             // g1 -> intersection j+1 ... i
-                            List<ShrinkablePoint2> points = new List<ShrinkablePoint2>();
-                            points.Add(new ShrinkablePoint2
+                            var points = new List<ShrinkablePoint2>
                             {
-                                m_position = intersection,
-                                m_shrinkDirection = Vector2.zero,
-                            });
+                                new ShrinkablePoint2 {m_position = intersection, m_shrinkDirection = Vector2.zero,}
+                            };
                             for (int k = (j + 1) % shrinkablePolygon.m_points.Count;
                                 k != (i + 1) % shrinkablePolygon.m_points.Count;
                                 k = (k + 1) % shrinkablePolygon.m_points.Count)
@@ -910,12 +908,10 @@ namespace Cinemachine
                             g2.m_state = shrinkablePolygon.m_state + 1;
 
                             // g2 -> intersection i+1 ... j
-                            List<ShrinkablePoint2> points = new List<ShrinkablePoint2>();
-                            points.Add(new ShrinkablePoint2
+                            var points = new List<ShrinkablePoint2>
                             {
-                                m_position = intersection,
-                                m_shrinkDirection = Vector2.zero,
-                            });
+                                new ShrinkablePoint2 {m_position = intersection, m_shrinkDirection = Vector2.zero,}
+                            };
                             for (int k = (i + 1) % shrinkablePolygon.m_points.Count;
                                 k != (j + 1) % shrinkablePolygon.m_points.Count;
                                 k = (k + 1) % shrinkablePolygon.m_points.Count)
