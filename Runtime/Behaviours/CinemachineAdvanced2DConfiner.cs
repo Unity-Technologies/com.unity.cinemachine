@@ -53,8 +53,6 @@ namespace Cinemachine
         internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE }
         [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
 
-        private Collider2D m_BoundingCompositeShape2D; // result from converting from m_BoundingShape2D
-        
         private List<List<Vector2>> m_originalPath;
         private List<List<Vector2>> m_originalPathCache;
         private int m_originalPathTotalPointCount;
@@ -161,45 +159,12 @@ namespace Cinemachine
         private Vector3 ConfinePoint(Vector3 camPos)
         {
             Vector2 camPos2D = camPos;
-            if (UseClipper)
+
+            if (ShrinkablePolygon.IsInside(m_currentPathCache, camPos2D))
             {
-                float minX = Single.PositiveInfinity;
-                float maxX = Single.NegativeInfinity;
-                foreach (var path in m_currentPathCache)
-                {
-                    minX = path.Aggregate(minX, (current, point) => Mathf.Min(current, point.x));
-                    maxX = path.Aggregate(maxX, (current, point) => Mathf.Max(current, point.x));
-                }
-                var polygonXWidth = maxX - minX;
-                
-                int intersectionCount = 0;
-                var camRayEndFromCamPos2D = camPos2D + Vector2.right * polygonXWidth;
-                foreach (var path in m_currentPathCache)
-                {
-                    for (var index = 0; index < path.Count; index++)
-                    {
-                        var p1 = path[index];
-                        var p2 = path[(index + 1) % path.Count];
-                        UnityVectorExtensions.FindIntersection(camPos2D, camRayEndFromCamPos2D, p1, p2,
-                            out bool lines_intersect, out bool segments_intersect, out Vector2 intersection);
-                        if (segments_intersect)
-                        {
-                            intersectionCount++;
-                        }
-                    }
-                }
-                
-                if (intersectionCount % 2 != 0) // inside polygon when odd num of intersections
-                {
-                    return Vector3.zero;
-                }
+                return Vector3.zero;
             }
-            else
-            {
-                if (m_BoundingCompositeShape2D.OverlapPoint(camPos))
-                    return Vector3.zero;
-            }
-            
+
             Vector2 closest = camPos2D;
             float bestDistance = float.MaxValue;
             for (int i = 0; i < m_currentPathCache.Count; ++i)
@@ -386,40 +351,18 @@ namespace Cinemachine
                     m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation);
         }
 
-        public bool UseClipper = false;
         private void ValidateCompositeColliderCache(bool pathChanged, float frustumHeight)
         {
             if (pathChanged ||
                 m_currentPathCache == null || 
-                m_BoundingCompositeShape2D == null ||
                 Math.Abs(frustumHeight - m_frustumHeightCache) > m_bakedConfinerResolution)
             {
-                // TODO: performance optimization
-                // TODO: Use polygon union operation, once polygon union operation is exposed by unity core
                 m_frustumHeightCache = frustumHeight;
                 m_confinerCache = GetConfinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
-                if (UseClipper)
-                {
-                    ShrinkablePolygon.ConvertToPath(m_confinerCache.graphs, out m_currentPathCache);
-                }
-                else
-                {
-                    GetConfinerStateToPath().Convert(m_confinerCache,
-                        out m_currentPathCache, out m_BoundingCompositeShape2D);
-                }
+                ShrinkablePolygon.ConvertToPath(m_confinerCache.graphs, out m_currentPathCache);
             }
         }
-
-        private ConfinerStateToPath GetConfinerStateToPath()
-        {
-            if (m_confinerStateConverter == null)
-            {
-                m_confinerStateConverter = new ConfinerStateToPath(gameObject.name);
-            }
-
-            return m_confinerStateConverter;
-        }
-
+        
         private ConfinerOven GetConfinerOven()
         {
             if (m_confinerBaker == null)
@@ -504,11 +447,6 @@ namespace Cinemachine
                             g.m_points[(i + 1) % g.m_points.Count].m_position);
                     }
                 }
-            }
-
-            foreach (var positionAngle in ShrinkablePolygon.PointAngleDebug)
-            {
-                Handles.Label(positionAngle.Key, positionAngle.Value + "'");
             }
             
         }
