@@ -107,8 +107,6 @@ namespace Cinemachine.Utility
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
-        
-        
 
         /// <summary>Is the vector within Epsilon of zero length?</summary>
         /// <param name="v"></param>

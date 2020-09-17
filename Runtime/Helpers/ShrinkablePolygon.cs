@@ -4,6 +4,7 @@ using System.Linq;
 using Cinemachine.Utility;
 using ClipperLib;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Cinemachine
 {
@@ -414,11 +415,9 @@ namespace Cinemachine
             Vector2 CA = (A - C);
             Vector2 CB = (B - C);
             
-            var angle1 = Vector2.SignedAngle(CA, normal);
-            var angle1_abs = Math.Abs(angle1);
-            var angle2 = Vector2.SignedAngle(CB, normal);
-            var angle2_abs = Math.Abs(angle2);
-
+            var angle1_abs = Vector2.Angle(CA, normal);
+            var angle2_abs = Vector2.Angle(CB, normal);
+            
             Vector2 R = normal.normalized * m_aspectRatioBasedDiagonal; // Mathf.Sqrt(m_aspectRatio*m_aspectRatio + 1);
             float angle = Vector2.SignedAngle(R, m_normalDirections[0]);
             if (0 < angle && angle < 90)
