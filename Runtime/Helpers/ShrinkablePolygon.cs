@@ -418,7 +418,7 @@ namespace Cinemachine
             var angle1_abs = Vector2.Angle(CA, normal);
             var angle2_abs = Vector2.Angle(CB, normal);
             
-            Vector2 R = normal.normalized * m_aspectRatioBasedDiagonal; // Mathf.Sqrt(m_aspectRatio*m_aspectRatio + 1);
+            Vector2 R = normal.normalized * m_aspectRatioBasedDiagonal;
             float angle = Vector2.SignedAngle(R, m_normalDirections[0]);
             if (0 < angle && angle < 90)
             {
