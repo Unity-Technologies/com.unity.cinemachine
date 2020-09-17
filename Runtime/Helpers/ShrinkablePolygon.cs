@@ -213,11 +213,7 @@ namespace Cinemachine
         internal void ComputeAspectBasedNormals()
         {
             List<Vector2> normalsBefore = m_points.Select(point => point.m_shrinkDirection).ToList();
-            for (int i = 0; i < m_points.Count; ++i)
-            {
-                normalsBefore.Add(m_points[i].m_shrinkDirection);
-            }
-            
+
             ComputeNormals(false);
             for (int i = 0; i < m_points.Count; ++i)
             {
