@@ -82,7 +82,7 @@ namespace Cinemachine
         {
             m_aspectRatio = aspectRatio;
             m_aspectRatioBasedDiagonal = aspectRatioBasedDiagonal;
-            m_normalDirections = normalDirections;
+            m_normalDirections = normalDirections; // shallow copy is enough here
         }
 
         /// <summary>
@@ -91,16 +91,19 @@ namespace Cinemachine
         /// <returns>Deep copy of this shrinkablePolygon</returns>
         public ShrinkablePolygon DeepCopy()
         {
+            // this can be shallow
             return new ShrinkablePolygon(m_aspectRatio, m_aspectRatioBasedDiagonal, m_normalDirections)
             {
-                m_points = m_points.ConvertAll(point =>
-                    new ShrinkablePoint2(point.m_position, point.m_shrinkDirection, point.m_cantIntersect)),
+                // shallow
                 m_clockwiseOrientation = m_clockwiseOrientation,
                 m_area = m_area,
-                m_intersectionPoints =
-                    m_intersectionPoints.ConvertAll(intersection => new Vector2(intersection.x, intersection.y)),
                 m_windowDiagonal = m_windowDiagonal,
-                m_state = m_state
+                m_state = m_state,
+                // deep
+                m_points = m_points.ConvertAll(point =>
+                    new ShrinkablePoint2(point.m_position, point.m_shrinkDirection, point.m_cantIntersect)),
+                m_intersectionPoints =
+                    m_intersectionPoints.ConvertAll(intersection => new Vector2(intersection.x, intersection.y))
             };
         }
 
@@ -202,7 +205,11 @@ namespace Cinemachine
         /// </summary>
         internal void ComputeAspectBasedNormals()
         {
-            List<Vector2> normalsBefore = m_points.Select(point => point.m_shrinkDirection).ToList();
+            var normalsBefore = new List<Vector2>(m_points.Count);
+            for (int i = 0; i < m_points.Count; ++i)
+            {
+                normalsBefore.Add(m_points[i].m_shrinkDirection);
+            }
 
             ComputeNormals(false);
             for (int i = 0; i < m_points.Count; ++i)
