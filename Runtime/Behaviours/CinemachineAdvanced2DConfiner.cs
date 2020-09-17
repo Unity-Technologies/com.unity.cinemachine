@@ -14,16 +14,8 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
-
-    /// <summary>
-    /// Advanced 2D confiner prebakes a confiner for ...
-    ///
-    /// todo...
-    /// If you change the input collider's m_points (without changing the number of m_points or ...)
-    /// </summary>
     public class CinemachineAdvanced2DConfiner : CinemachineExtension
     {
-        // TODO: OnValidate parameters (e.g. m_bakedConfinerResolution)
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
         public Collider2D m_BoundingShape2D;
@@ -69,7 +61,7 @@ namespace Cinemachine
         /// Trigger rebake process manually.
         /// The confiner rebakes iff an input parameter affecting the outcome of the baked result.
         /// </summary>
-        public void Bake()
+        private void Bake()
         {
             m_TriggerBake = true;
         }
@@ -342,8 +334,8 @@ namespace Cinemachine
             BakeProgress = BakeProgressEnum.BAKED;
             return true;
         }
-        
-        bool BoundingShapeTransformChanged()
+
+        private bool BoundingShapeTransformChanged()
         {
             return m_BoundingShape2D != null && 
                    (m_boundingShapePositionCache != m_BoundingShape2D.transform.position ||
@@ -379,7 +371,7 @@ namespace Cinemachine
             InvalidatePathCache();
         }
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             if (!m_DrawGizmosDebug) return;
             if (m_confinerStates != null && m_BoundingShape2D != null)

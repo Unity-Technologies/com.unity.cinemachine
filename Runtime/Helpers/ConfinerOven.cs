@@ -19,7 +19,6 @@ namespace Cinemachine
         }
         
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
-        private ConfinerStateToPath m_confinerStateToPath;
         
         /// <summary>
         /// 
@@ -72,7 +71,7 @@ namespace Cinemachine
         }
      
         /// <summary>
-        /// Converts and returns List<List<Graph>> from a List<List<Vector2>
+        /// Converts and returns shrinkable polygons from a polygons
         /// </summary>
         private List<List<ShrinkablePolygon>> CreateShrinkablePolygons(in List<List<Vector2>> paths, in float aspectRatio)
         {

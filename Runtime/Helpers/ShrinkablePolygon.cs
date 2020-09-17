@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine.Utility;
-using UnityEngine;
 using ClipperLib;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -26,9 +26,9 @@ namespace Cinemachine
 
             internal ShrinkablePoint2(Vector2 mPosition, Vector2 mShrinkDirection, bool mCantIntersect)
             {
-                this.m_position = mPosition;
-                this.m_shrinkDirection = mShrinkDirection;
-                this.m_cantIntersect = mCantIntersect;
+                m_position = mPosition;
+                m_shrinkDirection = mShrinkDirection;
+                m_cantIntersect = mCantIntersect;
             }
         }
 
@@ -43,6 +43,13 @@ namespace Cinemachine
         private float m_area;
 
         internal List<Vector2> m_intersectionPoints;
+
+        public ShrinkablePolygon()
+        {
+            m_points = new List<ShrinkablePoint2>();
+            m_intersectionPoints = new List<Vector2>();
+        }
+
         public ShrinkablePolygon(List<Vector2> points, float aspectRatio) : this()
         {
             m_points = new List<ShrinkablePoint2>(points.Count);
@@ -50,6 +57,7 @@ namespace Cinemachine
             {
                 m_points.Add(new ShrinkablePoint2 { m_position = points[i] });
             }
+            
             m_aspectRatio = aspectRatio;
             m_aspectRatioBasedDiagonal = Mathf.Sqrt(m_aspectRatio*m_aspectRatio + 1);
             m_normalDirections = new[]
@@ -63,6 +71,7 @@ namespace Cinemachine
                 new Vector2(-m_aspectRatio, 0),
                 new Vector2(-m_aspectRatio, 1),
             };
+            
             ComputeNormals(true);
             ComputeSignedArea();
             if (!m_clockwiseOrientation)
@@ -70,19 +79,6 @@ namespace Cinemachine
                 FlipNormals();
                 ComputeSignedArea();
             }
-        }
-
-        public ShrinkablePolygon()
-        {
-            m_points = new List<ShrinkablePoint2>();
-            m_intersectionPoints = new List<Vector2>();
-        }
-
-        private ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) : this()
-        {
-            m_aspectRatio = aspectRatio;
-            m_aspectRatioBasedDiagonal = aspectRatioBasedDiagonal;
-            m_normalDirections = normalDirections; // shallow copy is enough here
         }
 
         /// <summary>
@@ -99,6 +95,7 @@ namespace Cinemachine
                 m_area = m_area,
                 m_windowDiagonal = m_windowDiagonal,
                 m_state = m_state,
+                
                 // deep
                 m_points = m_points.ConvertAll(point =>
                     new ShrinkablePoint2(point.m_position, point.m_shrinkDirection, point.m_cantIntersect)),
@@ -106,12 +103,19 @@ namespace Cinemachine
                     m_intersectionPoints.ConvertAll(intersection => new Vector2(intersection.x, intersection.y))
             };
         }
+        
+        private ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) : this()
+        {
+            m_aspectRatio = aspectRatio;
+            m_aspectRatioBasedDiagonal = aspectRatioBasedDiagonal;
+            m_normalDirections = normalDirections; // shallow copy is enough here
+        }
 
         /// <summary>
         /// Computes signed m_area and determines whether a shrinkablePolygon is oriented clockwise or counter-clockwise.
         /// </summary>
         /// <returns>Area of the shrinkablePolygon</returns>
-        internal float ComputeSignedArea()
+        private float ComputeSignedArea()
         {
             m_area = 0;
             for (int i = 0; i < m_points.Count; ++i)
@@ -217,7 +221,7 @@ namespace Cinemachine
                 int prevIndex = i == 0 ? m_points.Count - 1 : i - 1;
                 int nextIndex = i == m_points.Count - 1 ? 0 : i + 1;
 
-                m_points[i].m_shrinkDirection = CalculateShrinkNormal(m_points[i].m_shrinkDirection, 
+                m_points[i].m_shrinkDirection = CalculateShrinkDirection(m_points[i].m_shrinkDirection, 
                     m_points[prevIndex].m_position, m_points[i].m_position, m_points[nextIndex].m_position);
             }
 
@@ -299,7 +303,7 @@ namespace Cinemachine
             }
         }
 
-        // TODO: this could also be in UnityVectorExtensions
+        // TODO: this could also be in UnityVectorExtensions?
         /// <summary>
         /// Checks whether p is inside or outside the polygons. The algorithm determines if a point is inside based
         /// on a horizontal raycast from p. If the ray intersects the polygon odd number of times, then p is inside.
@@ -339,6 +343,7 @@ namespace Cinemachine
         }
         
 
+        // TODO: this could also be in UnityVectorExtensions?
         /// <summary>
         /// Finds midpoint of a rectangle's side touching CA and CB.
         /// D1 - D2 defines the side or diagonal of a rectangle touching CA and CB.
@@ -393,11 +398,14 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// 
+        /// Calculates shrink direction for thisPoint, based on it's normal and neighbouring points.
         /// </summary>
-        /// <param name="normal">Normal to CalculateShrinkNormal</param>
-        /// <returns>RectangleNormalized m_shrinkDirection</returns>
-        private Vector2 CalculateShrinkNormal(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint)
+        /// <param name="normal">normal of thisPoint</param>
+        /// <param name="prevPoint">previous neighbouring of thisPoint</param>
+        /// <param name="thisPoint"></param>
+        /// <param name="nextPoint">next neighbouring of thisPoint</param>
+        /// <returns>Returns direction for thisPoint</returns>
+        private Vector2 CalculateShrinkDirection(Vector2 normal, Vector2 prevPoint, Vector2 thisPoint, Vector2 nextPoint)
         {
             var A = prevPoint;
             var B = nextPoint;
@@ -442,7 +450,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (90 < angle && angle < 180)
@@ -474,7 +482,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (-180 < angle && angle < -90)
@@ -506,7 +514,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else if (-90 < angle && angle < 0)
@@ -538,7 +546,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Debug.Log("Error in CalculateShrinkNormal - Let us know on the Cinemachine forum please!"); // should never happen
+                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
                 }
             }
             else
@@ -554,7 +562,7 @@ namespace Cinemachine
         /// <summary>
         /// Flips normals in the shrinkablePolygon.
         /// </summary>
-        internal void FlipNormals()
+        private void FlipNormals()
         {
             for (int i = 0; i < m_points.Count; ++i)
             {
@@ -668,7 +676,7 @@ namespace Cinemachine
             //         Vector2 center = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
             //         for (int i = 0; i < m_points.Count; ++i)
             //         {
-            //             m_points[i].m_shrinkDirection = CalculateShrinkNormal(center - m_points[i].m_position);
+            //             m_points[i].m_shrinkDirection = CalculateShrinkDirection(center - m_points[i].m_position);
             //         }
             //         Simplify();
             //     }
@@ -716,10 +724,12 @@ namespace Cinemachine
             return true;
         }
 
-        /// <summary></summary>
+        /// <summary>
+        /// Calculates quared distance to 'P' from closest point to 'P' in the shrinkablePolygon
+        /// </summary>
         /// <param name="p">Point in space.</param>
         /// <returns>Squared distance to 'P' from closest point to 'P' in the shrinkablePolygon</returns>
-        internal float SqrDistanceTo(Vector2 p)
+        private float SqrDistanceTo(Vector2 p)
         {
             float minDistance = float.MaxValue;
             for (int i = 0; i < m_points.Count; ++i)
@@ -731,7 +741,8 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Returns the closest point to the shrinkablePolygon from P. The point returned is going to be one of the m_points of the shrinkablePolygon.
+        /// Calculates the closest point to the shrinkablePolygon from P.
+        /// The point returned is going to be one of the m_points of the shrinkablePolygon.
         /// </summary>
         /// <param name="p">Point from which the distance is calculated.</param>
         /// <returns>A point that is part of the shrinkablePolygon m_points and is closest to P.</returns>
@@ -873,11 +884,6 @@ namespace Cinemachine
                     
                     if (segmentsIntersect)
                     {
-                        // TODO: check orientation of g1, g2
-                        // divide shrinkablePolygon into g1, g2. Then shrinkablePolygon = g2
-
-                        // TODO: starting index of new shrinkablePolygon should be the left-most index
-                        
                         // g1 will be left from the intersection, g2 will be right of the intersection.
                         ShrinkablePolygon g1 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
                         {
@@ -1006,7 +1012,7 @@ namespace Cinemachine
         /// <param name="points">List to rotate</param>
         /// <returns>List, in which the 0 element is the left-most in 2D space.
         /// Order of m_points of the original List is preserved</returns>
-        public static List<ShrinkablePoint2> RotateListToLeftmost(List<ShrinkablePoint2> points)
+        private static List<ShrinkablePoint2> RotateListToLeftmost(List<ShrinkablePoint2> points)
         {
             int leftMostPointIndex = 0;
             Vector2 leftMostPoint = points[0].m_position;
@@ -1019,18 +1025,18 @@ namespace Cinemachine
                 }
             }
 
-            var point_rolledToStartAtLeftmostpoint = new List<ShrinkablePoint2>(points.Count);
+            var pointsRolledToStartAtLeftMostPoint = new List<ShrinkablePoint2>(points.Count);
             for (int i = leftMostPointIndex; i < points.Count; ++i)
             {
-                point_rolledToStartAtLeftmostpoint.Add(points[i]);
+                pointsRolledToStartAtLeftMostPoint.Add(points[i]);
             }
 
             for (int i = 0; i < leftMostPointIndex; ++i)
             {
-                point_rolledToStartAtLeftmostpoint.Add(points[i]);
+                pointsRolledToStartAtLeftMostPoint.Add(points[i]);
             }
 
-            return point_rolledToStartAtLeftmostpoint;
+            return pointsRolledToStartAtLeftMostPoint;
         }
     }
 }
