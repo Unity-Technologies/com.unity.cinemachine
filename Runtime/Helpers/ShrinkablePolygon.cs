@@ -78,21 +78,11 @@ namespace Cinemachine
             m_intersectionPoints = new List<Vector2>();
         }
 
-        private ShrinkablePolygon(float aspectRatio) : this()
+        private ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) : this()
         {
             m_aspectRatio = aspectRatio;
-            m_aspectRatioBasedDiagonal = Mathf.Sqrt(m_aspectRatio * m_aspectRatio + 1);
-            m_normalDirections = new[]
-            {
-                Vector2.up,
-                new Vector2(m_aspectRatio, 1),
-                new Vector2(m_aspectRatio, 0),
-                new Vector2(m_aspectRatio, -1),
-                Vector2.down,
-                new Vector2(-m_aspectRatio, -1),
-                new Vector2(-m_aspectRatio, 0),
-                new Vector2(-m_aspectRatio, 1),
-            };
+            m_aspectRatioBasedDiagonal = aspectRatioBasedDiagonal;
+            m_normalDirections = normalDirections;
         }
 
         /// <summary>
@@ -101,7 +91,7 @@ namespace Cinemachine
         /// <returns>Deep copy of this shrinkablePolygon</returns>
         public ShrinkablePolygon DeepCopy()
         {
-            return new ShrinkablePolygon(m_aspectRatio)
+            return new ShrinkablePolygon(m_aspectRatio, m_aspectRatioBasedDiagonal, m_normalDirections)
             {
                 m_points = m_points.ConvertAll(point =>
                     new ShrinkablePoint2(point.m_position, point.m_shrinkDirection, point.m_cantIntersect)),
@@ -882,7 +872,7 @@ namespace Cinemachine
                         // TODO: starting index of new shrinkablePolygon should be the left-most index
                         
                         // g1 will be left from the intersection, g2 will be right of the intersection.
-                        ShrinkablePolygon g1 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio);
+                        ShrinkablePolygon g1 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
                         {
                             g1.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
                             g1.m_intersectionPoints.Add(intersection);
@@ -906,7 +896,7 @@ namespace Cinemachine
                         }
                         subgraphs.Add(g1);
 
-                        ShrinkablePolygon g2 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio);
+                        ShrinkablePolygon g2 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
                         {
                             g2.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
                             g2.m_intersectionPoints.Add(intersection);
