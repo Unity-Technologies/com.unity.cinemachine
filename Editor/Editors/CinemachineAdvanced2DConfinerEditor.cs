@@ -12,6 +12,7 @@ namespace Cinemachine.Editor
         private GUIContent autoBakeTooltip;
         
         private SerializedProperty triggerBakeProperty;
+        private SerializedProperty triggerClearCache;
         private SerializedProperty bakeProgressProperty;
         private string[] bakeProgressPropertyEnumNames;
         
@@ -24,6 +25,7 @@ namespace Cinemachine.Editor
                                                   "the outcome - change. True is on, False is off.");
 
             triggerBakeProperty = FindProperty(x => x.m_TriggerBake);
+            triggerClearCache = FindProperty(x => x.m_TriggerClearCache);
             bakeProgressProperty = FindProperty(x => x.BakeProgress);
             bakeProgressPropertyEnumNames = bakeProgressProperty.enumNames;
         }
@@ -42,6 +44,11 @@ namespace Cinemachine.Editor
                     if (GUILayout.Button("Bake"))
                     {
                         triggerBakeProperty.boolValue = true;
+                    }
+
+                    if (GUILayout.Button("Clear"))
+                    {
+                        triggerClearCache.boolValue = true;
                     }
                     
                     float p = bakeProgressProperty.enumValueIndex == 0 ? 0 :

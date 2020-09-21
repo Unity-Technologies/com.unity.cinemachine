@@ -591,7 +591,7 @@ namespace Cinemachine
         /// <summary>
         /// Shrink graphs m_points towards their m_shrinkDirection by shrinkAmount.
         /// </summary>
-        internal bool Shrink(float shrinkAmount)
+        internal bool Shrink(float shrinkAmount, bool shrinkToPoint)
         {
             // TODO: try centerized normals when shrink to point starts. maybe it works now.
             //if (shrinkBonesToPoint)
@@ -691,14 +691,60 @@ namespace Cinemachine
              m_windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float area1 = Mathf.Abs(ComputeSignedArea());
-            if (area1 < m_minArea) // todo: formalize magic numbers: 0.1, 1.3f, 10
+            if (area1 < m_minArea)
             {
-                for (int i = 0; i < m_points.Count; ++i)
+                if (shrinkToPoint)
                 {
-                    m_points[i].m_shrinkDirection = Vector2.zero;
+                    Vector2 center = CenterOfPolygon();
+                    for (int i = 0; i < m_points.Count; ++i)
+                    {
+                        Vector2 direction = center - m_points[i].m_position;
+                        if (Math.Abs(direction.x) > m_aspectRatio ||
+                            Math.Abs(direction.y) > 1)
+                        {
+                            if (direction.x > m_aspectRatio)
+                            {
+                                direction *= (m_aspectRatio / direction.x);
+                            }
+                            else if (direction.x < -m_aspectRatio)
+                            {
+                                direction *= -(m_aspectRatio / direction.x);
+                            }
+                            else
+                            {
+                                //direction.x = 0;
+                            }
+                            if (direction.y > 1)
+                            {
+                                direction *= (1f / direction.y);
+                            }
+                            else if (direction.y < -1)
+                            {
+                                direction.y *= -(1f / direction.y);
+                            }
+                            else
+                            {
+                                //direction.y = 0;
+                            }
+                            // direction.x = Mathf.Clamp(direction.x, -m_aspectRatio, m_aspectRatio);
+                            // direction.y = Mathf.Clamp(direction.y, -1, 1);
+                            m_points[i].m_shrinkDirection = direction;
+                        }
+                        else
+                        {
+                            m_points[i].m_shrinkDirection = Vector2.zero;
+                        }
+                    }
                 }
+                else
+                {
+                    for (int i = 0; i < m_points.Count; ++i)
+                    {
+                        m_points[i].m_shrinkDirection = Vector2.zero;
+                    }
 
-                return false;
+                    return false;
+                }
             }
             for (int i = 0; i < m_points.Count; ++i)
             {
@@ -725,6 +771,32 @@ namespace Cinemachine
             //     }
             // }
             return true;
+        }
+
+        private Vector2 CenterOfPolygon()
+        {
+            // float A = ComputeSignedArea();
+            // float Cx = 0;
+            // float Cy = 0;
+            // for (int index = 0; index < m_points.Count; ++index)
+            // {
+            //     int nextIndex = (index + 1) % m_points.Count;
+            //     float common = (m_points[index].m_position.x * m_points[nextIndex].m_position.y -
+            //                     m_points[nextIndex].m_position.x * m_points[index].m_position.y);
+            //     Cx += (m_points[index].m_position.x + m_points[nextIndex].m_position.x) * common;
+            //     Cy += (m_points[index].m_position.y + m_points[nextIndex].m_position.y) * common;
+            // }
+            //
+            // Cx *= 1f / (6f * A);
+            // Cy *= 1f / (6f * A);
+            // return new Vector2(Cx, Cy);
+
+            Vector2 center = Vector2.zero;
+            foreach (var p in m_points)
+            {
+                center += p.m_position;
+            }
+            return center / m_points.Count;
         }
 
         /// <summary>

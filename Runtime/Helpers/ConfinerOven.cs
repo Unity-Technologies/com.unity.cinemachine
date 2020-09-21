@@ -26,7 +26,8 @@ namespace Cinemachine
         /// <param name="inputPath"></param>
         /// <param name="sensorRatio"></param>
         /// <param name="shrinkAmount"></param>
-        internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount)
+        internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
+            in float maxOrthosize, in bool shrinkToPoint)
         {
             m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, sensorRatio);
             int graphs_index = 0;
@@ -39,7 +40,7 @@ namespace Cinemachine
                 {
                     m_shrinkablePolygons[graphs_index][g].ComputeAspectBasedNormals();
                     var graph = m_shrinkablePolygons[graphs_index][g].DeepCopy();
-                    if (graph.Shrink(shrinkAmount))
+                    if (graph.Shrink(shrinkAmount, shrinkToPoint))
                     {
                         if (graph.m_windowDiagonal > 0.1f) graph.Simplify();
                         /// 2. DO until Graph G has intersections
@@ -55,6 +56,10 @@ namespace Cinemachine
                 }
 
                 m_shrinkablePolygons.Add(nextGraphsIteration);
+                if (maxOrthosize < m_shrinkablePolygons[graphs_index][0].m_windowDiagonal)
+                {
+                    break;
+                }
                 ++graphs_index;
 
                 shrinking = false;
@@ -67,6 +72,8 @@ namespace Cinemachine
                         break;
                     }
                 }
+
+                
             }
         }
      
@@ -82,17 +89,27 @@ namespace Cinemachine
 
             List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>();
             bool first = true;
-            float minArea = 0;
             foreach (var points in paths)
             {
+                float squareSize = 0;
                 var newShrinkablePolygon = new ShrinkablePolygon(points, aspectRatio);
                 if (first)
                 {
-                    minArea = Mathf.Sqrt(newShrinkablePolygon.m_area / 42000f); // when area is 42000 then 1
+                    float minX = float.MaxValue, maxX = float.MinValue;
+                    float minY = float.MaxValue, maxY = float.MinValue;
+                    foreach (var p in newShrinkablePolygon.m_points)
+                    {
+                        minX = Mathf.Min(minX, p.m_position.x);
+                        minY = Mathf.Min(minY, p.m_position.y);
+                        maxX = Mathf.Max(maxX, p.m_position.x);
+                        maxY = Mathf.Max(maxY, p.m_position.y);
+                    }
+
+                    squareSize = Mathf.Min(maxX - minX, maxY - minY);
                     first = false;
                 }
 
-                newShrinkablePolygon.m_minArea = minArea;
+                newShrinkablePolygon.m_minArea = squareSize / 100f; 
                 shrinkablePolygons.Add(new List<ShrinkablePolygon> { newShrinkablePolygon });
             }
 

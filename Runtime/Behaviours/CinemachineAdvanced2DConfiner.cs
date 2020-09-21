@@ -33,6 +33,9 @@ namespace Cinemachine
 
         [Tooltip("Stops any kind of damping when the camera gets back inside the confiner m_area.  ")]
         public bool m_StopDampingWithinConfiner = false;
+
+        public float m_MaxOrthoSize;
+        public bool m_ShrinkToPointsExperimental;
         
         // advanced features
         public bool m_DrawGizmosDebug = false;
@@ -324,7 +327,8 @@ namespace Cinemachine
 
             m_bakedConfinerResolutionCache = m_bakedConfinerResolution;
             m_sensorRatioCache = sensorRatio;
-            GetConfinerOven().BakeConfiner(m_originalPath, m_sensorRatioCache, m_bakedConfinerResolutionCache);
+            GetConfinerOven().BakeConfiner(m_originalPath, m_sensorRatioCache, m_bakedConfinerResolutionCache, 
+                m_MaxOrthoSize, m_ShrinkToPointsExperimental);
             m_confinerStates = GetConfinerOven().GetGraphsAsConfinerStates();
 
             m_boundingShapePositionCache = m_BoundingShape2D.transform.position;
