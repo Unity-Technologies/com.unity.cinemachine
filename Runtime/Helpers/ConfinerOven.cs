@@ -81,9 +81,18 @@ namespace Cinemachine
             }
 
             List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>();
+            bool first = true;
+            float minArea = 0;
             foreach (var points in paths)
             {
                 var newShrinkablePolygon = new ShrinkablePolygon(points, aspectRatio);
+                if (first)
+                {
+                    minArea = Mathf.Sqrt(newShrinkablePolygon.m_area / 42000f); // when area is 42000 then 1
+                    first = false;
+                }
+
+                newShrinkablePolygon.m_minArea = minArea;
                 shrinkablePolygons.Add(new List<ShrinkablePolygon> { newShrinkablePolygon });
             }
 

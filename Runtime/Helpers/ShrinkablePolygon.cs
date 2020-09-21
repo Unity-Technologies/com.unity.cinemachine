@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cinemachine.Utility;
 using ClipperLib;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -41,7 +42,8 @@ namespace Cinemachine
         private readonly float m_aspectRatio;
         private float m_aspectRatioBasedDiagonal;
         private readonly Vector2[] m_normalDirections;
-        private float m_area;
+        internal float m_area;
+        internal float m_minArea;
 
         internal List<Vector2> m_intersectionPoints;
 
@@ -94,6 +96,7 @@ namespace Cinemachine
                 // shallow
                 m_clockwiseOrientation = m_clockwiseOrientation,
                 m_area = m_area,
+                m_minArea = m_minArea,
                 m_windowDiagonal = m_windowDiagonal,
                 m_state = m_state,
                 
@@ -687,7 +690,7 @@ namespace Cinemachine
              m_windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float area1 = Mathf.Abs(ComputeSignedArea());
-            if (area1 < 1.3f)
+            if (area1 < m_minArea) // todo: magic numbers: 0.1, 1.3f, 10
             {
                 for (int i = 0; i < m_points.Count; ++i)
                 {
@@ -700,31 +703,31 @@ namespace Cinemachine
             {
                 m_points[i].m_position += m_points[i].m_shrinkDirection * shrinkAmount;
             }
-            float area2 = Mathf.Abs(ComputeSignedArea());
-            if (area2 > area1)
-            {
-                FlipNormals();
-                for (int i = 0; i < m_points.Count; ++i)
-                {
-                    m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount * 2f); // why 2?
-                }
-            }
-            float area3 = Mathf.Abs(ComputeSignedArea());
-            if (area3 > area2 || area1 < 0.02f ||
-                area1 < area2 && area1 < area3)
-            {
-                FlipNormals();
-                for (int i = 0; i < m_points.Count; ++i)
-                {
-                    m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount);
-                    m_points[i].m_shrinkDirection = Vector2.zero;
-                }
-            }
+            // float area2 = Mathf.Abs(ComputeSignedArea());
+            // if (area2 > area1)
+            // {
+            //     FlipNormals();
+            //     for (int i = 0; i < m_points.Count; ++i)
+            //     {
+            //         m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount * 2f); // why 2?
+            //     }
+            // }
+            // float area3 = Mathf.Abs(ComputeSignedArea());
+            // if (area3 > area2 || area1 < 0.02f ||
+            //     area1 < area2 && area1 < area3)
+            // {
+            //     FlipNormals();
+            //     for (int i = 0; i < m_points.Count; ++i)
+            //     {
+            //         m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount);
+            //         m_points[i].m_shrinkDirection = Vector2.zero;
+            //     }
+            // }
             return true;
         }
 
         /// <summary>
-        /// Calculates quared distance to 'P' from closest point to 'P' in the shrinkablePolygon
+        /// Calculates squared distance to 'P' from closest point to 'P' in the shrinkablePolygon
         /// </summary>
         /// <param name="p">Point in space.</param>
         /// <returns>Squared distance to 'P' from closest point to 'P' in the shrinkablePolygon</returns>
@@ -889,6 +892,7 @@ namespace Cinemachine
                             g1.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
                             g1.m_intersectionPoints.Add(intersection);
                             g1.m_state = shrinkablePolygon.m_state + 1;
+                            g1.m_minArea = shrinkablePolygon.m_minArea;
 
                             // g1 -> intersection j+1 ... i
                             var points = new List<ShrinkablePoint2>
@@ -911,6 +915,7 @@ namespace Cinemachine
                             g2.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
                             g2.m_intersectionPoints.Add(intersection);
                             g2.m_state = shrinkablePolygon.m_state + 1;
+                            g2.m_minArea = shrinkablePolygon.m_minArea;
 
                             // g2 -> intersection i+1 ... j
                             var points = new List<ShrinkablePoint2>
@@ -991,18 +996,18 @@ namespace Cinemachine
                 }
             }
 
-            var point_rolledToStartAtClosestPoint = new List<ShrinkablePoint2>(points.Count);
+            var pointRolledToStartAtClosestPoint = new List<ShrinkablePoint2>(points.Count);
             for (int i = closestIndex; i < points.Count; ++i)
             {
-                point_rolledToStartAtClosestPoint.Add(points[i]);
+                pointRolledToStartAtClosestPoint.Add(points[i]);
             }
 
             for (int i = 0; i < closestIndex; ++i)
             {
-                point_rolledToStartAtClosestPoint.Add(points[i]);
+                pointRolledToStartAtClosestPoint.Add(points[i]);
             }
 
-            return point_rolledToStartAtClosestPoint;
+            return pointRolledToStartAtClosestPoint;
         }
 
         /// <summary>
