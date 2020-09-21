@@ -593,6 +593,7 @@ namespace Cinemachine
         /// </summary>
         internal bool Shrink(float shrinkAmount)
         {
+            // TODO: try centerized normals when shrink to point starts. maybe it works now.
             //if (shrinkBonesToPoint)
             // {
             //     var minX = float.PositiveInfinity;
@@ -690,7 +691,7 @@ namespace Cinemachine
              m_windowDiagonal += shrinkAmount;
             // TODO: optimize shrink - shrink until intersection instead of steps
             float area1 = Mathf.Abs(ComputeSignedArea());
-            if (area1 < m_minArea) // todo: magic numbers: 0.1, 1.3f, 10
+            if (area1 < m_minArea) // todo: formalize magic numbers: 0.1, 1.3f, 10
             {
                 for (int i = 0; i < m_points.Count; ++i)
                 {
