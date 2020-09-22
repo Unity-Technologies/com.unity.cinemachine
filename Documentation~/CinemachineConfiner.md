@@ -2,7 +2,7 @@
 
 Use the __Cinemachine Confiner__ [extension](CinemachineVirtualCameraExtensions.html) to limit the camera’s position to a volume or area.
 
-Confier operates in 2D or 3D mode.  The mode influences the kind of bounding shape it accepts. In 3D mode, the camera’s position in 3D is confined to a volume.  This also works for 2D games, but you need to take the depth into account.  In 2D mode, you don’t have to worry about depth.
+Confiner operates in 2D or 3D mode.  The mode influences the kind of bounding shape it accepts. In 3D mode, the camera’s position in 3D is confined to a volume.  This also works for 2D games, but you need to take the depth into account.  In 2D mode, you don’t have to worry about depth.
 
 For orthographic cameras, there is an additional option to confine the screen edges, not just the camera point.  This ensures that the entire screen area stays within the bounding area.
 
