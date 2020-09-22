@@ -8,24 +8,39 @@ namespace Cinemachine.Editor
     {
         protected static bool AdvancedSettingsExpanded = true;
 
+        private SerializedProperty maxOrthoSizeProperty;
+        private GUIContent maxOrthoSizeGUIContent;
+        private SerializedProperty shrinkToPointsExperimentalProperty;
+        private GUIContent shrinkToPointsExperimentalGUIContent;
+        
         private SerializedProperty autoBakeProperty;
-        private GUIContent autoBakeTooltip;
+        private GUIContent autoBakeGUIContent;
         
         private SerializedProperty triggerBakeProperty;
-        private SerializedProperty triggerClearCache;
+        private SerializedProperty triggerClearCacheProperty;
+        
         private SerializedProperty bakeProgressProperty;
         private string[] bakeProgressPropertyEnumNames;
         
         
         void OnEnable()
         {
+            maxOrthoSizeProperty = FindProperty(x => x.m_MaxOrthoSize);
+            maxOrthoSizeGUIContent = new GUIContent("Max Camera Window Size", "Defines a maximum camera window size for the precalculation. Use this to optimize " +
+                                  "memory usage. If 0, then this parameter is ignored.");
+            shrinkToPointsExperimentalProperty = FindProperty(x => x.m_ShrinkToPointsExperimental);
+            shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink To Point Experimental", 
+                "By default, the confiner is reduced until it has no area (e.g. lines, " +
+                "or points). If this property is enabled, then the confiner will " +
+                "continue reducing itself by reducing lines to points.");
             autoBakeProperty = FindProperty(x => x.m_AutoBake);
-            autoBakeTooltip = new GUIContent("Automatically rebakes the confiner, if input parameters " +
-                                                  "(CameraWindowRatio, InputCollider, Resolution) - that affect " +
-                                                  "the outcome - change. True is on, False is off.");
+            autoBakeGUIContent = new GUIContent("Automatic Baking",
+                "Automatically rebakes the confiner, if input parameters (InputCollider, Resolution, " +
+                "CameraWindowRatio) change. True is on, False is off.");
 
             triggerBakeProperty = FindProperty(x => x.m_TriggerBake);
-            triggerClearCache = FindProperty(x => x.m_TriggerClearCache);
+            triggerClearCacheProperty = FindProperty(x => x.m_TriggerClearCache);
+            
             bakeProgressProperty = FindProperty(x => x.BakeProgress);
             bakeProgressPropertyEnumNames = bakeProgressProperty.enumNames;
         }
@@ -37,7 +52,9 @@ namespace Cinemachine.Editor
             if (AdvancedSettingsExpanded)
             {
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(autoBakeProperty, autoBakeTooltip);
+                EditorGUILayout.PropertyField(maxOrthoSizeProperty, maxOrthoSizeGUIContent);
+                EditorGUILayout.PropertyField(shrinkToPointsExperimentalProperty, shrinkToPointsExperimentalGUIContent);
+                EditorGUILayout.PropertyField(autoBakeProperty, autoBakeGUIContent);
 
                 if (!autoBakeProperty.boolValue)
                 {
@@ -48,7 +65,7 @@ namespace Cinemachine.Editor
 
                     if (GUILayout.Button("Clear"))
                     {
-                        triggerClearCache.boolValue = true;
+                        triggerClearCacheProperty.boolValue = true;
                     }
                     
                     float p = bakeProgressProperty.enumValueIndex == 0 ? 0 :
