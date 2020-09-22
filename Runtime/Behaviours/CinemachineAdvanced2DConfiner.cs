@@ -380,41 +380,41 @@ namespace Cinemachine
             if (!m_DrawGizmosDebug) return;
             if (m_confinerStates != null && m_BoundingShape2D != null)
             {
-                Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.m_position;
-                for (var index = 0; index < m_confinerStates.Count; index++)
-                {
-                    var confinerState = m_confinerStates[index];
-                    for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
-                    {
-                        Gizmos.color = new Color((float) index / (float) m_confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
-                        var g = confinerState.graphs[index1];
-                        if (g.m_area < 0.1f)
-                        {
-                            //Handles.Label(offset + g.m_points[0].m_position, "A="+g.m_area);
-                            //Handles.Label(offset + g.m_points[0].m_position, "W="+g.m_windowDiagonal);
-                            for (int i = 0; i < g.m_points.Count; ++i)
-                            {
-                                Gizmos.DrawLine(offset + g.m_points[i].m_position,
-                                    offset + g.m_points[(i + 1) % g.m_points.Count].m_position);
-                            }
-                        }
-                    }
-                }
-
-                Gizmos.color = Color.cyan;
+                // Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.m_position;
                 // for (var index = 0; index < m_confinerStates.Count; index++)
-                {
-                    // var confinerState = m_confinerStates[index];
-                    var confinerState = m_confinerStates[0];
-                    foreach (var g in confinerState.graphs)
-                    {
-                        for (int i = 0; i < g.m_points.Count; ++i)
-                        {
-                            Gizmos.DrawLine(offset + g.m_points[i].m_position,
-                                offset + g.m_points[i].m_position + g.m_points[i].m_shrinkDirection);
-                        }
-                    }
-                }
+                // {
+                //     var confinerState = m_confinerStates[index];
+                //     for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
+                //     {
+                //         Gizmos.color = new Color((float) index / (float) m_confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
+                //         var g = confinerState.graphs[index1];
+                //         if (g.m_area < 0.1f)
+                //         {
+                //             //Handles.Label(offset + g.m_points[0].m_position, "A="+g.m_area);
+                //             //Handles.Label(offset + g.m_points[0].m_position, "W="+g.m_windowDiagonal);
+                //             for (int i = 0; i < g.m_points.Count; ++i)
+                //             {
+                //                 Gizmos.DrawLine(offset + g.m_points[i].m_position,
+                //                     offset + g.m_points[(i + 1) % g.m_points.Count].m_position);
+                //             }
+                //         }
+                //     }
+                // }
+                //
+                // Gizmos.color = Color.cyan;
+                // // for (var index = 0; index < m_confinerStates.Count; index++)
+                // {
+                //     // var confinerState = m_confinerStates[index];
+                //     var confinerState = m_confinerStates[0];
+                //     foreach (var g in confinerState.graphs)
+                //     {
+                //         for (int i = 0; i < g.m_points.Count; ++i)
+                //         {
+                //             Gizmos.DrawLine(offset + g.m_points[i].m_position,
+                //                 offset + g.m_points[i].m_position + g.m_points[i].m_shrinkDirection);
+                //         }
+                //     }
+                // }
             }
             
             if (m_currentPathCache == null || m_BoundingShape2D == null) return;
@@ -436,15 +436,20 @@ namespace Cinemachine
                 var confinerState = m_confinerStates[index];
                 for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
                 {
-                    Gizmos.color = Color.black;
+                    
                     var g = confinerState.graphs[index1];
                     Handles.Label(g.m_points[0].m_position, "A=" + g.m_area);
                     //Handles.Label(g.m_points[0].m_position, "A=" + g.ComputeSignedArea());
                     for (int i = 0; i < g.m_points.Count; ++i)
                     {
+                        Gizmos.color = Color.black;
                         Gizmos.DrawLine(
                             g.m_points[i].m_position,
                             g.m_points[(i + 1) % g.m_points.Count].m_position);
+                        Gizmos.color = Color.green;
+                        Gizmos.DrawLine(
+                            g.m_points[i].m_position,
+                            g.m_points[i].m_position + g.m_points[i].m_shrinkDirection);
                     }
                 }
             }

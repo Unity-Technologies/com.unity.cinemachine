@@ -88,29 +88,28 @@ namespace Cinemachine
             }
 
             List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>();
-            bool first = true;
-            foreach (var points in paths)
+            float minX = float.MaxValue, maxX = float.MinValue;
+            float minY = float.MaxValue, maxY = float.MinValue;
+            for (var i = 0; i < paths.Count; i++)
             {
-                float squareSize = 0;
+                var points = paths[i];
                 var newShrinkablePolygon = new ShrinkablePolygon(points, aspectRatio);
-                if (first)
+                for (var j = 0; j < newShrinkablePolygon.m_points.Count; j++)
                 {
-                    float minX = float.MaxValue, maxX = float.MinValue;
-                    float minY = float.MaxValue, maxY = float.MinValue;
-                    foreach (var p in newShrinkablePolygon.m_points)
-                    {
-                        minX = Mathf.Min(minX, p.m_position.x);
-                        minY = Mathf.Min(minY, p.m_position.y);
-                        maxX = Mathf.Max(maxX, p.m_position.x);
-                        maxY = Mathf.Max(maxY, p.m_position.y);
-                    }
-
-                    squareSize = Mathf.Min(maxX - minX, maxY - minY);
-                    first = false;
+                    var p = newShrinkablePolygon.m_points[j];
+                    minX = Mathf.Min(minX, p.m_position.x);
+                    minY = Mathf.Min(minY, p.m_position.y);
+                    maxX = Mathf.Max(maxX, p.m_position.x);
+                    maxY = Mathf.Max(maxY, p.m_position.y);
                 }
 
-                newShrinkablePolygon.m_minArea = squareSize / 100f; 
-                shrinkablePolygons.Add(new List<ShrinkablePolygon> { newShrinkablePolygon });
+                shrinkablePolygons.Add(new List<ShrinkablePolygon> {newShrinkablePolygon});
+            }
+
+            float squareSize = Mathf.Min(maxX - minX, maxY - minY);
+            for (var i = 0; i < shrinkablePolygons.Count; i++)
+            {
+                shrinkablePolygons[i][0].m_minArea = squareSize / 100f;
             }
 
             return shrinkablePolygons;

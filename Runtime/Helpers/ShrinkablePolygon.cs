@@ -75,13 +75,8 @@ namespace Cinemachine
                 new Vector2(-m_aspectRatio, 1),
             };
             
-            ComputeNormals(true);
             ComputeSignedArea();
-            if (!m_clockwiseOrientation)
-            {
-                FlipNormals();
-                ComputeSignedArea();
-            }
+            ComputeNormals(true);
         }
 
         /// <summary>
@@ -90,10 +85,8 @@ namespace Cinemachine
         /// <returns>Deep copy of this shrinkablePolygon</returns>
         public ShrinkablePolygon DeepCopy()
         {
-            // this can be shallow
             return new ShrinkablePolygon(m_aspectRatio, m_aspectRatioBasedDiagonal, m_normalDirections)
             {
-                // shallow
                 m_clockwiseOrientation = m_clockwiseOrientation,
                 m_area = m_area,
                 m_minArea = m_minArea,
@@ -174,7 +167,8 @@ namespace Cinemachine
                     
                     int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
                     var angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevEdgeIndex]);
-                    if (angle < 0)
+                    if (m_clockwiseOrientation && angle < 0 ||
+                        !m_clockwiseOrientation && angle > 0)
                     {
                         int prevIndex = (i == 0 ? m_points.Count - 1 : i - 1);
                         extended_points[i * 3 + 0] = new ShrinkablePoint2
