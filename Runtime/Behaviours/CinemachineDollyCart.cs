@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Splines;
+using Unity.Mathematics;
 
 namespace Cinemachine
 {
@@ -20,7 +22,10 @@ namespace Cinemachine
     {
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
-        public CinemachinePathBase m_Path;
+        public SplineContainer m_Path;
+        //public CinemachinePathBase m_Path;
+
+
 
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
@@ -74,12 +79,33 @@ namespace Cinemachine
 
         void SetCartPosition(float distanceAlongPath)
         {
+            //if (m_Path != null)
+            //{
+                //m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
+                //transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
+                //transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+            //}
             if (m_Path != null)
             {
-                m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
-                transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
-                transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+                m_Position = StandardizePathDistance(distanceAlongPath);
+                float3 result = m_Path.EvaluatePosition(m_Position / m_Path.CalculateLength());
+                transform.position = new Vector3(result.x, result.y, result.z);
+                //transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
             }
+        }
+
+        float StandardizePathDistance(float distance)
+        {
+            float length = m_Path.CalculateLength();
+            if (length < Vector3.kEpsilon)
+                return 0;
+            if (m_Path.Spline.Closed)
+            {
+                distance = distance % length;
+                if (distance < 0)
+                    distance += length;
+            }
+            return Mathf.Clamp(distance, 0, length);
         }
     }
 }

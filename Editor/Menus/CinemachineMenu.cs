@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;
+using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
 {
@@ -144,7 +145,7 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
+            SplineContainer path = go.GetComponent<SplineContainer>();
             Selection.activeGameObject = go;
 
             go = InspectorUtility.CreateGameObject(
