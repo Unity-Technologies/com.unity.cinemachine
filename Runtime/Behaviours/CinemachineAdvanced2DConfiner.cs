@@ -30,13 +30,16 @@ namespace Cinemachine
         public float m_CornerDamping = 0;
         private float m_CornerAngleTreshold = 10f;
 
-        [Tooltip("Stops any kind of damping when the camera gets back inside the confined area.")]
+        [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
         public bool m_StopDampingWithinConfiner = false;
-
         
         // advanced features
-        public bool m_DrawGizmosDebug = false; // TODO: modify gizmos to only draw what's relevant to a user!
+        public bool m_DrawGizmosDebug = false; // TODO: modify gizmos to only draw what's relevant to a user! After Patrick's test - it may be useful for Patrick
         [HideInInspector, SerializeField] internal bool m_AutoBake = true; // TODO: remove
+                                                                           // reason: if user wants to
+                                                                           // switch between cameras, it is better
+                                                                           // to just have a different advnaced confiner
+                                                                           // for each setup
         [HideInInspector, SerializeField] internal bool m_TriggerBake = false;
         [HideInInspector, SerializeField] internal bool m_TriggerClearCache = false;
         [HideInInspector, SerializeField] internal float m_MaxOrthoSize;
@@ -61,8 +64,6 @@ namespace Cinemachine
         /// <summary>
         /// Trigger rebake process manually.
         /// The confiner rebakes iff an input parameters affecting the outcome of the baked result change.
-        /// Input parameters that we check:
-        /// TODO: list input parameters
         /// </summary>
         private void Bake()
         {
@@ -210,7 +211,6 @@ namespace Cinemachine
             m_boundingShapeRotationCache = new Quaternion(0,0,0,0);
         }
         
-        // TODO: cleanup ValidateConfinerStateCache 
         private float m_bakedConfinerResolutionCache;
         /// <summary>
         /// Checks if we have a valid confiner state cache. Calculates it if cache is invalid, and bake was requested.
@@ -220,12 +220,6 @@ namespace Cinemachine
         /// <returns>True, if path is baked and valid. False, if path is invalid or non-existent.</returns>
         private bool ValidateConfinerStateCache(float sensorRatio, out bool confinerStateChanged)
         {
-            // TODO: turn this and subsequent functions calls into courotines, to not block ui
-            // TODO: before calling this make sure to stop any running courotine 
-            // runningCoroutine = StartCoroutine(MyCoroutine());
-            // StopCoroutine(runningCoroutine);
-            // or async? naw, just set return values as members - this couritne runs alone always
-
             if (m_TriggerClearCache)
             {
                 InvalidatePathCache();
@@ -388,8 +382,7 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            InvalidatePathCache();
-            // TODO: add Bake() here? 
+            ForceBake();
         }
 
         private void OnDrawGizmosSelected()

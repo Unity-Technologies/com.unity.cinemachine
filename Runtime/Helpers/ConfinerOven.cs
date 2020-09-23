@@ -57,7 +57,7 @@ namespace Cinemachine
                 }
 
                 m_shrinkablePolygons.Add(nextGraphsIteration);
-                if (maxOrthosize < m_shrinkablePolygons[graphsIndex][0].m_windowDiagonal)
+                if (maxOrthosize != 0 && maxOrthosize < m_shrinkablePolygons[graphsIndex][0].m_windowDiagonal)
                 {
                     break;
                 }

@@ -26,8 +26,10 @@ namespace Cinemachine.Editor
         void OnEnable()
         {
             m_maxOrthoSizeProperty = FindProperty(x => x.m_MaxOrthoSize);
-            m_maxOrthoSizeGUIContent = new GUIContent("Max Camera Window Size", "Defines a maximum camera window size for the precalculation. Use this to optimize " +
-                                  "memory usage. If 0, then this parameter is ignored.");
+            m_maxOrthoSizeGUIContent = new GUIContent("Max Camera Window Size", 
+                "Defines a maximum camera window size for the precalculation. Use this to optimize memory usage. " +
+                "If 0, then this parameter is ignored.  " +
+                "For example, if you know the camera window size changes between 1-2. Set this to number to 2.");
             m_shrinkToPointsExperimentalProperty = FindProperty(x => x.m_ShrinkToPointsExperimental);
             m_shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink Sub-Polygons To Point Experimental", 
                 "By default, the confiner is reduced until it has no area (e.g. lines, " +
