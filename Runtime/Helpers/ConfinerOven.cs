@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 
@@ -21,31 +20,33 @@ namespace Cinemachine
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         
         /// <summary>
-        /// 
+        /// Precalculates from input parameters the shrinked down polygons.
         /// </summary>
         /// <param name="inputPath"></param>
         /// <param name="sensorRatio"></param>
         /// <param name="shrinkAmount"></param>
+        /// <param name="maxOrthosize"></param>
+        /// <param name="shrinkToPoint"></param>
         internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
             in float maxOrthosize, in bool shrinkToPoint)
         {
             m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, sensorRatio);
-            int graphs_index = 0;
-
-            bool shrinking = true;
+            var graphsIndex = 0;
+            var shrinking = true;
             while (shrinking)
             {
                 List<ShrinkablePolygon> nextGraphsIteration = new List<ShrinkablePolygon>();
-                for (var g = 0; g < m_shrinkablePolygons[graphs_index].Count; ++g)
+                for (int g = 0; g < m_shrinkablePolygons[graphsIndex].Count; ++g)
                 {
-                    m_shrinkablePolygons[graphs_index][g].ComputeAspectBasedNormals();
-                    var graph = m_shrinkablePolygons[graphs_index][g].DeepCopy();
+                    m_shrinkablePolygons[graphsIndex][g].ComputeAspectBasedShrinkDirections();
+                    ShrinkablePolygon graph = m_shrinkablePolygons[graphsIndex][g].DeepCopy();
                     if (graph.Shrink(shrinkAmount, shrinkToPoint))
                     {
-                        if (graph.m_windowDiagonal > 0.1f) graph.Simplify();
-                        /// 2. DO until Graph G has intersections
-                        /// 2.a.: Found 1 intersection, divide G into g1, g2. Then, G=g2, continue from 2.
-                        /// Result of 2 is G in subgraphs without intersections: g1, g2, ..., gn.
+                        if (graph.m_windowDiagonal > shrinkAmount * 100f)
+                        {
+                            graph.Simplify(shrinkAmount);
+                        }
+                        
                         ShrinkablePolygon.DivideAlongIntersections(graph, out List<ShrinkablePolygon> subgraphs);
                         nextGraphsIteration.AddRange(subgraphs);
                     }
@@ -56,24 +57,22 @@ namespace Cinemachine
                 }
 
                 m_shrinkablePolygons.Add(nextGraphsIteration);
-                if (maxOrthosize < m_shrinkablePolygons[graphs_index][0].m_windowDiagonal)
+                if (maxOrthosize < m_shrinkablePolygons[graphsIndex][0].m_windowDiagonal)
                 {
                     break;
                 }
-                ++graphs_index;
+                ++graphsIndex;
 
                 shrinking = false;
-                for (var index = 0; index < m_shrinkablePolygons[graphs_index].Count; index++)
+                for (int i = 0; i < m_shrinkablePolygons[graphsIndex].Count; ++i)
                 {
-                    var graph = m_shrinkablePolygons[graphs_index][index];
+                    ShrinkablePolygon graph = m_shrinkablePolygons[graphsIndex][i];
                     if (graph.IsShrinkable())
                     {
                         shrinking = true;
                         break;
                     }
                 }
-
-                
             }
         }
      
@@ -90,11 +89,10 @@ namespace Cinemachine
             List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>();
             float minX = float.MaxValue, maxX = float.MinValue;
             float minY = float.MaxValue, maxY = float.MinValue;
-            for (var i = 0; i < paths.Count; i++)
+            for (int i = 0; i < paths.Count; ++i)
             {
-                var points = paths[i];
-                var newShrinkablePolygon = new ShrinkablePolygon(points, aspectRatio);
-                for (var j = 0; j < newShrinkablePolygon.m_points.Count; j++)
+                var newShrinkablePolygon = new ShrinkablePolygon(paths[i], aspectRatio);
+                for (int j = 0; j < newShrinkablePolygon.m_points.Count; ++j)
                 {
                     var p = newShrinkablePolygon.m_points[j];
                     minX = Mathf.Min(minX, p.m_position.x);
@@ -107,7 +105,7 @@ namespace Cinemachine
             }
 
             float squareSize = Mathf.Min(maxX - minX, maxY - minY);
-            for (var i = 0; i < shrinkablePolygons.Count; i++)
+            for (int i = 0; i < shrinkablePolygons.Count; ++i)
             {
                 shrinkablePolygons[i][0].m_minArea = squareSize / 100f;
             }
@@ -175,7 +173,7 @@ namespace Cinemachine
                 for (int j = 0; j < left.graphs[i].m_points.Count; ++j)
                 {
                     r.m_intersectionPoints = left.graphs[i].m_intersectionPoints;
-                    var rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].m_points[j]);
+                    Vector2 rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].m_points[j]);
                     r.m_points.Add(new ShrinkablePolygon.ShrinkablePoint2
                     {
                         m_position = Vector2.Lerp(left.graphs[i].m_points[j].m_position, rightPoint, lerp),
@@ -198,16 +196,16 @@ namespace Cinemachine
             for (int i = 0; i < m_shrinkablePolygons.Count; ++i)
             {
                 float stateAverage = m_shrinkablePolygons[i].Count;
-                for (var index = 0; index < m_shrinkablePolygons[i].Count; index++)
+                for (int j = 0; j < m_shrinkablePolygons[i].Count; ++j)
                 {
-                    stateAverage += m_shrinkablePolygons[i][index].m_state;
+                    stateAverage += m_shrinkablePolygons[i][j].m_state;
                 }
                 stateAverage /= m_shrinkablePolygons[i].Count + 1;
 
-                var maxWindowDiagonal = m_shrinkablePolygons[i][0].m_windowDiagonal;
-                for (var index = 1; index < m_shrinkablePolygons[i].Count; index++)
+                float maxWindowDiagonal = m_shrinkablePolygons[i][0].m_windowDiagonal;
+                for (int j = 1; j < m_shrinkablePolygons[i].Count; ++j)
                 {
-                    maxWindowDiagonal = Mathf.Max(m_shrinkablePolygons[i][index].m_windowDiagonal, maxWindowDiagonal);
+                    maxWindowDiagonal = Mathf.Max(m_shrinkablePolygons[i][j].m_windowDiagonal, maxWindowDiagonal);
                 }
                 
                 m_confinerStates.Add(new ConfinerState
@@ -222,8 +220,8 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Removes m_shrinkablePolygons from the precalculated m_shrinkablePolygons that are redundant,
-        /// because they are lerpable between two other m_shrinkablePolygons.
+        /// Removes redundant shrinkable polygons from the baked shrinkable polygons. A shrinkable polygon is
+        /// redundant, if they are lerpable between two other shrinkable polygons.
         /// </summary>
         private void TrimGraphs()
         {
@@ -246,11 +244,7 @@ namespace Cinemachine
 
                 if (stateChanged || i == 0)
                 {
-                    // state0_min, ..., state0_max, state1_min, ... state1_max
-                    // ... parts need to be removed
-                    // when m_shrinkablePolygons[i].Count != m_shrinkablePolygons[j].Count, then we are at state0_max
-                    // so remove all between state0_max + 2, to state1_max - 1.
-                    var stateEnd = i != 0 ? i + 2 : 1;
+                    int stateEnd = i != 0 ? i + 2 : 1;
                     if (stateEnd < stateStart)
                     {
                         m_shrinkablePolygons.RemoveRange(stateEnd, stateStart - stateEnd);

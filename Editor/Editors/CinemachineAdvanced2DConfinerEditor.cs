@@ -6,71 +6,71 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineAdvanced2DConfiner))]
     public class CinemachineAdvanced2DConfinerEditor : BaseEditor<CinemachineAdvanced2DConfiner>
     {
-        protected static bool AdvancedSettingsExpanded = true;
+        private static bool m_advancedSettingsExpanded = true;
 
-        private SerializedProperty maxOrthoSizeProperty;
-        private GUIContent maxOrthoSizeGUIContent;
-        private SerializedProperty shrinkToPointsExperimentalProperty;
-        private GUIContent shrinkToPointsExperimentalGUIContent;
+        private SerializedProperty m_maxOrthoSizeProperty;
+        private GUIContent m_maxOrthoSizeGUIContent;
+        private SerializedProperty m_shrinkToPointsExperimentalProperty;
+        private GUIContent m_shrinkToPointsExperimentalGUIContent;
         
-        private SerializedProperty autoBakeProperty;
-        private GUIContent autoBakeGUIContent;
+        private SerializedProperty m_autoBakeProperty;
+        private GUIContent m_autoBakeGUIContent;
         
-        private SerializedProperty triggerBakeProperty;
-        private SerializedProperty triggerClearCacheProperty;
+        private SerializedProperty m_triggerBakeProperty;
+        private SerializedProperty m_triggerClearCacheProperty;
         
-        private SerializedProperty bakeProgressProperty;
-        private string[] bakeProgressPropertyEnumNames;
+        private SerializedProperty m_bakeProgressProperty;
+        private string[] m_bakeProgressPropertyEnumNames;
         
         
         void OnEnable()
         {
-            maxOrthoSizeProperty = FindProperty(x => x.m_MaxOrthoSize);
-            maxOrthoSizeGUIContent = new GUIContent("Max Camera Window Size", "Defines a maximum camera window size for the precalculation. Use this to optimize " +
+            m_maxOrthoSizeProperty = FindProperty(x => x.m_MaxOrthoSize);
+            m_maxOrthoSizeGUIContent = new GUIContent("Max Camera Window Size", "Defines a maximum camera window size for the precalculation. Use this to optimize " +
                                   "memory usage. If 0, then this parameter is ignored.");
-            shrinkToPointsExperimentalProperty = FindProperty(x => x.m_ShrinkToPointsExperimental);
-            shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink To Point Experimental", 
+            m_shrinkToPointsExperimentalProperty = FindProperty(x => x.m_ShrinkToPointsExperimental);
+            m_shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink Sub-Polygons To Point Experimental", 
                 "By default, the confiner is reduced until it has no area (e.g. lines, " +
                 "or points). If this property is enabled, then the confiner will " +
                 "continue reducing itself by reducing lines to points.");
-            autoBakeProperty = FindProperty(x => x.m_AutoBake);
-            autoBakeGUIContent = new GUIContent("Automatic Baking",
+            m_autoBakeProperty = FindProperty(x => x.m_AutoBake);
+            m_autoBakeGUIContent = new GUIContent("Automatic Baking",
                 "Automatically rebakes the confiner, if input parameters (InputCollider, Resolution, " +
                 "CameraWindowRatio) change. True is on, False is off.");
 
-            triggerBakeProperty = FindProperty(x => x.m_TriggerBake);
-            triggerClearCacheProperty = FindProperty(x => x.m_TriggerClearCache);
+            m_triggerBakeProperty = FindProperty(x => x.m_TriggerBake);
+            m_triggerClearCacheProperty = FindProperty(x => x.m_TriggerClearCache);
             
-            bakeProgressProperty = FindProperty(x => x.BakeProgress);
-            bakeProgressPropertyEnumNames = bakeProgressProperty.enumNames;
+            m_bakeProgressProperty = FindProperty(x => x.BakeProgress);
+            m_bakeProgressPropertyEnumNames = m_bakeProgressProperty.enumNames;
         }
         
         public override void OnInspectorGUI()
         {
             DrawRemainingPropertiesInInspector();
-            AdvancedSettingsExpanded = EditorGUILayout.Foldout(AdvancedSettingsExpanded, "Advanced Settings", true);
-            if (AdvancedSettingsExpanded)
+            m_advancedSettingsExpanded = EditorGUILayout.Foldout(m_advancedSettingsExpanded, "Advanced Settings", true);
+            if (m_advancedSettingsExpanded)
             {
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(maxOrthoSizeProperty, maxOrthoSizeGUIContent);
-                EditorGUILayout.PropertyField(shrinkToPointsExperimentalProperty, shrinkToPointsExperimentalGUIContent);
-                EditorGUILayout.PropertyField(autoBakeProperty, autoBakeGUIContent);
+                EditorGUILayout.PropertyField(m_maxOrthoSizeProperty, m_maxOrthoSizeGUIContent);
+                EditorGUILayout.PropertyField(m_shrinkToPointsExperimentalProperty, m_shrinkToPointsExperimentalGUIContent);
+                EditorGUILayout.PropertyField(m_autoBakeProperty, m_autoBakeGUIContent);
 
-                if (!autoBakeProperty.boolValue)
+                if (!m_autoBakeProperty.boolValue)
                 {
                     if (GUILayout.Button("Bake"))
                     {
-                        triggerBakeProperty.boolValue = true;
+                        m_triggerBakeProperty.boolValue = true;
                     }
 
                     if (GUILayout.Button("Clear"))
                     {
-                        triggerClearCacheProperty.boolValue = true;
+                        m_triggerClearCacheProperty.boolValue = true;
                     }
                     
-                    float p = bakeProgressProperty.enumValueIndex == 0 ? 0 :
-                        bakeProgressProperty.enumValueIndex == 1 ? 0.5f : 1f;
-                    EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), p, bakeProgressPropertyEnumNames[bakeProgressProperty.enumValueIndex]);
+                    float p = m_bakeProgressProperty.enumValueIndex == 0 ? 0 :
+                        m_bakeProgressProperty.enumValueIndex == 1 ? 0.5f : 1f;
+                    EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), p, m_bakeProgressPropertyEnumNames[m_bakeProgressProperty.enumValueIndex]);
                 }
             }
             serializedObject.ApplyModifiedProperties();
