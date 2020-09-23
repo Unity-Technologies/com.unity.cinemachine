@@ -4,6 +4,7 @@ using System.Linq;
 using Cinemachine.Utility;
 using ClipperLib;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Cinemachine
 {
@@ -323,7 +324,6 @@ namespace Cinemachine
             }
         }
 
-        // TODO: this could also be in UnityVectorExtensions? @gregoryl?
         /// <summary>
         /// Checks whether p is inside or outside the polygons. The algorithm determines if a point is inside based
         /// on a horizontal raycast from p. If the ray intersects the polygon odd number of times, then p is inside.
@@ -363,8 +363,6 @@ namespace Cinemachine
             return intersectionCount % 2 != 0; // inside polygon when odd number of intersections
         }
         
-
-        // TODO: this could also be in UnityVectorExtensions? @gregoryl?
         /// <summary>
         /// Finds midpoint of a rectangle's side touching CA and CB.
         /// D1 - D2 defines the side or diagonal of a rectangle touching CA and CB.
@@ -466,8 +464,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    // TODO: should this be an Assert instead? @gregoryl?
-                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
                 }
             }
             else if (90 < angle && angle < 180)
@@ -499,8 +496,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    // TODO: should this be an Assert instead? @gregoryl?
-                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
                 }
             }
             else if (-180 < angle && angle < -90)
@@ -532,8 +528,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    // TODO: should this be an Assert instead? @gregoryl?
-                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
                 }
             }
             else if (-90 < angle && angle < 0)
@@ -565,8 +560,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    // TODO: should this be an Assert instead? @gregoryl?
-                    Debug.Log("Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!"); // should never happen
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
                 }
             }
             else
@@ -924,20 +918,10 @@ namespace Cinemachine
             out List<ShrinkablePolygon> subgraphs)
         {
             subgraphs = new List<ShrinkablePolygon>();
-            int maxIteration = 10; // To avoid infinite loops.
-                                   // In practise max 1-3 intersections at the same time in the same frame.
+            var maxIteration = 10; // In practise max 1-3 intersections at the same time in the same frame.
             while (maxIteration > 0 && DivideGraph(ref shrinkablePolygon, ref subgraphs))
             {
                 maxIteration--;
-            };
-            
-            // TODO: Do we want to instead just warn them to increase iteration safety? gregoryl? 
-            // TODO: In reality the result won't really change*, because the remaining intersections will be handled next frame.
-            // TODO: *it will be off by one orthographic resolution - defined as m_bakedConfinerResolution = 0.005f;
-            if (maxIteration <= 0)
-            {
-                // never happened to me in my tests 3 iterations were the most (10-3 = 7).
-                Debug.Log("Exited with max iteration safety! - Let us know on the Cinemachine forums please!"); 
             }
             subgraphs.Add(shrinkablePolygon); // add remaining shrinkablePolygon
         }

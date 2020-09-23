@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Vector2 = UnityEngine.Vector2;
 
 namespace Cinemachine
@@ -156,7 +157,7 @@ namespace Cinemachine
         {
             if (left.graphs.Count != right.graphs.Count)
             {
-                Debug.Log("Error in ConfinerStateLerp - Let us know on the Cinemachine forum please!"); // should never happen
+                Assert.IsTrue(false, "Error in ConfinerStateLerp - Let us know on the Cinemachine forum please!");
                 return left;
             }
 
