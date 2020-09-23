@@ -140,8 +140,8 @@ namespace Cinemachine.Editor
         private static void CreateDollyTrackWithCart()
         {
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
-                    typeof(CinemachineSmoothPath));
+                    GenerateUniqueObjectName(typeof(SplineContainer), "DollyTrack"),
+                    typeof(SplineContainer));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
