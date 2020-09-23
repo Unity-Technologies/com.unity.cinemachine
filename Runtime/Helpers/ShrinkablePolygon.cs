@@ -720,8 +720,7 @@ namespace Cinemachine
                             {
                                 //direction.y = 0;
                             }
-                            // direction.x = Mathf.Clamp(direction.x, -m_aspectRatio, m_aspectRatio);
-                            // direction.y = Mathf.Clamp(direction.y, -1, 1);
+
                             m_points[i].m_shrinkDirection = direction;
                         }
                         else
@@ -831,7 +830,7 @@ namespace Cinemachine
 
             return closestPoint;
         }
-        
+  
         /// <summary>
         /// Returns point closest to p that is a point of the shrinkablePolygon.
         /// </summary>
@@ -897,7 +896,7 @@ namespace Cinemachine
                     int j = (i + 1) % m_points.Count;
                     {
                         if (!m_points[i].m_cantIntersect && !m_points[j].m_cantIntersect) continue;
-                        if (m_points[i].m_cantIntersect && m_points[j].m_cantIntersect) continue;
+                        // if (m_points[i].m_cantIntersect && m_points[j].m_cantIntersect) continue;
                         if ((m_points[i].m_position - m_points[j].m_position).sqrMagnitude <= 0.01f)
                         {
                             if (m_points[i].m_cantIntersect)
