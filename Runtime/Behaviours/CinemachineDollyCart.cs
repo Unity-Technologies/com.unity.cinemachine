@@ -79,8 +79,7 @@ namespace Cinemachine
         {
             if (m_Path != null)
             {
-                m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
-                float3 result = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
+                float3 result = m_Path.EvaluatePositionAtUnit(ref m_Position, m_PositionUnits);
                 transform.position = new Vector3(result.x, result.y, result.z);
                 // Place holder: transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
             }
