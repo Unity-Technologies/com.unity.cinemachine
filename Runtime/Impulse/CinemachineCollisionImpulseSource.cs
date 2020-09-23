@@ -24,6 +24,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineCollisionImpulseSource.html")]
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource
     {
         /// <summary>Only collisions with objects on these layers will generate Impulse events.</summary>

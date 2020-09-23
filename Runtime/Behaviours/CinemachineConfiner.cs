@@ -19,6 +19,8 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineConfiner.html")]
     public class CinemachineConfiner : CinemachineExtension
     {
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
@@ -92,6 +94,10 @@ namespace Cinemachine
             m_Damping = Mathf.Max(0, m_Damping);
         }
 
+        /// <summary>
+        /// Called when connecting to a virtual camera
+        /// </summary>
+        /// <param name="connect">True if connecting, false if disconnecting</param>
         protected override void ConnectToVcam(bool connect)
         {
             base.ConnectToVcam(connect);
@@ -128,7 +134,13 @@ namespace Cinemachine
             return m_Damping;
         }
 
-        /// <summary>Callback to to the camera confining</summary>
+        /// <summary>
+        /// Callback to do the camera confining
+        /// </summary>
+        /// <param name="vcam">The virtual camera being processed</param>
+        /// <param name="stage">The current pipeline stage</param>
+        /// <param name="state">The current virtual camera state</param>
+        /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)

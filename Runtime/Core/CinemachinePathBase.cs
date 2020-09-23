@@ -45,14 +45,12 @@ namespace Cinemachine
         /// <returns>Standardized position, between MinPos and MaxPos</returns>
         public virtual float StandardizePos(float pos)
         {
-            if (MaxPos == 0)
-                return 0;
-            if (Looped)
+            if (Looped && MaxPos > 0)
             {
                 pos = pos % MaxPos;
                 if (pos < 0)
                     pos += MaxPos;
-                return pos > MaxPos - UnityVectorExtensions.Epsilon ? 0 : pos;
+                return pos;
             }
             return Mathf.Clamp(pos, 0, MaxPos);
         }
@@ -99,7 +97,7 @@ namespace Cinemachine
                 if (!Looped)
                 {
                     start = Mathf.Max(start, MinPos);
-                    end = Mathf.Max(end, MaxPos);
+                    end = Mathf.Min(end, MaxPos);
                 }
             }
             stepsPerSegment = Mathf.RoundToInt(Mathf.Clamp(stepsPerSegment, 1f, 100f));

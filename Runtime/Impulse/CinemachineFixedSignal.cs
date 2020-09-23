@@ -6,6 +6,7 @@ namespace Cinemachine
     /// A definition of an impulse signal that gets propagated to listeners
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseFixedSignals.html")]
     public class CinemachineFixedSignal : SignalSourceAsset
     {
         /// <summary>The raw signal shape along the X axis</summary>

@@ -13,6 +13,7 @@ namespace Cinemachine
 #else
     [ExecuteInEditMode]
 #endif
+    [HelpURL(Documentation.BaseURL + "api/Cinemachine.GroupWeightManipulator.html")]
     public class GroupWeightManipulator : MonoBehaviour
     {
         /// <summary>The weight of the group member at index 0</summary>

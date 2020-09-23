@@ -21,16 +21,21 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineBlendListCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBlendListCamera.html")]
     public class CinemachineBlendListCamera : CinemachineVirtualCameraBase
     {
-        /// <summary>Default object for the camera children to look at (the aim target), if not specified in a child rig.  May be empty</summary>
-        [Tooltip("Default object for the camera children to look at (the aim target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
+        /// <summary>Default object for the camera children to look at (the aim target), 
+        /// if not specified in a child rig.  May be empty</summary>
+        [Tooltip("Default object for the camera children to look at (the aim target), if not "
+            + "specified in a child camera.  May be empty if all of the children define targets of their own.")]
         [NoSaveDuringPlay]
         [VcamTargetProperty]
         public Transform m_LookAt = null;
 
-        /// <summary>Default object for the camera children wants to move with (the body target), if not specified in a child rig.  May be empty</summary>
-        [Tooltip("Default object for the camera children wants to move with (the body target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
+        /// <summary>Default object for the camera children wants to move with (the body target), 
+        /// if not specified in a child rig.  May be empty</summary>
+        [Tooltip("Default object for the camera children wants to move with (the body target), "
+            + "if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
         [NoSaveDuringPlay]
         [VcamTargetProperty]
         public Transform m_Follow = null;
@@ -39,7 +44,7 @@ namespace Cinemachine
         [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
         public bool m_ShowDebugText = false;
 
-        /// <summary>When enabled, the child vcams will cycle indefinitely instead of just stopping at the last onesummary>
+        /// <summary>When enabled, the child vcams will cycle indefinitely instead of just stopping at the last one</summary>
         [Tooltip("When enabled, the child vcams will cycle indefinitely instead of just stopping at the last one")]
         public bool m_Loop = false;
 
@@ -255,6 +260,9 @@ namespace Cinemachine
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
         }
 
+        /// <summary>
+        /// Uninstall the GUI handler
+        /// </summary>
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -267,7 +275,7 @@ namespace Cinemachine
             InvalidateListOfChildren();
         }
 
-        ///  Will only be called if Unity Editor - never in build
+        /// Will only be called if Unity Editor - never in build
         private void OnGuiHandler()
         {
             if (!m_ShowDebugText)
@@ -352,7 +360,7 @@ namespace Cinemachine
             }
 
             var holdTime = m_Instructions[mCurrentInstruction].m_Hold 
-                + m_Instructions[mCurrentInstruction].m_Blend.m_Time;
+                + m_Instructions[mCurrentInstruction].m_Blend.BlendTime;
             var minHold = mCurrentInstruction < m_Instructions.Length - 1 || m_Loop 
                 ? 0 : float.MaxValue;
             if (now - mActivationTime > Mathf.Max(minHold, holdTime))

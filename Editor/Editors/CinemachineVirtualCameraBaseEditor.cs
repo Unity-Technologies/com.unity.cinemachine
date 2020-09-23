@@ -10,23 +10,31 @@ namespace Cinemachine.Editor
     /// Base class for virtual camera editors.
     /// Handles drawing the header and the basic properties.
     /// </summary>
+    /// <typeparam name="T">The type of CinemachineVirtualCameraBase being edited</typeparam>
     public class CinemachineVirtualCameraBaseEditor<T>
         : BaseEditor<T> where T : CinemachineVirtualCameraBase
     {
+        /// <summary>A collection of GUIContent for use in the inspector</summary>
         public static class Styles
         {
+            /// <summary>GUIContent for Add Extension</summary>
             public static GUIContent addExtensionLabel = new GUIContent("Add Extension");
-            public static GUIContent virtualCameraChildrenInfoMsg = new GUIContent("The Virtual Camera Children field is not available when multiple objects are selected.");
+            /// <summary>GUIContent for no-multi-select message</summary>
+            public static GUIContent virtualCameraChildrenInfoMsg 
+                = new GUIContent("The Virtual Camera Children field is not available when multiple objects are selected.");
         }
         
         static Type[] sExtensionTypes;  // First entry is null
         static string[] sExtensionNames;
         bool IsPrefabBase { get; set; }
 
-        /// <summary>Obsolete, do not use</summary>
+        /// <summary>Obsolete, do not use.  Use the overload, which is more performant</summary>
+        /// <returns>List of property names to exclude</returns>
         protected override List<string> GetExcludedPropertiesInInspector() 
             { return base.GetExcludedPropertiesInInspector(); }
 
+        /// <summary>Get the property names to exclude in the inspector.</summary>
+        /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
@@ -34,6 +42,7 @@ namespace Cinemachine.Editor
                 excluded.AddRange(Target.m_ExcludedPropertiesInInspector);
         }
 
+        /// <summary>Inspector panel is being enabled</summary>
         protected virtual void OnEnable()
         {
             IsPrefabBase = Target.gameObject.scene.name == null; // causes a small GC alloc
@@ -57,6 +66,7 @@ namespace Cinemachine.Editor
             }
         }
 
+        /// <summary>Inspector panel is being disabled</summary>
         protected virtual void OnDisable()
         {
             if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
@@ -66,6 +76,7 @@ namespace Cinemachine.Editor
             }
         }
 
+        /// <summary>Create the contents of the inspector panel</summary>
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -74,6 +85,10 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
+        /// <summary>
+        /// Draw the virtual camera header in the inspector.  
+        /// This includes Solo button, Live status, and global settings
+        /// </summary>
         protected void DrawHeaderInInspector()
         {
             if (!IsPropertyExcluded("Header"))
@@ -84,6 +99,11 @@ namespace Cinemachine.Editor
             ExcludeProperty("Header");
         }
 
+        /// <summary>
+        /// Draw the LookAt and Follow targets in the inspector
+        /// </summary>
+        /// <param name="followTarget">Follow target property</param>
+        /// <param name="lookAtTarget">LookAt target property</param>
         protected void DrawTargetsInInspector(
             SerializedProperty followTarget, SerializedProperty lookAtTarget)
         {
@@ -110,6 +130,9 @@ namespace Cinemachine.Editor
                 serializedObject.ApplyModifiedProperties();
         }
 
+        /// <summary>
+        /// Draw the Extensions dropdown in the inspector
+        /// </summary>
         protected void DrawExtensionsWidgetInInspector()
         {
             if (!IsPropertyExcluded("Extensions"))
@@ -134,6 +157,9 @@ namespace Cinemachine.Editor
             }
         }
 
+        /// <summary>
+        /// Draw the Live status in the inspector, and the Solo button
+        /// </summary>
         protected void DrawCameraStatusInInspector()
         {
             if (Selection.objects.Length > 1)
@@ -197,6 +223,9 @@ namespace Cinemachine.Editor
             }
         }
 
+        /// <summary>
+        /// Draw the global settings controls in the inspector
+        /// </summary>
         protected void DrawGlobalControlsInInspector()
         {
             CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides

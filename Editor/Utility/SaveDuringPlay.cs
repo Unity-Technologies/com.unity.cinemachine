@@ -400,7 +400,11 @@ namespace SaveDuringPlay
     [InitializeOnLoad]
     public class SaveDuringPlay
     {
+        /// <summary>Editor preferences key for SaveDuringPlay enabled</summary>
         public static string kEnabledKey = "SaveDuringPlay_Enabled";
+
+        /// <summary>Enabled status for SaveDuringPlay.  
+        /// This is a global setting, saved in Editor Prefs</summary>
         public static bool Enabled
         {
             get { return EditorPrefs.GetBool(kEnabledKey, false); }
@@ -470,6 +474,8 @@ namespace SaveDuringPlay
         /// If you need to get notified before state is collected for hotsave, this is the place
         /// </summary>
         public static OnHotSaveDelegate OnHotSave;
+
+        /// <summary>Delegate for HotSave notification</summary>
         public delegate void OnHotSaveDelegate();
 
         /// Collect all relevant objects, active or not

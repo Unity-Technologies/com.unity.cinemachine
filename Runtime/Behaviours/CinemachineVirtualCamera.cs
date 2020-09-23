@@ -58,6 +58,7 @@ namespace Cinemachine
 #endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera wants to look at (the Aim target).
@@ -147,6 +148,8 @@ namespace Cinemachine
         /// Called by CinemachineCore at the appropriate Update time
         /// so the vcam can position itself and track its targets.  This class will
         /// invoke its pipeline and generate a CameraState for this frame.</summary>
+        /// <param name="worldUp">Effective world up</param>
+        /// <param name="deltaTime">Effective deltaTime</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             // Update the state by invoking the component pipeline
@@ -308,10 +311,12 @@ namespace Cinemachine
         public void InvalidateComponentPipeline() { m_ComponentPipeline = null; }
 
         /// <summary>Get the hidden CinemachinePipeline child object.</summary>
+        /// <returns>The hidden CinemachinePipeline child object</returns>
         public Transform GetComponentOwner() { UpdateComponentPipeline(); return m_ComponentOwner; }
 
         /// <summary>Get the component pipeline owned by the hidden child pipline container.
         /// For most purposes, it is preferable to use the GetCinemachineComponent method.</summary>
+        /// <returns>The component pipeline</returns>
         public CinemachineComponentBase[] GetComponentPipeline() { UpdateComponentPipeline(); return m_ComponentPipeline; }
 
         /// <summary>Get the component set for a specific stage.</summary>
@@ -328,6 +333,8 @@ namespace Cinemachine
         }
 
         /// <summary>Get an existing component of a specific type from the cinemachine pipeline.</summary>
+        /// <typeparam name="T">The type of component to get</typeparam>
+        /// <returns>The component if it's present, or null</returns>
         public T GetCinemachineComponent<T>() where T : CinemachineComponentBase
         {
             CinemachineComponentBase[] components = GetComponentPipeline();
@@ -338,7 +345,10 @@ namespace Cinemachine
             return null;
         }
 
-        /// <summary>Add a component to the cinemachine pipeline.</summary>
+        /// <summary>Add a component to the cinemachine pipeline.  
+        /// Existing components at the new component's stage are removed</summary>
+        /// <typeparam name="T">The type of component to add</typeparam>
+        /// <returns>The new component</returns>
         public T AddCinemachineComponent<T>() where T : CinemachineComponentBase
         {
             // Get the existing components
@@ -365,7 +375,8 @@ namespace Cinemachine
             return component;
         }
 
-        /// <summary>Remove a component from the cinemachine pipeline.</summary>
+        /// <summary>Remove a component from the cinemachine pipeline if it's present.</summary>
+        /// <typeparam name="T">The type of component to remove</typeparam>
         public void DestroyCinemachineComponent<T>() where T : CinemachineComponentBase
         {
             CinemachineComponentBase[] components = GetComponentPipeline();
