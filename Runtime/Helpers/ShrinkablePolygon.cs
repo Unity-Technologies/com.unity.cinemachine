@@ -621,7 +621,7 @@ namespace Cinemachine
                             }
                             else if (direction.y < -1)
                             {
-                                direction.y *= -(1f / direction.y);
+                                direction *= -(1f / direction.y);
                             }
 
                             m_points[i].m_shrinkDirection = direction;
