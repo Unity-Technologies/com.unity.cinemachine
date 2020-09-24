@@ -32,9 +32,8 @@ namespace Cinemachine.Editor
                 "For example, if you know the camera window size changes between 1-2. Set this to number to 2.");
             m_shrinkToPointsExperimentalProperty = FindProperty(x => x.m_ShrinkToPointsExperimental);
             m_shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink Sub-Polygons To Point Experimental", 
-                "By default, the confiner is reduced until it has no area (e.g. lines, " +
-                "or points). If this property is enabled, then the confiner will " +
-                "continue reducing itself by reducing lines to points.");
+                "By default, the confiner is reduced to its skeleton. If this property is enabled, then the confiner will " +
+                "continue reducing the skeletons by reducing bones (line segments) to points.");
             m_autoBakeProperty = FindProperty(x => x.m_AutoBake);
             m_autoBakeGUIContent = new GUIContent("Automatic Baking",
                 "Automatically rebakes the confiner, if input parameters (InputCollider, Resolution, " +
