@@ -360,7 +360,7 @@ namespace Cinemachine
                 Math.Abs(frustumHeight - m_frustumHeightCache) > m_bakedConfinerResolution)
             {
                 m_frustumHeightCache = frustumHeight;
-                m_confinerCache = GetConfinerOven().GetConfinerAtOrthoSize(m_frustumHeightCache);
+                m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(m_frustumHeightCache);
                 ShrinkablePolygon.ConvertToPath(m_confinerCache.graphs, out m_currentPathCache);
             }
         }

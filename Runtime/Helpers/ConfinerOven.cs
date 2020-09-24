@@ -115,14 +115,14 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// Converts and returns a prebaked ConfinerState for the input orthographicSize.
+        /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
         /// </summary>
-        internal ConfinerState GetConfinerAtOrthoSize(float orthographicSize)
+        internal ConfinerState GetConfinerAtFrustumHeight(float frustumHeight)
         {
             ConfinerState result = new ConfinerState();
             for (int i = m_confinerStates.Count - 1; i >= 0; --i)
             {
-                if (m_confinerStates[i].windowSize <= orthographicSize)
+                if (m_confinerStates[i].windowSize <= frustumHeight)
                 {
                     if (i == m_confinerStates.Count - 1)
                     {
@@ -132,14 +132,14 @@ namespace Cinemachine
                     {
                         // blend between m_confinerStates with same m_state
                         result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], Mathf.InverseLerp(
-                            m_confinerStates[i].windowSize, m_confinerStates[i + 1].windowSize, orthographicSize));
+                            m_confinerStates[i].windowSize, m_confinerStates[i + 1].windowSize, frustumHeight));
                     }
                     else
                     {
-                        // choose m_confinerStates with windowSize closer to orthographicSize
+                        // choose m_confinerStates with windowSize closer to frustumHeight
                         result = 
-                            Mathf.Abs(m_confinerStates[i].windowSize - orthographicSize) < 
-                            Mathf.Abs(m_confinerStates[i + 1].windowSize - orthographicSize) ? 
+                            Mathf.Abs(m_confinerStates[i].windowSize - frustumHeight) < 
+                            Mathf.Abs(m_confinerStates[i + 1].windowSize - frustumHeight) ? 
                                 m_confinerStates[i] : 
                                 m_confinerStates[i+1];
                     }
