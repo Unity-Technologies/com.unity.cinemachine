@@ -341,7 +341,12 @@ namespace Cinemachine
                 minX = path.Aggregate(minX, (current, point) => Mathf.Min(current, point.x));
                 maxX = path.Aggregate(maxX, (current, point) => Mathf.Max(current, point.x));
             }
+
             float polygonXWidth = maxX - minX;
+            if (!(minX <= p.x && p.x <= maxX))
+            {
+                return false; // p is outside to the left or to the right
+            }
             
             int intersectionCount = 0;
             Vector2 camRayEndFromCamPos2D = p + Vector2.right * polygonXWidth;
