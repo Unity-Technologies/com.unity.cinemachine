@@ -178,6 +178,7 @@ namespace Cinemachine
                     r.m_points.Add(new ShrinkablePolygon.ShrinkablePoint2
                     {
                         m_position = Vector2.Lerp(left.graphs[i].m_points[j].m_position, rightPoint, lerp),
+                        m_originalPosition = left.graphs[i].m_points[j].m_originalPosition,
                     });
                 }
                 result.graphs.Add(r);   

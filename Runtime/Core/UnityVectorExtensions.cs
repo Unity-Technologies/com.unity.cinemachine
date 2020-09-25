@@ -7,6 +7,19 @@ namespace Cinemachine.Utility
     {
         /// <summary>A useful Epsilon</summary>
         public const float Epsilon = 0.0001f;
+        
+        /// <summary>NaN Vector</summary>
+        public static Vector2 Vector2NaN = new Vector2(float.NaN, float.NaN);
+
+        /// <summary>
+        /// Checks if the Vector2 contains NaN for x or y.
+        /// </summary>
+        /// <param name="v">Vector2 to check for NaN</param>
+        /// <returns>True, if any components of the vector are NaN</returns>
+        public static bool IsNaN(Vector2 v)
+        {
+            return float.IsNaN(v.x) || float.IsNaN(v.y);
+        }
 
         /// <summary>
         /// Get the closest point on a line segment.

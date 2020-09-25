@@ -19,6 +19,7 @@ namespace Cinemachine
         internal class ShrinkablePoint2
         {
             public Vector2 m_position;
+            public Vector2 m_originalPosition;
             public Vector2 m_shrinkDirection;
             public bool m_cantIntersect;
 
@@ -26,12 +27,15 @@ namespace Cinemachine
             {
                 m_position = Vector2.zero;
                 m_shrinkDirection = Vector2.zero;
+                m_originalPosition = UnityVectorExtensions.Vector2NaN;
             }
 
-            internal ShrinkablePoint2(Vector2 mPosition, Vector2 mShrinkDirection, bool mCantIntersect)
+            internal ShrinkablePoint2(Vector2 mPosition, Vector2 mShrinkDirection, 
+                Vector2 mOriginalPosition, bool mCantIntersect)
             {
                 m_position = mPosition;
                 m_shrinkDirection = mShrinkDirection;
+                m_originalPosition = mOriginalPosition;
                 m_cantIntersect = mCantIntersect;
             }
         }
@@ -67,7 +71,11 @@ namespace Cinemachine
             m_points = new List<ShrinkablePoint2>(points.Count);
             for (int i = 0; i < points.Count; ++i)
             {
-                m_points.Add(new ShrinkablePoint2 { m_position = points[i] });
+                m_points.Add(new ShrinkablePoint2
+                {
+                    m_position = points[i],
+                    m_originalPosition = new Vector2(points[i].x, points[i].y), // TODO: do I need to deep copy?
+                });
             }
             
             m_aspectRatio = aspectRatio;
@@ -104,7 +112,8 @@ namespace Cinemachine
                 
                 // deep
                 m_points = m_points.ConvertAll(point =>
-                    new ShrinkablePoint2(point.m_position, point.m_shrinkDirection, point.m_cantIntersect)),
+                    new ShrinkablePoint2(point.m_position, point.m_originalPosition, 
+                        point.m_shrinkDirection, point.m_cantIntersect)),
                 m_intersectionPoints =
                     m_intersectionPoints.ConvertAll(intersection => new Vector2(intersection.x, intersection.y))
             };
@@ -299,6 +308,48 @@ namespace Cinemachine
                     clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
 
                     index++;
+                }
+                
+                // CinemachineAdvanced2DConfiner.CornerPoints.Clear();
+                foreach (var point in polygon.m_points)
+                {
+                    if (!UnityVectorExtensions.IsNaN(point.m_originalPosition))
+                    {
+                        Vector2 corner = point.m_originalPosition;
+                        //CinemachineAdvanced2DConfiner.CornerPoints.Add(corner);
+                        Vector2 specialShrinkDirection = point.m_position - corner;
+                        if (specialShrinkDirection.x > polygon.m_aspectRatio)
+                        {
+                            specialShrinkDirection *= (polygon.m_aspectRatio / specialShrinkDirection.x);
+                        }
+                        else if (specialShrinkDirection.x < -polygon.m_aspectRatio)
+                        {
+                            specialShrinkDirection *= -(polygon.m_aspectRatio / specialShrinkDirection.x);
+                        }
+                        if (specialShrinkDirection.y > 1)
+                        {
+                            specialShrinkDirection *= (1f / specialShrinkDirection.y);
+                        }
+                        else if (specialShrinkDirection.y < -1)
+                        {
+                            specialShrinkDirection *= -(1f / specialShrinkDirection.y);
+                        }
+
+                        Vector2 specialPoint = corner + specialShrinkDirection * polygon.m_windowDiagonal;
+                        Vector2 epsilonNormal = new Vector2(specialShrinkDirection.y, -specialShrinkDirection.x) * 0.01f;
+                        clip.Add(new List<IntPoint>(4));
+                        Vector2 p1 = point.m_position + epsilonNormal;
+                        Vector2 p2 = specialPoint + epsilonNormal;
+                        Vector2 p3 = specialPoint - epsilonNormal;
+                        Vector2 p4 = point.m_position - epsilonNormal;
+                        clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
+                        clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
+                        clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
+                        clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
+        
+                        index++;
+                    }
+    
                 }
             }
 
