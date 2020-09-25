@@ -47,7 +47,7 @@ namespace Cinemachine
         
         private static readonly float m_bakedConfinerResolution = 0.005f;
         
-        internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE } // TODO: remove states after fist pass cleanup
+        internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE } // TODO: remove states after fist pass cleanup!
         [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
 
         private List<List<Vector2>> m_originalPath;
