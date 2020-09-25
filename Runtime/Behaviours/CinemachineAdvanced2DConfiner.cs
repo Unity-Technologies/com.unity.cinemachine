@@ -361,7 +361,7 @@ namespace Cinemachine
             {
                 m_frustumHeightCache = frustumHeight;
                 m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(m_frustumHeightCache);
-                ShrinkablePolygon.ConvertToPath(m_confinerCache.graphs, out m_currentPathCache);
+                ShrinkablePolygon.ConvertToPath(m_confinerCache.graphs, m_frustumHeightCache, out m_currentPathCache);
             }
         }
         

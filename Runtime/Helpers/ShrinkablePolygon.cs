@@ -25,8 +25,6 @@ namespace Cinemachine
 
             internal ShrinkablePoint2()
             {
-                m_position = Vector2.zero;
-                m_shrinkDirection = Vector2.zero;
                 m_originalPosition = UnityVectorExtensions.Vector2NaN;
             }
 
@@ -44,9 +42,9 @@ namespace Cinemachine
         internal float m_windowDiagonal;
         internal int m_state;
         private bool m_clockwiseOrientation;
-        private readonly float m_aspectRatio;
-        private readonly float m_aspectRatioBasedDiagonal;
-        private readonly Vector2[] m_normalDirections;
+        internal readonly float m_aspectRatio;
+        internal readonly float m_aspectRatioBasedDiagonal;
+        internal readonly Vector2[] m_normalDirections;
         internal float m_area;
         internal float m_minArea;
 
@@ -125,7 +123,7 @@ namespace Cinemachine
         /// <param name="aspectRatio"></param>
         /// <param name="aspectRatioBasedDiagonal"></param>
         /// <param name="normalDirections"></param>
-        private ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) : this()
+        internal ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) : this()
         {
             m_aspectRatio = aspectRatio;
             m_aspectRatioBasedDiagonal = aspectRatioBasedDiagonal;
@@ -194,6 +192,8 @@ namespace Cinemachine
                     if (m_clockwiseOrientation && angle < 0 ||
                         !m_clockwiseOrientation && angle > 0)
                     {
+                        extendedPoints[i * 3 + 1].m_originalPosition = UnityVectorExtensions.Vector2NaN;
+                        
                         int prevIndex = (i == 0 ? m_points.Count - 1 : i - 1);
                         extendedPoints[i * 3 + 0] = new ShrinkablePoint2
                         {
@@ -268,12 +268,16 @@ namespace Cinemachine
         }
         
         private static readonly int FloatToIntScaler = 10000000; // same as in Physics2D
+
         /// <summary>
         /// Converts shrinkable polygons into a simple path made of 2D points.
         /// </summary>
         /// <param name="shrinkablePolygons">input shrinkable polygons</param>
+        /// <param name="frustumHeight">Frustum height requested by the user.
+        /// For the path touching the corners this may be relevant.</param>
         /// <param name="path">output result</param>
-        internal static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, out List<List<Vector2>> path)
+        internal static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, float frustumHeight,
+            out List<List<Vector2>> path)
         {
             // convert shrinkable polygons points to int based points for Clipper
             List<List<IntPoint>> clip = new List<List<IntPoint>>(shrinkablePolygons.Count);
@@ -310,37 +314,41 @@ namespace Cinemachine
                     index++;
                 }
                 
-                // CinemachineAdvanced2DConfiner.CornerPoints.Clear();
                 foreach (var point in polygon.m_points)
                 {
                     if (!UnityVectorExtensions.IsNaN(point.m_originalPosition))
                     {
                         Vector2 corner = point.m_originalPosition;
-                        //CinemachineAdvanced2DConfiner.CornerPoints.Add(corner);
-                        Vector2 specialShrinkDirection = point.m_position - corner;
-                        if (specialShrinkDirection.x > polygon.m_aspectRatio)
+                        Vector2 shrinkDirection = point.m_position - corner;
+                        float cornerDistance = shrinkDirection.sqrMagnitude;
+                        if (shrinkDirection.x > polygon.m_aspectRatio)
                         {
-                            specialShrinkDirection *= (polygon.m_aspectRatio / specialShrinkDirection.x);
+                            shrinkDirection *= (polygon.m_aspectRatio / shrinkDirection.x);
                         }
-                        else if (specialShrinkDirection.x < -polygon.m_aspectRatio)
+                        else if (shrinkDirection.x < -polygon.m_aspectRatio)
                         {
-                            specialShrinkDirection *= -(polygon.m_aspectRatio / specialShrinkDirection.x);
+                            shrinkDirection *= -(polygon.m_aspectRatio / shrinkDirection.x);
                         }
-                        if (specialShrinkDirection.y > 1)
+                        if (shrinkDirection.y > 1)
                         {
-                            specialShrinkDirection *= (1f / specialShrinkDirection.y);
+                            shrinkDirection *= (1f / shrinkDirection.y);
                         }
-                        else if (specialShrinkDirection.y < -1)
+                        else if (shrinkDirection.y < -1)
                         {
-                            specialShrinkDirection *= -(1f / specialShrinkDirection.y);
+                            shrinkDirection *= -(1f / shrinkDirection.y);
                         }
 
-                        Vector2 specialPoint = corner + specialShrinkDirection * polygon.m_windowDiagonal;
-                        Vector2 epsilonNormal = new Vector2(specialShrinkDirection.y, -specialShrinkDirection.x) * 0.01f;
+                        shrinkDirection *= frustumHeight;
+                        if (shrinkDirection.sqrMagnitude > cornerDistance)
+                        {
+                            continue; // camera is already touching this point
+                        }
+                        Vector2 cornerTouchingPoint = corner + shrinkDirection;
+                        Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x) * 0.01f;
                         clip.Add(new List<IntPoint>(4));
                         Vector2 p1 = point.m_position + epsilonNormal;
-                        Vector2 p2 = specialPoint + epsilonNormal;
-                        Vector2 p3 = specialPoint - epsilonNormal;
+                        Vector2 p2 = cornerTouchingPoint + epsilonNormal;
+                        Vector2 p3 = cornerTouchingPoint - epsilonNormal;
                         Vector2 p4 = point.m_position - epsilonNormal;
                         clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));

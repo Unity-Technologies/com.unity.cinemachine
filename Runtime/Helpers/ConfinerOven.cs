@@ -131,8 +131,7 @@ namespace Cinemachine
                     else if (Math.Abs(m_confinerStates[i].state - m_confinerStates[i + 1].state) < 1e-6f)
                     {
                         // blend between m_confinerStates with same m_state
-                        result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], Mathf.InverseLerp(
-                            m_confinerStates[i].windowSize, m_confinerStates[i + 1].windowSize, frustumHeight));
+                        result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
                     }
                     else
                     {
@@ -153,23 +152,28 @@ namespace Cinemachine
         /// <summary>
         /// Linearly interpolates between ConfinerStates.
         /// </summary>
-        private ConfinerState ConfinerStateLerp(in ConfinerState left, in ConfinerState right, float lerp)
+        private ConfinerState ConfinerStateLerp(in ConfinerState left, in ConfinerState right, float frustumHeight)
         {
             if (left.graphs.Count != right.graphs.Count)
             {
                 Assert.IsTrue(false, "Error in ConfinerStateLerp - Let us know on the Cinemachine forum please!");
                 return left;
             }
-
             ConfinerState result = new ConfinerState
             {
                 graphs = new List<ShrinkablePolygon>(left.graphs.Count),
             };
+            
+            float lerpValue = Mathf.InverseLerp(left.windowSize, right.windowSize, frustumHeight);
             for (int i = 0; i < left.graphs.Count; ++i)
             {
-                var r = new ShrinkablePolygon
+                var r = new ShrinkablePolygon(
+                    left.graphs[i].m_aspectRatio,
+                    left.graphs[i].m_aspectRatioBasedDiagonal,
+                    left.graphs[i].m_normalDirections)
                 {
                     m_points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.graphs[i].m_points.Count),
+                    m_windowDiagonal = frustumHeight,
                 };
                 for (int j = 0; j < left.graphs[i].m_points.Count; ++j)
                 {
@@ -177,7 +181,7 @@ namespace Cinemachine
                     Vector2 rightPoint = right.graphs[i].ClosestGraphPoint(left.graphs[i].m_points[j]);
                     r.m_points.Add(new ShrinkablePolygon.ShrinkablePoint2
                     {
-                        m_position = Vector2.Lerp(left.graphs[i].m_points[j].m_position, rightPoint, lerp),
+                        m_position = Vector2.Lerp(left.graphs[i].m_points[j].m_position, rightPoint, lerpValue),
                         m_originalPosition = left.graphs[i].m_points[j].m_originalPosition,
                     });
                 }
