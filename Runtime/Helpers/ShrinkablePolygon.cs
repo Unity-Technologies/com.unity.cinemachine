@@ -30,12 +30,12 @@ namespace Cinemachine
                 m_originalPosition = UnityVectorExtensions.Vector2NaN;
             }
 
-            internal ShrinkablePoint2(Vector2 mPosition, Vector2 mShrinkDirection, 
-                Vector2 mOriginalPosition, bool mCantIntersect)
+            internal ShrinkablePoint2(Vector2 mPosition, Vector2 mOriginalPosition, Vector2 mShrinkDirection, 
+                bool mCantIntersect)
             {
                 m_position = mPosition;
-                m_shrinkDirection = mShrinkDirection;
                 m_originalPosition = mOriginalPosition;
+                m_shrinkDirection = mShrinkDirection;
                 m_cantIntersect = mCantIntersect;
             }
         }
