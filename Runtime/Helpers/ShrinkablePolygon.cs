@@ -72,7 +72,7 @@ namespace Cinemachine
                 m_points.Add(new ShrinkablePoint2
                 {
                     m_position = points[i],
-                    m_originalPosition = new Vector2(points[i].x, points[i].y), // TODO: do I need to deep copy?
+                    m_originalPosition = points[i],
                 });
             }
             
