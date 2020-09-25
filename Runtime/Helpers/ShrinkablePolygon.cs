@@ -344,7 +344,7 @@ namespace Cinemachine
                             continue; // camera is already touching this point
                         }
                         Vector2 cornerTouchingPoint = corner + shrinkDirection;
-                        Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x) * 0.01f;
+                        Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 0.01f;
                         clip.Add(new List<IntPoint>(4));
                         Vector2 p1 = point.m_position + epsilonNormal;
                         Vector2 p2 = cornerTouchingPoint + epsilonNormal;
