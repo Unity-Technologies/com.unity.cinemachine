@@ -28,6 +28,7 @@ namespace Cinemachine
                  + "Higher numbers are more gradual.")]
         [Range(0, 10)]
         public float m_CornerDamping = 0;
+        private bool m_CornerDampingIsOn = false;
         private float m_CornerAngleTreshold = 10f;
 
         [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
@@ -97,24 +98,21 @@ namespace Cinemachine
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
-                    Vector3 originalDisplacement = displacement;
                     float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                    if (m_CornerDamping > 0 && displacementAngle > m_CornerAngleTreshold)
+                    if (m_CornerDampingIsOn || m_CornerDamping > 0 && displacementAngle > m_CornerAngleTreshold)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
-                        delta = Damper.Damp(delta, m_CornerDamping, deltaTime);
-                        displacement = extra.m_previousDisplacement + delta;
+                        var deltaDamped = Damper.Damp(delta, m_CornerDamping, deltaTime);
+                        displacement = extra.m_previousDisplacement + deltaDamped;
+
+                        m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
+                                              delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     }
                     else if (m_Damping > 0)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, m_Damping, deltaTime);
                         displacement = extra.m_previousDisplacement + delta;
-                    }
-                    
-                    if (m_StopDampingWithinConfiner && ConfinePoint(state.CorrectedPosition + displacement).sqrMagnitude <= UnityVectorExtensions.Epsilon)
-                    {
-                        displacement = originalDisplacement;
                     }
                 }
                 extra.m_previousDisplacement = displacement;
