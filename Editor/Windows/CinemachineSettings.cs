@@ -237,10 +237,11 @@ namespace Cinemachine.Editor
         /// after adding a virtual camera to the project for the first time
         static void OnPackageLoadedInEditor()
         {
-            if (CinemachineLogoTexture == null) {
-				// After adding the CM to a project, we need to wait for one update cycle for the assets to load
+            if (CinemachineLogoTexture == null) 
+            {
+                // After adding the CM to a project, we need to wait for one update cycle for the assets to load
                 EditorApplication.update += OnPackageLoadedInEditor; 
-			}
+            }
             else
             {
                 EditorApplication.update -= OnPackageLoadedInEditor;
