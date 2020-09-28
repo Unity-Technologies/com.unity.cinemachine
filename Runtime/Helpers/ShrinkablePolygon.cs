@@ -123,7 +123,8 @@ namespace Cinemachine
         /// <param name="aspectRatio"></param>
         /// <param name="aspectRatioBasedDiagonal"></param>
         /// <param name="normalDirections"></param>
-        internal ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) : this()
+        internal ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) 
+            : this()
         {
             m_aspectRatio = aspectRatio;
             m_aspectRatioBasedDiagonal = aspectRatioBasedDiagonal;
@@ -178,7 +179,8 @@ namespace Cinemachine
                 // positive for polygons oriented counterclockwise)
                 // fixing means that we add more shrink directions, because at this corners the offset from the
                 // camera middle point can be different depending on which way the camera comes from
-                // worst case: every point has negative angle (not possible in practise, but makes the algorithm simpler)
+                // worst case: every point has negative angle
+                // (not possible in practise, but makes the algorithm simpler)
                 // so all in all we will have 3 times as many points as before (1 + 2 extra for each point)
                 
                 // original points are placed with padding _ 0 _ _ 1 _ _ 2 _ _ ...
@@ -528,7 +530,8 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - " +
+                                         "Let us know on the Cinemachine forum please!");
                 }
             }
             else if (90 < angle && angle < 180)
@@ -560,7 +563,8 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - " +
+                                         "Let us know on the Cinemachine forum please!");
                 }
             }
             else if (-180 < angle && angle < -90)
@@ -592,7 +596,8 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - " +
+                                         "Let us know on the Cinemachine forum please!");
                 }
             }
             else if (-90 < angle && angle < 0)
@@ -624,7 +629,8 @@ namespace Cinemachine
                 }
                 else
                 {
-                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - Let us know on the Cinemachine forum please!");
+                    Assert.IsTrue(false, "Error in CalculateShrinkDirection - " +
+                                         "Let us know on the Cinemachine forum please!");
                 }
             }
             else
@@ -903,7 +909,8 @@ namespace Cinemachine
                     
                     if (segmentsIntersect) // so we divide g into g1 and g2.
                     {
-                        var g1 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
+                        var g1 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, 
+                            shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
                         {
                             g1.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
                             g1.m_intersectionPoints.Add(intersection);
@@ -926,7 +933,8 @@ namespace Cinemachine
                         }
                         subgraphs.Add(g1);
 
-                        var g2 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
+                        var g2 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, 
+                            shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
                         {
                             g2.m_windowDiagonal = shrinkablePolygon.m_windowDiagonal;
                             g2.m_intersectionPoints.Add(intersection);
@@ -997,7 +1005,8 @@ namespace Cinemachine
         /// <param name="points">List to rotate</param>
         /// <returns>List, in which the 0 element is the closest point in the List to point in 2D space.
         /// Order of points of the original list is preserved</returns>
-        private static List<ShrinkablePoint2> RollListToStartClosestToPoint(in List<ShrinkablePoint2> points, in Vector2 point)
+        private static List<ShrinkablePoint2> RollListToStartClosestToPoint(
+            in List<ShrinkablePoint2> points, in Vector2 point)
         {
             int closestIndex = 0;
             Vector2 closestPoint = points[0].m_position;

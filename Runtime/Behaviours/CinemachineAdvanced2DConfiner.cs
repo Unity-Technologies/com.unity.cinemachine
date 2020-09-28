@@ -35,7 +35,8 @@ namespace Cinemachine
         public bool m_StopDampingWithinConfiner = false;
         
         // advanced features
-        public bool m_DrawGizmosDebug = false; // TODO: modify gizmos to only draw what's relevant to a user! After Patrick's test - it may be useful for Patrick
+        public bool m_DrawGizmosDebug = false; // TODO: modify gizmos to only draw what's relevant to a user! After
+                                               // Patrick's test - it may be useful for Patrick
         [HideInInspector, SerializeField] internal bool m_AutoBake = true; // TODO: remove
                                                                            // reason: if user wants to
                                                                            // switch between cameras, it is better
@@ -48,7 +49,8 @@ namespace Cinemachine
         
         private static readonly float m_bakedConfinerResolution = 0.005f;
         
-        internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE } // TODO: remove states after fist pass cleanup!
+        internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE } // TODO: remove states after
+                                                                               // fist pass cleanup!
         [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
 
         private List<List<Vector2>> m_originalPath;
@@ -268,7 +270,8 @@ namespace Cinemachine
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                    if (boundingShapeTransformChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
+                    if (boundingShapeTransformChanged || m_originalPath == null || 
+                        m_originalPath.Count != poly.pathCount || 
                         m_originalPathTotalPointCount != poly.GetTotalPointCount())
                     { 
                         m_originalPath = new List<List<Vector2>>();
@@ -288,8 +291,8 @@ namespace Cinemachine
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
                     CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                    if (boundingShapeTransformChanged || m_originalPath == null || m_originalPath.Count != poly.pathCount || 
-                        m_originalPathTotalPointCount != poly.pointCount)
+                    if (boundingShapeTransformChanged || m_originalPath == null || 
+                        m_originalPath.Count != poly.pathCount || m_originalPathTotalPointCount != poly.pointCount)
                     {
                         m_originalPath = new List<List<Vector2>>();
                         Vector2[] path = new Vector2[poly.pointCount];
