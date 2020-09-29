@@ -64,6 +64,41 @@ namespace Cinemachine.Utility
         {
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
+        
+        /// <summary>
+        /// Calculates distance between point and the line segment defined by l1 and l2.
+        /// </summary>
+        /// <param name="point">Point from which distance to the line segment is calculated</param>
+        /// <param name="l1">Point one, defining the line</param>
+        /// <param name="l2">Point two, defining the line</param>
+        /// <returns></returns>
+        public static float DistanceBetweenPointAndLineSegment(in Vector2 point, in Vector2 l1, in Vector2 l2)
+        {
+            var x2_x1 = l2.x - l1.x;
+            var y2_y1 = l2.y - l1.y;
+
+            var param = -1f;
+            var sqrMagnitude = x2_x1 * x2_x1 + y2_y1 * y2_y1;
+            if (sqrMagnitude > Epsilon) param = ((point.x - l1.x) * x2_x1 + (point.y - l1.y) * y2_y1) / sqrMagnitude;
+
+            float xx, yy;
+            if (param < 0) {
+                xx = l1.x;
+                yy = l1.y;
+            }
+            else if (param > 1) {
+                xx = l2.x;
+                yy = l2.y;
+            }
+            else {
+                xx = l1.x + param * x2_x1;
+                yy = l1.y + param * y2_y1;
+            }
+
+            var dx = point.x - xx;
+            var dy = point.y - yy;
+            return Mathf.Sqrt(dx * dx + dy * dy);
+        }
 
         /// <summary>
         /// Calculates distance between point and the line defined by l1 and l2.

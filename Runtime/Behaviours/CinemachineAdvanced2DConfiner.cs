@@ -29,14 +29,14 @@ namespace Cinemachine
         [Range(0, 10)]
         public float m_CornerDamping = 0;
         private bool m_CornerDampingIsOn = false;
+        private float m_CornerDampingSpeedup = 1f;
         private float m_CornerAngleTreshold = 10f;
-
+        
         [Tooltip("Damping applied automatically when getting close to the sides.")]
         [Range(0, 10)]
         public float m_SideSmoothing = 0;
         private float m_SideSmoothingProximity = 1;
         
-
         [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
         public bool m_StopDampingWithinConfiner = false;
         
@@ -109,15 +109,15 @@ namespace Cinemachine
                     if (m_CornerDampingIsOn || m_CornerDamping > 0 && displacementAngle > m_CornerAngleTreshold)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
-                        var deltaDamped = Damper.Damp(delta, m_CornerDamping, deltaTime);
+                        var deltaDamped = Damper.Damp(delta, m_CornerDamping / m_CornerDampingSpeedup, deltaTime);
                         displacement = extra.m_previousDisplacement + deltaDamped;
 
+                        m_CornerDampingSpeedup = displacementAngle < 1f ? 2f : 1f;
                         m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
                                               delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     }
-                    else if (m_SideSmoothing > 0)
+                    else if (m_SideSmoothing > 0 && displacement == Vector3.zero)
                     {
-                        
                         GetClosestEdgeNormal(state.CorrectedPosition, in m_currentPathCache, out float distance, out Vector2 normal);
                         if (distance < m_SideSmoothingProximity)
                         {
@@ -189,52 +189,24 @@ namespace Cinemachine
             {
                 for (var p = 0; p < polygons[i].Count; p++)
                 {
-                    distance = (polygons[i][p] - position).sqrMagnitude;
+                    int nextP = (p + 1) % polygons[i].Count;
+                    distance = UnityVectorExtensions.DistanceBetweenPointAndLineSegment(position, 
+                        polygons[i][p],
+                        polygons[i][nextP]);
                     if (distance < minDistance)
                     {
+                        
                         minDistance = distance;
-                        closestPolygonIndex = i;
-                        closestPointIndex = p;
+                        var edge = polygons[i][p] - polygons[i][nextP];
+                        normal = new Vector2(edge.y, -edge.x);
                     }
                 }
             }
 
-            var d1 = (polygons[closestPolygonIndex][closestPointIndex == 0 ? 
-                polygons[closestPolygonIndex].Count - 1 : 
-                closestPointIndex - 1] - position).sqrMagnitude;
-            var d2 = (polygons[closestPolygonIndex][closestPointIndex == polygons[closestPolygonIndex].Count - 1 ? 
-                0 : 
-                closestPointIndex + 1] - position).sqrMagnitude;
-
-            if (d1 < d2)
-            {
-                int secondClosestIndex = closestPointIndex == 0 ? 
-                    polygons[closestPolygonIndex].Count - 1 : 
-                    closestPointIndex - 1;
-                var edge = polygons[closestPolygonIndex][closestPointIndex] -
-                           polygons[closestPolygonIndex][secondClosestIndex];
-                normal = new Vector2(edge.y, -edge.x);
-                distance = UnityVectorExtensions.DistanceBetweenPointAndLine(position, 
-                    polygons[closestPolygonIndex][closestPointIndex],
-                    polygons[closestPolygonIndex][secondClosestIndex]);
-            }
-            else
-            {
-                int secondClosestIndex = closestPointIndex == polygons[closestPolygonIndex].Count - 1 ? 
-                    0 : 
-                    closestPointIndex + 1;
-                
-                var edge = polygons[closestPolygonIndex][secondClosestIndex] -
-                           polygons[closestPolygonIndex][closestPointIndex];
-                normal = new Vector2(edge.y, -edge.x);
-                distance = UnityVectorExtensions.DistanceBetweenPointAndLine(position, 
-                    polygons[closestPolygonIndex][secondClosestIndex],
-                    polygons[closestPolygonIndex][closestPointIndex]);
-            }
-
-            smoothingNormalPos = position;
-            smoothingNormalDebug = normal.normalized * 2f;
-            smoothingDistance = distance;
+            distance = minDistance;
+            debug_cameraPoint = position;
+            debug_normalOfClosestEdge = normal.normalized;
+            debug_distanceToClosestEdge = distance;
         }
 
         /// <summary>
@@ -473,17 +445,21 @@ namespace Cinemachine
             ForceBake();
         }
 
-        private Vector2 smoothingNormalPos = Vector2.zero;
-        private Vector2 smoothingNormalDebug = Vector2.zero;
-        private float smoothingDistance = 0;
-        private void OnDrawGizmosSelected()
+        
+        // debug_cameraPoint = position;
+        // debug_normalOfClosestEdge = normal.normalized;
+        // debug_distanceToClosestEdge = distance;
+        private Vector2 debug_cameraPoint = Vector2.zero;
+        private Vector2 debug_normalOfClosestEdge = Vector2.zero;
+        private float debug_distanceToClosestEdge = 0;
+        private void OnDrawGizmos()
         {
             if (!m_DrawGizmosDebug) return;
             if (m_confinerStates != null && m_BoundingShape2D != null)
             {
                 Gizmos.color = Color.red;
-                Handles.Label(smoothingNormalPos, smoothingDistance.ToString());
-                Gizmos.DrawLine(smoothingNormalPos, smoothingNormalPos + smoothingNormalDebug);
+                Handles.Label(debug_cameraPoint, debug_distanceToClosestEdge.ToString());
+                Gizmos.DrawLine(debug_cameraPoint - debug_normalOfClosestEdge * debug_distanceToClosestEdge, debug_cameraPoint);
                 
                 // Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.m_position;
                 // for (var index = 0; index < m_confinerStates.Count; index++)
