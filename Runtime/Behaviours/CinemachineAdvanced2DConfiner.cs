@@ -118,7 +118,7 @@ namespace Cinemachine
                     }
                     else if (m_SideSmoothing > 0)
                     {
-                        GetClosestEdge(in m_currentPathCache, out float distance, out Vector2 normal);
+                        GetClosestEdgeNormal(in m_currentPathCache, out float distance, out Vector2 normal);
                         if (distance < m_SideSmoothingProximity)
                         {
                             Vector3 delta = displacement - extra.m_previousDisplacement;
@@ -175,6 +175,12 @@ namespace Cinemachine
                 frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
             }
             return frustumHeight;
+        }
+
+        private void GetClosestEdgeNormal(in List<List<Vector2>> polygons, out float distance, out Vector2 normal)
+        {
+            distance = 0;
+            normal = Vector2.zero;
         }
 
         /// <summary>
