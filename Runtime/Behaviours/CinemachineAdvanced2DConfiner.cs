@@ -31,6 +31,12 @@ namespace Cinemachine
         private bool m_CornerDampingIsOn = false;
         private float m_CornerAngleTreshold = 10f;
 
+        [Tooltip("Damping applied automatically when getting close to the sides.")]
+        [Range(0, 10)]
+        public float m_SideSmoothing = 0;
+        private float m_SideSmoothingProximity = 1;
+        
+
         [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
         public bool m_StopDampingWithinConfiner = false;
         
@@ -109,6 +115,27 @@ namespace Cinemachine
 
                         m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
                                               delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
+                    }
+                    else if (m_SideSmoothing > 0)
+                    {
+                        GetClosestEdge(in m_currentPathCache, out float distance, out Vector2 normal);
+                        if (distance < m_SideSmoothingProximity)
+                        {
+                            Vector3 delta = displacement - extra.m_previousDisplacement;
+                            
+                            Vector3 deltaX = new Vector3(delta.x, 0, 0);
+                            if (delta.x * normal.x < 0) // pointing in opposite dir
+                            {
+                                deltaX = Damper.Damp(deltaX, m_SideSmoothing, deltaTime);
+                            }
+                            Vector3 deltaY = new Vector3(0, delta.y, 0);
+                            if (delta.y * normal.y < 0) // pointing in opposite dir
+                            {
+                                deltaY = Damper.Damp(deltaY, m_SideSmoothing, deltaTime);
+                            }
+                            
+                            displacement = extra.m_previousDisplacement + new Vector3(deltaX.x, deltaY.y, 0);
+                        }
                     }
                     else if (m_Damping > 0)
                     {
