@@ -6,7 +6,7 @@
 - Bugfix (1256530) - disallow multiple components where appropriate
 - Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
 - Bugfix (1174993) - CM Brain logo was not added to Hierarchy next to Main Camera after adding vcam for the first time after importing CM. 
-- UI update - Moved Cinemachine menu to GameObject Create menu.  
+- UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierachy window.
 
 <size=20><b>Version 2.6.2</b></size>
 
