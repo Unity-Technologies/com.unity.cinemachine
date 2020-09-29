@@ -95,9 +95,9 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Creates and returns a deep copy of this shrinkablePolygon.
+        /// Creates and returns a deep copy of this subPolygons.
         /// </summary>
-        /// <returns>Deep copy of this shrinkablePolygon</returns>
+        /// <returns>Deep copy of this subPolygons</returns>
         public ShrinkablePolygon DeepCopy()
         {
             return new ShrinkablePolygon(m_aspectRatio, m_aspectRatioBasedDiagonal, m_normalDirections)
@@ -132,9 +132,9 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Computes signed area and determines whether a shrinkablePolygon is oriented clockwise or counter-clockwise.
+        /// Computes signed area and determines whether a subPolygons is oriented clockwise or counter-clockwise.
         /// </summary>
-        /// <returns>Area of the shrinkablePolygon</returns>
+        /// <returns>Area of the subPolygons</returns>
         private float ComputeSignedArea()
         {
             m_area = 0;
@@ -298,7 +298,7 @@ namespace Cinemachine
                 // add a thin line to each intersection point, thus connecting disconnected polygons
                 foreach (var intersectionPoint in polygon.m_intersectionPoints)
                 {
-                    Vector2 closestPoint = polygon.ClosestGraphPoint(intersectionPoint);
+                    Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
                     Vector2 direction = (closestPoint - intersectionPoint).normalized;
                     Vector2 epsilonNormal = new Vector2(direction.y, -direction.x) * 0.01f;
 
@@ -645,7 +645,7 @@ namespace Cinemachine
         /// <summary>
         /// ShrinkablePolygon is shrinkable if it has at least one non-zero shrink direction.
         /// </summary>
-        /// <returns>True, if shrinkablePolygon is shrinkable. False, otherwise.</returns>
+        /// <returns>True, if subPolygons is shrinkable. False, otherwise.</returns>
         internal bool IsShrinkable()
         {
             for (int i = 0; i < m_points.Count; ++i)
@@ -659,7 +659,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Shrink graphs points towards their shrink direction by shrinkAmount.
+        /// Shrink shrinkablePolygon points towards their shrink direction by shrinkAmount.
         /// </summary>
         internal bool Shrink(float shrinkAmount, bool shrinkToPoint)
         {
@@ -755,10 +755,10 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Calculates squared distance to 'P' from closest point to 'P' in the shrinkablePolygon
+        /// Calculates squared distance to 'P' from closest point to 'P' in the subPolygons
         /// </summary>
         /// <param name="p">Point in space.</param>
-        /// <returns>Squared distance to 'P' from closest point to 'P' in the shrinkablePolygon</returns>
+        /// <returns>Squared distance to 'P' from closest point to 'P' in the subPolygons</returns>
         private float SqrDistanceTo(Vector2 p)
         {
             float minDistance = float.MaxValue;
@@ -771,12 +771,12 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Calculates the closest point to the shrinkablePolygon from P.
-        /// The point returned is going to be one of the m_points of the shrinkablePolygon.
+        /// Calculates the closest point to the subPolygons from P.
+        /// The point returned is going to be one of the m_points of the subPolygons.
         /// </summary>
         /// <param name="p">Point from which the distance is calculated.</param>
-        /// <returns>A point that is part of the shrinkablePolygon m_points and is closest to P.</returns>
-        private Vector2 ClosestGraphPoint(Vector2 p)
+        /// <returns>A point that is part of the subPolygons m_points and is closest to P.</returns>
+        private Vector2 ClosestPolygonPoint(Vector2 p)
         {
             float minDistance = float.MaxValue;
             Vector2 closestPoint = Vector2.zero;
@@ -794,11 +794,11 @@ namespace Cinemachine
         }
   
         /// <summary>
-        /// Returns point closest to p that is a point of the shrinkablePolygon.
+        /// Returns point closest to p that is a point of the subPolygons.
         /// </summary>
         /// <param name="p"></param>
         /// <returns>Closest point to p in ShrinkablePolygon</returns>
-        internal Vector2 ClosestGraphPoint(ShrinkablePoint2 p)
+        internal Vector2 ClosestPolygonPoint(ShrinkablePoint2 p)
         {
             var foundWithNormal = false;
             var minDistance = float.MaxValue;
@@ -880,17 +880,18 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Divides shrinkablePolygon into subgraphs if there are intersections.</summary>
-        /// <param name="shrinkablePolygon">ShrinkablePolygon to divide. ShrinkablePolygon will be overwritten by a shrinkablePolygon with possible intersections,
-        /// after cutting off the shrinkablePolygon part 'left' of the intersection.</param>
-        /// <param name="subgraphs">Resulting subgraphs from dividing shrinkablePolygon.</param>
+        /// <summary>Divides subPolygons into subPolygons if there are intersections.</summary>
+        /// <param name="shrinkablePolygon">ShrinkablePolygon to divide. ShrinkablePolygon will be overwritten by a subPolygons with possible intersections,
+        /// after cutting off the subPolygons part 'left' of the intersection.</param>
+        /// <param name="subPolygons">Resulting subPolygons from dividing subPolygons.</param>
         /// <returns>True, if found intersection. False, otherwise.</returns>
-        private static bool DivideGraph(ref ShrinkablePolygon shrinkablePolygon, ref List<ShrinkablePolygon> subgraphs)
+        private static bool DivideShrinkablePolygon(ref ShrinkablePolygon shrinkablePolygon, 
+            ref List<ShrinkablePolygon> subPolygons)
         {
-            // for each edge in shrinkablePolygon, but not for edges that are neighbours (e.g. 0-1, 1-2),
+            // for each edge in subPolygons, but not for edges that are neighbours (e.g. 0-1, 1-2),
             // check for intersections.
-            // if we intersect, we need to divide the shrinkablePolygon into two graphs (g1,g2) to remove the
-            // intersection within a shrinkablePolygon.
+            // if we intersect, we need to divide the subPolygons into two shrinkablePolygons (g1,g2) to remove the
+            // intersection within a subPolygons.
             // g1 will be 'left' of the intersection, g2 will be 'right' of the intersection.
             // g2 may contain additional intersections.
             for (int i = 0; i < shrinkablePolygon.m_points.Count; ++i)
@@ -931,7 +932,7 @@ namespace Cinemachine
                             
                             g1.m_points = RotateListToLeftmost(points);
                         }
-                        subgraphs.Add(g1);
+                        subPolygons.Add(g1);
 
                         var g2 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, 
                             shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
@@ -956,8 +957,8 @@ namespace Cinemachine
                             g2.m_points = RollListToStartClosestToPoint(points, intersection);
                         }
 
-                        // we need to move the intersection points from the parent shrinkablePolygon
-                        // to g1 and g2 graphs, depending on which is closer to the intersection point.
+                        // we need to move the intersection points from the parent subPolygons
+                        // to g1 and g2 subPolygons, depending on which is closer to the intersection point.
                         for (int k = 0; k < shrinkablePolygon.m_intersectionPoints.Count; ++k)
                         {
                             float g1Dist = g1.SqrDistanceTo(shrinkablePolygon.m_intersectionPoints[k]);
@@ -973,29 +974,29 @@ namespace Cinemachine
                         }
 
                         shrinkablePolygon = g2; // need to continue dividing g2 as it may contain more intersections
-                        return true; // shrinkablePolygon has nice intersections
+                        return true; // subPolygons has nice intersections
                     }
                 }
             }
 
-            return false; // shrinkablePolygon does not have nice intersections
+            return false; // subPolygons does not have nice intersections
         }
 
         /// <summary>
         /// Divides input shrinkable polygon until it has intersections.
         /// </summary>
-        /// <param name="shrinkablePolygon"></param>
-        /// <param name="subgraphs"></param>
-        internal static void DivideAlongIntersections(ShrinkablePolygon shrinkablePolygon, 
-            out List<ShrinkablePolygon> subgraphs)
+        /// <param name="subPolygons"></param>
+        /// <param name="subShrinkablePolygon"></param>
+        internal static void DivideAlongIntersections(ShrinkablePolygon subPolygons, 
+            out List<ShrinkablePolygon> subShrinkablePolygon)
         {
-            subgraphs = new List<ShrinkablePolygon>();
+            subShrinkablePolygon = new List<ShrinkablePolygon>();
             var maxIteration = 10; // In practise max 1-3 intersections at the same time in the same frame.
-            while (maxIteration > 0 && DivideGraph(ref shrinkablePolygon, ref subgraphs))
+            while (maxIteration > 0 && DivideShrinkablePolygon(ref subPolygons, ref subShrinkablePolygon))
             {
                 maxIteration--;
             }
-            subgraphs.Add(shrinkablePolygon); // add remaining shrinkablePolygon
+            subShrinkablePolygon.Add(subPolygons); // add remaining subPolygons
         }
         
         /// <summary>

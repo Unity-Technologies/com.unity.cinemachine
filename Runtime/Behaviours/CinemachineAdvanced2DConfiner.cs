@@ -66,7 +66,7 @@ namespace Cinemachine
         private float m_frustumHeightCache;
         private List<List<Vector2>> m_currentPathCache;
 
-        private List<List<ShrinkablePolygon>> m_graphs;
+        private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         private List<ConfinerOven.ConfinerState> m_confinerStates;
         private ConfinerOven m_confinerBaker = null;
 
@@ -359,7 +359,7 @@ namespace Cinemachine
             m_sensorRatioCache = sensorRatio;
             GetConfinerOven().BakeConfiner(m_originalPath, m_sensorRatioCache, m_bakedConfinerResolutionCache, 
                 m_MaxOrthoSize, m_ShrinkToPointsExperimental);
-            m_confinerStates = GetConfinerOven().GetGraphsAsConfinerStates();
+            m_confinerStates = GetConfinerOven().GetShrinkablePolygonsAsConfinerStates();
 
             m_boundingShapePositionCache = m_BoundingShape2D.transform.position;
             m_boundingShapeRotationCache = m_BoundingShape2D.transform.rotation;
@@ -395,7 +395,7 @@ namespace Cinemachine
             {
                 m_frustumHeightCache = frustumHeight;
                 m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(m_frustumHeightCache);
-                ShrinkablePolygon.ConvertToPath(m_confinerCache.graphs, m_frustumHeightCache, out m_currentPathCache);
+                ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, m_frustumHeightCache, out m_currentPathCache);
             }
         }
         
@@ -428,10 +428,10 @@ namespace Cinemachine
                 // for (var index = 0; index < m_confinerStates.Count; index++)
                 // {
                 //     var confinerState = m_confinerStates[index];
-                //     for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
+                //     for (var index1 = 0; index1 < confinerState.polygons.Count; index1++)
                 //     {
-                //         Gizmos.color = new Color((float) index / (float) m_confinerStates.Count, (float) index1 / (float) confinerState.graphs.Count, 0.2f);
-                //         var g = confinerState.graphs[index1];
+                //         Gizmos.color = new Color((float) index / (float) m_confinerStates.Count, (float) index1 / (float) confinerState.polygons.Count, 0.2f);
+                //         var g = confinerState.polygons[index1];
                 //         if (g.m_area < 0.1f)
                 //         {
                 //             //Handles.Label(offset + g.m_points[0].m_position, "A="+g.m_area);
@@ -450,7 +450,7 @@ namespace Cinemachine
                 // {
                 //     // var confinerState = m_confinerStates[index];
                 //     var confinerState = m_confinerStates[0];
-                //     foreach (var g in confinerState.graphs)
+                //     foreach (var g in confinerState.polygons)
                 //     {
                 //         for (int i = 0; i < g.m_points.Count; ++i)
                 //         {
@@ -478,10 +478,10 @@ namespace Cinemachine
             {
                 var index = 0;
                 var confinerState = m_confinerStates[index];
-                for (var index1 = 0; index1 < confinerState.graphs.Count; index1++)
+                for (var index1 = 0; index1 < confinerState.polygons.Count; index1++)
                 {
                     
-                    var g = confinerState.graphs[index1];
+                    var g = confinerState.polygons[index1];
                     Handles.Label(g.m_points[0].m_position, "A=" + g.m_area);
                     //Handles.Label(g.m_points[0].m_position, "A=" + g.ComputeSignedArea());
                     for (int i = 0; i < g.m_points.Count; ++i)
