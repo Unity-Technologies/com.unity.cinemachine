@@ -192,13 +192,24 @@ namespace Cinemachine
                     int nextP = (p + 1) % polygons[i].Count;
                     distance = UnityVectorExtensions.DistanceBetweenPointAndLineSegment(position, 
                         polygons[i][p],
-                        polygons[i][nextP]);
+                        polygons[i][nextP],
+                        out float onSegment);
                     if (distance < minDistance)
                     {
-                        
                         minDistance = distance;
                         var edge = polygons[i][p] - polygons[i][nextP];
-                        normal = new Vector2(edge.y, -edge.x);
+                        if (onSegment < 0)
+                        {
+                            normal = position - polygons[i][p];
+                        }
+                        else if (onSegment > 1)
+                        {
+                            normal = position - polygons[i][nextP];
+                        }
+                        else
+                        {
+                            normal = new Vector2(edge.y, -edge.x);
+                        }
                     }
                 }
             }

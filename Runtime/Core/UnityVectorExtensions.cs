@@ -64,35 +64,41 @@ namespace Cinemachine.Utility
         {
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
-        
+
         /// <summary>
         /// Calculates distance between point and the line segment defined by l1 and l2.
         /// </summary>
         /// <param name="point">Point from which distance to the line segment is calculated</param>
         /// <param name="l1">Point one, defining the line</param>
         /// <param name="l2">Point two, defining the line</param>
+        /// <param name="onSegment">If onSegment is smaller than 0, then the distance between point and the line
+        /// segment is the same as the distance between point and l1. If onSegment is bigger than 1, then the distance
+        /// between point and the line segment is the same as the distance between point and l2. If onSegment is
+        /// between 0 and 1, then the distance is the length of the segment going through point and is perpendicular
+        /// to the line defined by l1 and l2.</param>
         /// <returns></returns>
-        public static float DistanceBetweenPointAndLineSegment(in Vector2 point, in Vector2 l1, in Vector2 l2)
+        public static float DistanceBetweenPointAndLineSegment(in Vector2 point, in Vector2 l1, in Vector2 l2, 
+            out float onSegment)
         {
             var x2_x1 = l2.x - l1.x;
             var y2_y1 = l2.y - l1.y;
 
-            var param = -1f;
+            onSegment = -1f;
             var sqrMagnitude = x2_x1 * x2_x1 + y2_y1 * y2_y1;
-            if (sqrMagnitude > Epsilon) param = ((point.x - l1.x) * x2_x1 + (point.y - l1.y) * y2_y1) / sqrMagnitude;
+            if (sqrMagnitude > Epsilon) onSegment = ((point.x - l1.x) * x2_x1 + (point.y - l1.y) * y2_y1) / sqrMagnitude;
 
             float xx, yy;
-            if (param < 0) {
+            if (onSegment < 0) {
                 xx = l1.x;
                 yy = l1.y;
             }
-            else if (param > 1) {
+            else if (onSegment > 1) {
                 xx = l2.x;
                 yy = l2.y;
             }
             else {
-                xx = l1.x + param * x2_x1;
-                yy = l1.y + param * y2_y1;
+                xx = l1.x + onSegment * x2_x1;
+                yy = l1.y + onSegment * y2_y1;
             }
 
             var dx = point.x - xx;
