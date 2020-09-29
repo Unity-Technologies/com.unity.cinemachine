@@ -66,7 +66,6 @@ namespace Cinemachine
         private float m_frustumHeightCache;
         private List<List<Vector2>> m_currentPathCache;
 
-        private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         private List<ConfinerOven.ConfinerState> m_confinerStates;
         private ConfinerOven m_confinerBaker = null;
 
