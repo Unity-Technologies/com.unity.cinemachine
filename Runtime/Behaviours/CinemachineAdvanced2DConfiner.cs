@@ -29,6 +29,7 @@ namespace Cinemachine
         [Range(0, 10)]
         public float m_CornerDamping = 0;
         private bool m_CornerDampingIsOn = false;
+        private float m_CornerDampingSpeedup = 1f;
         private float m_CornerAngleTreshold = 10f;
 
         // advanced features
@@ -100,9 +101,10 @@ namespace Cinemachine
                     if (m_CornerDampingIsOn || m_CornerDamping > 0 && displacementAngle > m_CornerAngleTreshold)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
-                        var deltaDamped = Damper.Damp(delta, m_CornerDamping, deltaTime);
+                        var deltaDamped = Damper.Damp(delta, m_CornerDamping / m_CornerDampingSpeedup, deltaTime);
                         displacement = extra.m_previousDisplacement + deltaDamped;
 
+                        m_CornerDampingSpeedup = displacementAngle < 1f ? 2f : 1f;
                         m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
                                               delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     }
