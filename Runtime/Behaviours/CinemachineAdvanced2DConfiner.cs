@@ -31,9 +31,6 @@ namespace Cinemachine
         private bool m_CornerDampingIsOn = false;
         private float m_CornerAngleTreshold = 10f;
 
-        [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
-        public bool m_StopDampingWithinConfiner = false;
-        
         // advanced features
         public bool m_DrawGizmosDebug = false; // TODO: modify gizmos to only draw what's relevant to a user! After
                                                // Patrick's test - it may be useful for Patrick
@@ -60,7 +57,6 @@ namespace Cinemachine
         private float m_frustumHeightCache;
         private List<List<Vector2>> m_currentPathCache;
 
-        private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         private List<ConfinerOven.ConfinerState> m_confinerStates;
         private ConfinerOven m_confinerBaker = null;
 
@@ -386,7 +382,7 @@ namespace Cinemachine
             ForceBake();
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             if (!m_DrawGizmosDebug) return;
             if (m_confinerStates != null && m_BoundingShape2D != null)
