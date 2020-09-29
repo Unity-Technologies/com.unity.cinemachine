@@ -36,14 +36,14 @@ namespace Cinemachine.Editor
         private const string m_CinemachineGameObjectRootMenu = "GameObject/Cinemachine/";
         private const int m_MenuPriority = 11; // right after Camera
         
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create Virtual Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_MenuPriority)]
         public static CinemachineVirtualCamera CreateVirtualCamera()
         {
             return InternalCreateVirtualCamera(
                 "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTransposer));
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create FreeLook Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_MenuPriority)]
         private static void CreateFreeLookCamera()
         {
             CreateCameraBrainIfAbsent();
@@ -55,7 +55,7 @@ namespace Cinemachine.Editor
             Selection.activeGameObject = go;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create Blend List Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_MenuPriority)]
         private static void CreateBlendListCamera()
         {
             CreateCameraBrainIfAbsent();
@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
             vcam.m_Instructions[1].m_Blend.m_Time = 2f;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create State-Driven Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_MenuPriority)]
         private static void CreateStateDivenCamera()
         {
             CreateCameraBrainIfAbsent();
@@ -101,7 +101,7 @@ namespace Cinemachine.Editor
         }
 
 #if CINEMACHINE_PHYSICS
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create ClearShot Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_MenuPriority)]
         private static void CreateClearShotVirtualCamera()
         {
             CreateCameraBrainIfAbsent();
@@ -122,7 +122,7 @@ namespace Cinemachine.Editor
         }
 #endif
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create Dolly Camera with Track", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_MenuPriority)]
         private static void CreateDollyCameraWithPath()
         {
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
@@ -139,7 +139,7 @@ namespace Cinemachine.Editor
             dolly.m_Path = path;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create Dolly Track with Cart", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_MenuPriority)]
         private static void CreateDollyTrackWithCart()
         {
             GameObject go = InspectorUtility.CreateGameObject(
@@ -162,7 +162,7 @@ namespace Cinemachine.Editor
             cart.m_Path = path;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create Target Group Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_MenuPriority)]
         private static void CreateTargetGroupCamera()
         {
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
@@ -177,7 +177,7 @@ namespace Cinemachine.Editor
             vcam.Follow = go.transform;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create Mixing Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_MenuPriority)]
         private static void CreateMixingCamera()
         {
             CreateCameraBrainIfAbsent();
@@ -194,7 +194,7 @@ namespace Cinemachine.Editor
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create MixingCamera child");
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Create 2D Camera", false, m_MenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_MenuPriority)]
         private static void Create2DCamera()
         {
             InternalCreateVirtualCamera("CM vcam", true, typeof(CinemachineFramingTransposer));
