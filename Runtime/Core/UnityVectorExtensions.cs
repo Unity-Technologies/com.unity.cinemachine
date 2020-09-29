@@ -64,6 +64,22 @@ namespace Cinemachine.Utility
         {
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
+
+        /// <summary>
+        /// Calculates distance between point and the line defined by l1 and l2.
+        /// </summary>
+        /// <param name="point">Point from which distance to the line is calculated</param>
+        /// <param name="l1">Point one, defining the line</param>
+        /// <param name="l2">Point two, defining the line</param>
+        /// <returns></returns>
+        public static float DistanceBetweenPointAndLine(in Vector2 point, in Vector2 l1, in Vector2 l2)
+        {
+            float x2_x1 = l2.x - l1.x;
+            float y2_y1 = l2.y - l1.y;
+
+            return Mathf.Abs(y2_y1*point.x - x2_x1*point.y + l2.x*l1.y - l2.y*l1.x) / 
+                   Mathf.Sqrt(y2_y1 * y2_y1 + x2_x1 * x2_x1);
+        }
         
         /// <summary>
         /// Calculates the intersection point defined by line_1 (p1, p2), and line_2 (p3, p4).

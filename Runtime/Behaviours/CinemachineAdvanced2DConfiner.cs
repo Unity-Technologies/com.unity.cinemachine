@@ -117,7 +117,8 @@ namespace Cinemachine
                     }
                     else if (m_SideSmoothing > 0)
                     {
-                        GetClosestEdgeNormal(in m_currentPathCache, out float distance, out Vector2 normal);
+                        
+                        GetClosestEdgeNormal(state.CorrectedPosition, in m_currentPathCache, out float distance, out Vector2 normal);
                         if (distance < m_SideSmoothingProximity)
                         {
                             Vector3 delta = displacement - extra.m_previousDisplacement;
@@ -176,10 +177,64 @@ namespace Cinemachine
             return frustumHeight;
         }
 
-        private void GetClosestEdgeNormal(in List<List<Vector2>> polygons, out float distance, out Vector2 normal)
+        private void GetClosestEdgeNormal(Vector2 position, in List<List<Vector2>> polygons, 
+            out float distance, out Vector2 normal)
         {
-            distance = 0;
             normal = Vector2.zero;
+
+            int closestPolygonIndex = 0;
+            int closestPointIndex = 0;
+            var minDistance = float.MaxValue;
+            for (var i = 0; i < polygons.Count; i++)
+            {
+                for (var p = 0; p < polygons[i].Count; p++)
+                {
+                    distance = (polygons[i][p] - position).sqrMagnitude;
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestPolygonIndex = i;
+                        closestPointIndex = p;
+                    }
+                }
+            }
+
+            var d1 = (polygons[closestPolygonIndex][closestPointIndex == 0 ? 
+                polygons[closestPolygonIndex].Count - 1 : 
+                closestPointIndex - 1] - position).sqrMagnitude;
+            var d2 = (polygons[closestPolygonIndex][closestPointIndex == polygons[closestPolygonIndex].Count - 1 ? 
+                0 : 
+                closestPointIndex + 1] - position).sqrMagnitude;
+
+            if (d1 < d2)
+            {
+                int secondClosestIndex = closestPointIndex == 0 ? 
+                    polygons[closestPolygonIndex].Count - 1 : 
+                    closestPointIndex - 1;
+                var edge = polygons[closestPolygonIndex][closestPointIndex] -
+                           polygons[closestPolygonIndex][secondClosestIndex];
+                normal = new Vector2(edge.y, -edge.x);
+                distance = UnityVectorExtensions.DistanceBetweenPointAndLine(position, 
+                    polygons[closestPolygonIndex][closestPointIndex],
+                    polygons[closestPolygonIndex][secondClosestIndex]);
+            }
+            else
+            {
+                int secondClosestIndex = closestPointIndex == polygons[closestPolygonIndex].Count - 1 ? 
+                    0 : 
+                    closestPointIndex + 1;
+                
+                var edge = polygons[closestPolygonIndex][secondClosestIndex] -
+                           polygons[closestPolygonIndex][closestPointIndex];
+                normal = new Vector2(edge.y, -edge.x);
+                distance = UnityVectorExtensions.DistanceBetweenPointAndLine(position, 
+                    polygons[closestPolygonIndex][secondClosestIndex],
+                    polygons[closestPolygonIndex][closestPointIndex]);
+            }
+
+            smoothingNormalPos = position;
+            smoothingNormalDebug = normal.normalized * 2f;
+            smoothingDistance = distance;
         }
 
         /// <summary>
@@ -418,11 +473,18 @@ namespace Cinemachine
             ForceBake();
         }
 
+        private Vector2 smoothingNormalPos = Vector2.zero;
+        private Vector2 smoothingNormalDebug = Vector2.zero;
+        private float smoothingDistance = 0;
         private void OnDrawGizmosSelected()
         {
             if (!m_DrawGizmosDebug) return;
             if (m_confinerStates != null && m_BoundingShape2D != null)
             {
+                Gizmos.color = Color.red;
+                Handles.Label(smoothingNormalPos, smoothingDistance.ToString());
+                Gizmos.DrawLine(smoothingNormalPos, smoothingNormalPos + smoothingNormalDebug);
+                
                 // Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.m_position;
                 // for (var index = 0; index < m_confinerStates.Count; index++)
                 // {
