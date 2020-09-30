@@ -35,6 +35,7 @@ namespace Cinemachine.PostFX
     [ExecuteAlways]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVolumeSettings.html")]
     public class CinemachineVolumeSettings : CinemachineExtension
     {

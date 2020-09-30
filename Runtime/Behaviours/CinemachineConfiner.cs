@@ -20,6 +20,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineConfiner.html")]
     public class CinemachineConfiner : CinemachineExtension
     {

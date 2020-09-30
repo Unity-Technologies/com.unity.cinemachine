@@ -12,6 +12,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFollowZoom.html")]
     public class CinemachineFollowZoom : CinemachineExtension
     {

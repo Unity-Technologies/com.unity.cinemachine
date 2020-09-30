@@ -12,6 +12,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachineSmoothPath")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSmoothPath.html")]
     public class CinemachineSmoothPath : CinemachinePathBase
     {

@@ -5,11 +5,11 @@ namespace Cinemachine
 {
     internal static class Documentation 
     {
-        // This must be used like
-        // [HelpURL(Documentation.BaseURL + "api/some-page.html")]
-        // or
-        // [HelpURL(Documentation.BaseURL + "manual/some-page.html")]
-        // It cannot support String.Format nor string interpolation
+        /// <summary>This must be used like
+        /// [HelpURL(Documentation.BaseURL + "api/some-page.html")]
+        /// or
+        /// [HelpURL(Documentation.BaseURL + "manual/some-page.html")]
+        /// It cannot support String.Format nor string interpolation</summary>
         public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@2.6/";
     }
 

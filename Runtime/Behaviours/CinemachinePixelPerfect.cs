@@ -12,6 +12,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePixelPerfect.html")]
     public class CinemachinePixelPerfect : CinemachineExtension
     {
@@ -66,6 +67,7 @@ namespace Cinemachine
     /// sprites would appear pixel perfect when the virtual camera becomes live.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
+    [DisallowMultipleComponent]
     public class CinemachinePixelPerfect : MonoBehaviour {}
 }
 #endif

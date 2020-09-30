@@ -58,6 +58,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/CinemachineTargetGroup")]
     [SaveDuringPlay]
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineTargetGroup.html")]
     public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup
     {

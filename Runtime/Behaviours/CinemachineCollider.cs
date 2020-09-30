@@ -27,6 +27,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCollider.html")]
     public class CinemachineCollider : CinemachineExtension
     {

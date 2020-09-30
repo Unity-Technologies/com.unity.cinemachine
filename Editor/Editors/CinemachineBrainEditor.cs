@@ -30,12 +30,8 @@ namespace Cinemachine.Editor
 
         private void OnEnable()
         {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(
-                    FieldPath(x => x.m_CustomBlends), this);
-            m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) =>
-                {
-                    InspectorUtility.RepaintGameView();
-                };
+            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(FieldPath(x => x.m_CustomBlends), this);
+            m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) => { InspectorUtility.RepaintGameView(); };
         }
 
         private void OnDisable()

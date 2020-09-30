@@ -10,6 +10,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
     public class CinemachineDollyCart : MonoBehaviour
     {

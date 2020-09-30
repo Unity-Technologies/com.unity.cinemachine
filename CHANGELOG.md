@@ -4,8 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.3-preview.1] - 2020-09-03
+## [2.6.3] - 2020-09-16
 - Regression fix (1274989) - OnTargetObjectWarped broken for OrbitalTransposer
+- Bugfix (1276391) - CM Brain Reset did not reset Custom Blends asset in inspector
+- Bugfix (1276343) - CM Brain inspector custom blends misaligned dropdown arrow
+- Bugfix (1256530) - disallow multiple components where appropriate
+- Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
+- Bugfix (1174993) - CM Brain logo was not added to Hierarchy next to Main Camera after adding vcam for the first time after importing CM. 
 
 
 ## [2.6.2] - 2020-09-02

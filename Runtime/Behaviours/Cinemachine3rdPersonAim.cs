@@ -15,6 +15,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     public class Cinemachine3rdPersonAim : CinemachineExtension
     {
         /// <summary>Objects on these layers will be detected.</summary>

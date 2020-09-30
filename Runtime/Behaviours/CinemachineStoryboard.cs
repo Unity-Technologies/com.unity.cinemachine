@@ -17,6 +17,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineStoryboard.html")]
     public class CinemachineStoryboard : CinemachineExtension
     {
