@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1256530) - disallow multiple components where appropriate
 - Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
 - Bugfix (1174993) - CM Brain logo was not added to Hierarchy next to Main Camera after adding vcam for the first time after importing CM. 
+- Bugfix (1100131) - Confiner is aware of 2D collider's offset attribute.
 
 
 ## [2.6.2] - 2020-09-02
