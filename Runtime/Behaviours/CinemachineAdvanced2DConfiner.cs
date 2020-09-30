@@ -118,6 +118,10 @@ namespace Cinemachine
                     }
                     else if (m_SideSmoothing > 0 && displacement == Vector3.zero)
                     {
+                        // TODO: instead of this just project velocity vectors x and y components out and
+                        // find 2 points on collider these hit.
+                        // TODO: then find the normals of these points, and based on them damp the components
+                        
                         GetClosestEdgeNormal(state.CorrectedPosition, in m_currentPathCache, out float distance, out Vector2 normal);
                         if (distance < m_SideSmoothingProximity)
                         {
