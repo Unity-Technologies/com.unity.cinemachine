@@ -820,7 +820,7 @@ namespace Cinemachine
                         cam.orthographicSize = state.Lens.OrthographicSize;
                     else
                     {
-                        cam.fieldOfView = state.Lens.VerticalFOV;
+                        cam.fieldOfView = state.Lens.FieldOfView;
                         cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
                         cam.lensShift = state.Lens.LensShift;
                     }

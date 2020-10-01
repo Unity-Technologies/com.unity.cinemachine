@@ -33,7 +33,6 @@ namespace Cinemachine
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the "
             + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
-        [LensSettingsProperty]
         public LensSettings m_Lens = LensSettings.Default;
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from

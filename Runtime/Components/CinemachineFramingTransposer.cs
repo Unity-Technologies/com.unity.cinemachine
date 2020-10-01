@@ -444,7 +444,7 @@ namespace Cinemachine
             {
                 m_Predictor.Reset();
                 m_PreviousCameraPosition = curState.RawPosition;
-                m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.VerticalFOV;
+                m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
                 m_prevRotation = curState.RawOrientation;
                 if (!InheritingPosition && m_CenterOnActivate)
                 {
@@ -458,7 +458,7 @@ namespace Cinemachine
                 return;
             }
 
-            var verticalFOV = lens.VerticalFOV;
+            var verticalFOV = lens.FieldOfView;
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = AbstractFollowTargetGroup;
@@ -607,7 +607,7 @@ namespace Cinemachine
                             targetFOV - m_prevFOV, m_ZDamping, deltaTime);
                     m_prevFOV = targetFOV;
 
-                    lens.VerticalFOV = targetFOV;
+                    lens.FieldOfView = targetFOV;
                     curState.Lens = lens;
                 }
             }

@@ -33,8 +33,10 @@ namespace Cinemachine
         [VcamTargetProperty]
         public Transform m_Follow = null;
 
-        /// <summary>If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used</summary>
-        [Tooltip("If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used")]
+        /// <summary>If enabled, this lens setting will apply to all three child rigs, 
+        /// otherwise the child rig lens settings will be used</summary>
+        [Tooltip("If enabled, this lens setting will apply to all three child rigs, "
+            + "otherwise the child rig lens settings will be used")]
         [FormerlySerializedAs("m_UseCommonLensSetting")]
         public bool m_CommonLens = true;
 
@@ -42,8 +44,9 @@ namespace Cinemachine
         /// This generally mirrors the Unity Camera's lens settings, and will be used to drive
         /// the Unity camera when the vcam is active</summary>
         [FormerlySerializedAs("m_LensAttributes")]
-        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active")]
-        [LensSettingsProperty]
+        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally "
+            + "mirrors the Unity Camera's lens settings, and will be used to drive the "
+            + "Unity camera when the vcam is active")]
         public LensSettings m_Lens = LensSettings.Default;
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
@@ -65,8 +68,10 @@ namespace Cinemachine
         [Tooltip("Controls how automatic recentering of the Y axis is accomplished")]
         public AxisState.Recentering m_YAxisRecentering = new AxisState.Recentering(false, 1, 2);
 
-        /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component</summary>
-        [Tooltip("The Horizontal axis.  Value is -180...180.  This is passed on to the rigs' OrbitalTransposer component")]
+        /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to 
+        /// the rigs' OrbitalTransposer component</summary>
+        [Tooltip("The Horizontal axis.  Value is -180...180.  "
+            + "This is passed on to the rigs' OrbitalTransposer component")]
         [AxisStateProperty]
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
@@ -83,12 +88,15 @@ namespace Cinemachine
 
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Header("Orbits")]
-        [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also used to set the camera's Up vector, which will be maintained when aiming the camera.")]
+        [Tooltip("The coordinate space to use when interpreting the offset from the target.  "
+            + "This is also used to set the camera's Up vector, which will be maintained "
+            + "when aiming the camera.")]
         public CinemachineOrbitalTransposer.BindingMode m_BindingMode
             = CinemachineOrbitalTransposer.BindingMode.SimpleFollowWithWorldUp;
 
         /// <summary></summary>
-        [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
+        [Tooltip("Controls how taut is the line that connects the rigs' orbits, which "
+            + "determines final placement on the Y axis")]
         [Range(0f, 1f)]
         [FormerlySerializedAs("m_SplineTension")]
         public float m_SplineCurvature = 0.2f;

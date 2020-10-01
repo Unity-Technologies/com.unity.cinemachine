@@ -27,19 +27,14 @@ namespace Cinemachine
         public static LensSettings Default = new LensSettings(40f, 10f, 0.1f, 5000f, 0);
 
         /// <summary>
-        /// Specifies which axis to use when expressing the value for the field of view and orthographic size.
-        /// </summary>
-        [Tooltip("Specifies which axis to use when expressing the value for the "
-            + "field of view and orthographic size.")]
-        public Camera.FieldOfViewAxis FieldOfViewAxis;
-
-        /// <summary>
         /// This is the camera view in degrees. For cinematic people, a 50mm lens
         /// on a super-35mm sensor would equal a 19.6 degree FOV
         /// </summary>
         [Range(1f, 179f)]
-        [Tooltip("This is the camera view in degrees. For cinematic people, a 50mm lens "
-           + "on a super-35mm sensor would equal a 19.6 degree FOV")]
+        [Tooltip("This is the camera view in degrees. Display will be in vertical degress, unless the "
+            + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
+            + "be in horizontal degress.  Internally, it is always vertical degrees.  "
+            + "For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
         public float FieldOfView;
 
         /// <summary>
@@ -89,22 +84,11 @@ namespace Cinemachine
         /// </summary>
         public float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
 
-        /// <summary>Get the vertical field of view</summary>
-        public float VerticalFOV 
-        {
-            get => FieldOfViewAxis == Camera.FieldOfViewAxis.Vertical 
-                ? FieldOfView : Camera.HorizontalToVerticalFieldOfView(FieldOfView, Aspect);
-            set => FieldOfView = FieldOfViewAxis == Camera.FieldOfViewAxis.Vertical 
-                ? value : Camera.VerticalToHorizontalFieldOfView(FieldOfView, Aspect);
-        }
-
         /// <summary>Get the horizontal field of view</summary>
         public float HorizontalFOV 
         { 
-            get => FieldOfViewAxis == Camera.FieldOfViewAxis.Horizontal 
-                ? FieldOfView : Camera.VerticalToHorizontalFieldOfView(FieldOfView, Aspect);
-            set => FieldOfView = FieldOfViewAxis == Camera.FieldOfViewAxis.Horizontal 
-                ? value : Camera.HorizontalToVerticalFieldOfView(FieldOfView, Aspect);
+            get => Camera.VerticalToHorizontalFieldOfView(FieldOfView, Aspect);
+            set => FieldOfView = Camera.HorizontalToVerticalFieldOfView(value, Aspect);
         }
 
         /// <summary>
@@ -246,13 +230,7 @@ namespace Cinemachine
             LensSettings blendedLens = new LensSettings();
             blendedLens.FarClipPlane = Mathf.Lerp(lensA.FarClipPlane, lensB.FarClipPlane, t);
             blendedLens.NearClipPlane = Mathf.Lerp(lensA.NearClipPlane, lensB.NearClipPlane, t);
-            if (lensA.FieldOfViewAxis != lensB.FieldOfViewAxis)
-                blendedLens.VerticalFOV = Mathf.Lerp(lensA.VerticalFOV, lensB.VerticalFOV, t);
-            else
-            {
-                blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
-                blendedLens.FieldOfViewAxis = lensA.FieldOfViewAxis;
-            }
+            blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
             blendedLens.OrthographicSize = Mathf.Lerp(lensA.OrthographicSize, lensB.OrthographicSize, t);
             blendedLens.Dutch = Mathf.Lerp(lensA.Dutch, lensB.Dutch, t);
             blendedLens.Orthographic = lensA.Orthographic && lensB.Orthographic;

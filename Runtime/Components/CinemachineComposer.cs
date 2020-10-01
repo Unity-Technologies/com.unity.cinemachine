@@ -385,7 +385,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    var verticalFOV = lens.VerticalFOV;
+                    var verticalFOV = lens.FieldOfView;
                     if (mFov != verticalFOV)
                         recalculate = true;
                     if (recalculate)

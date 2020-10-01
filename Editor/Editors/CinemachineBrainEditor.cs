@@ -117,7 +117,7 @@ namespace Cinemachine.Editor
             else
             {
                 Gizmos.DrawFrustum(
-                        Vector3.zero, lens.VerticalFOV,
+                        Vector3.zero, lens.FieldOfView,
                         lens.FarClipPlane, lens.NearClipPlane, aspect);
             }
             Gizmos.matrix = originalMatrix;
