@@ -35,7 +35,7 @@ namespace Cinemachine
         [Tooltip("Damping applied automatically when getting close to the sides.")]
         [Range(0, 10)]
         public float m_SideSmoothing = 0;
-        private float m_SideSmoothingProximity = 1;
+        private float m_SideSmoothingProximity = 10;
         
         [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
         public bool m_StopDampingWithinConfiner = false;
@@ -88,6 +88,7 @@ namespace Cinemachine
         }
 
         private ConfinerOven.ConfinerState m_confinerCache;
+        private Vector3 prevPosition = Vector3.zero;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -103,6 +104,7 @@ namespace Cinemachine
 
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
+                Debug.Log("velocity:"+(state.CorrectedPosition - prevPosition));
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
@@ -123,24 +125,29 @@ namespace Cinemachine
                         // TODO: then find the normals of these points, and based on them damp the components
                         //GetClosestEdgeNormal(state.CorrectedPosition, in m_currentPathCache, out float distance, out Vector2 normal);
                         
-                        Vector3 delta = displacement - extra.m_previousDisplacement;
-                        GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta, in m_currentPathCache, out float distance, out Vector2 normal);
-                        if (distance < m_SideSmoothingProximity)
+                        Vector3 delta = state.CorrectedPosition - prevPosition;
+                        
+                        GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta.normalized, 
+                            in m_currentPathCache, in m_SideSmoothingProximity,
+                            out Vector2 normal);
+
+                        if (normal != Vector2.zero)
                         {
-                            // TODO: need to base it on normal + normal.x / normal.y ratio
                             Vector3 deltaX = new Vector3(delta.x, 0, 0);
-                            if (delta.x * normal.x < 0) // pointing in opposite dir
-                            {
-                                deltaX = Damper.Damp(deltaX, m_SideSmoothing, deltaTime);
-                            }
+                            // if (delta.x * normal.x < 0) // pointing in opposite dir
+                            // {
+                                deltaX = Damper.Damp(deltaX, m_SideSmoothing * normal.x, deltaTime);
+                            // }
                             Vector3 deltaY = new Vector3(0, delta.y, 0);
-                            if (delta.y * normal.y < 0) // pointing in opposite dir
-                            {
-                                deltaY = Damper.Damp(deltaY, m_SideSmoothing, deltaTime);
-                            }
-                            
-                            displacement = extra.m_previousDisplacement + new Vector3(deltaX.x, deltaY.y, 0);
+                            // if (delta.y * normal.y < 0) // pointing in opposite dir
+                            // {
+                                deltaY = Damper.Damp(deltaY, m_SideSmoothing * normal.y, deltaTime);
+                            // }
+                            var deltaDamped = deltaX + deltaY;
+                            displacement = extra.m_previousDisplacement + deltaDamped;
+                            Debug.Log("delta:"+delta+"|=| deltaDamped:"+deltaDamped+"|=| normal:"+normal+"|=| displacement:"+displacement);
                         }
+                        // displacement = extra.m_previousDisplacement + new Vector3(deltaX.x, deltaY.y, 0);
                     }
                     else if (m_Damping > 0)
                     {
@@ -152,6 +159,8 @@ namespace Cinemachine
                 extra.m_previousDisplacement = displacement;
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
+                
+                prevPosition = state.CorrectedPosition;
             }
         }
 
@@ -183,96 +192,133 @@ namespace Cinemachine
         }
 
 
-        private void GetClosestEdgeNormalInDirection(Vector2 position, Vector2 velocity, in List<List<Vector2>> polygons,
-            out float distance, out Vector2 normal)
+        private void GetClosestEdgeNormalInDirection(
+            Vector2 position, Vector2 velocity, in List<List<Vector2>> polygons, in float proximity,
+            out Vector2 normal)
         {
-            // TODO: debug
             normal = Vector2.zero;
-            float polygonSize = 100f; // todo: need to know this
-            velocity = velocity.normalized * polygonSize;
+            if (velocity == Vector2.zero)
+            {
+                return;
+            }
             
-
-            int closestPolygonIndex = 0;
-            int closestPointIndex = 0;
-            var minDistanceX = float.MaxValue;
-            var minDistanceY = float.MaxValue;
-            float distanceX, distanceY;
-            bool linesIntersect, segmentsIntersect;
-            Vector2 intersection;
+            var normalH = Vector2.zero;
+            var normalV = Vector2.zero;
+            
+            var horizontalSearchVector = new Vector2(Math.Abs(velocity.x) < UnityVectorExtensions.Epsilon ? 
+                0 : 
+                Mathf.Sign(velocity.x) * proximity, 0); 
+            var verticalSearchVector = new Vector2(0, Math.Abs(velocity.y) < UnityVectorExtensions.Epsilon ? 
+                0 : 
+                Mathf.Sign(velocity.y) * proximity);
+            
+            float minHorizontalDistance = proximity;
+            float minVerticalDistance = proximity;
             for (var i = 0; i < polygons.Count; i++)
             {
                 for (var p = 0; p < polygons[i].Count; p++)
                 {
                     int nextP = (p + 1) % polygons[i].Count;
                     UnityVectorExtensions.FindIntersection(
-                        position, new Vector2(velocity.x, 0), 
+                        position, position + horizontalSearchVector,
                         polygons[i][p], polygons[i][nextP],
-                        out linesIntersect, out segmentsIntersect, out intersection);
+                        out _, out bool segmentsIntersect, out _);
 
                     if (segmentsIntersect)
                     {
-                        distanceX = UnityVectorExtensions.DistanceBetweenPointAndLineSegment(position, 
+                        var horizontalDistance = UnityVectorExtensions.DistanceBetweenPointAndLineSegment(position, 
                             polygons[i][p],
                             polygons[i][nextP],
                             out float onSegment);
-                        
-                        if (distanceX < minDistanceX)
+
+                        if (horizontalDistance < minHorizontalDistance)
                         {
-                            minDistanceX = distanceX;
+                            minHorizontalDistance = horizontalDistance;
                             var edge = polygons[i][p] - polygons[i][nextP];
                             if (onSegment < 0)
                             {
-                                normal.x = (position - polygons[i][p]).x;
+                                normalH = position - polygons[i][p];
                             }
                             else if (onSegment > 1)
                             {
-                                normal.x = (position - polygons[i][nextP]).x;
+                                normalH = position - polygons[i][nextP];
                             }
                             else
                             {
-                                normal.x = edge.y; //new Vector2(edge.y, -edge.x);
+                                normalH = new Vector2(edge.y, -edge.x);
                             }
                         }
                     }
                     UnityVectorExtensions.FindIntersection(
-                        position, new Vector2(0, velocity.y), 
+                        position, position + verticalSearchVector, 
                         polygons[i][p], polygons[i][nextP],
-                        out linesIntersect, out segmentsIntersect, out intersection);
+                        out _, out segmentsIntersect, out _);
 
                     if (segmentsIntersect)
                     {
-                        distanceY = UnityVectorExtensions.DistanceBetweenPointAndLineSegment(position, 
+                        var verticalDistance = UnityVectorExtensions.DistanceBetweenPointAndLineSegment(position, 
                             polygons[i][p],
                             polygons[i][nextP],
                             out float onSegment);
-                        
-                        if (distanceY < minDistanceY)
+
+                        if (verticalDistance < minVerticalDistance)
                         {
-                            minDistanceY = distanceY;
+                            minVerticalDistance = verticalDistance;
                             var edge = polygons[i][p] - polygons[i][nextP];
                             if (onSegment < 0)
                             {
-                                normal.y = (position - polygons[i][p]).y;
+                                normalV = position - polygons[i][p];
                             }
                             else if (onSegment > 1)
                             {
-                                normal.y = (position - polygons[i][nextP]).y;
+                                normalV = position - polygons[i][nextP];
                             }
                             else
                             {
-                                normal.y = -edge.x; //new Vector2(edge.y, -edge.x);
+                                normalV = new Vector2(edge.y, -edge.x);
                             }
                         }
                     }
                 }
             }
 
-            distance = Mathf.Min(minDistanceX, minDistanceY);
-            debug_cameraPoint = position;
-            debug_normalOfClosestEdge = normal.normalized;
-            debug_distanceToClosestEdgeX = minDistanceX;
-            debug_distanceToClosestEdgeY = minDistanceY;
-            
+            if (minHorizontalDistance >= proximity)
+            {
+                normalH = Vector2.zero;
+            }
+            else
+            {
+                normalH = normalH.normalized * minHorizontalDistance;
+            }
+
+            if (minVerticalDistance >= proximity)
+            {
+                normalV = Vector2.zero;
+            }
+            else
+            {
+                normalV = normalV.normalized * minVerticalDistance;
+            }
+
+            normal = normalH + normalV;
+            if (normal != Vector2.zero)
+            {
+                normal.x = Mathf.Abs(normal.x);
+                normal.y = Mathf.Abs(normal.y);
+                normal /= Mathf.Max(normal.x, normal.y); // fit vector into a 1 by 1 square <=> biggest component is 1
+
+                debug_cameraPoint = position;
+                debug_normalOfClosestEdge = normal.normalized;
+                debug_distanceToClosestEdgeX = minHorizontalDistance;
+                debug_distanceToClosestEdgeY = minVerticalDistance;
+            }
+            else
+            {
+                debug_cameraPoint = position;
+                debug_normalOfClosestEdge = Vector2.zero;
+                debug_distanceToClosestEdgeX = 0;
+                debug_distanceToClosestEdgeY = 0;
+            }
         }
 
         private void GetClosestEdgeNormal(Vector2 position, in List<List<Vector2>> polygons, 
@@ -567,10 +613,18 @@ namespace Cinemachine
             if (!m_DrawGizmosDebug) return;
             if (m_confinerStates != null && m_BoundingShape2D != null)
             {
-                Gizmos.color = Color.red;
                 Handles.Label(debug_cameraPoint + Vector2.up, debug_distanceToClosestEdgeX.ToString());
                 Handles.Label(debug_cameraPoint + Vector2.left, debug_distanceToClosestEdgeY.ToString());
-                Gizmos.DrawLine(debug_cameraPoint - debug_normalOfClosestEdge * Mathf.Max(debug_distanceToClosestEdgeX, debug_distanceToClosestEdgeY) , debug_cameraPoint);
+                
+                var pasd1 = debug_cameraPoint -
+                            new Vector2(debug_normalOfClosestEdge.x * debug_distanceToClosestEdgeX, 0);
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(pasd1 , debug_cameraPoint);
+                
+                var pasd2 = debug_cameraPoint - 
+                            new Vector2(0, debug_normalOfClosestEdge.y * debug_distanceToClosestEdgeY);
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(pasd2 , debug_cameraPoint);
                 
                 // Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.m_position;
                 // for (var index = 0; index < m_confinerStates.Count; index++)

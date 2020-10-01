@@ -166,6 +166,16 @@ namespace Cinemachine.Utility
             
             segmentsIntersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
         }
+        
+        /// <summary>
+        /// Component-wise absolute value
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static Vector2 Abs(this Vector2 v)
+        {
+            return new Vector2(Mathf.Abs(v.x), Mathf.Abs(v.y));
+        }
 
         /// <summary>
         /// Component-wise absolute value
