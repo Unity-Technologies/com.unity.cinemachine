@@ -313,7 +313,7 @@ namespace Cinemachine.Editor
         {
             EditPresetsLabel = new GUIContent("Edit Presets...");
             LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
-            HFOVLabel = new GUIContent("Hoizontal FOV", "Horizontal Field of View");
+            HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
             VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
             FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
             OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
