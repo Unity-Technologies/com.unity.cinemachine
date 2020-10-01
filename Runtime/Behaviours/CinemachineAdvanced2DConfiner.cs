@@ -188,12 +188,6 @@ namespace Cinemachine
             dampVector = Vector2.zero;
             if (velocity == Vector2.zero)
             {
-                Debug.Log("Velo 0");
-                return;
-            }
-            if (velocity.sqrMagnitude < UnityVectorExtensions.Epsilon)
-            {
-                Debug.Log("Velo sqrMagnitude < epsi");
                 return;
             }
             
@@ -306,19 +300,12 @@ namespace Cinemachine
                 {
                     dampVector.y = 1;
                 }
-                
-                debug_cameraPoint = position;
-                debug_normalOfClosestEdge = dampVector;
-                debug_distanceToClosestEdgeX = minHorizontalDistance;
-                debug_distanceToClosestEdgeY = minVerticalDistance;
             }
-            else
-            {
-                debug_cameraPoint = position;
-                debug_normalOfClosestEdge = Vector2.zero;
-                debug_distanceToClosestEdgeX = 0;
-                debug_distanceToClosestEdgeY = 0;
-            }
+            
+            debug_cameraPoint = position;
+            debug_normalOfClosestEdge = dampVector;
+            debug_distanceToClosestEdgeX = minHorizontalDistance;
+            debug_distanceToClosestEdgeY = minVerticalDistance;
         }
 
         private void GetClosestEdgeNormal(Vector2 position, in List<List<Vector2>> polygons, 
@@ -613,8 +600,8 @@ namespace Cinemachine
             if (!m_DrawGizmosDebug) return;
             if (m_confinerStates != null && m_BoundingShape2D != null)
             {
-                Handles.Label(debug_cameraPoint + Vector2.up, debug_distanceToClosestEdgeX.ToString());
-                Handles.Label(debug_cameraPoint + Vector2.left, debug_distanceToClosestEdgeY.ToString());
+                Handles.Label(debug_cameraPoint + Vector2.left, debug_distanceToClosestEdgeX >= m_SideSmoothingProximity ? "Too far" : debug_distanceToClosestEdgeX.ToString());
+                Handles.Label(debug_cameraPoint + Vector2.down, debug_distanceToClosestEdgeY >= m_SideSmoothingProximity  ? "Too far" : debug_distanceToClosestEdgeY.ToString());
                 
                 var pasd1 = debug_cameraPoint -
                             new Vector2(debug_normalOfClosestEdge.x * debug_distanceToClosestEdgeX, 0);
