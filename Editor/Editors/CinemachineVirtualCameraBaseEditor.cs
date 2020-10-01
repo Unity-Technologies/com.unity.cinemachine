@@ -349,13 +349,13 @@ namespace Cinemachine.Editor
             }
             else
             {
-                var so = new SerializedObject(camera);
-                var p = so.FindProperty("m_FOVAxisMode");
+                // This should really be a global setting, but for now there is no better way than this!
+                var p = new SerializedObject(camera).FindProperty("m_FOVAxisMode");
                 if (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal)
                     UseHorizontalFOV = true;
                 IsOrtho = camera.orthographic;
                 IsPhysical = camera.usePhysicalProperties;
-                SensorSize = new Vector2(camera.aspect, 1f);
+                SensorSize = IsPhysical ? camera.sensorSize : new Vector2(camera.aspect, 1f);
             }
         }
 
