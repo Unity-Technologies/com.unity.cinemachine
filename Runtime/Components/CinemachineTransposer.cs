@@ -300,11 +300,6 @@ namespace Cinemachine
 
             // Adjust for damping, which is done in camera-offset-local coords
             var positionDelta = targetPosition - currentPosition;
-            Debug.Log("positionDelta:"+positionDelta);
-            if (positionDelta.sqrMagnitude > 0)
-            {
-                int stophere;
-            }
             if (prevStateValid)
             {
                 Quaternion dampingSpace;

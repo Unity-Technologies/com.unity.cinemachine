@@ -35,7 +35,7 @@ namespace Cinemachine
         [Tooltip("Damping applied automatically when getting close to the sides.")]
         [Range(0, 10)]
         public float m_SideSmoothing = 0;
-        private float m_SideSmoothingProximity = 10;
+        public float m_SideSmoothingProximity = 10;
         
         [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
         public bool m_StopDampingWithinConfiner = false;
@@ -89,7 +89,6 @@ namespace Cinemachine
 
         private ConfinerOven.ConfinerState m_confinerCache;
         private Vector3 prevPosition = Vector3.zero;
-        private Vector3 prevFollowPos = Vector3.zero;
         private bool prevStateValid = false;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
@@ -106,7 +105,6 @@ namespace Cinemachine
 
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
-                // Debug.Log("velocity:"+(state.CorrectedPosition - prevPosition));
                 Vector3 currentPos = prevPosition;
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
@@ -124,36 +122,16 @@ namespace Cinemachine
                     else if (m_SideSmoothing > 0 && displacement == Vector3.zero)
                     {
                         Vector3 delta = state.CorrectedPosition - prevPosition;
-                        Debug.Log("state.CorrectedPosition:"+state.CorrectedPosition+"- prevPosition:"+prevPosition+" ==> delta:" +delta);
-
-                        Vector3 delta2 = vcam.Follow.position - prevFollowPos;
-                        Debug.Log("vcam.Follow.position:"+vcam.Follow.position+"- prevFollowPos:"+prevFollowPos+" ==> delta2:" +delta2);
-
-                        delta = delta2;
-                        GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta.normalized, 
+                        GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta.normalized,
                             in m_currentPathCache, in m_SideSmoothingProximity,
-                            out Vector2 normal);
-
-                        if (normal != Vector2.zero)
+                            out Vector2 dampVector);
+                        if (dampVector != Vector2.zero)
                         {
-                            Debug.Log("damping:"+normal);
-                            Debug.Log("deltaTime:"+deltaTime);
-                            Vector3 deltaX = new Vector3(delta.x, 0, 0);
-                            // if (delta.x * normal.x < 0) // pointing in opposite dir
-                            // {
-                                deltaX = Damper.Damp(deltaX, m_SideSmoothing * normal.x, deltaTime);
-                            // }
-                            Vector3 deltaY = new Vector3(0, delta.y, 0);
-                            // if (delta.y * normal.y < 0) // pointing in opposite dir
-                            // {
-                                deltaY = Damper.Damp(deltaY, m_SideSmoothing * normal.y, deltaTime);
-                            // }
-                            var deltaDamped = deltaX + deltaY;
-                            displacement = extra.m_previousDisplacement + deltaDamped;
-                            currentPos += deltaDamped;
-                            // Debug.Log("delta:"+delta+"|=| deltaDamped:"+deltaDamped+"|=| normal:"+normal+"|=| displacement:"+displacement);
+                            delta.x = Damper.Damp(delta.x, m_SideSmoothing * dampVector.x, deltaTime);
+                            delta.y = Damper.Damp(delta.y, m_SideSmoothing * dampVector.y, deltaTime);
+                            
+                            
                         }
-                        // displacement = extra.m_previousDisplacement + new Vector3(deltaX.x, deltaY.y, 0);
                     }
                     else if (m_Damping > 0)
                     {
@@ -166,9 +144,7 @@ namespace Cinemachine
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
                 
-                prevFollowPos = vcam.Follow.position;
                 prevPosition = currentPos;
-                
                 if (!prevStateValid)
                 {
                     prevPosition = state.CorrectedPosition;
@@ -207,11 +183,17 @@ namespace Cinemachine
 
         private void GetClosestEdgeNormalInDirection(
             Vector2 position, Vector2 velocity, in List<List<Vector2>> polygons, in float proximity,
-            out Vector2 normal)
+            out Vector2 dampVector)
         {
-            normal = Vector2.zero;
+            dampVector = Vector2.zero;
             if (velocity == Vector2.zero)
             {
+                Debug.Log("Velo 0");
+                return;
+            }
+            if (velocity.sqrMagnitude < UnityVectorExtensions.Epsilon)
+            {
+                Debug.Log("Velo sqrMagnitude < epsi");
                 return;
             }
             
@@ -313,15 +295,15 @@ namespace Cinemachine
                 normalV = normalV.normalized * minVerticalDistance;
             }
 
-            normal = normalH + normalV;
-            if (normal != Vector2.zero)
+            dampVector = normalH + normalV;
+            if (dampVector != Vector2.zero)
             {
-                normal.x = Mathf.Abs(normal.x);
-                normal.y = Mathf.Abs(normal.y);
-                normal /= Mathf.Max(normal.x, normal.y); // fit vector into a 1 by 1 square <=> biggest component is 1
+                dampVector.x = Mathf.Abs(dampVector.x);
+                dampVector.y = Mathf.Abs(dampVector.y);
+                dampVector /= Mathf.Max(dampVector.x, dampVector.y); // fit vector into a 1 by 1 square <=> biggest component is 1
 
                 debug_cameraPoint = position;
-                debug_normalOfClosestEdge = normal.normalized;
+                debug_normalOfClosestEdge = dampVector.normalized;
                 debug_distanceToClosestEdgeX = minHorizontalDistance;
                 debug_distanceToClosestEdgeY = minVerticalDistance;
             }
@@ -373,7 +355,7 @@ namespace Cinemachine
 
             distance = minDistance;
             // debug_cameraPoint = position;
-            // debug_normalOfClosestEdge = normal.normalized;
+            // debug_normalOfClosestEdge = dampVector.normalized;
             // debug_distanceToClosestEdge = distance;
         }
 
@@ -615,7 +597,7 @@ namespace Cinemachine
 
         
         // debug_cameraPoint = position;
-        // debug_normalOfClosestEdge = normal.normalized;
+        // debug_normalOfClosestEdge = dampVector.normalized;
         // debug_distanceToClosestEdge = distance;
         private Vector2 debug_cameraPoint = Vector2.zero;
         private Vector2 debug_normalOfClosestEdge = Vector2.zero;
