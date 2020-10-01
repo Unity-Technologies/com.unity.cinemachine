@@ -89,6 +89,8 @@ namespace Cinemachine
 
         private ConfinerOven.ConfinerState m_confinerCache;
         private Vector3 prevPosition = Vector3.zero;
+        private Vector3 prevFollowPos = Vector3.zero;
+        private bool prevStateValid = false;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -104,7 +106,8 @@ namespace Cinemachine
 
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
-                Debug.Log("velocity:"+(state.CorrectedPosition - prevPosition));
+                // Debug.Log("velocity:"+(state.CorrectedPosition - prevPosition));
+                Vector3 currentPos = prevPosition;
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
@@ -120,19 +123,21 @@ namespace Cinemachine
                     }
                     else if (m_SideSmoothing > 0 && displacement == Vector3.zero)
                     {
-                        // TODO: instead of this just project velocity vectors x and y components out and
-                        // find 2 points on collider these hit.
-                        // TODO: then find the normals of these points, and based on them damp the components
-                        //GetClosestEdgeNormal(state.CorrectedPosition, in m_currentPathCache, out float distance, out Vector2 normal);
-                        
                         Vector3 delta = state.CorrectedPosition - prevPosition;
-                        
+                        Debug.Log("state.CorrectedPosition:"+state.CorrectedPosition+"- prevPosition:"+prevPosition+" ==> delta:" +delta);
+
+                        Vector3 delta2 = vcam.Follow.position - prevFollowPos;
+                        Debug.Log("vcam.Follow.position:"+vcam.Follow.position+"- prevFollowPos:"+prevFollowPos+" ==> delta2:" +delta2);
+
+                        delta = delta2;
                         GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta.normalized, 
                             in m_currentPathCache, in m_SideSmoothingProximity,
                             out Vector2 normal);
 
                         if (normal != Vector2.zero)
                         {
+                            Debug.Log("damping:"+normal);
+                            Debug.Log("deltaTime:"+deltaTime);
                             Vector3 deltaX = new Vector3(delta.x, 0, 0);
                             // if (delta.x * normal.x < 0) // pointing in opposite dir
                             // {
@@ -145,7 +150,8 @@ namespace Cinemachine
                             // }
                             var deltaDamped = deltaX + deltaY;
                             displacement = extra.m_previousDisplacement + deltaDamped;
-                            Debug.Log("delta:"+delta+"|=| deltaDamped:"+deltaDamped+"|=| normal:"+normal+"|=| displacement:"+displacement);
+                            currentPos += deltaDamped;
+                            // Debug.Log("delta:"+delta+"|=| deltaDamped:"+deltaDamped+"|=| normal:"+normal+"|=| displacement:"+displacement);
                         }
                         // displacement = extra.m_previousDisplacement + new Vector3(deltaX.x, deltaY.y, 0);
                     }
@@ -160,7 +166,14 @@ namespace Cinemachine
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
                 
-                prevPosition = state.CorrectedPosition;
+                prevFollowPos = vcam.Follow.position;
+                prevPosition = currentPos;
+                
+                if (!prevStateValid)
+                {
+                    prevPosition = state.CorrectedPosition;
+                    prevStateValid = true;
+                }
             }
         }
 
