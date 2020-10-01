@@ -298,12 +298,17 @@ namespace Cinemachine
             dampVector = normalH + normalV;
             if (dampVector != Vector2.zero)
             {
-                dampVector.x = Mathf.Abs(dampVector.x);
-                dampVector.y = Mathf.Abs(dampVector.y);
-                dampVector /= Mathf.Max(dampVector.x, dampVector.y); // fit vector into a 1 by 1 square <=> biggest component is 1
-
+                if (Mathf.Abs(dampVector.x) > 0)
+                {
+                    dampVector.x = 1;
+                }
+                if (Mathf.Abs(dampVector.y) > 0)
+                {
+                    dampVector.y = 1;
+                }
+                
                 debug_cameraPoint = position;
-                debug_normalOfClosestEdge = dampVector.normalized;
+                debug_normalOfClosestEdge = dampVector;
                 debug_distanceToClosestEdgeX = minHorizontalDistance;
                 debug_distanceToClosestEdgeY = minVerticalDistance;
             }
