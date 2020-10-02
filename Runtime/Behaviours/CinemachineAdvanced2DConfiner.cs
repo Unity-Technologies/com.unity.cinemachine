@@ -18,11 +18,6 @@ namespace Cinemachine
         [Tooltip("The 2D shape within which the camera is to be contained.  " +
                  "Can be a 2D polygon or 2D composite collider.")]
         public Collider2D m_BoundingShape2D;
-        
-        [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
-                 + "Higher numbers are more gradual.")]
-        [Range(0, 10)]
-        public float m_Damping = 0;
 
         [Tooltip("Damping applied automatically around corners to avoid jumps.  "
                  + "Higher numbers are more gradual.")]
@@ -87,9 +82,7 @@ namespace Cinemachine
             Bake();
         }
 
-        private ConfinerOven.ConfinerState m_confinerCache;
         private Vector3 prevPosition = Vector3.zero;
-        private bool prevStateValid = false;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -105,7 +98,6 @@ namespace Cinemachine
 
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
-                Vector3 currentPos = prevPosition;
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
@@ -119,36 +111,30 @@ namespace Cinemachine
                         m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
                                               delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     }
-                    else if (m_SideSmoothing > 0 && displacement == Vector3.zero)
-                    {
-                        Vector3 delta = state.CorrectedPosition - prevPosition;
-                        GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta.normalized,
-                            in m_currentPathCache, in m_SideSmoothingProximity,
-                            out Vector2 dampVector);
-                        if (dampVector != Vector2.zero)
-                        {
-                            delta.x = Damper.Damp(delta.x, m_SideSmoothing * dampVector.x, deltaTime);
-                            delta.y = Damper.Damp(delta.y, m_SideSmoothing * dampVector.y, deltaTime);
-                        }
-                        
-                    }
-                    else if (m_Damping > 0)
-                    {
-                        Vector3 delta = displacement - extra.m_previousDisplacement;
-                        delta = Damper.Damp(delta, m_Damping, deltaTime);
-                        displacement = extra.m_previousDisplacement + delta;
-                    }
                 }
                 extra.m_previousDisplacement = displacement;
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
                 
-                prevPosition = state.CorrectedPosition;
-                if (!prevStateValid)
+                if (m_SideSmoothing > 0)
                 {
-                    prevPosition = state.CorrectedPosition;
-                    prevStateValid = true;
+                    Vector3 delta = state.CorrectedPosition - prevPosition;
+
+                    state.PositionCorrection -= delta;
+                    
+                    GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta.normalized,
+                        in m_currentPathCache, in m_SideSmoothingProximity,
+                        out Vector2 dampVector);
+                    if (dampVector != Vector2.zero)
+                    {
+                        delta.x = Damper.Damp(delta.x, m_SideSmoothing * dampVector.x, deltaTime);
+                        delta.y = Damper.Damp(delta.y, m_SideSmoothing * dampVector.y, deltaTime);
+                    }
+                    
+                    state.PositionCorrection += delta;
                 }
+                
+                prevPosition = state.CorrectedPosition;
             }
         }
 
@@ -184,7 +170,7 @@ namespace Cinemachine
             Vector2 position, Vector2 velocityDirection, in List<List<Vector2>> polygons, in float proximity,
             out Vector2 dampVector)
         {
-            Debug.Log("velocityDirection:" + velocityDirection);
+            // Debug.Log("velocityDirection:" + velocityDirection);
             dampVector = Vector2.zero;
             
             var horizontalSearchVector = new Vector2(Math.Abs(velocityDirection.x) < UnityVectorExtensions.Epsilon ? 
@@ -196,6 +182,10 @@ namespace Cinemachine
             
             if (velocityDirection == Vector2.zero)
             {
+                debug_cameraPoint = position;
+                debug_normalOfClosestEdge = dampVector;
+                debug_distanceToClosestEdgeX = proximity + 1;
+                debug_distanceToClosestEdgeY = proximity + 1;
                 return;
             }
             
@@ -548,7 +538,8 @@ namespace Cinemachine
                     m_boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
                     m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation);
         }
-
+        
+        private ConfinerOven.ConfinerState m_confinerCache;
         /// <summary>
         /// Check that the path cache was converted from the current confiner cache, or
         /// converts it if the frustum height was changed.
