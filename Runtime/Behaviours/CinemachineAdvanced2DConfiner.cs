@@ -589,58 +589,6 @@ namespace Cinemachine
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmosDebug) return;
-            if (m_confinerStates != null && m_BoundingShape2D != null)
-            {
-                Handles.Label(debug_cameraPoint + Vector2.left, debug_distanceToClosestEdgeX >= m_SideSmoothingProximity ? "Too far" : debug_distanceToClosestEdgeX.ToString());
-                Handles.Label(debug_cameraPoint + Vector2.down, debug_distanceToClosestEdgeY >= m_SideSmoothingProximity  ? "Too far" : debug_distanceToClosestEdgeY.ToString());
-                
-                var pasd1 = debug_cameraPoint -
-                            new Vector2(debug_normalOfClosestEdge.x * debug_distanceToClosestEdgeX, 0);
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(pasd1 , debug_cameraPoint);
-                
-                var pasd2 = debug_cameraPoint - 
-                            new Vector2(0, debug_normalOfClosestEdge.y * debug_distanceToClosestEdgeY);
-                Gizmos.color = Color.green;
-                Gizmos.DrawLine(pasd2 , debug_cameraPoint);
-                
-                // Vector2 offset = Vector2.zero;// m_BoundingShape2D.transform.m_position;
-                // for (var index = 0; index < m_confinerStates.Count; index++)
-                // {
-                //     var confinerState = m_confinerStates[index];
-                //     for (var index1 = 0; index1 < confinerState.polygons.Count; index1++)
-                //     {
-                //         Gizmos.color = new Color((float) index / (float) m_confinerStates.Count, (float) index1 / (float) confinerState.polygons.Count, 0.2f);
-                //         var g = confinerState.polygons[index1];
-                //         if (g.m_area < 0.1f)
-                //         {
-                //             //Handles.Label(offset + g.m_points[0].m_position, "A="+g.m_area);
-                //             //Handles.Label(offset + g.m_points[0].m_position, "W="+g.m_windowDiagonal);
-                //             for (int i = 0; i < g.m_points.Count; ++i)
-                //             {
-                //                 Gizmos.DrawLine(offset + g.m_points[i].m_position,
-                //                     offset + g.m_points[(i + 1) % g.m_points.Count].m_position);
-                //             }
-                //         }
-                //     }
-                // }
-                //
-                // Gizmos.color = Color.cyan;
-                // // for (var index = 0; index < m_confinerStates.Count; index++)
-                // {
-                //     // var confinerState = m_confinerStates[index];
-                //     var confinerState = m_confinerStates[0];
-                //     foreach (var g in confinerState.polygons)
-                //     {
-                //         for (int i = 0; i < g.m_points.Count; ++i)
-                //         {
-                //             Gizmos.DrawLine(offset + g.m_points[i].m_position,
-                //                 offset + g.m_points[i].m_position + g.m_points[i].m_shrinkDirection);
-                //         }
-                //     }
-                // }
-            }
-            
             if (m_currentPathCache == null || m_BoundingShape2D == null) return;
             
             Gizmos.color = Color.cyan;
@@ -653,31 +601,6 @@ namespace Cinemachine
                         path[(index + 1) % path.Count]);
                 }
             }
-
-            if (m_confinerStates != null && m_BoundingShape2D != null) 
-            {
-                var index = 0;
-                var confinerState = m_confinerStates[index];
-                for (var index1 = 0; index1 < confinerState.polygons.Count; index1++)
-                {
-                    
-                    var g = confinerState.polygons[index1];
-                    Handles.Label(g.m_points[0].m_position, "A=" + g.m_area);
-                    //Handles.Label(g.m_points[0].m_position, "A=" + g.ComputeSignedArea());
-                    for (int i = 0; i < g.m_points.Count; ++i)
-                    {
-                        Gizmos.color = Color.black;
-                        Gizmos.DrawLine(
-                            g.m_points[i].m_position,
-                            g.m_points[(i + 1) % g.m_points.Count].m_position);
-                        Gizmos.color = Color.green;
-                        Gizmos.DrawLine(
-                            g.m_points[i].m_position,
-                            g.m_points[i].m_position + g.m_points[i].m_shrinkDirection);
-                    }
-                }
-            }
-            
         }
     }
 }
