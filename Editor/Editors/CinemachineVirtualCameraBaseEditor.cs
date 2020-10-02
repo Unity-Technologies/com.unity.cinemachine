@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 
-using System.Reflection;
-
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
         using UnityEngine.Rendering.HighDefinition;
@@ -16,6 +14,36 @@ using System.Reflection;
             using UnityEngine.Experimental.Rendering.HDPipeline;
         #endif
     #endif
+#endif
+
+#if UNITY_2019_1_OR_NEWER
+    using CameraExtensions = UnityEngine.Camera;
+#else
+    // Needed only for Unity pre-2019.1 because Camera doesn't have these methods
+    static class CameraExtensions
+    {
+        public static float HorizontalToVerticalFieldOfView(float f, float aspect)
+        {
+            return Mathf.Rad2Deg * 2 * Mathf.Atan(Mathf.Tan(f * Mathf.Deg2Rad * 0.5f) / aspect);
+        }
+
+        public static float VerticalToHorizontalFieldOfView(float f, float aspect)
+        {
+            return Mathf.Rad2Deg * 2 * Mathf.Atan(Mathf.Tan(f * Mathf.Deg2Rad * 0.5f) * aspect);
+        }
+
+        public static float FieldOfViewToFocalLength(float fov, float sensorHeight)
+        {
+            return sensorHeight * 0.5f / Mathf.Tan(Mathf.Deg2Rad * fov * 0.5f);
+        }
+
+        public static float FocalLengthToFieldOfView(float focalLength, float sensorHeight)
+        {
+            if (focalLength < UnityVectorExtensions.Epsilon)
+                return 180f;
+            return Mathf.Rad2Deg * 2.0f * Mathf.Atan(sensorHeight * 0.5f / focalLength);
+        }
+    }
 #endif
 
 
@@ -48,7 +76,8 @@ namespace Cinemachine.Editor
         protected override List<string> GetExcludedPropertiesInInspector() 
             { return base.GetExcludedPropertiesInInspector(); }
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
+        /// <summary>Get the property names to exclude in the inspector.  
+        /// Implementation should call the base class implementation</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
@@ -57,7 +86,8 @@ namespace Cinemachine.Editor
                 excluded.AddRange(Target.m_ExcludedPropertiesInInspector);
         }
 
-        /// <summary>Inspector panel is being enabled</summary>
+        /// <summary>Inspector panel is being enabled.  
+        /// Implementation should call the base class implementation</summary>
         protected virtual void OnEnable()
         {
             IsPrefabBase = Target.gameObject.scene.name == null; // causes a small GC alloc
@@ -81,7 +111,8 @@ namespace Cinemachine.Editor
             }
         }
 
-        /// <summary>Inspector panel is being disabled</summary>
+        /// <summary>Inspector panel is being disabled.
+        /// Implementation should call the base class implementation</summary>
         protected virtual void OnDisable()
         {
             if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
@@ -91,7 +122,9 @@ namespace Cinemachine.Editor
             }
         }
 
-        /// <summary>Create the contents of the inspector panel</summary>
+        /// <summary>Create the contents of the inspector panel.
+        /// This implementation draws header and Extensions widget, and uses default algorithms 
+        /// to draw the properties in the inspector</summary>
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -117,8 +150,8 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Draw the LookAt and Follow targets in the inspector
         /// </summary>
-        /// <param name="followTarget">Follow target property</param>
-        /// <param name="lookAtTarget">LookAt target property</param>
+        /// <param name="followTarget">Follow target SerializedProperty</param>
+        /// <param name="lookAtTarget">LookAt target SerializedProperty</param>
         protected void DrawTargetsInInspector(
             SerializedProperty followTarget, SerializedProperty lookAtTarget)
         {
@@ -238,26 +271,27 @@ namespace Cinemachine.Editor
             }
         }
 
+        static GUIContent ShowInGameGuidesLabel = new GUIContent(
+            "Game Window Guides",
+            "Enable the display of overlays in the Game window.  "
+                + "You can adjust colours and opacity in Edit/Preferences/Cinemachine.");
+
+        static GUIContent SaveDuringPlayLabel = new GUIContent(
+            "Save During Play",
+            "If checked, Virtual Camera settings changes made during Play Mode "
+                + "will be propagated back to the scene when Play Mode is exited.");
+
         /// <summary>
         /// Draw the global settings controls in the inspector
         /// </summary>
         protected void DrawGlobalControlsInInspector()
         {
             CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides
-                = EditorGUILayout.Toggle(
-                    new GUIContent(
-                        "Game Window Guides",
-                        "Enable the display of overlays in the Game window.  "
-                            + "You can adjust colours and opacity in Edit/Preferences/Cinemachine."),
+                = EditorGUILayout.Toggle(ShowInGameGuidesLabel,
                     CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides);
 
             SaveDuringPlay.SaveDuringPlay.Enabled
-                = EditorGUILayout.Toggle(
-                    new GUIContent(
-                        "Save During Play",
-                        "If checked, Virtual Camera settings changes made during Play Mode "
-                            + "will be propagated back to the scene when Play Mode is exited."),
-                    SaveDuringPlay.SaveDuringPlay.Enabled);
+                = EditorGUILayout.Toggle(SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
 
             if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(
@@ -267,6 +301,11 @@ namespace Cinemachine.Editor
         }
 
         LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
+
+        /// <summary>
+        /// Draw the Lens Settings controls in the inspector
+        /// </summary>
+        /// <param name="property">The SerializedProperty for the field of type LensSettings field</param>
         protected void DrawLensSettingsInInspector(SerializedProperty property)
         {
             if (m_LensSettingsInspectorHelper == null)
@@ -292,12 +331,13 @@ namespace Cinemachine.Editor
         GUIContent[] m_PhysicalPresetOptions;
         LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
 
-        GUIContent EditPresetsLabel;
-        GUIContent LensLabel;
-        GUIContent HFOVLabel;
-        GUIContent VFOVLabel;
-        GUIContent FocalLengthLabel;
-        GUIContent OrthoSizeLabel;
+        static GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");
+        static GUIContent LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
+        static GUIContent HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
+        static GUIContent VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
+        static GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
+        static GUIContent OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
+            + "this defines the half-height, in world coordinates, of the camera view.");
 
         bool IsOrtho;
         bool IsPhysical;
@@ -311,14 +351,6 @@ namespace Cinemachine.Editor
 
         public LensSettingsInspectorHelper() 
         {
-            EditPresetsLabel = new GUIContent("Edit Presets...");
-            LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
-            HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
-            VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
-            FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
-            OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
-                + "this defines the half-height, in world coordinates, of the camera view.");
-
     #if CINEMACHINE_HDRP
             PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
     #endif
@@ -349,10 +381,12 @@ namespace Cinemachine.Editor
             }
             else
             {
+#if UNITY_2019_1_OR_NEWER
                 // This should really be a global setting, but for now there is no better way than this!
                 var p = new SerializedObject(camera).FindProperty("m_FOVAxisMode");
                 if (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal)
                     UseHorizontalFOV = true;
+#endif
                 IsOrtho = camera.orthographic;
                 IsPhysical = camera.usePhysicalProperties;
                 SensorSize = IsPhysical ? camera.sensorSize : new Vector2(camera.aspect, 1f);
@@ -370,7 +404,7 @@ namespace Cinemachine.Editor
             else
                 bindingFlags |= System.Reflection.BindingFlags.Static;
 
-            PropertyInfo pi = type.GetProperty(memberName, bindingFlags);
+            System.Reflection.PropertyInfo pi = type.GetProperty(memberName, bindingFlags);
             if ((pi != null) && (pi.PropertyType == typeof(T)))
                 return (T)pi.GetValue(obj, null);
             else
@@ -484,11 +518,11 @@ namespace Cinemachine.Editor
 
             float f = FOVProperty.floatValue;
             if (UseHorizontalFOV)
-                f = Camera.VerticalToHorizontalFieldOfView(f, aspect);
+                f = CameraExtensions.VerticalToHorizontalFieldOfView(f, aspect);
             EditorGUI.BeginProperty(rect, label, FOVProperty);
             f = EditorGUI.FloatField(rect, label, f);
             if (UseHorizontalFOV)
-                f = Camera.HorizontalToVerticalFieldOfView(Mathf.Clamp(f, 1, 179), aspect);
+                f = CameraExtensions.HorizontalToVerticalFieldOfView(Mathf.Clamp(f, 1, 179), aspect);
             if (!Mathf.Approximately(FOVProperty.floatValue, f))
                 FOVProperty.floatValue = Mathf.Clamp(f, 1, 179);
             EditorGUI.EndProperty();
@@ -515,10 +549,10 @@ namespace Cinemachine.Editor
             float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 4;
             rect.width -= dropdownWidth + hSpace;
 
-            float f = VerticalFOVToFocalLength(FOVProperty.floatValue, SensorSize.y);
+            float f = CameraExtensions.FieldOfViewToFocalLength(FOVProperty.floatValue, SensorSize.y);
             EditorGUI.BeginProperty(rect, label, FOVProperty);
             f = EditorGUI.FloatField(rect, label, f);
-            f = FocalLengthToVerticalFOV(f, SensorSize.y);
+            f = CameraExtensions.FocalLengthToFieldOfView(f, SensorSize.y);
             if (!Mathf.Approximately(FOVProperty.floatValue, f))
                 FOVProperty.floatValue = Mathf.Clamp(f, 1, 179);
             EditorGUI.EndProperty();
@@ -530,7 +564,7 @@ namespace Cinemachine.Editor
             int preset = -1;
             if (presets != null)
             {
-                var focalLength = VerticalFOVToFocalLength(FOVProperty.floatValue, SensorSize.y);
+                var focalLength = CameraExtensions.FieldOfViewToFocalLength(FOVProperty.floatValue, SensorSize.y);
                 var aperture = property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue;
                 var iso = property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue;
                 var shutterSpeed = property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue;
@@ -551,7 +585,7 @@ namespace Cinemachine.Editor
             else if (selection >= 0 && selection < m_PhysicalPresetOptions.Length-1)
             {
                 var v = presets.m_PhysicalPresets[selection];
-                FOVProperty.floatValue = FocalLengthToVerticalFOV(v.m_FocalLength, SensorSize.y);
+                FOVProperty.floatValue = CameraExtensions.FocalLengthToFieldOfView(v.m_FocalLength, SensorSize.y);
                 property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue = v.Aperture;
                 property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue = v.Iso;
                 property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue = v.ShutterSpeed;
@@ -565,30 +599,18 @@ namespace Cinemachine.Editor
 #else
             CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
             int preset = (presets == null) ? -1 : presets.GetMatchingPhysicalPreset(
-                VerticalFOVToFocalLength(FOVProperty.floatValue, SensorSize.y));
+                CameraExtensions.FieldOfViewToFocalLength(FOVProperty.floatValue, SensorSize.y));
             rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
             int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_PhysicalPresetOptions);
             if (selection == m_PhysicalPresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
                 Selection.activeObject = presets = CinemachineLensPresets.Instance;
             else if (selection >= 0 && selection < m_PhysicalPresetOptions.Length-1)
             {
-                FOVProperty.floatValue = FocalLengthToVerticalFOV(
+                FOVProperty.floatValue = CameraExtensions.FocalLengthToFieldOfView(
                     presets.m_PhysicalPresets[selection].m_FocalLength, SensorSize.y);
                 property.serializedObject.ApplyModifiedProperties();
             }
 #endif
-        }
-
-        static float VerticalFOVToFocalLength(float fov, float sensorHeight)
-        {
-            return sensorHeight * 0.5f / Mathf.Tan(Mathf.Deg2Rad * fov * 0.5f);
-        }
-
-        static float FocalLengthToVerticalFOV(float focalLength, float sensorHeight)
-        {
-            if (focalLength < UnityVectorExtensions.Epsilon)
-                return 180f;
-            return Mathf.Rad2Deg * 2.0f * Mathf.Atan(sensorHeight * 0.5f / focalLength);
         }
     }
 }

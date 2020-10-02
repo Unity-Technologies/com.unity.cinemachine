@@ -84,13 +84,6 @@ namespace Cinemachine
         /// </summary>
         public float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
 
-        /// <summary>Get the horizontal field of view</summary>
-        public float HorizontalFOV 
-        { 
-            get => Camera.VerticalToHorizontalFieldOfView(FieldOfView, Aspect);
-            set => FieldOfView = Camera.HorizontalToVerticalFieldOfView(value, Aspect);
-        }
-
         /// <summary>
         /// This is set every frame by the virtual camera, based on the value
         /// found in the currently associated Unity camera
