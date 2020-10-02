@@ -274,7 +274,7 @@ namespace Cinemachine.Editor
         static GUIContent ShowInGameGuidesLabel = new GUIContent(
             "Game Window Guides",
             "Enable the display of overlays in the Game window.  "
-                + "You can adjust colours and opacity in Edit/Preferences/Cinemachine.");
+                + "You can adjust colours and opacity in Cinemachine Preferences.");
 
         static GUIContent SaveDuringPlayLabel = new GUIContent(
             "Save During Play",
