@@ -1,3 +1,8 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+#endif
+
 using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -60,17 +65,7 @@ namespace Cinemachine
             + "Higher numbers are more gradual.")]
         [Range(0, 10)]
         public float m_Damping = 0;
-
-        [Tooltip("Damping applied automatically around corners to avoid jumps.  "
-                 + "Higher numbers produce more smooth cornering.")]
-        [Range(0, 10)]
-        public float m_CornerDamping = 0;
-
-        [Tooltip("After going through the corner should the camera return smoothly or snap?")]
-        public bool m_SnapFromCorner = true;
-        private float m_CornerAngleTreshold = 10f;
-        private bool m_Cornerring = false;
-
+        
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the confiner, in the event that the camera has children</param>

@@ -3,7 +3,7 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using Cinemachine.Utility;
 
-public class RuntimeDampingTest
+public class UnityVectorExtensionTests
 {
     [Test]
 	public void FindIntersectionTests()
