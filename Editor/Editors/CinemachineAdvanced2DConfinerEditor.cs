@@ -27,10 +27,11 @@ namespace Cinemachine.Editor
         {
             m_maxOrthoSizeProperty = FindProperty(x => x.m_MaxOrthoSize);
             m_maxOrthoSizeGUIContent = new GUIContent("Max Camera Window Size", 
-                "Defines a maximum camera window size for baking. Use this to optimize memory usage.  If 0, then " +
-                "this parameter is ignored.  Can be also used to allow the camera to look outside the map a bit. " +
-                "For example, if you are using a camera with orthographic size of 2, then you could set this value " +
-                "to 1.8. This will allow the camera to look outside by some amount depending on your window ratio.");
+                "Defines a maximum camera window size for baking. The 2DConfiner will clamp values bigger than this. " +
+                "Use this to optimize memory usage.  If set to 0, then this parameter is ignored.  " +
+                "Can be also used to allow the camera to look outside the map a bit. For example, if you are using a " +
+                "camera with orthographic size of 2, then you could set this value to 1.8. This will allow the camera " +
+                "to look outside by some amount depending on your window ratio.");
             
             m_shrinkToPointsExperimentalProperty = FindProperty(x => x.m_ShrinkToPointsExperimental);
             m_shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink Sub-Polygons To Point Experimental", 
@@ -51,6 +52,7 @@ namespace Cinemachine.Editor
         
         public override void OnInspectorGUI()
         {
+            BeginInspector();
             DrawRemainingPropertiesInInspector();
             m_advancedSettingsExpanded = EditorGUILayout.Foldout(m_advancedSettingsExpanded, "Advanced Settings", true);
             if (m_advancedSettingsExpanded)
