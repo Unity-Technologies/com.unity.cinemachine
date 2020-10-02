@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineAdvanced2DConfiner))]
-    public class CinemachineAdvanced2DConfinerEditor : BaseEditor<CinemachineAdvanced2DConfiner>
+    [CustomEditor(typeof(CinemachineConfiner2D))]
+    public class CinemachineAdvanced2DConfinerEditor : BaseEditor<CinemachineConfiner2D>
     {
         private static bool m_advancedSettingsExpanded = true;
 

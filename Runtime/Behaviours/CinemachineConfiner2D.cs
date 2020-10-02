@@ -1,17 +1,17 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_PHYSICS
+#define CINEMACHINE_PHYSICS_2D
+#endif
+
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
-{ 
-    [SaveDuringPlay]
-#if UNITY_2018_3_OR_NEWER
-    [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
-    public class CinemachineAdvanced2DConfiner : CinemachineExtension
+{
+    [SaveDuringPlay, ExecuteAlways]
+    public class CinemachineConfiner2D : CinemachineExtension
     {
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained.  " +
