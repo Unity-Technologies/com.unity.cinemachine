@@ -129,9 +129,8 @@ namespace Cinemachine
                         {
                             delta.x = Damper.Damp(delta.x, m_SideSmoothing * dampVector.x, deltaTime);
                             delta.y = Damper.Damp(delta.y, m_SideSmoothing * dampVector.y, deltaTime);
-                            
-                            
                         }
+                        
                     }
                     else if (m_Damping > 0)
                     {
@@ -144,7 +143,7 @@ namespace Cinemachine
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
                 
-                prevPosition = currentPos;
+                prevPosition = state.CorrectedPosition;
                 if (!prevStateValid)
                 {
                     prevPosition = state.CorrectedPosition;
@@ -182,25 +181,26 @@ namespace Cinemachine
 
 
         private void GetClosestEdgeNormalInDirection(
-            Vector2 position, Vector2 velocity, in List<List<Vector2>> polygons, in float proximity,
+            Vector2 position, Vector2 velocityDirection, in List<List<Vector2>> polygons, in float proximity,
             out Vector2 dampVector)
         {
+            Debug.Log("velocityDirection:" + velocityDirection);
             dampVector = Vector2.zero;
-            if (velocity == Vector2.zero)
+            
+            var horizontalSearchVector = new Vector2(Math.Abs(velocityDirection.x) < UnityVectorExtensions.Epsilon ? 
+                0 : 
+                Mathf.Sign(velocityDirection.x) * proximity, 0); 
+            var verticalSearchVector = new Vector2(0, Math.Abs(velocityDirection.y) < UnityVectorExtensions.Epsilon ? 
+                0 : 
+                Mathf.Sign(velocityDirection.y) * proximity);
+            
+            if (velocityDirection == Vector2.zero)
             {
                 return;
             }
             
             var normalH = Vector2.zero;
             var normalV = Vector2.zero;
-            
-            var horizontalSearchVector = new Vector2(Math.Abs(velocity.x) < UnityVectorExtensions.Epsilon ? 
-                0 : 
-                Mathf.Sign(velocity.x) * proximity, 0); 
-            var verticalSearchVector = new Vector2(0, Math.Abs(velocity.y) < UnityVectorExtensions.Epsilon ? 
-                0 : 
-                Mathf.Sign(velocity.y) * proximity);
-            
             float minHorizontalDistance = proximity;
             float minVerticalDistance = proximity;
             for (var i = 0; i < polygons.Count; i++)
