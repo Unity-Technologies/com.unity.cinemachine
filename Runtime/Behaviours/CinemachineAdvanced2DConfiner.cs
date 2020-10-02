@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Cinemachine
 { 
