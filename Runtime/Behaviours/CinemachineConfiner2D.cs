@@ -2,6 +2,8 @@
 #define CINEMACHINE_PHYSICS_2D
 #endif
 
+#define DRAW_DEBUG_TOOLS
+
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -30,6 +32,7 @@ namespace Cinemachine
         [Range(0, 10)]
         public float m_SideSmoothing = 0;
         public float m_SideSmoothingProximity = 10;
+        private float m_SideSmoothingTime;
         
         [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
         public bool m_StopDampingWithinConfiner = false;
@@ -127,8 +130,14 @@ namespace Cinemachine
                         out Vector2 dampVector);
                     if (dampVector != Vector2.zero)
                     {
-                        delta.x = Damper.Damp(delta.x, m_SideSmoothing * dampVector.x, deltaTime);
-                        delta.y = Damper.Damp(delta.y, m_SideSmoothing * dampVector.y, deltaTime);
+                        m_SideSmoothingTime += deltaTime;
+                        var m_SideSmoothingValue = Mathf.Lerp(0, m_SideSmoothing, m_SideSmoothingTime);
+                        delta.x = Damper.Damp(delta.x, m_SideSmoothingValue * dampVector.x, deltaTime);
+                        delta.y = Damper.Damp(delta.y, m_SideSmoothingValue * dampVector.y, deltaTime);
+                    }
+                    else
+                    {
+                        m_SideSmoothingTime = 0;
                     }
                     
                     state.PositionCorrection += delta;
@@ -552,6 +561,10 @@ namespace Cinemachine
                         path[(index + 1) % path.Count]);
                 }
             }
+            
+            #if DRAW_DEBUG_TOOLS
+            
+            #endif
         }
     }
 #endif
