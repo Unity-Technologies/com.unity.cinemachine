@@ -125,12 +125,12 @@ namespace Cinemachine.Editor
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
-                    typeof(CinemachineSmoothPath));
+                    GenerateUniqueObjectName(typeof(SplineContainer), "DollyTrack"),
+                    typeof(SplineContainer));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
+            SplineContainer path = go.GetComponent<SplineContainer>();
             var dolly = vcam.GetCinemachineComponent<CinemachineTrackedDolly>();
             Undo.RecordObject(dolly, "create track");
             dolly.m_Path = path;

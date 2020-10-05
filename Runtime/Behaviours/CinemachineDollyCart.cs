@@ -61,15 +61,7 @@ namespace Cinemachine
         }
 
         void Update()
-        {
-            if (m_Path && m_PathCache.m_Path != m_Path)
-            {
-                m_PathCache.m_Path = m_Path;
-                m_PathCache.InvalidateDistanceCache();
-            }
-            
-            m_PathCache.InvalidateDistanceCache(); 
-
+        {           
             float speed = Application.isPlaying ? m_Speed : 0;
             if (m_UpdateMethod == UpdateMethod.Update)
                 SetCartPosition(m_Position + speed * Time.deltaTime);
@@ -85,6 +77,7 @@ namespace Cinemachine
 
         void SetCartPosition(float distanceAlongPath)
         {
+            m_PathCache.UpdatePathCache(m_Path);
             if (m_Path != null)
             {
                 m_Position = m_PathCache.StandardizeUnit(distanceAlongPath, m_PositionUnits);
