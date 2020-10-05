@@ -22,22 +22,35 @@ namespace Cinemachine
             Normalized
         }
 
+        /// <summary>When calculating the distance cache, sample the path this many
+        /// times between points</summary>
+        internal int m_DistanceCacheSampleStepsPerSegment = 20;
+
+        /// <summary>The path to follow</summary>
+        public SplineContainer m_Path;
+
+        /// <summary>Update the cached path elements if necessary</summary>
+        public void UpdatePathCache(SplineContainer path)
+        {
+            if (m_Path != path)
+            {
+                m_Path = path;
+                InvalidateDistanceCache();
+                return;
+            }
+            // if callback()
+            InvalidateDistanceCache();
+        }
+
         /// <summary>Call this if the path changes in such a way as to affect distances
         /// or other cached path elements</summary>
-        public virtual void InvalidateDistanceCache()
+        private void InvalidateDistanceCache()
         {
             m_DistanceToPos = null;
             m_PosToDistance = null;
             m_CachedSampleSteps = 0;
             m_PathLength = 0;
         }
-
-        /// <summary>When calculating the distance cache, sample the path this many
-        /// times between points</summary>
-        private int m_DistanceCacheSampleStepsPerSegment = 20;
-
-        /// <summary>The path to follow</summary>
-        public SplineContainer m_Path;
 
         /// <summary>The minimum value for the path position</summary>
         public float MinPos { get { return 0; } }
@@ -47,7 +60,8 @@ namespace Cinemachine
         {
             get
             {
-                if (!m_Path) return 0;
+                if (!m_Path)
+                    return 0;
                 int count = m_Path.Spline.KnotCount - 1;
                 if (count < 1)
                     return 0;
@@ -149,7 +163,7 @@ namespace Cinemachine
         /// <param name="pos">The value to be standardized</param>
         /// <param name="units">The unit type</param>
         /// <returns>The standardized value of pos, between MinUnit and MaxUnit</returns>
-        public virtual float StandardizeUnit(float pos, PositionUnits units)
+        public float StandardizeUnit(float pos, PositionUnits units)
         {
             if (units == PositionUnits.PathUnits)
                 return StandardizePos(pos);
@@ -195,7 +209,7 @@ namespace Cinemachine
         /// <summary>Get a worldspace position of a point along the path</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space position of the point along at path at pos</returns>
-        private Vector3 EvaluatePosition(float pos)
+        internal Vector3 EvaluatePosition(float pos)
         {
             float3 result = float3.zero;
             if (m_Path && m_Path.Spline.KnotCount > 0)
@@ -233,7 +247,7 @@ namespace Cinemachine
         /// <summary>Get the orientation the curve at a point along the path.</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space orientation of the path</returns>
-        private Quaternion EvaluateOrientation(float pos)
+        internal Quaternion EvaluateOrientation(float pos)
         {
             return Quaternion.identity;
         }
@@ -280,7 +294,7 @@ namespace Cinemachine
         /// is proportionally slower for higher numbers</param>
         /// <returns>The position along the path that is closest to the target point.
         /// The value is in Path Units, not Distance units.</returns>
-        public virtual float FindClosestPoint(
+        public float FindClosestPoint(
             Vector3 p, int startSegment, int searchRadius, int stepsPerSegment)
         {
             float start = MinPos;
