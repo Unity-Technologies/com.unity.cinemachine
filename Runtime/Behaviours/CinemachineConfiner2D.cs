@@ -1,5 +1,4 @@
 #if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
 #define CINEMACHINE_PHYSICS_2D
 #endif
 
@@ -10,6 +9,7 @@ using UnityEngine;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_PHYSICS_2D
     [SaveDuringPlay, ExecuteAlways]
     public class CinemachineConfiner2D : CinemachineExtension
     {
@@ -103,7 +103,8 @@ namespace Cinemachine
                     if (m_CornerDampingIsOn || m_CornerDamping > 0 && displacementAngle > m_CornerAngleTreshold)
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
-                        var deltaDamped = Damper.Damp(delta, m_CornerDamping / m_CornerDampingSpeedup, deltaTime);
+                        var deltaDamped = 
+                            Damper.Damp(delta, m_CornerDamping / m_CornerDampingSpeedup, deltaTime);
                         displacement = extra.m_previousDisplacement + deltaDamped;
 
                         m_CornerDampingSpeedup = displacementAngle < 1f ? 2f : 1f;
@@ -121,7 +122,7 @@ namespace Cinemachine
 
                     state.PositionCorrection -= delta;
                     
-                    GetClosestEdgeNormalInDirection(state.CorrectedPosition, delta.normalized,
+                    GetDampVectorBasedOnDirection(state.CorrectedPosition, delta.normalized,
                         in m_currentPathCache, in m_SideSmoothingProximity,
                         out Vector2 dampVector);
                     if (dampVector != Vector2.zero)
@@ -165,26 +166,33 @@ namespace Cinemachine
         }
 
 
-        private void GetClosestEdgeNormalInDirection(
-            Vector2 position, Vector2 velocityDirection, in List<List<Vector2>> polygons, in float proximity,
+        /// <summary>
+        /// Returns a 2D damping vector, that defines a component-wise damping. If a component is 0, that means no
+        /// damping in that directions. For example, (0,0) means no damping in either X or Y directions, and (1,1) means
+        /// damping in both.
+        /// Damping Vector is based on the closest edges in the direction the player is moving. The direction is
+        /// decomposed into an X and Y component. These are used to find the closest two edges.
+        /// </summary>
+        /// <param name="position">Position of the player</param>
+        /// <param name="direction">Direction of the player's velocity</param>
+        /// <param name="polygons">Polygons that define the confiner area</param>
+        /// <param name="proximity">How far to check for edges</param>
+        /// <param name="dampVector">2D Vector defining damping to be applied on player</param>
+        private void GetDampVectorBasedOnDirection(
+            Vector2 position, Vector2 direction, in List<List<Vector2>> polygons, in float proximity,
             out Vector2 dampVector)
         {
-            // Debug.Log("velocityDirection:" + velocityDirection);
             dampVector = Vector2.zero;
             
-            var horizontalSearchVector = new Vector2(Math.Abs(velocityDirection.x) < UnityVectorExtensions.Epsilon ? 
+            var horizontalSearchVector = new Vector2(Math.Abs(direction.x) < UnityVectorExtensions.Epsilon ? 
                 0 : 
-                Mathf.Sign(velocityDirection.x) * proximity, 0); 
-            var verticalSearchVector = new Vector2(0, Math.Abs(velocityDirection.y) < UnityVectorExtensions.Epsilon ? 
+                Mathf.Sign(direction.x) * proximity, 0); 
+            var verticalSearchVector = new Vector2(0, Math.Abs(direction.y) < UnityVectorExtensions.Epsilon ? 
                 0 : 
-                Mathf.Sign(velocityDirection.y) * proximity);
+                Mathf.Sign(direction.y) * proximity);
             
-            if (velocityDirection == Vector2.zero)
+            if (direction == Vector2.zero)
             {
-                debug_cameraPoint = position;
-                debug_normalOfClosestEdge = dampVector;
-                debug_distanceToClosestEdgeX = proximity + 1;
-                debug_distanceToClosestEdgeY = proximity + 1;
                 return;
             }
             
@@ -290,54 +298,6 @@ namespace Cinemachine
                     dampVector.y = 1;
                 }
             }
-            
-            debug_cameraPoint = position;
-            debug_normalOfClosestEdge = dampVector;
-            debug_distanceToClosestEdgeX = minHorizontalDistance;
-            debug_distanceToClosestEdgeY = minVerticalDistance;
-        }
-
-        private void GetClosestEdgeNormal(Vector2 position, in List<List<Vector2>> polygons, 
-            out float distance, out Vector2 normal)
-        {
-            normal = Vector2.zero;
-
-            int closestPolygonIndex = 0;
-            int closestPointIndex = 0;
-            var minDistance = float.MaxValue;
-            for (var i = 0; i < polygons.Count; i++)
-            {
-                for (var p = 0; p < polygons[i].Count; p++)
-                {
-                    int nextP = (p + 1) % polygons[i].Count;
-                    distance = UnityVectorExtensions.DistanceBetweenPointAndLineSegment(position, 
-                        polygons[i][p],
-                        polygons[i][nextP],
-                        out float onSegment);
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        var edge = polygons[i][p] - polygons[i][nextP];
-                        if (onSegment < 0)
-                        {
-                            normal = position - polygons[i][p];
-                        }
-                        else if (onSegment > 1)
-                        {
-                            normal = position - polygons[i][nextP];
-                        }
-                        else
-                        {
-                            normal = new Vector2(edge.y, -edge.x);
-                        }
-                    }
-                }
-            }
-
-            distance = minDistance;
-            // debug_cameraPoint = position;
-            // debug_normalOfClosestEdge = dampVector.normalized;
-            // debug_distanceToClosestEdge = distance;
         }
 
         /// <summary>
@@ -576,15 +536,7 @@ namespace Cinemachine
             base.OnEnable();
             ForceBake();
         }
-
         
-        // debug_cameraPoint = position;
-        // debug_normalOfClosestEdge = dampVector.normalized;
-        // debug_distanceToClosestEdge = distance;
-        private Vector2 debug_cameraPoint = Vector2.zero;
-        private Vector2 debug_normalOfClosestEdge = Vector2.zero;
-        private float debug_distanceToClosestEdgeX = 0;
-        private float debug_distanceToClosestEdgeY = 0;
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmosDebug) return;
@@ -602,4 +554,5 @@ namespace Cinemachine
             }
         }
     }
+#endif
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineConfiner2D))]
-    public class CinemachineAdvanced2DConfinerEditor : BaseEditor<CinemachineConfiner2D>
+    public class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
     {
         private static bool m_advancedSettingsExpanded = true;
 
