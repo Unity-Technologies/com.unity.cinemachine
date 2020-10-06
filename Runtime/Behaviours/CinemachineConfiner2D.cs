@@ -2,8 +2,6 @@
 #define CINEMACHINE_PHYSICS_2D
 #endif
 
-#define DRAW_DEBUG_TOOLS
-
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -50,8 +48,7 @@ namespace Cinemachine
         private bool m_SideDampingOn = false;
 
         // advanced features
-        public bool m_DrawGizmosDebug = false; // TODO: modify gizmos to only draw what's relevant to a user! After
-                                               // Patrick's test - it may be useful for Patrick
+        public bool m_DrawGizmos = false;
         [HideInInspector, SerializeField] internal bool m_AutoBake = true; // TODO: remove
                                                                            // reason: if user wants to
                                                                            // switch between cameras, it is better
@@ -586,7 +583,7 @@ namespace Cinemachine
         private Vector3 forGizmosCameraPosition;
         private void OnDrawGizmos()
         {
-            if (!m_DrawGizmosDebug) return;
+            if (!m_DrawGizmos) return;
             if (m_currentPathCache == null || m_BoundingShape2D == null) return;
             
             Gizmos.color = Color.cyan;
@@ -602,8 +599,6 @@ namespace Cinemachine
             
             Handles.color = Color.green;
             Handles.DrawWireDisc(forGizmosCameraPosition, Vector3.back, m_SideDampingProximity);
-#if DRAW_DEBUG_TOOLS
-#endif
         }
     }
 #endif

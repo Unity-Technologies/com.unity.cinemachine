@@ -54,7 +54,7 @@ namespace Cinemachine
         /// <summary>
         /// Default constructor initializing points and intersection points.
         /// </summary>
-        public ShrinkablePolygon()
+        private ShrinkablePolygon()
         {
             m_points = new List<ShrinkablePoint2>();
             m_intersectionPoints = new List<Vector2>();
@@ -717,26 +717,6 @@ namespace Cinemachine
             {
                 m_points[i].m_position += m_points[i].m_shrinkDirection * shrinkAmount;
             }
-            // float area2 = Mathf.Abs(ComputeSignedArea());
-            // if (area2 > area1)
-            // {
-            //     FlipNormals();
-            //     for (int i = 0; i < m_points.Count; ++i)
-            //     {
-            //         m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount * 2f); // why 2?
-            //     }
-            // }
-            // float area3 = Mathf.Abs(ComputeSignedArea());
-            // if (area3 > area2 || area1 < 0.02f ||
-            //     area1 < area2 && area1 < area3)
-            // {
-            //     FlipNormals();
-            //     for (int i = 0; i < m_points.Count; ++i)
-            //     {
-            //         m_points[i].m_position += m_points[i].m_shrinkDirection * (shrinkAmount);
-            //         m_points[i].m_shrinkDirection = Vector2.zero;
-            //     }
-            // }
             return true;
         }
 
