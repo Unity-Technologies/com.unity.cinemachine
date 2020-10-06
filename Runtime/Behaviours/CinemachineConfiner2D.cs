@@ -36,13 +36,9 @@ namespace Cinemachine
         private bool m_CornerDampingIsOn = false;
         private float m_CornerDampingSpeedup = 1f;
         private float m_CornerAngleTreshold = 10f;
-        
-        // TODO: question for Gregory: I think if sideDamping is on, then corner damping must be on too, and
-        // TODO: sideDamping <= cornerDamping
-        // TODO: I think we should enforce this because sideDamping does not work well without corner damping at corners
         /// <summary>Damping applied when getting within the specified proximity to the sides.</summary>
-        [Tooltip("Damping applied when getting within the specified proximity to the sides. " +
-                 "If your map has a concave shape, then it is recommended to enable CornerDamping too!")]
+        [Tooltip("Damping applied when getting within the specified proximity to the sides.  When side damping is " +
+                 "enabled, then corner damping must be enabled with equal or greater value.")]
         [Range(0, 5)]
         public float m_SideDamping = 0;
         
@@ -96,6 +92,11 @@ namespace Cinemachine
         {
             InvalidatePathCache();
             Bake();
+        }
+
+        private void OnValidate()
+        {
+            m_CornerDamping = Mathf.Clamp(m_CornerDamping, m_SideDamping, float.MaxValue);
         }
 
         private Vector3 prevPosition = Vector3.zero;
@@ -185,8 +186,6 @@ namespace Cinemachine
                         {
                             delta.y = Damper.Damp(delta.y, 0, deltaTime);
                         }
-                        Debug.Log("sideSmoothingValue:"+sideSmoothingValue);
-                        Debug.Log("dampVector:"+dampVector);
                     }
                     state.PositionCorrection += delta;
                 }
