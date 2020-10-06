@@ -141,7 +141,6 @@ namespace Cinemachine
                         in m_currentPathCache, in m_SideDampingProximity,
                         out Vector2 dampVector);
 
-                    forGizmosCameraPosition = state.CorrectedPosition;
                     dampVector = dampVector.Abs();
                     bool zeroDampVector = dampVector.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     if (m_SideDampingOn || zeroDampVector)
@@ -168,6 +167,7 @@ namespace Cinemachine
                             Mathf.Lerp(0, m_SideDamping, m_SideDampingTime);
                         if (dampVector.x > UnityVectorExtensions.Epsilon)
                         {
+                            dampVector.x = Mathf.Clamp(dampVector.x, 1f, Single.MaxValue);
                             delta.x = Damper.Damp(delta.x, sideSmoothingValue, deltaTime * dampVector.x);
                         }
                         else
@@ -177,6 +177,7 @@ namespace Cinemachine
 
                         if (dampVector.y > UnityVectorExtensions.Epsilon)
                         {
+                            dampVector.y = Mathf.Clamp(dampVector.y, 1f, Single.MaxValue);
                             delta.y = Damper.Damp(delta.y, sideSmoothingValue, deltaTime * dampVector.y);
                         }
                         else
@@ -580,7 +581,6 @@ namespace Cinemachine
             ForceBake();
         }
         
-        private Vector3 forGizmosCameraPosition;
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmos) return;
@@ -598,7 +598,7 @@ namespace Cinemachine
             }
             
             Handles.color = Color.green;
-            Handles.DrawWireDisc(forGizmosCameraPosition, Vector3.back, m_SideDampingProximity);
+            Handles.DrawWireDisc(prevPosition, Vector3.back, m_SideDampingProximity);
         }
     }
 #endif
