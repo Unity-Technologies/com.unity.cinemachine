@@ -7,11 +7,19 @@
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEditor;
 using UnityEngine;
 
 namespace Cinemachine
 {
 #if CINEMACHINE_PHYSICS_2D
+    /// <summary>
+    /// An add-on module for Cinemachine Virtual Camera that post-processes
+    /// the final position of the virtual camera. It will confine the virtual
+    /// camera view window to the area specified in the Bounding Shape 2D field
+    /// based on the camera's window size and ratio.
+    /// The confining area is baked and cached at start.
+    /// </summary>
     [SaveDuringPlay, ExecuteAlways]
     public class CinemachineConfiner2D : CinemachineExtension
     {
@@ -20,23 +28,31 @@ namespace Cinemachine
                  "Can be a 2D polygon or 2D composite collider.")]
         public Collider2D m_BoundingShape2D;
 
+        /// <summary>Damping applied automatically around corners to avoid jumps.</summary>
         [Tooltip("Damping applied automatically around corners to avoid jumps.  "
                  + "Higher numbers are more gradual.")]
-        [Range(0, 10)]
+        [Range(0, 5)]
         public float m_CornerDamping = 0;
         private bool m_CornerDampingIsOn = false;
         private float m_CornerDampingSpeedup = 1f;
         private float m_CornerAngleTreshold = 10f;
         
-        [Tooltip("Damping applied automatically when getting close to the sides.")]
-        [Range(0, 10)]
-        public float m_SideSmoothing = 0;
-        public float m_SideSmoothingProximity = 10;
-        private float m_SideSmoothingTime;
+        // TODO: question for Gregory: I think if sideDamping is on, then corner damping must be on too, and
+        // TODO: sideDamping <= cornerDamping
+        // TODO: I think we should enforce this because sideDamping does not work well without corner damping at corners
+        /// <summary>Damping applied when getting within the specified proximity to the sides.</summary>
+        [Tooltip("Damping applied when getting within the specified proximity to the sides. " +
+                 "If your map has a concave shape, then it is recommended to enable CornerDamping too!")]
+        [Range(0, 5)]
+        public float m_SideDamping = 0;
         
-        [Tooltip("Stops confiner damping when the camera gets back inside the confined area.")]
-        public bool m_StopDampingWithinConfiner = false;
-        
+        /// <summary>User specified proximity used by Side Damping</summary>
+        [Tooltip("Proximity used by Side Damping")]
+        [Range(0, 100)]
+        public float m_SideDampingProximity = 10;
+        private float m_SideDampingTime;
+        private bool m_SideDampingOn = false;
+
         // advanced features
         public bool m_DrawGizmosDebug = false; // TODO: modify gizmos to only draw what's relevant to a user! After
                                                // Patrick's test - it may be useful for Patrick
@@ -75,9 +91,7 @@ namespace Cinemachine
             m_TriggerBake = true;
         }
 
-        /// <summary>
-        /// Force rebake process manually. This function invalidates the cache, thus ensuring a rebake.
-        /// </summary>
+        /// <summary>Force rebake manually. This function invalidates the cache and rebakes the confiner.</summary>
         public void ForceBake()
         {
             InvalidatePathCache();
@@ -119,27 +133,61 @@ namespace Cinemachine
                 state.PositionCorrection += displacement;
                 extra.confinerDisplacement = displacement.magnitude;
                 
-                if (m_SideSmoothing > 0)
+                if (!m_CornerDampingIsOn && m_SideDamping > 0)
                 {
                     Vector3 delta = state.CorrectedPosition - prevPosition;
 
                     state.PositionCorrection -= delta;
                     
-                    GetDampVectorBasedOnDirection(state.CorrectedPosition, delta.normalized,
-                        in m_currentPathCache, in m_SideSmoothingProximity,
+                    GetDampVectorBasedOnDirection(state.CorrectedPosition, delta,
+                        in m_currentPathCache, in m_SideDampingProximity,
                         out Vector2 dampVector);
-                    if (dampVector != Vector2.zero)
+
+                    forGizmosCameraPosition = state.CorrectedPosition;
+                    dampVector = dampVector.Abs();
+                    bool zeroDampVector = dampVector.sqrMagnitude > UnityVectorExtensions.Epsilon;
+                    if (m_SideDampingOn || zeroDampVector)
                     {
-                        m_SideSmoothingTime += deltaTime;
-                        var m_SideSmoothingValue = Mathf.Lerp(0, m_SideSmoothing, m_SideSmoothingTime);
-                        delta.x = Damper.Damp(delta.x, m_SideSmoothingValue * dampVector.x, deltaTime);
-                        delta.y = Damper.Damp(delta.y, m_SideSmoothingValue * dampVector.y, deltaTime);
+                        if (zeroDampVector)
+                        {
+                            m_SideDampingTime += deltaTime;
+                            m_SideDampingOn = true;
+                            if (m_SideDampingTime >= 1)
+                            {
+                                m_SideDampingTime = 1;
+                            }
+                        }
+                        else
+                        {
+                            m_SideDampingTime -= deltaTime;
+                            if (m_SideDampingTime <= 0)
+                            {
+                                m_SideDampingTime = 0;
+                                m_SideDampingOn = false;
+                            }
+                        }
+                        float sideSmoothingValue =
+                            Mathf.Lerp(0, m_SideDamping, m_SideDampingTime);
+                        if (dampVector.x > UnityVectorExtensions.Epsilon)
+                        {
+                            delta.x = Damper.Damp(delta.x, sideSmoothingValue, deltaTime * dampVector.x);
+                        }
+                        else
+                        {
+                            delta.x = Damper.Damp(delta.x, 0, deltaTime);
+                        }
+
+                        if (dampVector.y > UnityVectorExtensions.Epsilon)
+                        {
+                            delta.y = Damper.Damp(delta.y, sideSmoothingValue, deltaTime * dampVector.y);
+                        }
+                        else
+                        {
+                            delta.y = Damper.Damp(delta.y, 0, deltaTime);
+                        }
+                        Debug.Log("sideSmoothingValue:"+sideSmoothingValue);
+                        Debug.Log("dampVector:"+dampVector);
                     }
-                    else
-                    {
-                        m_SideSmoothingTime = 0;
-                    }
-                    
                     state.PositionCorrection += delta;
                 }
                 
@@ -200,10 +248,11 @@ namespace Cinemachine
                 0 : 
                 Mathf.Sign(direction.y) * proximity);
             
-            if (direction == Vector2.zero)
+            if (direction.sqrMagnitude < UnityVectorExtensions.Epsilon)
             {
                 return;
             }
+            direction.Normalize();
             
             var normalH = Vector2.zero;
             var normalV = Vector2.zero;
@@ -296,17 +345,6 @@ namespace Cinemachine
             }
 
             dampVector = normalH + normalV;
-            if (dampVector != Vector2.zero)
-            {
-                if (Mathf.Abs(dampVector.x) > 0)
-                {
-                    dampVector.x = 1;
-                }
-                if (Mathf.Abs(dampVector.y) > 0)
-                {
-                    dampVector.y = 1;
-                }
-            }
         }
 
         /// <summary>
@@ -546,6 +584,7 @@ namespace Cinemachine
             ForceBake();
         }
         
+        private Vector3 forGizmosCameraPosition;
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmosDebug) return;
@@ -562,9 +601,10 @@ namespace Cinemachine
                 }
             }
             
-            #if DRAW_DEBUG_TOOLS
-            
-            #endif
+            Handles.color = Color.green;
+            Handles.DrawWireDisc(forGizmosCameraPosition, Vector3.back, m_SideDampingProximity);
+#if DRAW_DEBUG_TOOLS
+#endif
         }
     }
 #endif
