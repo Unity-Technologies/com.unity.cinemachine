@@ -97,6 +97,9 @@ namespace Cinemachine
         }
 
         private Vector3 prevPosition = Vector3.zero;
+        private Vector2 prevDampVector = Vector2.zero;
+        private float sideDampingCatchupSpeed = 0;
+        private float catchupTimer = 0;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -142,6 +145,18 @@ namespace Cinemachine
                         out Vector2 dampVector);
 
                     dampVector = dampVector.Abs();
+                    if (dampVector == Vector2.zero)
+                    {
+                        sideDampingCatchupSpeed = Mathf.Max(1, delta.sqrMagnitude) * 2f;
+                        sideDampingCatchupSpeed = Mathf.Lerp(1, sideDampingCatchupSpeed, catchupTimer);
+                        catchupTimer += deltaTime;
+                    }
+                    else
+                    {
+                        catchupTimer = 0;
+                        prevDampVector = dampVector;
+                    }
+
                     bool zeroDampVector = dampVector.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     if (m_SideDampingOn || zeroDampVector)
                     {
@@ -167,22 +182,38 @@ namespace Cinemachine
                             Mathf.Lerp(0, m_SideDamping, m_SideDampingTime);
                         if (dampVector.x > UnityVectorExtensions.Epsilon)
                         {
-                            dampVector.x = Mathf.Clamp(dampVector.x, 1f, Single.MaxValue);
+                            dampVector.x = Mathf.Max(dampVector.x, 1f);
                             delta.x = Damper.Damp(delta.x, sideSmoothingValue, deltaTime * dampVector.x);
                         }
                         else
                         {
-                            delta.x = Damper.Damp(delta.x, 0, deltaTime);
+                            if (dampVector.x < UnityVectorExtensions.Epsilon && 
+                                prevDampVector.x > UnityVectorExtensions.Epsilon)
+                            {
+                                delta.x = Damper.Damp(delta.x, sideSmoothingValue, deltaTime * sideDampingCatchupSpeed);
+                            }
+                            else 
+                            {
+                                delta.x = Damper.Damp(delta.x, 0, deltaTime);
+                            }
                         }
 
                         if (dampVector.y > UnityVectorExtensions.Epsilon)
                         {
-                            dampVector.y = Mathf.Clamp(dampVector.y, 1f, Single.MaxValue);
+                            dampVector.y = Mathf.Max(dampVector.y, 1f);
                             delta.y = Damper.Damp(delta.y, sideSmoothingValue, deltaTime * dampVector.y);
                         }
                         else
                         {
-                            delta.y = Damper.Damp(delta.y, 0, deltaTime);
+                            if (dampVector.y < UnityVectorExtensions.Epsilon && 
+                                prevDampVector.y > UnityVectorExtensions.Epsilon)
+                            {
+                                delta.y = Damper.Damp(delta.y, sideSmoothingValue, deltaTime * sideDampingCatchupSpeed);
+                            }
+                            else
+                            {
+                                delta.y = Damper.Damp(delta.y, 0, deltaTime);
+                            }
                         }
                     }
                     state.PositionCorrection += delta;
@@ -341,7 +372,7 @@ namespace Cinemachine
                 normalV = normalV.normalized * minVerticalDistance;
             }
 
-            dampVector = normalH + normalV;
+            dampVector = (normalH + normalV).normalized;
         }
 
         /// <summary>
