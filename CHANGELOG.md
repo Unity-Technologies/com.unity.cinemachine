@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.7.0-preview.1] - 2020-10-01
 - Virtual Camera Lens inspector supports display of Horizontal FOV
+- Virtual Camera Lens can override orthographic and physical camera settings
 - Bugfix (1060230) - lens inspector sometimes displayed ortho vs perspective incorrectly for a brief time
 
 ## [2.6.3] - 2020-09-16

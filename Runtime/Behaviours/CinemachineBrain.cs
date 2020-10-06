@@ -802,7 +802,7 @@ namespace Cinemachine
         }
 
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
-        private void PushStateToUnityCamera(CameraState state)
+        private void PushStateToUnityCamera(in CameraState state)
         {
             CurrentCameraState = state;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
@@ -816,34 +816,36 @@ namespace Cinemachine
                 {
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
-                    if (cam.orthographic)
-                        cam.orthographicSize = state.Lens.OrthographicSize;
-                    else
-                    {
-                        cam.fieldOfView = state.Lens.FieldOfView;
-                        cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
-                        cam.lensShift = state.Lens.LensShift;
-                    }
-#if CINEMACHINE_HDRP
+                    cam.orthographicSize = state.Lens.OrthographicSize;
+                    cam.fieldOfView = state.Lens.FieldOfView;
+                    cam.lensShift = state.Lens.LensShift;
+                    cam.orthographic = state.Lens.Orthographic;
+                    cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
                     if (state.Lens.IsPhysicalCamera)
                     {
-    #if UNITY_2019_2_OR_NEWER
-                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
-    #else
-                        var hda = cam.GetComponent<HDAdditionalCameraData>();
-    #endif
-                        if (hda != null)
+                        cam.sensorSize = state.Lens.SensorSize;
+                        cam.gateFit = state.Lens.GateFit;
+#if CINEMACHINE_HDRP
+                        if (state.Lens.IsPhysicalCamera)
                         {
-                            hda.physicalParameters.iso = state.Lens.Iso;
-                            hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
-                            hda.physicalParameters.aperture = state.Lens.Aperture;
-                            hda.physicalParameters.bladeCount = state.Lens.BladeCount;
-                            hda.physicalParameters.curvature = state.Lens.Curvature;
-                            hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
-                            hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
+    #if UNITY_2019_2_OR_NEWER
+                            cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
+    #else
+                            var hda = cam.GetComponent<HDAdditionalCameraData>();
+    #endif
+                            if (hda != null)
+                            {
+                                hda.physicalParameters.iso = state.Lens.Iso;
+                                hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
+                                hda.physicalParameters.aperture = state.Lens.Aperture;
+                                hda.physicalParameters.bladeCount = state.Lens.BladeCount;
+                                hda.physicalParameters.curvature = state.Lens.Curvature;
+                                hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
+                                hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
+                            }
                         }
-                    }
 #endif
+                    }
                 }
             }
             if (CinemachineCore.CameraUpdatedEvent != null)
