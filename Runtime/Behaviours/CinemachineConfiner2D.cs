@@ -149,7 +149,8 @@ namespace Cinemachine
                     {
                         sideDampingCatchupSpeed = Mathf.Max(1, delta.sqrMagnitude) * 2f;
                         sideDampingCatchupSpeed = Mathf.Lerp(1, sideDampingCatchupSpeed, catchupTimer);
-                        catchupTimer += deltaTime;
+                        var multiplier = 1f / m_SideDamping; // TODO: test
+                        catchupTimer += deltaTime * multiplier;
                     }
                     else
                     {
