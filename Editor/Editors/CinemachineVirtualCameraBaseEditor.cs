@@ -338,6 +338,9 @@ namespace Cinemachine.Editor
         static GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
         static GUIContent OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
             + "this defines the half-height, in world coordinates, of the camera view.");
+        static GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
+            "Actual size of the image sensor (in mm), used to "
+            + "convert between focal length and field of vue.");
 
         bool IsOrtho;
         bool IsPhysical;
@@ -489,8 +492,7 @@ namespace Cinemachine.Editor
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping));
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism));
 
-                        if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
-                            EditorGUILayout.PropertyField(property.FindPropertyRelative("m_SensorSize"));
+                        DrawSensorSizeInInspector(property);
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
                         if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
                             EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
@@ -498,8 +500,7 @@ namespace Cinemachine.Editor
                         --EditorGUI.indentLevel;
                     }
 #else
-                    if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
-                        EditorGUILayout.PropertyField(property.FindPropertyRelative("m_SensorSize"));
+                    DrawSensorSizeInInspector(property);
                     EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
                     if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
@@ -512,6 +513,21 @@ namespace Cinemachine.Editor
         }
 
         static float ExtraSpaceHackWTF() { return EditorGUI.indentLevel * (EditorGUIUtility.singleLineHeight - 3); }
+
+        void DrawSensorSizeInInspector(SerializedProperty property)
+        {
+            if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+            {
+                property = property.FindPropertyRelative("m_SensorSize");
+                var rect = EditorGUILayout.GetControlRect(true);
+                EditorGUI.BeginProperty(rect, SensorSizeLabel, property);
+                var v = EditorGUI.Vector2Field(rect, SensorSizeLabel, property.vector2Value);
+                v.x = Mathf.Max(v.x, 0.1f);
+                v.y = Mathf.Max(v.y, 0.1f);
+                property.vector2Value = v;
+                EditorGUI.EndProperty();
+            }
+        }
 
         void DrawLensFocusInInspector(Rect rect, SerializedProperty property)
         {

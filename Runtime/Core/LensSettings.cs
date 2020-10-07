@@ -109,8 +109,8 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// For physical cameras, this is the acual size of the image sensor, and is used to 
-        /// convert between Focus Depth and field of vue.  For nonphysical cameras, it is the aspect ratio.
+        /// For physical cameras, this is the actual size of the image sensor (in mm); it is used to 
+        /// convert between focal length and field of vue.  For nonphysical cameras, it is the aspect ratio.
         /// </summary>
         public Vector2 SensorSize
         { 
