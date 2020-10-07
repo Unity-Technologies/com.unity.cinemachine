@@ -264,6 +264,7 @@ namespace Cinemachine
             NearClipPlane = nearClip;
             FarClipPlane = farClip;
             Dutch = dutch;
+            m_SensorSize = new Vector2(1, 1);
 
 #if CINEMACHINE_HDRP
             Iso = 200;
@@ -313,6 +314,8 @@ namespace Cinemachine
             NearClipPlane = Mathf.Max(NearClipPlane, Orthographic ? 0 : 0.001f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.001f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
+            m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);
+            m_SensorSize.y = Mathf.Max(m_SensorSize.y, 0.1f);
 #if CINEMACHINE_HDRP
             ShutterSpeed = Mathf.Max(0, ShutterSpeed);
             Aperture = Mathf.Clamp(Aperture, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
