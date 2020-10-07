@@ -331,14 +331,14 @@ namespace Cinemachine.Editor
         GUIContent[] m_PhysicalPresetOptions;
         LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
 
-        static GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");
-        static GUIContent LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
-        static GUIContent HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
-        static GUIContent VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
-        static GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
-        static GUIContent OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
+        static readonly GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");
+        static readonly GUIContent LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
+        static readonly GUIContent HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
+        static readonly GUIContent VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
+        static readonly GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
+        static readonly GUIContent OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
             + "this defines the half-height, in world coordinates, of the camera view.");
-        static GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
+        static readonly GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
             "Actual size of the image sensor (in mm), used to "
             + "convert between focal length and field of vue.");
 
