@@ -46,7 +46,7 @@ namespace Cinemachine
         internal readonly float m_aspectRatio;
         internal readonly float m_aspectRatioBasedDiagonal;
         internal readonly Vector2[] m_normalDirections;
-        internal float m_area;
+        private float m_area;
         internal float m_minArea;
 
         internal List<Vector2> m_intersectionPoints;
