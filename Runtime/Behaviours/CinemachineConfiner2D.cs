@@ -34,8 +34,9 @@ namespace Cinemachine
         private float m_CornerDampingSpeedup = 1f;
         private float m_CornerAngleTreshold = 10f;
 
-        // advanced features
-        public bool m_DrawGizmos = false;
+        /// <summary>Draws Gizmos for easier fine-tuning.</summary>
+        [Tooltip("Draws Input Bounding Shape (black) and Confiner (cyan) for easier fine-tuning.")]
+        public bool m_DrawGizmos = true;
         [HideInInspector, SerializeField] internal bool m_AutoBake = true; // TODO: remove
                                                                            // reason: if user wants to
                                                                            // switch between cameras, it is better
