@@ -39,7 +39,7 @@ namespace Cinemachine
         [HideInInspector, SerializeField] internal bool m_AutoBake = true; // TODO: remove
                                                                            // reason: if user wants to
                                                                            // switch between cameras, it is better
-                                                                           // to just have a different advnaced confiner
+                                                                           // to just have a different 2D confiner
                                                                            // for each setup
         [HideInInspector, SerializeField] internal bool m_TriggerBake = false;
         [HideInInspector, SerializeField] internal bool m_TriggerClearCache = false;
@@ -381,10 +381,23 @@ namespace Cinemachine
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmos) return;
-            if (m_currentPathCache == null || m_BoundingShape2D == null) return;
+            if (m_currentPathCache == null || m_originalPath == null) return;
             
+            // Draw confiner for current camera size
             Gizmos.color = Color.cyan;
             foreach (var path in m_currentPathCache)
+            {
+                for (var index = 0; index < path.Count; index++)
+                {
+                    Gizmos.DrawLine(
+                        path[index], 
+                        path[(index + 1) % path.Count]);
+                }
+            }
+            
+            // Draw input confiner
+            Gizmos.color = Color.black;
+            foreach (var path in m_originalPath)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
