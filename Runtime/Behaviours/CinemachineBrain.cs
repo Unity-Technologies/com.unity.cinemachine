@@ -232,8 +232,8 @@ namespace Cinemachine
             StopCoroutine(mPhysicsCoroutine);
         }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { ManualUpdate(); }
-        void OnSceneUnloaded(Scene scene) { ManualUpdate(); }
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { if (mFrameStack.Count > 0) ManualUpdate(); }
+        void OnSceneUnloaded(Scene scene) { if (mFrameStack.Count > 0) ManualUpdate(); }
 
         private void Start()
         {
