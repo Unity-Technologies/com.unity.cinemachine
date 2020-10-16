@@ -12,7 +12,7 @@ namespace Cinemachine.Editor
             const float hSpace = 2;
             float iconSize = rect.height + 4;
             rect.width -= iconSize + hSpace;
-            EditorGUI.PropertyField(rect, property, label);
+            EditorGUI.PropertyField(rect, property, EditorGUI.BeginProperty(rect, label, property));
             rect.x += rect.width + hSpace; rect.width = iconSize;
 
             var oldEnabled = GUI.enabled;
