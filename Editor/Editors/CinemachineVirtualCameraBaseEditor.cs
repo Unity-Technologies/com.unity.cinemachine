@@ -331,18 +331,22 @@ namespace Cinemachine.Editor
         GUIContent[] m_PhysicalPresetOptions;
         LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
 
-        static GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");
-        static GUIContent LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
-        static GUIContent HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
-        static GUIContent VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
-        static GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
-        static GUIContent OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
+        static readonly GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");
+        static readonly GUIContent LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
+        static readonly GUIContent HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
+        static readonly GUIContent VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
+        static readonly GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
+        static readonly GUIContent OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
             + "this defines the half-height, in world coordinates, of the camera view.");
+        static readonly GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
+            "Actual size of the image sensor (in mm), used to "
+            + "convert between focal length and field of vue.");
 
         bool IsOrtho;
         bool IsPhysical;
         Vector2 SensorSize;
         bool UseHorizontalFOV;
+        SerializedProperty ModeOverrideProperty;
 
     #if CINEMACHINE_HDRP
         GUIContent PhysicalPropertiesLabel;
@@ -371,15 +375,17 @@ namespace Cinemachine.Editor
 
         public void SnapshotCameraShadowValues(SerializedProperty property, Camera camera)
         {
+            ModeOverrideProperty = property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride);
+
+            // Assume lens is up-to-date
             UseHorizontalFOV = false;
-            if (camera == null)
-            {
-                object lensObject = SerializedPropertyHelper.GetPropertyValue(property);
-                IsOrtho = AccessProperty<bool>(typeof(LensSettings), lensObject, "Orthographic");
-                IsPhysical = AccessProperty<bool>(typeof(LensSettings), lensObject, "IsPhysicalCamera");
-                SensorSize = AccessProperty<Vector2>(typeof(LensSettings), lensObject, "SensorSize");
-            }
-            else
+            object lensObject = SerializedPropertyHelper.GetPropertyValue(property);
+            IsOrtho = AccessProperty<bool>(typeof(LensSettings), lensObject, "Orthographic");
+            IsPhysical = AccessProperty<bool>(typeof(LensSettings), lensObject, "IsPhysicalCamera");
+            SensorSize = AccessProperty<Vector2>(typeof(LensSettings), lensObject, "SensorSize");
+
+            // Then pull from actual camera if appropriate
+            if (camera != null)
             {
 #if UNITY_2019_1_OR_NEWER
                 // This should really be a global setting, but for now there is no better way than this!
@@ -387,9 +393,13 @@ namespace Cinemachine.Editor
                 if (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal)
                     UseHorizontalFOV = true;
 #endif
-                IsOrtho = camera.orthographic;
-                IsPhysical = camera.usePhysicalProperties;
-                SensorSize = IsPhysical ? camera.sensorSize : new Vector2(camera.aspect, 1f);
+                // It's possible that the lens isn't synched with its camera - fix that here
+                if (ModeOverrideProperty.intValue == (int)LensSettings.OverrideModes.None)
+                {
+                    IsOrtho = camera.orthographic;
+                    IsPhysical = camera.usePhysicalProperties;
+                    SensorSize = IsPhysical ? camera.sensorSize : new Vector2(camera.aspect, 1f);
+                }
             }
         }
 
@@ -434,11 +444,14 @@ namespace Cinemachine.Editor
             else
             {
                 ++EditorGUI.indentLevel;
+
                 rect = EditorGUILayout.GetControlRect(true);
                 DrawLensFocusInInspector(rect, property);
 
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.NearClipPlane));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane));
+                EditorGUILayout.PropertyField(ModeOverrideProperty);
+
                 if (IsPhysical)
                 {
 #if CINEMACHINE_HDRP
@@ -478,12 +491,19 @@ namespace Cinemachine.Editor
 
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping));
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism));
+
+                        DrawSensorSizeInInspector(property);
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
+                        if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+                            EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
 
                         --EditorGUI.indentLevel;
                     }
 #else
+                    DrawSensorSizeInInspector(property);
                     EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
+                    if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+                        EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
 #endif
                 }
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch));
@@ -493,6 +513,21 @@ namespace Cinemachine.Editor
         }
 
         static float ExtraSpaceHackWTF() { return EditorGUI.indentLevel * (EditorGUIUtility.singleLineHeight - 3); }
+
+        void DrawSensorSizeInInspector(SerializedProperty property)
+        {
+            if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+            {
+                property = property.FindPropertyRelative("m_SensorSize");
+                var rect = EditorGUILayout.GetControlRect(true);
+                EditorGUI.BeginProperty(rect, SensorSizeLabel, property);
+                var v = EditorGUI.Vector2Field(rect, SensorSizeLabel, property.vector2Value);
+                v.x = Mathf.Max(v.x, 0.1f);
+                v.y = Mathf.Max(v.y, 0.1f);
+                property.vector2Value = v;
+                EditorGUI.EndProperty();
+            }
+        }
 
         void DrawLensFocusInInspector(Rect rect, SerializedProperty property)
         {
@@ -552,7 +587,7 @@ namespace Cinemachine.Editor
             float f = CameraExtensions.FieldOfViewToFocalLength(FOVProperty.floatValue, SensorSize.y);
             EditorGUI.BeginProperty(rect, label, FOVProperty);
             f = EditorGUI.FloatField(rect, label, f);
-            f = CameraExtensions.FocalLengthToFieldOfView(f, SensorSize.y);
+            f = CameraExtensions.FocalLengthToFieldOfView(Mathf.Max(f, 0.0001f), SensorSize.y);
             if (!Mathf.Approximately(FOVProperty.floatValue, f))
                 FOVProperty.floatValue = Mathf.Clamp(f, 1, 179);
             EditorGUI.EndProperty();
