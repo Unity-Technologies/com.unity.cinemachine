@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
             rect.width -= iconSize;
             int preset = sNoisePresets.IndexOf((NoiseSettings)property.objectReferenceValue);
             EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
-            preset = EditorGUI.Popup(rect, label, preset, sNoisePresetNames);
+            preset = EditorGUI.Popup(rect, EditorGUI.BeginProperty(rect, label, property), preset, sNoisePresetNames);
             EditorGUI.showMixedValue = false;
             string labelText = label.text;
             NoiseSettings newProfile = preset < 0 ? null : sNoisePresets[preset] as NoiseSettings;
@@ -80,10 +80,8 @@ namespace Cinemachine.Editor
                 return;
 
             sNoisePresets = FindAssetsByType<NoiseSettings>();
-#if UNITY_2018_1_OR_NEWER
             InspectorUtility.AddAssetsFromPackageSubDirectory(
                 typeof(NoiseSettings), sNoisePresets, "Presets/Noise");
-#endif
             sNoisePresets.Insert(0, null);
             List<GUIContent> presetNameList = new List<GUIContent>();
             foreach (var n in sNoisePresets)

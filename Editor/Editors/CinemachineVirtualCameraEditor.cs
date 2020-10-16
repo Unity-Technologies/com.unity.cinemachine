@@ -134,6 +134,8 @@ namespace Cinemachine.Editor
             DrawHeaderInInspector();
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
+            DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
+            DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
             DrawPipelineInInspector();
             DrawExtensionsWidgetInInspector();
@@ -150,7 +152,7 @@ namespace Cinemachine.Editor
                 if (index < 0 || sStageData[index].PopupOptions.Length <= 1)
                     continue;
 
-                const float indentOffset = 4;
+                const float indentOffset = 3;
 
                 GUIStyle stageBoxStyle = GUI.skin.box;
                 EditorGUILayout.BeginVertical(stageBoxStyle);

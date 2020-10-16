@@ -7,11 +7,11 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
-    #if CINEMACHINE_HDRP_7_0_0
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+    #if CINEMACHINE_HDRP_7_3_1
     using UnityEngine.Rendering.HighDefinition;
     #else
-        #if CINEMACHINE_LWRP_7_0_0
+        #if CINEMACHINE_LWRP_7_3_1
         using UnityEngine.Rendering.Universal;
         #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
@@ -37,11 +37,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [AddComponentMenu("Cinemachine/CinemachineBrain")]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
@@ -232,8 +228,8 @@ namespace Cinemachine
             StopCoroutine(mPhysicsCoroutine);
         }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { ManualUpdate(); }
-        void OnSceneUnloaded(Scene scene) { ManualUpdate(); }
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { if (mFrameStack.Count > 0) ManualUpdate(); }
+        void OnSceneUnloaded(Scene scene) { if (mFrameStack.Count > 0) ManualUpdate(); }
 
         private void Start()
         {
@@ -579,12 +575,16 @@ namespace Cinemachine
         }
 
         ICinemachineCamera mActiveCameraPreviousFrame;
+        GameObject mActiveCameraPreviousFrameGameObject;
+
         private void ProcessActiveCamera(float deltaTime)
         {
             var activeCamera = ActiveVirtualCamera;
             if (activeCamera != null)
             {
                 // Has the current camera changed this frame?
+                if (mActiveCameraPreviousFrameGameObject == null)
+                    mActiveCameraPreviousFrame = null; // object was deleted
                 if (activeCamera != mActiveCameraPreviousFrame)
                 {
                     // Notify incoming camera of transition
@@ -610,6 +610,8 @@ namespace Cinemachine
                     SoloCamera != null ? SoloCamera.State : mCurrentLiveCameras.State);
             }
             mActiveCameraPreviousFrame = activeCamera;
+            mActiveCameraPreviousFrameGameObject 
+                = activeCamera == null ? null : activeCamera.VirtualCameraGameObject;
         }
 
         private void UpdateFrame0(float deltaTime)
@@ -806,7 +808,7 @@ namespace Cinemachine
         }
 
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
-        private void PushStateToUnityCamera(CameraState state)
+        private void PushStateToUnityCamera(in CameraState state)
         {
             CurrentCameraState = state;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
@@ -820,36 +822,36 @@ namespace Cinemachine
                 {
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
+                    cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
-                    if (cam.orthographic)
-                        cam.orthographicSize = state.Lens.OrthographicSize;
-#if UNITY_2018_2_OR_NEWER
-                    else
-                    {
-                        cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
-                        cam.lensShift = state.Lens.LensShift;
-                    }
-    #if CINEMACHINE_HDRP
+                    cam.lensShift = state.Lens.LensShift;
+                    cam.orthographic = state.Lens.Orthographic;
+                    cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
                     if (state.Lens.IsPhysicalCamera)
                     {
-#if UNITY_2019_2_OR_NEWER
-                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
-#else
-                        var hda = cam.GetComponent<HDAdditionalCameraData>();
-#endif
-                        if (hda != null)
+                        cam.sensorSize = state.Lens.SensorSize;
+                        cam.gateFit = state.Lens.GateFit;
+#if CINEMACHINE_HDRP
+                        if (state.Lens.IsPhysicalCamera)
                         {
-                            hda.physicalParameters.iso = state.Lens.Iso;
-                            hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
-                            hda.physicalParameters.aperture = state.Lens.Aperture;
-                            hda.physicalParameters.bladeCount = state.Lens.BladeCount;
-                            hda.physicalParameters.curvature = state.Lens.Curvature;
-                            hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
-                            hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
-                        }
-                    }
+    #if UNITY_2019_2_OR_NEWER
+                            cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
+    #else
+                            var hda = cam.GetComponent<HDAdditionalCameraData>();
     #endif
+                            if (hda != null)
+                            {
+                                hda.physicalParameters.iso = state.Lens.Iso;
+                                hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
+                                hda.physicalParameters.aperture = state.Lens.Aperture;
+                                hda.physicalParameters.bladeCount = state.Lens.BladeCount;
+                                hda.physicalParameters.curvature = state.Lens.Curvature;
+                                hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
+                                hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
+                            }
+                        }
 #endif
+                    }
                 }
             }
             if (CinemachineCore.CameraUpdatedEvent != null)
