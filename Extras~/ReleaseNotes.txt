@@ -1,5 +1,6 @@
-<size=20><b>Version 2.7.0-preview.1</b></size>
+<size=20><b>Version 2.7.0</b></size>
 
+- Added ApplyAfter option to ImpulseListener, to add control over the ordering of extensions
 - Virtual Camera Lens inspector supports display of Horizontal FOV
 - Virtual Camera Lens can override orthographic and physical camera settings
 - Bugfix (1060230) - lens inspector sometimes displayed ortho vs perspective incorrectly for a brief time

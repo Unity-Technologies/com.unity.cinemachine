@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.7.0-preview.1] - 2020-10-10
+- Added ApplyAfter option to ImpulseListener, to add control over the ordering of extensions
 - Virtual Camera Lens inspector supports display of Horizontal FOV
 - Virtual Camera Lens can override orthographic and physical camera settings
 - Bugfix (1060230) - lens inspector sometimes displayed ortho vs perspective incorrectly for a brief time
