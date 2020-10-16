@@ -94,14 +94,14 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition);
 
+                // Remember the desired displacement for next frame
+                var prev = extra.m_previousDisplacement;
+                extra.m_previousDisplacement = displacement;
+
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
-                    extra.m_dampedDisplacement = Vector3.zero;
+                    extra.m_dampedDisplacement = extra.m_dampedDisplacement = Vector3.zero;
                 else
                 {
-                    // Remember the desired displacement for next frame
-                    var prev = extra.m_previousDisplacement;
-                    extra.m_previousDisplacement = displacement;
-
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
                     if (Vector2.Angle(prev, displacement) > CornerAngleTreshold)
