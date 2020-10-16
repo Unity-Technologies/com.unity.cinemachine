@@ -38,7 +38,7 @@ namespace Cinemachine.Editor
             rect.height = height;
             property.isExpanded = EditorGUI.Foldout(
                 new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height),
-                property.isExpanded, label, true);
+                property.isExpanded, EditorGUI.BeginProperty(rect, label, property), true);
             if (property.isExpanded)
             {
                 ++EditorGUI.indentLevel;

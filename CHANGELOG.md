@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.6.4-preview.1] - 2020-10-16
-- Bugfix (11283984) - Error message when loading new scene with DontDestroyOnLoad
+- Bugfix (1283984) - Error message when loading new scene with DontDestroyOnLoad
+- bugfix (1284701) - Edge-case exception when vcam is deleted
 
 
 ## [2.6.3] - 2020-09-16

@@ -1,5 +1,7 @@
 <size=20><b>Version 2.6.4</b></size>
-- Bugfix (11283984) - Error message when loading new scene with DontDestroyOnLoad
+
+- Bugfix (1283984) - Error message when loading new scene with DontDestroyOnLoad
+- bugfix (1284701) - Edge-case exception when vcam is deleted
 
 <size=20><b>Version 2.6.3</b></size>
 
