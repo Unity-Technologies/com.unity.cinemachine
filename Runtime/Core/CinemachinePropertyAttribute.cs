@@ -13,7 +13,7 @@ namespace Cinemachine
     public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute {}
 
     /// <summary>
-    /// Property applied to LensSettings.  Used for custom drawing in the inspector.
+    /// This attributs is obsolete and unused.
     /// </summary>
     public sealed class LensSettingsPropertyAttribute : PropertyAttribute {}
 

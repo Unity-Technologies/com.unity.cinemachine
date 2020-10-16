@@ -60,11 +60,9 @@ using Cinemachine;
             // GML this is too bold.  What if timeline is a child of something moving?
             // also, SetActive(false) prevents the animator from being able to animate the object
             vcam.gameObject.SetActive(false);
-    #if UNITY_2018_3_OR_NEWER
             var d = TimelineEditor.inspectedDirector;
             if (d != null)
                 Undo.SetTransformParent(vcam.transform, d.transform, "");
-    #endif
 #endif
             return vcam;
         }
@@ -167,9 +165,7 @@ using Cinemachine;
             // this prevents flicker on post processing updates
             if (EditorGUI.EndChangeCheck())
             {
-#if UNITY_2018_3_OR_NEWER
                 TimelineEditor.Refresh(RefreshReason.SceneNeedsUpdate);
-#endif
                 GUI.changed = false;
             }
         }

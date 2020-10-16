@@ -4,7 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.4-preview.1] - 2020-10-16
+## [2.7.0-preview.1] - 2020-10-10
+- Virtual Camera Lens inspector supports display of Horizontal FOV
+- Bugfix (1060230) - lens inspector sometimes displayed ortho vs perspective incorrectly for a brief time
 - Bugfix (1283984) - Error message when loading new scene with DontDestroyOnLoad
 - bugfix (1284701) - Edge-case exception when vcam is deleted
 

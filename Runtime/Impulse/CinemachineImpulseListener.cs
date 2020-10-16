@@ -10,11 +10,7 @@ namespace Cinemachine
     [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseListener.html")]
     public class CinemachineImpulseListener : CinemachineExtension
     {
