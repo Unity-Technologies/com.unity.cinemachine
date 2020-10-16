@@ -99,7 +99,7 @@ namespace Cinemachine
                 extra.m_previousDisplacement = displacement;
 
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
-                    extra.m_dampedDisplacement = extra.m_dampedDisplacement = Vector3.zero;
+                    extra.m_dampedDisplacement = Vector3.zero;
                 else
                 {
                     // If a big change from previous frame's desired displacement is detected, 
