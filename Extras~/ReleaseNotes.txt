@@ -1,3 +1,6 @@
+<size=20><b>Version 2.6.4</b></size>
+- bugfix (1284701) - Edge-case exception when vcam is deleted
+
 <size=20><b>Version 2.6.3</b></size>
 
 - Regression fix (1274989) - OnTargetObjectWarped broken for OrbitalTransposer
