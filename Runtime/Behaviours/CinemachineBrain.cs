@@ -228,8 +228,8 @@ namespace Cinemachine
             StopCoroutine(mPhysicsCoroutine);
         }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { ManualUpdate(); }
-        void OnSceneUnloaded(Scene scene) { ManualUpdate(); }
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode) { if (mFrameStack.Count > 0) ManualUpdate(); }
+        void OnSceneUnloaded(Scene scene) { if (mFrameStack.Count > 0) ManualUpdate(); }
 
         private void Start()
         {
@@ -575,12 +575,16 @@ namespace Cinemachine
         }
 
         ICinemachineCamera mActiveCameraPreviousFrame;
+        GameObject mActiveCameraPreviousFrameGameObject;
+
         private void ProcessActiveCamera(float deltaTime)
         {
             var activeCamera = ActiveVirtualCamera;
             if (activeCamera != null)
             {
                 // Has the current camera changed this frame?
+                if (mActiveCameraPreviousFrameGameObject == null)
+                    mActiveCameraPreviousFrame = null; // object was deleted
                 if (activeCamera != mActiveCameraPreviousFrame)
                 {
                     // Notify incoming camera of transition
@@ -606,6 +610,8 @@ namespace Cinemachine
                     SoloCamera != null ? SoloCamera.State : mCurrentLiveCameras.State);
             }
             mActiveCameraPreviousFrame = activeCamera;
+            mActiveCameraPreviousFrameGameObject 
+                = activeCamera == null ? null : activeCamera.VirtualCameraGameObject;
         }
 
         private void UpdateFrame0(float deltaTime)
