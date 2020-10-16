@@ -2,6 +2,7 @@
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using Cinemachine.Utility;
+using Assert = UnityEngine.Assertions.Assert;
 
 public class UnityVectorExtensionTests
 {
