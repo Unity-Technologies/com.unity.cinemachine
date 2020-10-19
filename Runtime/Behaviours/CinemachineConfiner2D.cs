@@ -21,6 +21,7 @@ namespace Cinemachine
     /// If the cache is invalid, it will be automatically recomputed at the next usage (lazy evaluation).
     /// The cache is automatically invalidated in some well-defined circumstances:
     /// - Aspect ratio of the parent vcam changes.
+    /// - Relevant parameters in the Confiner change (MaxOrthoSize, ShrinkToPointsExperimental).
     /// - Transform of the bounding shape 2D changes.
     /// 
     /// The cache is NOT automatically invalidated (due to high computation cost every frame) if the contents
@@ -47,7 +48,9 @@ namespace Cinemachine
         public bool m_DrawGizmos = true;
         private List<List<Vector2>> m_ConfinerGizmos;
         
-        [HideInInspector, SerializeField] internal float m_MaxOrthoSize;
+        [HideInInspector, SerializeField] internal float m_MaxOrthoSize; // TODO: in editor change name to
+                                                                         // maxFrustumHeight and convert between
+                                                                         // ortho and perspective bull
         [HideInInspector, SerializeField] internal bool m_ShrinkToPointsExperimental;
         
         private static readonly float m_bakedConfinerResolution = 0.005f;
@@ -69,15 +72,14 @@ namespace Cinemachine
         {
             if (stage == CinemachineCore.Stage.Body)
             {
-                if (!ValidateConfinerStateCache(state.Lens.Aspect, out bool confinerStateChanged))
+                if (!ValidatePathCache(state.Lens.Aspect, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
                 
-                var extra = GetExtraState<VcamExtraState>(vcam);
-                
                 float frustumHeight = CalculateFrustumHeight(state, vcam);
-                ValidatePathCache(confinerStateChanged, frustumHeight, extra);
+                var extra = GetExtraState<VcamExtraState>(vcam);
+                ValidateVcamPathCache(confinerStateChanged, frustumHeight, extra);
 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_VcamShapeCache.m_path);
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
@@ -101,7 +103,7 @@ namespace Cinemachine
             }
         }
 
-        // <summary>
+        /// <summary>
         /// Calculates Frustum Height for orthographic or perspective camera.
         /// Ascii illustration of Frustum Height:
         ///  |----+----+  -\
@@ -110,6 +112,9 @@ namespace Cinemachine
         ///  |    |    |
         ///  |---------|
         /// </summary>
+        /// <param name="state">CameraState to check if Orthographic or Perspective</param>
+        /// <param name="vcam">Vi</param>
+        /// <returns>Frustum height of the camera</returns>
         private float CalculateFrustumHeight(in CameraState state, in CinemachineVirtualCameraBase vcam)
         {
             float frustumHeight;
@@ -180,7 +185,9 @@ namespace Cinemachine
         private struct ShapeCache
         {
             public float m_aspectRatio;
-
+            public float m_maxOrthoSize;
+            public bool m_shrinkToPoints;
+            
             private Vector3 m_boundingShapePosition;
             private Vector3 m_boundingShapeScale;
             private Quaternion m_boundingShapeRotation;
@@ -193,6 +200,8 @@ namespace Cinemachine
             public void Invalidate()
             {
                 m_aspectRatio = 0;
+                m_maxOrthoSize = 0;
+                m_shrinkToPoints = false;
                 
                 m_boundingShapePosition = Vector3.negativeInfinity;
                 m_boundingShapeScale = Vector3.negativeInfinity;
@@ -203,6 +212,17 @@ namespace Cinemachine
                 m_originalPathTotalPointCount = 0;
 
                 m_confinerStates = null;
+            }
+
+            public bool IsValid(in Transform boundingShapeTransform, in float aspectRatio, 
+                in float maxOrthoSize, in bool shrinkToPoint)
+            {
+                return m_originalPath != null && // first time?
+                       m_confinerStates != null && // cache not empty? 
+                       !BoundingShapeTransformChanged(boundingShapeTransform) && // input shape changed?
+                       Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
+                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon && // max ortho changed?
+                       m_shrinkToPoints == shrinkToPoint; // shrink to point option changed
             }
 
             public void SetTransformCache(in Transform boundingShapeTransform)
@@ -230,6 +250,11 @@ namespace Cinemachine
         {
             public float m_frustumHeight;
             public List<List<Vector2>> m_path;
+
+            public bool IsValid(in float frustumHeight)
+            {
+                return m_path != null && Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
+            }
         }
 
         /// <summary>
@@ -238,16 +263,11 @@ namespace Cinemachine
         /// <param name="aspectRatio">Camera window ratio (width / height)</param>
         /// <param name="confinerStateChanged">True, if the baked confiner state has changed. False, otherwise.</param>
         /// <returns>True, if path is baked and valid. False, otherwise.</returns>
-        private bool ValidateConfinerStateCache(float aspectRatio, out bool confinerStateChanged)
+        private bool ValidatePathCache(float aspectRatio, out bool confinerStateChanged)
         {
             confinerStateChanged = false;
-            bool cacheIsValid =
-                m_shapeCache.m_originalPath != null && // first time?
-                m_shapeCache.m_confinerStates != null && // cache not empty? 
-                !m_shapeCache.BoundingShapeTransformChanged(m_BoundingShape2D.transform) && // confiner was moved or rotated or scaled?
-                Math.Abs(m_shapeCache.m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon; // sensor ratio changed?
-            
-            if (cacheIsValid)
+            if (m_shapeCache.IsValid(m_BoundingShape2D.transform, 
+                aspectRatio, m_MaxOrthoSize, m_ShrinkToPointsExperimental))
             {
                 BakeProgress = BakeProgressEnum.BAKED;
                 return true;
@@ -322,6 +342,8 @@ namespace Cinemachine
             m_shapeCache.m_aspectRatio = aspectRatio;
             m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
             m_shapeCache.SetTransformCache(m_BoundingShape2D.transform);
+            m_shapeCache.m_maxOrthoSize = m_MaxOrthoSize;
+            m_shapeCache.m_shrinkToPoints = m_ShrinkToPointsExperimental;
 
             BakeProgress = BakeProgressEnum.BAKED;
             return true;
@@ -335,22 +357,22 @@ namespace Cinemachine
         /// </summary>
         /// <param name="confinerStateChanged">Confiner cache was changed</param>
         /// <param name="frustumHeight">Camera frustum height</param>
-        private void ValidatePathCache(in bool confinerStateChanged, in float frustumHeight, in VcamExtraState extra)
+        private void ValidateVcamPathCache(in bool confinerStateChanged, in float frustumHeight, in VcamExtraState extra)
         {
-            if (confinerStateChanged ||
-                extra.m_VcamShapeCache.m_path == null || 
-                Math.Abs(frustumHeight - extra.m_VcamShapeCache.m_frustumHeight) > m_bakedConfinerResolution)
+            if (!confinerStateChanged && extra.m_VcamShapeCache.IsValid(frustumHeight))
             {
-                m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(frustumHeight);
-                ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, frustumHeight, 
-                    out extra.m_VcamShapeCache.m_path);
+                return;
+            }
+            
+            m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(frustumHeight);
+            ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, frustumHeight, 
+                out extra.m_VcamShapeCache.m_path);
                 
-                extra.m_VcamShapeCache.m_frustumHeight = frustumHeight;
+            extra.m_VcamShapeCache.m_frustumHeight = frustumHeight;
                 
-                if (m_DrawGizmos)
-                {
-                    m_ConfinerGizmos = extra.m_VcamShapeCache.m_path;
-                }
+            if (m_DrawGizmos)
+            {
+                m_ConfinerGizmos = extra.m_VcamShapeCache.m_path;
             }
         }
         
