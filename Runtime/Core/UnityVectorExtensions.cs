@@ -63,76 +63,16 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>
-        /// Calculates distance between point and the line segment defined by l1 and l2.
-        /// </summary>
-        /// <param name="point">Point from which distance to the line segment is calculated</param>
-        /// <param name="l1">Point one, defining the line</param>
-        /// <param name="l2">Point two, defining the line</param>
-        /// <param name="onSegment">If onSegment is smaller than 0, then the distance between point and the line
-        /// segment is the same as the distance between point and l1. If onSegment is bigger than 1, then the distance
-        /// between point and the line segment is the same as the distance between point and l2. If onSegment is
-        /// between 0 and 1, then the distance is the length of the segment going through point and is perpendicular
-        /// to the line defined by l1 and l2.</param>
-        /// <returns></returns>
-        public static float DistanceBetweenPointAndLineSegment(in Vector2 point, in Vector2 l1, in Vector2 l2, 
-            out float onSegment)
-        {
-            var x2_x1 = l2.x - l1.x;
-            var y2_y1 = l2.y - l1.y;
-
-            onSegment = -1f;
-            var sqrMagnitude = x2_x1 * x2_x1 + y2_y1 * y2_y1;
-            if (sqrMagnitude > Epsilon) onSegment = ((point.x - l1.x) * x2_x1 + (point.y - l1.y) * y2_y1) / sqrMagnitude;
-
-            float xx, yy;
-            if (onSegment < 0) {
-                xx = l1.x;
-                yy = l1.y;
-            }
-            else if (onSegment > 1) {
-                xx = l2.x;
-                yy = l2.y;
-            }
-            else {
-                xx = l1.x + onSegment * x2_x1;
-                yy = l1.y + onSegment * y2_y1;
-            }
-
-            var dx = point.x - xx;
-            var dy = point.y - yy;
-            return Mathf.Sqrt(dx * dx + dy * dy);
-        }
-
-        /// <summary>
-        /// Calculates distance between point and the line defined by l1 and l2.
-        /// </summary>
-        /// <param name="point">Point from which distance to the line is calculated</param>
-        /// <param name="l1">Point one, defining the line</param>
-        /// <param name="l2">Point two, defining the line</param>
-        /// <returns></returns>
-        public static float DistanceBetweenPointAndLine(in Vector2 point, in Vector2 l1, in Vector2 l2)
-        {
-            float x2_x1 = l2.x - l1.x;
-            float y2_y1 = l2.y - l1.y;
-
-            return Mathf.Abs(y2_y1*point.x - x2_x1*point.y + l2.x*l1.y - l2.y*l1.x) / 
-                   Mathf.Sqrt(y2_y1 * y2_y1 + x2_x1 * x2_x1);
-        }
-        
-        /// <summary>
         /// Calculates the intersection point defined by line_1 (p1, p2), and line_2 (p3, p4).
         /// </summary>
         /// <param name="p1">line_1 is defined by (p1, p2)</param>
         /// <param name="p2">line_1 is defined by (p1, p2)</param>
         /// <param name="p3">line_2 is defined by (p3, p4)</param>
         /// <param name="p4">line_2 is defined by (p3, p4)</param>
-        /// <param name="linesIntersect">True, if line_1 and line_2 intersect. False, otherwise.</param>
-        /// <param name="segmentsIntersect">True, if line_1 and line_2 intersect within the line segments defined by [p1,p2] and [p3,p4]. False, otherwise.</param>
         /// <param name="intersection">If lines intersect, then this will hold the intersection point. Otherwise, it will be Vector2.positiveInfinity.</param>
-        /// <returns></returns>
-        public static void FindIntersection(
-            in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4,
-            out bool linesIntersect, out bool segmentsIntersect, out Vector2 intersection)
+        /// <returns>0 = no intersection, 1 = lines intersect, 2 = segments intersect.</returns>
+        public static int FindIntersection(in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4, 
+            out Vector2 intersection)
         {
             // Get the segments' parameters.
             float dx12 = p2.x - p1.x;
@@ -146,29 +86,25 @@ namespace Cinemachine.Utility
             float t1 =
                 ((p1.x - p3.x) * dy34 + (p3.y - p1.y) * dx34)
                 / denominator;
-            if (float.IsInfinity(t1))
+            if (float.IsInfinity(t1) || float.IsNaN(t1))
             {
                 // The lines are parallel (or close enough to it).
-                linesIntersect = false;
-                segmentsIntersect = false;
                 intersection = Vector2.positiveInfinity;
-                return;
+                return 0; // no intersection
             }
-            linesIntersect = true;
-
-            float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
-
+            
             // Find the point of intersection.
             intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
             
-            segmentsIntersect = t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
+            float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
+            return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
         }
         
         /// <summary>
         /// Component-wise absolute value
         /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
+        /// <param name="v">Input vector</param>
+        /// <returns>Component-wise absolute value of the input vector</returns>
         public static Vector2 Abs(this Vector2 v)
         {
             return new Vector2(Mathf.Abs(v.x), Mathf.Abs(v.y));
@@ -177,8 +113,8 @@ namespace Cinemachine.Utility
         /// <summary>
         /// Component-wise absolute value
         /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
+        /// <param name="v">Input vector</param>
+        /// <returns>Component-wise absolute value of the input vector</returns>
         public static Vector3 Abs(this Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));

@@ -16,20 +16,20 @@ namespace Cinemachine
         /// <summary>
         /// 2D point with shrink direction.
         /// </summary>
-        internal class ShrinkablePoint2
+        public class ShrinkablePoint2
         {
             public Vector2 m_position;
             public Vector2 m_originalPosition;
             public Vector2 m_shrinkDirection;
             public bool m_cantIntersect;
-            internal static readonly Vector2 m_vector2NaN = new Vector2(float.NaN, float.NaN);
+            public static readonly Vector2 m_vector2NaN = new Vector2(float.NaN, float.NaN);
 
-            internal ShrinkablePoint2()
+            public ShrinkablePoint2()
             {
                 m_originalPosition = m_vector2NaN;
             }
 
-            internal ShrinkablePoint2(Vector2 mPosition, Vector2 mOriginalPosition, Vector2 mShrinkDirection, 
+            public ShrinkablePoint2(Vector2 mPosition, Vector2 mOriginalPosition, Vector2 mShrinkDirection, 
                 bool mCantIntersect)
             {
                 m_position = mPosition;
@@ -39,17 +39,17 @@ namespace Cinemachine
             }
         }
 
-        internal List<ShrinkablePoint2> m_points;
-        internal float m_windowDiagonal;
-        internal int m_state;
+        public List<ShrinkablePoint2> m_points;
+        public float m_windowDiagonal;
+        public int m_state;
         private bool m_clockwiseOrientation;
-        internal readonly float m_aspectRatio;
-        internal readonly float m_aspectRatioBasedDiagonal;
-        internal readonly Vector2[] m_normalDirections;
+        public readonly float m_aspectRatio;
+        public readonly float m_aspectRatioBasedDiagonal;
+        public readonly Vector2[] m_normalDirections;
         private float m_area;
-        internal float m_minArea;
+        public float m_minArea;
 
-        internal List<Vector2> m_intersectionPoints;
+        public List<Vector2> m_intersectionPoints;
 
         /// <summary>
         /// Default constructor initializing points and intersection points.
@@ -124,7 +124,7 @@ namespace Cinemachine
         /// <param name="aspectRatio"></param>
         /// <param name="aspectRatioBasedDiagonal"></param>
         /// <param name="normalDirections"></param>
-        internal ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) 
+        public ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) 
             : this()
         {
             m_aspectRatio = aspectRatio;
@@ -232,7 +232,7 @@ namespace Cinemachine
         /// Computes shrink directions that respect the aspect ratio of the camera. If the camera window is a square,
         /// then the shrink directions will be equivalent to the normals.
         /// </summary>
-        internal void ComputeAspectBasedShrinkDirections()
+        public void ComputeAspectBasedShrinkDirections()
         {
             // cache current shrink directions to check for change later
             var cachedShrinkDirections = new List<Vector2>(m_points.Count);
@@ -279,7 +279,7 @@ namespace Cinemachine
         /// <param name="frustumHeight">Frustum height requested by the user.
         /// For the path touching the corners this may be relevant.</param>
         /// <param name="path">output result</param>
-        internal static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, float frustumHeight,
+        public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, float frustumHeight,
             out List<List<Vector2>> path)
         {
             // convert shrinkable polygons points to int based points for Clipper
@@ -394,7 +394,7 @@ namespace Cinemachine
         /// <param name="polygons">Input polygons</param>
         /// <param name="p">Input point.</param>
         /// <returns>True, if inside. False, otherwise.</returns>
-        internal static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p)
+        public static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p)
         {
             float minX = Single.PositiveInfinity;
             float maxX = Single.NegativeInfinity;
@@ -418,9 +418,9 @@ namespace Cinemachine
                 {
                     var p1 = polygon[index];
                     var p2 = polygon[(index + 1) % polygon.Count];
-                    UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2,
-                        out bool linesIntersect, out bool segmentsIntersect, out Vector2 intersection);
-                    if (segmentsIntersect)
+                    int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
+                        out Vector2 intersection);
+                    if (intersectionType == 2)
                     {
                         intersectionCount++;
                     }
@@ -647,7 +647,7 @@ namespace Cinemachine
         /// ShrinkablePolygon is shrinkable if it has at least one non-zero shrink direction.
         /// </summary>
         /// <returns>True, if subPolygons is shrinkable. False, otherwise.</returns>
-        internal bool IsShrinkable()
+        public bool IsShrinkable()
         {
             for (int i = 0; i < m_points.Count; ++i)
             {
@@ -662,7 +662,7 @@ namespace Cinemachine
         /// <summary>
         /// Shrink shrinkablePolygon points towards their shrink direction by shrinkAmount.
         /// </summary>
-        internal bool Shrink(float shrinkAmount, bool shrinkToPoint)
+        public bool Shrink(float shrinkAmount, bool shrinkToPoint)
         {
             m_windowDiagonal += shrinkAmount;
             float area1 = Mathf.Abs(ComputeSignedArea());
@@ -779,7 +779,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="p"></param>
         /// <returns>Closest point to p in ShrinkablePolygon</returns>
-        internal Vector2 ClosestPolygonPoint(ShrinkablePoint2 p)
+        public Vector2 ClosestPolygonPoint(ShrinkablePoint2 p)
         {
             var foundWithNormal = false;
             var minDistance = float.MaxValue;
@@ -820,7 +820,7 @@ namespace Cinemachine
         /// <summary>
         /// Removes m_points that are the same or very close.
         /// </summary>
-        internal void Simplify(float shrinkAmount)
+        public void Simplify(float shrinkAmount)
         {
             if (m_points.Count <= 4)
             {
@@ -883,13 +883,12 @@ namespace Cinemachine
                     int nextJ = (j + 1) % shrinkablePolygon.m_points.Count;
                     if (i == nextJ) continue;
 
-                    UnityVectorExtensions.FindIntersection(shrinkablePolygon.m_points[i].m_position,
-                        shrinkablePolygon.m_points[nextI].m_position,
+                    int intersectionType = UnityVectorExtensions.FindIntersection(
+                        shrinkablePolygon.m_points[i].m_position, shrinkablePolygon.m_points[nextI].m_position,
                         shrinkablePolygon.m_points[j].m_position, shrinkablePolygon.m_points[nextJ].m_position,
-                        out bool linesIntersect, out bool segmentsIntersect,
                         out Vector2 intersection);
                     
-                    if (segmentsIntersect) // so we divide g into g1 and g2.
+                    if (intersectionType == 2) // so we divide g into g1 and g2.
                     {
                         var g1 = new ShrinkablePolygon(shrinkablePolygon.m_aspectRatio, 
                             shrinkablePolygon.m_aspectRatioBasedDiagonal, shrinkablePolygon.m_normalDirections);
@@ -968,7 +967,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="subPolygons"></param>
         /// <param name="subShrinkablePolygon"></param>
-        internal static void DivideAlongIntersections(ShrinkablePolygon subPolygons, 
+        public static void DivideAlongIntersections(ShrinkablePolygon subPolygons, 
             out List<ShrinkablePolygon> subShrinkablePolygon)
         {
             subShrinkablePolygon = new List<ShrinkablePolygon>();

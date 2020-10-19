@@ -2,21 +2,21 @@
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using Cinemachine.Utility;
+using Assert = UnityEngine.Assertions.Assert;
 
 public class UnityVectorExtensionTests
 {
     [Test]
-	public void FindIntersectionTests()
+	    public void FindIntersectionTests()
     {
         {
             var l1_p1 = new Vector2(0, 1);
             var l1_p2 = new Vector2(0, -1);
             var l2_p1 = new Vector2(-1, 0);
             var l2_p2 = new Vector2(1, 0);
-            UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, out bool linesIntersect,
-                out bool segmentsIntersect, out Vector2 intersection);
-            Assert.IsTrue(linesIntersect);
-            Assert.IsTrue(segmentsIntersect);
+            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
+                out Vector2 intersection);
+            Assert.IsTrue(intersectionType == 2);
             Assert.IsTrue(Mathf.Abs(intersection.x) < 1e-8f &&
                           Mathf.Abs(intersection.y) < 1e-8f); // intersection should be Vector2.zero
         }
@@ -25,10 +25,9 @@ public class UnityVectorExtensionTests
             var l1_p2 = new Vector2(0, 0);
             var l2_p1 = new Vector2(-1, 0);
             var l2_p2 = new Vector2(1, 0);
-            UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, out bool linesIntersect, 
-                out bool segmentsIntersect, out Vector2 intersection);
-            Assert.IsTrue(linesIntersect);
-            Assert.IsTrue(segmentsIntersect);
+            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
+                out Vector2 intersection);
+            Assert.IsTrue(intersectionType == 2);
             Assert.IsTrue(Mathf.Abs(intersection.x) < 1e-8f &&
                           Mathf.Abs(intersection.y) < 1e-8f); // intersection should be Vector2.zero
         }
@@ -37,10 +36,9 @@ public class UnityVectorExtensionTests
             var l1_p2 = new Vector2(0, 1);
             var l2_p1 = new Vector2(-1, 0);
             var l2_p2 = new Vector2(1, 0);
-            UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, out bool linesIntersect, 
-                out bool segmentsIntersect, out Vector2 intersection);
-            Assert.IsTrue(linesIntersect);
-            Assert.IsFalse(segmentsIntersect);
+            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
+                out Vector2 intersection);
+            Assert.IsTrue(intersectionType == 1);
             Assert.IsTrue(Mathf.Abs(intersection.x) < 1e-8f &&
                           Mathf.Abs(intersection.y) < 1e-8f); // intersection should be Vector2.zero
         }
@@ -49,13 +47,21 @@ public class UnityVectorExtensionTests
             var l1_p2 = new Vector2(0, 1);
             var l2_p1 = new Vector2(1, 2);
             var l2_p2 = new Vector2(1, 1);
-            UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, out bool linesIntersect, 
-                out bool segmentsIntersect, out Vector2 intersection);
-            Assert.IsFalse(linesIntersect);
-            Assert.IsFalse(segmentsIntersect);
+            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
+                out Vector2 intersection);
+            Assert.IsTrue(intersectionType == 0);
+        }
+        {
+            var l1_p1 = new Vector2(0, 1);
+            var l1_p2 = new Vector2(0, 1);
+            var l2_p1 = new Vector2(1, 0);
+            var l2_p2 = new Vector2(1, 0);
+            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
+                out Vector2 intersection);
+            Assert.IsTrue(intersectionType == 0);
         }
     }
-
+        
     [Test]
      public void TestAngle()
     {

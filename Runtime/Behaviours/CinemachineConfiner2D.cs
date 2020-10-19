@@ -97,7 +97,8 @@ namespace Cinemachine
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                    if (m_CornerDampingIsOn || m_Damping > 0 && displacementAngle > m_CornerAngleTreshold)
+                    if (m_CornerDampingIsOn || 
+                        (m_Damping > 0 && displacementAngle > m_CornerAngleTreshold))
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         var deltaDamped = 

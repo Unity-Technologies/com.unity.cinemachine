@@ -10,7 +10,7 @@ namespace Cinemachine
     /// </summary>
     internal class ConfinerOven
     {
-        internal class ConfinerState
+        public class ConfinerState
         {
             public List<ShrinkablePolygon> polygons;
             public float windowSize;
@@ -27,7 +27,7 @@ namespace Cinemachine
         /// <param name="shrinkAmount"></param>
         /// <param name="maxOrthosize"></param>
         /// <param name="shrinkToPoint"></param>
-        internal void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
+        public void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
             in float maxOrthosize, in bool shrinkToPoint)
         {
             m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, sensorRatio);
@@ -80,7 +80,7 @@ namespace Cinemachine
         /// <summary>
         /// Converts and returns shrinkable polygons from a polygons
         /// </summary>
-        private List<List<ShrinkablePolygon>> CreateShrinkablePolygons(
+        public List<List<ShrinkablePolygon>> CreateShrinkablePolygons(
             in List<List<Vector2>> paths, in float aspectRatio)
         {
             if (paths == null)
@@ -118,7 +118,7 @@ namespace Cinemachine
         /// <summary>
         /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
         /// </summary>
-        internal ConfinerState GetConfinerAtFrustumHeight(float frustumHeight)
+        public ConfinerState GetConfinerAtFrustumHeight(float frustumHeight)
         {
             ConfinerState result = new ConfinerState();
             for (int i = m_confinerStates.Count - 1; i >= 0; --i)
@@ -195,7 +195,7 @@ namespace Cinemachine
         /// <summary>
         /// Converts and returns m_shrinkablePolygons into List<ConfinerState>
         /// </summary>
-        internal List<ConfinerState> GetShrinkablePolygonsAsConfinerStates()
+        public List<ConfinerState> GetShrinkablePolygonsAsConfinerStates()
         {
             TrimShrinkablePolygons();
 
