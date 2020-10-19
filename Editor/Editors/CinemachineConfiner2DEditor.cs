@@ -13,9 +13,6 @@ namespace Cinemachine.Editor
         private SerializedProperty m_shrinkToPointsExperimentalProperty;
         private GUIContent m_shrinkToPointsExperimentalGUIContent;
 
-        private SerializedProperty m_triggerBakeProperty;
-        private SerializedProperty m_triggerClearCacheProperty;
-        
         private SerializedProperty m_bakeProgressProperty;
         private string[] m_bakeProgressPropertyEnumNames;
         
@@ -35,9 +32,6 @@ namespace Cinemachine.Editor
                 "By default, the confiner is reduced to its skeleton. If this property is enabled, then the confiner " +
                 "will continue reducing the skeletons by reducing bones (line segments) to points.");
 
-            m_triggerBakeProperty = FindProperty(x => x.m_TriggerBake);
-            m_triggerClearCacheProperty = FindProperty(x => x.m_TriggerClearCache);
-            
             m_bakeProgressProperty = FindProperty(x => x.BakeProgress);
             m_bakeProgressPropertyEnumNames = m_bakeProgressProperty.enumNames;
         }
@@ -54,17 +48,6 @@ namespace Cinemachine.Editor
                 EditorGUILayout.PropertyField(m_shrinkToPointsExperimentalProperty, 
                     m_shrinkToPointsExperimentalGUIContent);
 
-                
-                if (GUILayout.Button("Bake"))
-                {
-                    m_triggerBakeProperty.boolValue = true;
-                }
-
-                if (GUILayout.Button("Clear"))
-                {
-                    m_triggerClearCacheProperty.boolValue = true;
-                }
-                
                 float p = m_bakeProgressProperty.enumValueIndex == 0 ? 0 :
                     m_bakeProgressProperty.enumValueIndex == 1 ? 0.5f : 1f;
                 EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), p, 

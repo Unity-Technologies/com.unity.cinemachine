@@ -12,11 +12,20 @@ namespace Cinemachine
 {
 #if CINEMACHINE_PHYSICS_2D
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that post-processes
-    /// the final position of the virtual camera. It will confine the virtual
-    /// camera view window to the area specified in the Bounding Shape 2D field
-    /// based on the camera's window size and ratio.
-    /// The confining area is baked and cached at start.
+    /// An add-on module for Cinemachine Virtual Camera that post-processes the final position of the virtual camera.
+    /// It will confine the virtual camera view window to the area specified in the Bounding Shape 2D field based on
+    /// the camera's window size and ratio. The confining area is baked and cached at start.
+    ///
+    /// 
+    /// CinemachineConfiner2D uses a cache to avoid rebaking the confiner unnecessarily.
+    /// If the cache is invalid, it will be automatically recomputed at the next usage (lazy evaluation).
+    /// The cache is automatically invalidated in some well-defined circumstances:
+    /// - Aspect ratio of the parent vcam changes.
+    /// - Transform of the bounding shape 2D changes.
+    /// 
+    /// The cache is NOT automatically invalidated (due to high computation cost every frame) if the contents
+    /// of the confining shape change (e.g. points get moved dynamically). In that case, we expose an API to
+    /// forcibly invalidate the cache so that it gets auto-recomputed next time it's needed.
     /// </summary>
     [SaveDuringPlay, ExecuteAlways]
     public class CinemachineConfiner2D : CinemachineExtension
@@ -38,11 +47,6 @@ namespace Cinemachine
         public bool m_DrawGizmos = true;
         private List<List<Vector2>> m_ConfinerGizmos;
         
-        
-        private bool m_AutoBake = true;
-        
-        [HideInInspector, SerializeField] internal bool m_TriggerBake = false;
-        [HideInInspector, SerializeField] internal bool m_TriggerClearCache = false;
         [HideInInspector, SerializeField] internal float m_MaxOrthoSize;
         [HideInInspector, SerializeField] internal bool m_ShrinkToPointsExperimental;
         
@@ -54,20 +58,10 @@ namespace Cinemachine
         
         private ConfinerOven m_confinerBaker = null;
 
-        /// <summary>Force rebake manually. This function invalidates the cache and rebakes the confiner.</summary>
+        /// <summary>Forces rebake at next iteration.</summary>
         public void ForceBake()
         {
             m_shapeCache.Invalidate();
-            Bake();
-        }
-        
-        /// <summary>
-        /// Trigger rebake process manually.
-        /// The confiner rebakes iff an input parameters affecting the outcome of the baked result change.
-        /// </summary>
-        private void Bake()
-        {
-            m_TriggerBake = true;
         }
 
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
@@ -186,30 +180,29 @@ namespace Cinemachine
         private struct ShapeCache
         {
             public float m_aspectRatio;
-            
-            public Collider2D m_boundingShape2D;
-            public List<List<Vector2>> m_originalPath;
-            public int m_originalPathTotalPointCount;
-            
-            public List<ConfinerOven.ConfinerState> m_confinerStates;
 
             private Vector3 m_boundingShapePosition;
             private Vector3 m_boundingShapeScale;
             private Quaternion m_boundingShapeRotation;
+            
+            public Collider2D m_boundingShape2D;
+            public List<List<Vector2>> m_originalPath;
+            public int m_originalPathTotalPointCount;
+            public List<ConfinerOven.ConfinerState> m_confinerStates;
 
             public void Invalidate()
             {
                 m_aspectRatio = 0;
+                
+                m_boundingShapePosition = Vector3.negativeInfinity;
+                m_boundingShapeScale = Vector3.negativeInfinity;
+                m_boundingShapeRotation = new Quaternion(0,0,0,0);
                 
                 m_boundingShape2D = null;
                 m_originalPath = null;
                 m_originalPathTotalPointCount = 0;
 
                 m_confinerStates = null;
-                
-                m_boundingShapePosition = Vector3.negativeInfinity;
-                m_boundingShapeScale = Vector3.negativeInfinity;
-                m_boundingShapeRotation = new Quaternion(0,0,0,0);
             }
 
             public void SetTransformCache(in Transform boundingShapeTransform)
@@ -240,52 +233,26 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Checks if we have a valid confiner state cache. Calculates it if cache is invalid, and bake was requested.
+        /// Checks if we have a valid confiner state cache. Calculates it if cache is invalid.
         /// </summary>
         /// <param name="aspectRatio">Camera window ratio (width / height)</param>
         /// <param name="confinerStateChanged">True, if the baked confiner state has changed. False, otherwise.</param>
-        /// <returns>True, if path is baked and valid. False, if path is invalid or non-existent.</returns>
+        /// <returns>True, if path is baked and valid. False, otherwise.</returns>
         private bool ValidateConfinerStateCache(float aspectRatio, out bool confinerStateChanged)
         {
-            if (m_TriggerClearCache)
-            {
-                m_shapeCache.Invalidate();
-                m_TriggerClearCache = false;
-            }
-            
             confinerStateChanged = false;
-            bool cacheIsEmpty = m_shapeCache.m_confinerStates == null;
             bool cacheIsValid =
                 m_shapeCache.m_originalPath != null && // first time?
-                !cacheIsEmpty && // has a prev. baked result?
+                m_shapeCache.m_confinerStates != null && // cache not empty? 
                 !m_shapeCache.BoundingShapeTransformChanged(m_BoundingShape2D.transform) && // confiner was moved or rotated or scaled?
                 Math.Abs(m_shapeCache.m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon; // sensor ratio changed?
-            if (!m_AutoBake && !m_TriggerBake)
+            
+            if (cacheIsValid)
             {
-                if (cacheIsEmpty)
-                {
-                    BakeProgress = BakeProgressEnum.EMPTY;
-                    return false; // if m_confinerStates is null, then we don't have path -> false
-                }
-                else if (!cacheIsValid)
-                {
-                    BakeProgress = BakeProgressEnum.INVALID_CACHE;
-                    return true;
-                }
-                else
-                {
-                    BakeProgress = BakeProgressEnum.BAKED;
-                    return true;
-                }
-            }
-            else if (!cacheIsEmpty && cacheIsValid)
-            {
-                m_TriggerBake = false;
                 BakeProgress = BakeProgressEnum.BAKED;
                 return true;
             }
             
-            m_TriggerBake = false;
             BakeProgress = BakeProgressEnum.BAKING;
             confinerStateChanged = true;
 
