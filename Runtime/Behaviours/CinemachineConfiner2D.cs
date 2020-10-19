@@ -214,12 +214,13 @@ namespace Cinemachine
                 m_confinerStates = null;
             }
 
-            public bool IsValid(in Transform boundingShapeTransform, in float aspectRatio, 
-                in float maxOrthoSize, in bool shrinkToPoint)
+            public bool IsValid(in Collider2D boundingShape2D, 
+                in float aspectRatio, in float maxOrthoSize, in bool shrinkToPoint)
             {
-                return m_originalPath != null && // first time?
+                return m_boundingShape2D == boundingShape2D && // same boundingShape?
+                       m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
-                       !BoundingShapeTransformChanged(boundingShapeTransform) && // input shape changed?
+                       !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
                        Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon && // max ortho changed?
                        m_shrinkToPoints == shrinkToPoint; // shrink to point option changed
@@ -266,7 +267,7 @@ namespace Cinemachine
         private bool ValidatePathCache(float aspectRatio, out bool confinerStateChanged)
         {
             confinerStateChanged = false;
-            if (m_shapeCache.IsValid(m_BoundingShape2D.transform, 
+            if (m_shapeCache.IsValid(m_BoundingShape2D, 
                 aspectRatio, m_MaxOrthoSize, m_ShrinkToPointsExperimental))
             {
                 BakeProgress = BakeProgressEnum.BAKED;
