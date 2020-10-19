@@ -39,11 +39,8 @@ namespace Cinemachine
         private List<List<Vector2>> m_ConfinerGizmos;
         
         
-        [HideInInspector, SerializeField] internal bool m_AutoBake = true; // TODO: remove
-                                                                           // reason: if user wants to
-                                                                           // switch between cameras, it is better
-                                                                           // to just have a different 2D confiner
-                                                                           // for each setup
+        private bool m_AutoBake = true;
+        
         [HideInInspector, SerializeField] internal bool m_TriggerBake = false;
         [HideInInspector, SerializeField] internal bool m_TriggerClearCache = false;
         [HideInInspector, SerializeField] internal float m_MaxOrthoSize;
@@ -63,7 +60,7 @@ namespace Cinemachine
         /// <summary>Force rebake manually. This function invalidates the cache and rebakes the confiner.</summary>
         public void ForceBake()
         {
-            InvalidatePathCache();
+            m_shapeCache.Invalidate();
             Bake();
         }
         
@@ -192,24 +189,26 @@ namespace Cinemachine
         private struct ShapeCache
         {
             public float m_aspectRatio;
-            public Vector3 m_boundingShapePosition;
-            public Vector3 m_boundingShapeScale;
-            public Quaternion m_boundingShapeRotation;
             
             public Collider2D m_boundingShape2D;
             public List<List<Vector2>> m_originalPath;
             public int m_originalPathTotalPointCount;
 
+            private Vector3 m_boundingShapePosition;
+            private Vector3 m_boundingShapeScale;
+            private Quaternion m_boundingShapeRotation;
+
             public void Invalidate()
             {
                 m_aspectRatio = 0;
-                m_boundingShapePosition = Vector3.negativeInfinity;
-                m_boundingShapeScale = Vector3.negativeInfinity;
-                m_boundingShapeRotation = new Quaternion(0,0,0,0);
                 
                 m_boundingShape2D = null;
                 m_originalPath = null;
                 m_originalPathTotalPointCount = 0;
+                
+                m_boundingShapePosition = Vector3.negativeInfinity;
+                m_boundingShapeScale = Vector3.negativeInfinity;
+                m_boundingShapeRotation = new Quaternion(0,0,0,0);
             }
 
             public void SetTransformCache(in Transform boundingShapeTransform)
@@ -240,14 +239,6 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Invalidates path cache.
-        /// </summary>
-        private void InvalidatePathCache()
-        {
-            m_shapeCache.Invalidate();
-        }
-        
-        /// <summary>
         /// Checks if we have a valid confiner state cache. Calculates it if cache is invalid, and bake was requested.
         /// </summary>
         /// <param name="aspectRatio">Camera window ratio (width / height)</param>
@@ -257,7 +248,7 @@ namespace Cinemachine
         {
             if (m_TriggerClearCache)
             {
-                InvalidatePathCache();
+                m_shapeCache.Invalidate();
                 m_TriggerClearCache = false;
             }
             
@@ -351,7 +342,7 @@ namespace Cinemachine
                 else
                 {
                     BakeProgress = BakeProgressEnum.INVALID_CACHE;
-                    InvalidatePathCache();
+                    m_shapeCache.Invalidate();
                     return false; // input collider is invalid
                 }
             }

@@ -12,10 +12,7 @@ namespace Cinemachine.Editor
         private GUIContent m_maxOrthoSizeGUIContent;
         private SerializedProperty m_shrinkToPointsExperimentalProperty;
         private GUIContent m_shrinkToPointsExperimentalGUIContent;
-        
-        private SerializedProperty m_autoBakeProperty;
-        private GUIContent m_autoBakeGUIContent;
-        
+
         private SerializedProperty m_triggerBakeProperty;
         private SerializedProperty m_triggerClearCacheProperty;
         
@@ -37,11 +34,6 @@ namespace Cinemachine.Editor
             m_shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink Sub-Polygons To Point Experimental", 
                 "By default, the confiner is reduced to its skeleton. If this property is enabled, then the confiner " +
                 "will continue reducing the skeletons by reducing bones (line segments) to points.");
-            
-            m_autoBakeProperty = FindProperty(x => x.m_AutoBake);
-            m_autoBakeGUIContent = new GUIContent("Automatic Baking",
-                "Automatically rebakes the confiner, if input parameters (InputCollider, Resolution, " +
-                "CameraWindowRatio) change. True is on, False is off.");
 
             m_triggerBakeProperty = FindProperty(x => x.m_TriggerBake);
             m_triggerClearCacheProperty = FindProperty(x => x.m_TriggerClearCache);
@@ -61,25 +53,23 @@ namespace Cinemachine.Editor
                 EditorGUILayout.PropertyField(m_maxOrthoSizeProperty, m_maxOrthoSizeGUIContent);
                 EditorGUILayout.PropertyField(m_shrinkToPointsExperimentalProperty, 
                     m_shrinkToPointsExperimentalGUIContent);
-                EditorGUILayout.PropertyField(m_autoBakeProperty, m_autoBakeGUIContent);
 
-                if (!m_autoBakeProperty.boolValue)
+                
+                if (GUILayout.Button("Bake"))
                 {
-                    if (GUILayout.Button("Bake"))
-                    {
-                        m_triggerBakeProperty.boolValue = true;
-                    }
-
-                    if (GUILayout.Button("Clear"))
-                    {
-                        m_triggerClearCacheProperty.boolValue = true;
-                    }
-                    
-                    float p = m_bakeProgressProperty.enumValueIndex == 0 ? 0 :
-                        m_bakeProgressProperty.enumValueIndex == 1 ? 0.5f : 1f;
-                    EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), p, 
-                        m_bakeProgressPropertyEnumNames[m_bakeProgressProperty.enumValueIndex]);
+                    m_triggerBakeProperty.boolValue = true;
                 }
+
+                if (GUILayout.Button("Clear"))
+                {
+                    m_triggerClearCacheProperty.boolValue = true;
+                }
+                
+                float p = m_bakeProgressProperty.enumValueIndex == 0 ? 0 :
+                    m_bakeProgressProperty.enumValueIndex == 1 ? 0.5f : 1f;
+                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), p, 
+                    m_bakeProgressPropertyEnumNames[m_bakeProgressProperty.enumValueIndex]);
+                
             }
             serializedObject.ApplyModifiedProperties();
         }
