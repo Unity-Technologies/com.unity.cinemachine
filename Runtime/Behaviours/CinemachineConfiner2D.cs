@@ -30,13 +30,15 @@ namespace Cinemachine
         [Tooltip("Damping applied around corners to avoid jumps.  Higher numbers are more gradual.")]
         [Range(0, 5)]
         public float m_Damping = 0;
-        private bool m_CornerDampingIsOn = false;
         private float m_CornerDampingSpeedup = 1f;
         private float m_CornerAngleTreshold = 10f;
 
         /// <summary>Draws Gizmos for easier fine-tuning.</summary>
         [Tooltip("Draws Input Bounding Shape (black) and Confiner (cyan) for easier fine-tuning.")]
         public bool m_DrawGizmos = true;
+        private List<List<Vector2>> m_ConfinerGizmos;
+        
+        
         [HideInInspector, SerializeField] internal bool m_AutoBake = true; // TODO: remove
                                                                            // reason: if user wants to
                                                                            // switch between cameras, it is better
@@ -53,12 +55,7 @@ namespace Cinemachine
                                                                                // fist pass cleanup!
         [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
 
-        private List<List<Vector2>> m_originalPath;
-        private List<List<Vector2>> m_originalPathCache;
-        private int m_originalPathTotalPointCount;
         
-        private float m_frustumHeightCache;
-        private List<List<Vector2>> m_currentPathCache;
 
         private List<ConfinerOven.ConfinerState> m_confinerStates;
         private ConfinerOven m_confinerBaker = null;
@@ -89,15 +86,16 @@ namespace Cinemachine
                     return; // invalid path
                 }
                 
-                float frustumHeight = CalculateFrustumHeight(state, vcam);
-                ValidatePathCache(confinerStateChanged, frustumHeight);
-
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                Vector3 displacement = ConfinePoint(state.CorrectedPosition);
+                
+                float frustumHeight = CalculateFrustumHeight(state, vcam);
+                ValidatePathCache(confinerStateChanged, frustumHeight, extra);
+
+                Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_VcamShapeCache.m_path);
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                    if (m_CornerDampingIsOn || 
+                    if (extra.m_CornerDampingIsOn || 
                         (m_Damping > 0 && displacementAngle > m_CornerAngleTreshold))
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
@@ -106,13 +104,12 @@ namespace Cinemachine
                         displacement = extra.m_previousDisplacement + deltaDamped;
 
                         m_CornerDampingSpeedup = displacementAngle < 1f ? 2f : 1f;
-                        m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
-                                              delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
+                        extra.m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
+                                                    delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     }
                 }
                 extra.m_previousDisplacement = displacement;
                 state.PositionCorrection += displacement;
-                extra.confinerDisplacement = displacement.magnitude;
             }
         }
 
@@ -120,7 +117,7 @@ namespace Cinemachine
         /// Calculates Frustum Height for orthographic or perspective camera.
         /// Ascii illustration of Frustum Height:
         ///  |----+----+  -\
-        ///  |    |    |    } frustumHeight = cameraWindowHeight / 2
+        ///  |    |    |    } m_frustumHeight = cameraWindowHeight / 2
         ///  |---------+  -/
         ///  |    |    |
         ///  |---------|
@@ -148,24 +145,24 @@ namespace Cinemachine
         /// </summary>
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
-        private Vector2 ConfinePoint(Vector2 positionToConfine)
+        private Vector2 ConfinePoint(in Vector2 positionToConfine, in List<List<Vector2>> pathCache)
         {
-            if (ShrinkablePolygon.IsInside(m_currentPathCache, positionToConfine))
+            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
             {
                 return Vector2.zero;
             }
 
             Vector2 closest = positionToConfine;
             float minDistance = float.MaxValue;
-            for (int i = 0; i < m_currentPathCache.Count; ++i)
+            for (int i = 0; i < pathCache.Count; ++i)
             {
-                int numPoints = m_currentPathCache[i].Count;
+                int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = m_currentPathCache[i][numPoints - 1];
+                    Vector2 v0 = pathCache[i][numPoints - 1];
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = m_currentPathCache[i][j];
+                        Vector2 v = pathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
@@ -183,35 +180,80 @@ namespace Cinemachine
         private class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
-            public float confinerDisplacement;
-            public bool applyAfterAim;
+            public bool m_CornerDampingIsOn;
+            public VcamShapeCache m_VcamShapeCache;
         };
 
-        private float m_sensorRatioCache;
-        private Vector3 m_boundingShapePositionCache;
-        private Vector3 m_boundingShapeScaleCache;
-        private Quaternion m_boundingShapeRotationCache;
+        /// <summary>
+        /// ShapeCache: contains all state that's dependent only on the settings in the confiner: bounding shape,
+        /// shrinkToPoint, maxOrthoSize. Contains nothing that is dependent on anything in the vcam itself
+        /// (except maybe aspect ratio, which we can assume to be constant among vcam children).
+        /// </summary>
+        private struct ShapeCache
+        {
+            public float m_aspectRatio;
+            public Vector3 m_boundingShapePosition;
+            public Vector3 m_boundingShapeScale;
+            public Quaternion m_boundingShapeRotation;
+            
+            public Collider2D m_boundingShape2D;
+            public List<List<Vector2>> m_originalPath;
+            public int m_originalPathTotalPointCount;
+
+            public void Invalidate()
+            {
+                m_aspectRatio = 0;
+                m_boundingShapePosition = Vector3.negativeInfinity;
+                m_boundingShapeScale = Vector3.negativeInfinity;
+                m_boundingShapeRotation = new Quaternion(0,0,0,0);
+                
+                m_boundingShape2D = null;
+                m_originalPath = null;
+                m_originalPathTotalPointCount = 0;
+            }
+
+            public void SetTransformCache(in Transform boundingShapeTransform)
+            {
+                m_boundingShapePosition = boundingShapeTransform.position;
+                m_boundingShapeScale = boundingShapeTransform.localScale;
+                m_boundingShapeRotation = boundingShapeTransform.rotation;
+            }
+            
+            public bool BoundingShapeTransformChanged(in Transform boundingShapeTransform)
+            {
+                return m_boundingShape2D != null && 
+                       (m_boundingShapePosition != boundingShapeTransform.position ||
+                        m_boundingShapeScale != boundingShapeTransform.localScale ||
+                        m_boundingShapeRotation != boundingShapeTransform.rotation);
+            }
+        }
+        private ShapeCache m_shapeCache;
+
+        /// <summary>
+        /// VcamShapeCache (lives inside VcamExtraState): contains all the cache items that are dependent on
+        /// something in the vcam (e.g. orthoSize).
+        /// </summary>
+        private struct VcamShapeCache
+        {
+            public float m_frustumHeight;
+            public List<List<Vector2>> m_path;
+        }
+
         /// <summary>
         /// Invalidates path cache.
         /// </summary>
         private void InvalidatePathCache()
         {
-            m_originalPath = null;
-            m_originalPathCache = null;
-            m_sensorRatioCache = 0;
-            m_boundingShapePositionCache = Vector3.negativeInfinity;
-            m_boundingShapeScaleCache = Vector3.negativeInfinity;
-            m_boundingShapeRotationCache = new Quaternion(0,0,0,0);
+            m_shapeCache.Invalidate();
         }
         
-        private float m_bakedConfinerResolutionCache;
         /// <summary>
         /// Checks if we have a valid confiner state cache. Calculates it if cache is invalid, and bake was requested.
         /// </summary>
-        /// <param name="sensorRatio">Camera window ratio (width / height)</param>
+        /// <param name="aspectRatio">Camera window ratio (width / height)</param>
         /// <param name="confinerStateChanged">True, if the baked confiner state has changed. False, otherwise.</param>
         /// <returns>True, if path is baked and valid. False, if path is invalid or non-existent.</returns>
-        private bool ValidateConfinerStateCache(float sensorRatio, out bool confinerStateChanged)
+        private bool ValidateConfinerStateCache(float aspectRatio, out bool confinerStateChanged)
         {
             if (m_TriggerClearCache)
             {
@@ -221,12 +263,11 @@ namespace Cinemachine
             
             confinerStateChanged = false;
             bool cacheIsEmpty = m_confinerStates == null;
-            bool cacheIsValid = 
-                m_originalPath != null && // first time?
+            bool cacheIsValid =
+                m_shapeCache.m_originalPath != null && // first time?
                 !cacheIsEmpty && // has a prev. baked result?
-                !BoundingShapeTransformChanged() && // confiner was moved or rotated or scaled?
-                Math.Abs(m_sensorRatioCache - sensorRatio) < UnityVectorExtensions.Epsilon && // sensor ratio changed?
-                Math.Abs(m_bakedConfinerResolution - m_bakedConfinerResolutionCache) < UnityVectorExtensions.Epsilon; // resolution changed?
+                !m_shapeCache.BoundingShapeTransformChanged(m_BoundingShape2D.transform) && // confiner was moved or rotated or scaled?
+                Math.Abs(m_shapeCache.m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon; // sensor ratio changed?
             if (!m_AutoBake && !m_TriggerBake)
             {
                 if (cacheIsEmpty)
@@ -256,18 +297,18 @@ namespace Cinemachine
             BakeProgress = BakeProgressEnum.BAKING;
             confinerStateChanged = true;
 
-            bool boundingShapeTransformChanged = BoundingShapeTransformChanged();
-            if (boundingShapeTransformChanged || m_originalPath == null)
+            bool boundingShapeTransformChanged = m_shapeCache.BoundingShapeTransformChanged(m_BoundingShape2D.transform);
+            if (boundingShapeTransformChanged || m_shapeCache.m_originalPath == null)
             {
                 Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                    if (boundingShapeTransformChanged || m_originalPath == null || 
-                        m_originalPath.Count != poly.pathCount || 
-                        m_originalPathTotalPointCount != poly.GetTotalPointCount())
+                    if (boundingShapeTransformChanged || m_shapeCache.m_originalPath == null || 
+                        m_shapeCache.m_originalPath.Count != poly.pathCount || 
+                        m_shapeCache.m_originalPathTotalPointCount != poly.GetTotalPointCount())
                     { 
-                        m_originalPath = new List<List<Vector2>>();
+                        m_shapeCache.m_originalPath = new List<List<Vector2>>();
                         for (int i = 0; i < poly.pathCount; ++i)
                         {
                             Vector2[] path = poly.GetPath(i);
@@ -276,18 +317,18 @@ namespace Cinemachine
                             {
                                 dst.Add(m_BoundingShape2D.transform.TransformPoint(path[j]));
                             }
-                            m_originalPath.Add(dst);
+                            m_shapeCache.m_originalPath.Add(dst);
                         }
-                        m_originalPathTotalPointCount = poly.GetTotalPointCount();
+                        m_shapeCache.m_originalPathTotalPointCount = poly.GetTotalPointCount();
                     }
                 }
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
                     CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                    if (boundingShapeTransformChanged || m_originalPath == null || 
-                        m_originalPath.Count != poly.pathCount || m_originalPathTotalPointCount != poly.pointCount)
+                    if (boundingShapeTransformChanged || m_shapeCache.m_originalPath == null || 
+                        m_shapeCache.m_originalPath.Count != poly.pathCount || m_shapeCache.m_originalPathTotalPointCount != poly.pointCount)
                     {
-                        m_originalPath = new List<List<Vector2>>();
+                        m_shapeCache.m_originalPath = new List<List<Vector2>>();
                         Vector2[] path = new Vector2[poly.pointCount];
                         Vector3 lossyScale = m_BoundingShape2D.transform.lossyScale;
                         Vector2 revertCompositeColliderScale = new Vector2(
@@ -302,9 +343,9 @@ namespace Cinemachine
                                 dst.Add(m_BoundingShape2D.transform.TransformPoint(
                                     path[j] * revertCompositeColliderScale));
                             }
-                            m_originalPath.Add(dst);
+                            m_shapeCache.m_originalPath.Add(dst);
                         }
-                        m_originalPathTotalPointCount = poly.pointCount;
+                        m_shapeCache.m_originalPathTotalPointCount = poly.pointCount;
                     }
                 }
                 else
@@ -315,31 +356,18 @@ namespace Cinemachine
                 }
             }
 
-            m_bakedConfinerResolutionCache = m_bakedConfinerResolution;
-            m_sensorRatioCache = sensorRatio;
-            GetConfinerOven().BakeConfiner(m_originalPath, m_sensorRatioCache, m_bakedConfinerResolutionCache, 
+            GetConfinerOven().BakeConfiner(m_shapeCache.m_originalPath, aspectRatio, m_bakedConfinerResolution, 
                 m_MaxOrthoSize, m_ShrinkToPointsExperimental);
             m_confinerStates = GetConfinerOven().GetShrinkablePolygonsAsConfinerStates();
 
-            m_boundingShapePositionCache = m_BoundingShape2D.transform.position;
-            m_boundingShapeRotationCache = m_BoundingShape2D.transform.rotation;
-            m_boundingShapeScaleCache = m_BoundingShape2D.transform.localScale;
+            m_shapeCache.m_aspectRatio = aspectRatio;
+            m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
+            m_shapeCache.SetTransformCache(m_BoundingShape2D.transform);
 
             BakeProgress = BakeProgressEnum.BAKED;
             return true;
         }
 
-        /// <summary>
-        /// Checks if the input bounding shape was moved, rotated, or scaled.
-        /// </summary>
-        /// <returns></returns>
-        private bool BoundingShapeTransformChanged()
-        {
-            return m_BoundingShape2D != null && 
-                   (m_boundingShapePositionCache != m_BoundingShape2D.transform.position ||
-                    m_boundingShapeScaleCache != m_BoundingShape2D.transform.localScale ||
-                    m_boundingShapeRotationCache != m_BoundingShape2D.transform.rotation);
-        }
         
         private ConfinerOven.ConfinerState m_confinerCache;
         /// <summary>
@@ -348,15 +376,22 @@ namespace Cinemachine
         /// </summary>
         /// <param name="confinerStateChanged">Confiner cache was changed</param>
         /// <param name="frustumHeight">Camera frustum height</param>
-        private void ValidatePathCache(bool confinerStateChanged, float frustumHeight)
+        private void ValidatePathCache(in bool confinerStateChanged, in float frustumHeight, in VcamExtraState extra)
         {
             if (confinerStateChanged ||
-                m_currentPathCache == null || 
-                Math.Abs(frustumHeight - m_frustumHeightCache) > m_bakedConfinerResolution)
+                extra.m_VcamShapeCache.m_path == null || 
+                Math.Abs(frustumHeight - extra.m_VcamShapeCache.m_frustumHeight) > m_bakedConfinerResolution)
             {
-                m_frustumHeightCache = frustumHeight;
-                m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(m_frustumHeightCache);
-                ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, m_frustumHeightCache, out m_currentPathCache);
+                m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(frustumHeight);
+                ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, frustumHeight, 
+                    out extra.m_VcamShapeCache.m_path);
+                
+                extra.m_VcamShapeCache.m_frustumHeight = frustumHeight;
+                
+                if (m_DrawGizmos)
+                {
+                    m_ConfinerGizmos = extra.m_VcamShapeCache.m_path;
+                }
             }
         }
         
@@ -383,11 +418,11 @@ namespace Cinemachine
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmos) return;
-            if (m_currentPathCache == null || m_originalPath == null) return;
+            if (m_ConfinerGizmos == null || m_shapeCache.m_originalPath == null) return;
             
             // Draw confiner for current camera size
             Gizmos.color = Color.cyan;
-            foreach (var path in m_currentPathCache)
+            foreach (var path in m_ConfinerGizmos)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
@@ -399,7 +434,7 @@ namespace Cinemachine
             
             // Draw input confiner
             Gizmos.color = Color.black;
-            foreach (var path in m_originalPath)
+            foreach (var path in m_shapeCache.m_originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
                 {
