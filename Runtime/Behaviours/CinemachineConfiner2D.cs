@@ -79,13 +79,13 @@ namespace Cinemachine
                 
                 float frustumHeight = CalculateFrustumHeight(state, vcam);
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                ValidateVcamPathCache(confinerStateChanged, frustumHeight, extra);
+                ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
 
-                Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_VcamShapeCache.m_path);
+                Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path);
                 if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 { 
                     float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                    if (extra.m_CornerDampingIsOn || 
+                    if (extra.m_cornerDampingIsOn || 
                         (m_Damping > 0 && displacementAngle > m_CornerAngleTreshold))
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
@@ -94,7 +94,7 @@ namespace Cinemachine
                         displacement = extra.m_previousDisplacement + deltaDamped;
 
                         m_CornerDampingSpeedup = displacementAngle < 1f ? 2f : 1f;
-                        extra.m_CornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
+                        extra.m_cornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
                                                     delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
                     }
                 }
@@ -173,8 +173,8 @@ namespace Cinemachine
         private class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
-            public bool m_CornerDampingIsOn;
-            public VcamShapeCache m_VcamShapeCache;
+            public bool m_cornerDampingIsOn;
+            public VcamShapeCache m_vcamShapeCache;
         };
 
         /// <summary>
@@ -251,10 +251,12 @@ namespace Cinemachine
         {
             public float m_frustumHeight;
             public List<List<Vector2>> m_path;
+            public bool m_orthographic;
 
-            public bool IsValid(in float frustumHeight)
+            public bool IsValid(in float frustumHeight, in bool isOrthographic)
             {
-                return m_path != null && Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
+                return m_path != null && m_orthographic == isOrthographic &&
+                       Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
             }
         }
 
@@ -358,22 +360,24 @@ namespace Cinemachine
         /// </summary>
         /// <param name="confinerStateChanged">Confiner cache was changed</param>
         /// <param name="frustumHeight">Camera frustum height</param>
-        private void ValidateVcamPathCache(in bool confinerStateChanged, in float frustumHeight, in VcamExtraState extra)
+        private void ValidateVcamPathCache(
+            in bool confinerStateChanged, in float frustumHeight, in bool orthographic, in VcamExtraState extra)
         {
-            if (!confinerStateChanged && extra.m_VcamShapeCache.IsValid(frustumHeight))
+            if (!confinerStateChanged && extra.m_vcamShapeCache.IsValid(frustumHeight, orthographic))
             {
                 return;
             }
             
             m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(frustumHeight);
             ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, frustumHeight, 
-                out extra.m_VcamShapeCache.m_path);
+                out extra.m_vcamShapeCache.m_path);
                 
-            extra.m_VcamShapeCache.m_frustumHeight = frustumHeight;
+            extra.m_vcamShapeCache.m_frustumHeight = frustumHeight;
+            extra.m_vcamShapeCache.m_orthographic = orthographic;
                 
             if (m_DrawGizmos)
             {
-                m_ConfinerGizmos = extra.m_VcamShapeCache.m_path;
+                m_ConfinerGizmos = extra.m_vcamShapeCache.m_path;
             }
         }
         

@@ -20,7 +20,7 @@ namespace Cinemachine
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         
         /// <summary>
-        /// Precalculates from input parameters the shrinked down polygons.
+        /// Precalculates from input parameters the shrinkable polygons.
         /// </summary>
         /// <param name="inputPath"></param>
         /// <param name="sensorRatio"></param>
