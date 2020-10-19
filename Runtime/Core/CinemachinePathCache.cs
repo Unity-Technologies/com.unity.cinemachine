@@ -230,7 +230,17 @@ namespace Cinemachine
         /// Length of the vector represents the tangent strength</returns>
         private Vector3 EvaluateTangent(float pos)
         {
-            return Vector3.zero;
+            float3 result = float3.zero;
+            if (m_Path && m_Path.Spline.KnotCount > 1)
+            {
+                int indexA, indexB;
+                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                if (indexA == indexB)
+                    result = m_Path.EvaluateSegmentTangent(indexA, 0);
+                else
+                    result = m_Path.EvaluateSegmentTangent(indexA, pos - indexA);
+            }
+            return new Vector3(result.x, result.y, result.z);
         }
 
         // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
