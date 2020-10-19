@@ -51,10 +51,7 @@ namespace Cinemachine
         internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE } // TODO: remove states after
                                                                                // fist pass cleanup!
         [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
-
         
-
-        private List<ConfinerOven.ConfinerState> m_confinerStates;
         private ConfinerOven m_confinerBaker = null;
 
         /// <summary>Force rebake manually. This function invalidates the cache and rebakes the confiner.</summary>
@@ -193,6 +190,8 @@ namespace Cinemachine
             public Collider2D m_boundingShape2D;
             public List<List<Vector2>> m_originalPath;
             public int m_originalPathTotalPointCount;
+            
+            public List<ConfinerOven.ConfinerState> m_confinerStates;
 
             private Vector3 m_boundingShapePosition;
             private Vector3 m_boundingShapeScale;
@@ -205,6 +204,8 @@ namespace Cinemachine
                 m_boundingShape2D = null;
                 m_originalPath = null;
                 m_originalPathTotalPointCount = 0;
+
+                m_confinerStates = null;
                 
                 m_boundingShapePosition = Vector3.negativeInfinity;
                 m_boundingShapeScale = Vector3.negativeInfinity;
@@ -253,7 +254,7 @@ namespace Cinemachine
             }
             
             confinerStateChanged = false;
-            bool cacheIsEmpty = m_confinerStates == null;
+            bool cacheIsEmpty = m_shapeCache.m_confinerStates == null;
             bool cacheIsValid =
                 m_shapeCache.m_originalPath != null && // first time?
                 !cacheIsEmpty && // has a prev. baked result?
@@ -349,7 +350,7 @@ namespace Cinemachine
 
             GetConfinerOven().BakeConfiner(m_shapeCache.m_originalPath, aspectRatio, m_bakedConfinerResolution, 
                 m_MaxOrthoSize, m_ShrinkToPointsExperimental);
-            m_confinerStates = GetConfinerOven().GetShrinkablePolygonsAsConfinerStates();
+            m_shapeCache.m_confinerStates = GetConfinerOven().GetShrinkablePolygonsAsConfinerStates();
 
             m_shapeCache.m_aspectRatio = aspectRatio;
             m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
