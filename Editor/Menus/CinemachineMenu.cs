@@ -245,7 +245,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Create a Virtual Camera, with components
         /// </summary>
-        static CinemachineVirtualCamera InternalCreateVirtualCamera(
+        internal static CinemachineVirtualCamera InternalCreateVirtualCamera(
             string name, bool selectIt, params Type[] components)
         {
             // Create a new virtual camera
