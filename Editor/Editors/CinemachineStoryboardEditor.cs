@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
     [InitializeOnLoad]
     internal class CinemachineStoryboardMute
     {
-        const string StoryboardGlobalMuteMenuName = "GameObject/Cinemachine/Storyboard Global Mute";
+        const string StoryboardGlobalMuteMenuName = "Cinemachine/Storyboard Global Mute";
         [MenuItem(StoryboardGlobalMuteMenuName, false)]
         public static void StoryboardGlobalMute()
         {
