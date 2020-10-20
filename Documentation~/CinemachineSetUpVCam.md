@@ -4,7 +4,7 @@ In your project, organize your Scene Hierarchy to have a single Unity camera wit
 
 To add a Virtual Camera to a Scene:
 
-1. In the Unity menu, choose __Cinemachine > Create Virtual Camera__. <br/>Unity adds a new GameObject with a Cinemachine Virtual Camera component. If necessary, Unity also adds a [Cinemachine Brain](CinemachineBrainProperties.html) component to the Unity camera GameObject for you.
+1. In the Unity menu, choose __GameObject > Cinemachine > Virtual Camera__. <br/>Unity adds a new GameObject with a Cinemachine Virtual Camera component. If necessary, Unity also adds a [Cinemachine Brain](CinemachineBrainProperties.html) component to the Unity camera GameObject for you.
 
 2. Use the __Follow__ property to specify a GameObject to follow. <br/>The Virtual Camera automatically positions the Unity camera relative to this GameObject at all times, even as you move it in the Scene.
 

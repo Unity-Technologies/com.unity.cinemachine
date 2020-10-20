@@ -8,7 +8,7 @@ Mixing Camera manages up to eight child Virtual Cameras. In the Mixing Camera co
 
 To create a Mixing Camera:
 
-1. In the Unity menu, choose __Cinemachine > Create Mixing Camera__.
+1. In the Unity menu, choose __GameObject > Cinemachine > Mixing Camera__.
 A new Mixing Camera appears in the [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window. By default, Unity also adds two Virtual Cameras as children of the Mixing Camera.
 
 2. Adjust the children Virtual Cameras.
