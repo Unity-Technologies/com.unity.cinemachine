@@ -183,12 +183,13 @@ namespace Cinemachine
             public float m_aspectRatio;
             public float m_maxOrthoSize;
             public bool m_shrinkToPoints;
-            
+
             private Vector3 m_boundingShapePosition;
             private Vector3 m_boundingShapeScale;
             private Quaternion m_boundingShapeRotation;
             
             public Collider2D m_boundingShape2D;
+            public Vector2 m_boundingShapeOffset;
             public List<List<Vector2>> m_originalPath;
             public int m_originalPathTotalPointCount;
             public List<ConfinerOven.ConfinerState> m_confinerStates;
@@ -214,6 +215,7 @@ namespace Cinemachine
                 in float aspectRatio, in float maxOrthoSize, in bool shrinkToPoint)
             {
                 return m_boundingShape2D == boundingShape2D && // same boundingShape?
+                       m_boundingShapeOffset == boundingShape2D.offset && // same offset on boundingShape?
                        m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
                        !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
@@ -271,64 +273,56 @@ namespace Cinemachine
                 return true;
             }
             
+            m_shapeCache.Invalidate();
             confinerStateChanged = true;
-
-            bool boundingShapeTransformChanged = m_shapeCache.BoundingShapeTransformChanged(m_BoundingShape2D.transform);
-            if (boundingShapeTransformChanged || m_shapeCache.m_originalPath == null)
+            
+            Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
+            if (colliderType == typeof(PolygonCollider2D))
             {
-                Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
-                if (colliderType == typeof(PolygonCollider2D))
+                PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
+                Vector2 offset = m_BoundingShape2D.offset * m_BoundingShape2D.transform.localScale;
+                
+                m_shapeCache.m_originalPath = new List<List<Vector2>>();
+                for (int i = 0; i < poly.pathCount; ++i)
                 {
-                    PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                    if (boundingShapeTransformChanged || m_shapeCache.m_originalPath == null || 
-                        m_shapeCache.m_originalPath.Count != poly.pathCount || 
-                        m_shapeCache.m_originalPathTotalPointCount != poly.GetTotalPointCount())
-                    { 
-                        m_shapeCache.m_originalPath = new List<List<Vector2>>();
-                        for (int i = 0; i < poly.pathCount; ++i)
-                        {
-                            Vector2[] path = poly.GetPath(i);
-                            List<Vector2> dst = new List<Vector2>();
-                            for (int j = 0; j < path.Length; ++j)
-                            {
-                                dst.Add(m_BoundingShape2D.transform.TransformPoint(path[j]));
-                            }
-                            m_shapeCache.m_originalPath.Add(dst);
-                        }
-                        m_shapeCache.m_originalPathTotalPointCount = poly.GetTotalPointCount();
-                    }
-                }
-                else if (colliderType == typeof(CompositeCollider2D))
-                {
-                    CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                    if (boundingShapeTransformChanged || m_shapeCache.m_originalPath == null || 
-                        m_shapeCache.m_originalPath.Count != poly.pathCount || m_shapeCache.m_originalPathTotalPointCount != poly.pointCount)
+                    Vector2[] path = poly.GetPath(i);
+                    List<Vector2> dst = new List<Vector2>();
+                    for (int j = 0; j < path.Length; ++j)
                     {
-                        m_shapeCache.m_originalPath = new List<List<Vector2>>();
-                        Vector2[] path = new Vector2[poly.pointCount];
-                        Vector3 lossyScale = m_BoundingShape2D.transform.lossyScale;
-                        Vector2 revertCompositeColliderScale = new Vector2(
-                            1f / lossyScale.x, 
-                            1f / lossyScale.y);
-                        for (int i = 0; i < poly.pathCount; ++i)
-                        {
-                            int numPoints = poly.GetPath(i, path);
-                            List<Vector2> dst = new List<Vector2>();
-                            for (int j = 0; j < numPoints; ++j)
-                            {
-                                dst.Add(m_BoundingShape2D.transform.TransformPoint(
-                                    path[j] * revertCompositeColliderScale));
-                            }
-                            m_shapeCache.m_originalPath.Add(dst);
-                        }
-                        m_shapeCache.m_originalPathTotalPointCount = poly.pointCount;
+                        dst.Add(m_BoundingShape2D.transform.TransformPoint(path[j] + offset));
                     }
+                    m_shapeCache.m_originalPath.Add(dst);
                 }
-                else
+                m_shapeCache.m_originalPathTotalPointCount = poly.GetTotalPointCount();
+            }
+            else if (colliderType == typeof(CompositeCollider2D))
+            {
+                CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
+                Vector2 offset = m_BoundingShape2D.offset * m_BoundingShape2D.transform.localScale;
+                
+                m_shapeCache.m_originalPath = new List<List<Vector2>>();
+                Vector2[] path = new Vector2[poly.pointCount];
+                Vector3 lossyScale = m_BoundingShape2D.transform.lossyScale;
+                Vector2 revertCompositeColliderScale = new Vector2(
+                    1f / lossyScale.x, 
+                    1f / lossyScale.y);
+                for (int i = 0; i < poly.pathCount; ++i)
                 {
-                    m_shapeCache.Invalidate();
-                    return false; // input collider is invalid
+                    int numPoints = poly.GetPath(i, path);
+                    List<Vector2> dst = new List<Vector2>();
+                    for (int j = 0; j < numPoints; ++j)
+                    {
+                        dst.Add(m_BoundingShape2D.transform.TransformPoint(
+                            (path[j] + offset) * revertCompositeColliderScale));
+                    }
+                    m_shapeCache.m_originalPath.Add(dst);
                 }
+                m_shapeCache.m_originalPathTotalPointCount = poly.pointCount;
+            }
+            else
+            {
+                m_shapeCache.Invalidate();
+                return false; // input collider is invalid
             }
 
             GetConfinerOven().BakeConfiner(m_shapeCache.m_originalPath, aspectRatio, m_bakedConfinerResolution, 
@@ -337,6 +331,7 @@ namespace Cinemachine
 
             m_shapeCache.m_aspectRatio = aspectRatio;
             m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
+            m_shapeCache.m_boundingShapeOffset = m_BoundingShape2D.offset;
             m_shapeCache.SetTransformCache(m_BoundingShape2D.transform);
             m_shapeCache.m_maxOrthoSize = m_MaxOrthoSize;
             m_shapeCache.m_shrinkToPoints = m_ShrinkToPointsExperimental;
