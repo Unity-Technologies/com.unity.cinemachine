@@ -40,8 +40,6 @@ namespace Cinemachine
         [Tooltip("Damping applied around corners to avoid jumps.  Higher numbers are more gradual.")]
         [Range(0, 5)]
         public float m_Damping = 0;
-        private float m_CornerDampingSpeedup = 1f;
-        private float m_CornerAngleTreshold = 10f;
 
         /// <summary>Draws Gizmos for easier fine-tuning.</summary>
         [Tooltip("Draws Input Bounding Shape (black) and Confiner (cyan) for easier fine-tuning.")]
