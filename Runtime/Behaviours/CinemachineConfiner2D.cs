@@ -76,7 +76,8 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
 
-                Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path);
+                Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path, 
+                    m_shapeCache.m_boundingShape2D);
                 // Remember the desired displacement for next frame
                 var prev = extra.m_previousDisplacement;
                 extra.m_previousDisplacement = displacement;
@@ -132,9 +133,10 @@ namespace Cinemachine
         /// </summary>
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
-        private Vector2 ConfinePoint(in Vector2 positionToConfine, in List<List<Vector2>> pathCache)
+        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
+            in Collider2D collider2D)
         {
-            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
+            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, collider2D))
             {
                 return Vector2.zero;
             }
@@ -146,10 +148,10 @@ namespace Cinemachine
                 int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = pathCache[i][numPoints - 1];
+                    Vector2 v0 = collider2D.transform.TransformPoint(pathCache[i][numPoints - 1] + collider2D.offset);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = pathCache[i][j];
+                        Vector2 v = collider2D.transform.TransformPoint(pathCache[i][j] + collider2D.offset);
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
@@ -180,12 +182,10 @@ namespace Cinemachine
             public float m_maxOrthoSize;
             public bool m_shrinkToPoints;
 
-            private Vector3 m_boundingShapePosition;
             private Vector3 m_boundingShapeScale;
             private Quaternion m_boundingShapeRotation;
             
             public Collider2D m_boundingShape2D;
-            public Vector2 m_boundingShapeOffset;
             public List<List<Vector2>> m_originalPath;
             public List<ConfinerOven.ConfinerState> m_confinerStates;
 
@@ -195,7 +195,6 @@ namespace Cinemachine
                 m_maxOrthoSize = 0;
                 m_shrinkToPoints = false;
                 
-                m_boundingShapePosition = Vector3.negativeInfinity;
                 m_boundingShapeScale = Vector3.negativeInfinity;
                 m_boundingShapeRotation = new Quaternion(0,0,0,0);
                 
@@ -210,7 +209,6 @@ namespace Cinemachine
             {
                 return m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
                        !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
-                       m_boundingShapeOffset == boundingShape2D.offset && // same offset on boundingShape?
                        m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
@@ -220,7 +218,6 @@ namespace Cinemachine
 
             public void SetTransformCache(in Transform boundingShapeTransform)
             {
-                m_boundingShapePosition = boundingShapeTransform.position;
                 m_boundingShapeScale = boundingShapeTransform.localScale;
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
@@ -228,8 +225,7 @@ namespace Cinemachine
             private bool BoundingShapeTransformChanged(in Transform boundingShapeTransform)
             {
                 return m_boundingShape2D != null && 
-                       (m_boundingShapePosition != boundingShapeTransform.position ||
-                        m_boundingShapeScale != boundingShapeTransform.localScale ||
+                       (m_boundingShapeScale != boundingShapeTransform.localScale || 
                         m_boundingShapeRotation != boundingShapeTransform.rotation);
             }
         }
@@ -274,8 +270,6 @@ namespace Cinemachine
             if (colliderType == typeof(PolygonCollider2D))
             {
                 PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                Vector2 offset = m_BoundingShape2D.offset * m_BoundingShape2D.transform.localScale;
-                
                 m_shapeCache.m_originalPath = new List<List<Vector2>>();
                 for (int i = 0; i < poly.pathCount; ++i)
                 {
@@ -283,7 +277,7 @@ namespace Cinemachine
                     List<Vector2> dst = new List<Vector2>();
                     for (int j = 0; j < path.Length; ++j)
                     {
-                        dst.Add(m_BoundingShape2D.transform.TransformPoint(path[j] + offset));
+                        dst.Add(path[j]);
                     }
                     m_shapeCache.m_originalPath.Add(dst);
                 }
@@ -291,7 +285,6 @@ namespace Cinemachine
             else if (colliderType == typeof(CompositeCollider2D))
             {
                 CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                Vector2 offset = m_BoundingShape2D.offset * m_BoundingShape2D.transform.localScale;
                 
                 m_shapeCache.m_originalPath = new List<List<Vector2>>();
                 Vector2[] path = new Vector2[poly.pointCount];
@@ -305,8 +298,7 @@ namespace Cinemachine
                     List<Vector2> dst = new List<Vector2>();
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        dst.Add(m_BoundingShape2D.transform.TransformPoint(
-                            (path[j] + offset) * revertCompositeColliderScale));
+                        dst.Add(path[j] * revertCompositeColliderScale);
                     }
                     m_shapeCache.m_originalPath.Add(dst);
                 }
@@ -323,7 +315,6 @@ namespace Cinemachine
 
             m_shapeCache.m_aspectRatio = aspectRatio;
             m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
-            m_shapeCache.m_boundingShapeOffset = m_BoundingShape2D.offset;
             m_shapeCache.SetTransformCache(m_BoundingShape2D.transform);
             m_shapeCache.m_maxOrthoSize = m_MaxOrthoSize;
             m_shapeCache.m_shrinkToPoints = m_ShrinkToPointsExperimental;
@@ -392,8 +383,10 @@ namespace Cinemachine
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        path[index], 
-                        path[(index + 1) % path.Count]);
+                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
+                            path[index] + m_shapeCache.m_boundingShape2D.offset), 
+                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
+                            path[(index + 1) % path.Count]+ m_shapeCache.m_boundingShape2D.offset));
                 }
             }
             
@@ -404,8 +397,10 @@ namespace Cinemachine
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        path[index], 
-                        path[(index + 1) % path.Count]);
+                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
+                            path[index] + m_shapeCache.m_boundingShape2D.offset),
+                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
+                            path[(index + 1) % path.Count]+ m_shapeCache.m_boundingShape2D.offset));
                 }
             }
         }
