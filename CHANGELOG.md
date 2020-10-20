@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1060230) - lens inspector sometimes displayed ortho vs perspective incorrectly for a brief time
 - Bugfix (1283984) - Error message when loading new scene with DontDestroyOnLoad
 - bugfix (1284701) - Edge-case exception when vcam is deleted
+- UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierachy window.
 
 
 ## [2.6.3] - 2020-09-16
@@ -19,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1276343) - CM Brain inspector custom blends misaligned dropdown arrow
 - Bugfix (1256530) - disallow multiple components where appropriate
 - Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
-- Bugfix (1174993) - CM Brain logo was not added to Hierarchy next to Main Camera after adding vcam for the first time after importing CM. 
+- Bugfix (1174993) - CM Brain logo was not added to Hierarchy next to Main Camera after adding vcam for the first time after importing CM.
 - Bugfix (1100131) - Confiner is aware of 2D collider's offset attribute.
 
 

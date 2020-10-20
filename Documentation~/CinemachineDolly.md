@@ -14,7 +14,8 @@ Cinemachine provides two types of dolly paths:
 
 To create a Virtual Camera with a dolly path:
 
-1. In the Unity menu, choose __Cinemachine > Create Dolly Camera with Track__.A new Virtual Camera and dolly track appears in the [Hierarchy]([https://docs.unity3d.com/Manual/Hierarchy.html](https://docs.unity3d.com/Manual/Hierarchy.html)). By default, the dolly track GameObject is a Smooth Path.
+1. In the Unity menu, choose __GameObject > Cinemachine > Dolly Camera with Track__.
+A new Virtual Camera and dolly track appears in the [Hierarchy]([https://docs.unity3d.com/Manual/Hierarchy.html](https://docs.unity3d.com/Manual/Hierarchy.html)). By default, the dolly track GameObject is a Smooth Path.
 
 2. In the [Hierarchy]([https://docs.unity3d.com/Manual/Hierarchy.html](https://docs.unity3d.com/Manual/Hierarchy.html)) window, select the new dolly track GameObject.
 
