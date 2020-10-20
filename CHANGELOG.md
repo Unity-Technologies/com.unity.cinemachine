@@ -4,6 +4,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.0-preview.1] - 2020-10-10
+- Added ApplyAfter option to ImpulseListener, to add control over the ordering of extensions
+- Virtual Camera Lens inspector supports display of Horizontal FOV
+- Virtual Camera Lens can override orthographic and physical camera settings
+- Bugfix (1060230) - lens inspector sometimes displayed ortho vs perspective incorrectly for a brief time
+- Bugfix (1283984) - Error message when loading new scene with DontDestroyOnLoad
+- bugfix (1284701) - Edge-case exception when vcam is deleted
+- UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierachy window.
+
+
 ## [2.6.3] - 2020-09-16
 - Regression fix (1274989) - OnTargetObjectWarped broken for OrbitalTransposer
 - Bugfix (1276391) - CM Brain Reset did not reset Custom Blends asset in inspector
@@ -11,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1256530) - disallow multiple components where appropriate
 - Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
 - Bugfix (1174993) - CM Brain logo was not added to Hierarchy next to Main Camera after adding vcam for the first time after importing CM.
-- UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierachy window.
+- Bugfix (1100131) - Confiner is aware of 2D collider's offset attribute.
 
 
 ## [2.6.2] - 2020-09-02
