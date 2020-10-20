@@ -62,7 +62,8 @@ namespace Cinemachine
         {
             m_shapeCache.Invalidate();
         }
-
+        
+        private const float CornerAngleTreshold = 10f; // still unsure about the value of this constant
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -78,23 +79,22 @@ namespace Cinemachine
                 ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path);
-                if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
-                { 
-                    float displacementAngle = Vector2.Angle(extra.m_previousDisplacement, displacement);
-                    if (extra.m_cornerDampingIsOn || 
-                        (m_Damping > 0 && displacementAngle > m_CornerAngleTreshold))
-                    {
-                        Vector3 delta = displacement - extra.m_previousDisplacement;
-                        var deltaDamped = 
-                            Damper.Damp(delta, m_Damping / m_CornerDampingSpeedup, deltaTime);
-                        displacement = extra.m_previousDisplacement + deltaDamped;
-
-                        m_CornerDampingSpeedup = displacementAngle < 1f ? 2f : 1f;
-                        extra.m_cornerDampingIsOn = displacementAngle > UnityVectorExtensions.Epsilon ||
-                                                    delta.sqrMagnitude > UnityVectorExtensions.Epsilon;
-                    }
-                }
+                // Remember the desired displacement for next frame
+                var prev = extra.m_previousDisplacement;
                 extra.m_previousDisplacement = displacement;
+
+                if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
+                    extra.m_dampedDisplacement = Vector3.zero;
+                else
+                {
+                    // If a big change from previous frame's desired displacement is detected, 
+                    // assume we are going around a corner and extract that difference for damping
+                    if (Vector2.Angle(prev, displacement) > CornerAngleTreshold)
+                        extra.m_dampedDisplacement += displacement - prev;
+
+                    extra.m_dampedDisplacement -= Damper.Damp(extra.m_dampedDisplacement, m_Damping, deltaTime);
+                    displacement -= extra.m_dampedDisplacement;
+                }
                 state.PositionCorrection += displacement;
             }
         }
@@ -169,7 +169,7 @@ namespace Cinemachine
         private class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
-            public bool m_cornerDampingIsOn;
+            public Vector3 m_dampedDisplacement;
             public VcamShapeCache m_vcamShapeCache;
         };
 
@@ -210,7 +210,7 @@ namespace Cinemachine
             public bool IsValid(in Collider2D boundingShape2D, 
                 in float aspectRatio, in float maxOrthoSize, in bool shrinkToPoint)
             {
-                return m_boundingShape2D == boundingShape2D && // same boundingShape?
+                return m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
                        !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
                        m_boundingShapeOffset == boundingShape2D.offset && // same offset on boundingShape?
                        m_originalPath != null && // first time?
