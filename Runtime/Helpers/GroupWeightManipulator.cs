@@ -8,11 +8,7 @@ namespace Cinemachine
     /// If you want to add more slots, just modify this code.
     /// </summary>
     [RequireComponent(typeof(CinemachineTargetGroup))]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [HelpURL(Documentation.BaseURL + "api/Cinemachine.GroupWeightManipulator.html")]
     public class GroupWeightManipulator : MonoBehaviour
     {

@@ -14,11 +14,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineMixingCamera.html")]

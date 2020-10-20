@@ -10,36 +10,48 @@ namespace Cinemachine
     [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseListener.html")]
     public class CinemachineImpulseListener : CinemachineExtension
     {
+        /// <summary>
+        /// When to apply the impulse reaction.  Default is Noise.  
+        /// Modify this if necessary to influence the ordering of extension effects
+        /// </summary>
+        [Tooltip("When to apply the impulse reaction.  Default is after the Noise stage.  "
+            + "Modify this if necessary to influence the ordering of extension effects")]
+        public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.Aim; // legacy compatibility setting
+
         /// <summary>
         /// Impulse events on channels not included in the mask will be ignored.
         /// </summary>
         [Tooltip("Impulse events on channels not included in the mask will be ignored.")]
         [CinemachineImpulseChannelProperty]
-        public int m_ChannelMask = 1;
+        public int m_ChannelMask;
 
         /// <summary>
         /// Gain to apply to the Impulse signal.
         /// </summary>
         [Tooltip("Gain to apply to the Impulse signal.  1 is normal strength.  "
             + "Setting this to 0 completely mutes the signal.")]
-        public float m_Gain = 1;
+        public float m_Gain;
 
         /// <summary>
         /// Enable this to perform distance calculation in 2D (ignore Z).
         /// </summary>
         [Tooltip("Enable this to perform distance calculation in 2D (ignore Z)")]
-        public bool m_Use2DDistance = false;
+        public bool m_Use2DDistance;
 
         // GML todo: add reaction configuration params here
- 
+
+        private void Reset()
+        {
+            m_ApplyAfter = CinemachineCore.Stage.Noise; // this is the default setting
+            m_ChannelMask = 1;
+            m_Gain = 1;
+            m_Use2DDistance = false;
+        }
+
         /// <summary>React to any detected impulses</summary>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="stage">The current pipeline stage</param>
@@ -49,7 +61,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == CinemachineCore.Stage.Aim)
+            if (stage == m_ApplyAfter)
             {
                 Vector3 impulsePos = Vector3.zero;
                 Quaternion impulseRot = Quaternion.identity;

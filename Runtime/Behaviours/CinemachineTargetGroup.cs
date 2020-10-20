@@ -57,11 +57,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachineTargetGroup")]
     [SaveDuringPlay]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineTargetGroup.html")]
     public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup

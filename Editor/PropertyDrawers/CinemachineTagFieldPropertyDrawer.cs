@@ -19,7 +19,7 @@ namespace Cinemachine.Editor
             tagValue = property.stringValue;
             EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
             EditorGUI.BeginChangeCheck();
-            tagValue = EditorGUI.TagField(rect, label, tagValue);
+            tagValue = EditorGUI.TagField(rect, EditorGUI.BeginProperty(rect, label, property), tagValue);
             if (EditorGUI.EndChangeCheck())
                 property.stringValue = tagValue;
             EditorGUI.showMixedValue = false;

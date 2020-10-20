@@ -34,11 +34,7 @@ namespace Cinemachine.PostFX
     /// DepthOfField effect that is enabled.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]

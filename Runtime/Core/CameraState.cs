@@ -335,7 +335,6 @@ namespace Cinemachine
                     // Make sure we preserve the screen composition through FOV changes
                     adjustedT = Mathf.Abs((lens.FieldOfView - fovA) / (fovB - fovA));
                 }
-
                 // Linear interpolation of lookAt target point
                 state.ReferenceLookAt = Vector3.Lerp(
                         stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
