@@ -54,11 +54,7 @@ namespace Cinemachine
         [HideInInspector, SerializeField] internal bool m_ShrinkToPointsExperimental;
         
         private static readonly float m_bakedConfinerResolution = 0.005f;
-        
-        internal enum BakeProgressEnum { EMPTY, BAKING, BAKED, INVALID_CACHE } // TODO: remove states after
-                                                                               // fist pass cleanup!
-        [HideInInspector, SerializeField] internal BakeProgressEnum BakeProgress = BakeProgressEnum.INVALID_CACHE;
-        
+
         private ConfinerOven m_confinerBaker = null;
 
         /// <summary>Forces rebake at next iteration.</summary>
@@ -272,11 +268,9 @@ namespace Cinemachine
             if (m_shapeCache.IsValid(m_BoundingShape2D, 
                 aspectRatio, m_MaxOrthoSize, m_ShrinkToPointsExperimental))
             {
-                BakeProgress = BakeProgressEnum.BAKED;
                 return true;
             }
             
-            BakeProgress = BakeProgressEnum.BAKING;
             confinerStateChanged = true;
 
             bool boundingShapeTransformChanged = m_shapeCache.BoundingShapeTransformChanged(m_BoundingShape2D.transform);
@@ -332,7 +326,6 @@ namespace Cinemachine
                 }
                 else
                 {
-                    BakeProgress = BakeProgressEnum.INVALID_CACHE;
                     m_shapeCache.Invalidate();
                     return false; // input collider is invalid
                 }
@@ -348,7 +341,6 @@ namespace Cinemachine
             m_shapeCache.m_maxOrthoSize = m_MaxOrthoSize;
             m_shapeCache.m_shrinkToPoints = m_ShrinkToPointsExperimental;
 
-            BakeProgress = BakeProgressEnum.BAKED;
             return true;
         }
 

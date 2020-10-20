@@ -12,10 +12,6 @@ namespace Cinemachine.Editor
         private GUIContent m_maxOrthoSizeGUIContent;
         private SerializedProperty m_shrinkToPointsExperimentalProperty;
         private GUIContent m_shrinkToPointsExperimentalGUIContent;
-
-        private SerializedProperty m_bakeProgressProperty;
-        private string[] m_bakeProgressPropertyEnumNames;
-        
         
         void OnEnable()
         {
@@ -31,9 +27,6 @@ namespace Cinemachine.Editor
             m_shrinkToPointsExperimentalGUIContent = new GUIContent("Shrink Sub-Polygons To Point Experimental", 
                 "By default, the confiner is reduced to its skeleton. If this property is enabled, then the confiner " +
                 "will continue reducing the skeletons by reducing bones (line segments) to points.");
-
-            m_bakeProgressProperty = FindProperty(x => x.BakeProgress);
-            m_bakeProgressPropertyEnumNames = m_bakeProgressProperty.enumNames;
         }
         
         public override void OnInspectorGUI()
@@ -47,12 +40,6 @@ namespace Cinemachine.Editor
                 EditorGUILayout.PropertyField(m_maxOrthoSizeProperty, m_maxOrthoSizeGUIContent);
                 EditorGUILayout.PropertyField(m_shrinkToPointsExperimentalProperty, 
                     m_shrinkToPointsExperimentalGUIContent);
-
-                float p = m_bakeProgressProperty.enumValueIndex == 0 ? 0 :
-                    m_bakeProgressProperty.enumValueIndex == 1 ? 0.5f : 1f;
-                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), p, 
-                    m_bakeProgressPropertyEnumNames[m_bakeProgressProperty.enumValueIndex]);
-                
             }
             serializedObject.ApplyModifiedProperties();
         }
