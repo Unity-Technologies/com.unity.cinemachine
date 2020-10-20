@@ -20,13 +20,12 @@ namespace Cinemachine
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         
         /// <summary>
-        /// Precalculates from input parameters the shrinkable polygons.
+        /// Creates shrinkable polygons from input parameters.
+        /// The algorithm is divide and conquer. It iteratively shrinks down the input polygon towards its shrink
+        /// directions. If the polygon intersects with itself, then we divide the polygon into two polygons at the
+        /// intersection point, and continue the algorithm on these two polygons separately. We need to keep track of
+        /// the connectivity information between sub-polygons.
         /// </summary>
-        /// <param name="inputPath"></param>
-        /// <param name="sensorRatio"></param>
-        /// <param name="shrinkAmount"></param>
-        /// <param name="maxOrthosize"></param>
-        /// <param name="shrinkToPoint"></param>
         public void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
             in float maxOrthosize, in bool shrinkToPoint)
         {
@@ -228,7 +227,7 @@ namespace Cinemachine
 
         /// <summary>
         /// Removes redundant shrinkable polygons from the baked shrinkable polygons. A shrinkable polygon is
-        /// redundant, if they are lerpable between two other shrinkable polygons.
+        /// redundant, if it is lerpable polygon between two other shrinkable polygons.
         /// </summary>
         private void TrimShrinkablePolygons()
         {

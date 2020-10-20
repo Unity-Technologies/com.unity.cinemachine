@@ -174,9 +174,7 @@ namespace Cinemachine
         };
 
         /// <summary>
-        /// ShapeCache: contains all state that's dependent only on the settings in the confiner: bounding shape,
-        /// shrinkToPoint, maxOrthoSize. Contains nothing that is dependent on anything in the vcam itself
-        /// (except maybe aspect ratio, which we can assume to be constant among vcam children).
+        /// ShapeCache: contains all state that's dependent only on the settings in the confiner.
         /// </summary>
         private struct ShapeCache
         {
@@ -191,7 +189,6 @@ namespace Cinemachine
             public Collider2D m_boundingShape2D;
             public Vector2 m_boundingShapeOffset;
             public List<List<Vector2>> m_originalPath;
-            public int m_originalPathTotalPointCount;
             public List<ConfinerOven.ConfinerState> m_confinerStates;
 
             public void Invalidate()
@@ -206,7 +203,6 @@ namespace Cinemachine
                 
                 m_boundingShape2D = null;
                 m_originalPath = null;
-                m_originalPathTotalPointCount = 0;
 
                 m_confinerStates = null;
             }
@@ -215,10 +211,10 @@ namespace Cinemachine
                 in float aspectRatio, in float maxOrthoSize, in bool shrinkToPoint)
             {
                 return m_boundingShape2D == boundingShape2D && // same boundingShape?
+                       !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
                        m_boundingShapeOffset == boundingShape2D.offset && // same offset on boundingShape?
                        m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
-                       !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
                        Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon && // max ortho changed?
                        m_shrinkToPoints == shrinkToPoint; // shrink to point option changed
@@ -231,7 +227,7 @@ namespace Cinemachine
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
             
-            public bool BoundingShapeTransformChanged(in Transform boundingShapeTransform)
+            private bool BoundingShapeTransformChanged(in Transform boundingShapeTransform)
             {
                 return m_boundingShape2D != null && 
                        (m_boundingShapePosition != boundingShapeTransform.position ||
@@ -242,14 +238,14 @@ namespace Cinemachine
         private ShapeCache m_shapeCache;
 
         /// <summary>
-        /// VcamShapeCache (lives inside VcamExtraState): contains all the cache items that are dependent on
-        /// something in the vcam (e.g. orthoSize).
+        /// VcamShapeCache (lives inside VcamExtraState): contains all the cache items
+        /// that are dependent on something in the vcam.
         /// </summary>
         private struct VcamShapeCache
         {
             public float m_frustumHeight;
-            public List<List<Vector2>> m_path;
             public bool m_orthographic;
+            public List<List<Vector2>> m_path;
 
             public bool IsValid(in float frustumHeight, in bool isOrthographic)
             {
@@ -293,7 +289,6 @@ namespace Cinemachine
                     }
                     m_shapeCache.m_originalPath.Add(dst);
                 }
-                m_shapeCache.m_originalPathTotalPointCount = poly.GetTotalPointCount();
             }
             else if (colliderType == typeof(CompositeCollider2D))
             {
@@ -317,7 +312,6 @@ namespace Cinemachine
                     }
                     m_shapeCache.m_originalPath.Add(dst);
                 }
-                m_shapeCache.m_originalPathTotalPointCount = poly.pointCount;
             }
             else
             {

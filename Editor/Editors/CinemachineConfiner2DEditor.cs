@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
         private SerializedProperty m_shrinkToPointsExperimentalProperty;
         private GUIContent m_shrinkToPointsExperimentalGUIContent;
         
-        void OnEnable()
+        protected virtual void OnEnable()
         {
             m_maxOrthoSizeProperty = FindProperty(x => x.m_MaxOrthoSize);
             m_maxOrthoSizeGUIContent = new GUIContent("Max Camera Window Size", 

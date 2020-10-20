@@ -9,7 +9,7 @@ using UnityEngine.Assertions;
 namespace Cinemachine
 {
     /// <summary>
-    /// ShrinkablePolygon represents points with normals that can shrink down to it's skeleton.  
+    /// ShrinkablePolygon represents points with shrink directions.
     /// </summary>
     internal class ShrinkablePolygon
     {
@@ -63,8 +63,6 @@ namespace Cinemachine
         /// <summary>
         /// Parameterized constructor for points and aspect ratio.
         /// </summary>
-        /// <param name="points"></param>
-        /// <param name="aspectRatio"></param>
         public ShrinkablePolygon(List<Vector2> points, float aspectRatio) : this()
         {
             m_points = new List<ShrinkablePoint2>(points.Count);
@@ -121,9 +119,6 @@ namespace Cinemachine
         /// <summary>
         /// Private constructor for shallow copying normal directions.
         /// </summary>
-        /// <param name="aspectRatio"></param>
-        /// <param name="aspectRatioBasedDiagonal"></param>
-        /// <param name="normalDirections"></param>
         public ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) 
             : this()
         {
@@ -155,7 +150,6 @@ namespace Cinemachine
         /// Computes normalized normals for all points. If fixBigCornerAngles is true, then adds additional points for
         /// corners with reflex angles to ensure correct offsets.
         /// </summary>
-        /// <param name="fixBigCornerAngles"></param>
         private void ComputeNormals(bool fixBigCornerAngles)
         {
             var edgeNormals = new List<Vector2>(m_points.Count);
@@ -963,10 +957,8 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Divides input shrinkable polygon until it has intersections.
+        /// Divides input shrinkable polygon into subpolygons until it has no more intersections.
         /// </summary>
-        /// <param name="subPolygons"></param>
-        /// <param name="subShrinkablePolygon"></param>
         public static void DivideAlongIntersections(ShrinkablePolygon subPolygons, 
             out List<ShrinkablePolygon> subShrinkablePolygon)
         {
@@ -981,6 +973,7 @@ namespace Cinemachine
         
         /// <summary>
         /// Rotates input List of shrinkable points to start closest to input point in 2D space.
+        /// This is important to ensure order independence in algorithm.
         /// </summary>
         /// <param name="point">List will rotate so it's 0th element is as close to point as possible.</param>
         /// <param name="points">List to rotate</param>
@@ -1016,6 +1009,7 @@ namespace Cinemachine
 
         /// <summary>
         /// Rotates input List to start from the left-most element in 2D space.
+        /// This is important to ensure order independence in algorithm.
         /// </summary>
         /// <param name="points">List to rotate</param>
         /// <returns>List, in which the 0 element is the left-most in 2D space.
