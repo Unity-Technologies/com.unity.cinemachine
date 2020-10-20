@@ -5,6 +5,7 @@
 - Bugfix (1276343) - CM Brain inspector custom blends misaligned dropdown arrow
 - Bugfix (1256530) - disallow multiple components where appropriate
 - Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
+- New feature: CinemachineConfiner2D - Improved 2D confiner
 
 <size=20><b>Version 2.6.2</b></size>
 
