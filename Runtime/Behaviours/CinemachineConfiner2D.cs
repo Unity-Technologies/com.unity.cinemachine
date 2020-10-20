@@ -51,7 +51,7 @@ namespace Cinemachine
                                                                          // ortho and perspective bull
         [HideInInspector, SerializeField] internal bool m_ShrinkToPointsExperimental;
         
-        private static readonly float m_bakedConfinerResolution = 0.005f;
+        internal static readonly float m_bakedConfinerResolution = 0.005f;
 
         private ConfinerOven m_confinerBaker = null;
 

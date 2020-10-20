@@ -79,7 +79,7 @@ namespace Cinemachine
         /// <summary>
         /// Converts and returns shrinkable polygons from a polygons
         /// </summary>
-        public List<List<ShrinkablePolygon>> CreateShrinkablePolygons(
+        public static List<List<ShrinkablePolygon>> CreateShrinkablePolygons(
             in List<List<Vector2>> paths, in float aspectRatio)
         {
             if (paths == null)
