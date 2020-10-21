@@ -26,8 +26,9 @@ namespace Cinemachine
     /// InvalidatePathCache button in the editor on the component.
     ///
     /// Collider's Transform changes are supported, but after changing the Rotation component the cache is going to be
-    /// invalid, and the user needs to invalidate it. Only uniform scale is supported, if none uniform is selected,
-    /// Cinemachine Confiner will consider the max scale value and scale using that.
+    /// invalid, and the user needs to invalidate it if they want to have a correct cache. Only uniform scale is
+    /// supported, if none uniform is selected, Cinemachine Confiner will consider the max scale value and scale
+    /// using that.
     /// 
     /// The cache is NOT automatically invalidated (due to high computation cost every frame) if the contents
     /// of the confining shape change (e.g. points get moved dynamically). In that case, we expose an API to
@@ -49,7 +50,6 @@ namespace Cinemachine
         /// <summary>Draws Gizmos for easier fine-tuning.</summary>
         [Tooltip("Draws Input Bounding Shape (black) and Confiner (cyan) for easier fine-tuning.")]
         public bool m_DrawGizmos = true;
-        private List<List<Vector2>> m_ConfinerGizmos;
         
         /// <summary>
         /// The confiner will correctly confine up to this maximum orthographic size. If set to 0, then this parameter is ignored and all camera sizes are supported. Use it to optimize computation and memory costs.
@@ -70,7 +70,7 @@ namespace Cinemachine
         }
         
         private const float CornerAngleTreshold = 10f; // still unsure about the value of this constant
-        private Vector3 localScaleDelta;
+        private VcamExtraState extra;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -82,7 +82,7 @@ namespace Cinemachine
                 }
                 
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
-                var extra = GetExtraState<VcamExtraState>(vcam);
+                extra = GetExtraState<VcamExtraState>(vcam);
                 ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path, 
@@ -365,11 +365,6 @@ namespace Cinemachine
                 
             extra.m_vcamShapeCache.m_frustumHeight = frustumHeight;
             extra.m_vcamShapeCache.m_orthographic = orthographic;
-                
-            if (m_DrawGizmos)
-            {
-                m_ConfinerGizmos = extra.m_vcamShapeCache.m_path;
-            }
         }
         
         protected override void OnEnable()
@@ -388,13 +383,13 @@ namespace Cinemachine
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmos) return;
-            if (m_ConfinerGizmos == null || m_shapeCache.m_originalPath == null) return;
+            if (extra.m_vcamShapeCache.m_path == null || m_shapeCache.m_originalPath == null) return;
             
             // Draw confiner for current camera size
             Gizmos.color = m_gizmoColor;
             Vector3 offset3 = Vector3.zero;
                 // m_shapeCache.m_localToWorldDelta.transform.TransformPoint(m_shapeCache.m_boundingShape2D.offset);
-            foreach (var path in m_ConfinerGizmos)
+            foreach (var path in extra.m_vcamShapeCache.m_path)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
