@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
-using UnityEditor;
 using UnityEngine;
 
 namespace Cinemachine
@@ -49,8 +48,7 @@ namespace Cinemachine
         [HideInInspector, SerializeField] internal float m_MaxOrthoSize; // TODO: in editor change name to
                                                                          // maxFrustumHeight and convert between
                                                                          // ortho and perspective bull
-        [HideInInspector, SerializeField] internal bool m_ShrinkToPointsExperimental;
-        
+
         internal static readonly float m_bakedConfinerResolution = 0.005f;
 
         private ConfinerOven m_confinerBaker = null;
@@ -178,7 +176,6 @@ namespace Cinemachine
         {
             public float m_aspectRatio;
             public float m_maxOrthoSize;
-            public bool m_shrinkToPoints;
 
             private Vector3 m_boundingShapePosition;
             private Vector3 m_boundingShapeScale;
@@ -193,7 +190,6 @@ namespace Cinemachine
             {
                 m_aspectRatio = 0;
                 m_maxOrthoSize = 0;
-                m_shrinkToPoints = false;
                 
                 m_boundingShapePosition = Vector3.negativeInfinity;
                 m_boundingShapeScale = Vector3.negativeInfinity;
@@ -214,8 +210,7 @@ namespace Cinemachine
                        m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
-                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon && // max ortho changed?
-                       m_shrinkToPoints == shrinkToPoint; // shrink to point option changed
+                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
 
             public void SetTransformCache(in Transform boundingShapeTransform)
@@ -262,7 +257,7 @@ namespace Cinemachine
         {
             confinerStateChanged = false;
             if (m_shapeCache.IsValid(m_BoundingShape2D, 
-                aspectRatio, m_MaxOrthoSize, m_ShrinkToPointsExperimental))
+                aspectRatio, m_MaxOrthoSize, true))
             {
                 return true;
             }
@@ -318,7 +313,7 @@ namespace Cinemachine
             }
 
             GetConfinerOven().BakeConfiner(m_shapeCache.m_originalPath, aspectRatio, m_bakedConfinerResolution, 
-                m_MaxOrthoSize, m_ShrinkToPointsExperimental);
+                m_MaxOrthoSize, true);
             m_shapeCache.m_confinerStates = GetConfinerOven().GetShrinkablePolygonsAsConfinerStates();
 
             m_shapeCache.m_aspectRatio = aspectRatio;
@@ -326,7 +321,6 @@ namespace Cinemachine
             m_shapeCache.m_boundingShapeOffset = m_BoundingShape2D.offset;
             m_shapeCache.SetTransformCache(m_BoundingShape2D.transform);
             m_shapeCache.m_maxOrthoSize = m_MaxOrthoSize;
-            m_shapeCache.m_shrinkToPoints = m_ShrinkToPointsExperimental;
 
             return true;
         }
