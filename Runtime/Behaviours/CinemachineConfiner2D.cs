@@ -274,7 +274,8 @@ namespace Cinemachine
                     List<Vector2> dst = new List<Vector2>();
                     for (int j = 0; j < path.Length; ++j)
                     {
-                        dst.Add(path[j]);
+                        var point = new Vector3(path[j].x, path[j].y, 0);
+                        dst.Add(m_BoundingShape2D.transform.rotation * Vector3.Cross(point, m_BoundingShape2D.transform.localScale));
                     }
                     m_shapeCache.m_originalPath.Add(dst);
                 }
