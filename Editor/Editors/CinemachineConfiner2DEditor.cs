@@ -28,6 +28,7 @@ namespace Cinemachine.Editor
             if (GUILayout.Button("InvalidateCache"))
             {
                 m_target.InvalidatePathCache();
+                EditorUtility.SetDirty(m_target);
             }
         }
     }

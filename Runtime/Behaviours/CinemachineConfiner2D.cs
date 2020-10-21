@@ -16,12 +16,18 @@ namespace Cinemachine
     /// the camera's window size and ratio. The confining area is baked and cached at start.
     ///
     /// 
-    /// CinemachineConfiner2D uses a cache to avoid rebaking the confiner unnecessarily.
+    /// CinemachineConfiner2D uses a cache to avoid recalculating the confiner unnecessarily.
     /// If the cache is invalid, it will be automatically recomputed at the next usage (lazy evaluation).
     /// The cache is automatically invalidated in some well-defined circumstances:
     /// - Aspect ratio of the parent vcam changes.
     /// - MaxOrthoSize parameter in the Confiner changes.
-    /// - Transform of the bounding shape 2D changes.
+    ///
+    /// The user can invalidate the cache manually by calling InvalidatePathCache() function or clicking the
+    /// InvalidatePathCache button in the editor on the component.
+    ///
+    /// Collider's Transform changes are supported, but after changing the Rotation component the cache is going to be
+    /// invalid, and the user needs to invalidate it. Only uniform scale is supported, if none uniform is selected,
+    /// Cinemachine Confiner will consider the max scale value and scale using that.
     /// 
     /// The cache is NOT automatically invalidated (due to high computation cost every frame) if the contents
     /// of the confining shape change (e.g. points get moved dynamically). In that case, we expose an API to
@@ -78,17 +84,6 @@ namespace Cinemachine
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
-
-                m_shapeCache.m_localToWorldDelta.position = m_shapeCache.m_boundingShape2D.transform.position;
-                m_shapeCache.m_localToWorldDelta.rotation = Quaternion.Inverse(m_shapeCache.m_boundingShapeRotation) *
-                                                            m_shapeCache.m_boundingShape2D.transform.rotation;
-                localScaleDelta.x = m_shapeCache.m_boundingShapeScale.x /
-                                    m_shapeCache.m_boundingShape2D.transform.localScale.x;
-                localScaleDelta.y = m_shapeCache.m_boundingShapeScale.y /
-                                    m_shapeCache.m_boundingShape2D.transform.localScale.y;
-                localScaleDelta.z = m_shapeCache.m_boundingShapeScale.z /
-                                    m_shapeCache.m_boundingShape2D.transform.localScale.z;
-                m_shapeCache.m_localToWorldDelta.localScale = localScaleDelta;
 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path, 
                     m_shapeCache.m_localToWorldDelta, Vector3.zero);
@@ -250,11 +245,28 @@ namespace Cinemachine
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
             
-            private bool BoundingShapeTransformChanged(in Transform boundingShapeTransform)
+            public void SetLocalToWorldDelta()
             {
-                return m_boundingShape2D != null && 
-                       (m_boundingShapeScale != boundingShapeTransform.localScale || 
-                        m_boundingShapeRotation != boundingShapeTransform.rotation);
+                Transform boundingShapeTransform = m_boundingShape2D.transform;
+                m_localToWorldDelta.position = boundingShapeTransform.position;
+                m_localToWorldDelta.rotation = Quaternion.Inverse(m_boundingShapeRotation) * 
+                                               boundingShapeTransform.rotation;
+                
+                Vector3 localScale = boundingShapeTransform.localScale;
+                if (Math.Abs(localScale.x) < UnityVectorExtensions.Epsilon || 
+                    Math.Abs(localScale.y) < UnityVectorExtensions.Epsilon || 
+                    Math.Abs(localScale.z) < UnityVectorExtensions.Epsilon)
+                {
+                    localScale = Vector3.zero;
+                }
+                else
+                {
+                    var maxScale = Mathf.Max(localScale.x, Mathf.Max(localScale.y, localScale.z));
+                    localScale.x = maxScale;
+                    localScale.y = maxScale;
+                    localScale.z = maxScale;
+                }
+                m_localToWorldDelta.localScale = localScale;
             }
         }
         private ShapeCache m_shapeCache;
@@ -272,6 +284,7 @@ namespace Cinemachine
                 aspectRatio, m_MaxOrthoSize))
             {
                 m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
+                m_shapeCache.SetLocalToWorldDelta();
                 return true;
             }
             
@@ -334,6 +347,7 @@ namespace Cinemachine
             m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
             m_shapeCache.SetTransformCache(m_BoundingShape2D.transform);
             m_shapeCache.m_maxOrthoSize = m_MaxOrthoSize;
+            m_shapeCache.SetLocalToWorldDelta();
 
             return true;
         }

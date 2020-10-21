@@ -17,6 +17,17 @@ namespace Cinemachine.Utility
         {
             return float.IsNaN(v.x) || float.IsNaN(v.y);
         }
+        
+        /// <summary>
+        /// Checks if the Vector2 contains NaN for x or y.
+        /// </summary>
+        /// <param name="v">Vector2 to check for NaN</param>
+        /// <returns>True, if any components of the vector are NaN</returns>
+        public static bool IsNaN(this Vector3 v)
+        {
+            return float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z);
+        }
+        
 
         /// <summary>
         /// Get the closest point on a line segment.

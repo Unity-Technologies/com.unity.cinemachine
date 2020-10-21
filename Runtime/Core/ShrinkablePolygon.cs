@@ -395,10 +395,13 @@ namespace Cinemachine
             float maxX = Single.NegativeInfinity;
             foreach (var path in polygons)
             {
-                minX = path.Aggregate(minX, (current, point) => Mathf.Min(current, point.x));
-                maxX = path.Aggregate(maxX, (current, point) => Mathf.Max(current, point.x));
+                foreach (var point in path)
+                {
+                    var pointInWorldCoordinates = localToWorld.TransformPoint(point);
+                    minX = Mathf.Min(minX, pointInWorldCoordinates.x);
+                    maxX = Mathf.Max(maxX, pointInWorldCoordinates.x);
+                }
             }
-
             float polygonXWidth = maxX - minX;
             if (!(minX <= p.x && p.x <= maxX))
             {
