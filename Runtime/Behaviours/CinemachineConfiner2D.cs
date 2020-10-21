@@ -45,9 +45,13 @@ namespace Cinemachine
         public bool m_DrawGizmos = true;
         private List<List<Vector2>> m_ConfinerGizmos;
         
-        [HideInInspector, SerializeField] internal float m_MaxOrthoSize; // TODO: in editor change name to
-                                                                         // maxFrustumHeight and convert between
-                                                                         // ortho and perspective bull
+        /// <summary>
+        /// The confiner will correctly confine up to this maximum orthographic size. If set to 0, then this parameter is ignored and all camera sizes are supported. Use it to optimize computation and memory costs.
+        /// </summary>
+        [Tooltip("The confiner will correctly confine up to this maximum orthographic size. " +
+                 "If set to 0, then this parameter is ignored and all camera sizes are supported. " +
+                 "Use it to optimize computation and memory costs.")]
+        public float m_MaxOrthoSize;
 
         internal static readonly float m_bakedConfinerResolution = 0.005f;
 
@@ -93,6 +97,12 @@ namespace Cinemachine
                 }
                 state.PositionCorrection += displacement;
             }
+        }
+        
+        private void OnValidate()
+        {
+            m_Damping = Mathf.Max(0, m_Damping);
+            m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
         }
 
         /// <summary>
