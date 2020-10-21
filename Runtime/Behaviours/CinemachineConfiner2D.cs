@@ -20,7 +20,7 @@ namespace Cinemachine
     /// If the cache is invalid, it will be automatically recomputed at the next usage (lazy evaluation).
     /// The cache is automatically invalidated in some well-defined circumstances:
     /// - Aspect ratio of the parent vcam changes.
-    /// - Relevant parameters in the Confiner change (MaxOrthoSize, ShrinkToPointsExperimental).
+    /// - MaxOrthoSize parameter in the Confiner changes.
     /// - Transform of the bounding shape 2D changes.
     /// 
     /// The cache is NOT automatically invalidated (due to high computation cost every frame) if the contents
@@ -57,8 +57,8 @@ namespace Cinemachine
 
         private ConfinerOven m_confinerBaker = null;
 
-        /// <summary>Forces rebake at next iteration.</summary>
-        public void ForceBake()
+        /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
+        public void InvalidatePathCache()
         {
             m_shapeCache.Invalidate();
         }
@@ -74,7 +74,7 @@ namespace Cinemachine
                     return; // invalid path
                 }
                 
-                float frustumHeight = CalculateFrustumHeight(state, vcam);
+                float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
 
@@ -106,18 +106,13 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Calculates Frustum Height for orthographic or perspective camera.
-        /// Ascii illustration of Frustum Height:
-        ///  |----+----+  -\
-        ///  |    |    |    } m_frustumHeight = cameraWindowHeight / 2
-        ///  |---------+  -/
-        ///  |    |    |
-        ///  |---------|
+        /// Calculates half frustum height for orthographic or perspective camera.
+        /// For more info on frustum height, see <see cref="docs.unity3d.com/Manual/FrustumSizeAtDistance.html"/> 
         /// </summary>
-        /// <param name="state">CameraState to check if Orthographic or Perspective</param>
-        /// <param name="vcam">Vi</param>
+        /// <param name="state">CameraState for checking if Orthographic or Perspective</param>
+        /// <param name="vcam">vcam, to check its position</param>
         /// <returns>Frustum height of the camera</returns>
-        private float CalculateFrustumHeight(in CameraState state, in CinemachineVirtualCameraBase vcam)
+        private float CalculateHalfFrustumHeight(in CameraState state, in CinemachineVirtualCameraBase vcam)
         {
             float frustumHeight;
             if (state.Lens.Orthographic)
@@ -177,6 +172,20 @@ namespace Cinemachine
             public Vector3 m_previousDisplacement;
             public Vector3 m_dampedDisplacement;
             public VcamShapeCache m_vcamShapeCache;
+            
+            /// <summary> Contains all the cache items that are dependent on something in the vcam. </summary>
+            internal struct VcamShapeCache
+            {
+                public float m_frustumHeight;
+                public bool m_orthographic;
+                public List<List<Vector2>> m_path;
+
+                public bool IsValid(in float frustumHeight, in bool isOrthographic)
+                {
+                    return m_path != null && m_orthographic == isOrthographic &&
+                           Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
+                }
+            }
         };
 
         /// <summary>
@@ -212,7 +221,7 @@ namespace Cinemachine
             }
 
             public bool IsValid(in Collider2D boundingShape2D, 
-                in float aspectRatio, in float maxOrthoSize, in bool shrinkToPoint)
+                in float aspectRatio, in float maxOrthoSize)
             {
                 return m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
                        !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
@@ -241,33 +250,16 @@ namespace Cinemachine
         private ShapeCache m_shapeCache;
 
         /// <summary>
-        /// VcamShapeCache (lives inside VcamExtraState): contains all the cache items
-        /// that are dependent on something in the vcam.
-        /// </summary>
-        private struct VcamShapeCache
-        {
-            public float m_frustumHeight;
-            public bool m_orthographic;
-            public List<List<Vector2>> m_path;
-
-            public bool IsValid(in float frustumHeight, in bool isOrthographic)
-            {
-                return m_path != null && m_orthographic == isOrthographic &&
-                       Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
-            }
-        }
-
-        /// <summary>
-        /// Checks if we have a valid confiner state cache. Calculates it if cache is invalid.
+        /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
         /// </summary>
         /// <param name="aspectRatio">Camera window ratio (width / height)</param>
         /// <param name="confinerStateChanged">True, if the baked confiner state has changed. False, otherwise.</param>
         /// <returns>True, if path is baked and valid. False, otherwise.</returns>
-        private bool ValidatePathCache(float aspectRatio, out bool confinerStateChanged)
+        public bool ValidatePathCache(float aspectRatio, out bool confinerStateChanged)
         {
             confinerStateChanged = false;
             if (m_shapeCache.IsValid(m_BoundingShape2D, 
-                aspectRatio, m_MaxOrthoSize, true))
+                aspectRatio, m_MaxOrthoSize))
             {
                 return true;
             }
@@ -381,7 +373,7 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            ForceBake();
+            InvalidatePathCache();
         }
         
         private void OnDrawGizmos()
@@ -390,7 +382,7 @@ namespace Cinemachine
             if (m_ConfinerGizmos == null || m_shapeCache.m_originalPath == null) return;
             
             // Draw confiner for current camera size
-            Gizmos.color = Color.cyan;
+            Gizmos.color = Color.yellow;
             foreach (var path in m_ConfinerGizmos)
             {
                 for (var index = 0; index < path.Count; index++)
@@ -402,7 +394,7 @@ namespace Cinemachine
             }
             
             // Draw input confiner
-            Gizmos.color = Color.black;
+            Gizmos.color = new Color(1f, 0.92156863f, 0.015686275f, 0.5f); // dimmed yellow
             foreach (var path in m_shapeCache.m_originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
