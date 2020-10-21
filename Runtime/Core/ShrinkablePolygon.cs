@@ -388,7 +388,8 @@ namespace Cinemachine
         /// <param name="polygons">Input polygons</param>
         /// <param name="p">Input point.</param>
         /// <returns>True, if inside. False, otherwise.</returns>
-        public static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p, in Collider2D collider2D)
+        public static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p, 
+            in Transform localToWorld, in Vector2 offset)
         {
             float minX = Single.PositiveInfinity;
             float maxX = Single.NegativeInfinity;
@@ -410,8 +411,8 @@ namespace Cinemachine
             {
                 for (int index = 0; index < polygon.Count; ++index)
                 {
-                    var p1 = collider2D.transform.TransformPoint(polygon[index] + collider2D.offset);
-                    var p2 = collider2D.transform.TransformPoint(polygon[(index + 1) % polygon.Count] + collider2D.offset);
+                    var p1 = localToWorld.TransformPoint(polygon[index] + offset);
+                    var p2 = localToWorld.TransformPoint(polygon[(index + 1) % polygon.Count] + offset);
                     int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
                         out Vector2 intersection);
                     if (intersectionType == 2)

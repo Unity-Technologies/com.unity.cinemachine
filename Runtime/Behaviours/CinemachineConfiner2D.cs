@@ -64,6 +64,7 @@ namespace Cinemachine
         }
         
         private const float CornerAngleTreshold = 10f; // still unsure about the value of this constant
+        private Vector3 localScaleDelta;
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -78,8 +79,19 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
 
+                m_shapeCache.m_localToWorldDelta.position = m_shapeCache.m_boundingShape2D.transform.position;
+                m_shapeCache.m_localToWorldDelta.rotation = Quaternion.Inverse(m_shapeCache.m_boundingShapeRotation) *
+                                                            m_shapeCache.m_boundingShape2D.transform.rotation;
+                localScaleDelta.x = m_shapeCache.m_boundingShapeScale.x /
+                                    m_shapeCache.m_boundingShape2D.transform.localScale.x;
+                localScaleDelta.y = m_shapeCache.m_boundingShapeScale.y /
+                                    m_shapeCache.m_boundingShape2D.transform.localScale.y;
+                localScaleDelta.z = m_shapeCache.m_boundingShapeScale.z /
+                                    m_shapeCache.m_boundingShape2D.transform.localScale.z;
+                m_shapeCache.m_localToWorldDelta.localScale = localScaleDelta;
+
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path, 
-                    m_shapeCache.m_boundingShape2D);
+                    m_shapeCache.m_localToWorldDelta, Vector3.zero);
                 // Remember the desired displacement for next frame
                 var prev = extra.m_previousDisplacement;
                 extra.m_previousDisplacement = displacement;
@@ -137,9 +149,9 @@ namespace Cinemachine
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
-            in Collider2D collider2D)
+            in Transform localToWorld, in Vector2 offset)
         {
-            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, collider2D))
+            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, localToWorld, offset))
             {
                 return Vector2.zero;
             }
@@ -151,10 +163,10 @@ namespace Cinemachine
                 int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = collider2D.transform.TransformPoint(pathCache[i][numPoints - 1] + collider2D.offset);
+                    Vector2 v0 = localToWorld.TransformPoint(pathCache[i][numPoints - 1] + offset);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = collider2D.transform.TransformPoint(pathCache[i][j] + collider2D.offset);
+                        Vector2 v = localToWorld.transform.TransformPoint(pathCache[i][j] + offset);
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
@@ -197,9 +209,11 @@ namespace Cinemachine
         {
             public float m_aspectRatio;
             public float m_maxOrthoSize;
+            
+            public Transform m_localToWorldDelta;
 
-            private Vector3 m_boundingShapeScale;
-            private Quaternion m_boundingShapeRotation;
+            public Vector3 m_boundingShapeScale;
+            public Quaternion m_boundingShapeRotation;
             
             public Collider2D m_boundingShape2D;
             public List<List<Vector2>> m_originalPath;
@@ -223,7 +237,7 @@ namespace Cinemachine
                 in float aspectRatio, in float maxOrthoSize)
             {
                 return m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
-                       !BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
+                       //!BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
                        m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
@@ -257,6 +271,7 @@ namespace Cinemachine
             if (m_shapeCache.IsValid(m_BoundingShape2D, 
                 aspectRatio, m_MaxOrthoSize))
             {
+                m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
                 return true;
             }
             
@@ -274,8 +289,12 @@ namespace Cinemachine
                     List<Vector2> dst = new List<Vector2>();
                     for (int j = 0; j < path.Length; ++j)
                     {
-                        var point = new Vector3(path[j].x, path[j].y, 0);
-                        dst.Add(m_BoundingShape2D.transform.rotation * Vector3.Cross(point, m_BoundingShape2D.transform.localScale));
+                        var point = new Vector3(
+                            path[j].x * m_BoundingShape2D.transform.localScale.x, 
+                            path[j].y * m_BoundingShape2D.transform.localScale.y, 
+                            0);
+                        var pointResult = m_BoundingShape2D.transform.rotation * point;
+                        dst.Add(pointResult);
                     }
                     m_shapeCache.m_originalPath.Add(dst);
                 }
@@ -365,6 +384,11 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
+            if (m_shapeCache.m_localToWorldDelta == null)
+            {
+                var localToWorldTransformHolder = new GameObject {hideFlags = HideFlags.HideAndDontSave};
+                m_shapeCache.m_localToWorldDelta = localToWorldTransformHolder.transform;
+            }
             InvalidatePathCache();
         }
         
@@ -375,18 +399,21 @@ namespace Cinemachine
             
             // Draw confiner for current camera size
             Gizmos.color = Color.yellow;
+            Vector3 offset3 = Vector3.zero;
+                // m_shapeCache.m_localToWorldDelta.transform.TransformPoint(m_shapeCache.m_boundingShape2D.offset);
             foreach (var path in m_ConfinerGizmos)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
-                            path[index] + m_shapeCache.m_boundingShape2D.offset), 
-                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
-                            path[(index + 1) % path.Count]+ m_shapeCache.m_boundingShape2D.offset));
+                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
+                            path[index]) + offset3, 
+                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
+                            path[(index + 1) % path.Count]) + offset3);
                 }
             }
-            
+
+            Vector2 offset2 = Vector2.zero;
             // Draw input confiner
             Gizmos.color = new Color(1f, 0.92156863f, 0.015686275f, 0.5f); // dimmed yellow
             foreach (var path in m_shapeCache.m_originalPath )
@@ -394,10 +421,10 @@ namespace Cinemachine
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
-                            path[index] + m_shapeCache.m_boundingShape2D.offset),
-                        m_shapeCache.m_boundingShape2D.transform.TransformPoint(
-                            path[(index + 1) % path.Count]+ m_shapeCache.m_boundingShape2D.offset));
+                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
+                            path[index] + offset2),
+                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
+                            path[(index + 1) % path.Count] + offset2));
                 }
             }
         }

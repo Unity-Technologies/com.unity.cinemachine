@@ -23,12 +23,12 @@ namespace Cinemachine.Editor
         
         public override void OnInspectorGUI()
         {
+            BeginInspector();
             DrawRemainingPropertiesInInspector();
             if (GUILayout.Button("InvalidateCache"))
             {
                 m_target.InvalidatePathCache();
             }
-            serializedObject.ApplyModifiedProperties();
         }
     }
 #endif
