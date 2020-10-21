@@ -26,9 +26,8 @@ namespace Cinemachine
     /// InvalidatePathCache button in the editor on the component.
     ///
     /// Collider's Transform changes are supported, but after changing the Rotation component the cache is going to be
-    /// invalid, and the user needs to invalidate it if they want to have a correct cache. Only uniform scale is
-    /// supported, if none uniform is selected, Cinemachine Confiner will consider the max scale value and scale
-    /// using that.
+    /// invalid, and the user needs to invalidate it if they want to have a correct cache. If the collider is rotated,
+    /// non-uniform scale will distort the confiner.
     /// 
     /// The cache is NOT automatically invalidated (due to high computation cost every frame) if the contents
     /// of the confining shape change (e.g. points get moved dynamically). In that case, we expose an API to
@@ -248,8 +247,8 @@ namespace Cinemachine
                 m_aspectRatio = 0;
                 m_maxOrthoSize = 0;
                 
-                m_boundingShapeScale = Vector3.negativeInfinity;
-                m_boundingShapeRotation = new Quaternion(0,0,0,0);
+                m_boundingShapeScale = Vector3.one;
+                m_boundingShapeRotation = Quaternion.identity;
                 
                 m_boundingShape2D = null;
                 m_originalPath = null;
@@ -277,6 +276,7 @@ namespace Cinemachine
                 
                 Invalidate();
                 confinerStateChanged = true;
+                SetTransformCache(boundingShape2D.transform);
                 
                 Type colliderType = boundingShape2D == null ? null:  boundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
@@ -332,7 +332,6 @@ namespace Cinemachine
 
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
-                SetTransformCache(boundingShape2D.transform);
                 m_maxOrthoSize = maxOrthoSize;
                 SetLocalToWorldDelta();
 
@@ -362,12 +361,17 @@ namespace Cinemachine
                 m_localToWorldDelta.position = boundingShapeTransform.position;
                 m_localToWorldDelta.rotation = Quaternion.Inverse(m_boundingShapeRotation) * 
                                                boundingShapeTransform.rotation;
-
+                
                 Vector3 localScale = boundingShapeTransform.localScale;
-                var maxScale = Mathf.Max(localScale.x, Mathf.Max(localScale.y, localScale.z));
-                localScale.x = maxScale;
-                localScale.y = maxScale;
-                localScale.z = maxScale;
+                localScale.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
+                    ? 0
+                    : localScale.x / m_boundingShapeScale.x;
+                localScale.y = Math.Abs(m_boundingShapeScale.y) < UnityVectorExtensions.Epsilon
+                    ? 0
+                    : localScale.y / m_boundingShapeScale.y;
+                localScale.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
+                    ? 0
+                    : localScale.z / m_boundingShapeScale.z;
                 m_localToWorldDelta.localScale = localScale;
             }
         }
