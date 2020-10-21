@@ -4,6 +4,9 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
+    /// <summary>
+    /// Alternative to AxisState - a simplified structure to hold the definition of an input axis
+    /// </summary>
     [Serializable]
     public struct AxisBase
     {
@@ -24,12 +27,19 @@ namespace Cinemachine
         [Tooltip("If checked, then the axis will wrap around at the min/max values, forming a loop")]
         public bool m_Wrap;
 
+        /// <summary>
+        /// Call this from OnValidate() to validate the fields of this structure (applies clamps, etc).
+        /// </summary>
         public void Validate()
         {
             m_MaxValue = Mathf.Clamp(m_MaxValue, m_MinValue, m_MaxValue);
         }
     }
 
+    /// <summary>
+    /// A helper class to drive an input axis, as an alternative to the standard Cinemachine.AxisState.
+    /// Behaviour is a simple scale of the input channel, with no max speed or damping.
+    /// </summary>
     [Serializable]
     public struct CinemachineInputAxisDriver
     {
