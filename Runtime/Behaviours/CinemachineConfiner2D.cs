@@ -61,7 +61,7 @@ namespace Cinemachine
 
         internal static readonly float m_bakedConfinerResolution = 0.005f;
 
-        private ConfinerOven m_confinerBaker = null;
+        private ConfinerOven m_confinerBaker = new ConfinerOven();
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidatePathCache()
@@ -330,9 +330,9 @@ namespace Cinemachine
                 return false; // input collider is invalid
             }
 
-            GetConfinerOven().BakeConfiner(m_shapeCache.m_originalPath, aspectRatio, m_bakedConfinerResolution, 
+            m_confinerBaker.BakeConfiner(m_shapeCache.m_originalPath, aspectRatio, m_bakedConfinerResolution, 
                 m_MaxOrthoSize, true);
-            m_shapeCache.m_confinerStates = GetConfinerOven().GetShrinkablePolygonsAsConfinerStates();
+            m_shapeCache.m_confinerStates = m_confinerBaker.GetShrinkablePolygonsAsConfinerStates();
 
             m_shapeCache.m_aspectRatio = aspectRatio;
             m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
@@ -359,7 +359,7 @@ namespace Cinemachine
                 return;
             }
             
-            m_confinerCache = GetConfinerOven().GetConfinerAtFrustumHeight(frustumHeight);
+            m_confinerCache = m_confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
             ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, frustumHeight, 
                 out extra.m_vcamShapeCache.m_path);
                 
@@ -370,20 +370,6 @@ namespace Cinemachine
             {
                 m_ConfinerGizmos = extra.m_vcamShapeCache.m_path;
             }
-        }
-        
-        /// <summary>
-        /// Singleton for this object's ConfinerOven.
-        /// </summary>
-        /// <returns>ConfinerOven</returns>
-        private ConfinerOven GetConfinerOven()
-        {
-            if (m_confinerBaker == null)
-            {
-                m_confinerBaker = new ConfinerOven();
-            }
-
-            return m_confinerBaker;
         }
         
         protected override void OnEnable()
@@ -397,6 +383,7 @@ namespace Cinemachine
             InvalidatePathCache();
         }
 
+    #if UNITY_EDITOR
         internal Color m_gizmoColor = Color.yellow;
         private void OnDrawGizmos()
         {
@@ -434,6 +421,7 @@ namespace Cinemachine
                 }
             }
         }
+    #endif
     }
 #endif
 }
