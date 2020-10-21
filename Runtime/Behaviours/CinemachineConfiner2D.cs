@@ -58,59 +58,60 @@ namespace Cinemachine
                  "If set to 0, then this parameter is ignored and all camera sizes are supported. " +
                  "Use it to optimize computation and memory costs.")]
         public float m_MaxOrthoSize;
-
-        internal static readonly float m_bakedConfinerResolution = 0.005f;
-
-        private ConfinerOven m_confinerBaker = new ConfinerOven();
-
+        
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidatePathCache()
         {
             m_shapeCache.Invalidate();
         }
+
+        /// <summary>Validates cache if it is invalid.</summary>
+        /// <param name="cameraAspectRatio">Aspect ratio of camera.</param>
+        /// <returns>Return true if cache is valid. False, otherwise.</returns>
+        public bool ValidatePathCache(float cameraAspectRatio)
+        {
+            return m_shapeCache.ValidateCache(
+                m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, cameraAspectRatio, out _);
+        }
         
-        private const float CornerAngleTreshold = 10f; // still unsure about the value of this constant
-        private VcamExtraState extra;
+        private ConfinerOven m_confinerBaker = new ConfinerOven();
+        private VcamExtraState m_extra;
+        private const float m_cornerAngleTreshold = 10f; // still unsure about the value of this constant
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             if (stage == CinemachineCore.Stage.Body)
             {
-                if (!ValidatePathCache(state.Lens.Aspect, out bool confinerStateChanged))
+                if (!m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, 
+                    state.Lens.Aspect, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
                 
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
-                extra = GetExtraState<VcamExtraState>(vcam);
-                ValidateVcamPathCache(confinerStateChanged, frustumHeight, state.Lens.Orthographic, extra);
+                m_extra = GetExtraState<VcamExtraState>(vcam);
+                m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
 
-                Vector3 displacement = ConfinePoint(state.CorrectedPosition, extra.m_vcamShapeCache.m_path, 
+                Vector3 displacement = ConfinePoint(state.CorrectedPosition, m_extra.m_vcamShapeCache.m_path, 
                     m_shapeCache.m_localToWorldDelta, Vector3.zero);
                 // Remember the desired displacement for next frame
-                var prev = extra.m_previousDisplacement;
-                extra.m_previousDisplacement = displacement;
+                var prev = m_extra.m_previousDisplacement;
+                m_extra.m_previousDisplacement = displacement;
 
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
-                    extra.m_dampedDisplacement = Vector3.zero;
+                    m_extra.m_dampedDisplacement = Vector3.zero;
                 else
                 {
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
-                    if (Vector2.Angle(prev, displacement) > CornerAngleTreshold)
-                        extra.m_dampedDisplacement += displacement - prev;
+                    if (Vector2.Angle(prev, displacement) > m_cornerAngleTreshold)
+                        m_extra.m_dampedDisplacement += displacement - prev;
 
-                    extra.m_dampedDisplacement -= Damper.Damp(extra.m_dampedDisplacement, m_Damping, deltaTime);
-                    displacement -= extra.m_dampedDisplacement;
+                    m_extra.m_dampedDisplacement -= Damper.Damp(m_extra.m_dampedDisplacement, m_Damping, deltaTime);
+                    displacement -= m_extra.m_dampedDisplacement;
                 }
                 state.PositionCorrection += displacement;
             }
-        }
-        
-        private void OnValidate()
-        {
-            m_Damping = Mathf.Max(0, m_Damping);
-            m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
         }
 
         /// <summary>
@@ -176,6 +177,7 @@ namespace Cinemachine
             return closest - positionToConfine;
         }
         
+        internal static readonly float m_bakedConfinerResolution = 0.005f;
         private class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
@@ -185,11 +187,36 @@ namespace Cinemachine
             /// <summary> Contains all the cache items that are dependent on something in the vcam. </summary>
             internal struct VcamShapeCache
             {
-                public float m_frustumHeight;
-                public bool m_orthographic;
                 public List<List<Vector2>> m_path;
+                
+                private float m_frustumHeight;
+                private bool m_orthographic;
 
-                public bool IsValid(in float frustumHeight, in bool isOrthographic)
+                /// <summary>
+                /// Check that the path cache was converted from the current confiner cache, or
+                /// converts it if the frustum height was changed.
+                /// </summary>
+                /// <param name="confinerStateChanged">Confiner cache was changed</param>
+                /// <param name="frustumHeight">Camera frustum height</param>
+                public void ValidateCache(
+                    in ConfinerOven confinerBaker, in bool confinerStateChanged, 
+                    in float frustumHeight, in bool orthographic, 
+                    VcamExtraState extra)
+                {
+                    if (!confinerStateChanged && extra.m_vcamShapeCache.IsValid(frustumHeight, orthographic))
+                    {
+                        return;
+                    }
+            
+                    var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
+                    ShrinkablePolygon.ConvertToPath(confinerCache.polygons, frustumHeight, 
+                        out extra.m_vcamShapeCache.m_path);
+                
+                    extra.m_vcamShapeCache.m_frustumHeight = frustumHeight;
+                    extra.m_vcamShapeCache.m_orthographic = orthographic;
+                }
+                
+                private bool IsValid(in float frustumHeight, in bool isOrthographic)
                 {
                     return m_path != null && m_orthographic == isOrthographic &&
                            Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
@@ -202,18 +229,20 @@ namespace Cinemachine
         /// </summary>
         private struct ShapeCache
         {
-            public float m_aspectRatio;
-            public float m_maxOrthoSize;
-            
             public Transform m_localToWorldDelta;
-
-            public Vector3 m_boundingShapeScale;
-            public Quaternion m_boundingShapeRotation;
-            
-            public Collider2D m_boundingShape2D;
             public List<List<Vector2>> m_originalPath;
-            public List<ConfinerOven.ConfinerState> m_confinerStates;
+            
+            private float m_aspectRatio;
+            private float m_maxOrthoSize;
+            private Vector3 m_boundingShapeScale;
+            private Quaternion m_boundingShapeRotation;
 
+            private Collider2D m_boundingShape2D;
+            private List<ConfinerOven.ConfinerState> m_confinerStates;
+
+            /// <summary>
+            /// Invalidates shapeCache
+            /// </summary>
             public void Invalidate()
             {
                 m_aspectRatio = 0;
@@ -227,8 +256,90 @@ namespace Cinemachine
 
                 m_confinerStates = null;
             }
+            
+            /// <summary>
+            /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
+            /// </summary>
+            /// <param name="aspectRatio">Camera window ratio (width / height)</param>
+            /// <param name="confinerStateChanged">True, if the baked confiner state has changed. False, otherwise.</param>
+            /// <returns>True, if path is baked and valid. False, otherwise.</returns>
+            public bool ValidateCache(Collider2D boundingShape2D, float maxOrthoSize, ConfinerOven confinerBaker,
+                 float aspectRatio, out bool confinerStateChanged)
+            {
+                confinerStateChanged = false;
+                if (IsValid(boundingShape2D, 
+                    aspectRatio, maxOrthoSize))
+                {
+                    m_boundingShape2D = boundingShape2D;
+                    SetLocalToWorldDelta();
+                    return true;
+                }
+                
+                Invalidate();
+                confinerStateChanged = true;
+                
+                Type colliderType = boundingShape2D == null ? null:  boundingShape2D.GetType();
+                if (colliderType == typeof(PolygonCollider2D))
+                {
+                    PolygonCollider2D poly = boundingShape2D as PolygonCollider2D;
+                    m_originalPath = new List<List<Vector2>>();
+                    for (int i = 0; i < poly.pathCount; ++i)
+                    {
+                        Vector2[] path = poly.GetPath(i);
+                        List<Vector2> dst = new List<Vector2>();
+                        for (int j = 0; j < path.Length; ++j)
+                        {
+                            var point = new Vector3(
+                                path[j].x * boundingShape2D.transform.localScale.x, 
+                                path[j].y * boundingShape2D.transform.localScale.y, 
+                                0);
+                            var pointResult = boundingShape2D.transform.rotation * point;
+                            dst.Add(pointResult);
+                        }
+                        m_originalPath.Add(dst);
+                    }
+                }
+                else if (colliderType == typeof(CompositeCollider2D))
+                {
+                    CompositeCollider2D poly = boundingShape2D as CompositeCollider2D;
+                    
+                    m_originalPath = new List<List<Vector2>>();
+                    Vector2[] path = new Vector2[poly.pointCount];
+                    Vector3 lossyScale = boundingShape2D.transform.lossyScale;
+                    Vector2 revertCompositeColliderScale = new Vector2(
+                        1f / lossyScale.x, 
+                        1f / lossyScale.y);
+                    for (int i = 0; i < poly.pathCount; ++i)
+                    {
+                        int numPoints = poly.GetPath(i, path);
+                        List<Vector2> dst = new List<Vector2>();
+                        for (int j = 0; j < numPoints; ++j)
+                        {
+                            dst.Add(path[j] * revertCompositeColliderScale);
+                        }
+                        m_originalPath.Add(dst);
+                    }
+                }
+                else
+                {
+                    Invalidate();
+                    return false; // input collider is invalid
+                }
 
-            public bool IsValid(in Collider2D boundingShape2D, 
+                confinerBaker.BakeConfiner(m_originalPath, aspectRatio, m_bakedConfinerResolution, 
+                    maxOrthoSize, true);
+                m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
+
+                m_aspectRatio = aspectRatio;
+                m_boundingShape2D = boundingShape2D;
+                SetTransformCache(boundingShape2D.transform);
+                m_maxOrthoSize = maxOrthoSize;
+                SetLocalToWorldDelta();
+
+                return true;
+            }
+
+            private bool IsValid(in Collider2D boundingShape2D, 
                 in float aspectRatio, in float maxOrthoSize)
             {
                 return m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
@@ -239,13 +350,13 @@ namespace Cinemachine
                        Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
 
-            public void SetTransformCache(in Transform boundingShapeTransform)
+            private void SetTransformCache(in Transform boundingShapeTransform)
             {
                 m_boundingShapeScale = boundingShapeTransform.localScale;
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
-            
-            public void SetLocalToWorldDelta()
+
+            private void SetLocalToWorldDelta()
             {
                 Transform boundingShapeTransform = m_boundingShape2D.transform;
                 m_localToWorldDelta.position = boundingShapeTransform.position;
@@ -262,111 +373,6 @@ namespace Cinemachine
         }
         private ShapeCache m_shapeCache;
 
-        /// <summary>
-        /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
-        /// </summary>
-        /// <param name="aspectRatio">Camera window ratio (width / height)</param>
-        /// <param name="confinerStateChanged">True, if the baked confiner state has changed. False, otherwise.</param>
-        /// <returns>True, if path is baked and valid. False, otherwise.</returns>
-        public bool ValidatePathCache(float aspectRatio, out bool confinerStateChanged)
-        {
-            confinerStateChanged = false;
-            if (m_shapeCache.IsValid(m_BoundingShape2D, 
-                aspectRatio, m_MaxOrthoSize))
-            {
-                m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
-                m_shapeCache.SetLocalToWorldDelta();
-                return true;
-            }
-            
-            m_shapeCache.Invalidate();
-            confinerStateChanged = true;
-            
-            Type colliderType = m_BoundingShape2D == null ? null:  m_BoundingShape2D.GetType();
-            if (colliderType == typeof(PolygonCollider2D))
-            {
-                PolygonCollider2D poly = m_BoundingShape2D as PolygonCollider2D;
-                m_shapeCache.m_originalPath = new List<List<Vector2>>();
-                for (int i = 0; i < poly.pathCount; ++i)
-                {
-                    Vector2[] path = poly.GetPath(i);
-                    List<Vector2> dst = new List<Vector2>();
-                    for (int j = 0; j < path.Length; ++j)
-                    {
-                        var point = new Vector3(
-                            path[j].x * m_BoundingShape2D.transform.localScale.x, 
-                            path[j].y * m_BoundingShape2D.transform.localScale.y, 
-                            0);
-                        var pointResult = m_BoundingShape2D.transform.rotation * point;
-                        dst.Add(pointResult);
-                    }
-                    m_shapeCache.m_originalPath.Add(dst);
-                }
-            }
-            else if (colliderType == typeof(CompositeCollider2D))
-            {
-                CompositeCollider2D poly = m_BoundingShape2D as CompositeCollider2D;
-                
-                m_shapeCache.m_originalPath = new List<List<Vector2>>();
-                Vector2[] path = new Vector2[poly.pointCount];
-                Vector3 lossyScale = m_BoundingShape2D.transform.lossyScale;
-                Vector2 revertCompositeColliderScale = new Vector2(
-                    1f / lossyScale.x, 
-                    1f / lossyScale.y);
-                for (int i = 0; i < poly.pathCount; ++i)
-                {
-                    int numPoints = poly.GetPath(i, path);
-                    List<Vector2> dst = new List<Vector2>();
-                    for (int j = 0; j < numPoints; ++j)
-                    {
-                        dst.Add(path[j] * revertCompositeColliderScale);
-                    }
-                    m_shapeCache.m_originalPath.Add(dst);
-                }
-            }
-            else
-            {
-                m_shapeCache.Invalidate();
-                return false; // input collider is invalid
-            }
-
-            m_confinerBaker.BakeConfiner(m_shapeCache.m_originalPath, aspectRatio, m_bakedConfinerResolution, 
-                m_MaxOrthoSize, true);
-            m_shapeCache.m_confinerStates = m_confinerBaker.GetShrinkablePolygonsAsConfinerStates();
-
-            m_shapeCache.m_aspectRatio = aspectRatio;
-            m_shapeCache.m_boundingShape2D = m_BoundingShape2D;
-            m_shapeCache.SetTransformCache(m_BoundingShape2D.transform);
-            m_shapeCache.m_maxOrthoSize = m_MaxOrthoSize;
-            m_shapeCache.SetLocalToWorldDelta();
-
-            return true;
-        }
-
-        
-        private ConfinerOven.ConfinerState m_confinerCache;
-        /// <summary>
-        /// Check that the path cache was converted from the current confiner cache, or
-        /// converts it if the frustum height was changed.
-        /// </summary>
-        /// <param name="confinerStateChanged">Confiner cache was changed</param>
-        /// <param name="frustumHeight">Camera frustum height</param>
-        private void ValidateVcamPathCache(
-            in bool confinerStateChanged, in float frustumHeight, in bool orthographic, in VcamExtraState extra)
-        {
-            if (!confinerStateChanged && extra.m_vcamShapeCache.IsValid(frustumHeight, orthographic))
-            {
-                return;
-            }
-            
-            m_confinerCache = m_confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-            ShrinkablePolygon.ConvertToPath(m_confinerCache.polygons, frustumHeight, 
-                out extra.m_vcamShapeCache.m_path);
-                
-            extra.m_vcamShapeCache.m_frustumHeight = frustumHeight;
-            extra.m_vcamShapeCache.m_orthographic = orthographic;
-        }
-        
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -377,19 +383,28 @@ namespace Cinemachine
             }
             InvalidatePathCache();
         }
+        
+        private void OnValidate()
+        {
+            m_Damping = Mathf.Max(0, m_Damping);
+            m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
+        }
 
     #if UNITY_EDITOR
         internal Color m_gizmoColor = Color.yellow;
         private void OnDrawGizmos()
         {
-            if (!m_DrawGizmos) return;
-            if (extra.m_vcamShapeCache.m_path == null || m_shapeCache.m_originalPath == null) return;
+            if (!m_DrawGizmos || 
+                m_extra == null || m_extra.m_vcamShapeCache.m_path == null || m_shapeCache.m_originalPath == null)
+            {
+                return;
+            }
             
             // Draw confiner for current camera size
             Gizmos.color = m_gizmoColor;
             Vector3 offset3 = Vector3.zero;
                 // m_shapeCache.m_localToWorldDelta.transform.TransformPoint(m_shapeCache.m_boundingShape2D.offset);
-            foreach (var path in extra.m_vcamShapeCache.m_path)
+            foreach (var path in m_extra.m_vcamShapeCache.m_path)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
