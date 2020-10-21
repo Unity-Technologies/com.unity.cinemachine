@@ -276,7 +276,6 @@ namespace Cinemachine
                 
                 Invalidate();
                 confinerStateChanged = true;
-                SetTransformCache(boundingShape2D.transform);
                 
                 Type colliderType = boundingShape2D == null ? null:  boundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
@@ -333,6 +332,7 @@ namespace Cinemachine
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxOrthoSize;
+                SetTransformCache(boundingShape2D.transform);
                 SetLocalToWorldDelta();
 
                 return true;
@@ -341,7 +341,8 @@ namespace Cinemachine
             private bool IsValid(in Collider2D boundingShape2D, 
                 in float aspectRatio, in float maxOrthoSize)
             {
-                return m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
+                return boundingShape2D != null && 
+                       m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
                        //!BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
                        m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
@@ -377,15 +378,15 @@ namespace Cinemachine
         }
         private ShapeCache m_shapeCache;
 
-        protected override void OnEnable()
+        private GameObject localToWorldTransformHolder;
+        private void Start()
         {
-            base.OnEnable();
             if (m_shapeCache.m_localToWorldDelta == null)
             {
-                var localToWorldTransformHolder = new GameObject {hideFlags = HideFlags.HideAndDontSave};
+                localToWorldTransformHolder = new GameObject("LocalToWorldTransform");
+                localToWorldTransformHolder.hideFlags = HideFlags.HideAndDontSave;
                 m_shapeCache.m_localToWorldDelta = localToWorldTransformHolder.transform;
             }
-            InvalidatePathCache();
         }
         
         private void OnValidate()
