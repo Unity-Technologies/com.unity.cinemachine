@@ -19,6 +19,7 @@ namespace Cinemachine.Editor
         void OnEnable()
         {
             m_target = (CinemachineConfiner2D) target;
+            m_target.m_gizmoColor = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
         }
         
         public override void OnInspectorGUI()

@@ -251,21 +251,12 @@ namespace Cinemachine
                 m_localToWorldDelta.position = boundingShapeTransform.position;
                 m_localToWorldDelta.rotation = Quaternion.Inverse(m_boundingShapeRotation) * 
                                                boundingShapeTransform.rotation;
-                
+
                 Vector3 localScale = boundingShapeTransform.localScale;
-                if (Math.Abs(localScale.x) < UnityVectorExtensions.Epsilon || 
-                    Math.Abs(localScale.y) < UnityVectorExtensions.Epsilon || 
-                    Math.Abs(localScale.z) < UnityVectorExtensions.Epsilon)
-                {
-                    localScale = Vector3.zero;
-                }
-                else
-                {
-                    var maxScale = Mathf.Max(localScale.x, Mathf.Max(localScale.y, localScale.z));
-                    localScale.x = maxScale;
-                    localScale.y = maxScale;
-                    localScale.z = maxScale;
-                }
+                var maxScale = Mathf.Max(localScale.x, Mathf.Max(localScale.y, localScale.z));
+                localScale.x = maxScale;
+                localScale.y = maxScale;
+                localScale.z = maxScale;
                 m_localToWorldDelta.localScale = localScale;
             }
         }
@@ -405,14 +396,15 @@ namespace Cinemachine
             }
             InvalidatePathCache();
         }
-        
+
+        internal Color m_gizmoColor = Color.yellow;
         private void OnDrawGizmos()
         {
             if (!m_DrawGizmos) return;
             if (m_ConfinerGizmos == null || m_shapeCache.m_originalPath == null) return;
             
             // Draw confiner for current camera size
-            Gizmos.color = Color.yellow;
+            Gizmos.color = m_gizmoColor;
             Vector3 offset3 = Vector3.zero;
                 // m_shapeCache.m_localToWorldDelta.transform.TransformPoint(m_shapeCache.m_boundingShape2D.offset);
             foreach (var path in m_ConfinerGizmos)
@@ -429,7 +421,7 @@ namespace Cinemachine
 
             Vector2 offset2 = Vector2.zero;
             // Draw input confiner
-            Gizmos.color = new Color(1f, 0.92156863f, 0.015686275f, 0.5f); // dimmed yellow
+            Gizmos.color = new Color(m_gizmoColor.r, m_gizmoColor.g, m_gizmoColor.b, m_gizmoColor.a / 2f); // dimmed yellow
             foreach (var path in m_shapeCache.m_originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
