@@ -389,7 +389,7 @@ namespace Cinemachine
         /// <param name="p">Input point.</param>
         /// <returns>True, if inside. False, otherwise.</returns>
         public static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p, 
-            in Transform localToWorld, in Vector2 offset)
+            in Vector3 scale, in Quaternion rotation, in Vector3 translation, in Vector2 offset)
         {
             float minX = Single.PositiveInfinity;
             float maxX = Single.NegativeInfinity;
@@ -397,7 +397,7 @@ namespace Cinemachine
             {
                 foreach (var point in path)
                 {
-                    var pointInWorldCoordinates = localToWorld.TransformPoint(point);
+                    var pointInWorldCoordinates = ApplyTransformation(point, scale, rotation, translation);
                     minX = Mathf.Min(minX, pointInWorldCoordinates.x);
                     maxX = Mathf.Max(maxX, pointInWorldCoordinates.x);
                 }
@@ -414,8 +414,11 @@ namespace Cinemachine
             {
                 for (int index = 0; index < polygon.Count; ++index)
                 {
-                    var p1 = localToWorld.TransformPoint(polygon[index] + offset);
-                    var p2 = localToWorld.TransformPoint(polygon[(index + 1) % polygon.Count] + offset);
+                    Vector2 p1 = ApplyTransformation(polygon[index], scale, rotation, translation);
+                    p1 += offset;
+                    Vector2 p2 = ApplyTransformation(polygon[(index + 1) % polygon.Count], scale, rotation,
+                        translation);
+                    p2 += offset;
                     int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
                         out Vector2 intersection);
                     if (intersectionType == 2)
@@ -427,6 +430,15 @@ namespace Cinemachine
 
             return intersectionCount % 2 != 0; // inside polygon when odd number of intersections
         }
+
+        private static Vector3 ApplyTransformation(in Vector3 point, Vector3 scale, Quaternion rotation, Vector3 translation)
+        {
+            var transformedPoint = new Vector3(point.x * scale.x, point.y * scale.y, point.z * scale.z);
+            transformedPoint = rotation * transformedPoint;
+            transformedPoint += translation;
+            return transformedPoint;
+        }
+        
         
         /// <summary>
         /// Finds midpoint of a rectangle's side touching CA and CB.

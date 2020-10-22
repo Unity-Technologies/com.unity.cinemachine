@@ -92,7 +92,7 @@ namespace Cinemachine
                 m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
 
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, m_extra.m_vcamShapeCache.m_path, 
-                    m_shapeCache.m_localToWorldDelta, Vector3.zero);
+                    m_shapeCache, Vector3.zero);
                 // Remember the desired displacement for next frame
                 var prev = m_extra.m_previousDisplacement;
                 m_extra.m_previousDisplacement = displacement;
@@ -144,9 +144,10 @@ namespace Cinemachine
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
-            in Transform localToWorld, in Vector2 offset)
+            in ShapeCache shapeCache, in Vector2 offset)
         {
-            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, localToWorld, offset))
+            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, shapeCache.m_scaleDelta, 
+                shapeCache.m_rotationDelta, shapeCache.m_positionDelta, offset))
             {
                 return Vector2.zero;
             }
@@ -158,10 +159,10 @@ namespace Cinemachine
                 int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = localToWorld.TransformPoint(pathCache[i][numPoints - 1] + offset);
+                    Vector2 v0 = shapeCache.ApplyTransformationDelta(pathCache[i][numPoints - 1] + offset);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = localToWorld.transform.TransformPoint(pathCache[i][j] + offset);
+                        Vector2 v = shapeCache.ApplyTransformationDelta(pathCache[i][j] + offset);
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
@@ -228,7 +229,9 @@ namespace Cinemachine
         /// </summary>
         private struct ShapeCache
         {
-            public Transform m_localToWorldDelta;
+            public Vector3 m_positionDelta;
+            public Vector3 m_scaleDelta;
+            public Quaternion m_rotationDelta;
             public List<List<Vector2>> m_originalPath;
             
             private float m_aspectRatio;
@@ -254,6 +257,15 @@ namespace Cinemachine
                 m_originalPath = null;
 
                 m_confinerStates = null;
+            }
+
+            public Vector3 ApplyTransformationDelta(in Vector3 point)
+            {
+                var transformedPoint = new Vector3(point.x * m_scaleDelta.x, point.y * m_scaleDelta.y,
+                    point.z * m_scaleDelta.z);
+                transformedPoint = m_rotationDelta * transformedPoint;
+                transformedPoint += m_positionDelta;
+                return transformedPoint;
             }
             
             /// <summary>
@@ -359,9 +371,9 @@ namespace Cinemachine
             private void SetLocalToWorldDelta()
             {
                 Transform boundingShapeTransform = m_boundingShape2D.transform;
-                m_localToWorldDelta.position = boundingShapeTransform.position;
-                m_localToWorldDelta.rotation = Quaternion.Inverse(m_boundingShapeRotation) * 
-                                               boundingShapeTransform.rotation;
+                m_positionDelta = boundingShapeTransform.position;
+                m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * 
+                                  boundingShapeTransform.rotation;
                 
                 Vector3 localScale = boundingShapeTransform.localScale;
                 localScale.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
@@ -373,22 +385,13 @@ namespace Cinemachine
                 localScale.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
                     ? 0
                     : localScale.z / m_boundingShapeScale.z;
-                m_localToWorldDelta.localScale = localScale;
+                m_scaleDelta = localScale; // TODO: directly assign scaleDelta.xyz
             }
         }
         private ShapeCache m_shapeCache;
 
         private GameObject localToWorldTransformHolder;
-        private void Start()
-        {
-            if (m_shapeCache.m_localToWorldDelta == null)
-            {
-                localToWorldTransformHolder = new GameObject("LocalToWorldTransform");
-                localToWorldTransformHolder.hideFlags = HideFlags.HideAndDontSave;
-                m_shapeCache.m_localToWorldDelta = localToWorldTransformHolder.transform;
-            }
-        }
-        
+
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
@@ -414,10 +417,8 @@ namespace Cinemachine
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
-                            path[index]) + offset3, 
-                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
-                            path[(index + 1) % path.Count]) + offset3);
+                        m_shapeCache.ApplyTransformationDelta(path[index]) + offset3,
+                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count]) + offset3);
                 }
             }
 
@@ -429,10 +430,8 @@ namespace Cinemachine
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
-                            path[index] + offset2),
-                        m_shapeCache.m_localToWorldDelta.transform.TransformPoint(
-                            path[(index + 1) % path.Count] + offset2));
+                        m_shapeCache.ApplyTransformationDelta(path[index] + offset2),
+                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count] + offset2));
                 }
             }
         }
