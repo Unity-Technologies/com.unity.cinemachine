@@ -97,9 +97,9 @@ namespace Cinemachine
                 m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
 
 
-                Vector3 cameraPosLocal = m_shapeCache.TransformCameraPosToConfinerSpace(state.CorrectedPosition);
+                Vector3 cameraPosLocal = m_shapeCache.TransformPointToConfinerSpace(state.CorrectedPosition);
                 Vector3 displacement = ConfinePoint(cameraPosLocal, m_extra.m_vcamShapeCache.m_path);
-                displacement = m_shapeCache.TransformDisplacementToCamera(displacement);
+                displacement = m_shapeCache.TransformConfinerSpacePointToWorld(displacement);
 
                 // Remember the desired displacement for next frame
                 var prev = m_extra.m_previousDisplacement;
@@ -235,11 +235,12 @@ namespace Cinemachine
         /// </summary>
         private struct ShapeCache
         {
-            public Vector3 m_positionDelta;
-            public Vector3 m_scaleDelta;
-            public Quaternion m_rotationDelta;
-            public Vector3 m_offset; // TODO: refactor for gizmos only
             public List<List<Vector2>> m_originalPath;
+
+            public Vector3 m_positionDelta; // TODO: refactor for gizmos only
+            public Vector3 m_scaleDelta; // TODO: refactor for gizmos only
+            public Quaternion m_rotationDelta; // TODO: refactor for gizmos only
+            public Vector3 m_offset; // TODO: refactor for gizmos only
             
             private float m_aspectRatio;
             private float m_maxOrthoSize;
@@ -368,25 +369,33 @@ namespace Cinemachine
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
             
-            public Vector3 TransformCameraPosToConfinerSpace(in Vector3 cameraPos)
+            /// <summary>
+            /// Transforms point to confiner local space
+            /// </summary>
+            /// <param name="point">Point to transform</param>
+            /// <returns>Point in confiner's local space</returns>
+            public Vector3 TransformPointToConfinerSpace(in Vector3 point)
             {
-                var cameraPosLocal = cameraPos;
-                cameraPosLocal = T.MultiplyPoint3x4(cameraPosLocal);
-                cameraPosLocal = R.MultiplyPoint3x4(cameraPosLocal);
-                cameraPosLocal = S.MultiplyPoint3x4(cameraPosLocal);
-                return cameraPosLocal;
+                Vector3 pointInConfinerSpace = T.MultiplyPoint3x4(point);
+                pointInConfinerSpace = R.MultiplyPoint3x4(pointInConfinerSpace);
+                pointInConfinerSpace = S.MultiplyPoint3x4(pointInConfinerSpace);
+                return pointInConfinerSpace;
             }
 
-            public Vector3 TransformDisplacementToCamera(in Vector3 displacement)
+            /// <summary>
+            /// Transforms point in confiner local space to world space.
+            /// </summary>
+            /// <param name="point">Point to transform</param>
+            /// <returns>Point in world space</returns>
+            public Vector3 TransformConfinerSpacePointToWorld(in Vector3 point)
             {
-                var displacementCamera = displacement;
-                displacementCamera = S_inverse.MultiplyPoint3x4(displacementCamera);
+                Vector3 displacementCamera = S_inverse.MultiplyPoint3x4(point);
                 displacementCamera = R_inverse.MultiplyPoint3x4(displacementCamera);
                 return displacementCamera;
             }
 
-            private Matrix4x4 S, R, T;
-            private Matrix4x4 S_inverse, R_inverse;
+            private Matrix4x4 S, R, T; // Scale, Rotation, Translation matrices converting camera to confiner space
+            private Matrix4x4 S_inverse, R_inverse; // Scale, Rotation matrices converting displacement to camera space
             private void CalculateDeltaTransformationMatrix()
             {
                 if (m_boundingShape2D.transform.hasChanged)
