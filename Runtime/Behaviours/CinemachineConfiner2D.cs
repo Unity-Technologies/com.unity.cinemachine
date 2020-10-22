@@ -71,7 +71,7 @@ namespace Cinemachine
 
         /// <summary>Validates cache if it is invalid.</summary>
         /// <param name="cameraAspectRatio">Aspect ratio of camera.</param>
-        /// <returns>Return true if cache is valid. False, otherwise.</returns>
+        /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
         public bool ValidatePathCache(float cameraAspectRatio)
         {
             return m_shapeCache.ValidateCache(
@@ -94,7 +94,8 @@ namespace Cinemachine
                 
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 m_extra = GetExtraState<VcamExtraState>(vcam);
-                m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
+                m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, 
+                    confinerStateChanged, frustumHeight, state.Lens.Orthographic);
 
 
                 Vector3 cameraPosLocal = m_shapeCache.TransformPointToConfinerSpace(state.CorrectedPosition);
@@ -197,7 +198,7 @@ namespace Cinemachine
                 
                 private float m_frustumHeight;
                 private bool m_orthographic;
-
+                
                 /// <summary>
                 /// Check that the path cache was converted from the current confiner cache, or
                 /// converts it if the frustum height was changed.
@@ -206,21 +207,21 @@ namespace Cinemachine
                 /// <param name="frustumHeight">Camera frustum height</param>
                 public void ValidateCache(
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float frustumHeight, in bool orthographic, 
-                    VcamExtraState extra)
+                    in float frustumHeight, in bool orthographic)
                 {
-                    if (!confinerStateChanged && extra.m_vcamShapeCache.IsValid(frustumHeight, orthographic))
+                    if (!confinerStateChanged && IsValid(frustumHeight, orthographic))
                     {
                         return;
                     }
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
                     ShrinkablePolygon.ConvertToPath(confinerCache.polygons, frustumHeight, 
-                        out extra.m_vcamShapeCache.m_path);
+                        out m_path);
                 
-                    extra.m_vcamShapeCache.m_frustumHeight = frustumHeight;
-                    extra.m_vcamShapeCache.m_orthographic = orthographic;
+                    m_frustumHeight = frustumHeight;
+                    m_orthographic = orthographic;
                 }
+
                 
                 private bool IsValid(in float frustumHeight, in bool isOrthographic)
                 {
