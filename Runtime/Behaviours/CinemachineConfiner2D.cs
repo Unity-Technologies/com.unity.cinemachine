@@ -91,8 +91,14 @@ namespace Cinemachine
                 m_extra = GetExtraState<VcamExtraState>(vcam);
                 m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
 
+                Vector3 offset = new Vector3(
+                    m_shapeCache.m_boundingShape2D.offset.x * m_shapeCache.m_boundingShape2D.transform.localScale.x,
+                    m_shapeCache.m_boundingShape2D.offset.y * m_shapeCache.m_boundingShape2D.transform.localScale.y,
+                    0
+                );
+                offset = m_shapeCache.m_boundingShape2D.transform.rotation * offset;
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, m_extra.m_vcamShapeCache.m_path, 
-                    m_shapeCache, Vector3.zero);
+                    m_shapeCache, offset);
                 // Remember the desired displacement for next frame
                 var prev = m_extra.m_previousDisplacement;
                 m_extra.m_previousDisplacement = displacement;
@@ -144,7 +150,7 @@ namespace Cinemachine
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
-            in ShapeCache shapeCache, in Vector2 offset)
+            in ShapeCache shapeCache, in Vector3 offset)
         {
             if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, shapeCache.m_scaleDelta, 
                 shapeCache.m_rotationDelta, shapeCache.m_positionDelta, offset))
@@ -159,10 +165,10 @@ namespace Cinemachine
                 int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = shapeCache.ApplyTransformationDelta(pathCache[i][numPoints - 1] + offset);
+                    Vector2 v0 = shapeCache.ApplyTransformationDelta(pathCache[i][numPoints - 1]) + offset;
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = shapeCache.ApplyTransformationDelta(pathCache[i][j] + offset);
+                        Vector2 v = shapeCache.ApplyTransformationDelta(pathCache[i][j]) + offset;
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
@@ -239,7 +245,7 @@ namespace Cinemachine
             private Vector3 m_boundingShapeScale;
             private Quaternion m_boundingShapeRotation;
 
-            private Collider2D m_boundingShape2D;
+            internal Collider2D m_boundingShape2D;
             private List<ConfinerOven.ConfinerState> m_confinerStates;
 
             /// <summary>
@@ -282,7 +288,7 @@ namespace Cinemachine
                     aspectRatio, maxOrthoSize))
                 {
                     m_boundingShape2D = boundingShape2D;
-                    SetLocalToWorldDelta();
+                    SetDeltaTransformationMatrix();
                     return true;
                 }
                 
@@ -345,7 +351,7 @@ namespace Cinemachine
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxOrthoSize;
                 SetTransformCache(boundingShape2D.transform);
-                SetLocalToWorldDelta();
+                SetDeltaTransformationMatrix();
 
                 return true;
             }
@@ -368,12 +374,13 @@ namespace Cinemachine
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
 
-            private void SetLocalToWorldDelta()
+            private void SetDeltaTransformationMatrix()
             {
                 Transform boundingShapeTransform = m_boundingShape2D.transform;
+                
                 m_positionDelta = boundingShapeTransform.position;
-                m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * 
-                                  boundingShapeTransform.rotation;
+                
+                m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * boundingShapeTransform.rotation;
                 
                 Vector3 localScale = boundingShapeTransform.localScale;
                 localScale.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
@@ -410,19 +417,23 @@ namespace Cinemachine
             
             // Draw confiner for current camera size
             Gizmos.color = m_gizmoColor;
-            Vector3 offset3 = Vector3.zero;
-                // m_shapeCache.m_localToWorldDelta.transform.TransformPoint(m_shapeCache.m_boundingShape2D.offset);
+            
+            Vector3 offset = new Vector3(
+                m_shapeCache.m_boundingShape2D.offset.x * m_shapeCache.m_boundingShape2D.transform.localScale.x,
+                m_shapeCache.m_boundingShape2D.offset.y * m_shapeCache.m_boundingShape2D.transform.localScale.y,
+                0
+                );
+            offset = m_shapeCache.m_boundingShape2D.transform.rotation * offset;
             foreach (var path in m_extra.m_vcamShapeCache.m_path)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_shapeCache.ApplyTransformationDelta(path[index]) + offset3,
-                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count]) + offset3);
+                        m_shapeCache.ApplyTransformationDelta(path[index]) + offset,
+                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count]) + offset);
                 }
             }
 
-            Vector2 offset2 = Vector2.zero;
             // Draw input confiner
             Gizmos.color = new Color(m_gizmoColor.r, m_gizmoColor.g, m_gizmoColor.b, m_gizmoColor.a / 2f); // dimmed yellow
             foreach (var path in m_shapeCache.m_originalPath )
@@ -430,8 +441,8 @@ namespace Cinemachine
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_shapeCache.ApplyTransformationDelta(path[index] + offset2),
-                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count] + offset2));
+                        m_shapeCache.ApplyTransformationDelta(path[index]) + offset,
+                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count]) + offset);
                 }
             }
         }

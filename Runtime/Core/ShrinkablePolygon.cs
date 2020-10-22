@@ -389,7 +389,7 @@ namespace Cinemachine
         /// <param name="p">Input point.</param>
         /// <returns>True, if inside. False, otherwise.</returns>
         public static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p, 
-            in Vector3 scale, in Quaternion rotation, in Vector3 translation, in Vector2 offset)
+            in Vector3 scale, in Quaternion rotation, in Vector3 translation, in Vector3 offset)
         {
             float minX = Single.PositiveInfinity;
             float maxX = Single.NegativeInfinity;
@@ -397,7 +397,7 @@ namespace Cinemachine
             {
                 foreach (var point in path)
                 {
-                    var pointInWorldCoordinates = ApplyTransformation(point, scale, rotation, translation);
+                    var pointInWorldCoordinates = ApplyTransformation(point, scale, rotation, translation) + offset;
                     minX = Mathf.Min(minX, pointInWorldCoordinates.x);
                     maxX = Mathf.Max(maxX, pointInWorldCoordinates.x);
                 }
@@ -414,11 +414,9 @@ namespace Cinemachine
             {
                 for (int index = 0; index < polygon.Count; ++index)
                 {
-                    Vector2 p1 = ApplyTransformation(polygon[index], scale, rotation, translation);
-                    p1 += offset;
+                    Vector2 p1 = ApplyTransformation(polygon[index], scale, rotation, translation) + offset;
                     Vector2 p2 = ApplyTransformation(polygon[(index + 1) % polygon.Count], scale, rotation,
-                        translation);
-                    p2 += offset;
+                        translation) + offset;
                     int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
                         out Vector2 intersection);
                     if (intersectionType == 2)
