@@ -4,8 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Cinemachine.Utility;
 using UnityEngine;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Cinemachine
 {
@@ -90,10 +95,32 @@ namespace Cinemachine
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 m_extra = GetExtraState<VcamExtraState>(vcam);
                 m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
+
+                // UnityVectorExtensions.ApplyTransformation(point,
+                //     m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta,
+                //     m_shapeCache.m_positionDelta) + m_shapeCache.m_offset;
+                    
+                var cameraPosLocal = state.CorrectedPosition;
+                // cameraGlobal to confinerLocal
+
+                Matrix4x4 S = Matrix4x4.identity;
+                S.m00 = Math.Abs(m_shapeCache.m_scaleDelta.x) < 1e-6f ? 0 : 1f / m_shapeCache.m_scaleDelta.x;
+                S.m11 = Math.Abs(m_shapeCache.m_scaleDelta.y) < 1e-6f ? 0 : 1f / m_shapeCache.m_scaleDelta.y;
+                S.m22 = Math.Abs(m_shapeCache.m_scaleDelta.z) < 1e-6f ? 0 : 1f / m_shapeCache.m_scaleDelta.z;
+                Matrix4x4 R = Matrix4x4.Rotate(Quaternion.Inverse(m_shapeCache.m_rotationDelta));
+                Matrix4x4 T = Matrix4x4.identity;
+                T.m03 = -m_shapeCache.m_positionDelta.x;
+                T.m13 = -m_shapeCache.m_positionDelta.y;
+                T.m23 = -m_shapeCache.m_positionDelta.z;
                 
-                var cameraPosLocal = UnityVectorExtensions.ApplyTransformation(state.CorrectedPosition,
-                    m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, m_shapeCache.m_positionDelta);
+                cameraPosLocal = T.MultiplyPoint3x4(cameraPosLocal);
+                cameraPosLocal = R.MultiplyPoint3x4(cameraPosLocal);
+                cameraPosLocal = S.MultiplyPoint3x4(cameraPosLocal);
                 Vector3 displacement = ConfinePoint(cameraPosLocal, m_extra.m_vcamShapeCache.m_path);
+                // displacementConfinerLocal to Global
+                displacement = S.inverse.MultiplyPoint3x4(displacement);
+                displacement = R.inverse.MultiplyPoint3x4(displacement);
+
                 // Remember the desired displacement for next frame
                 var prev = m_extra.m_previousDisplacement;
                 m_extra.m_previousDisplacement = displacement;
