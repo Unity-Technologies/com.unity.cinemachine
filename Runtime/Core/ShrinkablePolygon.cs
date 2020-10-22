@@ -397,7 +397,8 @@ namespace Cinemachine
             {
                 foreach (var point in path)
                 {
-                    var pointInWorldCoordinates = ApplyTransformation(point, scale, rotation, translation) + offset;
+                    var pointInWorldCoordinates = UnityVectorExtensions.ApplyTransformation(point, 
+                        scale, rotation, translation) + offset;
                     minX = Mathf.Min(minX, pointInWorldCoordinates.x);
                     maxX = Mathf.Max(maxX, pointInWorldCoordinates.x);
                 }
@@ -414,9 +415,10 @@ namespace Cinemachine
             {
                 for (int index = 0; index < polygon.Count; ++index)
                 {
-                    Vector2 p1 = ApplyTransformation(polygon[index], scale, rotation, translation) + offset;
-                    Vector2 p2 = ApplyTransformation(polygon[(index + 1) % polygon.Count], scale, rotation,
-                        translation) + offset;
+                    Vector2 p1 = UnityVectorExtensions.ApplyTransformation(polygon[index], 
+                        scale, rotation, translation) + offset;
+                    Vector2 p2 = UnityVectorExtensions.ApplyTransformation(polygon[(index + 1) % polygon.Count], 
+                        scale, rotation, translation) + offset;
                     int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
                         out Vector2 intersection);
                     if (intersectionType == 2)
@@ -429,13 +431,6 @@ namespace Cinemachine
             return intersectionCount % 2 != 0; // inside polygon when odd number of intersections
         }
 
-        private static Vector3 ApplyTransformation(in Vector3 point, Vector3 scale, Quaternion rotation, Vector3 translation)
-        {
-            var transformedPoint = new Vector3(point.x * scale.x, point.y * scale.y, point.z * scale.z);
-            transformedPoint = rotation * transformedPoint;
-            transformedPoint += translation;
-            return transformedPoint;
-        }
         
         
         /// <summary>

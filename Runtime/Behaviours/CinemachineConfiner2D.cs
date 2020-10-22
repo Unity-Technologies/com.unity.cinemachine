@@ -159,10 +159,16 @@ namespace Cinemachine
                 int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = shapeCache.ApplyTransformationDelta(pathCache[i][numPoints - 1]) + m_shapeCache.m_offset;
+                    UnityVectorExtensions.ApplyTransformation(pathCache[i][numPoints - 1],
+                        shapeCache.m_scaleDelta, shapeCache.m_rotationDelta, shapeCache.m_positionDelta);
+                    Vector2 v0 = UnityVectorExtensions.ApplyTransformation(pathCache[i][numPoints - 1],
+                        shapeCache.m_scaleDelta, shapeCache.m_rotationDelta, shapeCache.m_positionDelta) 
+                                 + m_shapeCache.m_offset;
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = shapeCache.ApplyTransformationDelta(pathCache[i][j]) + m_shapeCache.m_offset;
+                        Vector2 v = UnityVectorExtensions.ApplyTransformation(pathCache[i][j],
+                                        shapeCache.m_scaleDelta, shapeCache.m_rotationDelta, shapeCache.m_positionDelta) 
+                                    + m_shapeCache.m_offset;
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
@@ -260,15 +266,6 @@ namespace Cinemachine
                 m_confinerStates = null;
             }
 
-            public Vector3 ApplyTransformationDelta(in Vector3 point)
-            {
-                var transformedPoint = new Vector3(point.x * m_scaleDelta.x, point.y * m_scaleDelta.y,
-                    point.z * m_scaleDelta.z);
-                transformedPoint = m_rotationDelta * transformedPoint;
-                transformedPoint += m_positionDelta;
-                return transformedPoint;
-            }
-            
             /// <summary>
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
@@ -426,20 +423,17 @@ namespace Cinemachine
             
             // Draw confiner for current camera size
             Gizmos.color = m_gizmoColor;
-            
-            Vector3 offset = new Vector3(
-                m_shapeCache.m_boundingShape2D.offset.x * m_shapeCache.m_boundingShape2D.transform.localScale.x,
-                m_shapeCache.m_boundingShape2D.offset.y * m_shapeCache.m_boundingShape2D.transform.localScale.y,
-                0
-                );
-            offset = m_shapeCache.m_boundingShape2D.transform.rotation * offset;
             foreach (var path in m_extra.m_vcamShapeCache.m_path)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
                     Gizmos.DrawLine(
-                        m_shapeCache.ApplyTransformationDelta(path[index]) + offset,
-                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count]) + offset);
+                        UnityVectorExtensions.ApplyTransformation(path[index], 
+                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
+                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset,
+                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
+                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
+                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset);
                 }
             }
 
@@ -448,10 +442,14 @@ namespace Cinemachine
             foreach (var path in m_shapeCache.m_originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
-                {
+                { 
                     Gizmos.DrawLine(
-                        m_shapeCache.ApplyTransformationDelta(path[index]) + offset,
-                        m_shapeCache.ApplyTransformationDelta(path[(index + 1) % path.Count]) + offset);
+                        UnityVectorExtensions.ApplyTransformation(path[index], 
+                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
+                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset,
+                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
+                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
+                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset);
                 }
             }
         }
