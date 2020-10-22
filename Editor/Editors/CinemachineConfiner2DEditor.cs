@@ -5,8 +5,7 @@
 
 using UnityEngine;
 using UnityEditor;
-using System;
-using System.Collections.Generic;
+using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
@@ -15,21 +14,59 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     internal sealed class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
     {
-        private CinemachineConfiner2D m_target;
-        void OnEnable()
-        {
-            m_target = (CinemachineConfiner2D) target;
-        }
-        
         public override void OnInspectorGUI()
         {
             BeginInspector();
             DrawRemainingPropertiesInInspector();
-            m_target.m_gizmoColor = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
             if (GUILayout.Button("InvalidateCache"))
             {
-                m_target.InvalidatePathCache();
-                EditorUtility.SetDirty(m_target);
+                Target.InvalidatePathCache();
+                EditorUtility.SetDirty(Target);
+            }
+        }
+
+        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
+        private static void DrawColliderGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
+        {
+            if (confiner2D.m_extra == null || confiner2D.m_extra.m_vcamShapeCache.m_path == null || 
+                confiner2D.m_shapeCache.m_originalPath == null)
+            {
+                return;
+            }
+            
+            Color color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
+            Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
+            
+            // Draw confiner for current camera size
+            Gizmos.color = color;
+            foreach (var path in confiner2D.m_extra.m_vcamShapeCache.m_path)
+            {
+                for (var index = 0; index < path.Count; index++)
+                {
+                    Gizmos.DrawLine(
+                        UnityVectorExtensions.ApplyTransformation(path[index], 
+                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
+                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset,
+                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
+                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
+                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset);
+                }
+            }
+
+            // Draw input confiner
+            Gizmos.color = colorDimmed;
+            foreach (var path in confiner2D.m_shapeCache.m_originalPath )
+            {
+                for (var index = 0; index < path.Count; index++)
+                { 
+                    Gizmos.DrawLine(
+                        UnityVectorExtensions.ApplyTransformation(path[index], 
+                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
+                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset,
+                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
+                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
+                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset);
+                }
             }
         }
     }

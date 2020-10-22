@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using Cinemachine.Utility;
 using UnityEngine;
 using Matrix4x4 = UnityEngine.Matrix4x4;
@@ -51,12 +50,9 @@ namespace Cinemachine
         [Range(0, 5)]
         public float m_Damping = 0;
 
-        /// <summary>Draws Gizmos for easier fine-tuning.</summary>
-        [Tooltip("Draws Input Bounding Shape (black) and Confiner (cyan) for easier fine-tuning.")]
-        public bool m_DrawGizmos = true;
-        
         /// <summary>
-        /// The confiner will correctly confine up to this maximum orthographic size. If set to 0, then this parameter is ignored and all camera sizes are supported. Use it to optimize computation and memory costs.
+        /// The confiner will correctly confine up to this maximum orthographic size. If set to 0, then this
+        /// parameter is ignored and all camera sizes are supported. Use it to optimize computation and memory costs.
         /// </summary>
         [Tooltip("The confiner will correctly confine up to this maximum orthographic size. " +
                  "If set to 0, then this parameter is ignored and all camera sizes are supported. " +
@@ -69,7 +65,7 @@ namespace Cinemachine
             m_shapeCache.Invalidate();
         }
 
-        /// <summary>Validates cache if it is invalid.</summary>
+        /// <summary>Validates cache</summary>
         /// <param name="cameraAspectRatio">Aspect ratio of camera.</param>
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
         public bool ValidatePathCache(float cameraAspectRatio)
@@ -78,8 +74,7 @@ namespace Cinemachine
                 m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, cameraAspectRatio, out _);
         }
         
-        private ConfinerOven m_confinerBaker = new ConfinerOven();
-        private VcamExtraState m_extra;
+        private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
         private const float m_cornerAngleTreshold = 10f; // still unsure about the value of this constant
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
@@ -181,8 +176,10 @@ namespace Cinemachine
             return closest - positionToConfine;
         }
         
-        internal static readonly float m_bakedConfinerResolution = 0.005f;
-        private class VcamExtraState
+        internal static readonly float m_bakedConfinerResolution = 0.005f; // internal, because Tests access it
+        
+        internal VcamExtraState m_extra; // internal, because Editor Gizmos access it
+        internal class VcamExtraState // internal, because Editor Gizmos access it
         {
             public Vector3 m_previousDisplacement;
             public Vector3 m_dampedDisplacement;
@@ -227,11 +224,12 @@ namespace Cinemachine
                 }
             }
         };
-
+        
+        internal ShapeCache m_shapeCache; // internal, because Editor Gizmos access it
         /// <summary>
         /// ShapeCache: contains all state that's dependent only on the settings in the confiner.
         /// </summary>
-        private struct ShapeCache
+        internal struct ShapeCache  // internal, because Editor Gizmos access it
         {
             public List<List<Vector2>> m_originalPath;
 
@@ -269,7 +267,8 @@ namespace Cinemachine
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
             /// <param name="aspectRatio">Camera window ratio (width / height)</param>
-            /// <param name="confinerStateChanged">True, if the baked confiner state has changed. False, otherwise.</param>
+            /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
+            /// False, otherwise.</param>
             /// <returns>True, if path is baked and valid. False, otherwise.</returns>
             public bool ValidateCache(Collider2D boundingShape2D, float maxOrthoSize, ConfinerOven confinerBaker,
                  float aspectRatio, out bool confinerStateChanged)
@@ -443,59 +442,12 @@ namespace Cinemachine
                 m_offset = boundingShapeTransform.rotation * m_offset;
             }
         }
-        private ShapeCache m_shapeCache;
-
-        private GameObject localToWorldTransformHolder;
 
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
         }
-
-    #if UNITY_EDITOR
-        internal Color m_gizmoColor = Color.yellow;
-        private void OnDrawGizmos()
-        {
-            if (!m_DrawGizmos || 
-                m_extra == null || m_extra.m_vcamShapeCache.m_path == null || m_shapeCache.m_originalPath == null)
-            {
-                return;
-            }
-            
-            // Draw confiner for current camera size
-            Gizmos.color = m_gizmoColor;
-            foreach (var path in m_extra.m_vcamShapeCache.m_path)
-            {
-                for (var index = 0; index < path.Count; index++)
-                {
-                    Gizmos.DrawLine(
-                        UnityVectorExtensions.ApplyTransformation(path[index], 
-                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
-                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset,
-                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
-                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
-                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset);
-                }
-            }
-
-            // Draw input confiner
-            Gizmos.color = new Color(m_gizmoColor.r, m_gizmoColor.g, m_gizmoColor.b, m_gizmoColor.a / 2f); // dimmed yellow
-            foreach (var path in m_shapeCache.m_originalPath )
-            {
-                for (var index = 0; index < path.Count; index++)
-                { 
-                    Gizmos.DrawLine(
-                        UnityVectorExtensions.ApplyTransformation(path[index], 
-                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
-                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset,
-                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
-                            m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, 
-                            m_shapeCache.m_positionDelta) + m_shapeCache.m_offset);
-                }
-            }
-        }
-    #endif
     }
 #endif
 }
