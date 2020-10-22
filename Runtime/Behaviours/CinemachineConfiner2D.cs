@@ -15,27 +15,35 @@ namespace Cinemachine
 {
 #if CINEMACHINE_PHYSICS_2D
     /// <summary>
+    /// <para>
     /// An add-on module for Cinemachine Virtual Camera that post-processes the final position of the virtual camera.
     /// It will confine the virtual camera view window to the area specified in the Bounding Shape 2D field based on
     /// the camera's window size and ratio. The confining area is baked and cached at start.
-    ///
+    /// </para>
     /// 
+    ///<para>
     /// CinemachineConfiner2D uses a cache to avoid recalculating the confiner unnecessarily.
     /// If the cache is invalid, it will be automatically recomputed at the next usage (lazy evaluation).
     /// The cache is automatically invalidated in some well-defined circumstances:
-    /// - Aspect ratio of the parent vcam changes.
-    /// - MaxOrthoSize parameter in the Confiner changes.
-    ///
-    /// The user can invalidate the cache manually by calling InvalidatePathCache() function or clicking the
-    /// InvalidatePathCache button in the editor on the component.
-    ///
-    /// Collider's Transform changes are supported, but after changing the Rotation component the cache is going to be
-    /// invalid, and the user needs to invalidate it if they want to have a correct cache. If the collider is rotated,
-    /// non-uniform scale will distort the confiner.
+    /// <list type="bullet">
+    /// <item><description> MaxOrthoSize parameter changes.</description></item>
+    /// <item><description> Aspect ratio of the parent vcam changes.</description></item>
+    /// <item><description> Input collider object changes (i.e. use another Collider2D).</description></item>
+    /// </list>
+    /// </para>
     /// 
-    /// The cache is NOT automatically invalidated (due to high computation cost every frame) if the contents
-    /// of the confining shape change (e.g. points get moved dynamically). In that case, we expose an API to
-    /// forcibly invalidate the cache so that it gets auto-recomputed next time it's needed.
+    /// <para>
+    /// The cache is <strong>NOT</strong> automatically invalidated (due to high computation cost every frame) if the
+    /// contents of the confining shape change (e.g. points get moved dynamically). In that case, the client must call
+    /// the InvalidatePathCache() function or the user must click the Invalidate Cache button in the component's
+    /// inspector.
+    /// </para>
+    /// 
+    /// <para>
+    /// Collider's Transform changes are supported, but after changing the Scale or Rotation components the cache is
+    /// going to be invalid. If the users would like to have a valid cache, then they must call the
+    /// InvalidatePathCache() function or the user must click the Invalidate Cache button in the component's inspector.
+    /// </para>
     /// </summary>
     [SaveDuringPlay, ExecuteAlways]
     public class CinemachineConfiner2D : CinemachineExtension
@@ -88,30 +96,30 @@ namespace Cinemachine
                 }
                 
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
-                m_extra = GetExtraState<VcamExtraState>(vcam);
-                m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, 
+                var extra = GetExtraState<VcamExtraState>(vcam);
+                extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, 
                     confinerStateChanged, frustumHeight, state.Lens.Orthographic);
 
 
                 Vector3 cameraPosLocal = m_shapeCache.TransformPointToConfinerSpace(state.CorrectedPosition);
-                Vector3 displacement = ConfinePoint(cameraPosLocal, m_extra.m_vcamShapeCache.m_path);
+                Vector3 displacement = ConfinePoint(cameraPosLocal, extra.m_vcamShapeCache.m_path);
                 displacement = m_shapeCache.TransformConfinerSpacePointToWorld(displacement);
 
                 // Remember the desired displacement for next frame
-                var prev = m_extra.m_previousDisplacement;
-                m_extra.m_previousDisplacement = displacement;
+                var prev = extra.m_previousDisplacement;
+                extra.m_previousDisplacement = displacement;
 
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
-                    m_extra.m_dampedDisplacement = Vector3.zero;
+                    extra.m_dampedDisplacement = Vector3.zero;
                 else
                 {
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
                     if (Vector2.Angle(prev, displacement) > m_cornerAngleTreshold)
-                        m_extra.m_dampedDisplacement += displacement - prev;
+                        extra.m_dampedDisplacement += displacement - prev;
 
-                    m_extra.m_dampedDisplacement -= Damper.Damp(m_extra.m_dampedDisplacement, m_Damping, deltaTime);
-                    displacement -= m_extra.m_dampedDisplacement;
+                    extra.m_dampedDisplacement -= Damper.Damp(extra.m_dampedDisplacement, m_Damping, deltaTime);
+                    displacement -= extra.m_dampedDisplacement;
                 }
                 state.PositionCorrection += displacement;
             }
@@ -177,9 +185,12 @@ namespace Cinemachine
         }
         
         internal static readonly float m_bakedConfinerResolution = 0.005f; // internal, because Tests access it
-        
-        internal VcamExtraState m_extra; // internal, because Editor Gizmos access it
-        internal class VcamExtraState // internal, because Editor Gizmos access it
+
+        internal List<List<Vector2>> GetCurrentPath()
+        {
+            return GetExtraState<VcamExtraState>(VirtualCamera).m_vcamShapeCache.m_path;
+        }
+        private class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
             public Vector3 m_dampedDisplacement;

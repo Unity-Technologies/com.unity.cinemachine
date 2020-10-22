@@ -28,18 +28,19 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
         private static void DrawColliderGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
         {
-            if (confiner2D.m_extra == null || confiner2D.m_extra.m_vcamShapeCache.m_path == null || 
+            var currentPath = confiner2D.GetCurrentPath();
+            if (currentPath == null || 
                 confiner2D.m_shapeCache.m_originalPath == null)
             {
                 return;
             }
-            
+
             Color color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
             Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
             
             // Draw confiner for current camera size
             Gizmos.color = color;
-            foreach (var path in confiner2D.m_extra.m_vcamShapeCache.m_path)
+            foreach (var path in currentPath)
             {
                 for (var index = 0; index < path.Count; index++)
                 {
