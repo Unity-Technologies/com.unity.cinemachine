@@ -318,11 +318,11 @@ namespace Cinemachine
                         Vector2 corner = point.m_originalPosition;
                         Vector2 shrinkDirection = point.m_position - corner;
                         float cornerDistance = shrinkDirection.sqrMagnitude;
-                        if (shrinkDirection.x > polygon.m_aspectRatio)
+                        if (shrinkDirection.x > 0)
                         {
                             shrinkDirection *= (polygon.m_aspectRatio / shrinkDirection.x);
                         }
-                        else if (shrinkDirection.x < -polygon.m_aspectRatio)
+                        else if (shrinkDirection.x < 0)
                         {
                             shrinkDirection *= -(polygon.m_aspectRatio / shrinkDirection.x);
                         }

@@ -377,16 +377,15 @@ namespace Cinemachine
                 m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * boundingShapeTransform.rotation;
                 
                 Vector3 localScale = boundingShapeTransform.localScale;
-                localScale.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
+                m_scaleDelta.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
                     ? 0
                     : localScale.x / m_boundingShapeScale.x;
-                localScale.y = Math.Abs(m_boundingShapeScale.y) < UnityVectorExtensions.Epsilon
+                m_scaleDelta.y = Math.Abs(m_boundingShapeScale.y) < UnityVectorExtensions.Epsilon
                     ? 0
                     : localScale.y / m_boundingShapeScale.y;
-                localScale.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
+                m_scaleDelta.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
                     ? 0
                     : localScale.z / m_boundingShapeScale.z;
-                m_scaleDelta = localScale; // TODO: directly assign scaleDelta.xyz
             }
 
             private void CalculateOffset()
