@@ -138,10 +138,7 @@ namespace Cinemachine
             }
             else
             {
-                Quaternion inverseRotation = Quaternion.Inverse(m_BoundingShape2D.transform.rotation);
-                Vector3 planePosition = inverseRotation * m_BoundingShape2D.transform.position;
-                Vector3 cameraPosition = inverseRotation * vcam.transform.position;
-                float distance = Mathf.Abs(planePosition.z - cameraPosition.z);
+                float distance = m_BoundingShape2D.transform.position.z - vcam.transform.position.z;
                 frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
             }
             return frustumHeight;
