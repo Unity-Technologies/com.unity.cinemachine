@@ -96,30 +96,10 @@ namespace Cinemachine
                 m_extra = GetExtraState<VcamExtraState>(vcam);
                 m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
 
-                // UnityVectorExtensions.ApplyTransformation(point,
-                //     m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta,
-                //     m_shapeCache.m_positionDelta) + m_shapeCache.m_offset;
-                    
-                var cameraPosLocal = state.CorrectedPosition;
-                // cameraGlobal to confinerLocal
 
-                Matrix4x4 S = Matrix4x4.identity;
-                S.m00 = Math.Abs(m_shapeCache.m_scaleDelta.x) < 1e-6f ? 0 : 1f / m_shapeCache.m_scaleDelta.x;
-                S.m11 = Math.Abs(m_shapeCache.m_scaleDelta.y) < 1e-6f ? 0 : 1f / m_shapeCache.m_scaleDelta.y;
-                S.m22 = Math.Abs(m_shapeCache.m_scaleDelta.z) < 1e-6f ? 0 : 1f / m_shapeCache.m_scaleDelta.z;
-                Matrix4x4 R = Matrix4x4.Rotate(Quaternion.Inverse(m_shapeCache.m_rotationDelta));
-                Matrix4x4 T = Matrix4x4.identity;
-                T.m03 = -m_shapeCache.m_positionDelta.x;
-                T.m13 = -m_shapeCache.m_positionDelta.y;
-                T.m23 = -m_shapeCache.m_positionDelta.z;
-                
-                cameraPosLocal = T.MultiplyPoint3x4(cameraPosLocal);
-                cameraPosLocal = R.MultiplyPoint3x4(cameraPosLocal);
-                cameraPosLocal = S.MultiplyPoint3x4(cameraPosLocal);
+                Vector3 cameraPosLocal = m_shapeCache.TransformCameraPosToConfinerSpace(state.CorrectedPosition);
                 Vector3 displacement = ConfinePoint(cameraPosLocal, m_extra.m_vcamShapeCache.m_path);
-                // displacementConfinerLocal to Global
-                displacement = S.inverse.MultiplyPoint3x4(displacement);
-                displacement = R.inverse.MultiplyPoint3x4(displacement);
+                displacement = m_shapeCache.TransformDisplacementToCamera(displacement);
 
                 // Remember the desired displacement for next frame
                 var prev = m_extra.m_previousDisplacement;
@@ -258,7 +238,7 @@ namespace Cinemachine
             public Vector3 m_positionDelta;
             public Vector3 m_scaleDelta;
             public Quaternion m_rotationDelta;
-            public Vector3 m_offset;
+            public Vector3 m_offset; // TODO: refactor for gizmos only
             public List<List<Vector2>> m_originalPath;
             
             private float m_aspectRatio;
@@ -266,7 +246,7 @@ namespace Cinemachine
             private Vector3 m_boundingShapeScale;
             private Quaternion m_boundingShapeRotation;
 
-            internal Collider2D m_boundingShape2D;
+            private Collider2D m_boundingShape2D;
             private List<ConfinerOven.ConfinerState> m_confinerStates;
 
             /// <summary>
@@ -387,25 +367,61 @@ namespace Cinemachine
                 m_boundingShapeScale = boundingShapeTransform.localScale;
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
+            
+            public Vector3 TransformCameraPosToConfinerSpace(in Vector3 cameraPos)
+            {
+                var cameraPosLocal = cameraPos;
+                cameraPosLocal = T.MultiplyPoint3x4(cameraPosLocal);
+                cameraPosLocal = R.MultiplyPoint3x4(cameraPosLocal);
+                cameraPosLocal = S.MultiplyPoint3x4(cameraPosLocal);
+                return cameraPosLocal;
+            }
 
+            public Vector3 TransformDisplacementToCamera(in Vector3 displacement)
+            {
+                var displacementCamera = displacement;
+                displacementCamera = S_inverse.MultiplyPoint3x4(displacementCamera);
+                displacementCamera = R_inverse.MultiplyPoint3x4(displacementCamera);
+                return displacementCamera;
+            }
+
+            private Matrix4x4 S, R, T;
+            private Matrix4x4 S_inverse, R_inverse;
             private void CalculateDeltaTransformationMatrix()
             {
-                Transform boundingShapeTransform = m_boundingShape2D.transform;
+                if (m_boundingShape2D.transform.hasChanged)
+                {
+                    Transform boundingShapeTransform = m_boundingShape2D.transform;
                 
-                m_positionDelta = boundingShapeTransform.position;
+                    m_positionDelta = boundingShapeTransform.position;
                 
-                m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * boundingShapeTransform.rotation;
+                    m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * boundingShapeTransform.rotation;
                 
-                Vector3 localScale = boundingShapeTransform.localScale;
-                m_scaleDelta.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
-                    ? 0
-                    : localScale.x / m_boundingShapeScale.x;
-                m_scaleDelta.y = Math.Abs(m_boundingShapeScale.y) < UnityVectorExtensions.Epsilon
-                    ? 0
-                    : localScale.y / m_boundingShapeScale.y;
-                m_scaleDelta.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
-                    ? 0
-                    : localScale.z / m_boundingShapeScale.z;
+                    Vector3 localScale = boundingShapeTransform.localScale;
+                    m_scaleDelta.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
+                        ? 0
+                        : localScale.x / m_boundingShapeScale.x;
+                    m_scaleDelta.y = Math.Abs(m_boundingShapeScale.y) < UnityVectorExtensions.Epsilon
+                        ? 0
+                        : localScale.y / m_boundingShapeScale.y;
+                    m_scaleDelta.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
+                        ? 0
+                        : localScale.z / m_boundingShapeScale.z;
+                
+                    S = Matrix4x4.identity;
+                    S.m00 = Math.Abs(m_scaleDelta.x) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.x;
+                    S.m11 = Math.Abs(m_scaleDelta.y) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.y;
+                    S.m22 = Math.Abs(m_scaleDelta.z) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.z;
+                    S_inverse = S.inverse;
+
+                    R = Matrix4x4.Rotate(Quaternion.Inverse(m_rotationDelta));
+                    R_inverse = Matrix4x4.Rotate(m_rotationDelta);
+                    
+                    T = Matrix4x4.identity;
+                    T.m03 = -m_positionDelta.x;
+                    T.m13 = -m_positionDelta.y;
+                    T.m23 = -m_positionDelta.z;
+                }
             }
 
             private void CalculateOffset()

@@ -83,15 +83,6 @@ namespace Cinemachine.Utility
             return transformedPoint;
         }
         
-        public static Vector3 ApplyInverseTransformation(in Vector3 point, 
-            in Vector3 scale, in Quaternion rotation, in Vector3 translation)
-        {
-            var transformedPoint = -translation;
-            transformedPoint = Quaternion.Inverse(rotation) * transformedPoint;
-            transformedPoint = new Vector3(transformedPoint.x / scale.x, transformedPoint.y / scale.y, transformedPoint.z / scale.z);
-            return transformedPoint;
-        }
-
         /// <summary>
         /// Calculates the intersection point defined by line_1 (p1, p2), and line_2 (p3, p4).
         /// </summary>
