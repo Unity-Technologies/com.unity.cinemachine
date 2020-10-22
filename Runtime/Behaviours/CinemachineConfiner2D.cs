@@ -90,15 +90,9 @@ namespace Cinemachine
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 m_extra = GetExtraState<VcamExtraState>(vcam);
                 m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
-
-                Vector3 offset = new Vector3(
-                    m_shapeCache.m_boundingShape2D.offset.x * m_shapeCache.m_boundingShape2D.transform.localScale.x,
-                    m_shapeCache.m_boundingShape2D.offset.y * m_shapeCache.m_boundingShape2D.transform.localScale.y,
-                    0
-                );
-                offset = m_shapeCache.m_boundingShape2D.transform.rotation * offset;
+                
                 Vector3 displacement = ConfinePoint(state.CorrectedPosition, m_extra.m_vcamShapeCache.m_path, 
-                    m_shapeCache, offset);
+                    m_shapeCache);
                 // Remember the desired displacement for next frame
                 var prev = m_extra.m_previousDisplacement;
                 m_extra.m_previousDisplacement = displacement;
@@ -150,10 +144,10 @@ namespace Cinemachine
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
-            in ShapeCache shapeCache, in Vector3 offset)
+            in ShapeCache shapeCache)
         {
             if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, shapeCache.m_scaleDelta, 
-                shapeCache.m_rotationDelta, shapeCache.m_positionDelta, offset))
+                shapeCache.m_rotationDelta, shapeCache.m_positionDelta, m_shapeCache.m_offset))
             {
                 return Vector2.zero;
             }
@@ -165,10 +159,10 @@ namespace Cinemachine
                 int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = shapeCache.ApplyTransformationDelta(pathCache[i][numPoints - 1]) + offset;
+                    Vector2 v0 = shapeCache.ApplyTransformationDelta(pathCache[i][numPoints - 1]) + m_shapeCache.m_offset;
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = shapeCache.ApplyTransformationDelta(pathCache[i][j]) + offset;
+                        Vector2 v = shapeCache.ApplyTransformationDelta(pathCache[i][j]) + m_shapeCache.m_offset;
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
@@ -238,6 +232,7 @@ namespace Cinemachine
             public Vector3 m_positionDelta;
             public Vector3 m_scaleDelta;
             public Quaternion m_rotationDelta;
+            public Vector3 m_offset;
             public List<List<Vector2>> m_originalPath;
             
             private float m_aspectRatio;
@@ -288,7 +283,8 @@ namespace Cinemachine
                     aspectRatio, maxOrthoSize))
                 {
                     m_boundingShape2D = boundingShape2D;
-                    SetDeltaTransformationMatrix();
+                    CalculateDeltaTransformationMatrix();
+                    CalculateOffset();
                     return true;
                 }
                 
@@ -351,7 +347,8 @@ namespace Cinemachine
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxOrthoSize;
                 SetTransformCache(boundingShape2D.transform);
-                SetDeltaTransformationMatrix();
+                CalculateDeltaTransformationMatrix();
+                CalculateOffset();
 
                 return true;
             }
@@ -374,7 +371,7 @@ namespace Cinemachine
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
 
-            private void SetDeltaTransformationMatrix()
+            private void CalculateDeltaTransformationMatrix()
             {
                 Transform boundingShapeTransform = m_boundingShape2D.transform;
                 
@@ -393,6 +390,18 @@ namespace Cinemachine
                     ? 0
                     : localScale.z / m_boundingShapeScale.z;
                 m_scaleDelta = localScale; // TODO: directly assign scaleDelta.xyz
+            }
+
+            private void CalculateOffset()
+            {
+                var offset = m_boundingShape2D.offset;
+                var boundingShapeTransform = m_boundingShape2D.transform;
+                m_offset = new Vector3(
+                    offset.x * boundingShapeTransform.localScale.x,
+                    offset.y * boundingShapeTransform.localScale.y,
+                    0
+                );
+                m_offset = boundingShapeTransform.rotation * m_offset;
             }
         }
         private ShapeCache m_shapeCache;
