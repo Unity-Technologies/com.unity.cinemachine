@@ -91,8 +91,9 @@ namespace Cinemachine
                 m_extra = GetExtraState<VcamExtraState>(vcam);
                 m_extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight, state.Lens.Orthographic, m_extra);
                 
-                Vector3 displacement = ConfinePoint(state.CorrectedPosition, m_extra.m_vcamShapeCache.m_path, 
-                    m_shapeCache);
+                var cameraPosLocal = UnityVectorExtensions.ApplyTransformation(state.CorrectedPosition,
+                    m_shapeCache.m_scaleDelta, m_shapeCache.m_rotationDelta, m_shapeCache.m_positionDelta);
+                Vector3 displacement = ConfinePoint(cameraPosLocal, m_extra.m_vcamShapeCache.m_path);
                 // Remember the desired displacement for next frame
                 var prev = m_extra.m_previousDisplacement;
                 m_extra.m_previousDisplacement = displacement;
@@ -143,11 +144,9 @@ namespace Cinemachine
         /// </summary>
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
-        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
-            in ShapeCache shapeCache)
+        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache)
         {
-            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine, shapeCache.m_scaleDelta, 
-                shapeCache.m_rotationDelta, shapeCache.m_positionDelta, m_shapeCache.m_offset))
+            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
             {
                 return Vector2.zero;
             }
@@ -159,16 +158,10 @@ namespace Cinemachine
                 int numPoints = pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    UnityVectorExtensions.ApplyTransformation(pathCache[i][numPoints - 1],
-                        shapeCache.m_scaleDelta, shapeCache.m_rotationDelta, shapeCache.m_positionDelta);
-                    Vector2 v0 = UnityVectorExtensions.ApplyTransformation(pathCache[i][numPoints - 1],
-                        shapeCache.m_scaleDelta, shapeCache.m_rotationDelta, shapeCache.m_positionDelta) 
-                                 + m_shapeCache.m_offset;
+                    Vector2 v0 = pathCache[i][numPoints - 1];
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = UnityVectorExtensions.ApplyTransformation(pathCache[i][j],
-                                        shapeCache.m_scaleDelta, shapeCache.m_rotationDelta, shapeCache.m_positionDelta) 
-                                    + m_shapeCache.m_offset;
+                        Vector2 v = pathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
                         if (distance < minDistance)
