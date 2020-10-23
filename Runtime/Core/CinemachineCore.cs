@@ -408,6 +408,8 @@ namespace Cinemachine
         /// <summary>
         /// Is this virtual camera currently actively controlling any Camera?
         /// </summary>
+        /// <param name="vcam">The virtual camea in question</param>
+        /// <returns>True if the vcam is currently driving a Brain</returns>
         public bool IsLive(ICinemachineCamera vcam)
         {
             if (vcam != null)

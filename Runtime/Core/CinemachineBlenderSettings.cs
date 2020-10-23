@@ -19,12 +19,15 @@ namespace Cinemachine
         [Serializable]
         public struct CustomBlend
         {
+            /// <summary>When blending from this camera</summary>
             [Tooltip("When blending from this camera")]
             public string m_From;
 
+            /// <summary>When blending to this camera</summary>
             [Tooltip("When blending to this camera")]
             public string m_To;
 
+            /// <summary>Blend curve definition</summary>
             [CinemachineBlendDefinitionProperty]
             [Tooltip("Blend curve definition")]
             public CinemachineBlendDefinition m_Blend;

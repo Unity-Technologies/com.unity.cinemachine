@@ -48,11 +48,15 @@ namespace Cinemachine
     public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute {}    
     
     /// <summary>
-    /// Used for custom drawing in the inspector.
+    /// Used for custom drawing in the inspector.  Inspector will show a foldout with the asset contents
     /// </summary>
     public sealed class CinemachineEmbeddedAssetPropertyAttribute : PropertyAttribute 
     {
+        /// <summary>If true, inspector will display a warning if the embedded asset is null</summary>
         public bool WarnIfNull;
+
+        /// <summary>Standard constructor</summary>
+        /// <param name="warnIfNull">If true, inspector will display a warning if the embedded asset is null</param>
         public CinemachineEmbeddedAssetPropertyAttribute(bool warnIfNull = false)
         {
             WarnIfNull = warnIfNull;
@@ -60,7 +64,7 @@ namespace Cinemachine
     }
     
     /// <summary>
-    /// Atrtribute to control the automatic generation of documentation.
+    /// Atrtribute to control the automatic generation of documentation.  This attribute is obsolete and not used.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
     public sealed class DocumentationSortingAttribute : System.Attribute
@@ -79,6 +83,7 @@ namespace Cinemachine
         public Level Category { get; private set; }
 
         /// <summary>Contructor with specific values</summary>
+        /// <param name="category">Documentation level</param>
         public DocumentationSortingAttribute(Level category)
         {
             Category = category;

@@ -18,6 +18,16 @@ namespace Cinemachine.PostFX
 {
 #if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
     // Workaround for Unity scripting bug
+    /// <summary>
+    /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
+    ///
+    /// As a component on the Virtual Camera, it holds
+    /// a Post-Processing Profile asset that will be applied to the Unity camera whenever
+    /// the Virtual camera is live.  It also has the optional functionality of animating
+    /// the Focus Distance and DepthOfField properties of the Camera State, and
+    /// applying them to the current Post-Processing profile, provided that profile has a
+    /// DepthOfField effect that is enabled.
+    /// </summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineVolumeSettings : MonoBehaviour {}
 #else

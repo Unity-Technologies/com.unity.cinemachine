@@ -362,7 +362,9 @@ namespace Cinemachine
             ScreenSpaceAimWhenTargetsDiffer
         }
 
-        /// <summary>Applies a position blend hint to the camera state</summary>
+        /// <summary>Applies a position blend hint to a camera state</summary>
+        /// <param name="state">The state to apply the hint to</param>
+        /// <param name="hint">The hint to apply</param>
         protected void ApplyPositionBlendMethod(ref CameraState state, BlendHint hint)
         {
             switch (hint)
@@ -676,7 +678,13 @@ namespace Cinemachine
         }
         
         /// <summary>Create a blend between 2 virtual cameras, taking into account
-        /// any existing active blend.</summary>
+        /// any existing active blend, with special case handling if the new blend is 
+        /// effectively an undo of the current blend</summary>
+        /// <param name="camA">Outgoing virtual camera</param>
+        /// <param name="camB">Incoming virtual camera</param>
+        /// <param name="blendDef">Definition of the blend to create</param>
+        /// <param name="activeBlend">The current active blend</param>
+        /// <returns>The new blend</returns>
         protected CinemachineBlend CreateBlend(
             ICinemachineCamera camA, ICinemachineCamera camB,
             CinemachineBlendDefinition blendDef,
