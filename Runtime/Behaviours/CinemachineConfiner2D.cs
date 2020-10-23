@@ -97,9 +97,9 @@ namespace Cinemachine
                 
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 var extra = GetExtraState<VcamExtraState>(vcam);
+                extra.m_vcam = vcam;
                 extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
-
-
+                
                 Vector3 cameraPosLocal = m_shapeCache.TransformPointToConfinerSpace(state.CorrectedPosition);
                 Vector3 displacement = ConfinePoint(cameraPosLocal, extra.m_vcamShapeCache.m_path);
                 displacement = m_shapeCache.TransformConfinerSpacePointToWorld(displacement);
@@ -185,12 +185,25 @@ namespace Cinemachine
         
         internal static readonly float m_bakedConfinerResolution = 0.005f; // internal, because Tests access it
 
+        private List<List<Vector2>> m_gizmoPaths = new List<List<Vector2>>();
         internal List<List<Vector2>> GetCurrentPath()
         {
-            return GetExtraState<VcamExtraState>(VirtualCamera).m_vcamShapeCache.m_path;
+            m_gizmoPaths.Clear();
+            var allExtraStates = GetAllExtraStates<VcamExtraState>();
+            for (int i = 0; i < allExtraStates.Count; ++i)
+            {
+                if (!CinemachineCore.Instance.IsLive(allExtraStates[i].m_vcam)) continue;
+
+                for (int p = 0; p < allExtraStates[i].m_vcamShapeCache.m_path.Count; ++p)
+                {
+                    m_gizmoPaths.Add(allExtraStates[i].m_vcamShapeCache.m_path[p]);
+                }
+            }
+            return m_gizmoPaths;
         }
         private class VcamExtraState
         {
+            internal CinemachineVirtualCameraBase m_vcam;
             public Vector3 m_previousDisplacement;
             public Vector3 m_dampedDisplacement;
             public VcamShapeCache m_vcamShapeCache;
