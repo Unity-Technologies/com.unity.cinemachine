@@ -321,8 +321,8 @@ namespace Cinemachine
                         for (int j = 0; j < path.Length; ++j)
                         {
                             var point = new Vector3(
-                                path[j].x * boundingShape2D.transform.localScale.x, 
-                                path[j].y * boundingShape2D.transform.localScale.y, 
+                                path[j].x * boundingShape2D.transform.lossyScale.x, 
+                                path[j].y * boundingShape2D.transform.lossyScale.y, 
                                 0);
                             var pointResult = boundingShape2D.transform.rotation * point;
                             dst.Add(pointResult);
@@ -385,7 +385,7 @@ namespace Cinemachine
 
             private void SetTransformCache(in Transform boundingShapeTransform)
             {
-                m_boundingShapeScale = boundingShapeTransform.localScale;
+                m_boundingShapeScale = boundingShapeTransform.lossyScale;
                 m_boundingShapeRotation = boundingShapeTransform.rotation;
             }
             
@@ -426,16 +426,16 @@ namespace Cinemachine
                 
                     m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * boundingShapeTransform.rotation;
                 
-                    Vector3 localScale = boundingShapeTransform.localScale;
+                    Vector3 lossyScale = boundingShapeTransform.lossyScale;
                     m_scaleDelta.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
                         ? 0
-                        : localScale.x / m_boundingShapeScale.x;
+                        : lossyScale.x / m_boundingShapeScale.x;
                     m_scaleDelta.y = Math.Abs(m_boundingShapeScale.y) < UnityVectorExtensions.Epsilon
                         ? 0
-                        : localScale.y / m_boundingShapeScale.y;
+                        : lossyScale.y / m_boundingShapeScale.y;
                     m_scaleDelta.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
                         ? 0
-                        : localScale.z / m_boundingShapeScale.z;
+                        : lossyScale.z / m_boundingShapeScale.z;
                 
                     S = Matrix4x4.identity;
                     S.m00 = Math.Abs(m_scaleDelta.x) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.x;
@@ -453,8 +453,8 @@ namespace Cinemachine
                 var offset = m_boundingShape2D.offset;
                 var boundingShapeTransform = m_boundingShape2D.transform;
                 m_offset = new Vector3(
-                    offset.x * boundingShapeTransform.localScale.x,
-                    offset.y * boundingShapeTransform.localScale.y,
+                    offset.x * boundingShapeTransform.lossyScale.x,
+                    offset.y * boundingShapeTransform.lossyScale.y,
                     0
                 );
                 m_offset = boundingShapeTransform.rotation * m_offset;
