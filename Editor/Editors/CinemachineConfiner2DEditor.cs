@@ -26,7 +26,7 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
-        private static void DrawColliderGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
+        private static void DrawConfinerGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
         {
             var currentPath = confiner2D.GetCurrentPath();
             if (currentPath == null || 
