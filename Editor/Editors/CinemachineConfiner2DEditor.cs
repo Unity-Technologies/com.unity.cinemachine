@@ -3,6 +3,7 @@
 #define CINEMACHINE_PHYSICS_2D
 #endif
 
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
@@ -28,12 +29,16 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
         private static void DrawConfinerGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
         {
-            var currentPath = confiner2D.GetCurrentPath();
-            if (currentPath == null || 
-                confiner2D.m_shapeCache.m_originalPath == null)
-            {
-                return;
-            }
+            List<List<Vector2>> currentPath = new List<List<Vector2>>();
+            confiner2D.GetCurrentPath(ref currentPath);
+            List<List<Vector2>> originalPath = new List<List<Vector2>>();
+            confiner2D.GetOriginalPath(ref originalPath);
+            
+            if (currentPath == null || originalPath == null) { return; }
+
+            Quaternion rotation = Quaternion.identity;
+            Vector3 offset = Vector3.zero, translation = Vector3.zero, scale = Vector3.one;
+            confiner2D.GetPathDeltaTransformation(ref scale, ref rotation, ref translation, ref offset);
 
             Color color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
             Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
@@ -46,27 +51,23 @@ namespace Cinemachine.Editor
                 {
                     Gizmos.DrawLine(
                         UnityVectorExtensions.ApplyTransformation(path[index], 
-                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
-                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset,
-                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
-                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
-                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset);
+                            scale, rotation, translation) + offset,
+                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count], 
+                            scale, rotation, translation) + offset);
                 }
             }
 
             // Draw input confiner
             Gizmos.color = colorDimmed;
-            foreach (var path in confiner2D.m_shapeCache.m_originalPath )
+            foreach (var path in originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
                 { 
                     Gizmos.DrawLine(
                         UnityVectorExtensions.ApplyTransformation(path[index], 
-                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
-                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset,
-                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count],
-                            confiner2D.m_shapeCache.m_scaleDelta, confiner2D.m_shapeCache.m_rotationDelta, 
-                            confiner2D.m_shapeCache.m_positionDelta) + confiner2D.m_shapeCache.m_offset);
+                            scale, rotation, translation) + offset,
+                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count], 
+                            scale, rotation, translation) + offset);
                 }
             }
         }

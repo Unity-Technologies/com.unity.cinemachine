@@ -191,11 +191,9 @@ namespace Cinemachine
         }
         
         internal static readonly float m_bakedConfinerResolution = 0.005f; // internal, because Tests access it
-
-        private List<List<Vector2>> m_gizmoPaths = new List<List<Vector2>>(); // TODO: editor and out it
-        internal List<List<Vector2>> GetCurrentPath()
+        internal void GetCurrentPath(ref List<List<Vector2>> path)
         {
-            m_gizmoPaths.Clear();
+            path.Clear();
             var allExtraStates = GetAllExtraStates<VcamExtraState>();
             for (int i = 0; i < allExtraStates.Count; ++i)
             {
@@ -203,11 +201,11 @@ namespace Cinemachine
 
                 for (int p = 0; p < allExtraStates[i].m_vcamShapeCache.m_path.Count; ++p)
                 {
-                    m_gizmoPaths.Add(allExtraStates[i].m_vcamShapeCache.m_path[p]);
+                    path.Add(allExtraStates[i].m_vcamShapeCache.m_path[p]);
                 }
             }
-            return m_gizmoPaths;
         }
+        
         private class VcamExtraState
         {
             internal CinemachineVirtualCameraBase m_vcam;
@@ -251,11 +249,11 @@ namespace Cinemachine
             }
         };
         
-        internal ShapeCache m_shapeCache; // internal, because Editor Gizmos access it
+        private ShapeCache m_shapeCache; // internal, because Editor Gizmos access it
         /// <summary>
         /// ShapeCache: contains all state that's dependent only on the settings in the confiner.
         /// </summary>
-        internal struct ShapeCache  // internal, because Editor Gizmos access it
+        private struct ShapeCache  // internal, because Editor Gizmos access it
         {
             public List<List<Vector2>> m_originalPath;
 
@@ -287,6 +285,27 @@ namespace Cinemachine
                 m_originalPath = null;
 
                 m_confinerStates = null;
+            }
+            
+            /// <summary>
+            /// Transforms point to confiner local space
+            /// </summary>
+            /// <param name="point">Point to transform</param>
+            /// <returns>Point in confiner's local space</returns>
+            public Vector3 TransformPointToConfinerSpace(in Vector3 point)
+            {
+                Vector3 p = point - m_positionDelta - m_offset;
+                return WorldSpaceToConfinerSpace.MultiplyPoint3x4(p);
+            }
+
+            /// <summary>
+            /// Transforms point in confiner local space to world space.
+            /// </summary>
+            /// <param name="point">Point to transform</param>
+            /// <returns>Point in world space</returns>
+            public Vector3 TransformConfinerSpacePointToWorld(in Vector3 point)
+            {
+                return WorldSpaceToConfinerSpace_inverse.MultiplyPoint3x4(point);
             }
 
             /// <summary>
@@ -375,7 +394,6 @@ namespace Cinemachine
             {
                 return boundingShape2D != null && 
                        m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
-                       //!BoundingShapeTransformChanged(boundingShape2D.transform) && // input shape changed?
                        m_originalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
@@ -387,34 +405,9 @@ namespace Cinemachine
                 m_boundingShapeBakedScale = boundingShapeTransform.lossyScale;
                 m_boundingShapeBakedRotation = boundingShapeTransform.rotation;
             }
-            
-            /// <summary>
-            /// Transforms point to confiner local space
-            /// </summary>
-            /// <param name="point">Point to transform</param>
-            /// <returns>Point in confiner's local space</returns>
-            public Vector3 TransformPointToConfinerSpace(in Vector3 point)
-            {
-                Vector3 pointInConfinerSpace = point - m_positionDelta - m_offset;
-                pointInConfinerSpace = R.MultiplyPoint3x4(pointInConfinerSpace);
-                pointInConfinerSpace = S.MultiplyPoint3x4(pointInConfinerSpace);
-                return pointInConfinerSpace;
-            }
 
-            /// <summary>
-            /// Transforms point in confiner local space to world space.
-            /// </summary>
-            /// <param name="point">Point to transform</param>
-            /// <returns>Point in world space</returns>
-            public Vector3 TransformConfinerSpacePointToWorld(in Vector3 point)
-            {
-                Vector3 displacementCamera = S_inverse.MultiplyPoint3x4(point);
-                displacementCamera = R_inverse.MultiplyPoint3x4(displacementCamera);
-                return displacementCamera;
-            }
-
-            private Matrix4x4 S, R; // Scale, Rotation matrices converting camera to confiner space
-            private Matrix4x4 S_inverse, R_inverse; // Scale, Rotation matrices converting displacement to camera space
+            internal Matrix4x4 WorldSpaceToConfinerSpace;
+            private Matrix4x4 WorldSpaceToConfinerSpace_inverse;
             private void CalculateDeltaTransformationMatrix()
             {
                 if (m_boundingShape2D.transform.hasChanged)
@@ -436,14 +429,15 @@ namespace Cinemachine
                         ? 0
                         : lossyScale.z / m_boundingShapeBakedScale.z;
                 
-                    S = Matrix4x4.identity;
+                    var S = Matrix4x4.identity;
                     S.m00 = Math.Abs(m_scaleDelta.x) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.x;
                     S.m11 = Math.Abs(m_scaleDelta.y) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.y;
                     S.m22 = Math.Abs(m_scaleDelta.z) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.z;
-                    S_inverse = S.inverse;
 
-                    R = Matrix4x4.Rotate(Quaternion.Inverse(m_rotationDelta));
-                    R_inverse = Matrix4x4.Rotate(m_rotationDelta);
+                    var R = Matrix4x4.Rotate(Quaternion.Inverse(m_rotationDelta));
+                    
+                    WorldSpaceToConfinerSpace = R * S;
+                    WorldSpaceToConfinerSpace_inverse = WorldSpaceToConfinerSpace.inverse;
                 }
             }
 
@@ -458,6 +452,20 @@ namespace Cinemachine
                 );
                 m_offset = boundingShapeTransform.rotation * m_offset;
             }
+        }
+        
+        internal void GetPathDeltaTransformation(
+            ref Vector3 scale, ref Quaternion rotation, ref Vector3 translation, ref Vector3 offset)
+        {
+            scale = m_shapeCache.m_scaleDelta;
+            rotation = m_shapeCache.m_rotationDelta;
+            translation = m_shapeCache.m_positionDelta;
+            offset = m_shapeCache.m_offset;
+        }
+
+        internal void GetOriginalPath(ref List<List<Vector2>> path)
+        {
+            path = m_shapeCache.m_originalPath;
         }
 
         private void OnValidate()
