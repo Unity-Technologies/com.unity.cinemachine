@@ -95,12 +95,14 @@ namespace Cinemachine
                     return; // invalid path
                 }
                 
+                // TODO: use this for frustum height too
+                Vector3 cameraPosLocal = m_shapeCache.TransformPointToConfinerSpace(state.CorrectedPosition);
+                
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
                 
-                Vector3 cameraPosLocal = m_shapeCache.TransformPointToConfinerSpace(state.CorrectedPosition);
                 Vector3 displacement = ConfinePoint(cameraPosLocal, extra.m_vcamShapeCache.m_path);
                 displacement = m_shapeCache.TransformConfinerSpacePointToWorld(displacement);
 
@@ -140,6 +142,7 @@ namespace Cinemachine
             }
             else
             {
+                // TODO: move camera to collider local space 
                 // distance between the collider's plane and the camera
                 Quaternion inverseRotation = Quaternion.Inverse(m_BoundingShape2D.transform.rotation);
                 Vector3 planePosition = inverseRotation * m_BoundingShape2D.transform.position;
@@ -189,7 +192,7 @@ namespace Cinemachine
         
         internal static readonly float m_bakedConfinerResolution = 0.005f; // internal, because Tests access it
 
-        private List<List<Vector2>> m_gizmoPaths = new List<List<Vector2>>();
+        private List<List<Vector2>> m_gizmoPaths = new List<List<Vector2>>(); // TODO: editor and out it
         internal List<List<Vector2>> GetCurrentPath()
         {
             m_gizmoPaths.Clear();
