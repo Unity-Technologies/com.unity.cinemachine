@@ -259,7 +259,7 @@ namespace Cinemachine
             public Vector3 m_positionDelta; // TODO: refactor for gizmos only
             public Vector3 m_scaleDelta; // TODO: refactor for gizmos only
             public Quaternion m_rotationDelta; // TODO: refactor for gizmos only
-            public Vector3 m_offset; // TODO: refactor for gizmos only
+            public Vector3 m_offset;
             
             private float m_aspectRatio;
             private float m_maxOrthoSize;
@@ -397,6 +397,7 @@ namespace Cinemachine
             public Vector3 TransformPointToConfinerSpace(in Vector3 point)
             {
                 Vector3 pointInConfinerSpace = T.MultiplyPoint3x4(point);
+                pointInConfinerSpace -= m_offset;
                 pointInConfinerSpace = R.MultiplyPoint3x4(pointInConfinerSpace);
                 pointInConfinerSpace = S.MultiplyPoint3x4(pointInConfinerSpace);
                 return pointInConfinerSpace;
