@@ -256,7 +256,7 @@ namespace Cinemachine
         {
             public List<List<Vector2>> m_originalPath;
 
-            public Vector3 m_positionDelta; // TODO: refactor for gizmos only
+            public Vector3 m_positionDelta;
             public Vector3 m_scaleDelta; // TODO: refactor for gizmos only
             public Quaternion m_rotationDelta; // TODO: refactor for gizmos only
             public Vector3 m_offset;
@@ -396,8 +396,7 @@ namespace Cinemachine
             /// <returns>Point in confiner's local space</returns>
             public Vector3 TransformPointToConfinerSpace(in Vector3 point)
             {
-                Vector3 pointInConfinerSpace = T.MultiplyPoint3x4(point);
-                pointInConfinerSpace -= m_offset;
+                Vector3 pointInConfinerSpace = point - m_positionDelta - m_offset;
                 pointInConfinerSpace = R.MultiplyPoint3x4(pointInConfinerSpace);
                 pointInConfinerSpace = S.MultiplyPoint3x4(pointInConfinerSpace);
                 return pointInConfinerSpace;
@@ -415,7 +414,7 @@ namespace Cinemachine
                 return displacementCamera;
             }
 
-            private Matrix4x4 S, R, T; // Scale, Rotation, Translation matrices converting camera to confiner space
+            private Matrix4x4 S, R; // Scale, Rotation matrices converting camera to confiner space
             private Matrix4x4 S_inverse, R_inverse; // Scale, Rotation matrices converting displacement to camera space
             private void CalculateDeltaTransformationMatrix()
             {
@@ -446,11 +445,6 @@ namespace Cinemachine
 
                     R = Matrix4x4.Rotate(Quaternion.Inverse(m_rotationDelta));
                     R_inverse = Matrix4x4.Rotate(m_rotationDelta);
-                    
-                    T = Matrix4x4.identity;
-                    T.m03 = -m_positionDelta.x;
-                    T.m13 = -m_positionDelta.y;
-                    T.m23 = -m_positionDelta.z;
                 }
             }
 
