@@ -56,7 +56,7 @@ namespace Cinemachine
         /// <summary>Damping applied automatically around corners to avoid jumps.</summary>
         [Tooltip("Damping applied around corners to avoid jumps.  Higher numbers are more gradual.")]
         [Range(0, 5)]
-        public float m_Damping = 0;
+        public float m_Damping;
 
         /// <summary>
         /// The confiner will correctly confine up to this maximum orthographic size. If set to 0, then this
@@ -97,8 +97,7 @@ namespace Cinemachine
                 
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, 
-                    confinerStateChanged, frustumHeight, state.Lens.Orthographic);
+                extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
 
 
                 Vector3 cameraPosLocal = m_shapeCache.TransformPointToConfinerSpace(state.CorrectedPosition);
@@ -202,19 +201,16 @@ namespace Cinemachine
                 public List<List<Vector2>> m_path;
                 
                 private float m_frustumHeight;
-                private bool m_orthographic;
                 
                 /// <summary>
                 /// Check that the path cache was converted from the current confiner cache, or
                 /// converts it if the frustum height was changed.
                 /// </summary>
-                /// <param name="confinerStateChanged">Confiner cache was changed</param>
-                /// <param name="frustumHeight">Camera frustum height</param>
                 public void ValidateCache(
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float frustumHeight, in bool orthographic)
+                    in float frustumHeight)
                 {
-                    if (!confinerStateChanged && IsValid(frustumHeight, orthographic))
+                    if (!confinerStateChanged && IsValid(frustumHeight))
                     {
                         return;
                     }
@@ -224,13 +220,12 @@ namespace Cinemachine
                         out m_path);
                 
                     m_frustumHeight = frustumHeight;
-                    m_orthographic = orthographic;
                 }
 
                 
-                private bool IsValid(in float frustumHeight, in bool isOrthographic)
+                private bool IsValid(in float frustumHeight)
                 {
-                    return m_path != null && m_orthographic == isOrthographic &&
+                    return m_path != null &&
                            Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
                 }
             }
@@ -458,6 +453,12 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
+        }
+
+        private void Reset()
+        {
+            m_Damping = 0;
+            m_MaxOrthoSize = 0;
         }
     }
 #endif
