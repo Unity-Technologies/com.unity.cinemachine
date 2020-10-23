@@ -258,13 +258,13 @@ namespace Cinemachine
 
             public Vector3 m_positionDelta;
             public Vector3 m_offset;
-            public Vector3 m_scaleDelta; // TODO: refactor for gizmos only
-            public Quaternion m_rotationDelta; // TODO: refactor for gizmos only
+            public Vector3 m_scaleDelta;
+            public Quaternion m_rotationDelta;
             
             private float m_aspectRatio;
             private float m_maxOrthoSize;
-            private Vector3 m_boundingShapeScale;
-            private Quaternion m_boundingShapeRotation;
+            private Vector3 m_boundingShapeBakedScale;
+            private Quaternion m_boundingShapeBakedRotation;
 
             private Collider2D m_boundingShape2D;
             private List<ConfinerOven.ConfinerState> m_confinerStates;
@@ -277,8 +277,8 @@ namespace Cinemachine
                 m_aspectRatio = 0;
                 m_maxOrthoSize = 0;
                 
-                m_boundingShapeScale = Vector3.one;
-                m_boundingShapeRotation = Quaternion.identity;
+                m_boundingShapeBakedScale = Vector3.one;
+                m_boundingShapeBakedRotation = Quaternion.identity;
                 
                 m_boundingShape2D = null;
                 m_originalPath = null;
@@ -385,8 +385,8 @@ namespace Cinemachine
 
             private void SetTransformCache(in Transform boundingShapeTransform)
             {
-                m_boundingShapeScale = boundingShapeTransform.lossyScale;
-                m_boundingShapeRotation = boundingShapeTransform.rotation;
+                m_boundingShapeBakedScale = boundingShapeTransform.lossyScale;
+                m_boundingShapeBakedRotation = boundingShapeTransform.rotation;
             }
             
             /// <summary>
@@ -424,18 +424,18 @@ namespace Cinemachine
                 
                     m_positionDelta = boundingShapeTransform.position;
                 
-                    m_rotationDelta = Quaternion.Inverse(m_boundingShapeRotation) * boundingShapeTransform.rotation;
+                    m_rotationDelta = Quaternion.Inverse(m_boundingShapeBakedRotation) * boundingShapeTransform.rotation;
                 
                     Vector3 lossyScale = boundingShapeTransform.lossyScale;
-                    m_scaleDelta.x = Math.Abs(m_boundingShapeScale.x) < UnityVectorExtensions.Epsilon
+                    m_scaleDelta.x = Math.Abs(m_boundingShapeBakedScale.x) < UnityVectorExtensions.Epsilon
                         ? 0
-                        : lossyScale.x / m_boundingShapeScale.x;
-                    m_scaleDelta.y = Math.Abs(m_boundingShapeScale.y) < UnityVectorExtensions.Epsilon
+                        : lossyScale.x / m_boundingShapeBakedScale.x;
+                    m_scaleDelta.y = Math.Abs(m_boundingShapeBakedScale.y) < UnityVectorExtensions.Epsilon
                         ? 0
-                        : lossyScale.y / m_boundingShapeScale.y;
-                    m_scaleDelta.z = Math.Abs(m_boundingShapeScale.z) < UnityVectorExtensions.Epsilon
+                        : lossyScale.y / m_boundingShapeBakedScale.y;
+                    m_scaleDelta.z = Math.Abs(m_boundingShapeBakedScale.z) < UnityVectorExtensions.Epsilon
                         ? 0
-                        : lossyScale.z / m_boundingShapeScale.z;
+                        : lossyScale.z / m_boundingShapeBakedScale.z;
                 
                     S = Matrix4x4.identity;
                     S.m00 = Math.Abs(m_scaleDelta.x) < UnityVectorExtensions.Epsilon ? 0 : 1f / m_scaleDelta.x;
