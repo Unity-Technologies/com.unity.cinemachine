@@ -257,9 +257,9 @@ namespace Cinemachine
             public List<List<Vector2>> m_originalPath;
 
             public Vector3 m_positionDelta;
+            public Vector3 m_offset;
             public Vector3 m_scaleDelta; // TODO: refactor for gizmos only
             public Quaternion m_rotationDelta; // TODO: refactor for gizmos only
-            public Vector3 m_offset;
             
             private float m_aspectRatio;
             private float m_maxOrthoSize;
