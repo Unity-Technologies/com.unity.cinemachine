@@ -317,18 +317,16 @@ namespace Cinemachine
                 {
                     PolygonCollider2D poly = boundingShape2D as PolygonCollider2D;
                     m_originalPath = new List<List<Vector2>>();
+                    var localToWorld = boundingShape2D.transform.localToWorldMatrix;
+                    localToWorld.m03 = 0; localToWorld.m13 = 0; localToWorld.m23 = 0; // set translation part to 0
+                    
                     for (int i = 0; i < poly.pathCount; ++i)
                     {
                         Vector2[] path = poly.GetPath(i);
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < path.Length; ++j)
                         {
-                            var point = new Vector3(
-                                path[j].x * boundingShape2D.transform.lossyScale.x, 
-                                path[j].y * boundingShape2D.transform.lossyScale.y, 
-                                0);
-                            var pointResult = boundingShape2D.transform.rotation * point;
-                            dst.Add(pointResult);
+                            dst.Add(localToWorld.MultiplyPoint3x4(path[j]));
                         }
                         m_originalPath.Add(dst);
                     }
@@ -338,18 +336,16 @@ namespace Cinemachine
                     CompositeCollider2D poly = boundingShape2D as CompositeCollider2D;
                     
                     m_originalPath = new List<List<Vector2>>();
+                    var localToWorld = boundingShape2D.transform.localToWorldMatrix;
+                    localToWorld.m03 = 0; localToWorld.m13 = 0; localToWorld.m23 = 0; // set translation part to 0
                     Vector2[] path = new Vector2[poly.pointCount];
-                    Vector3 lossyScale = boundingShape2D.transform.lossyScale;
-                    Vector2 revertCompositeColliderScale = new Vector2(
-                        1f / lossyScale.x, 
-                        1f / lossyScale.y);
                     for (int i = 0; i < poly.pathCount; ++i)
                     {
                         int numPoints = poly.GetPath(i, path);
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < numPoints; ++j)
                         {
-                            dst.Add(path[j] * revertCompositeColliderScale);
+                            dst.Add(localToWorld.MultiplyPoint3x4(path[j]));
                         }
                         m_originalPath.Add(dst);
                     }
