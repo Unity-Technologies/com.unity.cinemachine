@@ -84,8 +84,13 @@ namespace Cinemachine.Utility
         }
         
         /// <summary>
-        /// Calculates the intersection point defined by line_1 (p1, p2), and line_2 (p3, p4).
-        /// Returns intersection type (0 = no intersection, 1 = lines intersect, 2 = segments intersect).
+        /// Calculates the intersection point defined by line_1 [p1, p2], and line_2 [p3, p4).
+        /// Meaning of brackets:
+        /// <list type="bullet">
+        /// <item><description> If line_1 intersects line_2 at exactly p4, then segments do not intersect, but lines do.</description></item>
+        /// <item><description> If line_1 intersects line_2 at exactly p3, then segments intersect.</description></item>
+        /// </list>
+        /// <para>Returns intersection type (0 = no intersection, 1 = lines intersect, 2 = segments intersect).</para>
         /// </summary>
         /// <param name="p1">line_1 is defined by (p1, p2)</param>
         /// <param name="p2">line_1 is defined by (p1, p2)</param>
@@ -119,7 +124,7 @@ namespace Cinemachine.Utility
             intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
             
             float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
-            return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
+            return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
         }
         
         /// <summary>
