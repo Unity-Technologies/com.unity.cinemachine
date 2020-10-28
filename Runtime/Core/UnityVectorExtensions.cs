@@ -85,6 +85,7 @@ namespace Cinemachine.Utility
         
         /// <summary>
         /// Calculates the intersection point defined by line_1 (p1, p2), and line_2 (p3, p4).
+        /// Returns intersection type (0 = no intersection, 1 = lines intersect, 2 = segments intersect).
         /// </summary>
         /// <param name="p1">line_1 is defined by (p1, p2)</param>
         /// <param name="p2">line_1 is defined by (p1, p2)</param>

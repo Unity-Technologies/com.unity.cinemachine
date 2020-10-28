@@ -178,7 +178,7 @@ namespace Cinemachine
                         Vector2 v = pathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
-                        if (distance < minDistance)
+                        if (distance < minDistance && !DoesIntersectOriginal(positionToConfine, c))
                         {
                             minDistance = distance;
                             closest = c;
@@ -188,6 +188,23 @@ namespace Cinemachine
                 }
             }
             return closest - positionToConfine;
+        }
+
+        private bool DoesIntersectOriginal(Vector2 l1, Vector2 l2)
+        {
+            foreach (var originalPath in m_shapeCache.m_originalPath)
+            {
+                for (int i = 0; i < originalPath.Count; ++i)
+                {
+                    if (UnityVectorExtensions.FindIntersection(l1, l2, originalPath[i], 
+                        originalPath[(i + 1) % originalPath.Count], out _) == 2)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
         
         internal static readonly float m_bakedConfinerResolution = 0.005f; // internal, because Tests access it
