@@ -375,16 +375,19 @@ namespace Cinemachine
                     CompositeCollider2D poly = boundingShape2D as CompositeCollider2D;
                     
                     m_originalPath = new List<List<Vector2>>();
-                    var localToWorld = boundingShape2D.transform.localToWorldMatrix;
+                    var boundingShape2DTransform = boundingShape2D.transform;
+                    var localToWorld = boundingShape2DTransform.localToWorldMatrix;
                     localToWorld.m03 = 0; localToWorld.m13 = 0; localToWorld.m23 = 0; // set translation part to 0
                     Vector2[] path = new Vector2[poly.pointCount];
+                    Vector3 lossyScale = boundingShape2DTransform.lossyScale;
+                    Vector2 revertCompositeColliderScale = new Vector2(1f / lossyScale.x, 1f / lossyScale.y);
                     for (int i = 0; i < poly.pathCount; ++i)
                     {
                         int numPoints = poly.GetPath(i, path);
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < numPoints; ++j)
                         {
-                            dst.Add(localToWorld.MultiplyPoint3x4(path[j]));
+                            dst.Add(localToWorld.MultiplyPoint3x4(path[j] * revertCompositeColliderScale));
                         }
                         m_originalPath.Add(dst);
                     }
