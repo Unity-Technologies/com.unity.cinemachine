@@ -103,7 +103,8 @@ namespace Cinemachine
                 extra.m_vcam = vcam;
                 extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
                 
-                Vector3 displacement = ConfinePoint(cameraPosLocal, extra.m_vcamShapeCache.m_path);
+                Vector3 displacement = ConfinePoint(cameraPosLocal, 
+                    extra.m_vcamShapeCache.m_path, extra.m_vcamShapeCache.m_pathHasBone);
                 displacement = m_shapeCache.TransformConfinerSpacePointToWorld(displacement);
 
                 // Remember the desired displacement for next frame
@@ -158,7 +159,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
-        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache)
+        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache, in bool hasBone)
         {
             if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
             {
@@ -178,7 +179,7 @@ namespace Cinemachine
                         Vector2 v = pathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         float distance = Vector2.SqrMagnitude(positionToConfine - c);
-                        if (distance < minDistance && !DoesIntersectOriginal(positionToConfine, c))
+                        if (distance < minDistance && (!hasBone || !DoesIntersectOriginal(positionToConfine, c)))
                         {
                             minDistance = distance;
                             closest = c;
@@ -187,6 +188,7 @@ namespace Cinemachine
                     }
                 }
             }
+
             return closest - positionToConfine;
         }
 
@@ -234,7 +236,7 @@ namespace Cinemachine
             internal struct VcamShapeCache
             {
                 public List<List<Vector2>> m_path;
-                
+                public bool m_pathHasBone;
                 private float m_frustumHeight;
                 
                 /// <summary>
@@ -253,6 +255,7 @@ namespace Cinemachine
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
                     ShrinkablePolygon.ConvertToPath(confinerCache.polygons, frustumHeight, 
                         out m_path);
+                    m_pathHasBone = confinerCache.hasBone;
                 
                     m_frustumHeight = frustumHeight;
                 }

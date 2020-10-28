@@ -41,6 +41,7 @@ namespace Cinemachine
 
         public List<ShrinkablePoint2> m_points;
         public float m_windowDiagonal;
+        public bool m_hasBone;
         public int m_state;
         private bool m_clockwiseOrientation;
         public readonly float m_aspectRatio;
@@ -699,6 +700,7 @@ namespace Cinemachine
                         else
                         {
                             m_points[i].m_shrinkDirection = Vector2.zero;
+                            m_hasBone = true;
                         }
                     }
                 }
@@ -708,6 +710,7 @@ namespace Cinemachine
                     {
                         m_points[i].m_shrinkDirection = Vector2.zero;
                     }
+                    m_hasBone = true;
 
                     return false;
                 }
