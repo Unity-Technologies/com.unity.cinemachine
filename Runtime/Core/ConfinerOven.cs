@@ -14,7 +14,6 @@ namespace Cinemachine
         {
             public List<ShrinkablePolygon> polygons;
             public float windowSize;
-            public bool hasBone; // has pieces there are shrunk down to a line or point.
             public float state;
         }
         
@@ -210,17 +209,15 @@ namespace Cinemachine
                 stateAverage /= m_shrinkablePolygons[i].Count + 1;
 
                 float maxWindowDiagonal = m_shrinkablePolygons[i][0].m_windowDiagonal;
-                bool hasBone = false;
+               
                 for (int j = 1; j < m_shrinkablePolygons[i].Count; ++j)
                 {
                     maxWindowDiagonal = Mathf.Max(m_shrinkablePolygons[i][j].m_windowDiagonal, maxWindowDiagonal);
-                    hasBone = hasBone || m_shrinkablePolygons[i][j].m_hasBone;
                 }
                 
                 m_confinerStates.Add(new ConfinerState
                 {
                     windowSize = maxWindowDiagonal,
-                    hasBone = hasBone,
                     polygons = m_shrinkablePolygons[i],
                     state = stateAverage,
                 });

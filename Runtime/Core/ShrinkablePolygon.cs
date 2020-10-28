@@ -41,7 +41,6 @@ namespace Cinemachine
 
         public List<ShrinkablePoint2> m_points;
         public float m_windowDiagonal;
-        public bool m_hasBone;
         public int m_state;
         private bool m_clockwiseOrientation;
         public readonly float m_aspectRatio;
@@ -275,8 +274,9 @@ namespace Cinemachine
         /// For the path touching the corners this may be relevant.</param>
         /// <param name="path">output result</param>
         public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, float frustumHeight,
-            out List<List<Vector2>> path)
+            out List<List<Vector2>> path, out bool hasIntersections)
         {
+            hasIntersections = false;
             // convert shrinkable polygons points to int based points for Clipper
             List<List<IntPoint>> clip = new List<List<IntPoint>>(shrinkablePolygons.Count);
             int index = 0;
@@ -294,6 +294,8 @@ namespace Cinemachine
                 // add a thin line to each intersection point, thus connecting disconnected polygons
                 foreach (var intersectionPoint in polygon.m_intersectionPoints)
                 {
+                    hasIntersections = true;
+                    
                     Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
                     Vector2 direction = (closestPoint - intersectionPoint).normalized;
                     Vector2 epsilonNormal = new Vector2(direction.y, -direction.x) * 0.01f;
@@ -700,7 +702,6 @@ namespace Cinemachine
                         else
                         {
                             m_points[i].m_shrinkDirection = Vector2.zero;
-                            m_hasBone = true;
                         }
                     }
                 }
@@ -710,7 +711,6 @@ namespace Cinemachine
                     {
                         m_points[i].m_shrinkDirection = Vector2.zero;
                     }
-                    m_hasBone = true;
 
                     return false;
                 }

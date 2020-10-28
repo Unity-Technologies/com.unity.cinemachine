@@ -254,8 +254,8 @@ namespace Cinemachine
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
                     ShrinkablePolygon.ConvertToPath(confinerCache.polygons, frustumHeight, 
-                        out m_path);
-                    m_pathHasBone = confinerCache.hasBone;
+                        out m_path, out bool hasIntersections);
+                    m_pathHasBone = hasIntersections;
                 
                     m_frustumHeight = frustumHeight;
                 }
