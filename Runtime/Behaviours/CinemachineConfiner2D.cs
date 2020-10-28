@@ -104,7 +104,7 @@ namespace Cinemachine
                 extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
                 
                 Vector3 displacement = ConfinePoint(cameraPosLocal, 
-                    extra.m_vcamShapeCache.m_path, extra.m_vcamShapeCache.m_pathHasBone);
+                    extra.m_vcamShapeCache.m_path, extra.m_vcamShapeCache.m_pathHasBone, state.Lens.Aspect);
                 displacement = m_shapeCache.TransformConfinerSpacePointToWorld(displacement);
 
                 // Remember the desired displacement for next frame
@@ -159,7 +159,8 @@ namespace Cinemachine
         /// </summary>
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
-        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache, in bool hasBone)
+        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache, 
+            in bool hasBone, in float aspect)
         {
             if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
             {
@@ -178,7 +179,10 @@ namespace Cinemachine
                     {
                         Vector2 v = pathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
-                        float distance = Vector2.SqrMagnitude(positionToConfine - c);
+                        Vector2 difference = positionToConfine - c;
+                        difference.x /= aspect; // the weight of distance on X axis depends on the aspect ratio. y is 1
+                        
+                        float distance = Vector2.SqrMagnitude(difference);
                         if (distance < minDistance && (!hasBone || !DoesIntersectOriginal(positionToConfine, c)))
                         {
                             minDistance = distance;
