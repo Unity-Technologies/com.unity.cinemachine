@@ -165,7 +165,8 @@ namespace Cinemachine
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache, 
             in bool hasBone, in float aspect)
         {
-            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
+            bool outsideOfOriginal = !ShrinkablePolygon.IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
+            if (!outsideOfOriginal && ShrinkablePolygon.IsInside(pathCache, positionToConfine))
             {
                 return positionToConfine;
             }
@@ -186,7 +187,7 @@ namespace Cinemachine
                         difference.x /= aspect; // the weight of distance on X axis depends on the aspect ratio. y is 1
                         
                         float distance = Vector2.SqrMagnitude(difference);
-                        if (distance < minDistance && (!hasBone || !DoesIntersectOriginal(positionToConfine, c)))
+                        if (distance < minDistance && (outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c)))
                         {
                             minDistance = distance;
                             closest = c;
