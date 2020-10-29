@@ -14,7 +14,7 @@ Cinemachine works well with other Unity tools, acting as a powerful complement t
 
 Cinemachine is a free package, available for any project. You install Cinemachine like [any other package](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html).
 
-After you install Cinemachine, a new *Cinemachine* folder appears in the Gizmos folder of your Project window, and a new __Cinemachine__ menu is available.
+After you install Cinemachine, a new *Cinemachine* folder appears in the Gizmos folder of your Project window, and a new __GameObject > Cinemachine__ menu is available. You can also access this menu when you right click inside the Hierarchy view.
 
 ![Cinemachine menu in the Unity Editor](images/CinemachineMenu.png)
 

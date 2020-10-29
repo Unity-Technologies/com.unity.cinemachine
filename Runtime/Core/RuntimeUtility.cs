@@ -49,6 +49,15 @@ namespace Cinemachine
         }
         
         #if CINEMACHINE_PHYSICS
+        /// <summary>
+        /// Perform a raycast, but pass through any objects that have a given tag
+        /// </summary>
+        /// <param name="ray">The ray to cast</param>
+        /// <param name="hitInfo">The returned results</param>
+        /// <param name="rayLength">Length of the raycast</param>
+        /// <param name="layerMask">Layers to include</param>
+        /// <param name="ignoreTag">Tag to ignore</param>
+        /// <returns>True if something was hit.  Results in hitInfo</returns>
         public static bool RaycastIgnoreTag(
             Ray ray, out RaycastHit hitInfo, float rayLength, int layerMask, in string ignoreTag)
         {
@@ -80,6 +89,17 @@ namespace Cinemachine
             return false;
         }
 
+        /// <summary>
+        /// Perform a sphere cast, but pass through objects with a given tag
+        /// </summary>
+        /// <param name="rayStart">Start of the ray</param>
+        /// <param name="radius">Radius of the sphere cast</param>
+        /// <param name="dir">Direction of the ray</param>
+        /// <param name="hitInfo">Results go here</param>
+        /// <param name="rayLength">Length of the ray</param>
+        /// <param name="layerMask">Layers to include</param>
+        /// <param name="ignoreTag">Tag to ignore</param>
+        /// <returns>True if something is hit.  Results in hitInfo.</returns>
         public static bool SphereCastIgnoreTag(
             Vector3 rayStart, float radius, Vector3 dir, 
             out RaycastHit hitInfo, float rayLength, 

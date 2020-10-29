@@ -18,7 +18,7 @@ To create a State-Driven camera:
 
 1. Set up the animation target GameObject to [control it with an Animator Controller](https://docs.unity3d.com/Manual/AnimatorControllers.html).
 
-2. In the Unity menu, choose __Cinemachine > Create State-Driven Camera__.<br/>A new State-Driven camera appears in the hierarchy with a new child Virtual Camera.
+2. In the Unity menu, choose __GameObject > Cinemachine > State-Driven Camera__.<br/>A new State-Driven camera appears in the hierarchy with a new child Virtual Camera.
 
 3. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), assign the animation target you created in step 1 to the Animated Target property.
 

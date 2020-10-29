@@ -1,11 +1,11 @@
 using UnityEngine;
 using System;
 
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_0_0
-    #if CINEMACHINE_HDRP_7_0_0
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+    #if CINEMACHINE_HDRP_7_3_1
     using UnityEngine.Rendering.HighDefinition;
     #else
-        #if CINEMACHINE_LWRP_7_0_0
+        #if CINEMACHINE_LWRP_7_3_1
         using UnityEngine.Rendering.Universal;
         #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
@@ -27,12 +27,14 @@ namespace Cinemachine
         public static LensSettings Default = new LensSettings(40f, 10f, 0.1f, 5000f, 0);
 
         /// <summary>
-        /// This is the camera view in vertical degrees. For cinematic people, a 50mm lens
+        /// This is the camera view in degrees. For cinematic people, a 50mm lens
         /// on a super-35mm sensor would equal a 19.6 degree FOV
         /// </summary>
         [Range(1f, 179f)]
-        [Tooltip("This is the camera view in vertical degrees. For cinematic people, a 50mm lens "
-           + "on a super-35mm sensor would equal a 19.6 degree FOV")]
+        [Tooltip("This is the camera view in degrees. Display will be in vertical degress, unless the "
+            + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
+            + "be in horizontal degress.  Internally, it is always vertical degrees.  "
+            + "For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
         public float FieldOfView;
 
         /// <summary>
@@ -66,16 +68,55 @@ namespace Cinemachine
         public float Dutch;
 
         /// <summary>
-        /// This is set every frame by the virtual camera, based on the value found in the
-        /// currently associated Unity camera
+        /// This enum controls how the Camera seetings are driven.  Some settings
+        /// can be pulled from the main camera, or pushed to it, depending on these values.
         /// </summary>
-        public bool Orthographic { get; set; }
+        public enum OverrideModes
+        {
+            /// <summary> Perspective/Ortho, IsPhysical, SensorSize, and GateFit 
+            /// will not be changed in Unity Camera.  This is the default setting.</summary>
+            None = 0,
+            /// <summary>Orthographic projection mode will be pushed to the Unity Camera</summary>
+            Orthographic,
+            /// <summary>Perspective projection mode will be pushed to the Unity Camera</summary>
+            Perspective,
+            /// <summary>A physically-modeled Prsoective projection type will be pushed 
+            /// to the Unity Camera</summary>
+            Physical
+        }
 
         /// <summary>
-        /// This is set every frame by the virtual camera, based on the value
-        /// found in the currently associated Unity camera
+        /// This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, 
+        /// and GateFit are set in the Camera object, or are overidden here.
         /// </summary>
-        public Vector2 SensorSize { get; set; }
+        [Tooltip("This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, "
+            + "and GateFit are set in the Camera object, or are overidden here.")]
+        public OverrideModes ModeOverride;
+
+        /// <summary>
+        /// This is set every frame by the virtual camera, based on the value found in the
+        /// currently associated Unity camera.
+        /// Do not set this property.  Instead, use the ModeOverride field to set orthographic mode.
+        /// </summary>
+        public bool Orthographic 
+        { 
+            get { return ModeOverride == OverrideModes.Orthographic
+                || ModeOverride == OverrideModes.None && m_OrthoFromCamera; } 
+
+            /// Obsolete: do not use
+            set { m_OrthoFromCamera = value; ModeOverride = value 
+                ? OverrideModes.Orthographic : OverrideModes.Perspective; } 
+        }
+
+        /// <summary>
+        /// For physical cameras, this is the actual size of the image sensor (in mm); it is used to 
+        /// convert between focal length and field of vue.  For nonphysical cameras, it is the aspect ratio.
+        /// </summary>
+        public Vector2 SensorSize
+        { 
+            get { return m_SensorSize; } 
+            set { m_SensorSize = value; } 
+        }
 
         /// <summary>
         /// Sensor aspect, not screen aspect.  For nonphysical cameras, this is the same thing.
@@ -83,13 +124,32 @@ namespace Cinemachine
         public float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
 
         /// <summary>
-        /// This is set every frame by the virtual camera, based on the value
-        /// found in the currently associated Unity camera
+        /// This property will be true if the camera mode is set, either directly or 
+        /// indirectly, to Physical Camera
+        /// Do not set this property.  Instead, use the ModeOverride field to set physical mode.
         /// </summary>
-        public bool IsPhysicalCamera { get; set; }
+        public bool IsPhysicalCamera 
+        { 
+            get { return ModeOverride == OverrideModes.Physical 
+                || ModeOverride == OverrideModes.None && m_PhysicalFromCamera; } 
 
-        /// <summary>For physical cameras only: position of the gate relative to the film back</summary>
+            /// Obsolete: do not use
+            set { m_PhysicalFromCamera = value; ModeOverride = value 
+                ? OverrideModes.Physical : OverrideModes.Perspective; } 
+        }
+
+        /// <summary>For physical cameras only: position of the gate relative to 
+        /// the film back</summary>
         public Vector2 LensShift;
+
+        /// <summary>For physical cameras only: how the image is fitted to the sensor 
+        /// if the aspect ratios differ</summary>
+        public Camera.GateFitMode GateFit;
+
+        [SerializeField]
+        Vector2 m_SensorSize;
+        bool m_OrthoFromCamera;
+        bool m_PhysicalFromCamera;
 
 #if CINEMACHINE_HDRP
         public int Iso;
@@ -111,6 +171,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="fromCamera">The Camera from which the FoV, near
         /// and far clip planes will be copied.</param>
+        /// <returns>The LensSettings as extracted from the supplied Camera</returns>
 	    public static LensSettings FromCamera(Camera fromCamera)
         {
             LensSettings lens = Default;
@@ -120,20 +181,19 @@ namespace Cinemachine
                 lens.OrthographicSize = fromCamera.orthographicSize;
                 lens.NearClipPlane = fromCamera.nearClipPlane;
                 lens.FarClipPlane = fromCamera.farClipPlane;
-#if UNITY_2018_2_OR_NEWER
                 lens.LensShift = fromCamera.lensShift;
-#endif
+                lens.GateFit = fromCamera.gateFit;
                 lens.SnapshotCameraReadOnlyProperties(fromCamera);
 
 #if CINEMACHINE_HDRP
                 if (lens.IsPhysicalCamera)
                 {
                     var pc = new HDPhysicalCamera();
-#if UNITY_2019_2_OR_NEWER
+    #if UNITY_2019_2_OR_NEWER
                     fromCamera.TryGetComponent<HDAdditionalCameraData>(out var hda);
-#else
+    #else
                     var hda = fromCamera.GetComponent<HDAdditionalCameraData>();
-#endif
+    #endif
                     if (hda != null)
                         pc = hda.physicalParameters;
                     lens.Iso = pc.iso;
@@ -155,17 +215,19 @@ namespace Cinemachine
         /// <param name="camera">The Camera from which we will take the info</param>
         public void SnapshotCameraReadOnlyProperties(Camera camera)
         {
-            if (camera != null)
+            m_OrthoFromCamera = false;
+            m_PhysicalFromCamera = false;
+            if (camera != null && ModeOverride == OverrideModes.None)
             {
-                Orthographic = camera.orthographic;
-                SensorSize = new Vector2(camera.aspect, 1f);
-#if UNITY_2018_2_OR_NEWER
-                IsPhysicalCamera = camera.usePhysicalProperties;
+                m_OrthoFromCamera = camera.orthographic;
+                m_PhysicalFromCamera = camera.usePhysicalProperties;
                 if (IsPhysicalCamera)
-                    SensorSize = camera.sensorSize;
+                    m_SensorSize = camera.sensorSize;
                 else
+                {
+                    m_SensorSize = new Vector2(camera.aspect, 1f);
                     LensShift = Vector2.zero;
-#endif
+                }
             }
         }
 
@@ -175,33 +237,35 @@ namespace Cinemachine
         /// <param name="lens">The LensSettings from which we will take the info</param>
         public void SnapshotCameraReadOnlyProperties(ref LensSettings lens)
         {
-            Orthographic = lens.Orthographic;
-            SensorSize = lens.SensorSize;
-#if UNITY_2018_2_OR_NEWER
-            IsPhysicalCamera = lens.IsPhysicalCamera;
-            if (!IsPhysicalCamera)
-                LensShift = Vector2.zero;
-#endif
+            if (ModeOverride == OverrideModes.None)
+            {
+                m_OrthoFromCamera = lens.Orthographic;
+                m_SensorSize = lens.m_SensorSize;
+                m_PhysicalFromCamera = lens.IsPhysicalCamera;
+                if (!IsPhysicalCamera)
+                    LensShift = Vector2.zero;
+            }
         }
 
         /// <summary>
         /// Explicit constructor for this LensSettings
         /// </summary>
-        /// <param name="fov">The Vertical field of view</param>
+        /// <param name="verticalFOV">The Vertical field of view</param>
         /// <param name="orthographicSize">If orthographic, this is the half-height of the screen</param>
         /// <param name="nearClip">The near clip plane</param>
         /// <param name="farClip">The far clip plane</param>
         /// <param name="dutch">Camera roll, in degrees.  This is applied at the end
         /// after shot composition.</param>
         public LensSettings(
-            float fov, float orthographicSize,
+            float verticalFOV, float orthographicSize,
             float nearClip, float farClip, float dutch) : this()
         {
-            FieldOfView = fov;
+            FieldOfView = verticalFOV;
             OrthographicSize = orthographicSize;
             NearClipPlane = nearClip;
             FarClipPlane = farClip;
             Dutch = dutch;
+            m_SensorSize = new Vector2(1, 1);
 
 #if CINEMACHINE_HDRP
             Iso = 200;
@@ -224,15 +288,13 @@ namespace Cinemachine
         public static LensSettings Lerp(LensSettings lensA, LensSettings lensB, float t)
         {
             t = Mathf.Clamp01(t);
-            LensSettings blendedLens = new LensSettings();
+            LensSettings blendedLens = t < 0.5f ? lensA : lensB; // non-lerpable settings taken care of here
             blendedLens.FarClipPlane = Mathf.Lerp(lensA.FarClipPlane, lensB.FarClipPlane, t);
             blendedLens.NearClipPlane = Mathf.Lerp(lensA.NearClipPlane, lensB.NearClipPlane, t);
             blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
             blendedLens.OrthographicSize = Mathf.Lerp(lensA.OrthographicSize, lensB.OrthographicSize, t);
             blendedLens.Dutch = Mathf.Lerp(lensA.Dutch, lensB.Dutch, t);
-            blendedLens.Orthographic = lensA.Orthographic && lensB.Orthographic;
-            blendedLens.IsPhysicalCamera = lensA.IsPhysicalCamera || lensB.IsPhysicalCamera;
-            blendedLens.SensorSize = Vector2.Lerp(lensA.SensorSize, lensB.SensorSize, t);
+            blendedLens.m_SensorSize = Vector2.Lerp(lensA.m_SensorSize, lensB.m_SensorSize, t);
             blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
 
 #if CINEMACHINE_HDRP
@@ -253,6 +315,8 @@ namespace Cinemachine
             NearClipPlane = Mathf.Max(NearClipPlane, Orthographic ? 0 : 0.001f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.001f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
+            m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);
+            m_SensorSize.y = Mathf.Max(m_SensorSize.y, 0.1f);
 #if CINEMACHINE_HDRP
             ShutterSpeed = Mathf.Max(0, ShutterSpeed);
             Aperture = Mathf.Clamp(Aperture, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);

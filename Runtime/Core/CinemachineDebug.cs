@@ -60,6 +60,8 @@ namespace Cinemachine.Utility
         private static List<StringBuilder> mAvailableStringBuilders;
 
         /// <summary>Get a preallocated StringBuilder from the pool</summary>
+        /// <returns>The preallocated StringBuilder from the pool.  
+        /// Client must call ReturnToPool when done</returns>
         public static StringBuilder SBFromPool()
         {
             if (mAvailableStringBuilders == null || mAvailableStringBuilders.Count == 0)
@@ -71,6 +73,7 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>Return a StringBuilder to the preallocated pool</summary>
+        /// <param name="sb">The string builder object to return to the pool</param>
         public static void ReturnToPool(StringBuilder sb)
         {
             if (mAvailableStringBuilders == null)

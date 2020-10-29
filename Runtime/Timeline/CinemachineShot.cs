@@ -10,18 +10,24 @@ using Cinemachine;
 
 //namespace Cinemachine.Timeline
 //{
-/// <summary>
-/// Internal use only.  Not part of the public API.
-/// </summary>
+    /// <summary>
+    /// Internal use only.  Not part of the public API.
+    /// </summary>
     public sealed class CinemachineShot : PlayableAsset, IPropertyPreview
     {
+        /// <summary>The name to display on the track</summary>
 #if !UNITY_2019_2_OR_NEWER
-    [HideInInspector]
+        [HideInInspector]
 #endif
-    public string DisplayName;
+        public string DisplayName;
 
-    public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;
+        /// <summary>The virtual camera to activate</summary>
+        public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;
 
+        /// <summary>PlayableAsset implementation</summary>
+        /// <param name="graph"></param>
+        /// <param name="owner"></param>
+        /// <returns></returns>
         public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
         {
             var playable = ScriptPlayable<CinemachineShotPlayable>.Create(graph);
@@ -29,7 +35,9 @@ using Cinemachine;
             return playable;
         }
 
-        // IPropertyPreview implementation
+        /// <summary>IPropertyPreview implementation</summary>
+        /// <param name="director"></param>
+        /// <param name="driver"></param>
         public void GatherProperties(PlayableDirector director, IPropertyCollector driver)
         {
             driver.AddFromName<Transform>("m_LocalPosition.x");

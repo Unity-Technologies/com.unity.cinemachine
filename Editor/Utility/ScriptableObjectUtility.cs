@@ -5,8 +5,14 @@ using System;
 
 namespace Cinemachine.Editor
 {
+    /// <summary>
+    /// This is a collection of utilities surrounding ScriptableObjects
+    /// </summary>
     public class ScriptableObjectUtility : ScriptableObject
     {
+        /// <summary>
+        /// The default relative path to the root directory where Cinemachine is installed
+        /// </summary>
         public static string kPackageRoot = "Packages/com.unity.cinemachine";
 
         /// <summary>Get the Cinemachine package install path.  Works whether CM is
@@ -54,12 +60,18 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>Create a scriptable object asset</summary>
+        /// <typeparam name="T">The type of asset to create</typeparam>
+        /// <param name="assetPath">The full path and filename of the asset to create</param>
+        /// <returns>The newly-created asset</returns>
         public static T CreateAt<T>(string assetPath) where T : ScriptableObject
         {
             return CreateAt(typeof(T), assetPath) as T;
         }
 
         /// <summary>Create a scriptable object asset</summary>
+        /// <param name="assetType">The type of asset to create</param>
+        /// <param name="assetPath">The full path and filename of the asset to create</param>
+        /// <returns>The newly-created asset</returns>
         public static ScriptableObject CreateAt(Type assetType, string assetPath)
         {
             ScriptableObject asset = ScriptableObject.CreateInstance(assetType);
@@ -72,6 +84,10 @@ namespace Cinemachine.Editor
             return asset;
         }
 
+        /// <summary>Create a ScriptableObject asset</summary>
+        /// <typeparam name="T">The type of asset to create</typeparam>
+        /// <param name="prependFolderName">If true, prepend the selected asset folder name to the asset name</param>
+        /// <param name="trimName">If true, remove instances of the "Asset", "Attributes", "Container" strings from the name</param>
         public static void Create<T>(bool prependFolderName = false, bool trimName = true) where T : ScriptableObject
         {
             string className = typeof(T).Name;

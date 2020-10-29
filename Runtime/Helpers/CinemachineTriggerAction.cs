@@ -13,6 +13,10 @@ namespace Cinemachine
 {
 #if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)
     // Workaround for Unity scripting bug
+    /// <summary>
+    /// A multi-purpose script which causes an action to occur when
+    /// a trigger collider is entered and exited.
+    /// </summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineTriggerAction : MonoBehaviour {}
 #else
@@ -94,7 +98,17 @@ namespace Cinemachine
             public float m_StartTime;
 
             /// <summary>How to interpret the start time</summary>
-            public enum TimeMode { FromStart, FromEnd, BeforeNow, AfterNow };
+            public enum TimeMode 
+            {
+                /// <summary>Offset after the start of the timeline</summary>
+                FromStart, 
+                /// <summary>Offset before the end of the timeline</summary>
+                FromEnd, 
+                /// <summary>Offset before the current timeline time</summary>
+                BeforeNow, 
+                /// <summary>Offset after the current timeline time</summary>
+                AfterNow 
+            };
 
             /// <summary>How to interpret the start time</summary>
             [Tooltip("How to interpret the start time")]
@@ -104,7 +118,8 @@ namespace Cinemachine
             [Tooltip("This event will be invoked")]
             public TriggerEvent m_Event;
 
-            /// <summary>Constructor</summary>
+            /// <summary>Standard Constructor</summary>
+            /// <param name="action">Action to set</param>
             public ActionSettings(Mode action)
             {
                 m_Action = action;

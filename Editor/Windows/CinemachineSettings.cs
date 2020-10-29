@@ -300,6 +300,11 @@ namespace Cinemachine.Editor
                 GUILayout.EndScrollView();
             }
 
+            // Storyboard global mute
+            CinemachineStoryboardMute.Enabled = EditorGUILayout.Toggle(
+                new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted."), 
+                CinemachineStoryboardMute.Enabled);
+
             sScrollPosition = GUILayout.BeginScrollView(sScrollPosition);
 
             //CinemachineCore.sShowHiddenObjects

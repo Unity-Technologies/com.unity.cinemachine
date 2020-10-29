@@ -18,10 +18,13 @@ namespace Cinemachine
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable] public class Appearance
         {
+            /// <summary>The color of the path itself when it is active in the editor</summary>
             [Tooltip("The color of the path itself when it is active in the editor")]
             public Color pathColor = Color.green;
+            /// <summary>The color of the path itself when it is inactive in the editor</summary>
             [Tooltip("The color of the path itself when it is inactive in the editor")]
             public Color inactivePathColor = Color.gray;
+            /// <summary>The width of the railroad-tracks that are drawn to represent the path</summary>
             [Tooltip("The width of the railroad-tracks that are drawn to represent the path")]
             [Range(0f, 10f)]
             public float width = 0.2f;

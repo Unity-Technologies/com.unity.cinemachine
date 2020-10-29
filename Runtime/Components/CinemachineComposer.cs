@@ -385,11 +385,12 @@ namespace Cinemachine
                 }
                 else
                 {
-                    if (mFov != lens.FieldOfView)
+                    var verticalFOV = lens.FieldOfView;
+                    if (mFov != verticalFOV)
                         recalculate = true;
                     if (recalculate)
                     {
-                        mFov = lens.FieldOfView;
+                        mFov = verticalFOV;
                         double radHFOV = 2 * Math.Atan(Math.Tan(mFov * Mathf.Deg2Rad / 2) * lens.Aspect);
                         mFovH = (float)(Mathf.Rad2Deg * radHFOV);
                         mOrthoSizeOverDistance = 0;

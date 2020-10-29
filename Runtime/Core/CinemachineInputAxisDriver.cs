@@ -4,6 +4,9 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
+    /// <summary>
+    /// Alternative to AxisState - a simplified structure to hold the definition of an input axis
+    /// </summary>
     [Serializable]
     public struct AxisBase
     {
@@ -24,28 +27,43 @@ namespace Cinemachine
         [Tooltip("If checked, then the axis will wrap around at the min/max values, forming a loop")]
         public bool m_Wrap;
 
+        /// <summary>
+        /// Call this from OnValidate() to validate the fields of this structure (applies clamps, etc).
+        /// </summary>
         public void Validate()
         {
             m_MaxValue = Mathf.Clamp(m_MaxValue, m_MinValue, m_MaxValue);
         }
     }
 
+    /// <summary>
+    /// A helper class to drive an input axis, as an alternative to the standard Cinemachine.AxisState.
+    /// Behaviour is a simple direct scaling of the input channel, with no max speed.
+    /// </summary>
     [Serializable]
     public struct CinemachineInputAxisDriver
     {
+        /// <summary>Multiply the input by this amount prior to processing.  Controls the input power</summary>
         [Tooltip("Multiply the input by this amount prior to processing.  Controls the input power.")]
         public float multiplier;
 
+        /// <summary>The amount of time in seconds it takes to accelerate to a higher speed</summary>
         [Tooltip("The amount of time in seconds it takes to accelerate to a higher speed")]
         public float accelTime;
 
+        /// <summary>The amount of time in seconds it takes to decelerate to a lower speed</summary>
         [Tooltip("The amount of time in seconds it takes to decelerate to a lower speed")]
         public float decelTime;
 
+        /// <summary>The name of this axis as specified in Unity Input manager. 
+        /// Setting to an empty string will disable the automatic updating of this axis</summary>
         [Tooltip("The name of this axis as specified in Unity Input manager. "
             + "Setting to an empty string will disable the automatic updating of this axis")]
         public string name;
 
+        /// <summary>The value of the input axis.  A value of 0 means no input.  You can drive 
+        /// "this directly from a custom input system, or you can set the Axis Name and 
+        /// have the value driven by the internal Input Manager</summary>
         [NoSaveDuringPlay]
         [Tooltip("The value of the input axis.  A value of 0 means no input.  You can drive "
             + "this directly from a custom input system, or you can set the Axis Name and "
@@ -56,13 +74,17 @@ namespace Cinemachine
         private float mCurrentSpeed;
         const float Epsilon =  UnityVectorExtensions.Epsilon;
 
-        /// Call from OnValidate: Make sure the fields are sensible
+        /// <summary>Call from OnValidate: Make sure the fields are sensible</summary>
         public void Validate()
         {
             accelTime = Mathf.Max(0, accelTime);
             decelTime = Mathf.Max(0, decelTime);
         }
 
+        /// <summary>Update the axis</summary>
+        /// <param name="deltaTime">current deltaTime</param>
+        /// <param name="axis">The AxisState to update</param>
+        /// <returns>True if the axis value changed due to user input, false otherwise</returns>
         public bool Update(float deltaTime, ref AxisBase axis)
         {
             if (!string.IsNullOrEmpty(name))
@@ -99,23 +121,11 @@ namespace Cinemachine
             return Mathf.Abs(inputValue) > Epsilon;
         }
 
-        float ClampValue(ref AxisBase axis, float v)
-        {
-            float r = axis.m_MaxValue - axis.m_MinValue;
-            if (axis.m_Wrap && r > Epsilon)
-            {
-                v = (v - axis.m_MinValue) % r;
-                v += axis.m_MinValue + ((v < 0) ? r : 0);
-            }
-            return Mathf.Clamp(v, axis.m_MinValue, axis.m_MaxValue);
-        }
 
-        /// <summary>
-        /// Support for legacy AxisState struct
-        /// </summary>
-        /// <param name="deltaTime"></param>
-        /// <param name="axis"></param>
-        /// <returns></returns>
+        /// <summary>Support for legacy AxisState struct: update the axis</summary>
+        /// <param name="deltaTime">current deltaTime</param>
+        /// <param name="axis">The AxisState to update</param>
+        /// <returns>True if the axis value changed due to user input, false otherwise</returns>
         public bool Update(float deltaTime, ref AxisState axis)
         {
             var a = new AxisBase
@@ -128,6 +138,17 @@ namespace Cinemachine
             bool changed = Update(deltaTime, ref a);
             axis.Value = a.m_Value;
             return changed;
+        }
+        
+        float ClampValue(ref AxisBase axis, float v)
+        {
+            float r = axis.m_MaxValue - axis.m_MinValue;
+            if (axis.m_Wrap && r > Epsilon)
+            {
+                v = (v - axis.m_MinValue) % r;
+                v += axis.m_MinValue + ((v < 0) ? r : 0);
+            }
+            return Mathf.Clamp(v, axis.m_MinValue, axis.m_MaxValue);
         }
     }
 }
