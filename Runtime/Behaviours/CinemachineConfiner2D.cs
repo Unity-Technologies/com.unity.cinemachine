@@ -100,8 +100,7 @@ namespace Cinemachine
                 // TODO: use this for frustum height too
                 var oldCameraPos = state.CorrectedPosition;
                 var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
-                
-                float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
+                float frustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
@@ -142,7 +141,7 @@ namespace Cinemachine
         /// <param name="state">CameraState for checking if Orthographic or Perspective</param>
         /// <param name="vcam">vcam, to check its position</param>
         /// <returns>Frustum height of the camera</returns>
-        private float CalculateHalfFrustumHeight(in CameraState state, in CinemachineVirtualCameraBase vcam)
+        private float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
         {
             float frustumHeight;
             if (state.Lens.Orthographic)
@@ -151,12 +150,8 @@ namespace Cinemachine
             }
             else
             {
-                // TODO: move camera to collider local space 
                 // distance between the collider's plane and the camera
-                Quaternion inverseRotation = Quaternion.Inverse(m_BoundingShape2D.transform.rotation);
-                Vector3 planePosition = inverseRotation * m_BoundingShape2D.transform.position;
-                Vector3 cameraPosition = inverseRotation * vcam.transform.position;
-                float distance = Mathf.Abs(planePosition.z - cameraPosition.z);
+                float distance = cameraPosLocalZ;
                 frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
             }
             return frustumHeight;
