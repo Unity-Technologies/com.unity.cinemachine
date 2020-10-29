@@ -184,7 +184,7 @@ namespace Cinemachine
                         Vector2 v = pathCache[i][j];
                         Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                         Vector2 difference = positionToConfine - c;
-                        difference.x /= aspect; // the weight of distance on X axis depends on the aspect ratio. y is 1
+                        //difference.x /= aspect; // the weight of distance on X axis depends on the aspect ratio. y is 1
                         
                         float distance = Vector2.SqrMagnitude(difference);
                         if (distance < minDistance && (outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c)))
