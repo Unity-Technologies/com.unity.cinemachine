@@ -459,25 +459,25 @@ namespace Cinemachine
             Vector2 CA = (A - C);
             Vector2 CB = (B - C);
 
-            float gamma = UnityVectorExtensions.Angle(CA, CB);
+            float gamma = Vector2.Angle(CA, CB);
             if (gamma <= 0.05f || 179.95f <= gamma) 
             { 
                 return (A + B) / 2; // too narrow angle, so just return the mid point
             }
             Vector2 D1D2 = D1 - D2;
             Vector2 D1C = C - B;
-            float beta = UnityVectorExtensions.Angle(D1C, D1D2);
+            float beta = Vector2.Angle(D1C, D1D2);
             Vector2 D2D1 = D2 - D1;
             Vector2 D2C = C - A;
-            float alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+            float alpha = Vector2.Angle(D2C, D2D1);
             if (Math.Abs(gamma + beta + alpha - 180) > 0.5f)
             {
                 D1D2 = D2 - D1;
                 D1C = C - B;
-                beta = UnityVectorExtensions.Angle(D1C, D1D2);
+                beta = Vector2.Angle(D1C, D1D2);
                 D2D1 = D1 - D2;
                 D2C = C - A;
-                alpha = UnityVectorExtensions.Angle(D2C, D2D1);
+                alpha = Vector2.Angle(D2C, D2D1);
             }
             if (alpha <= 0.05f || 179.95f <= alpha || 
                 beta <= 0.05f || 179.95f <= beta)
