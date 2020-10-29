@@ -110,6 +110,10 @@ namespace Cinemachine
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone, state.Lens.Aspect);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
+                // Don't move the camera along its z-axis
+                var fwd = state.CorrectedOrientation * Vector3.forward;
+                newCameraPos -= fwd * Vector3.Dot(fwd, newCameraPos - oldCameraPos);
+
                 // Remember the desired displacement for next frame
                 var displacement = newCameraPos - oldCameraPos;
                 var prev = extra.m_PreviousDisplacement;
