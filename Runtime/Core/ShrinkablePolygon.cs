@@ -151,7 +151,7 @@ namespace Cinemachine
             return m_area;
         }
 
-        private readonly List<Vector2> m_edgeNormals = new List<Vector2>();
+        private static readonly List<Vector2> m_edgeNormals = new List<Vector2>(100); 
         /// <summary>
         /// Computes normalized normals for all points. If fixBigCornerAngles is true, then adds additional points for
         /// corners with reflex angles to ensure correct offsets.
