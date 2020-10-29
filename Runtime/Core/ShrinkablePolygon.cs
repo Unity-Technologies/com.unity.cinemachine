@@ -16,7 +16,7 @@ namespace Cinemachine
         /// <summary>
         /// 2D point with shrink direction.
         /// </summary>
-        public class ShrinkablePoint2
+        public struct ShrinkablePoint2
         {
             public Vector2 m_Position;
             public Vector2 m_OriginalPosition;
@@ -24,19 +24,19 @@ namespace Cinemachine
             public bool m_CantIntersect;
             public static readonly Vector2 m_Vector2NaN = new Vector2(float.NaN, float.NaN);
 
-            public ShrinkablePoint2()
-            {
-                m_OriginalPosition = m_Vector2NaN;
-            }
-
-            public ShrinkablePoint2(Vector2 mPosition, Vector2 mOriginalPosition, Vector2 mShrinkDirection, 
-                bool mCantIntersect)
-            {
-                m_Position = mPosition;
-                m_OriginalPosition = mOriginalPosition;
-                m_ShrinkDirection = mShrinkDirection;
-                m_CantIntersect = mCantIntersect;
-            }
+            // public ShrinkablePoint2()
+            // {
+            //     m_OriginalPosition = m_Vector2NaN;
+            // }
+            //
+            // public ShrinkablePoint2(Vector2 mPosition, Vector2 mOriginalPosition, Vector2 mShrinkDirection, 
+            //     bool mCantIntersect)
+            // {
+            //     m_Position = mPosition;
+            //     m_OriginalPosition = mOriginalPosition;
+            //     m_ShrinkDirection = mShrinkDirection;
+            //     m_CantIntersect = mCantIntersect;
+            // }
         }
 
         public List<ShrinkablePoint2> m_Points;
@@ -109,8 +109,13 @@ namespace Cinemachine
                 
                 // deep
                 m_Points = m_Points.ConvertAll(point =>
-                    new ShrinkablePoint2(point.m_Position, point.m_OriginalPosition, 
-                        point.m_ShrinkDirection, point.m_CantIntersect)),
+                    new ShrinkablePoint2
+                    {
+                        m_Position = point.m_Position,
+                        m_OriginalPosition = point.m_OriginalPosition,
+                        m_ShrinkDirection = point.m_ShrinkDirection,
+                        m_CantIntersect = point.m_CantIntersect,
+                    }),
                 m_IntersectionPoints =
                     m_IntersectionPoints.ConvertAll(intersection => new Vector2(intersection.x, intersection.y))
             };
@@ -164,8 +169,9 @@ namespace Cinemachine
             for (int i = 0; i < m_Points.Count; ++i)
             {
                 int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
-                m_Points[i].m_ShrinkDirection = edgeNormals[i] + edgeNormals[prevEdgeIndex];
-                m_Points[i].m_ShrinkDirection.Normalize();
+                var mPoint = m_Points[i];
+                mPoint.m_ShrinkDirection = (edgeNormals[i] + edgeNormals[prevEdgeIndex]).normalized;
+                m_Points[i] = mPoint;
             }
 
             if (fixBigCornerAngles)
@@ -189,7 +195,9 @@ namespace Cinemachine
                     if (m_clockwiseOrientation && angle < 0 ||
                         !m_clockwiseOrientation && angle > 0)
                     {
-                        extendedPoints[i * 3 + 1].m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN;
+                        var shrinkablePoint2 = extendedPoints[i * 3 + 1];
+                        shrinkablePoint2.m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN;
+                        extendedPoints[i * 3 + 1] = shrinkablePoint2;
                         
                         int prevIndex = (i == 0 ? m_Points.Count - 1 : i - 1);
                         extendedPoints[i * 3 + 0] = new ShrinkablePoint2
@@ -197,6 +205,7 @@ namespace Cinemachine
                             m_Position = Vector2.Lerp(m_Points[i].m_Position, m_Points[prevIndex].m_Position, 0.01f),
                             m_ShrinkDirection = m_Points[i].m_ShrinkDirection,
                             m_CantIntersect = true,
+                            m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN,
                         };
                         
                         int nextIndex = (i == m_Points.Count - 1 ? 0 : i + 1);
@@ -205,14 +214,19 @@ namespace Cinemachine
                             m_Position = Vector2.Lerp(m_Points[i].m_Position, m_Points[nextIndex].m_Position, 0.01f),
                             m_ShrinkDirection = m_Points[i].m_ShrinkDirection,
                             m_CantIntersect = true,
+                            m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN,
                         };
                     }
                 }
                 
+                // TODO: remove unused
                 // remove unused padding
                 for (int index = extendedPoints.Count - 1; index >= 0; index--)
                 {
-                    if (extendedPoints[index] == null)
+                    if (extendedPoints[index].m_Position == Vector2.zero &&
+                        extendedPoints[index].m_OriginalPosition == Vector2.zero &&
+                        extendedPoints[index].m_ShrinkDirection == Vector2.zero
+                        )
                     {
                         extendedPoints.RemoveAt(index);
                     }
@@ -242,8 +256,10 @@ namespace Cinemachine
                 int prevIndex = i == 0 ? m_Points.Count - 1 : i - 1;
                 int nextIndex = i == m_Points.Count - 1 ? 0 : i + 1;
 
-                m_Points[i].m_ShrinkDirection = CalculateShrinkDirection(m_Points[i].m_ShrinkDirection, 
-                    m_Points[prevIndex].m_Position, m_Points[i].m_Position, m_Points[nextIndex].m_Position);
+                var mPoint = m_Points[i];
+                mPoint.m_ShrinkDirection = CalculateShrinkDirection(mPoint.m_ShrinkDirection, 
+                    m_Points[prevIndex].m_Position, mPoint.m_Position, m_Points[nextIndex].m_Position);
+                m_Points[i] = mPoint;
             }
 
             // update m_State, if change happened based on the cached shrink directions
@@ -674,7 +690,8 @@ namespace Cinemachine
                     Vector2 center = CenterOfMass();
                     for (int i = 0; i < m_Points.Count; ++i)
                     {
-                        Vector2 direction = center - m_Points[i].m_Position;
+                        var mPoint = m_Points[i];
+                        Vector2 direction = center - mPoint.m_Position;
                         // normalize direction so it is within the m_AspectRatio x 1 rectangle.
                         if (Math.Abs(direction.x) > m_AspectRatio ||
                             Math.Abs(direction.y) > 1)
@@ -696,19 +713,23 @@ namespace Cinemachine
                                 direction *= -(1f / direction.y);
                             }
 
-                            m_Points[i].m_ShrinkDirection = direction;
+                            mPoint.m_ShrinkDirection = direction;
                         }
                         else
                         {
-                            m_Points[i].m_ShrinkDirection = Vector2.zero;
+                            mPoint.m_ShrinkDirection = Vector2.zero;
                         }
+
+                        m_Points[i] = mPoint;
                     }
                 }
                 else
                 {
                     for (int i = 0; i < m_Points.Count; ++i)
                     {
-                        m_Points[i].m_ShrinkDirection = Vector2.zero;
+                        var mPoint = m_Points[i];
+                        mPoint.m_ShrinkDirection = Vector2.zero;
+                        m_Points[i] = mPoint;
                     }
 
                     return false;
@@ -716,7 +737,9 @@ namespace Cinemachine
             }
             for (int i = 0; i < m_Points.Count; ++i)
             {
-                m_Points[i].m_Position += m_Points[i].m_ShrinkDirection * shrinkAmount;
+                var mPoint = m_Points[i];
+                mPoint.m_Position += mPoint.m_ShrinkDirection * shrinkAmount;
+                m_Points[i] = mPoint;
             }
             return true;
         }
