@@ -925,7 +925,12 @@ namespace Cinemachine
                             // g1 -> intersection j+1 ... i
                             var points = new List<ShrinkablePoint2>
                             {
-                                new ShrinkablePoint2 {m_Position = intersection, m_ShrinkDirection = Vector2.zero,}
+                                new ShrinkablePoint2
+                                {
+                                    m_Position = intersection, 
+                                    m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN, 
+                                    m_ShrinkDirection = Vector2.zero,
+                                }
                             };
                             for (int k = (j + 1) % shrinkablePolygon.m_Points.Count;
                                 k != (i + 1) % shrinkablePolygon.m_Points.Count;
@@ -949,7 +954,12 @@ namespace Cinemachine
                             // g2 -> intersection i+1 ... j
                             var points = new List<ShrinkablePoint2>
                             {
-                                new ShrinkablePoint2 {m_Position = intersection, m_ShrinkDirection = Vector2.zero,}
+                                new ShrinkablePoint2
+                                {
+                                    m_Position = intersection,
+                                    m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN, 
+                                    m_ShrinkDirection = Vector2.zero,
+                                }
                             };
                             for (int k = (i + 1) % shrinkablePolygon.m_Points.Count;
                                 k != (j + 1) % shrinkablePolygon.m_Points.Count;
