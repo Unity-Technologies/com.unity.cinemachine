@@ -183,11 +183,11 @@ public class UnityVectorExtensionTests
             for (var index = 0; index < subShrinkablePolygon1.Count; index++)
             {
                 subShrinkablePolygon1[index].Simplify(CinemachineConfiner2D.m_bakedConfinerResolution);
-                Assert.IsTrue(subShrinkablePolygon1[index].m_points.Count == 3);
+                Assert.IsTrue(subShrinkablePolygon1[index].m_Points.Count == 3);
             }
 
-            Assert.IsTrue(subShrinkablePolygon1[0].m_points[2].m_position == Vector2.zero);
-            Assert.IsTrue(subShrinkablePolygon1[1].m_points[0].m_position == Vector2.zero);
+            Assert.IsTrue(subShrinkablePolygon1[0].m_Points[2].m_Position == Vector2.zero);
+            Assert.IsTrue(subShrinkablePolygon1[1].m_Points[0].m_Position == Vector2.zero);
         }
         List<ShrinkablePolygon> subShrinkablePolygon2;
         {
@@ -211,25 +211,25 @@ public class UnityVectorExtensionTests
             for (var index = 0; index < subShrinkablePolygon2.Count; index++)
             {
                 subShrinkablePolygon2[index].Simplify(CinemachineConfiner2D.m_bakedConfinerResolution);
-                Assert.IsTrue(subShrinkablePolygon2[index].m_points.Count == 3);
+                Assert.IsTrue(subShrinkablePolygon2[index].m_Points.Count == 3);
             }
 
-            Assert.IsTrue(subShrinkablePolygon2[0].m_points[1].m_position == Vector2.zero);
-            Assert.IsTrue(subShrinkablePolygon2[1].m_points[0].m_position == Vector2.zero);
+            Assert.IsTrue(subShrinkablePolygon2[0].m_Points[1].m_Position == Vector2.zero);
+            Assert.IsTrue(subShrinkablePolygon2[1].m_Points[0].m_Position == Vector2.zero);
         }
 
         
         Assert.IsTrue(
-            subShrinkablePolygon1[0].m_points[0].m_position == subShrinkablePolygon2[0].m_points[0].m_position);
+            subShrinkablePolygon1[0].m_Points[0].m_Position == subShrinkablePolygon2[0].m_Points[0].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[0].m_points[1].m_position == subShrinkablePolygon2[0].m_points[2].m_position);
+            subShrinkablePolygon1[0].m_Points[1].m_Position == subShrinkablePolygon2[0].m_Points[2].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[0].m_points[2].m_position == subShrinkablePolygon2[0].m_points[1].m_position);
+            subShrinkablePolygon1[0].m_Points[2].m_Position == subShrinkablePolygon2[0].m_Points[1].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[1].m_points[0].m_position == subShrinkablePolygon2[1].m_points[0].m_position);
+            subShrinkablePolygon1[1].m_Points[0].m_Position == subShrinkablePolygon2[1].m_Points[0].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[1].m_points[1].m_position == subShrinkablePolygon2[1].m_points[2].m_position);
+            subShrinkablePolygon1[1].m_Points[1].m_Position == subShrinkablePolygon2[1].m_Points[2].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[1].m_points[2].m_position == subShrinkablePolygon2[1].m_points[1].m_position);
+            subShrinkablePolygon1[1].m_Points[2].m_Position == subShrinkablePolygon2[1].m_Points[1].m_Position);
     }
 }

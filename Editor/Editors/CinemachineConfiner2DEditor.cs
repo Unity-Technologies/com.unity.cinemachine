@@ -25,7 +25,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        static List<List<Vector2>> s_currentPathCache = new List<List<Vector2>>();
+        private static List<List<Vector2>> s_currentPathCache = new List<List<Vector2>>();
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
         private static void DrawConfinerGizmos(CinemachineConfiner2D confiner2D, GizmoType type)

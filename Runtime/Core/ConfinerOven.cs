@@ -12,9 +12,9 @@ namespace Cinemachine
     {
         public class ConfinerState
         {
-            public List<ShrinkablePolygon> polygons;
-            public float windowSize;
-            public float state;
+            public List<ShrinkablePolygon> m_Polygons;
+            public float m_WindowSize;
+            public float m_State;
         }
         
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
@@ -41,7 +41,7 @@ namespace Cinemachine
                     ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
                     if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint))
                     {
-                        if (shrinkablePolygon.m_windowDiagonal > shrinkAmount * 100f)
+                        if (shrinkablePolygon.m_WindowDiagonal > shrinkAmount * 100f)
                         {
                             shrinkablePolygon.Simplify(shrinkAmount);
                         }
@@ -57,7 +57,7 @@ namespace Cinemachine
                 }
 
                 m_shrinkablePolygons.Add(nextPolygonIteration);
-                if (maxOrthosize != 0 && maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_windowDiagonal)
+                if (maxOrthosize != 0 && maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_WindowDiagonal)
                 {
                     break;
                 }
@@ -93,13 +93,13 @@ namespace Cinemachine
             for (int i = 0; i < paths.Count; ++i)
             {
                 var newShrinkablePolygon = new ShrinkablePolygon(paths[i], aspectRatio);
-                for (int j = 0; j < newShrinkablePolygon.m_points.Count; ++j)
+                for (int j = 0; j < newShrinkablePolygon.m_Points.Count; ++j)
                 {
-                    var p = newShrinkablePolygon.m_points[j];
-                    minX = Mathf.Min(minX, p.m_position.x);
-                    minY = Mathf.Min(minY, p.m_position.y);
-                    maxX = Mathf.Max(maxX, p.m_position.x);
-                    maxY = Mathf.Max(maxY, p.m_position.y);
+                    var p = newShrinkablePolygon.m_Points[j];
+                    minX = Mathf.Min(minX, p.m_Position.x);
+                    minY = Mathf.Min(minY, p.m_Position.y);
+                    maxX = Mathf.Max(maxX, p.m_Position.x);
+                    maxY = Mathf.Max(maxY, p.m_Position.y);
                 }
 
                 shrinkablePolygons.Add(new List<ShrinkablePolygon> {newShrinkablePolygon});
@@ -108,7 +108,7 @@ namespace Cinemachine
             float squareSize = Mathf.Min(maxX - minX, maxY - minY);
             for (int i = 0; i < shrinkablePolygons.Count; ++i)
             {
-                shrinkablePolygons[i][0].m_minArea = squareSize / 100f;
+                shrinkablePolygons[i][0].m_MinArea = squareSize / 100f;
             }
 
             return shrinkablePolygons;
@@ -122,23 +122,23 @@ namespace Cinemachine
             ConfinerState result = new ConfinerState();
             for (int i = m_confinerStates.Count - 1; i >= 0; --i)
             {
-                if (m_confinerStates[i].windowSize <= frustumHeight)
+                if (m_confinerStates[i].m_WindowSize <= frustumHeight)
                 {
                     if (i == m_confinerStates.Count - 1)
                     {
                         result = m_confinerStates[i];
                     }
-                    else if (Math.Abs(m_confinerStates[i].state - m_confinerStates[i + 1].state) < 1e-6f)
+                    else if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 1e-6f)
                     {
-                        // blend between m_confinerStates with same m_state
+                        // blend between m_confinerStates with same m_State
                         result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
                     }
                     else
                     {
                         // choose m_confinerStates with windowSize closer to frustumHeight
                         result = 
-                            Mathf.Abs(m_confinerStates[i].windowSize - frustumHeight) < 
-                            Mathf.Abs(m_confinerStates[i + 1].windowSize - frustumHeight) ? 
+                            Mathf.Abs(m_confinerStates[i].m_WindowSize - frustumHeight) < 
+                            Mathf.Abs(m_confinerStates[i + 1].m_WindowSize - frustumHeight) ? 
                                 m_confinerStates[i] : 
                                 m_confinerStates[i+1];
                     }
@@ -154,38 +154,38 @@ namespace Cinemachine
         /// </summary>
         private ConfinerState ConfinerStateLerp(in ConfinerState left, in ConfinerState right, float frustumHeight)
         {
-            if (left.polygons.Count != right.polygons.Count)
+            if (left.m_Polygons.Count != right.m_Polygons.Count)
             {
                 Assert.IsTrue(false, "Error in ConfinerStateLerp - Let us know on the Cinemachine forum please!");
                 return left;
             }
             ConfinerState result = new ConfinerState
             {
-                polygons = new List<ShrinkablePolygon>(left.polygons.Count),
+                m_Polygons = new List<ShrinkablePolygon>(left.m_Polygons.Count),
             };
             
-            float lerpValue = Mathf.InverseLerp(left.windowSize, right.windowSize, frustumHeight);
-            for (int i = 0; i < left.polygons.Count; ++i)
+            float lerpValue = Mathf.InverseLerp(left.m_WindowSize, right.m_WindowSize, frustumHeight);
+            for (int i = 0; i < left.m_Polygons.Count; ++i)
             {
                 var r = new ShrinkablePolygon(
-                    left.polygons[i].m_aspectRatio,
-                    left.polygons[i].m_aspectRatioBasedDiagonal,
-                    left.polygons[i].m_normalDirections)
+                    left.m_Polygons[i].m_AspectRatio,
+                    left.m_Polygons[i].m_AspectRatioBasedDiagonal,
+                    left.m_Polygons[i].m_NormalDirections)
                 {
-                    m_points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.polygons[i].m_points.Count),
-                    m_windowDiagonal = frustumHeight,
+                    m_Points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.m_Polygons[i].m_Points.Count),
+                    m_WindowDiagonal = frustumHeight,
                 };
-                for (int j = 0; j < left.polygons[i].m_points.Count; ++j)
+                for (int j = 0; j < left.m_Polygons[i].m_Points.Count; ++j)
                 {
-                    r.m_intersectionPoints = left.polygons[i].m_intersectionPoints;
-                    Vector2 rightPoint = right.polygons[i].ClosestPolygonPoint(left.polygons[i].m_points[j]);
-                    r.m_points.Add(new ShrinkablePolygon.ShrinkablePoint2
+                    r.m_IntersectionPoints = left.m_Polygons[i].m_IntersectionPoints;
+                    Vector2 rightPoint = right.m_Polygons[i].ClosestPolygonPoint(left.m_Polygons[i].m_Points[j]);
+                    r.m_Points.Add(new ShrinkablePolygon.ShrinkablePoint2
                     {
-                        m_position = Vector2.Lerp(left.polygons[i].m_points[j].m_position, rightPoint, lerpValue),
-                        m_originalPosition = left.polygons[i].m_points[j].m_originalPosition,
+                        m_Position = Vector2.Lerp(left.m_Polygons[i].m_Points[j].m_Position, rightPoint, lerpValue),
+                        m_OriginalPosition = left.m_Polygons[i].m_Points[j].m_OriginalPosition,
                     });
                 }
-                result.polygons.Add(r);   
+                result.m_Polygons.Add(r);   
             }
             return result;
         }
@@ -204,22 +204,22 @@ namespace Cinemachine
                 float stateAverage = m_shrinkablePolygons[i].Count;
                 for (int j = 0; j < m_shrinkablePolygons[i].Count; ++j)
                 {
-                    stateAverage += m_shrinkablePolygons[i][j].m_state;
+                    stateAverage += m_shrinkablePolygons[i][j].m_State;
                 }
                 stateAverage /= m_shrinkablePolygons[i].Count + 1;
 
-                float maxWindowDiagonal = m_shrinkablePolygons[i][0].m_windowDiagonal;
+                float maxWindowDiagonal = m_shrinkablePolygons[i][0].m_WindowDiagonal;
                
                 for (int j = 1; j < m_shrinkablePolygons[i].Count; ++j)
                 {
-                    maxWindowDiagonal = Mathf.Max(m_shrinkablePolygons[i][j].m_windowDiagonal, maxWindowDiagonal);
+                    maxWindowDiagonal = Mathf.Max(m_shrinkablePolygons[i][j].m_WindowDiagonal, maxWindowDiagonal);
                 }
                 
                 m_confinerStates.Add(new ConfinerState
                 {
-                    windowSize = maxWindowDiagonal,
-                    polygons = m_shrinkablePolygons[i],
-                    state = stateAverage,
+                    m_WindowSize = maxWindowDiagonal,
+                    m_Polygons = m_shrinkablePolygons[i],
+                    m_State = stateAverage,
                 });
             }
 
@@ -241,7 +241,7 @@ namespace Cinemachine
                 {
                     for (int j = 0; j < m_shrinkablePolygons[stateStart].Count; ++j)
                     {
-                        if (m_shrinkablePolygons[stateStart][j].m_state != m_shrinkablePolygons[i][j].m_state)
+                        if (m_shrinkablePolygons[stateStart][j].m_State != m_shrinkablePolygons[i][j].m_State)
                         {
                             stateChanged = true;
                             break;

@@ -104,28 +104,28 @@ namespace Cinemachine
                 float frustumHeight = CalculateHalfFrustumHeight(state, vcam);
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
-                extra.m_vcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
+                extra.m_VcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
-                    extra.m_vcamShapeCache.m_path, extra.m_vcamShapeCache.m_pathHasBone, state.Lens.Aspect);
+                    extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone, state.Lens.Aspect);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Remember the desired displacement for next frame
                 var displacement = newCameraPos - oldCameraPos;
-                var prev = extra.m_previousDisplacement;
-                extra.m_previousDisplacement = displacement;
+                var prev = extra.m_PreviousDisplacement;
+                extra.m_PreviousDisplacement = displacement;
 
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
-                    extra.m_dampedDisplacement = Vector3.zero;
+                    extra.m_DampedDisplacement = Vector3.zero;
                 else
                 {
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
                     if (Vector2.Angle(prev, displacement) > m_cornerAngleTreshold)
-                        extra.m_dampedDisplacement += displacement - prev;
+                        extra.m_DampedDisplacement += displacement - prev;
 
-                    extra.m_dampedDisplacement -= Damper.Damp(extra.m_dampedDisplacement, m_Damping, deltaTime);
-                    displacement -= extra.m_dampedDisplacement;
+                    extra.m_DampedDisplacement -= Damper.Damp(extra.m_DampedDisplacement, m_Damping, deltaTime);
+                    displacement -= extra.m_DampedDisplacement;
                 }
                 state.PositionCorrection += displacement;
             }
@@ -219,16 +219,18 @@ namespace Cinemachine
         
         private class VcamExtraState
         {
+            public Vector3 m_PreviousDisplacement;
+            public Vector3 m_DampedDisplacement;
+            public VcamShapeCache m_VcamShapeCache;
+            
             internal CinemachineVirtualCameraBase m_vcam;
-            public Vector3 m_previousDisplacement;
-            public Vector3 m_dampedDisplacement;
-            public VcamShapeCache m_vcamShapeCache;
             
             /// <summary> Contains all the cache items that are dependent on something in the vcam. </summary>
             internal struct VcamShapeCache
             {
-                public List<List<Vector2>> m_path;
-                public bool m_pathHasBone;
+                public List<List<Vector2>> m_Path;
+                public bool m_PathHasBone;
+                
                 private float m_frustumHeight;
                 
                 /// <summary>
@@ -245,15 +247,14 @@ namespace Cinemachine
                     }
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                    ShrinkablePolygon.ConvertToPath(confinerCache.polygons, frustumHeight, out m_path, out m_pathHasBone);
+                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, frustumHeight, out m_Path, out m_PathHasBone);
                 
                     m_frustumHeight = frustumHeight;
                 }
 
-                
                 private bool IsValid(in float frustumHeight)
                 {
-                    return m_path != null && Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
+                    return m_Path != null && Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
                 }
             }
         };
@@ -261,7 +262,7 @@ namespace Cinemachine
         private ShapeCache m_shapeCache; 
 
         /// <summary>
-        /// ShapeCache: contains all state that's dependent only on the settings in the confiner.
+        /// ShapeCache: contains all m_State that's dependent only on the settings in the confiner.
         /// </summary>
         private struct ShapeCache
         {
@@ -294,10 +295,10 @@ namespace Cinemachine
             }
             
             /// <summary>
-            /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
+            /// Checks if we have a valid confiner m_State cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
             /// <param name="aspectRatio">Camera window ratio (width / height)</param>
-            /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
+            /// <param name="confinerStateChanged">True, if the baked confiner m_State has changed.
             /// False, otherwise.</param>
             /// <returns>True, if path is baked and valid. False, otherwise.</returns>
             public bool ValidateCache(
@@ -399,9 +400,9 @@ namespace Cinemachine
             {
                 if (CinemachineCore.Instance.IsLive(allExtraStates[i].m_vcam))
                 {
-                    for (int p = 0; p < allExtraStates[i].m_vcamShapeCache.m_path.Count; ++p)
+                    for (int p = 0; p < allExtraStates[i].m_VcamShapeCache.m_Path.Count; ++p)
                     {
-                        currentPath.Add(allExtraStates[i].m_vcamShapeCache.m_path[p]);
+                        currentPath.Add(allExtraStates[i].m_VcamShapeCache.m_Path[p]);
                     }
                 }
             }
