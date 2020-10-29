@@ -151,26 +151,27 @@ namespace Cinemachine
             return m_area;
         }
 
+        private readonly List<Vector2> m_edgeNormals = new List<Vector2>();
         /// <summary>
         /// Computes normalized normals for all points. If fixBigCornerAngles is true, then adds additional points for
         /// corners with reflex angles to ensure correct offsets.
         /// </summary>
         private void ComputeNormals(bool fixBigCornerAngles)
         {
-            var edgeNormals = new List<Vector2>(m_Points.Count);
+            m_edgeNormals.Clear();
             for (int i = 0; i < m_Points.Count; ++i)
             {
                 Vector2 edge = m_Points[(i + 1) % m_Points.Count].m_Position - m_Points[i].m_Position;
                 Vector2 normal = m_clockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x); 
-                edgeNormals.Add(normal.normalized);
+                m_edgeNormals.Add(normal.normalized);
             }
 
             // calculating normals
             for (int i = 0; i < m_Points.Count; ++i)
             {
-                int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
+                int prevEdgeIndex = i == 0 ? m_edgeNormals.Count - 1 : i - 1;
                 var mPoint = m_Points[i];
-                mPoint.m_ShrinkDirection = (edgeNormals[i] + edgeNormals[prevEdgeIndex]).normalized;
+                mPoint.m_ShrinkDirection = (m_edgeNormals[i] + m_edgeNormals[prevEdgeIndex]).normalized;
                 m_Points[i] = mPoint;
             }
 
@@ -190,8 +191,8 @@ namespace Cinemachine
                 {
                     extendedPoints[i * 3 + 1] = m_Points[i];
                     
-                    int prevEdgeIndex = i == 0 ? edgeNormals.Count - 1 : i - 1;
-                    float angle = Vector2.SignedAngle(edgeNormals[i], edgeNormals[prevEdgeIndex]);
+                    int prevEdgeIndex = i == 0 ? m_edgeNormals.Count - 1 : i - 1;
+                    float angle = Vector2.SignedAngle(m_edgeNormals[i], m_edgeNormals[prevEdgeIndex]);
                     if (m_clockwiseOrientation && angle < 0 ||
                         !m_clockwiseOrientation && angle > 0)
                     {
