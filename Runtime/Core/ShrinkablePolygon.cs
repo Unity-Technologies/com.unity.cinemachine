@@ -237,6 +237,7 @@ namespace Cinemachine
             }
         }
     
+        private static readonly List<Vector2> m_cachedShrinkDirections = new List<Vector2>(100); 
         /// <summary>
         /// Computes shrink directions that respect the aspect ratio of the camera. If the camera window is a square,
         /// then the shrink directions will be equivalent to the normals.
@@ -244,10 +245,10 @@ namespace Cinemachine
         public void ComputeAspectBasedShrinkDirections()
         {
             // cache current shrink directions to check for change later
-            var cachedShrinkDirections = new List<Vector2>(m_Points.Count);
+            m_cachedShrinkDirections.Clear();
             for (int i = 0; i < m_Points.Count; ++i)
             {
-                cachedShrinkDirections.Add(m_Points[i].m_ShrinkDirection);
+                m_cachedShrinkDirections.Add(m_Points[i].m_ShrinkDirection);
             }
             
             // calculate shrink directions
@@ -264,15 +265,15 @@ namespace Cinemachine
             }
 
             // update m_State, if change happened based on the cached shrink directions
-            if (cachedShrinkDirections.Count != m_Points.Count)
+            if (m_cachedShrinkDirections.Count != m_Points.Count)
             {
                 m_State++; // m_State change if more points where added
             }
             else
             {
-                for (var index = 0; index < cachedShrinkDirections.Count; index++)
+                for (var index = 0; index < m_cachedShrinkDirections.Count; index++)
                 {
-                    if (cachedShrinkDirections[index] != m_Points[index].m_ShrinkDirection)
+                    if (m_cachedShrinkDirections[index] != m_Points[index].m_ShrinkDirection)
                     {
                         m_State++; // m_State change when even one shrink direction has been changed
                         break;
