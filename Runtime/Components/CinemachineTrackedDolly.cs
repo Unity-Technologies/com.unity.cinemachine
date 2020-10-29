@@ -22,9 +22,7 @@ namespace Cinemachine
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
         [Tooltip("The path to which the camera will be constrained.  This must be non-null.")]
-        public SplineContainer m_Path;
-
-        internal CinemachinePathCache m_PathCache = new CinemachinePathCache();
+        public CinemachinePathBase m_Path;
 
         /// <summary>The position along the path at which the camera will be placed.
         /// This can be animated directly, or set automatically by the Auto-Dolly feature
@@ -40,7 +38,7 @@ namespace Cinemachine
             + "0 represents the first waypoint on the path, 1 is the second, and so on.  Values "
             + "in-between are points on the path in between the waypoints.  If set to Distance, "
             + "then Path Position represents distance along the path.")]
-        public CinemachinePathCache.PositionUnits m_PositionUnits = CinemachinePathCache.PositionUnits.Distance;
+        public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.PathUnits;
 
         /// <summary>Where to put the camera realtive to the path postion.  X is perpendicular 
         /// to the path, Y is up, and Z is parallel to the path.</summary>
@@ -208,22 +206,21 @@ namespace Cinemachine
                 m_PathPosition = 0;
                 return;
             }
-
-            m_PathCache.UpdatePathCache(m_Path);
-            m_PathPosition = m_PathCache.StandardizeUnit(m_PathPosition, m_PositionUnits);
+            m_Path.InvalidateDistanceCache();
+            m_PathPosition = m_Path.StandardizeUnit(m_PathPosition, m_PositionUnits);
 
             // Get the new ideal path base position
             if (m_AutoDolly.m_Enabled && FollowTarget != null)
             {
-                float prevPos = m_PathCache.ToNativePathUnits(m_PreviousPathPosition, m_PositionUnits);
+                float prevPos = m_Path.ToNativePathUnits(m_PreviousPathPosition, m_PositionUnits);
                 // This works in path units
-                m_PathPosition = m_PathCache.FindClosestPoint(
+                m_PathPosition = m_Path.FindClosestPoint(
                     FollowTargetPosition,
                     Mathf.FloorToInt(prevPos),
                     (deltaTime < 0 || m_AutoDolly.m_SearchRadius <= 0)
                         ? -1 : m_AutoDolly.m_SearchRadius,
                     m_AutoDolly.m_SearchResolution);
-                m_PathPosition = m_PathCache.FromPathNativeUnits(m_PathPosition, m_PositionUnits);
+                m_PathPosition = m_Path.FromPathNativeUnits(m_PathPosition, m_PositionUnits);
 
                 // Apply the path position offset
                 m_PathPosition += m_AutoDolly.m_PositionOffset;
@@ -233,12 +230,12 @@ namespace Cinemachine
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 // Normalize previous position to find the shortest path
-                float maxUnit = m_PathCache.MaxUnit(m_PositionUnits);
+                float maxUnit = m_Path.MaxUnit(m_PositionUnits);
                 if (maxUnit > 0)
                 {
-                    float prev = m_PathCache.StandardizeUnit(m_PreviousPathPosition, m_PositionUnits);
-                    float next = m_PathCache.StandardizeUnit(newPathPosition, m_PositionUnits);
-                    if (m_PathCache.Looped && Mathf.Abs(next - prev) > maxUnit / 2)
+                    float prev = m_Path.StandardizeUnit(m_PreviousPathPosition, m_PositionUnits);
+                    float next = m_Path.StandardizeUnit(newPathPosition, m_PositionUnits);
+                    if (m_Path.Looped && Mathf.Abs(next - prev) > maxUnit / 2)
                     {
                         if (next > prev)
                             prev += maxUnit;
@@ -255,10 +252,10 @@ namespace Cinemachine
                 newPathPosition = m_PreviousPathPosition - offset;
             }
             m_PreviousPathPosition = newPathPosition;
-            Quaternion newPathOrientation = m_PathCache.EvaluateOrientationAtUnit(newPathPosition, m_PositionUnits);
+            Quaternion newPathOrientation = m_Path.EvaluateOrientationAtUnit(newPathPosition, m_PositionUnits);
 
             // Apply the offset to get the new camera position
-            Vector3 newCameraPos = m_PathCache.EvaluatePositionAtUnit(newPathPosition, m_PositionUnits);
+            Vector3 newCameraPos = m_Path.EvaluatePositionAtUnit(newPathPosition, m_PositionUnits);
             Vector3 offsetX = newPathOrientation * Vector3.right;
             Vector3 offsetY = newPathOrientation * Vector3.up;
             Vector3 offsetZ = newPathOrientation * Vector3.forward;

@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using UnityEngine.Splines;
 
 namespace Cinemachine
 {
@@ -21,9 +20,7 @@ namespace Cinemachine
     {
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
-        public SplineContainer m_Path;
-
-        private CinemachinePathCache m_PathCache = new CinemachinePathCache();
+        public CinemachinePathBase m_Path;
 
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
@@ -42,7 +39,7 @@ namespace Cinemachine
 
         /// <summary>How to interpret the Path Position</summary>
         [Tooltip("How to interpret the Path Position.  If set to Path Units, values are as follows: 0 represents the first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in between the waypoints.  If set to Distance, then Path Position represents distance along the path.")]
-        public CinemachinePathCache.PositionUnits m_PositionUnits = CinemachinePathCache.PositionUnits.Distance;
+        public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.Distance;
 
         /// <summary>Move the cart with this speed</summary>
         [Tooltip("Move the cart with this speed along the path.  The value is interpreted according to the Position Units setting.")]
@@ -77,12 +74,15 @@ namespace Cinemachine
 
         void SetCartPosition(float distanceAlongPath)
         {
-            m_PathCache.UpdatePathCache(m_Path);
             if (m_Path != null)
             {
-                m_Position = m_PathCache.StandardizeUnit(distanceAlongPath, m_PositionUnits);
-                transform.position = m_PathCache.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
-                // Place holder: transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+                m_Path.InvalidateDistanceCache();
+                m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
+                transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
+                transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+            } else
+            {
+                m_Position = 0;
             }
         }
     }

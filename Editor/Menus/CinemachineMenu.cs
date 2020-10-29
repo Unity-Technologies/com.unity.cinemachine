@@ -125,12 +125,12 @@ namespace Cinemachine.Editor
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(SplineContainer), "DollyTrack"),
-                    typeof(SplineContainer));
+                    GenerateUniqueObjectName(typeof(CinemachineSplinePath), "DollyTrack"),
+                    typeof(CinemachineSplinePath));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            SplineContainer path = go.GetComponent<SplineContainer>();
+            CinemachineSplinePath path = go.GetComponent<CinemachineSplinePath>();
             var dolly = vcam.GetCinemachineComponent<CinemachineTrackedDolly>();
             Undo.RecordObject(dolly, "create track");
             dolly.m_Path = path;
@@ -140,12 +140,12 @@ namespace Cinemachine.Editor
         private static void CreateDollyTrackWithCart()
         {
             GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(SplineContainer), "DollyTrack"),
-                    typeof(SplineContainer));
+                    GenerateUniqueObjectName(typeof(CinemachineSplinePath), "DollyTrack"),
+                    typeof(CinemachineSplinePath));
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            SplineContainer path = go.GetComponent<SplineContainer>();
+            CinemachineSplinePath path = go.GetComponent<CinemachineSplinePath>();
             Selection.activeGameObject = go;
 
             go = InspectorUtility.CreateGameObject(

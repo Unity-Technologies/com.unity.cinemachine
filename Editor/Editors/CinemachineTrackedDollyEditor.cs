@@ -43,7 +43,7 @@ namespace Cinemachine.Editor
         public void OnVcamPositionDragged(Vector3 delta)
         {
             Undo.RegisterCompleteObjectUndo(Target, "Camera drag"); 
-            Quaternion targetOrientation = Target.m_PathCache.EvaluateOrientationAtUnit(
+            Quaternion targetOrientation = Target.m_Path.EvaluateOrientationAtUnit(
                 Target.m_PathPosition, Target.m_PositionUnits);
             Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
             Target.m_PathOffset += localOffset;
@@ -54,10 +54,11 @@ namespace Cinemachine.Editor
         {
             if (target.IsValid)
             {
-                CinemachinePathCache path = target.m_PathCache;
+                CinemachinePathBase path = target.m_Path;
                 if (path != null)
                 {
                     var isActive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
+                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
                     Vector3 pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
                     Color oldColor = Gizmos.color;
                     Gizmos.color = isActive
