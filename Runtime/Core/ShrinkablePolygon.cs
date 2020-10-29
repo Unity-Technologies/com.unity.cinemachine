@@ -754,10 +754,10 @@ namespace Cinemachine
 
         /// <summary>
         /// Calculates the closest point to the subPolygons from P.
-        /// The point returned is going to be one of the m_Points of the subPolygons.
+        /// The point returned is going to be one of the points of the subPolygons.
         /// </summary>
         /// <param name="p">Point from which the distance is calculated.</param>
-        /// <returns>A point that is part of the subPolygons m_Points and is closest to P.</returns>
+        /// <returns>A point that is part of the subPolygons points and is closest to P.</returns>
         private Vector2 ClosestPolygonPoint(Vector2 p)
         {
             float minDistance = float.MaxValue;
@@ -819,7 +819,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Removes m_Points that are the same or very close.
+        /// Removes points that are the same or very close.
         /// </summary>
         public void Simplify(float shrinkAmount)
         {

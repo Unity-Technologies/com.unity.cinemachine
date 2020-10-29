@@ -262,7 +262,7 @@ namespace Cinemachine
         private ShapeCache m_shapeCache; 
 
         /// <summary>
-        /// ShapeCache: contains all m_State that's dependent only on the settings in the confiner.
+        /// ShapeCache: contains all states that dependent only on the settings in the confiner.
         /// </summary>
         private struct ShapeCache
         {
@@ -295,10 +295,10 @@ namespace Cinemachine
             }
             
             /// <summary>
-            /// Checks if we have a valid confiner m_State cache. Calculates cache if it is invalid (outdated or empty).
+            /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
             /// <param name="aspectRatio">Camera window ratio (width / height)</param>
-            /// <param name="confinerStateChanged">True, if the baked confiner m_State has changed.
+            /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
             /// <returns>True, if path is baked and valid. False, otherwise.</returns>
             public bool ValidateCache(
