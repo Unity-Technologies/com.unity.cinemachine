@@ -6,7 +6,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
@@ -26,35 +25,25 @@ namespace Cinemachine.Editor
             }
         }
 
+        static List<List<Vector2>> s_currentPathCache = new List<List<Vector2>>();
+
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
         private static void DrawConfinerGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
         {
-            List<List<Vector2>> currentPath = new List<List<Vector2>>();
-            confiner2D.GetCurrentPath(ref currentPath);
-            List<List<Vector2>> originalPath = new List<List<Vector2>>();
-            confiner2D.GetOriginalPath(ref originalPath);
-            
-            if (currentPath == null || originalPath == null) { return; }
-
-            Quaternion rotation = Quaternion.identity;
-            Vector3 offset = Vector3.zero, translation = Vector3.zero, scale = Vector3.one;
-            confiner2D.GetPathDeltaTransformation(ref scale, ref rotation, ref translation, ref offset);
+            if (!confiner2D.GetGizmoPaths(out var originalPath, ref s_currentPathCache, out var pathLocalToWorld))
+                return;
 
             Color color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
             Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
             
             // Draw confiner for current camera size
             Gizmos.color = color;
-            foreach (var path in currentPath)
+            var oldMatrix = Gizmos.matrix;
+            Gizmos.matrix = pathLocalToWorld;
+            foreach (var path in s_currentPathCache)
             {
                 for (var index = 0; index < path.Count; index++)
-                {
-                    Gizmos.DrawLine(
-                        UnityVectorExtensions.ApplyTransformation(path[index], 
-                            scale, rotation, translation) + offset,
-                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count], 
-                            scale, rotation, translation) + offset);
-                }
+                    Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
             }
 
             // Draw input confiner
@@ -62,14 +51,10 @@ namespace Cinemachine.Editor
             foreach (var path in originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
-                { 
-                    Gizmos.DrawLine(
-                        UnityVectorExtensions.ApplyTransformation(path[index], 
-                            scale, rotation, translation) + offset,
-                        UnityVectorExtensions.ApplyTransformation(path[(index + 1) % path.Count], 
-                            scale, rotation, translation) + offset);
-                }
+                    Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
             }
+
+            Gizmos.matrix = oldMatrix;
         }
     }
 #endif

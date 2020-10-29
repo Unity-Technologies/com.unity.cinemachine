@@ -73,16 +73,6 @@ namespace Cinemachine.Utility
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
         
-        
-        public static Vector3 ApplyTransformation(in Vector3 point, 
-            in Vector3 scale, in Quaternion rotation, in Vector3 translation)
-        {
-            var transformedPoint = new Vector3(point.x * scale.x, point.y * scale.y, point.z * scale.z);
-            transformedPoint = rotation * transformedPoint;
-            transformedPoint += translation;
-            return transformedPoint;
-        }
-        
         /// <summary>
         /// Calculates the intersection point defined by line_1 [p1, p2], and line_2 [p3, p4).
         /// Meaning of brackets:
