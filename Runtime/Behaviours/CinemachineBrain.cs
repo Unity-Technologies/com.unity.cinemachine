@@ -495,7 +495,7 @@ namespace Cinemachine
         private int GetBrainFrame(int withId)
         {
             int count = mFrameStack.Count;
-            for (int i = mFrameStack.Count - 1; i > 0; --i)
+            for (int i = count - 1; i > 0; --i)
                 if (mFrameStack[i].id == withId)
                     return i;
             // Not found - add it
@@ -616,6 +616,10 @@ namespace Cinemachine
 
         private void UpdateFrame0(float deltaTime)
         {
+            // Make sure there is a first stack frame
+            if (mFrameStack.Count == 0)
+                mFrameStack.Add(new BrainFrame());
+
             // Update the in-game frame (frame 0)
             BrainFrame frame = mFrameStack[0];
 
@@ -687,6 +691,10 @@ namespace Cinemachine
         public void ComputeCurrentBlend(
             ref CinemachineBlend outputBlend, int numTopLayersToExclude)
         {
+            // Make sure there is a first stack frame
+            if (mFrameStack.Count == 0)
+                mFrameStack.Add(new BrainFrame());
+
             // Resolve the current working frame states in the stack
             int lastActive = 0;
             int topLayer = Mathf.Max(1, mFrameStack.Count - numTopLayersToExclude);
