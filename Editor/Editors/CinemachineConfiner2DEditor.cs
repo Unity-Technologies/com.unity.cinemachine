@@ -36,10 +36,11 @@ namespace Cinemachine.Editor
             Color color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
             Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
             
-            // Draw confiner for current camera size
-            Gizmos.color = color;
             var oldMatrix = Gizmos.matrix;
             Gizmos.matrix = pathLocalToWorld;
+
+            // Draw confiner for current camera size
+            Gizmos.color = colorDimmed;
             foreach (var path in s_currentPathCache)
             {
                 for (var index = 0; index < path.Count; index++)
@@ -47,7 +48,7 @@ namespace Cinemachine.Editor
             }
 
             // Draw input confiner
-            Gizmos.color = colorDimmed;
+            Gizmos.color = color;
             foreach (var path in originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
