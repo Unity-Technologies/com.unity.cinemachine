@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Cinemachine.Utility
 {
+    /// <summary>
+    /// This is a utility class to implement position predicting.
+    /// </summary>
     public class PositionPredictor
     {
         Vector3 m_Velocity;
@@ -10,12 +13,25 @@ namespace Cinemachine.Utility
         float m_SqrSpeed;
         bool m_HavePos;
 
+        /// <summary>
+        /// How much to smooth the predicted result.  Must be >= 0, roughly coresponds to smoothing time.
+        /// </summary>
         public float Smoothing { get; set; }
 
+        /// <summary>
+        /// Have any positions been logged for smoothing?
+        /// </summary>
+        /// <returns>True if no positions have yet been logged, in which case smoothing is impossible</returns>
         public bool IsEmpty() { return !m_HavePos; }
 
+        /// <summary>
+        /// Apply a delta to the target's position, which will be ignored for 
+        /// smoothing purposes.  Use this whent he target's position gets warped.
+        /// </summary>
+        /// <param name="positionDelta">The position change of the target object</param>
         public void ApplyTransformDelta(Vector3 positionDelta) { m_Pos += positionDelta; }
 
+        /// <summary>Reset the lookahead data, clear all the buffers.</summary>
         public void Reset() 
         { 
             m_HavePos = false; 
@@ -23,6 +39,10 @@ namespace Cinemachine.Utility
             m_SqrSpeed = 0;
         }
 
+        /// <summary>Add a new target position to the history buffer</summary>
+        /// <param name="pos">The new target position</param>
+        /// <param name="deltaTime">deltaTime since the last target position was added</param>
+        /// <param name="lookaheadTime">Current lookahead time setting (unused)</param>
         public void AddPosition(Vector3 pos, float deltaTime, float lookaheadTime)
         {
             if (deltaTime < 0)
@@ -41,11 +61,17 @@ namespace Cinemachine.Utility
             m_HavePos = true;
         }
 
+        /// <summary>Predict the target's position change over a given time from now</summary>
+        /// <param name="lookaheadTime">How far ahead in time to predict</param>
+        /// <returns>The predicted position change (current velocity * lokahead time)</returns>
         public Vector3 PredictPositionDelta(float lookaheadTime)
         {
             return m_Velocity * lookaheadTime;
         }
 
+        /// <summary>Predict the target's position a given time from now</summary>
+        /// <param name="lookaheadTime">How far ahead in time to predict</param>
+        /// <returns>The predicted position</returns>
         public Vector3 PredictPosition(float lookaheadTime)
         {
             return m_Pos + PredictPositionDelta(lookaheadTime);

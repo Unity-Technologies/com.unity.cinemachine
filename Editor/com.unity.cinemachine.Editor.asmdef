@@ -44,8 +44,8 @@
         },
         {
             "name": "com.unity.render-pipelines.high-definition",
-            "expression": "7.0.0",
-            "define": "CINEMACHINE_HDRP_7_0_0"
+            "expression": "7.3.1",
+            "define": "CINEMACHINE_HDRP_7_3_1"
         },
         {
             "name": "com.unity.modules.physics2d",
@@ -64,8 +64,8 @@
         },
         {
             "name": "com.unity.render-pipelines.universal",
-            "expression": "7.0.0",
-            "define": "CINEMACHINE_LWRP_7_0_0"
+            "expression": "7.3.1",
+            "define": "CINEMACHINE_LWRP_7_3_1"
         }
     ],
     "noEngineReferences": false

@@ -105,6 +105,11 @@ using UnityEngine;
 
 namespace Cinemachine
 {
+    /// <summary>
+    /// This is an add-on to override the legacy input system and read input using the
+    /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
+    /// or FreeLook that requires user input, and drag in the the desired actions.
+    /// </summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineInputProvider : MonoBehaviour {}
 }

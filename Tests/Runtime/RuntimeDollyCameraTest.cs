@@ -44,37 +44,37 @@ public class RuntimeDollyCameraTest
         dolly.m_PathPosition = 0;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 0.5f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7.5f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7.5f, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 6;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(12.98846f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(12.98846f, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 10;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(13, 1, -2)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(13, 1, -2)), 0, 0.1f);
         
         dolly.m_PathPosition = 15;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(11, 1, 1)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(11, 1, 1)), 0, 0.1f);
         
         dolly.m_PathPosition = 20;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, 0)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, 0)), 0, 0.1f);
         
         dolly.m_PathPosition = 26;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, -6)), 0, 0.1f);
     }
 
     [UnityTest]
@@ -84,27 +84,27 @@ public class RuntimeDollyCameraTest
         dolly.m_PathPosition = 0;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 0.125f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(10.25f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(10.25f, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 0.5f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(13, 1, 1)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(13, 1, 1)), 0, 0.1f);
         
         dolly.m_PathPosition = 0.75f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, 0.5f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, 0.5f)), 0, 0.1f);
         
         dolly.m_PathPosition = 1;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, -6)), 0, 0.1f);
     }
 
     [UnityTest]
@@ -114,42 +114,42 @@ public class RuntimeDollyCameraTest
         dolly.m_PathPosition = 0;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 0.125f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7.75f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7.75f, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 0.5f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(10, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(10, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 1;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(13, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(13, 1, -6)), 0, 0.1f);
         
         dolly.m_PathPosition = 1.5f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(13, 1, -2.5f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(13, 1, -2.5f)), 0, 0.1f);
         
         dolly.m_PathPosition = 1.75f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(13, 1, -0.75f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(13, 1, -0.75f)), 0, 0.1f);
         
         dolly.m_PathPosition = 3;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, 1)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, 1)), 0, 0.1f);
         
         dolly.m_PathPosition = 3.5f;
         vcam.InternalUpdateCameraState(Vector3.up, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.m_State.RawPosition, new Vector3(7, 1, -2.5f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, new Vector3(7, 1, -2.5f)), 0, 0.1f);
     }
 
 }

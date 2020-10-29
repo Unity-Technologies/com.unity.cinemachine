@@ -185,11 +185,7 @@ namespace Cinemachine.Editor
         /// <returns></returns>
         public static GameObject CreateGameObject(string name, params Type[] types)
         {
-#if UNITY_2018_3_OR_NEWER
             return ObjectFactory.CreateGameObject(name, types);
-#else
-            return new GameObject(name, types);
-#endif
         }
 
         /// <summary>

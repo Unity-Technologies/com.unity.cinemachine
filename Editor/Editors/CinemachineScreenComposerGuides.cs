@@ -146,7 +146,6 @@ namespace Cinemachine.Editor
             float screenHeight = cameraRect.height;
             float screenWidth = cameraRect.width;
 
-#if UNITY_2018_2_OR_NEWER
             float screenAspect = screenWidth / screenHeight;
             switch (outputCamera.gateFit)
             {
@@ -185,7 +184,7 @@ namespace Cinemachine.Editor
                 case Camera.GateFitMode.None:
                     break;
             }
-#endif
+
             cameraRect = new Rect(cameraRect.position, new Vector2(screenWidth, screenHeight));
 
             // Invert Y

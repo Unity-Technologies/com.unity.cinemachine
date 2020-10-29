@@ -51,11 +51,7 @@ namespace Cinemachine
     /// <seealso cref="CinemachineBasicMultiChannelPerlin"/>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
@@ -86,9 +82,9 @@ namespace Cinemachine
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
         [FormerlySerializedAs("m_LensAttributes")]
-        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the "
-            + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
-        [LensSettingsProperty]
+        [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally "
+            + "mirrors the Unity Camera's lens settings, and will be used to drive the "
+            + "Unity camera when the vcam is active.")]
         public LensSettings m_Lens = LensSettings.Default;
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
@@ -397,7 +393,7 @@ namespace Cinemachine
         /// <summary>API for the editor, to make the dragging of position handles behave better.</summary>
         public bool UserIsDragging { get; set; }
 
-        internal CameraState m_State = CameraState.Default; // Current state this frame
+        CameraState m_State = CameraState.Default; // Current state this frame
 
         CinemachineComponentBase[] m_ComponentPipeline = null;
         [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;   // serialized to handle copy/paste

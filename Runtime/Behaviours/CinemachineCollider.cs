@@ -26,11 +26,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
-#if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-#else
-    [ExecuteInEditMode]
-#endif
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCollider.html")]
     public class CinemachineCollider : CinemachineExtension

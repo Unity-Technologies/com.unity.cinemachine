@@ -5,21 +5,25 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// Helpers for the editor
+    /// Helpers for the editor relating to SerializedPropertys
     /// </summary>
     public static class SerializedPropertyHelper
     {
+        /// <summary>
         /// This is a way to get a field name string in such a manner that the compiler will
         /// generate errors for invalid fields.  Much better than directly using strings.
         /// Usage: instead of
-        /// <example>
+        /// <code>
         /// "m_MyField";
-        /// </example>
+        /// </code>
         /// do this:
-        /// <example>
+        /// <code>
         /// MyClass myclass = null;
         /// SerializedPropertyHelper.PropertyName( () => myClass.m_MyField);
-        /// </example>
+        /// </code>
+        /// </summary>
+        /// <param name="exp">Magic expression that resolves to a field: () => myClass.m_MyField</param>
+        /// <returns></returns>
         public static string PropertyName(Expression<Func<object>> exp)
         {
             var body = exp.Body as MemberExpression;
@@ -31,35 +35,31 @@ namespace Cinemachine.Editor
             return body.Member.Name;
         }
 
-        /// Usage: instead of
-        /// <example>
-        /// mySerializedObject.FindProperty("m_MyField");
-        /// </example>
-        /// do this:
-        /// <example>
-        /// MyClass myclass = null;
-        /// mySerializedObject.FindProperty( () => myClass.m_MyField);
-        /// </example>
+        /// <summary>
+        /// A compiler-assisted (non-string-based) way to call SerializedProperty.FindProperty
+        /// </summary>
+        /// <param name="obj">The serialized object to search</param>
+        /// <param name="exp">Magic expression that resolves to a field: () => myClass.m_MyField</param>
+        /// <returns>The resulting SerializedProperty, or null</returns>
         public static SerializedProperty FindProperty(this SerializedObject obj, Expression<Func<object>> exp)
         {
             return obj.FindProperty(PropertyName(exp));
         }
 
-        /// Usage: instead of
-        /// <example>
-        /// mySerializedProperty.FindPropertyRelative("m_MyField");
-        /// </example>
-        /// do this:
-        /// <example>
-        /// MyClass myclass = null;
-        /// mySerializedProperty.FindPropertyRelative( () => myClass.m_MyField);
-        /// </example>
+        /// <summary>
+        /// A compiler-assisted (non-string-based) way to call SerializedProperty.FindPropertyRelative
+        /// </summary>
+        /// <param name="obj">The serialized object to search</param>
+        /// <param name="exp">Magic expression that resolves to a field: () => myClass.m_MyField</param>
+        /// <returns>The resulting SerializedProperty, or null</returns>
         public static SerializedProperty FindPropertyRelative(this SerializedProperty obj, Expression<Func<object>> exp)
         {
             return obj.FindPropertyRelative(PropertyName(exp));
         }
 
         /// <summary>Get the value of a proprty, as an object</summary>
+        /// <param name="property">The property to query</param>
+        /// <returns>The object value of the property</returns>
         public static object GetPropertyValue(SerializedProperty property)
         {
             var targetObject = property.serializedObject.targetObject;

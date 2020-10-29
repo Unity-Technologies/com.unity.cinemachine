@@ -74,6 +74,7 @@ namespace Cinemachine
             public bool m_HoldForever;
 
             /// <summary>Get an envelope with default values.</summary>
+            /// <returns>An event with default values</returns>
             public static EnvelopeDefinition Default()
             {
                 return new EnvelopeDefinition { m_DecayTime = 0.7f, m_SustainTime = 0.2f, m_ScaleWithImpact = true };
@@ -250,6 +251,7 @@ namespace Cinemachine
             }
 
             /// <summary>Calculate the the decay applicable at a given distance from the impact point</summary>
+            /// <param name="distance">The distance over which to perform the decay</param>
             /// <returns>Scale factor 0...1</returns>
             public float DistanceDecay(float distance)
             {
@@ -389,6 +391,7 @@ namespace Cinemachine
         public float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : CinemachineCore.CurrentTime; } }
 
         /// <summary>Get a new ImpulseEvent</summary>
+        /// <returns>A newly-created impulse event.  May be recycled from expired events</returns>
         public ImpulseEvent NewImpulseEvent()
         {
             ImpulseEvent e;
@@ -402,6 +405,7 @@ namespace Cinemachine
         /// <summary>Activate an impulse event, so that it may begin broadcasting its signal</summary>
         /// Events will be automatically removed after they expire.
         /// You can tweak the ImpulseEvent fields dynamically if you keep a pointer to it.
+        /// <param name="e">The event to add to the current active events</param>
         public void AddImpulseEvent(ImpulseEvent e)
         {
             if (m_ActiveEvents == null)

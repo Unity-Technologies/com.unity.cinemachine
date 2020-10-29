@@ -11,19 +11,22 @@ using Cinemachine;
 
 //namespace Cinemachine.Timeline
 //{
+    /// <summary>
+    /// Timeline track for Cinemachine virtual camera activation
+    /// </summary>
     [Serializable]
     [TrackClipType(typeof(CinemachineShot))]
-#if !UNITY_2018_2_OR_NEWER
-    [TrackMediaType(TimelineAsset.MediaType.Script)]
-#endif
-#if UNITY_2018_3_OR_NEWER
     [TrackBindingType(typeof(CinemachineBrain), TrackBindingFlags.None)]
-#else
-    [TrackBindingType(typeof(CinemachineBrain))]
-#endif
     [TrackColor(0.53f, 0.0f, 0.08f)]
     public class CinemachineTrack : TrackAsset
     {
+        /// <summary>
+        /// TrackAsset implementation
+        /// </summary>
+        /// <param name="graph"></param>
+        /// <param name="go"></param>
+        /// <param name="inputCount"></param>
+        /// <returns></returns>
         public override Playable CreateTrackMixer(
             PlayableGraph graph, GameObject go, int inputCount)
         {
