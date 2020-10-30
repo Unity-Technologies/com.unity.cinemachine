@@ -146,7 +146,7 @@ namespace Cinemachine
             float frustumHeight;
             if (state.Lens.Orthographic)
             {
-                frustumHeight = Mathf.Abs(state.Lens.OrthographicSize);
+                frustumHeight = state.Lens.OrthographicSize;
             }
             else
             {
@@ -154,7 +154,8 @@ namespace Cinemachine
                 float distance = cameraPosLocalZ;
                 frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
             }
-            return frustumHeight;
+
+            return Mathf.Abs(frustumHeight);
         }
         
         /// <summary>
