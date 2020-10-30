@@ -106,7 +106,8 @@ namespace Cinemachine
                 extra.m_VcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
-                    extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone, state.Lens.Aspect);
+                    extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone, 
+                    state.Lens.Aspect * frustumHeight, frustumHeight);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
@@ -164,7 +165,7 @@ namespace Cinemachine
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache, 
-            in bool hasBone, in float aspect)
+            in bool hasBone, in float windowWidth, in float windowHeight)
         {
             bool outsideOfOriginal = !ShrinkablePolygon.IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
             if (!outsideOfOriginal && ShrinkablePolygon.IsInside(pathCache, positionToConfine))
@@ -183,17 +184,17 @@ namespace Cinemachine
                     Vector2 v = pathCache[i][(j + 1) % numPoints];
                     Vector2 c = Vector2.Lerp(v0, v, positionToConfine.ClosestPointOnSegment(v0, v));
                     Vector2 difference = positionToConfine - c;
-                    //difference.x /= aspect; // the weight of distance on X axis depends on the aspect ratio. y is 1
-
                     float distance = Vector2.SqrMagnitude(difference);
+                    if (Mathf.Abs(difference.x) > windowWidth || Mathf.Abs(difference.y) > windowHeight)
+                    {
+                        distance *= 10f; // weight for bad ones is increased
+                    }
                     if (distance < minDistance &&
                         (outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c)))
                     {
                         minDistance = distance;
                         closest = c;
                     }
-
-                    v0 = v;
                 }
             }
 
