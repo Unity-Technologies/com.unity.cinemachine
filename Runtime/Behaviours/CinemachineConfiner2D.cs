@@ -187,6 +187,8 @@ namespace Cinemachine
                     float distance = Vector2.SqrMagnitude(difference);
                     if (Mathf.Abs(difference.x) > windowWidth || Mathf.Abs(difference.y) > windowHeight)
                     {
+                        // TODO: formalize this. e.g. Penalty could be equal to polygon's max(width, height), and 
+                        // TODO: then distance += penalty
                         distance *= 10f; // weight for bad ones is increased
                     }
                     if (distance < minDistance &&
