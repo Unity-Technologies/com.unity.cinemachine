@@ -391,11 +391,17 @@ namespace Cinemachine
             foreach (var polySegment in solution)
             {
                 var pathSegment = new List<Vector2>(polySegment.Count);
+                Vector2 p_prev = Vector2.positiveInfinity;
                 for (index = 0; index < polySegment.Count; index++)
                 {
                     var p_int = polySegment[index];
                     var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
+                    if ((p - p_prev).sqrMagnitude < 0.001f)
+                    {
+                        continue;
+                    }
                     pathSegment.Add(p);
+                    p_prev = p;
                 }
                 path.Add(pathSegment);
             }
