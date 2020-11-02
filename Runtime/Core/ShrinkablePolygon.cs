@@ -108,16 +108,8 @@ namespace Cinemachine
                 m_State = m_State,
                 
                 // deep
-                m_Points = m_Points.ConvertAll(point =>
-                    new ShrinkablePoint2
-                    {
-                        m_Position = point.m_Position,
-                        m_OriginalPosition = point.m_OriginalPosition,
-                        m_ShrinkDirection = point.m_ShrinkDirection,
-                        m_CantIntersect = point.m_CantIntersect,
-                    }),
-                m_IntersectionPoints =
-                    m_IntersectionPoints.ConvertAll(intersection => new Vector2(intersection.x, intersection.y))
+                m_Points = m_Points.ConvertAll(point => point),
+                m_IntersectionPoints = m_IntersectionPoints.ConvertAll(intersection => intersection),
             };
         }
         
