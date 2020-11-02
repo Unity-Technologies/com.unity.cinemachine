@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.TestTools;
-using NUnit.Framework;
 using Cinemachine.Utility;
 using Assert = UnityEngine.Assertions.Assert;
 
@@ -18,7 +16,7 @@ public class Confiner2DTests
         cam.orthographic = true;
         vcam.m_Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
         
-        var go = new GameObject();
+        var go = new GameObject("PolygonCollider2DHolder");
         var polygonCollider2D = go.AddComponent<PolygonCollider2D>();
         confiner2D.m_BoundingShape2D = polygonCollider2D;
         confiner2D.m_Damping = 0;
@@ -101,11 +99,11 @@ public class Confiner2DTests
     
     private void CreateCameraAndAddVcam(out Camera cam, out CinemachineVirtualCamera vcam)
     {
-        var cameraHolder = new GameObject();
+        var cameraHolder = new GameObject("MainCamera");
         cam = cameraHolder.AddComponent<Camera>();
         cameraHolder.AddComponent<CinemachineBrain>();
         
-        var vcamHolder = new GameObject();
+        var vcamHolder = new GameObject("CM Vcam");
         vcam = vcamHolder.AddComponent<CinemachineVirtualCamera>();
         vcam.Priority = 100;
     }

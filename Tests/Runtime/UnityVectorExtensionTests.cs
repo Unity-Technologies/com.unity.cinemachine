@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
-using UnityEngine.TestTools;
 using NUnit.Framework;
 using Cinemachine.Utility;
 using Assert = UnityEngine.Assertions.Assert;
@@ -222,14 +221,14 @@ public class UnityVectorExtensionTests
         Assert.IsTrue(
             subShrinkablePolygon1[0].m_Points[0].m_Position == subShrinkablePolygon2[0].m_Points[0].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[0].m_Points[1].m_Position == subShrinkablePolygon2[0].m_Points[2].m_Position);
+            subShrinkablePolygon1[0].m_Points[1].m_Position == subShrinkablePolygon2[0].m_Points[1].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[0].m_Points[2].m_Position == subShrinkablePolygon2[0].m_Points[1].m_Position);
+            subShrinkablePolygon1[0].m_Points[2].m_Position == subShrinkablePolygon2[0].m_Points[2].m_Position);
         Assert.IsTrue(
             subShrinkablePolygon1[1].m_Points[0].m_Position == subShrinkablePolygon2[1].m_Points[0].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[1].m_Points[1].m_Position == subShrinkablePolygon2[1].m_Points[2].m_Position);
+            subShrinkablePolygon1[1].m_Points[1].m_Position == subShrinkablePolygon2[1].m_Points[1].m_Position);
         Assert.IsTrue(
-            subShrinkablePolygon1[1].m_Points[2].m_Position == subShrinkablePolygon2[1].m_Points[1].m_Position);
+            subShrinkablePolygon1[1].m_Points[2].m_Position == subShrinkablePolygon2[1].m_Points[2].m_Position);
     }
 }

@@ -290,8 +290,11 @@ namespace Cinemachine
         /// <param name="shrinkablePolygons">input shrinkable polygons</param>
         /// <param name="frustumHeight">Frustum height requested by the user.
         /// For the path touching the corners this may be relevant.</param>
-        /// <param name="path">output result</param>
-        public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, float frustumHeight,
+        /// <param name="bakedConfinerResolution">Used for removing tiny parts that stick out from the polygon.</param>
+        /// <param name="path">Resulting path.</param>
+        /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
+        public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, in float frustumHeight,
+            in float bakedConfinerResolution,
             out List<List<Vector2>> path, out bool hasIntersections)
         {
             hasIntersections = false;
@@ -387,6 +390,7 @@ namespace Cinemachine
                 PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
             
             // Convert result to float points
+            float distanceLimit = bakedConfinerResolution * 2f;
             path = new List<List<Vector2>>(solution.Count);
             foreach (var polySegment in solution)
             {
@@ -396,7 +400,7 @@ namespace Cinemachine
                 {
                     var p_int = polySegment[index];
                     var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
-                    if ((p - p_prev).sqrMagnitude < 0.001f)
+                    if ((p - p_prev).sqrMagnitude < distanceLimit)
                     {
                         continue;
                     }

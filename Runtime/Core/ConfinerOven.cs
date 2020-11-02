@@ -27,14 +27,21 @@ namespace Cinemachine
         /// the connectivity information between sub-polygons.
         /// </summary>
         public void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
-            in float maxOrthosize, in bool shrinkToPoint)
+            float maxOrthosize, in bool shrinkToPoint)
         {
+            float polygonHalfHeight = HeightOfAspectBasedBoundingBoxAroundPolygons(inputPath, sensorRatio) / 2f;
+            if (maxOrthosize == 0 || maxOrthosize > polygonHalfHeight) // exact comparison to 0 is intentional!
+            {
+                // ensuring that we don't compute further than what is the theoretical max
+                maxOrthosize = polygonHalfHeight; 
+            }
+            
             m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, sensorRatio);
             var polyIndex = 0;
             var shrinking = true;
             while (shrinking)
             {
-                List<ShrinkablePolygon> nextPolygonIteration = new List<ShrinkablePolygon>();
+                var nextPolygonIteration = new List<ShrinkablePolygon>();
                 for (int g = 0; g < m_shrinkablePolygons[polyIndex].Count; ++g)
                 {
                     m_shrinkablePolygons[polyIndex][g].ComputeAspectBasedShrinkDirections();
@@ -57,7 +64,7 @@ namespace Cinemachine
                 }
 
                 m_shrinkablePolygons.Add(nextPolygonIteration);
-                if (maxOrthosize != 0 && maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_WindowDiagonal)
+                if (maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_WindowDiagonal)
                 {
                     break;
                 }
@@ -224,6 +231,34 @@ namespace Cinemachine
             }
 
             return m_confinerStates;
+        }
+
+        /// <summary>
+        /// Calculates the height (y axis length) of the (unrotated) bounding box with the specified aspect ratio
+        /// around the input polygons.
+        /// </summary>
+        /// <param name="polygons">Input polygons</param>
+        /// <param name="aspect">Specifies the aspect ratio of the bounding box.</param>
+        /// <returns>The height (y axis length) of the (unrotated) bounding box with the specified aspect ratio
+        /// around the input polygon.</returns>
+        private float HeightOfAspectBasedBoundingBoxAroundPolygons(in List<List<Vector2>> polygons, in float aspect)
+        {
+            float minX = Single.PositiveInfinity, maxX = Single.NegativeInfinity;
+            float minY = Single.PositiveInfinity, maxY = Single.NegativeInfinity;
+            foreach (var path in polygons)
+            {
+                foreach (var point in path)
+                {
+                    minX = Mathf.Min(minX, point.x);
+                    maxX = Mathf.Max(maxX, point.x);
+                    minY = Mathf.Min(minY, point.y);
+                    maxY = Mathf.Max(maxY, point.y);
+                }
+            }
+
+            float pWidth = maxX - minX;
+            float pHeight = Mathf.Max(maxY - minY, pWidth / aspect);
+            return pHeight;
         }
 
         /// <summary>

@@ -97,7 +97,6 @@ namespace Cinemachine
                     return; // invalid path
                 }
                 
-                // TODO: use this for frustum height too
                 var oldCameraPos = state.CorrectedPosition;
                 var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 float frustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
@@ -250,7 +249,8 @@ namespace Cinemachine
                     }
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, frustumHeight, out m_Path, out m_PathHasBone);
+                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, frustumHeight, m_bakedConfinerResolution, 
+                        out m_Path, out m_PathHasBone);
                 
                     m_frustumHeight = frustumHeight;
                 }
@@ -356,7 +356,7 @@ namespace Cinemachine
                 {
                     return false; // input collider is invalid
                 }
-
+                
                 confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, m_bakedConfinerResolution, maxOrthoSize, true);
                 m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
                 m_aspectRatio = aspectRatio;
@@ -367,7 +367,7 @@ namespace Cinemachine
 
                 return true;
             }
-
+            
             private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
             {
                 return boundingShape2D != null && 
