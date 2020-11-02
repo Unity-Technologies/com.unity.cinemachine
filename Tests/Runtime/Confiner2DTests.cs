@@ -7,6 +7,52 @@ using Assert = UnityEngine.Assertions.Assert;
 
 public class Confiner2DTests
 {
+    [UnityTest]
+    public IEnumerator ConfinerSquarePolyTest()
+    {
+        CreateCameraAndAddVcam(out Camera cam, out CinemachineVirtualCamera vcam);
+        var confiner2D = vcam.gameObject.AddComponent<CinemachineConfiner2D>();
+        vcam.AddExtension(confiner2D);
+        cam.orthographic = true;
+        vcam.m_Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
+        
+        var go = new GameObject("PolygonCollider2DHolder");
+        var polygonCollider2D = go.AddComponent<PolygonCollider2D>();
+        confiner2D.m_BoundingShape2D = polygonCollider2D;
+        confiner2D.m_Damping = 0;
+        confiner2D.m_MaxOrthoSize = 0;
+        {
+            polygonCollider2D.points = new[]
+            {
+                Vector2.up + Vector2.left,
+                Vector2.up + Vector2.right,
+                Vector2.down + Vector2.right,
+                Vector2.down + Vector2.left,
+            };
+            confiner2D.InvalidatePathCache();
+            vcam.m_Lens.OrthographicSize = 0.3f;
+
+            vcam.transform.position = Vector2.up + Vector2.left;
+            yield return null;
+            Assert.IsTrue((vcam.State.CorrectedPosition - new Vector3(-0.131521702f, 0.704347908f, 0.0f)).sqrMagnitude 
+                          < UnityVectorExtensions.Epsilon);
+
+            vcam.transform.position = Vector2.up + Vector2.right;
+            yield return null;
+            Assert.IsTrue((vcam.State.CorrectedPosition - new Vector3(0.131521702f, 0.704347908f, 0.0f)).sqrMagnitude 
+                          < UnityVectorExtensions.Epsilon);
+
+            vcam.transform.position = Vector2.down + Vector2.right;
+            yield return null;
+            Assert.IsTrue((vcam.State.CorrectedPosition - new Vector3(0.131521702f, -0.704347908f, 0.0f)).sqrMagnitude 
+                          < UnityVectorExtensions.Epsilon);
+
+            vcam.transform.position = Vector2.down + Vector2.left;
+            yield return null;
+            Assert.IsTrue((vcam.State.CorrectedPosition - new Vector3(-0.131521702f, -0.704347908f, 0.0f)).sqrMagnitude
+                          < UnityVectorExtensions.Epsilon);
+        }
+    }
     
     [UnityTest]
     public IEnumerator ConfinerPolyTest()
@@ -97,7 +143,7 @@ public class Confiner2DTests
         
         vcam.m_Lens.OrthographicSize = 1;
     }
-    
+
     [UnityTest]
     public IEnumerator ConfinerCompositeTest()
     {
