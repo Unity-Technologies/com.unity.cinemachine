@@ -859,6 +859,7 @@ namespace Cinemachine
                 return;
             }
 
+            bool changeState = false;
             float distanceLimit = shrinkAmount * 2;
             var canSimplify = true;
             while (canSimplify)
@@ -886,10 +887,16 @@ namespace Cinemachine
                             m_Points.RemoveAt(i);
                         }
 
+                        changeState = true;
                         canSimplify = true;
                         break;
                     }
                 }
+            }
+
+            if (changeState)
+            {
+                m_State++;
             }
         }
 

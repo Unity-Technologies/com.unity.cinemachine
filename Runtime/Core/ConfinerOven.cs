@@ -237,7 +237,7 @@ namespace Cinemachine
             for (int i = m_shrinkablePolygons.Count - 2; i >= 0; --i)
             {
                 bool stateChanged = m_shrinkablePolygons[stateStart].Count != m_shrinkablePolygons[i].Count;
-                if (m_shrinkablePolygons[stateStart].Count == m_shrinkablePolygons[i].Count)
+                if (!stateChanged)
                 {
                     for (int j = 0; j < m_shrinkablePolygons[stateStart].Count; ++j)
                     {
