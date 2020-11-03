@@ -18,9 +18,9 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
             DrawRemainingPropertiesInInspector();
-            if (GUILayout.Button("InvalidateCache"))
+            if (GUILayout.Button("Invalidate Cache"))
             {
-                Target.InvalidatePathCache();
+                Target.InvalidateCache();
                 EditorUtility.SetDirty(Target);
             }
         }

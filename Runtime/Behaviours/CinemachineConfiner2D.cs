@@ -18,7 +18,7 @@ namespace Cinemachine
     /// the camera's window size and ratio. The confining area is baked and cached at start.
     /// </para>
     /// 
-    ///<para>
+    /// <para>
     /// CinemachineConfiner2D uses a cache to avoid recalculating the confiner unnecessarily.
     /// If the cache is invalid, it will be automatically recomputed at the next usage (lazy evaluation).
     /// The cache is automatically invalidated in some well-defined circumstances:
@@ -32,14 +32,14 @@ namespace Cinemachine
     /// <para>
     /// The cache is <strong>NOT</strong> automatically invalidated (due to high computation cost every frame) if the
     /// contents of the confining shape change (e.g. points get moved dynamically). In that case, the client must call
-    /// the InvalidatePathCache() function or the user must click the Invalidate Cache button in the component's
+    /// the InvalidateCache() function or the user must click the Invalidate Cache button in the component's
     /// inspector.
     /// </para>
     /// 
     /// <para>
     /// Collider's Transform changes are supported, but after changing the Scale or Rotation components the cache is
     /// going to be invalid. If the users would like to have a valid cache, then they must call the
-    /// InvalidatePathCache() function or the user must click the Invalidate Cache button in the component's inspector.
+    /// InvalidateCache() function or the user must click the Invalidate Cache button in the component's inspector.
     /// </para>
     /// </summary>
     [SaveDuringPlay, ExecuteAlways]
@@ -74,7 +74,7 @@ namespace Cinemachine
         public float m_CacheResolution;
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
-        public void InvalidatePathCache()
+        public void InvalidateCache()
         {
             m_shapeCache.Invalidate();
         }
@@ -82,7 +82,7 @@ namespace Cinemachine
         /// <summary>Validates cache</summary>
         /// <param name="cameraAspectRatio">Aspect ratio of camera.</param>
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
-        public bool ValidatePathCache(float cameraAspectRatio)
+        public bool ValidateCache(float cameraAspectRatio)
         {
             return m_shapeCache.ValidateCache(
                 m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, BakingResolution, cameraAspectRatio, out _);

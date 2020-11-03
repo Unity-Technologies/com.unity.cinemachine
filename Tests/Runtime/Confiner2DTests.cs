@@ -107,7 +107,7 @@ public class Confiner2DTests
                 Vector2.down + Vector2.right,
                 Vector2.down + Vector2.left,
             };
-            confiner2D.InvalidatePathCache();
+            confiner2D.InvalidateCache();
             vcam.m_Lens.OrthographicSize = 0.3f;
 
             vcam.transform.position = Vector2.up + Vector2.left;
@@ -154,7 +154,7 @@ public class Confiner2DTests
                 Vector2.right,
                 Vector2.down,
             };
-            confiner2D.InvalidatePathCache();
+            confiner2D.InvalidateCache();
             
             vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
@@ -191,7 +191,7 @@ public class Confiner2DTests
                 Vector2.up,
             };
             
-            confiner2D.InvalidatePathCache();
+            confiner2D.InvalidateCache();
             
             vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
@@ -254,7 +254,7 @@ public class Confiner2DTests
                 Vector2.right,
                 Vector2.down,
             };
-            confiner2D.InvalidatePathCache();
+            confiner2D.InvalidateCache();
             
             vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
@@ -291,7 +291,7 @@ public class Confiner2DTests
                 Vector2.up,
             };
             
-            confiner2D.InvalidatePathCache();
+            confiner2D.InvalidateCache();
             
             vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame

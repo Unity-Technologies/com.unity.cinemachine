@@ -236,19 +236,12 @@ namespace Cinemachine
             }
 
             // update m_State, if change happened based on the cached shrink directions
-            if (s_shrinkDirectionsCache.Count != numPoints)
+            for (var index = 0; index < s_shrinkDirectionsCache.Count; index++)
             {
-                m_State++; // m_State change if more points where added
-            }
-            else
-            {
-                for (var index = 0; index < s_shrinkDirectionsCache.Count; index++)
+                if (s_shrinkDirectionsCache[index] != m_Points[index].m_ShrinkDirection)
                 {
-                    if (s_shrinkDirectionsCache[index] != m_Points[index].m_ShrinkDirection)
-                    {
-                        m_State++; // m_State change when even one shrink direction has been changed
-                        break;
-                    }
+                    m_State++; // m_State change when even one shrink direction has been changed
+                    break;
                 }
             }
         }
