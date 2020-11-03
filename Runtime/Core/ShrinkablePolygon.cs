@@ -40,7 +40,7 @@ namespace Cinemachine
         }
 
         public List<ShrinkablePoint2> m_Points;
-        public float m_WindowDiagonal;
+        public float m_FrustumHeight;
         public int m_State;
         public readonly float m_AspectRatio;
         public readonly float m_AspectRatioBasedDiagonal;
@@ -104,7 +104,7 @@ namespace Cinemachine
                 m_clockwiseOrientation = m_clockwiseOrientation,
                 m_area = m_area,
                 m_MinArea = m_MinArea,
-                m_WindowDiagonal = m_WindowDiagonal,
+                m_FrustumHeight = m_FrustumHeight,
                 m_State = m_State,
                 
                 // deep
@@ -367,7 +367,7 @@ namespace Cinemachine
                         clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
-        
+     
                         index++;
                     }
     
@@ -690,7 +690,7 @@ namespace Cinemachine
         /// </summary>
         public bool Shrink(float shrinkAmount, bool shrinkToPoint)
         {
-            m_WindowDiagonal += shrinkAmount;
+            m_FrustumHeight += shrinkAmount;
             float area1 = Mathf.Abs(ComputeSignedArea());
             if (area1 < m_MinArea)
             {
@@ -933,7 +933,7 @@ namespace Cinemachine
                         var g1 = new ShrinkablePolygon(shrinkablePolygon.m_AspectRatio, 
                             shrinkablePolygon.m_AspectRatioBasedDiagonal, shrinkablePolygon.m_NormalDirections);
                         {
-                            g1.m_WindowDiagonal = shrinkablePolygon.m_WindowDiagonal;
+                            g1.m_FrustumHeight = shrinkablePolygon.m_FrustumHeight;
                             g1.m_IntersectionPoints.Add(intersection);
                             g1.m_State = shrinkablePolygon.m_State + 1;
                             g1.m_MinArea = shrinkablePolygon.m_MinArea;
@@ -962,7 +962,7 @@ namespace Cinemachine
                         var g2 = new ShrinkablePolygon(shrinkablePolygon.m_AspectRatio, 
                             shrinkablePolygon.m_AspectRatioBasedDiagonal, shrinkablePolygon.m_NormalDirections);
                         {
-                            g2.m_WindowDiagonal = shrinkablePolygon.m_WindowDiagonal;
+                            g2.m_FrustumHeight = shrinkablePolygon.m_FrustumHeight;
                             g2.m_IntersectionPoints.Add(intersection);
                             g2.m_State = shrinkablePolygon.m_State + 1;
                             g2.m_MinArea = shrinkablePolygon.m_MinArea;

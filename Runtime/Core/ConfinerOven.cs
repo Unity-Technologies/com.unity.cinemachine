@@ -13,7 +13,7 @@ namespace Cinemachine
         public class ConfinerState
         {
             public List<ShrinkablePolygon> m_Polygons;
-            public float m_WindowSize;
+            public float m_FrustumHeight;
             public float m_State;
         }
         
@@ -48,7 +48,7 @@ namespace Cinemachine
                     ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
                     if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint))
                     {
-                        if (shrinkablePolygon.m_WindowDiagonal > shrinkAmount * 100f)
+                        if (shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
                         {
                             shrinkablePolygon.Simplify(shrinkAmount);
                         }
@@ -64,7 +64,7 @@ namespace Cinemachine
                 }
 
                 m_shrinkablePolygons.Add(nextPolygonIteration);
-                if (maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_WindowDiagonal)
+                if (maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_FrustumHeight)
                 {
                     break;
                 }
@@ -129,7 +129,7 @@ namespace Cinemachine
             ConfinerState result = new ConfinerState();
             for (int i = m_confinerStates.Count - 1; i >= 0; --i)
             {
-                if (m_confinerStates[i].m_WindowSize <= frustumHeight)
+                if (m_confinerStates[i].m_FrustumHeight <= frustumHeight)
                 {
                     if (i == m_confinerStates.Count - 1)
                     {
@@ -144,8 +144,8 @@ namespace Cinemachine
                     {
                         // choose m_confinerStates with windowSize closer to frustumHeight
                         result = 
-                            Mathf.Abs(m_confinerStates[i].m_WindowSize - frustumHeight) < 
-                            Mathf.Abs(m_confinerStates[i + 1].m_WindowSize - frustumHeight) ? 
+                            Mathf.Abs(m_confinerStates[i].m_FrustumHeight - frustumHeight) < 
+                            Mathf.Abs(m_confinerStates[i + 1].m_FrustumHeight - frustumHeight) ? 
                                 m_confinerStates[i] : 
                                 m_confinerStates[i+1];
                     }
@@ -171,7 +171,7 @@ namespace Cinemachine
                 m_Polygons = new List<ShrinkablePolygon>(left.m_Polygons.Count),
             };
             
-            float lerpValue = Mathf.InverseLerp(left.m_WindowSize, right.m_WindowSize, frustumHeight);
+            float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);
             for (int i = 0; i < left.m_Polygons.Count; ++i)
             {
                 var r = new ShrinkablePolygon(
@@ -180,7 +180,7 @@ namespace Cinemachine
                     left.m_Polygons[i].m_NormalDirections)
                 {
                     m_Points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.m_Polygons[i].m_Points.Count),
-                    m_WindowDiagonal = frustumHeight,
+                    m_FrustumHeight = frustumHeight,
                 };
                 for (int j = 0; j < left.m_Polygons[i].m_Points.Count; ++j)
                 {
@@ -214,17 +214,10 @@ namespace Cinemachine
                     stateAverage += m_shrinkablePolygons[i][j].m_State;
                 }
                 stateAverage /= m_shrinkablePolygons[i].Count + 1;
-
-                float maxWindowDiagonal = m_shrinkablePolygons[i][0].m_WindowDiagonal;
-               
-                for (int j = 1; j < m_shrinkablePolygons[i].Count; ++j)
-                {
-                    maxWindowDiagonal = Mathf.Max(m_shrinkablePolygons[i][j].m_WindowDiagonal, maxWindowDiagonal);
-                }
                 
                 m_confinerStates.Add(new ConfinerState
                 {
-                    m_WindowSize = maxWindowDiagonal,
+                    m_FrustumHeight = m_shrinkablePolygons[i][0].m_FrustumHeight,
                     m_Polygons = m_shrinkablePolygons[i],
                     m_State = stateAverage,
                 });
