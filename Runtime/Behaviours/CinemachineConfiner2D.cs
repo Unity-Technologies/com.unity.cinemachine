@@ -124,7 +124,7 @@ namespace Cinemachine
                 {
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
-                    if (Vector2.Angle(prev, displacement) > m_cornerAngleTreshold)
+                    if (prev.sqrMagnitude > 0.01f && Vector2.Angle(prev, displacement) > m_cornerAngleTreshold)
                         extra.m_DampedDisplacement += displacement - prev;
 
                     extra.m_DampedDisplacement -= Damper.Damp(extra.m_DampedDisplacement, m_Damping, deltaTime);
