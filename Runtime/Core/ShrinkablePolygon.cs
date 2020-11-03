@@ -399,6 +399,11 @@ namespace Cinemachine
                     pathSegment.Add(p);
                     p_prev = p;
                 }
+
+                if (pathSegment.Count <= 1)
+                {
+                    continue; // ignore left-overs/twigs 
+                }
                 path.Add(pathSegment);
             }
         }
