@@ -434,7 +434,7 @@ namespace Cinemachine
 
         private void Reset()
         {
-            m_Damping = 0;
+            m_Damping = 0.5f;
             m_MaxOrthoSize = 0;
             m_CacheResolution = 1;
         }
