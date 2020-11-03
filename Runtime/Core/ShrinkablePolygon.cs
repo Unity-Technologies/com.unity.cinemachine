@@ -354,28 +354,17 @@ namespace Cinemachine
                 PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
             
             // Convert result to float points
-            float distanceLimit = bakedConfinerResolution * 2f;
             path = new List<List<Vector2>>(solution.Count);
             foreach (var polySegment in solution)
             {
                 var pathSegment = new List<Vector2>(polySegment.Count);
-                Vector2 p_prev = Vector2.positiveInfinity;
                 for (index = 0; index < polySegment.Count; index++)
                 {
                     var p_int = polySegment[index];
                     var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
-                    if ((p - p_prev).sqrMagnitude < distanceLimit)
-                    {
-                        continue;
-                    }
                     pathSegment.Add(p);
-                    p_prev = p;
                 }
 
-                if (pathSegment.Count <= 1)
-                {
-                    continue; // ignore left-overs/twigs 
-                }
                 path.Add(pathSegment);
             }
         }
