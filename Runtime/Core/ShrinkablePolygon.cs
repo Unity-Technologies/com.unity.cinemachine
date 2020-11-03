@@ -329,12 +329,12 @@ namespace Cinemachine
                             continue; // camera is already touching this point
                         }
                         Vector2 cornerTouchingPoint = corner + shrinkDirection;
-                        if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < bakedConfinerResolution)
+                        if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < 0.005f)
                         {
                             continue;
                         }
                         Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
-                                                bakedConfinerResolution;
+                                                0.005f;
                         clip.Add(new List<IntPoint>(4));
                         Vector2 p1 = point.m_Position + epsilonNormal;
                         Vector2 p2 = cornerTouchingPoint + epsilonNormal;
