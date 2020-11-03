@@ -305,7 +305,7 @@ namespace Cinemachine
                     {
                         Vector2 corner = point.m_OriginalPosition;
                         Vector2 shrinkDirection = point.m_Position - corner;
-                        float cornerDistance = shrinkDirection.sqrMagnitude;
+                        float sqrCornerDistance = shrinkDirection.sqrMagnitude;
                         if (shrinkDirection.x > 0)
                         {
                             shrinkDirection *= (polygon.m_AspectRatio / shrinkDirection.x);
@@ -324,12 +324,17 @@ namespace Cinemachine
                         }
 
                         shrinkDirection *= frustumHeight;
-                        if (shrinkDirection.sqrMagnitude > cornerDistance)
+                        if (shrinkDirection.sqrMagnitude >= sqrCornerDistance)
                         {
                             continue; // camera is already touching this point
                         }
                         Vector2 cornerTouchingPoint = corner + shrinkDirection;
-                        Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 0.01f;
+                        if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < bakedConfinerResolution)
+                        {
+                            continue;
+                        }
+                        Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
+                                                bakedConfinerResolution;
                         clip.Add(new List<IntPoint>(4));
                         Vector2 p1 = point.m_Position + epsilonNormal;
                         Vector2 p2 = cornerTouchingPoint + epsilonNormal;
