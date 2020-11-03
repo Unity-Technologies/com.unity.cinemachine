@@ -329,6 +329,7 @@ namespace Cinemachine
                             continue; // camera is already touching this point
                         }
                         Vector2 cornerTouchingPoint = corner + shrinkDirection;
+                        // TODO: formalize 0.005f e.g. maxCacheRes
                         if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < 0.005f)
                         {
                             continue;
