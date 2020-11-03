@@ -41,8 +41,9 @@ namespace Cinemachine
             var shrinking = true;
             while (shrinking)
             {
-                var nextPolygonIteration = new List<ShrinkablePolygon>();
-                for (int g = 0; g < m_shrinkablePolygons[polyIndex].Count; ++g)
+                var numPaths = m_shrinkablePolygons[polyIndex].Count;
+                var nextPolygonIteration = new List<ShrinkablePolygon>(numPaths);
+                for (int g = 0; g < numPaths; ++g)
                 {
                     m_shrinkablePolygons[polyIndex][g].ComputeAspectBasedShrinkDirections();
                     ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
@@ -89,35 +90,33 @@ namespace Cinemachine
         public static List<List<ShrinkablePolygon>> CreateShrinkablePolygons(
             in List<List<Vector2>> paths, in float aspectRatio)
         {
-            if (paths == null)
+            int numPaths = paths == null ? 0 : paths.Count;
+            var shrinkablePolygons = new List<List<ShrinkablePolygon>>(numPaths);
+            if (numPaths > 0)
             {
-                return new List<List<ShrinkablePolygon>>();
-            }
-
-            List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>();
-            float minX = float.MaxValue, maxX = float.MinValue;
-            float minY = float.MaxValue, maxY = float.MinValue;
-            for (int i = 0; i < paths.Count; ++i)
-            {
-                var newShrinkablePolygon = new ShrinkablePolygon(paths[i], aspectRatio);
-                for (int j = 0; j < newShrinkablePolygon.m_Points.Count; ++j)
+                float minX = float.MaxValue, maxX = float.MinValue;
+                float minY = float.MaxValue, maxY = float.MinValue;
+                for (int i = 0; i < numPaths; ++i)
                 {
-                    var p = newShrinkablePolygon.m_Points[j];
-                    minX = Mathf.Min(minX, p.m_Position.x);
-                    minY = Mathf.Min(minY, p.m_Position.y);
-                    maxX = Mathf.Max(maxX, p.m_Position.x);
-                    maxY = Mathf.Max(maxY, p.m_Position.y);
+                    var newShrinkablePolygon = new ShrinkablePolygon(paths[i], aspectRatio);
+                    int numPoints = newShrinkablePolygon.m_Points.Count;
+                    for (int j = 0; j < numPoints; ++j)
+                    {
+                        var p = newShrinkablePolygon.m_Points[j].m_Position;
+                        minX = Mathf.Min(minX, p.x);
+                        minY = Mathf.Min(minY, p.y);
+                        maxX = Mathf.Max(maxX, p.x);
+                        maxY = Mathf.Max(maxY, p.y);
+                    }
+                    shrinkablePolygons.Add(new List<ShrinkablePolygon> { newShrinkablePolygon });
                 }
 
-                shrinkablePolygons.Add(new List<ShrinkablePolygon> {newShrinkablePolygon});
+                float squareSize = Mathf.Min(maxX - minX, maxY - minY);
+                for (int i = 0; i < shrinkablePolygons.Count; ++i)
+                {
+                    shrinkablePolygons[i][0].m_MinArea = squareSize / 100f;
+                }
             }
-
-            float squareSize = Mathf.Min(maxX - minX, maxY - minY);
-            for (int i = 0; i < shrinkablePolygons.Count; ++i)
-            {
-                shrinkablePolygons[i][0].m_MinArea = squareSize / 100f;
-            }
-
             return shrinkablePolygons;
         }
         

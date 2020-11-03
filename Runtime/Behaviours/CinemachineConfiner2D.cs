@@ -6,10 +6,7 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
-using Matrix4x4 = UnityEngine.Matrix4x4;
-using Quaternion = UnityEngine.Quaternion;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
+
 
 namespace Cinemachine
 {
