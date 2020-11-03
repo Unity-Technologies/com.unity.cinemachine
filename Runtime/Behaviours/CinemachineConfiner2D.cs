@@ -67,6 +67,15 @@ namespace Cinemachine
                  "Use it to optimize computation and memory costs.")]
         public float m_MaxOrthoSize;
         
+        /// <summary>
+        /// Lower values will significantly improve performance but confine less precisely.  
+        /// Set this to the lowest value that gives acceptable results for the specific confining shape.
+        /// </summary>
+        [Tooltip("Lower values will significantly improve performance but confine less precisely.  "
+            + "Set this to the lowest value that gives acceptable results for the specific confining shape.")]
+        [Range(1, 1 + k_BakingResolutionSteps)]
+        public float m_CacheResolution;
+
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidatePathCache()
         {
@@ -79,19 +88,26 @@ namespace Cinemachine
         public bool ValidatePathCache(float cameraAspectRatio)
         {
             return m_shapeCache.ValidateCache(
-                m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, cameraAspectRatio, out _);
+                m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, BakingResolution, cameraAspectRatio, out _);
         }
         
         private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
-        private const float m_cornerAngleTreshold = 10f; // still unsure about the value of this constant
-        internal const float m_bakedConfinerResolution = 0.005f; // internal, because Tests access it
+        private const float m_cornerAngleTreshold = 10f;
+
+        internal const float k_BakingMinResolution = 0.1f; // internal, because Tests access it
+        internal const float k_BakingMaxResolution = 0.005f; // internal, because Tests access it
+        const float k_BakingResolutionSteps = 10;
+
+        private float BakingResolution => Mathf.Lerp(
+            k_BakingMinResolution, k_BakingMaxResolution, (m_CacheResolution - 1) / k_BakingResolutionSteps);
 
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             if (stage == CinemachineCore.Stage.Body)
             {
-                if (!m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, 
+                if (!m_shapeCache.ValidateCache(
+                    m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, BakingResolution,
                     state.Lens.Aspect, out bool confinerStateChanged))
                 {
                     return; // invalid path
@@ -102,7 +118,8 @@ namespace Cinemachine
                 float frustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
-                extra.m_VcamShapeCache.ValidateCache(m_confinerBaker, confinerStateChanged, frustumHeight);
+                extra.m_VcamShapeCache.ValidateCache(
+                    m_confinerBaker, confinerStateChanged, frustumHeight, BakingResolution);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone, 
@@ -241,23 +258,18 @@ namespace Cinemachine
                 /// </summary>
                 public void ValidateCache(
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float frustumHeight)
+                    in float frustumHeight, float bakedResolution)
                 {
-                    if (!confinerStateChanged && IsValid(frustumHeight))
+                    if (!confinerStateChanged && m_Path != null && Math.Abs(frustumHeight - m_frustumHeight) < bakedResolution)
                     {
                         return;
                     }
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, frustumHeight, m_bakedConfinerResolution, 
+                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, frustumHeight, bakedResolution, 
                         out m_Path, out m_PathHasBone);
                 
                     m_frustumHeight = frustumHeight;
-                }
-
-                private bool IsValid(in float frustumHeight)
-                {
-                    return m_Path != null && Math.Abs(frustumHeight - m_frustumHeight) < m_bakedConfinerResolution;
                 }
             }
         };
@@ -277,6 +289,7 @@ namespace Cinemachine
 
             private float m_aspectRatio;
             private float m_maxOrthoSize;
+            private float m_bakingResolution;
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
             private Collider2D m_boundingShape2D;
@@ -289,6 +302,7 @@ namespace Cinemachine
             {
                 m_aspectRatio = 0;
                 m_maxOrthoSize = 0;
+                m_bakingResolution = 0;
                 m_DeltaBakedToWorld = m_DeltaWorldToBaked = Matrix4x4.identity;
 
                 m_boundingShape2D = null;
@@ -306,10 +320,10 @@ namespace Cinemachine
             /// <returns>True, if path is baked and valid. False, otherwise.</returns>
             public bool ValidateCache(
                 Collider2D boundingShape2D, float maxOrthoSize, ConfinerOven confinerBaker,
-                 float aspectRatio, out bool confinerStateChanged)
+                 float bakingResolution, float aspectRatio, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
-                if (IsValid(boundingShape2D, aspectRatio, maxOrthoSize))
+                if (IsValid(boundingShape2D, aspectRatio, maxOrthoSize, bakingResolution))
                 {
                     CalculateDeltaTransformationMatrix();
                     return true;
@@ -357,25 +371,27 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, m_bakedConfinerResolution, maxOrthoSize, true);
+                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, true);
                 m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxOrthoSize;
+                m_bakingResolution = bakingResolution;
 
                 CalculateDeltaTransformationMatrix();
 
                 return true;
             }
             
-            private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
+            private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize, in float bakingResolution)
             {
                 return boundingShape2D != null && 
                        m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
                        m_OriginalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
-                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
+                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon && // max ortho changed?
+                       Mathf.Abs(m_bakingResolution - bakingResolution) < UnityVectorExtensions.Epsilon; // baking resolution changed?
             }
 
             private void CalculateDeltaTransformationMatrix()
@@ -416,12 +432,14 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
+            m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
         }
 
         private void Reset()
         {
             m_Damping = 0;
             m_MaxOrthoSize = 0;
+            m_CacheResolution = 1;
         }
     }
 #endif
