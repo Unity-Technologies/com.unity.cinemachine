@@ -23,20 +23,6 @@ namespace Cinemachine
             public Vector2 m_ShrinkDirection;
             public bool m_CantIntersect;
             public static readonly Vector2 m_Vector2NaN = new Vector2(float.NaN, float.NaN);
-
-            // public ShrinkablePoint2()
-            // {
-            //     m_OriginalPosition = m_Vector2NaN;
-            // }
-            //
-            // public ShrinkablePoint2(Vector2 mPosition, Vector2 mOriginalPosition, Vector2 mShrinkDirection, 
-            //     bool mCantIntersect)
-            // {
-            //     m_Position = mPosition;
-            //     m_OriginalPosition = mOriginalPosition;
-            //     m_ShrinkDirection = mShrinkDirection;
-            //     m_CantIntersect = mCantIntersect;
-            // }
         }
 
         public List<ShrinkablePoint2> m_Points;
@@ -49,7 +35,7 @@ namespace Cinemachine
         public List<Vector2> m_IntersectionPoints;
         
         private float m_area;
-        private bool m_clockwiseOrientation;
+        private bool ClockwiseOrientation => m_area > 0;
 
         /// <summary>
         /// Default constructor initializing points and intersection points.
@@ -101,7 +87,6 @@ namespace Cinemachine
         {
             return new ShrinkablePolygon(m_AspectRatio, m_AspectRatioBasedDiagonal, m_NormalDirections)
             {
-                m_clockwiseOrientation = m_clockwiseOrientation,
                 m_area = m_area,
                 m_MinArea = m_MinArea,
                 m_WindowDiagonal = m_WindowDiagonal,
@@ -131,39 +116,43 @@ namespace Cinemachine
         private float ComputeSignedArea()
         {
             m_area = 0;
-            for (int i = 0; i < m_Points.Count; ++i)
+            int numPoints = m_Points.Count;
+            for (int i = 0; i < numPoints; ++i)
             {
-                ShrinkablePoint2 p1 = m_Points[i];
-                ShrinkablePoint2 p2 = m_Points[(i + 1) % m_Points.Count];
-
-                m_area += (p2.m_Position.x - p1.m_Position.x) * (p2.m_Position.y + p1.m_Position.y);
+                var p1 = m_Points[i].m_Position;
+                var p2 = m_Points[(i + 1) % numPoints].m_Position;
+                m_area += (p2.x - p1.x) * (p2.y + p1.y);
             }
-
-            m_clockwiseOrientation = m_area > 0;
             return m_area;
         }
 
-        private static readonly List<Vector2> m_edgeNormals = new List<Vector2>(100); 
+        private static readonly List<Vector2> s_edgeNormalsCache = new List<Vector2>(); 
+        private static readonly List<ShrinkablePoint2> s_extendedPointsCache = new List<ShrinkablePoint2>();
+
         /// <summary>
         /// Computes normalized normals for all points. If fixBigCornerAngles is true, then adds additional points for
         /// corners with reflex angles to ensure correct offsets.
+        /// If fixBigCornerAngles is true, number of points may change.
         /// </summary>
         private void ComputeNormals(bool fixBigCornerAngles)
         {
-            m_edgeNormals.Clear();
-            for (int i = 0; i < m_Points.Count; ++i)
+            int numPoints = m_Points.Count;
+            s_edgeNormalsCache.Clear();
+            if (s_edgeNormalsCache.Capacity < numPoints)
+                s_edgeNormalsCache.Capacity = numPoints;
+            for (int i = 0; i < numPoints; ++i)
             {
-                Vector2 edge = m_Points[(i + 1) % m_Points.Count].m_Position - m_Points[i].m_Position;
-                Vector2 normal = m_clockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x); 
-                m_edgeNormals.Add(normal.normalized);
+                Vector2 edge = m_Points[(i + 1) % numPoints].m_Position - m_Points[i].m_Position;
+                Vector2 normal = ClockwiseOrientation ? new Vector2(edge.y, -edge.x) : new Vector2(-edge.y, edge.x); 
+                s_edgeNormalsCache.Add(normal.normalized);
             }
 
             // calculating normals
-            for (int i = 0; i < m_Points.Count; ++i)
+            for (int i = 0; i < numPoints; ++i)
             {
-                int prevEdgeIndex = i == 0 ? m_edgeNormals.Count - 1 : i - 1;
+                int prevEdgeIndex = i == 0 ? s_edgeNormalsCache.Count - 1 : i - 1;
                 var mPoint = m_Points[i];
-                mPoint.m_ShrinkDirection = (m_edgeNormals[i] + m_edgeNormals[prevEdgeIndex]).normalized;
+                mPoint.m_ShrinkDirection = (s_edgeNormalsCache[i] + s_edgeNormalsCache[prevEdgeIndex]).normalized;
                 m_Points[i] = mPoint;
             }
 
@@ -175,61 +164,48 @@ namespace Cinemachine
                 // camera middle point can be different depending on which way the camera comes from
                 // worst case: every point has negative angle
                 // (not possible in practise, but makes the algorithm simpler)
-                // so all in all we will have 3 times as many points as before (1 + 2 extra for each point)
-                
-                // original points are placed with padding _ 0 _ _ 1 _ _ 2 _ _ ...
-                List<ShrinkablePoint2> extendedPoints = new ShrinkablePoint2[m_Points.Count * 3].ToList();
-                for (int i = 0; i < m_Points.Count; ++i)
+                s_extendedPointsCache.Clear();
+                if (s_extendedPointsCache.Capacity < numPoints * 3)
+                    s_extendedPointsCache.Capacity = numPoints * 3;
+                for (int i = 0; i < numPoints; ++i)
                 {
-                    extendedPoints[i * 3 + 1] = m_Points[i];
-                    
-                    int prevEdgeIndex = i == 0 ? m_edgeNormals.Count - 1 : i - 1;
-                    float angle = Vector2.SignedAngle(m_edgeNormals[i], m_edgeNormals[prevEdgeIndex]);
-                    if (m_clockwiseOrientation && angle < 0 ||
-                        !m_clockwiseOrientation && angle > 0)
+                    int prevEdgeIndex = i == 0 ? s_edgeNormalsCache.Count - 1 : i - 1;
+                    var negativeAngle = Vector3.Cross(s_edgeNormalsCache[i], s_edgeNormalsCache[prevEdgeIndex]).z < 0;
+                    var sourcePoint = m_Points[i];
+                    if (ClockwiseOrientation != negativeAngle)
+                        s_extendedPointsCache.Add(sourcePoint);
+                    else
                     {
-                        var shrinkablePoint2 = extendedPoints[i * 3 + 1];
+                        int prevIndex = (i == 0 ? numPoints - 1 : i - 1);
+                        s_extendedPointsCache.Add(new ShrinkablePoint2
+                        {
+                            m_Position = Vector2.Lerp(sourcePoint.m_Position, m_Points[prevIndex].m_Position, 0.01f),
+                            m_ShrinkDirection = sourcePoint.m_ShrinkDirection,
+                            m_CantIntersect = true,
+                            m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN,
+                        });
+                        
+                        var shrinkablePoint2 = sourcePoint;
                         shrinkablePoint2.m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN;
-                        extendedPoints[i * 3 + 1] = shrinkablePoint2;
-                        
-                        int prevIndex = (i == 0 ? m_Points.Count - 1 : i - 1);
-                        extendedPoints[i * 3 + 0] = new ShrinkablePoint2
-                        {
-                            m_Position = Vector2.Lerp(m_Points[i].m_Position, m_Points[prevIndex].m_Position, 0.01f),
-                            m_ShrinkDirection = m_Points[i].m_ShrinkDirection,
-                            m_CantIntersect = true,
-                            m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN,
-                        };
-                        
-                        int nextIndex = (i == m_Points.Count - 1 ? 0 : i + 1);
-                        extendedPoints[i * 3 + 2] = new ShrinkablePoint2
-                        {
-                            m_Position = Vector2.Lerp(m_Points[i].m_Position, m_Points[nextIndex].m_Position, 0.01f),
-                            m_ShrinkDirection = m_Points[i].m_ShrinkDirection,
-                            m_CantIntersect = true,
-                            m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN,
-                        };
-                    }
-                }
-                
-                // TODO: remove unused
-                // remove unused padding
-                for (int index = extendedPoints.Count - 1; index >= 0; index--)
-                {
-                    if (extendedPoints[index].m_Position == Vector2.zero &&
-                        extendedPoints[index].m_OriginalPosition == Vector2.zero &&
-                        extendedPoints[index].m_ShrinkDirection == Vector2.zero
-                        )
-                    {
-                        extendedPoints.RemoveAt(index);
-                    }
-                }
+                        s_extendedPointsCache.Add(shrinkablePoint2);
 
-                m_Points = extendedPoints;
+                        int nextIndex = (i == numPoints - 1 ? 0 : i + 1);
+                        s_extendedPointsCache.Add(new ShrinkablePoint2
+                        {
+                            m_Position = Vector2.Lerp(sourcePoint.m_Position, m_Points[nextIndex].m_Position, 0.01f),
+                            m_ShrinkDirection = m_Points[i].m_ShrinkDirection,
+                            m_CantIntersect = true,
+                            m_OriginalPosition = ShrinkablePoint2.m_Vector2NaN,
+                        });
+                    }
+                }
+                if (s_extendedPointsCache.Count != numPoints)
+                    m_Points = s_extendedPointsCache;
             }
         }
     
-        private static readonly List<Vector2> m_cachedShrinkDirections = new List<Vector2>(100); 
+        private static readonly List<Vector2> s_shrinkDirectionsCache = new List<Vector2>(); 
+
         /// <summary>
         /// Computes shrink directions that respect the aspect ratio of the camera. If the camera window is a square,
         /// then the shrink directions will be equivalent to the normals.
@@ -237,35 +213,38 @@ namespace Cinemachine
         public void ComputeAspectBasedShrinkDirections()
         {
             // cache current shrink directions to check for change later
-            m_cachedShrinkDirections.Clear();
-            for (int i = 0; i < m_Points.Count; ++i)
+            int numPoints = m_Points.Count;
+            s_shrinkDirectionsCache.Clear();
+            if (s_shrinkDirectionsCache.Capacity < numPoints)
+                s_shrinkDirectionsCache.Capacity = numPoints;
+            for (int i = 0; i < numPoints; ++i)
             {
-                m_cachedShrinkDirections.Add(m_Points[i].m_ShrinkDirection);
+                s_shrinkDirectionsCache.Add(m_Points[i].m_ShrinkDirection);
             }
             
             // calculate shrink directions
             ComputeNormals(false);
-            for (int i = 0; i < m_Points.Count; ++i)
+            for (int i = 0; i < numPoints; ++i)
             {
-                int prevIndex = i == 0 ? m_Points.Count - 1 : i - 1;
-                int nextIndex = i == m_Points.Count - 1 ? 0 : i + 1;
+                int prevIndex = i == 0 ? numPoints - 1 : i - 1;
+                int nextIndex = i == numPoints - 1 ? 0 : i + 1;
 
-                var mPoint = m_Points[i];
-                mPoint.m_ShrinkDirection = CalculateShrinkDirection(mPoint.m_ShrinkDirection, 
-                    m_Points[prevIndex].m_Position, mPoint.m_Position, m_Points[nextIndex].m_Position);
-                m_Points[i] = mPoint;
+                var p = m_Points[i];
+                p.m_ShrinkDirection = CalculateShrinkDirection(p.m_ShrinkDirection, 
+                    m_Points[prevIndex].m_Position, p.m_Position, m_Points[nextIndex].m_Position);
+                m_Points[i] = p;
             }
 
             // update m_State, if change happened based on the cached shrink directions
-            if (m_cachedShrinkDirections.Count != m_Points.Count)
+            if (s_shrinkDirectionsCache.Count != numPoints)
             {
                 m_State++; // m_State change if more points where added
             }
             else
             {
-                for (var index = 0; index < m_cachedShrinkDirections.Count; index++)
+                for (var index = 0; index < s_shrinkDirectionsCache.Count; index++)
                 {
-                    if (m_cachedShrinkDirections[index] != m_Points[index].m_ShrinkDirection)
+                    if (s_shrinkDirectionsCache[index] != m_Points[index].m_ShrinkDirection)
                     {
                         m_State++; // m_State change when even one shrink direction has been changed
                         break;
