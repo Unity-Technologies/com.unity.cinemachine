@@ -53,9 +53,12 @@ namespace Cinemachine
                         {
                             shrinkablePolygon.Simplify(shrinkAmount);
                         }
-                        
-                        ShrinkablePolygon.DivideAlongIntersections(shrinkablePolygon, 
-                            out List<ShrinkablePolygon> subPolygons);
+
+                        if (ShrinkablePolygon.DivideAlongIntersections(shrinkablePolygon,
+                            out List<ShrinkablePolygon> subPolygons))
+                        {
+                            return; // stop at first intersection
+                        }
                         nextPolygonIteration.AddRange(subPolygons);
                     }
                     else

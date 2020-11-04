@@ -62,7 +62,7 @@ namespace Cinemachine
         [Tooltip("The confiner will correctly confine up to this maximum orthographic size. " +
                  "If set to 0, then this parameter is ignored and all camera sizes are supported. " +
                  "Use it to optimize computation and memory costs.")]
-        public float m_MaxOrthoSize;
+        internal float m_MaxOrthoSize;
         
         /// <summary>
         /// Lower values will significantly improve performance but confine less precisely.  
@@ -71,7 +71,7 @@ namespace Cinemachine
         [Tooltip("Lower values will significantly improve performance but confine less precisely.  "
             + "Set this to the lowest value that gives acceptable results for the specific confining shape.")]
         [Range(1, 1 + k_BakingResolutionSteps)]
-        public float m_CacheResolution;
+        private float m_CacheResolution; // TODO: discuss: I think 0.1f is too big. It does not give a smooth change.
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
@@ -429,7 +429,8 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
-            m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
+            m_CacheResolution = 1; // TODO: discuss: I think 0.1f is too big. It does not give a smooth change.
+            // m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
         }
 
         private void Reset()

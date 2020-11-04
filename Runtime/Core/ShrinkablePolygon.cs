@@ -979,11 +979,15 @@ namespace Cinemachine
             return false; // subPolygons does not have nice intersections
         }
 
-       private static readonly List<ShrinkablePolygon> m_subShrinkablePolygon = new List<ShrinkablePolygon>();
+        private static readonly List<ShrinkablePolygon> m_subShrinkablePolygon = new List<ShrinkablePolygon>();
+        
         /// <summary>
         /// Divides input shrinkable polygon into subpolygons until it has no more intersections.
         /// </summary>
-        public static void DivideAlongIntersections(ShrinkablePolygon subPolygons, 
+        /// <param name="subPolygons"></param>
+        /// <param name="subShrinkablePolygon"></param>
+        /// <returns>Returns True, if encountered an intersection. False, otherwise</returns>
+        public static bool DivideAlongIntersections(ShrinkablePolygon subPolygons, 
             out List<ShrinkablePolygon> subShrinkablePolygon)
         {
             m_subShrinkablePolygon.Clear();
@@ -992,8 +996,11 @@ namespace Cinemachine
             while (maxIteration > 0 && DivideShrinkablePolygon(ref subPolygons, ref subShrinkablePolygon))
             {
                 maxIteration--;
+                return true;
             }
             subShrinkablePolygon.Add(subPolygons); // add remaining subPolygons
+
+            return false; //return maxIteration < 10; // maxIteration is decremented after an intersection
         }
         
         /// <summary>
