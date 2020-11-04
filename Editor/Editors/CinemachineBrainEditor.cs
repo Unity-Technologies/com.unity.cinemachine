@@ -6,6 +6,9 @@ using System.IO;
 
 namespace Cinemachine.Editor
 {
+    /// <summary>
+    /// Inspector for CinemachineBrain
+    /// </summary>
     [CustomEditor(typeof(CinemachineBrain))]
     [CanEditMultipleObjects]
     public sealed class CinemachineBrainEditor : BaseEditor<CinemachineBrain>

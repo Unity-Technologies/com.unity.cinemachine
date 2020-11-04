@@ -252,6 +252,23 @@ namespace Cinemachine.Editor
 
         internal static event Action AdditionalCategories = null;
 
+        [InitializeOnLoadMethod]
+        /// Ensures that CM Brain logo is added to the Main Camera
+        /// after adding a virtual camera to the project for the first time
+        static void OnPackageLoadedInEditor()
+        {
+            if (CinemachineLogoTexture == null) 
+            {
+                // After adding the CM to a project, we need to wait for one update cycle for the assets to load
+                EditorApplication.update += OnPackageLoadedInEditor; 
+            }
+            else
+            {
+                EditorApplication.update -= OnPackageLoadedInEditor;
+                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI; // Update hierarchy with CM Brain logo
+            }
+        }
+
         static CinemachineSettings()
         {
             if (CinemachineLogoTexture != null)
@@ -303,6 +320,11 @@ namespace Cinemachine.Editor
 
                 GUILayout.EndScrollView();
             }
+
+            // Storyboard global mute
+            CinemachineStoryboardMute.Enabled = EditorGUILayout.Toggle(
+                new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted."), 
+                CinemachineStoryboardMute.Enabled);
 
             sScrollPosition = GUILayout.BeginScrollView(sScrollPosition);
 

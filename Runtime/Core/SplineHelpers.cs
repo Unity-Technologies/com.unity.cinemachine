@@ -2,8 +2,18 @@ using UnityEngine;
 
 namespace Cinemachine.Utility
 {
+    /// <summary>
+    /// A collection of utilities relating to Bezier splines
+    /// </summary>
     public static class SplineHelpers
     {
+        /// <summary>Compute the value of a 4-point 3-dimensional bezier spline</summary>
+        /// <param name="t">How far along the spline (0...1)</param>
+        /// <param name="p0">First point</param>
+        /// <param name="p1">First tangent</param>
+        /// <param name="p2">Second point</param>
+        /// <param name="p3">Second tangent</param>
+        /// <returns>The spline value at t</returns>
         public static Vector3 Bezier3(
             float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
@@ -13,6 +23,13 @@ namespace Cinemachine.Utility
                 + 3f * d * t * t * p2 + t * t * t * p3;
         }
 
+        /// <summary>Compute the tangent of a 4-point 3-dimensional bezier spline</summary>
+        /// <param name="t">How far along the spline (0...1)</param>
+        /// <param name="p0">First point</param>
+        /// <param name="p1">First tangent</param>
+        /// <param name="p2">Second point</param>
+        /// <param name="p3">Second tangent</param>
+        /// <returns>The spline tangent at t</returns>
         public static Vector3 BezierTangent3(
             float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
@@ -22,6 +39,13 @@ namespace Cinemachine.Utility
                 -  3f * p0 + 3f * p1;
         }
 
+        /// <summary>Compute the value of a 4-point 1-dimensional bezier spline</summary>
+        /// <param name="t">How far along the spline (0...1)</param>
+        /// <param name="p0">First point</param>
+        /// <param name="p1">First tangent</param>
+        /// <param name="p2">Second point</param>
+        /// <param name="p3">Second tangent</param>
+        /// <returns>The spline value at t</returns>
         public static float Bezier1(float t, float p0, float p1, float p2, float p3)
         {
             t = Mathf.Clamp01(t);
@@ -30,6 +54,13 @@ namespace Cinemachine.Utility
                 + 3f * d * t * t * p2 + t * t * t * p3;
         }
 
+        /// <summary>Compute the tangent of a 4-point 1-dimensional bezier spline</summary>
+        /// <param name="t">How far along the spline (0...1)</param>
+        /// <param name="p0">First point</param>
+        /// <param name="p1">First tangent</param>
+        /// <param name="p2">Second point</param>
+        /// <param name="p3">Second tangent</param>
+        /// <returns>The spline tangent at t</returns>
         public static float BezierTangent1(
             float t, float p0, float p1, float p2, float p3)
         {
@@ -39,6 +70,13 @@ namespace Cinemachine.Utility
                 -  3f * p0 + 3f * p1;
         }
 
+        /// <summary>
+        /// Use the Thomas algorithm to compute smooth tangent values for a spline.  
+        /// Resultant tangents guarantee second-order smoothness of the curve.
+        /// </summary>
+        /// <param name="knot">The knots defining the curve</param>
+        /// <param name="ctrl1">Output buffer for the first control points (1 per knot)</param>
+        /// <param name="ctrl2">Output buffer for the second control points (1 per knot)</param>
         public static void ComputeSmoothControlPoints(
             ref Vector4[] knot, ref Vector4[] ctrl1, ref Vector4[] ctrl2)
         {
@@ -104,6 +142,14 @@ namespace Cinemachine.Utility
             }
         }
 
+        /// <summary>
+        /// Use the Thomas algorithm to compute smooth tangent values for a spline.  
+        /// This method will assume that the spline is looped (i.e. that the last knot is followed by the first).
+        /// Resultant tangents guarantee second-order smoothness of the curve.
+        /// </summary>
+        /// <param name="knot">The knots defining the curve</param>
+        /// <param name="ctrl1">Output buffer for the first control points (1 per knot)</param>
+        /// <param name="ctrl2">Output buffer for the second control points (1 per knot)</param>
         public static void ComputeSmoothControlPointsLooped(
             ref Vector4[] knot, ref Vector4[] ctrl1, ref Vector4[] ctrl2)
         {

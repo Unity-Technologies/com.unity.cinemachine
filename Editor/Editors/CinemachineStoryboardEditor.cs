@@ -11,22 +11,9 @@ namespace Cinemachine.Editor
     [InitializeOnLoad]
     internal class CinemachineStoryboardMute
     {
-        const string StoryboardGlobalMuteMenuName = "Cinemachine/Storyboard Global Mute";
-        [MenuItem(StoryboardGlobalMuteMenuName, false)]
-        public static void StoryboardGlobalMute()
-        {
-            bool enable = !CinemachineStoryboardMute.Enabled;
-            CinemachineStoryboardMute.Enabled = enable;
-        }
-
         static CinemachineStoryboardMute()
         {
             CinemachineStoryboard.s_StoryboardGlobalMute = Enabled;
-
-             /// Delaying until first editor tick so that the menu
-             /// will be populated before setting check state, and
-             /// re-apply correct action
-             EditorApplication.delayCall += () => { UnityEditor.Menu.SetChecked(StoryboardGlobalMuteMenuName, Enabled); };
         }
 
         public static string kEnabledKey = "StoryboardMute_Enabled";
@@ -39,8 +26,6 @@ namespace Cinemachine.Editor
                 {
                     EditorPrefs.SetBool(kEnabledKey, value);
                     CinemachineStoryboard.s_StoryboardGlobalMute = value;
-                    UnityEditor.Menu.SetChecked(StoryboardGlobalMuteMenuName, value);
-
                     InspectorUtility.RepaintGameView();
                 }
             }

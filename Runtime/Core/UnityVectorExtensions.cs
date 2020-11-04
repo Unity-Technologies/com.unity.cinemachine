@@ -146,6 +146,9 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>Much more stable for small angles than Unity's native implementation</summary>
+        /// <param name="v1">The first vector</param>
+        /// <param name="v2">The second vector</param>
+        /// <returns>Angle between the vectors, in degrees</returns>
         public static float Angle(Vector3 v1, Vector3 v2)
         {
 #if false // Maybe this version is better?  to test....
@@ -161,6 +164,10 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>Much more stable for small angles than Unity's native implementation</summary>
+        /// <param name="v1">The first vector</param>
+        /// <param name="v2">The second vector</param>
+        /// <param name="up">Definition of up (used to determine the sign)</param>
+        /// <returns>Signed angle between the vectors, in degrees</returns>
         public static float SignedAngle(Vector3 v1, Vector3 v2, Vector3 up)
         {
             float angle = Angle(v1, v2);
@@ -170,6 +177,10 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>Much more stable for small angles than Unity's native implementation</summary>
+        /// <param name="v1">The first vector</param>
+        /// <param name="v2">The second vector</param>
+        /// <param name="up">Definition of up (used to determine the sign)</param>
+        /// <returns>Rotation between the vectors</returns>
         public static Quaternion SafeFromToRotation(Vector3 v1, Vector3 v2, Vector3 up)
         {
             var axis = Vector3.Cross(v1, v2);
@@ -185,6 +196,7 @@ namespace Cinemachine.Utility
         /// <param name="vB">Second direction</param>
         /// <param name="t">Interpolation amoun t</param>
         /// <param name="up">Defines the up direction</param>
+        /// <returns>Interpolated vector</returns>
         public static Vector3 SlerpWithReferenceUp(
             Vector3 vA, Vector3 vB, float t, Vector3 up)
         {
@@ -213,6 +225,7 @@ namespace Cinemachine.Utility
         /// <param name="qB">Second direction</param>
         /// <param name="t">Interpolation amoun t</param>
         /// <param name="up">Defines the up direction.  Must have a length of 1.</param>
+        /// <returns>Interpolated quaternion</returns>
         public static Quaternion SlerpWithReferenceUp(
             Quaternion qA, Quaternion qB, float t, Vector3 up)
         {
@@ -299,6 +312,7 @@ namespace Cinemachine.Utility
         /// <param name="rot">Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
         /// about local right.</param>
         /// <param name="worldUp">Which way is up</param>
+        /// <returns>Result rotation after the input is applied to the input quaternion</returns>
         public static Quaternion ApplyCameraRotation(
             this Quaternion orient, Vector2 rot, Vector3 worldUp)
         {

@@ -39,6 +39,9 @@ namespace Cinemachine
             public bool Constant;
 
             /// <summary>Get the signal value at a given time, offset by a given amount</summary>
+            /// <param name="time">The current time</param>
+            /// <param name="timeOffset">The (unscaled) offset to add to the current time</param>
+            /// <returns>Value of the signal at desired time</returns>
             public float GetValueAt(float time, float timeOffset)
             {
                 float t = (Frequency * time) + timeOffset;
@@ -66,6 +69,9 @@ namespace Cinemachine
             public NoiseParams Z;
 
             /// <summary>Get the signal value at a given time, offset by a given amount</summary>
+            /// <param name="time">The current time</param>
+            /// <param name="timeOffsets">The (unscaled) offsets (per-channel) to add to the current time</param>
+            /// <returns>Value of the signal at desired time</returns>
             public Vector3 GetValueAt(float time, Vector3 timeOffsets)
             {
                 return new Vector3(
@@ -76,12 +82,14 @@ namespace Cinemachine
         }
 
         /// <summary>The array of positional noise channels for this <c>NoiseSettings</c></summary>
-        [Tooltip("These are the noise channels for the virtual camera's position. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
+        [Tooltip("These are the noise channels for the virtual camera's position. Convincing noise setups "
+            + "typically mix low, medium and high frequencies together, so start with a size of 3")]
         [FormerlySerializedAs("m_Position")]
         public TransformNoiseParams[] PositionNoise = new TransformNoiseParams[0];
 
         /// <summary>The array of orientation noise channels for this <c>NoiseSettings</c></summary>
-        [Tooltip("These are the noise channels for the virtual camera's orientation. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
+        [Tooltip("These are the noise channels for the virtual camera's orientation. Convincing noise "
+            + "setups typically mix low, medium and high frequencies together, so start with a size of 3")]
         [FormerlySerializedAs("m_Orientation")]
         public TransformNoiseParams[] OrientationNoise = new TransformNoiseParams[0];
 
@@ -109,6 +117,7 @@ namespace Cinemachine
         public override float SignalDuration { get { return 0; } }
 
         /// <summary>Interface for raw signal provider</summary>
+        /// <param name="timeSinceSignalStart">Time at which to get signal value</param>
         /// <param name="pos">The position impulse signal</param>
         /// <param name="rot">The rotation impulse signal</param>
         public override void GetSignal(float timeSinceSignalStart, out Vector3 pos, out Quaternion rot)

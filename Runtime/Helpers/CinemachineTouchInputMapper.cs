@@ -8,10 +8,20 @@ using UnityEngine;
 /// </summary>
 public class CinemachineTouchInputMapper : MonoBehaviour
 {
+    /// <summary>Sensitivity multiplier for x-axis</summary>
+    [Tooltip("Sensitivity multiplier for x-axis")]
     public float TouchSensitivityX = 10f;
+
+    /// <summary>Sensitivity multiplier for y-axis</summary>
+    [Tooltip("Sensitivity multiplier for y-axis")]
     public float TouchSensitivityY = 10f;
 
+    /// <summary>Input channel to spoof for X axis</summary>
+    [Tooltip("Input channel to spoof for X axis")]
     public string TouchXInputMapTo = "Mouse X";
+
+    /// <summary>Input channel to spoof for Y axis</summary>
+    [Tooltip("Input channel to spoof for Y axis")]
     public string TouchYInputMapTo = "Mouse Y";
 
     void Start()

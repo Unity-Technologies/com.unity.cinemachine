@@ -16,7 +16,7 @@ namespace Cinemachine.Editor
             GUIContent timeText = new GUIContent(" s", timeProp.tooltip);
             var textDimensions = GUI.skin.label.CalcSize(timeText);
 
-            rect = EditorGUI.PrefixLabel(rect, label);
+            rect = EditorGUI.PrefixLabel(rect, EditorGUI.BeginProperty(rect, label, property));
 
             rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
             rect.width -= floatFieldWidth + textDimensions.x;
