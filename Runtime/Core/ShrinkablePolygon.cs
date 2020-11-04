@@ -329,13 +329,12 @@ namespace Cinemachine
                             continue; // camera is already touching this point
                         }
                         Vector2 cornerTouchingPoint = corner + shrinkDirection;
-                        // TODO: formalize 0.005f e.g. maxCacheRes
-                        if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < 0.005f)
+                        if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < UnityVectorExtensions.Epsilon)
                         {
                             continue;
                         }
                         Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
-                                                0.005f;
+                                                UnityVectorExtensions.Epsilon;
                         clip.Add(new List<IntPoint>(4));
                         Vector2 p1 = point.m_Position + epsilonNormal;
                         Vector2 p2 = cornerTouchingPoint + epsilonNormal;
@@ -979,7 +978,7 @@ namespace Cinemachine
             return false; // subPolygons does not have nice intersections
         }
 
-        private static readonly List<ShrinkablePolygon> m_subShrinkablePolygon = new List<ShrinkablePolygon>();
+        private static readonly List<ShrinkablePolygon> s_subShrinkablePolygon = new List<ShrinkablePolygon>();
         
         /// <summary>
         /// Divides input shrinkable polygon into subpolygons until it has no more intersections.
@@ -990,8 +989,8 @@ namespace Cinemachine
         public static bool DivideAlongIntersections(ShrinkablePolygon subPolygons, 
             out List<ShrinkablePolygon> subShrinkablePolygon)
         {
-            m_subShrinkablePolygon.Clear();
-            subShrinkablePolygon = m_subShrinkablePolygon;
+            s_subShrinkablePolygon.Clear();
+            subShrinkablePolygon = s_subShrinkablePolygon;
             var maxIteration = 10; // In practise max 1-3 intersections at the same time in the same frame.
             while (maxIteration > 0 && DivideShrinkablePolygon(ref subPolygons, ref subShrinkablePolygon))
             {

@@ -109,6 +109,8 @@ namespace Cinemachine
         private float BakingResolution => Mathf.Lerp(
             k_BakingMinResolution, k_BakingMaxResolution, (m_CacheResolution - 1) / k_BakingResolutionSteps);
 
+        private float m_currentFrustumHeight = 0;
+        
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
@@ -123,15 +125,15 @@ namespace Cinemachine
                 
                 var oldCameraPos = state.CorrectedPosition;
                 var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
-                float frustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
+                m_currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(
-                    m_confinerBaker, confinerStateChanged, frustumHeight, BakingResolution);
+                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight, BakingResolution);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone, 
-                    state.Lens.Aspect * frustumHeight, frustumHeight);
+                    state.Lens.Aspect * m_currentFrustumHeight, m_currentFrustumHeight);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
@@ -212,7 +214,7 @@ namespace Cinemachine
                     if (Mathf.Abs(difference.x) > windowWidth || Mathf.Abs(difference.y) > windowHeight)
                     {
                         // penalty for points from which the target is not visible, prefering visibility over proximity
-                        distance += m_confinerBaker.polygonDiagonal; 
+                        distance += m_confinerBaker.m_polygonDiagonal; 
                     }
                     if (distance < minDistance &&
                         (outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c)))
@@ -434,6 +436,12 @@ namespace Cinemachine
                 }
             }
             return originalPath != null;
+        }
+
+        // Used by editor gizmo drawer
+        internal bool IsOverMaxOrthosize()
+        {
+            return m_confinerBaker.m_cachedMaxOrthosize < m_currentFrustumHeight;
         }
 
         private void OnValidate()

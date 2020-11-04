@@ -24,7 +24,8 @@ namespace Cinemachine
 
         private bool m_stopAtFirstIntersection;
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
-        public float polygonDiagonal;
+        public float m_polygonDiagonal;
+        public float m_cachedMaxOrthosize;
         
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
@@ -58,7 +59,7 @@ namespace Cinemachine
                     {
                         if (shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
                         {
-                            shrinkablePolygon.Simplify(shrinkAmount);
+                            //shrinkablePolygon.Simplify(shrinkAmount);
                         }
                         if (ShrinkablePolygon.DivideAlongIntersections(shrinkablePolygon,
                             out List<ShrinkablePolygon> subPolygons) &&
@@ -74,6 +75,8 @@ namespace Cinemachine
                         nextPolygonIteration.Add(shrinkablePolygon);
                     }
                 }
+
+                m_cachedMaxOrthosize = nextPolygonIteration[0].m_FrustumHeight;
 
                 m_shrinkablePolygons.Add(nextPolygonIteration);
                 if (maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_FrustumHeight)
@@ -261,7 +264,7 @@ namespace Cinemachine
 
             float pWidth = maxX - minX;
             float pHeight = Mathf.Max(maxY - minY, pWidth / aspect);
-            polygonDiagonal = Mathf.Sqrt(pWidth * pWidth + pHeight * pHeight);
+            m_polygonDiagonal = Mathf.Sqrt(pWidth * pWidth + pHeight * pHeight);
             return pHeight;
         }
 

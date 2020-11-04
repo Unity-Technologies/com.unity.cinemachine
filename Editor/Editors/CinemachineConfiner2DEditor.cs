@@ -17,12 +17,21 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
+            if (Target.IsOverMaxOrthosize())
+            {
+                EditorGUILayout.HelpBox(
+                    "Camera window size is bigger than the maximum window size calculated by Confiner2D!",
+                    MessageType.Warning);
+            }
+            
             DrawRemainingPropertiesInInspector();
             if (GUILayout.Button("Invalidate Cache"))
             {
                 Target.InvalidateCache();
                 EditorUtility.SetDirty(Target);
             }
+
+            
         }
 
         private static List<List<Vector2>> s_currentPathCache = new List<List<Vector2>>();
