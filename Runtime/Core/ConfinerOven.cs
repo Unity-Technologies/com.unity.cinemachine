@@ -59,7 +59,7 @@ namespace Cinemachine
                     {
                         if (shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
                         {
-                            //shrinkablePolygon.Simplify(shrinkAmount);
+                            shrinkablePolygon.Simplify(shrinkAmount);
                         }
                         if (ShrinkablePolygon.DivideAlongIntersections(shrinkablePolygon,
                             out List<ShrinkablePolygon> subPolygons) &&
