@@ -327,10 +327,10 @@ namespace Cinemachine
             {
                 status = new UpdateStatus
                 {
-                    lastUpdateFixedFrame = 0,
+                    lastUpdateDeltaTime = -2,
                     lastUpdateMode = UpdateTracker.UpdateClock.Late,
                     lastUpdateFrame = Time.frameCount + 2, // so that frameDelta ends up negative
-                    lastUpdateDeltaTime = FixedFrameCount + 2
+                    lastUpdateFixedFrame = FixedFrameCount + 2
                 };
                 mUpdateStatus.Add(vcam, status);
             }
