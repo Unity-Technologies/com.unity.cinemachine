@@ -9,6 +9,8 @@ using UnityEngine;
 
 namespace Cinemachine
 {
+// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
+
 #if CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// <para>
@@ -62,16 +64,20 @@ namespace Cinemachine
         [Tooltip("The confiner will correctly confine up to this maximum orthographic size. " +
                  "If set to 0, then this parameter is ignored and all camera sizes are supported. " +
                  "Use it to optimize computation and memory costs.")]
-        internal float m_MaxOrthoSize;
-        
+        public float m_MaxOrthoSize;
+
         /// <summary>
         /// Lower values will significantly improve performance but confine less precisely.  
         /// Set this to the lowest value that gives acceptable results for the specific confining shape.
         /// </summary>
         [Tooltip("Lower values will significantly improve performance but confine less precisely.  "
-            + "Set this to the lowest value that gives acceptable results for the specific confining shape.")]
+                 + "Set this to the lowest value that gives acceptable results for the specific confining shape.")]
         [Range(1, 1 + k_BakingResolutionSteps)]
-        private float m_CacheResolution; // TODO: discuss: I think 0.1f is too big. It does not give a smooth change.
+#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
+        public float m_CacheResolution;
+#else
+        private float m_CacheResolution;
+#endif
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
@@ -88,7 +94,12 @@ namespace Cinemachine
                 m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, BakingResolution, cameraAspectRatio, out _);
         }
         
-        private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
+#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
+        private readonly ConfinerOven m_confinerBaker = new ConfinerOven(false);
+#else
+        private readonly ConfinerOven m_confinerBaker = new ConfinerOven(true);
+#endif
+        
         private const float m_cornerAngleTreshold = 10f;
 
         internal const float k_BakingMinResolution = 0.1f; // internal, because Tests access it
@@ -429,7 +440,7 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
-            m_CacheResolution = 1; // TODO: discuss: I think 0.1f is too big. It does not give a smooth change.
+            m_CacheResolution = 1;
             // m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
         }
 

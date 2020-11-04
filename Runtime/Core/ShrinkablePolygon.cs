@@ -996,11 +996,10 @@ namespace Cinemachine
             while (maxIteration > 0 && DivideShrinkablePolygon(ref subPolygons, ref subShrinkablePolygon))
             {
                 maxIteration--;
-                return true;
             }
             subShrinkablePolygon.Add(subPolygons); // add remaining subPolygons
 
-            return false; //return maxIteration < 10; // maxIteration is decremented after an intersection
+            return maxIteration < 10; // maxIteration is decremented after an intersection
         }
         
         /// <summary>

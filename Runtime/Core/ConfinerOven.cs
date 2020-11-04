@@ -16,7 +16,13 @@ namespace Cinemachine
             public float m_FrustumHeight;
             public float m_State;
         }
-        
+
+        public ConfinerOven(bool stopAtFirstIntersection)
+        {
+            m_stopAtFirstIntersection = stopAtFirstIntersection;
+        }
+
+        private bool m_stopAtFirstIntersection;
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         public float polygonDiagonal;
         
@@ -54,12 +60,13 @@ namespace Cinemachine
                         {
                             shrinkablePolygon.Simplify(shrinkAmount);
                         }
-
                         if (ShrinkablePolygon.DivideAlongIntersections(shrinkablePolygon,
-                            out List<ShrinkablePolygon> subPolygons))
+                            out List<ShrinkablePolygon> subPolygons) &&
+                            m_stopAtFirstIntersection)
                         {
                             return; // stop at first intersection
                         }
+
                         nextPolygonIteration.AddRange(subPolygons);
                     }
                     else
