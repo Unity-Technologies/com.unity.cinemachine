@@ -43,9 +43,6 @@ namespace Cinemachine.Editor
             Gizmos.color = colorDimmed;
             foreach (var path in s_currentPathCache)
             {
-                // GML Testing to show path divisions
-                Gizmos.color = new Color(1-Gizmos.color.r, 1-Gizmos.color.g, 1-Gizmos.color.b, Gizmos.color.a);
-
                 for (var index = 0; index < path.Count; index++)
                     Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
             }

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
 
-
 namespace Cinemachine
 {
 #if CINEMACHINE_PHYSICS_2D
@@ -15,7 +14,8 @@ namespace Cinemachine
     /// <para>
     /// An add-on module for Cinemachine Virtual Camera that post-processes the final position of the virtual camera.
     /// It will confine the virtual camera view window to the area specified in the Bounding Shape 2D field based on
-    /// the camera's window size and ratio. The confining area is baked and cached at start.
+    /// the camera's window size and ratio. The confining area is calculated and cached. The confining will stop
+    /// calculating the confining area, when the first time the confining area intersects itself.
     /// </para>
     /// 
     /// <para>
