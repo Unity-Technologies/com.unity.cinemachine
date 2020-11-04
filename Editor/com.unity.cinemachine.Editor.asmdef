@@ -63,6 +63,12 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.3.1",
             "define": "CINEMACHINE_LWRP_7_3_1"
+        },
+        {
+            "name": "com.unity.timeline",
+            "expression": "1.5.0-preview.5",
+            "define": "CINEMACHINE_TIMELINE_1_5_0"
         }
-    ]
+    ],
+    "noEngineReferences": false
 }

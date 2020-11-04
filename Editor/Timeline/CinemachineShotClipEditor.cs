@@ -20,10 +20,13 @@ public class CinemachineShotClipEditor : ClipEditor
         static EditorInitialize() { CinemachineMixer.GetMasterPlayableDirector = GetMasterDirector; } 
         static PlayableDirector GetMasterDirector() { return TimelineEditor.masterDirector; }
     }
-
     public delegate double TimelineGlobalToLocalTimeDelegate(double globalTime);
-    public static TimelineGlobalToLocalTimeDelegate TimelineGlobalToLocalTime = NoTimeConversion;
-    public static double NoTimeConversion(double time) { return time; }
+    public static TimelineGlobalToLocalTimeDelegate TimelineGlobalToLocalTime = DefaultTimeConversion;
+#if CINEMACHINE_TIMELINE_1_5_0
+    static double DefaultTimeConversion(double time) { return TimelineEditor.GetInspectedTimeFromMasterTime(time); }
+#else
+    static double DefaultTimeConversion(double time) { return time; }
+#endif
 
     public override ClipDrawOptions GetClipOptions(TimelineClip clip)
     {
@@ -39,6 +42,7 @@ public class CinemachineShotClipEditor : ClipEditor
                     clipOptions.errorText = "A virtual camera must be assigned";
                 else
                     clipOptions.tooltip = vcam.Name;
+
             }
         }
         return clipOptions;
