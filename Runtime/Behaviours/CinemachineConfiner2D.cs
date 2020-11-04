@@ -12,34 +12,47 @@ namespace Cinemachine
 #if CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// <para>
-    /// An add-on module for Cinemachine Virtual Camera that post-processes the final position of the virtual camera.
-    /// It will confine the virtual camera view window to the area specified in the Bounding Shape 2D field based on
-    /// the camera's window size and ratio. The confining area is calculated and cached. The confining will stop
-    /// calculating the confining area, when the confining area intersects itself.
+    /// An add-on module for Cinemachine Virtual Camera that post-processes the final position 
+    /// of the virtual camera.  It will confine the camera's position such that the screen edges stay 
+    /// within a shape defined by a 2D polygon.  This will work for orthographic or perspective cameras, 
+    /// provided that the camera's forward vector remains parallel to the bounding shape's normal, 
+    /// i.e. that the camera is looking straight at the polygon, and not obliquely at it.
     /// </para>
     /// 
     /// <para>
-    /// CinemachineConfiner2D uses a cache to avoid recalculating the confiner unnecessarily.
-    /// If the cache is invalid, it will be automatically recomputed at the next usage (lazy evaluation).
-    /// The cache is automatically invalidated in some well-defined circumstances:
+    /// When confining the camera, the camera's view size at the polygon plane is considered, and 
+    /// also its aspect ratio. Based on this information and the input polygon, a second (smaller) 
+    /// polygon is computed to which the camera's transform is constrained. Computation of this secondary 
+    /// polygon is nontrivial and expensive, so it should be done only when absolutely necessary.
+    /// </para>
+    ///
+    /// <para>
+    /// The cached secondary polygon needs to be recomputed in the following circumstances:
     /// <list type="bullet">
-    /// <item><description> MaxOrthoSize parameter changes.</description></item>
-    /// <item><description> Aspect ratio of the parent vcam changes.</description></item>
-    /// <item><description> Input collider object changes (i.e. use another Collider2D).</description></item>
+    /// <item><description> when the input polygon's points change.</description></item>
+    /// <item><description> when the input polygon is non-uniformly scaled, or.</description></item>
+    /// <item><description> when the input polygon is rotated.</description></item>
     /// </list>
+    /// For efficiency reasons, Cinemachine will not automatically regenerate the inner polygon 
+    /// in these cases, and it is the responsibility of the client to call the InvalidateCache() 
+    /// method to trigger the recalculation. An inspector button is also provided for this purpose.
     /// </para>
-    /// 
+    ///
     /// <para>
-    /// The cache is <strong>NOT</strong> automatically invalidated (due to high computation cost every frame) if the
-    /// contents of the confining shape change (e.g. points get moved dynamically). In that case, the client must call
-    /// the InvalidateCache() function or the user must click the Invalidate Cache button in the component's
-    /// inspector.
+    /// If the input polygon scales uniformly or translates, the cache remains valid. If the 
+    /// polygon rotates, then the cache degrades in quality (more or less depending on the aspect 
+    /// ratio - it's better if the ratio is close to 1:1) but can still be used. 
+    /// Regenerating it will eliminate the imperfections.
     /// </para>
-    /// 
+    ///
     /// <para>
-    /// Collider's Transform changes are supported, but after changing the Scale or Rotation components the cache is
-    /// going to be invalid. If the users would like to have a valid cache, then they must call the
-    /// InvalidateCache() function or the user must click the Invalidate Cache button in the component's inspector.
+    /// The cached secondary polygon is not a single polygon, but rather a family of polygons from 
+    /// which a member is chosen depending on the current size of the camera view. The number of 
+    /// polygons in this family will depend on the complexity of the input polygon, and the maximum 
+    /// expected camera view size. The MaxOrthoSize property is provided to give a hint to the 
+    /// algorithm to stop generating polygons for camera view sizes larger than the one specified. 
+    /// This can represent a substantial cost saving when regenerating the cache, so it is a good 
+    /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
     /// </para>
     /// </summary>
     [SaveDuringPlay, ExecuteAlways]
@@ -71,7 +84,7 @@ namespace Cinemachine
         [Tooltip("Lower values will significantly improve performance but confine less precisely.  "
             + "Set this to the lowest value that gives acceptable results for the specific confining shape.")]
         [Range(1, 1 + k_BakingResolutionSteps)]
-        private float m_CacheResolution; // TODO: discuss: I think 0.1f is too big. It does not give a smooth change.
+        private float m_CacheResolution;
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
@@ -89,11 +102,11 @@ namespace Cinemachine
         }
         
         private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
-        private const float m_cornerAngleTreshold = 10f;
 
+        private const float m_cornerAngleTreshold = 10f;
         internal const float k_BakingMinResolution = 0.1f; // internal, because Tests access it
         internal const float k_BakingMaxResolution = 0.005f; // internal, because Tests access it
-        const float k_BakingResolutionSteps = 10;
+        private const float k_BakingResolutionSteps = 10;
 
         private float BakingResolution => Mathf.Lerp(
             k_BakingMinResolution, k_BakingMaxResolution, (m_CacheResolution - 1) / k_BakingResolutionSteps);
@@ -429,8 +442,7 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
-            m_CacheResolution = 1; // TODO: discuss: I think 0.1f is too big. It does not give a smooth change.
-            // m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
+            m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
         }
 
         private void Reset()
