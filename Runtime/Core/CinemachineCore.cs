@@ -323,10 +323,15 @@ namespace Cinemachine
             // Have we already been updated this frame?
             if (mUpdateStatus == null)
                 mUpdateStatus = new Dictionary<CinemachineVirtualCameraBase, UpdateStatus>();
-            UpdateStatus status;
-            if (!mUpdateStatus.TryGetValue(vcam, out status))
+            if (!mUpdateStatus.TryGetValue(vcam, out UpdateStatus status))
             {
-                status = new UpdateStatus();
+                status = new UpdateStatus
+                {
+                    lastUpdateDeltaTime = -2,
+                    lastUpdateMode = UpdateTracker.UpdateClock.Late,
+                    lastUpdateFrame = Time.frameCount + 2, // so that frameDelta ends up negative
+                    lastUpdateFixedFrame = FixedFrameCount + 2
+                };
                 mUpdateStatus.Add(vcam, status);
             }
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
@@ -355,13 +360,6 @@ namespace Cinemachine
             public int lastUpdateFixedFrame;
             public UpdateTracker.UpdateClock lastUpdateMode;
             public float lastUpdateDeltaTime;
-            public UpdateStatus()
-            {
-                lastUpdateFrame = -2;
-                lastUpdateFixedFrame = 0;
-                lastUpdateMode = UpdateTracker.UpdateClock.Late;
-                lastUpdateDeltaTime = -2;
-            }
         }
         Dictionary<CinemachineVirtualCameraBase, UpdateStatus> mUpdateStatus;
 
