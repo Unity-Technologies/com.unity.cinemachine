@@ -256,7 +256,8 @@ namespace Cinemachine
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
                     in float frustumHeight, float bakedResolution)
                 {
-                    if (!confinerStateChanged && m_Path != null && Math.Abs(frustumHeight - m_frustumHeight) < bakedResolution)
+                    if (!confinerStateChanged && m_Path != null && 
+                        Math.Abs(frustumHeight - m_frustumHeight) < UnityVectorExtensions.Epsilon)
                     {
                         return;
                     }
