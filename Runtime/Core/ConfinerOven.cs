@@ -18,6 +18,7 @@ namespace Cinemachine
         }
         
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
+        public float polygonDiagonal;
         
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
@@ -253,6 +254,7 @@ namespace Cinemachine
 
             float pWidth = maxX - minX;
             float pHeight = Mathf.Max(maxY - minY, pWidth / aspect);
+            polygonDiagonal = Mathf.Sqrt(pWidth * pWidth + pHeight * pHeight);
             return pHeight;
         }
 
