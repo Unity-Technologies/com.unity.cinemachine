@@ -1,6 +1,7 @@
 #if !UNITY_2019_3_OR_NEWER
 #define CINEMACHINE_PHYSICS_2D
 #endif
+#define CINEMACHINE_EXPERIMENTAL_CONFINER2D
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,6 @@ using UnityEngine;
 
 namespace Cinemachine
 {
-// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
 
 #if CINEMACHINE_PHYSICS_2D
     /// <summary>
@@ -460,8 +460,7 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
-            m_CacheResolution = 1;
-            // m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
+            m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
         }
 
         private void Reset()
