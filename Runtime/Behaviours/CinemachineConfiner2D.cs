@@ -71,13 +71,14 @@ namespace Cinemachine
         public float m_Damping;
 
         /// <summary>
-        /// The confiner will correctly confine up to this maximum orthographic size. If set to 0, then this
-        /// parameter is ignored and all camera sizes are supported. Use it to optimize computation and memory costs.
+        /// The confiner will correctly confine up to the maximum window size (for orthographic camera, this is
+        /// equivalent to the orthographic size) or the first self intersection, whichever comes first.
+        /// If set to 0, then this parameter is ignored. Use it to optimize computation and memory costs.
         /// </summary>
-        [Tooltip("The confiner will correctly confine up to this maximum orthographic size. " +
-                 "If set to 0, then this parameter is ignored and all camera sizes are supported. " +
-                 "Use it to optimize computation and memory costs.")]
-        public float m_MaxOrthoSize;
+        [Tooltip("The confiner will correctly confine up to the maximum window size (for orthographic camera, this is " +
+                 "equivalent to the orthographic size) or the first self intersection, whichever comes first. " +
+                 "If set to 0, then this parameter is ignored. Use it to optimize computation and memory costs.")]
+        public float m_MaxWindowSize;
 
         /// <summary>
         /// Lower values will significantly improve performance but confine less precisely.  
@@ -104,7 +105,7 @@ namespace Cinemachine
         public bool ValidateCache(float cameraAspectRatio)
         {
             return m_shapeCache.ValidateCache(
-                m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, BakingResolution, cameraAspectRatio, out _);
+                m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker, BakingResolution, cameraAspectRatio, out _);
         }
 
         private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
@@ -125,7 +126,7 @@ namespace Cinemachine
             if (stage == CinemachineCore.Stage.Body)
             {
                 if (!m_shapeCache.ValidateCache(
-                    m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, BakingResolution,
+                    m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker, BakingResolution,
                     state.Lens.Aspect, out bool confinerStateChanged))
                 {
                     return; // invalid path
@@ -463,14 +464,14 @@ namespace Cinemachine
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
-            m_MaxOrthoSize = Mathf.Max(0, m_MaxOrthoSize);
+            m_MaxWindowSize = Mathf.Max(0, m_MaxWindowSize);
             m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
         }
 
         private void Reset()
         {
             m_Damping = 0.5f;
-            m_MaxOrthoSize = 0;
+            m_MaxWindowSize = 0;
             m_CacheResolution = 1;
         }
     }
