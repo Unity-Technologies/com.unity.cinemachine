@@ -98,7 +98,7 @@ public class Confiner2DTests
         var polygonCollider2D = go.AddComponent<PolygonCollider2D>();
         confiner2D.m_BoundingShape2D = polygonCollider2D;
         confiner2D.m_Damping = 0;
-        confiner2D.m_MaxOrthoSize = 0;
+        confiner2D.m_MaxWindowSize = 0;
         {
             polygonCollider2D.points = new[]
             {
@@ -145,7 +145,7 @@ public class Confiner2DTests
         var polygonCollider2D = go.AddComponent<PolygonCollider2D>();
         confiner2D.m_BoundingShape2D = polygonCollider2D;
         confiner2D.m_Damping = 0;
-        confiner2D.m_MaxOrthoSize = 0;
+        confiner2D.m_MaxWindowSize = 0;
         { // clockwise
             polygonCollider2D.points = new[]
             {
@@ -245,7 +245,7 @@ public class Confiner2DTests
         polygonCollider2D.usedByComposite = true;
         confiner2D.m_BoundingShape2D = compositeCollider2D;
         confiner2D.m_Damping = 0;
-        confiner2D.m_MaxOrthoSize = 0;
+        confiner2D.m_MaxWindowSize = 0;
         { // clockwise
             polygonCollider2D.points = new[]
             {
