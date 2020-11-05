@@ -57,8 +57,7 @@ namespace Cinemachine
                     ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
                     if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint))
                     {
-                        if (!m_stopAtFirstIntersection && 
-                            shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
+                        if (shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
                         {
                             shrinkablePolygon.Simplify(shrinkAmount);
                         }

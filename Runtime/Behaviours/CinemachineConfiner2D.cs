@@ -1,7 +1,7 @@
 #if !UNITY_2019_3_OR_NEWER
 #define CINEMACHINE_PHYSICS_2D
 #endif
-#define CINEMACHINE_EXPERIMENTAL_CONFINER2D
+// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
 
 using System;
 using System.Collections.Generic;
