@@ -313,30 +313,25 @@ namespace Cinemachine.PostFX
 
             if (found)
             {
-                if (layer) // note: this is not the same check as (layer == null)
-                {
-                    // layer is a deleted object
-                    brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
-                    mBrainToLayer.Remove(brain);
-                    layer = null;
-                }
+                // layer is a deleted object
+                brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+                mBrainToLayer.Remove(brain);
+                layer = null;
             }
-            else
-            {
-                // Brain is not in our lookup - add it
+            // Brain is not in our lookup - add it
 #if UNITY_2019_2_OR_NEWER
-                brain.TryGetComponent(out layer);
+            brain.TryGetComponent(out layer);
 #else
-                layer = brain.GetComponent<PostProcessLayer>();
+            layer = brain.GetComponent<PostProcessLayer>();
 #endif
-                if (layer != null)
-                    brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
+            if (layer != null)
+                brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
 #if UNITY_EDITOR
-                // Never add null in edit mode in case user adds a layer dynamically
-                if (Application.isPlaying || layer != null)  
+            // Never add null in edit mode in case user adds a layer dynamically
+            if (Application.isPlaying || layer != null)  
 #endif
-                    mBrainToLayer[brain] = layer;
-            }
+                mBrainToLayer[brain] = layer;
+
             return layer;
         }
 
