@@ -218,17 +218,17 @@ namespace Cinemachine
                 m_confinerStates.Capacity = m_shrinkablePolygons.Count;
             for (int i = 0; i < m_shrinkablePolygons.Count; ++i)
             {
-                float stateMax = float.NegativeInfinity;
+                float stateSum = 0;
                 for (int j = 0; j < m_shrinkablePolygons[i].Count; ++j)
                 {
-                    stateMax = Mathf.Max(stateMax, m_shrinkablePolygons[i][j].m_State);
+                    stateSum += m_shrinkablePolygons[i][j].m_State;
                 }
                 
                 m_confinerStates.Add(new ConfinerState
                 {
                     m_FrustumHeight = m_shrinkablePolygons[i][0].m_FrustumHeight,
                     m_Polygons = m_shrinkablePolygons[i],
-                    m_State = stateMax,
+                    m_State = stateSum,
                 });
             }
 
