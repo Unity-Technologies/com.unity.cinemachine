@@ -205,7 +205,7 @@ namespace Cinemachine
             return result;
         }
         
-        private List<ConfinerState> m_confinerStates;
+        private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
         /// <summary>
         /// Converts and returns m_shrinkablePolygons into List<ConfinerState>
         /// </summary>
@@ -213,7 +213,9 @@ namespace Cinemachine
         {
             TrimShrinkablePolygons();
 
-            m_confinerStates = new List<ConfinerState>();
+            m_confinerStates.Clear();
+            if (m_confinerStates.Capacity < m_shrinkablePolygons.Count)
+                m_confinerStates.Capacity = m_shrinkablePolygons.Count;
             for (int i = 0; i < m_shrinkablePolygons.Count; ++i)
             {
                 float stateMax = float.NegativeInfinity;
