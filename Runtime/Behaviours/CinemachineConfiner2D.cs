@@ -144,7 +144,7 @@ namespace Cinemachine
                     m_confinerBaker, confinerStateChanged, m_currentFrustumHeight, BakingResolution);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
-                    extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone, 
+                    extra.m_VcamShapeCache.m_Path, 
                     state.Lens.Aspect * m_currentFrustumHeight, m_currentFrustumHeight);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
@@ -202,14 +202,14 @@ namespace Cinemachine
         /// </summary>
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
-        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache, 
-            in bool hasBone, in float windowWidth, in float windowHeight)
+        private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
+            in float windowWidth, in float windowHeight)
         {
-            bool outsideOfOriginal = !ShrinkablePolygon.IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
-            if (!outsideOfOriginal && ShrinkablePolygon.IsInside(pathCache, positionToConfine))
+            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
             {
                 return positionToConfine;
             }
+            bool outsideOfOriginal = !ShrinkablePolygon.IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
 
             Vector2 closest = positionToConfine;
             float minDistance = float.MaxValue;
@@ -226,10 +226,11 @@ namespace Cinemachine
                     if (Mathf.Abs(difference.x) > windowWidth || Mathf.Abs(difference.y) > windowHeight)
                     {
                         // penalty for points from which the target is not visible, prefering visibility over proximity
-                        distance += m_confinerBaker.m_polygonDiagonal; 
+                        distance += m_confinerBaker.m_sqrPolygonDiagonal; 
                     }
-                    if (distance < minDistance &&
-                        (outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c)))
+
+                    bool isValid = outsideOfOriginal || !DoesIntersectOriginal(positionToConfine, c);
+                    if (distance < minDistance && isValid)
                     {
                         minDistance = distance;
                         closest = c;
@@ -269,7 +270,7 @@ namespace Cinemachine
             internal struct VcamShapeCache
             {
                 public List<List<Vector2>> m_Path;
-                public bool m_PathHasBone;
+                private bool m_PathHasBone;
                 
                 private float m_frustumHeight;
                 

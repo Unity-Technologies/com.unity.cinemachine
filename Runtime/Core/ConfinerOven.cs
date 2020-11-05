@@ -24,7 +24,7 @@ namespace Cinemachine
 
         private bool m_stopAtFirstIntersection;
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
-        public float m_polygonDiagonal;
+        public float m_sqrPolygonDiagonal;
         public float m_cachedMaxOrthosize;
         
         /// <summary>
@@ -265,7 +265,7 @@ namespace Cinemachine
 
             float pWidth = maxX - minX;
             float pHeight = Mathf.Max(maxY - minY, pWidth / aspect);
-            m_polygonDiagonal = Mathf.Sqrt(pWidth * pWidth + pHeight * pHeight);
+            m_sqrPolygonDiagonal = pWidth * pWidth + pHeight * pHeight;
             return pHeight;
         }
 
