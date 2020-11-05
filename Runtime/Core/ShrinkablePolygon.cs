@@ -816,6 +816,7 @@ namespace Cinemachine
             return closestPoint;
         }
 
+        internal static int s_simplifyPenalty = 10;
         /// <summary>
         /// Removes points that are the same or very close.
         /// </summary>
@@ -863,7 +864,7 @@ namespace Cinemachine
 
             if (changeState)
             {
-                m_State++;
+                m_State += s_simplifyPenalty; // simplify is a state change that cannot be lerped
             }
         }
 

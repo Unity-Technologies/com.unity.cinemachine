@@ -145,37 +145,24 @@ namespace Cinemachine
             {
                 if (m_confinerStates[i].m_FrustumHeight <= frustumHeight)
                 {
-                    if (!m_stopAtFirstIntersection)
+                    if (i == m_confinerStates.Count - 1)
                     {
-                        if (i == m_confinerStates.Count - 1)
-                        {
-                            result = m_confinerStates[i];
-                        }
-                        else
-                        {
-                            result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
-                        }
+                        result = m_confinerStates[i];
+                    }
+                    else if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 
+                             ShrinkablePolygon.s_simplifyPenalty)
+                    {
+                        // blend between m_confinerStates with same m_State
+                        result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
                     }
                     else
                     {
-                        if (i == m_confinerStates.Count - 1)
-                        {
-                            result = m_confinerStates[i];
-                        }
-                        else if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 1e-6f)
-                        {
-                            // blend between m_confinerStates with same m_State
-                            result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
-                        }
-                        else
-                        {
-                            // choose m_confinerStates with windowSize closer to frustumHeight
-                            result = 
-                                Mathf.Abs(m_confinerStates[i].m_FrustumHeight - frustumHeight) < 
-                                Mathf.Abs(m_confinerStates[i + 1].m_FrustumHeight - frustumHeight) ? 
-                                    m_confinerStates[i] : 
-                                    m_confinerStates[i+1];
-                        }
+                        // choose m_confinerStates with windowSize closer to frustumHeight
+                        result = 
+                            Mathf.Abs(m_confinerStates[i].m_FrustumHeight - frustumHeight) < 
+                            Mathf.Abs(m_confinerStates[i + 1].m_FrustumHeight - frustumHeight) ? 
+                                m_confinerStates[i] : 
+                                m_confinerStates[i+1];
                     }
                     break;
                 }
