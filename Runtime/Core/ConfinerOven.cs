@@ -17,12 +17,6 @@ namespace Cinemachine
             public float m_State;
         }
 
-        public ConfinerOven(bool stopAtFirstIntersection)
-        {
-            m_stopAtFirstIntersection = stopAtFirstIntersection;
-        }
-
-        private bool m_stopAtFirstIntersection;
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         public float m_sqrPolygonDiagonal;
         public float m_cachedMaxOrthosize;
@@ -35,7 +29,7 @@ namespace Cinemachine
         /// the connectivity information between sub-polygons.
         /// </summary>
         public void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
-            float maxOrthosize, in bool shrinkToPoint)
+            float maxOrthosize, in bool shrinkToPoint, in bool stopAtFirstIntersection)
         {
             float polygonHalfHeight = HeightOfAspectBasedBoundingBoxAroundPolygons(inputPath, sensorRatio) / 2f;
             if (maxOrthosize == 0 || maxOrthosize > polygonHalfHeight) // exact comparison to 0 is intentional!
@@ -63,7 +57,7 @@ namespace Cinemachine
                         }
                         if (ShrinkablePolygon.DivideAlongIntersections(shrinkablePolygon,
                             out List<ShrinkablePolygon> subPolygons) &&
-                            m_stopAtFirstIntersection)
+                            stopAtFirstIntersection)
                         {
                             return; // stop at first intersection
                         }
@@ -149,7 +143,7 @@ namespace Cinemachine
                         result = m_confinerStates[i];
                     }
                     else if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 
-                             ShrinkablePolygon.s_simplifyPenalty)
+                             ShrinkablePolygon.s_nonLerpableStateChangePenalty)
                     {
                         // blend between m_confinerStates with same m_State
                         result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
@@ -222,18 +216,17 @@ namespace Cinemachine
             m_confinerStates = new List<ConfinerState>();
             for (int i = 0; i < m_shrinkablePolygons.Count; ++i)
             {
-                float stateAverage = m_shrinkablePolygons[i].Count;
+                float stateMax = float.NegativeInfinity;
                 for (int j = 0; j < m_shrinkablePolygons[i].Count; ++j)
                 {
-                    stateAverage += m_shrinkablePolygons[i][j].m_State;
+                    stateMax = Mathf.Max(stateMax, m_shrinkablePolygons[i][j].m_State);
                 }
-                stateAverage /= m_shrinkablePolygons[i].Count + 1;
                 
                 m_confinerStates.Add(new ConfinerState
                 {
                     m_FrustumHeight = m_shrinkablePolygons[i][0].m_FrustumHeight,
                     m_Polygons = m_shrinkablePolygons[i],
-                    m_State = stateAverage,
+                    m_State = stateMax,
                 });
             }
 

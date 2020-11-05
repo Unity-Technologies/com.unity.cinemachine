@@ -816,7 +816,7 @@ namespace Cinemachine
             return closestPoint;
         }
 
-        internal static int s_simplifyPenalty = 10;
+        internal static int s_nonLerpableStateChangePenalty = 10; // penalty for non-lerpable state changes
         /// <summary>
         /// Removes points that are the same or very close.
         /// </summary>
@@ -864,7 +864,7 @@ namespace Cinemachine
 
             if (changeState)
             {
-                m_State += s_simplifyPenalty; // simplify is a state change that cannot be lerped
+                m_State += s_nonLerpableStateChangePenalty; // simplify is a state change that cannot be lerped
             }
         }
 
@@ -902,7 +902,7 @@ namespace Cinemachine
                         {
                             g1.m_FrustumHeight = shrinkablePolygon.m_FrustumHeight;
                             g1.m_IntersectionPoints.Add(intersection);
-                            g1.m_State = shrinkablePolygon.m_State + 1;
+                            g1.m_State = shrinkablePolygon.m_State + s_nonLerpableStateChangePenalty;
                             g1.m_MinArea = shrinkablePolygon.m_MinArea;
 
                             // g1 -> intersection j+1 ... i
@@ -931,7 +931,7 @@ namespace Cinemachine
                         {
                             g2.m_FrustumHeight = shrinkablePolygon.m_FrustumHeight;
                             g2.m_IntersectionPoints.Add(intersection);
-                            g2.m_State = shrinkablePolygon.m_State + 1;
+                            g2.m_State = shrinkablePolygon.m_State + s_nonLerpableStateChangePenalty;
                             g2.m_MinArea = shrinkablePolygon.m_MinArea;
 
                             // g2 -> intersection i+1 ... j

@@ -106,12 +106,8 @@ namespace Cinemachine
             return m_shapeCache.ValidateCache(
                 m_BoundingShape2D, m_MaxOrthoSize, m_confinerBaker, BakingResolution, cameraAspectRatio, out _);
         }
-        
-#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
-        private readonly ConfinerOven m_confinerBaker = new ConfinerOven(false);
-#else
-        private readonly ConfinerOven m_confinerBaker = new ConfinerOven(true);
-#endif
+
+        private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
 
         private const float m_cornerAngleTreshold = 10f;
         internal const float k_BakingMinResolution = 0.1f; // internal, because Tests access it
@@ -144,7 +140,7 @@ namespace Cinemachine
                     m_confinerBaker, confinerStateChanged, m_currentFrustumHeight, BakingResolution);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
-                    extra.m_VcamShapeCache.m_Path, 
+                    extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
                     state.Lens.Aspect * m_currentFrustumHeight, m_currentFrustumHeight);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
@@ -203,7 +199,7 @@ namespace Cinemachine
         /// <param name="positionToConfine">2D point to confine</param>
         /// <returns>Confined position</returns>
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
-            in float windowWidth, in float windowHeight)
+            in bool hasBone, in float windowWidth, in float windowHeight)
         {
             if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
             {
@@ -228,8 +224,11 @@ namespace Cinemachine
                         // penalty for points from which the target is not visible, prefering visibility over proximity
                         distance += m_confinerBaker.m_sqrPolygonDiagonal; 
                     }
-
+#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
+                    bool isValid = outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c);
+#else
                     bool isValid = outsideOfOriginal || !DoesIntersectOriginal(positionToConfine, c);
+#endif
                     if (distance < minDistance && isValid)
                     {
                         minDistance = distance;
@@ -270,7 +269,7 @@ namespace Cinemachine
             internal struct VcamShapeCache
             {
                 public List<List<Vector2>> m_Path;
-                private bool m_PathHasBone;
+                public bool m_PathHasBone;
                 
                 private float m_frustumHeight;
                 
@@ -394,7 +393,11 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, true);
+#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
+                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, true, false);
+#else
+                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, true, true);
+#endif
                 m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
