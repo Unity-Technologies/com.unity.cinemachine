@@ -71,13 +71,18 @@ namespace Cinemachine
         public float m_Damping;
 
         /// <summary>
-        /// The confiner will correctly confine up to the maximum window size (for orthographic camera, this is
-        /// equivalent to the orthographic size) or the first self intersection, whichever comes first.
-        /// If set to 0, then this parameter is ignored. Use it to optimize computation and memory costs.
+        /// To optimize computation and memory costs, set this to the largest view size that the camera 
+        /// is expected to have.  The confiner will not compute a polygon cache for frustum sizes larger 
+        /// than this.  This refers to the size in world units of the frustum at the confiner plane 
+        /// (for orthographic cameras, this is just the orthographic size).  If set to 0, then this 
+        /// parameter is ignored and a polygon cache will be calculated for all potential window sizes.
         /// </summary>
-        [Tooltip("The confiner will correctly confine up to the maximum window size (for orthographic camera, this is " +
-                 "equivalent to the orthographic size) or the first self intersection, whichever comes first. " +
-                 "If set to 0, then this parameter is ignored. Use it to optimize computation and memory costs.")]
+        [Tooltip("To optimize computation and memory costs, set this to the largest view size that the "
+            + "camera is expected to have.  The confiner will not compute a polygon cache for frustum "
+            + "sizes larger than this.  This refers to the size in world units of the frustum at the "
+            + "confiner plane (for orthographic cameras, this is just the orthographic size).  If set "
+            + "to 0, then this parameter is ignored and a polygon cache will be calculated for all "
+            + "potential window sizes.")]
         public float m_MaxWindowSize;
 
         /// <summary>
