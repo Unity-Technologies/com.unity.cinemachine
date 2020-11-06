@@ -40,7 +40,7 @@ namespace Cinemachine
 
             var aspectData = new ShrinkablePolygon.AspectData(aspectRatio);
             
-            m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, aspectRatio);
+            m_shrinkablePolygons = CreateShrinkablePolygons(inputPath);
             var polyIndex = 0;
             var shrinking = true;
             while (shrinking)
@@ -98,36 +98,28 @@ namespace Cinemachine
         /// Converts and returns shrinkable polygons from a polygons
         /// </summary>
         public static List<List<ShrinkablePolygon>> CreateShrinkablePolygons(
-            in List<List<Vector2>> paths, in float aspectRatio)
+            in List<List<Vector2>> paths)
         {
             int numPaths = paths == null ? 0 : paths.Count;
             var shrinkablePolygons = new List<List<ShrinkablePolygon>>(numPaths);
             if (numPaths > 0)
             {
-                float minX = float.MaxValue, maxX = float.MinValue;
-                float minY = float.MaxValue, maxY = float.MinValue;
                 for (int i = 0; i < numPaths; ++i)
                 {
-                    var newShrinkablePolygon = new ShrinkablePolygon(paths[i]);
-                    int numPoints = newShrinkablePolygon.m_Points.Count;
-                    for (int j = 0; j < numPoints; ++j)
-                    {
-                        var p = newShrinkablePolygon.m_Points[j].m_Position;
-                        minX = Mathf.Min(minX, p.x);
-                        minY = Mathf.Min(minY, p.y);
-                        maxX = Mathf.Max(maxX, p.x);
-                        maxY = Mathf.Max(maxY, p.y);
-                    }
-                    shrinkablePolygons.Add(new List<ShrinkablePolygon> { newShrinkablePolygon });
+                    shrinkablePolygons.Add(new List<ShrinkablePolygon> { new ShrinkablePolygon(paths[i]) });
                 }
 
-                float squareSize = Mathf.Min(maxX - minX, maxY - minY);
                 for (int i = 0; i < shrinkablePolygons.Count; ++i)
                 {
-                    shrinkablePolygons[i][0].m_MinArea = squareSize / 100f;
+                    shrinkablePolygons[i][0].m_MinArea = shrinkablePolygons[i][0].ComputeSignedArea() / 100f;
                 }
             }
             return shrinkablePolygons;
+        }
+
+        private void ComputePolygonArea()
+        {
+            
         }
         
         /// <summary>
@@ -162,7 +154,7 @@ namespace Cinemachine
 
             return new ConfinerState();
         }
-        
+
         /// <summary>
         /// Linearly interpolates between ConfinerStates.
         /// </summary>

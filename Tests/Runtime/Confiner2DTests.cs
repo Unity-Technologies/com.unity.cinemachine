@@ -24,7 +24,7 @@ public class Confiner2DTests
                 };
                 points.Add(inputPolygon);
             }
-            List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points, 1f);
+            List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points);
             Assert.IsTrue(polygons.Count == 1);
             Assert.IsTrue(polygons[0].Count == 1);
             ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], out subShrinkablePolygon1);
@@ -52,7 +52,7 @@ public class Confiner2DTests
                 };
                 points.Add(inputPolygon);
             }
-            List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points, 1f);
+            List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points);
             Assert.IsTrue(polygons.Count == 1);
             Assert.IsTrue(polygons[0].Count == 1);
             ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], out subShrinkablePolygon2);

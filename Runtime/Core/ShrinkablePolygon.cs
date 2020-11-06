@@ -109,7 +109,7 @@ namespace Cinemachine
         /// Computes signed area and determines whether a subPolygons is oriented clockwise or counter-clockwise.
         /// </summary>
         /// <returns>Area of the subPolygons</returns>
-        private float ComputeSignedArea()
+        public float ComputeSignedArea()
         {
             m_area = 0;
             int numPoints = m_Points.Count;
