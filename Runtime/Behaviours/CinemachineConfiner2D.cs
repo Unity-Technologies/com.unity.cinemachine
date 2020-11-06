@@ -143,7 +143,7 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(
-                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight, BakingResolution);
+                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
@@ -281,8 +281,7 @@ namespace Cinemachine
                 /// converts it if the frustum height was changed.
                 /// </summary>
                 public void ValidateCache(
-                    in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float frustumHeight, float bakedResolution)
+                    in ConfinerOven confinerBaker, in bool confinerStateChanged, in float frustumHeight)
                 {
                     if (!confinerStateChanged && m_Path != null && 
                         Math.Abs(frustumHeight - m_frustumHeight) < UnityVectorExtensions.Epsilon)
