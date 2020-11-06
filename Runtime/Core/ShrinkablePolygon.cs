@@ -25,12 +25,36 @@ namespace Cinemachine
             public static readonly Vector2 m_Vector2NaN = new Vector2(float.NaN, float.NaN);
         }
 
+        /// <summary>
+        /// Info relating to current aspect ratio
+        /// </summary>
+        public struct AspectData
+        {
+            public float m_AspectRatio;
+            public float m_AspectRatioBasedDiagonal;
+            public Vector2[] m_NormalDirections;
+
+            public AspectData(float aspectRatio)
+            {
+                m_AspectRatio = aspectRatio;
+                m_AspectRatioBasedDiagonal = Mathf.Sqrt(aspectRatio*aspectRatio + 1);
+                m_NormalDirections = new[]
+                {
+                    Vector2.up,
+                    new Vector2(aspectRatio, 1),
+                    new Vector2(aspectRatio, 0),
+                    new Vector2(aspectRatio, -1),
+                    Vector2.down,
+                    new Vector2(-aspectRatio, -1),
+                    new Vector2(-aspectRatio, 0),
+                    new Vector2(-aspectRatio, 1),
+                };
+            }
+        }
+
         public List<ShrinkablePoint2> m_Points;
         public float m_FrustumHeight;
         public int m_State;
-        public readonly float m_AspectRatio;
-        public readonly float m_AspectRatioBasedDiagonal;
-        public readonly Vector2[] m_NormalDirections;
         public float m_MinArea;
         public List<Vector2> m_IntersectionPoints;
         
@@ -40,16 +64,12 @@ namespace Cinemachine
         /// <summary>
         /// Default constructor initializing points and intersection points.
         /// </summary>
-        private ShrinkablePolygon()
-        {
-            m_Points = new List<ShrinkablePoint2>();
-            m_IntersectionPoints = new List<Vector2>();
-        }
+        public ShrinkablePolygon() {}
 
         /// <summary>
-        /// Parameterized constructor for points and aspect ratio.
+        /// Parameterized constructor for points - computes normals and signed area.
         /// </summary>
-        public ShrinkablePolygon(List<Vector2> points, float aspectRatio) : this()
+        public ShrinkablePolygon(List<Vector2> points) : this()
         {
             m_Points = new List<ShrinkablePoint2>(points.Count);
             for (int i = 0; i < points.Count; ++i)
@@ -60,20 +80,7 @@ namespace Cinemachine
                     m_OriginalPosition = points[i],
                 });
             }
-            
-            m_AspectRatio = aspectRatio;
-            m_AspectRatioBasedDiagonal = Mathf.Sqrt(m_AspectRatio*m_AspectRatio + 1);
-            m_NormalDirections = new[]
-            {
-                Vector2.up,
-                new Vector2(m_AspectRatio, 1),
-                new Vector2(m_AspectRatio, 0),
-                new Vector2(m_AspectRatio, -1),
-                Vector2.down,
-                new Vector2(-m_AspectRatio, -1),
-                new Vector2(-m_AspectRatio, 0),
-                new Vector2(-m_AspectRatio, 1),
-            };
+            m_IntersectionPoints = new List<Vector2>();
             
             ComputeSignedArea();
             ComputeNormals(true);
@@ -85,7 +92,7 @@ namespace Cinemachine
         /// <returns>Deep copy of this subPolygons</returns>
         public ShrinkablePolygon DeepCopy()
         {
-            return new ShrinkablePolygon(m_AspectRatio, m_AspectRatioBasedDiagonal, m_NormalDirections)
+            return new ShrinkablePolygon
             {
                 m_area = m_area,
                 m_MinArea = m_MinArea,
@@ -98,17 +105,6 @@ namespace Cinemachine
             };
         }
         
-        /// <summary>
-        /// Private constructor for shallow copying normal directions.
-        /// </summary>
-        public ShrinkablePolygon(float aspectRatio, float aspectRatioBasedDiagonal, Vector2[] normalDirections) 
-            : this()
-        {
-            m_AspectRatio = aspectRatio;
-            m_AspectRatioBasedDiagonal = aspectRatioBasedDiagonal;
-            m_NormalDirections = normalDirections; // shallow copy is enough here
-        }
-
         /// <summary>
         /// Computes signed area and determines whether a subPolygons is oriented clockwise or counter-clockwise.
         /// </summary>
@@ -210,7 +206,7 @@ namespace Cinemachine
         /// Computes shrink directions that respect the aspect ratio of the camera. If the camera window is a square,
         /// then the shrink directions will be equivalent to the normals.
         /// </summary>
-        public void ComputeAspectBasedShrinkDirections()
+        public void ComputeAspectBasedShrinkDirections(in AspectData aspectData)
         {
             // cache current shrink directions to check for change later
             int numPoints = m_Points.Count;
@@ -231,7 +227,7 @@ namespace Cinemachine
 
                 var p = m_Points[i];
                 p.m_ShrinkDirection = CalculateShrinkDirection(p.m_ShrinkDirection, 
-                    m_Points[prevIndex].m_Position, p.m_Position, m_Points[nextIndex].m_Position);
+                    m_Points[prevIndex].m_Position, p.m_Position, m_Points[nextIndex].m_Position, aspectData);
                 m_Points[i] = p;
             }
 
@@ -252,13 +248,14 @@ namespace Cinemachine
         /// Converts shrinkable polygons into a simple path made of 2D points.
         /// </summary>
         /// <param name="shrinkablePolygons">input shrinkable polygons</param>
+        /// <param name="aspectRatio">Current camera aspect ratio</param>
         /// <param name="frustumHeight">Frustum height requested by the user.
         /// For the path touching the corners this may be relevant.</param>
         /// <param name="maxCachedFrustumHeight">Maximum cached frustum height.</param>
         /// <param name="path">Resulting path.</param>
         /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
         public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, 
-            in float frustumHeight, in float maxCachedFrustumHeight,
+            in float aspectRatio, in float frustumHeight, in float maxCachedFrustumHeight,
             out List<List<Vector2>> path, out bool hasIntersections)
         {
             hasIntersections = maxCachedFrustumHeight < frustumHeight;
@@ -308,11 +305,11 @@ namespace Cinemachine
                         float sqrCornerDistance = shrinkDirection.sqrMagnitude;
                         if (shrinkDirection.x > 0)
                         {
-                            shrinkDirection *= (polygon.m_AspectRatio / shrinkDirection.x);
+                            shrinkDirection *= (aspectRatio / shrinkDirection.x);
                         }
                         else if (shrinkDirection.x < 0)
                         {
-                            shrinkDirection *= -(polygon.m_AspectRatio / shrinkDirection.x);
+                            shrinkDirection *= -(aspectRatio / shrinkDirection.x);
                         }
                         if (shrinkDirection.y > 1)
                         {
@@ -480,7 +477,8 @@ namespace Cinemachine
         /// <param name="nextPoint">next neighbouring of thisPoint</param>
         /// <returns>Returns shrink direction for thisPoint</returns>
         private Vector2 CalculateShrinkDirection(in Vector2 normal, 
-            in Vector2 prevPoint, in Vector2 thisPoint, in Vector2 nextPoint)
+            in Vector2 prevPoint, in Vector2 thisPoint, in Vector2 nextPoint, 
+            in AspectData aspectData)
         {
             Vector2 A = prevPoint;
             Vector2 B = nextPoint;
@@ -492,33 +490,33 @@ namespace Cinemachine
             float angle1_abs = Vector2.Angle(CA, normal);
             float angle2_abs = Vector2.Angle(CB, normal);
             
-            Vector2 R = normal.normalized * m_AspectRatioBasedDiagonal;
-            float angle = Vector2.SignedAngle(R, m_NormalDirections[0]);
+            Vector2 R = normal.normalized * aspectData.m_AspectRatioBasedDiagonal;
+            float angle = Vector2.SignedAngle(R, aspectData.m_NormalDirections[0]);
             if (0 < angle && angle < 90)
             {
                 if (angle - angle1_abs <= 1f && 89 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = m_NormalDirections[1];
+                    R = aspectData.m_NormalDirections[1];
                 }
                 else if (angle - angle1_abs <= 0 && angle + angle2_abs < 90)
                 {
                     // case 1a - 2 point intersection with camera window's bottom
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[3], m_NormalDirections[5]); // bottom side's midpoint
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[0]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[3], aspectData.m_NormalDirections[5]); // bottom side's midpoint
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[0]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (0 < angle - angle1_abs && 90 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's left side
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[7], m_NormalDirections[5]); // left side's midpoint
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[2]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[7], aspectData.m_NormalDirections[5]); // left side's midpoint
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[2]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (0 < angle - angle1_abs && angle + angle2_abs < 90)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, m_NormalDirections[3], m_NormalDirections[7]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[3], aspectData.m_NormalDirections[7]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -532,26 +530,26 @@ namespace Cinemachine
                 if (angle - angle1_abs <= 91 && 179 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = m_NormalDirections[3];
+                    R = aspectData.m_NormalDirections[3];
                 }
                 else if (angle - angle1_abs <= 90 && angle + angle2_abs < 180)
                 {
                     // case 1a - 2 point intersection with camera window's left
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[0], m_NormalDirections[4]); // left side's midpoint
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[2]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[0], aspectData.m_NormalDirections[4]); // left side's midpoint
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[2]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (90 < angle - angle1_abs && 180 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's top side
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[1], m_NormalDirections[7]); // top side's midpoint
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[4]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[7]); // top side's midpoint
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[4]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (90 < angle - angle1_abs && angle + angle2_abs < 180)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, m_NormalDirections[1], m_NormalDirections[5]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[5]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -565,26 +563,26 @@ namespace Cinemachine
                 if (angle - angle1_abs <= -179 && -91 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = m_NormalDirections[5];
+                    R = aspectData.m_NormalDirections[5];
                 }
                 else if (angle - angle1_abs <= -180 && angle + angle2_abs < -90)
                 {
                     // case 1a - 2 point intersection with camera window's top
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[7], m_NormalDirections[1]); // top side's midpoint
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[4]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[7], aspectData.m_NormalDirections[1]); // top side's midpoint
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[4]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-180 < angle - angle1_abs && -90 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's right side
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[1], m_NormalDirections[3]); // right side's midpoint
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[6]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[3]); // right side's midpoint
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[6]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-180 < angle - angle1_abs && angle + angle2_abs < -90)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, m_NormalDirections[3], m_NormalDirections[7]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[3], aspectData.m_NormalDirections[7]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -598,26 +596,26 @@ namespace Cinemachine
                 if (angle - angle1_abs <= -89 && -1 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = m_NormalDirections[7];
+                    R = aspectData.m_NormalDirections[7];
                 }
                 else if (angle - angle1_abs <= -90 && angle + angle2_abs < 0)
                 {
                     // case 1a - 2 point intersection with camera window's right side
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[7], m_NormalDirections[5]); // right side's midpoint
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[6]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[7], aspectData.m_NormalDirections[5]); // right side's midpoint
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[6]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-90 < angle - angle1_abs && 0 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's bottom side
-                    Vector2 M = FindMidPoint(A, B, C, m_NormalDirections[5], m_NormalDirections[3]); // bottom side's mid point
-                    Vector2 rectangleMidPoint = M + m_NormalDirections[0]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[5], aspectData.m_NormalDirections[3]); // bottom side's mid point
+                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[0]; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-90 < angle - angle1_abs && angle + angle2_abs < 0)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, m_NormalDirections[1], m_NormalDirections[5]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[5]); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -628,7 +626,7 @@ namespace Cinemachine
             }
             else
             {
-                R.x = Mathf.Clamp(R.x, -m_AspectRatio, m_AspectRatio);
+                R.x = Mathf.Clamp(R.x, -aspectData.m_AspectRatio, aspectData.m_AspectRatio);
                 R.y = Mathf.Clamp(R.y, -1, 1);
             }
             
@@ -654,7 +652,7 @@ namespace Cinemachine
         /// <summary>
         /// Shrink shrinkablePolygon points towards their shrink direction by shrinkAmount.
         /// </summary>
-        public bool Shrink(float shrinkAmount, bool shrinkToPoint)
+        public bool Shrink(float shrinkAmount, bool shrinkToPoint, in float aspectRatio)
         {
             m_FrustumHeight += shrinkAmount;
             float area1 = Mathf.Abs(ComputeSignedArea());
@@ -668,16 +666,16 @@ namespace Cinemachine
                         var mPoint = m_Points[i];
                         Vector2 direction = center - mPoint.m_Position;
                         // normalize direction so it is within the m_AspectRatio x 1 rectangle.
-                        if (Math.Abs(direction.x) > m_AspectRatio ||
+                        if (Math.Abs(direction.x) > aspectRatio ||
                             Math.Abs(direction.y) > 1)
                         {
-                            if (direction.x > m_AspectRatio)
+                            if (direction.x > aspectRatio)
                             {
-                                direction *= (m_AspectRatio / direction.x);
+                                direction *= (aspectRatio / direction.x);
                             }
-                            else if (direction.x < -m_AspectRatio)
+                            else if (direction.x < -aspectRatio)
                             {
-                                direction *= -(m_AspectRatio / direction.x);
+                                direction *= -(aspectRatio / direction.x);
                             }
                             if (direction.y > 1)
                             {
@@ -898,9 +896,9 @@ namespace Cinemachine
                     
                     if (intersectionType == 2) // so we divide g into g1 and g2.
                     {
-                        var g1 = new ShrinkablePolygon(shrinkablePolygon.m_AspectRatio, 
-                            shrinkablePolygon.m_AspectRatioBasedDiagonal, shrinkablePolygon.m_NormalDirections);
+                        var g1 = new ShrinkablePolygon();
                         {
+                            g1.m_IntersectionPoints = new List<Vector2>();
                             g1.m_FrustumHeight = shrinkablePolygon.m_FrustumHeight;
                             g1.m_IntersectionPoints.Add(intersection);
                             g1.m_State = shrinkablePolygon.m_State + s_nonLerpableStateChangePenalty;
@@ -926,9 +924,9 @@ namespace Cinemachine
                         }
                         subPolygons.Add(g1);
 
-                        var g2 = new ShrinkablePolygon(shrinkablePolygon.m_AspectRatio, 
-                            shrinkablePolygon.m_AspectRatioBasedDiagonal, shrinkablePolygon.m_NormalDirections);
+                        var g2 = new ShrinkablePolygon();
                         {
+                            g2.m_IntersectionPoints = new List<Vector2>();
                             g2.m_FrustumHeight = shrinkablePolygon.m_FrustumHeight;
                             g2.m_IntersectionPoints.Add(intersection);
                             g2.m_State = shrinkablePolygon.m_State + s_nonLerpableStateChangePenalty;
@@ -1024,6 +1022,7 @@ namespace Cinemachine
             if (closestIndex > 0)
                 RollList(points, closestIndex);
         }
+
 
         /// <summary>
         /// Rotates input List to start from the left-most element in 2D space.

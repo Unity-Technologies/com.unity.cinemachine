@@ -20,7 +20,7 @@ namespace Cinemachine
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         public float m_sqrPolygonDiagonal;
         public float m_cachedMaxFrustumHeight;
-        
+
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
         /// The algorithm is divide and conquer. It iteratively shrinks down the input polygon towards its shrink
@@ -28,17 +28,19 @@ namespace Cinemachine
         /// intersection point, and continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner(in List<List<Vector2>> inputPath, in float sensorRatio, in float shrinkAmount, 
+        public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, in float shrinkAmount, 
             float maxOrthosize, in bool shrinkToPoint, in bool stopAtFirstIntersection)
         {
-            float polygonHalfHeight = HeightOfAspectBasedBoundingBoxAroundPolygons(inputPath, sensorRatio) / 2f;
+            float polygonHalfHeight = HeightOfAspectBasedBoundingBoxAroundPolygons(inputPath, aspectRatio) / 2f;
             if (maxOrthosize == 0 || maxOrthosize > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
                 // ensuring that we don't compute further than what is the theoretical max
                 maxOrthosize = polygonHalfHeight; 
             }
+
+            var aspectData = new ShrinkablePolygon.AspectData(aspectRatio);
             
-            m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, sensorRatio);
+            m_shrinkablePolygons = CreateShrinkablePolygons(inputPath, aspectRatio);
             var polyIndex = 0;
             var shrinking = true;
             while (shrinking)
@@ -47,9 +49,9 @@ namespace Cinemachine
                 var nextPolygonIteration = new List<ShrinkablePolygon>(numPaths);
                 for (int g = 0; g < numPaths; ++g)
                 {
-                    m_shrinkablePolygons[polyIndex][g].ComputeAspectBasedShrinkDirections();
+                    m_shrinkablePolygons[polyIndex][g].ComputeAspectBasedShrinkDirections(aspectData);
                     ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
-                    if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint))
+                    if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint, aspectRatio))
                     {
                         if (shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
                         {
@@ -106,7 +108,7 @@ namespace Cinemachine
                 float minY = float.MaxValue, maxY = float.MinValue;
                 for (int i = 0; i < numPaths; ++i)
                 {
-                    var newShrinkablePolygon = new ShrinkablePolygon(paths[i], aspectRatio);
+                    var newShrinkablePolygon = new ShrinkablePolygon(paths[i]);
                     int numPoints = newShrinkablePolygon.m_Points.Count;
                     for (int j = 0; j < numPoints; ++j)
                     {
@@ -179,10 +181,7 @@ namespace Cinemachine
             float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);
             for (int i = 0; i < left.m_Polygons.Count; ++i)
             {
-                var r = new ShrinkablePolygon(
-                    left.m_Polygons[i].m_AspectRatio,
-                    left.m_Polygons[i].m_AspectRatioBasedDiagonal,
-                    left.m_Polygons[i].m_NormalDirections)
+                var r = new ShrinkablePolygon
                 {
                     m_Points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.m_Polygons[i].m_Points.Count),
                     m_FrustumHeight = frustumHeight,
