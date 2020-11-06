@@ -51,8 +51,19 @@ namespace Cinemachine
                 {
                     m_shrinkablePolygons[polyIndex][g].ComputeAspectBasedShrinkDirections(aspectData);
                     ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
+                    var areaBefore = shrinkablePolygon.ComputeSignedArea();
                     if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint, aspectRatio))
                     {
+                        var areaAfter = shrinkablePolygon.ComputeSignedArea();
+                        bool doesSelfIntersect = shrinkablePolygon.DoesSelfIntersect();
+                        bool isInverted = Mathf.Sign(areaBefore) != Mathf.Sign(areaAfter);
+                        if (doesSelfIntersect || isInverted)
+                        {
+                            // TODO: revert shrinking
+                            // then binary search step size
+                        }
+                        
+                        
                         if (shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
                         {
                             shrinkablePolygon.Simplify(shrinkAmount);
@@ -117,11 +128,6 @@ namespace Cinemachine
             return shrinkablePolygons;
         }
 
-        private void ComputePolygonArea()
-        {
-            
-        }
-        
         /// <summary>
         /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
         /// </summary>

@@ -124,6 +124,38 @@ namespace Cinemachine
             return m_area;
         }
 
+        /// <summary>
+        /// Checks whether the polygon intersects itself.
+        /// </summary>
+        /// <returns>True, if yes. False, otherwise.</returns>
+        public bool DoesSelfIntersect()
+        {
+            // for each edge in subPolygons, but not for edges that are neighbours (e.g. 0-1, 1-2),
+            // check for intersections.
+            int numPoints = m_Points.Count;
+            for (int i = 0; i < numPoints; ++i)
+            {
+                int nextI = (i + 1) % numPoints;
+                for (int j = i + 2; j < numPoints; ++j)
+                {
+                    int nextJ = (j + 1) % numPoints;
+                    if (i == nextJ) continue;
+
+                    int intersectionType = UnityVectorExtensions.FindIntersection(
+                        m_Points[i].m_Position, m_Points[nextI].m_Position,
+                        m_Points[j].m_Position, m_Points[nextJ].m_Position,
+                        out _);
+                    
+                    if (intersectionType == 2)
+                    {
+                        return true; // self intersects
+                    }
+                }
+            }
+
+            return false; // does not self intersect
+        }
+
         private static readonly List<Vector2> s_edgeNormalsCache = new List<Vector2>(); 
         private static readonly List<ShrinkablePoint2> s_extendedPointsCache = new List<ShrinkablePoint2>();
 
