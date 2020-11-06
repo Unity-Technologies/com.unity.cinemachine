@@ -882,12 +882,13 @@ namespace Cinemachine
             // intersection within a subPolygons.
             // g1 will be 'left' of the intersection, g2 will be 'right' of the intersection.
             // g2 may contain additional intersections.
-            for (int i = 0; i < shrinkablePolygon.m_Points.Count; ++i)
+            int numPoints = shrinkablePolygon.m_Points.Count;
+            for (int i = 0; i < numPoints; ++i)
             {
-                int nextI = (i + 1) % shrinkablePolygon.m_Points.Count;
-                for (int j = i + 2; j < shrinkablePolygon.m_Points.Count; ++j)
+                int nextI = (i + 1) % numPoints;
+                for (int j = i + 2; j < numPoints; ++j)
                 {
-                    int nextJ = (j + 1) % shrinkablePolygon.m_Points.Count;
+                    int nextJ = (j + 1) % numPoints;
                     if (i == nextJ) continue;
 
                     int intersectionType = UnityVectorExtensions.FindIntersection(
@@ -915,14 +916,13 @@ namespace Cinemachine
                                     m_ShrinkDirection = Vector2.zero,
                                 }
                             };
-                            for (int k = (j + 1) % shrinkablePolygon.m_Points.Count;
-                                k != (i + 1) % shrinkablePolygon.m_Points.Count;
-                                k = (k + 1) % shrinkablePolygon.m_Points.Count)
+                            for (int k = (j + 1) % numPoints; k != (i + 1) % numPoints; k = (k + 1) % numPoints)
                             {
                                 points.Add(shrinkablePolygon.m_Points[k]);
                             }
                             
-                            g1.m_Points = RotateListToLeftmost(points);
+                            RollListToLeftmost(points);
+                            g1.m_Points = points;
                         }
                         subPolygons.Add(g1);
 
@@ -944,14 +944,13 @@ namespace Cinemachine
                                     m_ShrinkDirection = Vector2.zero,
                                 }
                             };
-                            for (int k = (i + 1) % shrinkablePolygon.m_Points.Count;
-                                k != (j + 1) % shrinkablePolygon.m_Points.Count;
-                                k = (k + 1) % shrinkablePolygon.m_Points.Count)
+                            for (int k = (i + 1) % numPoints; k != (j + 1) % numPoints; k = (k + 1) % numPoints)
                             {
                                 points.Add(shrinkablePolygon.m_Points[k]);
                             }
 
-                            g2.m_Points = RollListToStartClosestToPoint(points, intersection);
+                            RollListToClosest(points, intersection);
+                            g2.m_Points = points;
                         }
 
                         // we need to move the intersection points from the parent subPolygons
@@ -1006,36 +1005,24 @@ namespace Cinemachine
         /// Rotates input List of shrinkable points to start closest to input point in 2D space.
         /// This is important to ensure order independence in algorithm.
         /// </summary>
-        /// <param name="point">List will rotate so it's 0th element is as close to point as possible.</param>
+        /// <param name="point">List will rotate so its 0th element is as close to point as possible.</param>
         /// <param name="points">List to rotate</param>
-        /// <returns>List, in which the 0 element is the closest point in the List to point in 2D space.
-        /// Order of points of the original list is preserved</returns>
-        private static List<ShrinkablePoint2> RollListToStartClosestToPoint(
-            in List<ShrinkablePoint2> points, in Vector2 point)
+        private static void RollListToClosest(List<ShrinkablePoint2> points, in Vector2 point)
         {
             int closestIndex = 0;
-            Vector2 closestPoint = points[0].m_Position;
-            for (int i = 1; i < points.Count; ++i)
+            float closestDistance = float.MaxValue;
+            int numPoints = points.Count;
+            for (int i = 0; i < numPoints; ++i)
             {
-                if ((closestPoint - point).sqrMagnitude > (closestPoint - points[i].m_Position).sqrMagnitude)
+                var d = (points[i].m_Position - point).sqrMagnitude;
+                if (d < closestDistance)
                 {
                     closestIndex = i;
-                    closestPoint = points[i].m_Position;
+                    closestDistance = d;
                 }
             }
-
-            var pointRolledToStartAtClosestPoint = new List<ShrinkablePoint2>(points.Count);
-            for (int i = closestIndex; i < points.Count; ++i)
-            {
-                pointRolledToStartAtClosestPoint.Add(points[i]);
-            }
-
-            for (int i = 0; i < closestIndex; ++i)
-            {
-                pointRolledToStartAtClosestPoint.Add(points[i]);
-            }
-
-            return pointRolledToStartAtClosestPoint;
+            if (closestIndex > 0)
+                RollList(points, closestIndex);
         }
 
         /// <summary>
@@ -1043,33 +1030,39 @@ namespace Cinemachine
         /// This is important to ensure order independence in algorithm.
         /// </summary>
         /// <param name="points">List to rotate</param>
-        /// <returns>List, in which the 0 element is the left-most in 2D space.
-        /// Order of points of the original list is preserved</returns>
-        private static List<ShrinkablePoint2> RotateListToLeftmost(List<ShrinkablePoint2> points)
+        private static void RollListToLeftmost(List<ShrinkablePoint2> points)
         {
             int leftMostPointIndex = 0;
-            Vector2 leftMostPoint = points[0].m_Position;
-            for (int i = 1; i < points.Count; ++i)
+            float leftMostPoint = points[0].m_Position.x;
+            int numPoints = points.Count;
+            for (int i = 1; i < numPoints; ++i)
             {
-                if (leftMostPoint.x > points[i].m_Position.x)
+                if (leftMostPoint > points[i].m_Position.x)
                 {
                     leftMostPointIndex = i;
-                    leftMostPoint = points[i].m_Position;
+                    leftMostPoint = points[i].m_Position.x;
                 }
             }
+            if (leftMostPointIndex > 0)
+                RollList(points, leftMostPointIndex);
+        }
 
-            var pointsRolledToStartAtLeftMostPoint = new List<ShrinkablePoint2>(points.Count);
-            for (int i = leftMostPointIndex; i < points.Count; ++i)
-            {
-                pointsRolledToStartAtLeftMostPoint.Add(points[i]);
-            }
+        private static List<ShrinkablePoint2> s_rollPointsCache = new List<ShrinkablePoint2>();
+        private static void RollList(List<ShrinkablePoint2> points, int newFirstElement)
+        {
+            s_rollPointsCache.Clear();
+            if (s_rollPointsCache.Capacity < newFirstElement)
+                s_rollPointsCache.Capacity = newFirstElement;
 
-            for (int i = 0; i < leftMostPointIndex; ++i)
-            {
-                pointsRolledToStartAtLeftMostPoint.Add(points[i]);
-            }
-
-            return pointsRolledToStartAtLeftMostPoint;
+            // GML TODO: this would be faster with memcpy
+            for (int i = 0; i < newFirstElement; ++i)
+                s_rollPointsCache.Add(points[i]);
+            int next = 0;
+            int numPoints = points.Count;
+            for (int i = newFirstElement; i < numPoints; ++i)
+                points[next++] = points[i];
+            for (int i = 0; next < numPoints; ++i)
+                points[next++] = s_rollPointsCache[i];
         }
     }
 }
