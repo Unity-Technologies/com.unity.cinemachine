@@ -119,7 +119,9 @@ namespace Cinemachine
                 var p2 = m_Points[(i + 1) % numPoints].m_Position;
                 m_area += (p2.x - p1.x) * (p2.y + p1.y);
             }
-            return m_area / 2f;
+
+            m_area = m_area / 2f;
+            return m_area;
         }
 
         private static readonly List<Vector2> s_edgeNormalsCache = new List<Vector2>(); 
