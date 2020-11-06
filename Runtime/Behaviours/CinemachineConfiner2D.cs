@@ -130,9 +130,10 @@ namespace Cinemachine
         {
             if (stage == CinemachineCore.Stage.Body)
             {
+                var aspectRatio = state.Lens.Aspect;
                 if (!m_shapeCache.ValidateCache(
                     m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker, BakingResolution,
-                    state.Lens.Aspect, out bool confinerStateChanged))
+                    aspectRatio, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
@@ -143,7 +144,8 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(
-                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight);
+                    m_confinerBaker, confinerStateChanged, 
+                    aspectRatio, m_currentFrustumHeight, BakingResolution);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
@@ -281,7 +283,8 @@ namespace Cinemachine
                 /// converts it if the frustum height was changed.
                 /// </summary>
                 public void ValidateCache(
-                    in ConfinerOven confinerBaker, in bool confinerStateChanged, in float frustumHeight)
+                    in ConfinerOven confinerBaker, in bool confinerStateChanged, 
+                    in float aspectRatio, in float frustumHeight, float bakedResolution)
                 {
                     if (!confinerStateChanged && m_Path != null && 
                         Math.Abs(frustumHeight - m_frustumHeight) < UnityVectorExtensions.Epsilon)
@@ -291,7 +294,7 @@ namespace Cinemachine
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
                     ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, 
-                        frustumHeight, confinerBaker.m_cachedMaxFrustumHeight, 
+                        aspectRatio, frustumHeight, confinerBaker.m_cachedMaxFrustumHeight, 
                         out m_Path, out m_PathHasBone);
                 
                     m_frustumHeight = frustumHeight;
