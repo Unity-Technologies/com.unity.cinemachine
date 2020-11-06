@@ -254,14 +254,14 @@ namespace Cinemachine
         /// <param name="shrinkablePolygons">input shrinkable polygons</param>
         /// <param name="frustumHeight">Frustum height requested by the user.
         /// For the path touching the corners this may be relevant.</param>
-        /// <param name="bakedConfinerResolution">Used for removing tiny parts that stick out from the polygon.</param>
+        /// <param name="maxCachedFrustumHeight">Maximum cached frustum height.</param>
         /// <param name="path">Resulting path.</param>
         /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
-        public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, in float frustumHeight,
-            in float bakedConfinerResolution,
+        public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, 
+            in float frustumHeight, in float maxCachedFrustumHeight,
             out List<List<Vector2>> path, out bool hasIntersections)
         {
-            hasIntersections = false;
+            hasIntersections = maxCachedFrustumHeight < frustumHeight;
             // convert shrinkable polygons points to int based points for Clipper
             List<List<IntPoint>> clip = new List<List<IntPoint>>(shrinkablePolygons.Count);
             int index = 0;

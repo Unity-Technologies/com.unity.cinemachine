@@ -17,7 +17,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.IsOverMaxOrthosize())
+            if (Target.IsOverCachedMaxFrustumHeight())
             {
                 EditorGUILayout.HelpBox(
                     "Camera window size is bigger than the cache size calculated by Confiner2D.  "

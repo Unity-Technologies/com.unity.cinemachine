@@ -230,11 +230,8 @@ namespace Cinemachine
                         // penalty for points from which the target is not visible, prefering visibility over proximity
                         distance += m_confinerBaker.m_sqrPolygonDiagonal; 
                     }
-#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
+
                     bool isValid = outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c);
-#else
-                    bool isValid = outsideOfOriginal || !DoesIntersectOriginal(positionToConfine, c);
-#endif
                     if (distance < minDistance && isValid)
                     {
                         minDistance = distance;
@@ -294,7 +291,8 @@ namespace Cinemachine
                     }
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, frustumHeight, bakedResolution, 
+                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, 
+                        frustumHeight, confinerBaker.m_cachedMaxFrustumHeight, 
                         out m_Path, out m_PathHasBone);
                 
                     m_frustumHeight = frustumHeight;
@@ -461,9 +459,9 @@ namespace Cinemachine
         }
 
         // Used by editor gizmo drawer
-        internal bool IsOverMaxOrthosize()
+        internal bool IsOverCachedMaxFrustumHeight()
         {
-            return m_confinerBaker.m_cachedMaxOrthosize < m_currentFrustumHeight;
+            return m_confinerBaker.m_cachedMaxFrustumHeight < m_currentFrustumHeight;
         }
 
         private void OnValidate()

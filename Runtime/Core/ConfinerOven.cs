@@ -19,7 +19,7 @@ namespace Cinemachine
 
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         public float m_sqrPolygonDiagonal;
-        public float m_cachedMaxOrthosize;
+        public float m_cachedMaxFrustumHeight;
         
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
@@ -70,7 +70,7 @@ namespace Cinemachine
                     }
                 }
 
-                m_cachedMaxOrthosize = nextPolygonIteration[0].m_FrustumHeight;
+                m_cachedMaxFrustumHeight = nextPolygonIteration[0].m_FrustumHeight;
 
                 m_shrinkablePolygons.Add(nextPolygonIteration);
                 if (maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_FrustumHeight)
