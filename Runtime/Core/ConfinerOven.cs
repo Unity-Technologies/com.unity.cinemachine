@@ -133,35 +133,32 @@ namespace Cinemachine
         /// </summary>
         public ConfinerState GetConfinerAtFrustumHeight(float frustumHeight)
         {
-            ConfinerState result = new ConfinerState();
             for (int i = m_confinerStates.Count - 1; i >= 0; --i)
             {
                 if (m_confinerStates[i].m_FrustumHeight <= frustumHeight)
                 {
                     if (i == m_confinerStates.Count - 1)
                     {
-                        result = m_confinerStates[i];
+                        return m_confinerStates[i];
                     }
-                    else if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 
-                             ShrinkablePolygon.s_nonLerpableStateChangePenalty)
+                    
+                    if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 
+                        ShrinkablePolygon.s_nonLerpableStateChangePenalty)
                     {
                         // blend between m_confinerStates with same m_State
-                        result = ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
+                        return ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
                     }
-                    else
-                    {
-                        // choose m_confinerStates with windowSize closer to frustumHeight
-                        result = 
-                            Mathf.Abs(m_confinerStates[i].m_FrustumHeight - frustumHeight) < 
-                            Mathf.Abs(m_confinerStates[i + 1].m_FrustumHeight - frustumHeight) ? 
-                                m_confinerStates[i] : 
-                                m_confinerStates[i+1];
-                    }
-                    break;
+                    
+                    // choose m_confinerStates with windowSize closer to frustumHeight
+                    return
+                        Mathf.Abs(m_confinerStates[i].m_FrustumHeight - frustumHeight) < 
+                        Mathf.Abs(m_confinerStates[i + 1].m_FrustumHeight - frustumHeight) ? 
+                            m_confinerStates[i] : 
+                            m_confinerStates[i+1];
                 }
             }
 
-            return result;
+            return new ConfinerState();
         }
         
         /// <summary>
