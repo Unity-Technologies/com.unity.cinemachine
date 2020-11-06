@@ -231,8 +231,8 @@ namespace Cinemachine
                         distance += m_confinerBaker.m_sqrPolygonDiagonal; 
                     }
 
-                    bool isValid = outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c);
-                    if (distance < minDistance && isValid)
+                    if (distance < minDistance && 
+                        (outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c)))
                     {
                         minDistance = distance;
                         closest = c;
