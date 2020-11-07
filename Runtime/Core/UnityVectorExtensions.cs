@@ -107,6 +107,11 @@ namespace Cinemachine.Utility
             {
                 // The lines are parallel (or close enough to it).
                 intersection = Vector2.positiveInfinity;
+                if ((p1 - p3).sqrMagnitude < 0.01f || (p1 - p4).sqrMagnitude < 0.01f ||
+                    (p2 - p3).sqrMagnitude < 0.01f || (p2 - p4).sqrMagnitude < 0.01f)
+                {
+                    return 2; // they are the same line, or very close parallels
+                }
                 return 0; // no intersection
             }
             

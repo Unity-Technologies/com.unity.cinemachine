@@ -944,7 +944,13 @@ namespace Cinemachine
                         shrinkablePolygon.m_Points[i].m_Position, shrinkablePolygon.m_Points[nextI].m_Position,
                         shrinkablePolygon.m_Points[j].m_Position, shrinkablePolygon.m_Points[nextJ].m_Position,
                         out Vector2 intersection);
-                    
+
+                    if (intersectionType == 2 && intersection.sqrMagnitude >= Vector2.positiveInfinity.sqrMagnitude)
+                    {
+                        // parallel lines so no need to divide.
+                        shrinkablePolygon.m_State += s_nonLerpableStateChangePenalty;
+                        return true; // subPolygons has nice intersections
+                    }
                     if (intersectionType == 2) // so we divide g into g1 and g2.
                     {
                         var g1 = new ShrinkablePolygon();
