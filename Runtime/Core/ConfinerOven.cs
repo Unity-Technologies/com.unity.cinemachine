@@ -51,10 +51,10 @@ namespace Cinemachine
                 {
                     m_shrinkablePolygons[polyIndex][g].ComputeAspectBasedShrinkDirections(aspectData);
                     ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
-                    var areaBefore = shrinkablePolygon.ComputeSignedArea();
+                    var areaBefore = shrinkablePolygon.ComputeSignedArea(); // TODO: m_Area may be storing this already
                     if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint, aspectRatio))
                     {
-                        var areaAfter = shrinkablePolygon.ComputeSignedArea();
+                        var areaAfter = shrinkablePolygon.ComputeSignedArea(); // TODO: m_Area has this already. in Shrink we calculate it
                         bool doesSelfIntersect = shrinkablePolygon.DoesSelfIntersect();
                         bool isInverted = Mathf.Sign(areaBefore) != Mathf.Sign(areaAfter);
                         if (doesSelfIntersect || isInverted)
@@ -122,7 +122,11 @@ namespace Cinemachine
 
                 for (int i = 0; i < shrinkablePolygons.Count; ++i)
                 {
-                    shrinkablePolygons[i][0].m_MinArea = shrinkablePolygons[i][0].ComputeSignedArea() / 100f;
+                    for (var j = 0; j < shrinkablePolygons[i].Count; j++)
+                    {
+                        shrinkablePolygons[i][j].m_Area = shrinkablePolygons[i][0].ComputeSignedArea();
+                        shrinkablePolygons[i][j].m_MinArea = 0.1f; // TODO: what's a good value
+                    }
                 }
             }
             return shrinkablePolygons;

@@ -58,8 +58,8 @@ namespace Cinemachine
         public float m_MinArea;
         public List<Vector2> m_IntersectionPoints;
         
-        private float m_area;
-        private bool ClockwiseOrientation => m_area > 0;
+        public float m_Area;
+        private bool ClockwiseOrientation => m_Area > 0;
 
         /// <summary>
         /// Default constructor initializing points and intersection points.
@@ -82,7 +82,7 @@ namespace Cinemachine
             }
             m_IntersectionPoints = new List<Vector2>();
             
-            ComputeSignedArea();
+            m_Area = ComputeSignedArea();
             ComputeNormals(true);
         }
 
@@ -94,7 +94,7 @@ namespace Cinemachine
         {
             return new ShrinkablePolygon
             {
-                m_area = m_area,
+                m_Area = m_Area,
                 m_MinArea = m_MinArea,
                 m_FrustumHeight = m_FrustumHeight,
                 m_State = m_State,
@@ -106,22 +106,21 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// Computes signed area and determines whether a subPolygons is oriented clockwise or counter-clockwise.
+        /// Computes signed area. Sign determines whether the polygon is oriented clockwise or counter-clockwise.
+        /// Does not work if polygon has self intersections.
         /// </summary>
         /// <returns>Area of the subPolygons</returns>
         public float ComputeSignedArea()
         {
-            m_area = 0;
+            float area = 0f;
             int numPoints = m_Points.Count;
             for (int i = 0; i < numPoints; ++i)
             {
                 var p1 = m_Points[i].m_Position;
                 var p2 = m_Points[(i + 1) % numPoints].m_Position;
-                m_area += (p2.x - p1.x) * (p2.y + p1.y);
+                area += (p2.x - p1.x) * (p2.y + p1.y);
             }
-
-            m_area = m_area / 2f;
-            return m_area;
+            return area / 2f;
         }
 
         /// <summary>
@@ -689,8 +688,8 @@ namespace Cinemachine
         public bool Shrink(float shrinkAmount, bool shrinkToPoint, in float aspectRatio)
         {
             m_FrustumHeight += shrinkAmount;
-            float area1 = Mathf.Abs(ComputeSignedArea());
-            if (area1 < m_MinArea)
+            m_Area = ComputeSignedArea();
+            if (Mathf.Abs(m_Area) < m_MinArea)
             {
                 if (shrinkToPoint)
                 {
