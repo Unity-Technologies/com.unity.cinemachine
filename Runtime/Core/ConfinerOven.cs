@@ -105,7 +105,7 @@ namespace Cinemachine
                                 leftCandidatePolygonIteration[rp], out List<ShrinkablePolygon> subPolygons) && 
                             stopAtFirstIntersection)
                         {
-                            //return; // stop at first intersection
+                            return; // stop at first intersection
                         }
                         leftCandidatePolygonIterationFixed.AddRange(subPolygons);
                     }
@@ -118,7 +118,7 @@ namespace Cinemachine
                                 rightCandidatePolygonIteration[rp], out List<ShrinkablePolygon> subPolygons) && 
                             stopAtFirstIntersection)
                         {
-                            //return; // stop at first intersection
+                            return; // stop at first intersection
                         }
                         rightCandidatePolygonIterationFixed.AddRange(subPolygons);
                     }
