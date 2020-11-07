@@ -698,6 +698,8 @@ namespace Cinemachine
         /// </summary>
         public bool Shrink(float stepSize, bool shrinkToPoint, in float aspectRatio)
         {
+            // TODO: state change is not added to polygons to mark boundary
+            // TODO: seems like camera window is twice as big as it should. 
             m_FrustumHeight += stepSize;
             if (Mathf.Abs(m_Area) < m_MinArea)
             {

@@ -247,7 +247,7 @@ namespace Cinemachine
         /// </summary>
         public List<ConfinerState> GetShrinkablePolygonsAsConfinerStates()
         {
-            TrimShrinkablePolygons();
+            // TrimShrinkablePolygons();
 
             m_confinerStates.Clear();
             if (m_confinerStates.Capacity < m_shrinkablePolygons.Count)

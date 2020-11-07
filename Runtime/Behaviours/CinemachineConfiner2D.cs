@@ -57,7 +57,7 @@ namespace Cinemachine
     /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
     /// </para>
     /// </summary>
-    [SaveDuringPlay, ExecuteAlways]
+    [SaveDuringPlay]//, ExecuteAlways] // TODO: when safe, turn back on
     public class CinemachineConfiner2D : CinemachineExtension
     {
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
@@ -402,7 +402,7 @@ namespace Cinemachine
 #if CINEMACHINE_EXPERIMENTAL_CONFINER2D
                 confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, true, false);
 #else
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, true, true);
+                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, false, true);
 #endif
                 m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
                 m_aspectRatio = aspectRatio;
