@@ -124,6 +124,17 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// Checks whether the polygon got inverted based on the area before and after the polygon got modified.
+        /// </summary>
+        /// <param name="areaBefore">The area of the polygon before it got modified.</param>
+        /// <returns>True, if the polygon is inverted. False, otherwise.</returns>
+        public bool IsInverted(float areaBefore)
+        {
+            m_Area = ComputeSignedArea(); 
+            return Mathf.Sign(areaBefore) != Mathf.Sign(m_Area);
+        }
+
+        /// <summary>
         /// Checks whether the polygon intersects itself.
         /// </summary>
         /// <returns>True, if yes. False, otherwise.</returns>
@@ -243,13 +254,13 @@ namespace Cinemachine
         {
             // cache current shrink directions to check for change later
             int numPoints = m_Points.Count;
-            s_shrinkDirectionsCache.Clear();
-            if (s_shrinkDirectionsCache.Capacity < numPoints)
-                s_shrinkDirectionsCache.Capacity = numPoints;
-            for (int i = 0; i < numPoints; ++i)
-            {
-                s_shrinkDirectionsCache.Add(m_Points[i].m_ShrinkDirection);
-            }
+            // s_shrinkDirectionsCache.Clear();
+            // if (s_shrinkDirectionsCache.Capacity < numPoints)
+            //     s_shrinkDirectionsCache.Capacity = numPoints;
+            // for (int i = 0; i < numPoints; ++i)
+            // {
+            //     s_shrinkDirectionsCache.Add(m_Points[i].m_ShrinkDirection);
+            // }
             
             // calculate shrink directions
             ComputeNormals(false);
@@ -264,15 +275,15 @@ namespace Cinemachine
                 m_Points[i] = p;
             }
 
-            // update m_State, if change happened based on the cached shrink directions
-            for (var index = 0; index < s_shrinkDirectionsCache.Count; index++)
-            {
-                if (s_shrinkDirectionsCache[index] != m_Points[index].m_ShrinkDirection)
-                {
-                    m_State++; // m_State change when even one shrink direction has been changed
-                    break;
-                }
-            }
+            // // update m_State, if change happened based on the cached shrink directions
+            // for (var index = 0; index < s_shrinkDirectionsCache.Count; index++)
+            // {
+            //     if (s_shrinkDirectionsCache[index] != m_Points[index].m_ShrinkDirection)
+            //     {
+            //         m_State++; // m_State change when even one shrink direction has been changed
+            //         break;
+            //     }
+            // }
         }
         
         private static readonly int FloatToIntScaler = 10000000; // same as in Physics2D
@@ -683,12 +694,11 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Shrink shrinkablePolygon points towards their shrink direction by shrinkAmount.
+        /// Shrink shrinkablePolygon points towards their shrink direction by stepSize.
         /// </summary>
-        public bool Shrink(float shrinkAmount, bool shrinkToPoint, in float aspectRatio)
+        public bool Shrink(float stepSize, bool shrinkToPoint, in float aspectRatio)
         {
-            m_FrustumHeight += shrinkAmount;
-            m_Area = ComputeSignedArea();
+            m_FrustumHeight += stepSize;
             if (Mathf.Abs(m_Area) < m_MinArea)
             {
                 if (shrinkToPoint)
@@ -744,7 +754,7 @@ namespace Cinemachine
             for (int i = 0; i < m_Points.Count; ++i)
             {
                 var mPoint = m_Points[i];
-                mPoint.m_Position += mPoint.m_ShrinkDirection * shrinkAmount;
+                mPoint.m_Position += mPoint.m_ShrinkDirection * stepSize;
                 m_Points[i] = mPoint;
             }
             return true;
@@ -848,18 +858,21 @@ namespace Cinemachine
         }
 
         internal static int s_nonLerpableStateChangePenalty = 10; // penalty for non-lerpable state changes
+      
         /// <summary>
         /// Removes points that are the same or very close.
         /// </summary>
-        public void Simplify(float shrinkAmount)
+        /// <param name="delta">Radius / 2f within which points are removed</param>
+        /// <returns>True, if simplified. False, otherwise.</returns>
+        public bool Simplify(float delta)
         {
             if (m_Points.Count <= 4)
             {
-                return;
+                return false;
             }
 
             bool changeState = false;
-            float distanceLimit = shrinkAmount * 2;
+            float distanceLimit = delta * 2f;
             var canSimplify = true;
             while (canSimplify)
             {
@@ -896,7 +909,10 @@ namespace Cinemachine
             if (changeState)
             {
                 m_State += s_nonLerpableStateChangePenalty; // simplify is a state change that cannot be lerped
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>Divides subPolygons into subPolygons if there are intersections.</summary>
