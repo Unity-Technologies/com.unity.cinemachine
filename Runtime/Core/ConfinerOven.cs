@@ -98,18 +98,7 @@ namespace Cinemachine
                 if (rightCandidatePolygonIteration != null &&
                     stepSize <= minStepSize)
                 {
-                    var leftCandidatePolygonIterationFixed = new List<ShrinkablePolygon>();
-                    for (int rp = 0; rp < leftCandidatePolygonIteration.Count; ++rp)
-                    {
-                        if (ShrinkablePolygon.DivideAlongIntersections(
-                                leftCandidatePolygonIteration[rp], out List<ShrinkablePolygon> subPolygons) && 
-                            stopAtFirstIntersection)
-                        {
-                            return; // stop at first intersection
-                        }
-                        leftCandidatePolygonIterationFixed.AddRange(subPolygons);
-                    }
-                    m_shrinkablePolygons.Add(leftCandidatePolygonIterationFixed);
+                    m_shrinkablePolygons.Add(leftCandidatePolygonIteration);
                     
                     var rightCandidatePolygonIterationFixed = new List<ShrinkablePolygon>();
                     for (int rp = 0; rp < rightCandidatePolygonIteration.Count; ++rp)
@@ -124,7 +113,7 @@ namespace Cinemachine
                     }
                     m_shrinkablePolygons.Add(rightCandidatePolygonIterationFixed);
 
-                    leftCandidatePolygonIteration = rightCandidatePolygonIteration;
+                    leftCandidatePolygonIteration = rightCandidatePolygonIterationFixed;
                     rightCandidatePolygonIteration = null;
                     
                     stepSize = maxStepSize;
