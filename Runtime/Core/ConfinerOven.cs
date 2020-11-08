@@ -41,7 +41,7 @@ namespace Cinemachine
             var aspectData = new ShrinkablePolygon.AspectData(aspectRatio);
             
             m_shrinkablePolygons = CreateShrinkablePolygons(inputPath);
-            float maxStepSize = polygonHalfHeight / 4f;
+            float maxStepSize = Mathf.Sqrt(Mathf.Sqrt(m_sqrPolygonDiagonal)) / (4f * aspectRatio);
             float minStepSize = 0.005f;
             float stepSize = maxStepSize;
             bool shrinking = true;
