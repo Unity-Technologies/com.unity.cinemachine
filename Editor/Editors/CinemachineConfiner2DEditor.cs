@@ -27,6 +27,25 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
             }
             
+#if false
+            // Debugging info
+            if (Target.GetGizmoPaths(out var originalPath, ref s_currentPathCache, out var pathLocalToWorld))
+            {
+                int pointCount0 = 0;
+                foreach (var path in originalPath )
+                    pointCount0 += path.Count;
+
+                int pointCount1 = 1;
+                foreach (var path in s_currentPathCache)
+                    pointCount1 += path.Count;
+
+                EditorGUILayout.HelpBox(
+                    $"Original Path: {pointCount0} points in {originalPath.Count} paths\n"
+                    + $"Confiner Path: {pointCount1} points in {s_currentPathCache.Count} paths",
+                    MessageType.Info);
+            }
+#endif
+
             DrawRemainingPropertiesInInspector();
             if (GUILayout.Button("Invalidate Cache"))
             {

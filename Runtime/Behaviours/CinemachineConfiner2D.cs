@@ -294,7 +294,7 @@ namespace Cinemachine
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
                     ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, 
-                        aspectRatio, frustumHeight, confinerBaker.m_cachedMaxFrustumHeight, 
+                        aspectRatio, frustumHeight, confinerBaker.MaxFrustumHeight, 
                         out m_Path, out m_PathHasBone);
                 
                     m_frustumHeight = frustumHeight;
@@ -463,7 +463,7 @@ namespace Cinemachine
         // Used by editor gizmo drawer
         internal bool IsOverCachedMaxFrustumHeight()
         {
-            return m_confinerBaker.m_cachedMaxFrustumHeight < m_currentFrustumHeight;
+            return m_confinerBaker.MaxFrustumHeight < m_currentFrustumHeight;
         }
 
         private void OnValidate()

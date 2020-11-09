@@ -19,7 +19,15 @@ namespace Cinemachine
 
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         public float m_sqrPolygonDiagonal;
-        public float m_cachedMaxFrustumHeight;
+
+        public float MaxFrustumHeight
+        {
+            get
+            {
+                int last = (m_shrinkablePolygons == null ? 0 : m_shrinkablePolygons.Count) - 1;
+                return last < 0 ? 0 : m_shrinkablePolygons[last][0].m_FrustumHeight;
+            }
+        }
 
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
@@ -126,6 +134,11 @@ namespace Cinemachine
                 }
                 else
                 {
+#if false
+if (m_shrinkablePolygons.Count > 1000)
+    break;
+Debug.Log($"States = {m_shrinkablePolygons.Count}, Frustum height = {leftCandidatePolygonIteration[0].m_FrustumHeight}, stepSize = {stepSize}");
+#endif
                     continue; // keep searching for a closer left and right or a non-null right
                 }
 
