@@ -18,6 +18,7 @@ namespace Cinemachine
         }
         private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
 
+        internal const float k_MinStepSize = 0.005f; // internal, because Tests access it
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
 
         public float SqrPolygonDiagonal { get; private set; }
@@ -67,7 +68,6 @@ namespace Cinemachine
             List<ShrinkablePolygon> rightCandidate = null;
             List<ShrinkablePolygon> leftCandidate = m_shrinkablePolygons[0];
             float maxStepSize = polygonHalfHeight / 4f;
-            float minStepSize = 0.005f;
             float stepSize = maxStepSize;
             bool shrinking = true;
             while (shrinking)
@@ -97,7 +97,7 @@ namespace Cinemachine
                         if (poly.m_FrustumHeight > 0.1f) 
                         {
                             // |= because we want to keep it true if it is true
-                            stateChangeFound |= poly.Simplify(minStepSize); 
+                            stateChangeFound |= poly.Simplify(k_MinStepSize); 
                         }
                         if (!stateChangeFound)
                         {
@@ -116,7 +116,7 @@ namespace Cinemachine
                 if (stateChangeFound)
                 {
                     rightCandidate = candidate;
-                    stepSize = Mathf.Max(stepSize / 2f, minStepSize);
+                    stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
                 }
                 else
                 {
@@ -124,13 +124,13 @@ namespace Cinemachine
                     if (rightCandidate != null)
                     {
                         // if we have not found right yet, then we don't need to decrease stepsize
-                        stepSize = Mathf.Max(stepSize / 2f, minStepSize);
+                        stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
                     }
                 }
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
                 // then we have located a state change point
-                if (rightCandidate != null && stepSize <= minStepSize)
+                if (rightCandidate != null && stepSize <= k_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
                     m_shrinkablePolygons.Add(leftCandidate);

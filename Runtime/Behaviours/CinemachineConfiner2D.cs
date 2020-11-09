@@ -103,9 +103,6 @@ namespace Cinemachine
         private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
 
         private const float m_cornerAngleTreshold = 10f;
-        internal const float k_BakingMinResolution = 0.1f; // internal, because Tests access it
-        internal const float k_BakingMaxResolution = 0.005f; // internal, because Tests access it
-        private const float k_BakingResolutionSteps = 10;
 
         private float m_currentFrustumHeight = 0;
         

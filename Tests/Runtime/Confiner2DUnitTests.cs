@@ -34,7 +34,7 @@ public class Confiner2DUnitTests
             Assert.IsTrue(subShrinkablePolygon1.Count == 2);
             for (var index = 0; index < subShrinkablePolygon1.Count; index++)
             {
-                subShrinkablePolygon1[index].Simplify(CinemachineConfiner2D.k_BakingMaxResolution);
+                subShrinkablePolygon1[index].Simplify(ConfinerOven.k_MinStepSize);
                 Assert.IsTrue(subShrinkablePolygon1[index].m_Points.Count == 3);
             }
 
@@ -62,7 +62,7 @@ public class Confiner2DUnitTests
             Assert.IsTrue(subShrinkablePolygon2.Count == 2);
             for (var index = 0; index < subShrinkablePolygon2.Count; index++)
             {
-                subShrinkablePolygon2[index].Simplify(CinemachineConfiner2D.k_BakingMaxResolution);
+                subShrinkablePolygon2[index].Simplify(ConfinerOven.k_MinStepSize);
                 Assert.IsTrue(subShrinkablePolygon2[index].m_Points.Count == 3);
             }
 
