@@ -58,8 +58,8 @@ namespace Cinemachine
         public float m_MinArea;
         public List<Vector2> m_IntersectionPoints;
         
-        private float m_area;
-        private bool ClockwiseOrientation => m_area > 0;
+        public float m_Area;
+        private bool ClockwiseOrientation => m_Area > 0;
 
         /// <summary>
         /// Default constructor initializing points and intersection points.
@@ -82,7 +82,7 @@ namespace Cinemachine
             }
             m_IntersectionPoints = new List<Vector2>();
             
-            ComputeSignedArea();
+            m_Area = ComputeSignedArea();
             ComputeNormals(true);
         }
 
@@ -94,7 +94,7 @@ namespace Cinemachine
         {
             return new ShrinkablePolygon
             {
-                m_area = m_area,
+                m_Area = m_Area,
                 m_MinArea = m_MinArea,
                 m_FrustumHeight = m_FrustumHeight,
                 m_State = m_State,
@@ -106,22 +106,32 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// Computes signed area and determines whether a subPolygons is oriented clockwise or counter-clockwise.
+        /// Computes signed area. Sign determines whether the polygon is oriented clockwise or counter-clockwise.
+        /// Does not work if polygon has self intersections.
         /// </summary>
         /// <returns>Area of the subPolygons</returns>
         public float ComputeSignedArea()
         {
-            m_area = 0;
+            float area = 0f;
             int numPoints = m_Points.Count;
             for (int i = 0; i < numPoints; ++i)
             {
                 var p1 = m_Points[i].m_Position;
                 var p2 = m_Points[(i + 1) % numPoints].m_Position;
-                m_area += (p2.x - p1.x) * (p2.y + p1.y);
+                area += (p2.x - p1.x) * (p2.y + p1.y);
             }
+            return area / 2f;
+        }
 
-            m_area = m_area / 2f;
-            return m_area;
+        /// <summary>
+        /// Checks whether the polygon got inverted based on the area before and after the polygon got modified.
+        /// </summary>
+        /// <param name="areaBefore">The area of the polygon before it got modified.</param>
+        /// <returns>True, if the polygon is inverted. False, otherwise.</returns>
+        public bool IsInverted(float areaBefore)
+        {
+            m_Area = ComputeSignedArea(); 
+            return Mathf.Sign(areaBefore) != Mathf.Sign(m_Area);
         }
 
         /// <summary>
@@ -244,13 +254,13 @@ namespace Cinemachine
         {
             // cache current shrink directions to check for change later
             int numPoints = m_Points.Count;
-            s_shrinkDirectionsCache.Clear();
-            if (s_shrinkDirectionsCache.Capacity < numPoints)
-                s_shrinkDirectionsCache.Capacity = numPoints;
-            for (int i = 0; i < numPoints; ++i)
-            {
-                s_shrinkDirectionsCache.Add(m_Points[i].m_ShrinkDirection);
-            }
+            // s_shrinkDirectionsCache.Clear();
+            // if (s_shrinkDirectionsCache.Capacity < numPoints)
+            //     s_shrinkDirectionsCache.Capacity = numPoints;
+            // for (int i = 0; i < numPoints; ++i)
+            // {
+            //     s_shrinkDirectionsCache.Add(m_Points[i].m_ShrinkDirection);
+            // }
             
             // calculate shrink directions
             ComputeNormals(false);
@@ -265,15 +275,15 @@ namespace Cinemachine
                 m_Points[i] = p;
             }
 
-            // update m_State, if change happened based on the cached shrink directions
-            for (var index = 0; index < s_shrinkDirectionsCache.Count; index++)
-            {
-                if (s_shrinkDirectionsCache[index] != m_Points[index].m_ShrinkDirection)
-                {
-                    m_State++; // m_State change when even one shrink direction has been changed
-                    break;
-                }
-            }
+            // // update m_State, if change happened based on the cached shrink directions
+            // for (var index = 0; index < s_shrinkDirectionsCache.Count; index++)
+            // {
+            //     if (s_shrinkDirectionsCache[index] != m_Points[index].m_ShrinkDirection)
+            //     {
+            //         m_State++; // m_State change when even one shrink direction has been changed
+            //         break;
+            //     }
+            // }
         }
         
         private static readonly int FloatToIntScaler = 10000000; // same as in Physics2D
@@ -314,13 +324,14 @@ namespace Cinemachine
                     
                     Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
                     Vector2 direction = (closestPoint - intersectionPoint).normalized;
-                    Vector2 epsilonNormal = new Vector2(direction.y, -direction.x) * 0.01f;
+                    Vector2 epsilonNormal = new Vector2(direction.y, -direction.x).normalized * 
+                                            UnityVectorExtensions.Epsilon;
 
                     clip.Add(new List<IntPoint>(4));
-                    Vector2 p1 = closestPoint + epsilonNormal;
+                    Vector2 p1 = closestPoint + epsilonNormal + direction * UnityVectorExtensions.Epsilon;
                     Vector2 p2 = intersectionPoint + epsilonNormal;
                     Vector3 p3 = intersectionPoint - epsilonNormal;
-                    Vector3 p4 = closestPoint - epsilonNormal;
+                    Vector3 p4 = closestPoint - epsilonNormal + direction * UnityVectorExtensions.Epsilon;
 
                     clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                     clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
@@ -367,10 +378,12 @@ namespace Cinemachine
                         Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
                                                 UnityVectorExtensions.Epsilon;
                         clip.Add(new List<IntPoint>(4));
-                        Vector2 p1 = point.m_Position + epsilonNormal;
+                        Vector2 p1 = point.m_Position + epsilonNormal + 
+                                     shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
                         Vector2 p2 = cornerTouchingPoint + epsilonNormal;
                         Vector2 p3 = cornerTouchingPoint - epsilonNormal;
-                        Vector2 p4 = point.m_Position - epsilonNormal;
+                        Vector2 p4 = point.m_Position - epsilonNormal + 
+                                     shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
                         clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
@@ -684,13 +697,14 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Shrink shrinkablePolygon points towards their shrink direction by shrinkAmount.
+        /// Shrink shrinkablePolygon points towards their shrink direction by stepSize.
         /// </summary>
-        public bool Shrink(float shrinkAmount, bool shrinkToPoint, in float aspectRatio)
+        public bool Shrink(float stepSize, bool shrinkToPoint, in float aspectRatio)
         {
-            m_FrustumHeight += shrinkAmount;
-            float area1 = Mathf.Abs(ComputeSignedArea());
-            if (area1 < m_MinArea)
+            // TODO: state change is not added to polygons to mark boundary
+            // TODO: seems like camera window is twice as big as it should. 
+            m_FrustumHeight += stepSize;
+            if (Mathf.Abs(m_Area) < m_MinArea)
             {
                 if (shrinkToPoint)
                 {
@@ -745,7 +759,7 @@ namespace Cinemachine
             for (int i = 0; i < m_Points.Count; ++i)
             {
                 var mPoint = m_Points[i];
-                mPoint.m_Position += mPoint.m_ShrinkDirection * shrinkAmount;
+                mPoint.m_Position += mPoint.m_ShrinkDirection * stepSize;
                 m_Points[i] = mPoint;
             }
             return true;
@@ -849,18 +863,21 @@ namespace Cinemachine
         }
 
         internal static int s_nonLerpableStateChangePenalty = 10; // penalty for non-lerpable state changes
+      
         /// <summary>
         /// Removes points that are the same or very close.
         /// </summary>
-        public void Simplify(float shrinkAmount)
+        /// <param name="delta">Radius / 2f within which points are removed</param>
+        /// <returns>True, if simplified. False, otherwise.</returns>
+        public bool Simplify(float delta)
         {
             if (m_Points.Count <= 4)
             {
-                return;
+                return false;
             }
 
             bool changeState = false;
-            float distanceLimit = shrinkAmount * 2;
+            float distanceLimit = delta * 2f;
             var canSimplify = true;
             while (canSimplify)
             {
@@ -897,7 +914,10 @@ namespace Cinemachine
             if (changeState)
             {
                 m_State += s_nonLerpableStateChangePenalty; // simplify is a state change that cannot be lerped
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>Divides subPolygons into subPolygons if there are intersections.</summary>
@@ -927,7 +947,13 @@ namespace Cinemachine
                         shrinkablePolygon.m_Points[i].m_Position, shrinkablePolygon.m_Points[nextI].m_Position,
                         shrinkablePolygon.m_Points[j].m_Position, shrinkablePolygon.m_Points[nextJ].m_Position,
                         out Vector2 intersection);
-                    
+
+                    if (intersectionType == 2 && intersection.sqrMagnitude >= Vector2.positiveInfinity.sqrMagnitude)
+                    {
+                        // parallel lines so no need to divide.
+                        shrinkablePolygon.m_State += s_nonLerpableStateChangePenalty;
+                        return true; // subPolygons has nice intersections
+                    }
                     if (intersectionType == 2) // so we divide g into g1 and g2.
                     {
                         var g1 = new ShrinkablePolygon();

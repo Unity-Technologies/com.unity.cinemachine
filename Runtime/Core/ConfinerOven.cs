@@ -19,7 +19,15 @@ namespace Cinemachine
 
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         public float m_sqrPolygonDiagonal;
-        public float m_cachedMaxFrustumHeight;
+
+        public float MaxFrustumHeight
+        {
+            get
+            {
+                int last = (m_shrinkablePolygons == null ? 0 : m_shrinkablePolygons.Count) - 1;
+                return last < 0 ? 0 : m_shrinkablePolygons[last][0].m_FrustumHeight;
+            }
+        }
 
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
@@ -28,74 +36,117 @@ namespace Cinemachine
         /// intersection point, and continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, in float shrinkAmount, 
-            float maxOrthosize, in bool shrinkToPoint, in bool stopAtFirstIntersection)
+        public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, in float bakingResolution,
+            float maxFrustumHeightBound, in bool shrinkToPoint, in bool stopAtFirstIntersection)
         {
             float polygonHalfHeight = HeightOfAspectBasedBoundingBoxAroundPolygons(inputPath, aspectRatio) / 2f;
-            if (maxOrthosize == 0 || maxOrthosize > polygonHalfHeight) // exact comparison to 0 is intentional!
+            if (maxFrustumHeightBound == 0 || maxFrustumHeightBound > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
                 // ensuring that we don't compute further than what is the theoretical max
-                maxOrthosize = polygonHalfHeight; 
+                maxFrustumHeightBound = polygonHalfHeight; 
             }
 
             var aspectData = new ShrinkablePolygon.AspectData(aspectRatio);
             
             m_shrinkablePolygons = CreateShrinkablePolygons(inputPath);
-            var polyIndex = 0;
-            var shrinking = true;
+            float maxStepSize = Mathf.Sqrt(Mathf.Sqrt(m_sqrPolygonDiagonal)) / (4f * aspectRatio);
+            float minStepSize = 0.005f;
+            float stepSize = maxStepSize;
+            bool shrinking = true;
+            List<ShrinkablePolygon> rightCandidatePolygonIteration = null;
+            List<ShrinkablePolygon> leftCandidatePolygonIteration = m_shrinkablePolygons[0];
             while (shrinking)
             {
-                var numPaths = m_shrinkablePolygons[polyIndex].Count;
-                var nextPolygonIteration = new List<ShrinkablePolygon>(numPaths);
+                bool stateChangeFound = false;
+                var numPaths = leftCandidatePolygonIteration.Count;
+                var candidatePolygonIteration = new List<ShrinkablePolygon>(numPaths);
                 for (int g = 0; g < numPaths; ++g)
                 {
-                    m_shrinkablePolygons[polyIndex][g].ComputeAspectBasedShrinkDirections(aspectData);
-                    ShrinkablePolygon shrinkablePolygon = m_shrinkablePolygons[polyIndex][g].DeepCopy();
-                    var areaBefore = shrinkablePolygon.ComputeSignedArea();
-                    if (shrinkablePolygon.Shrink(shrinkAmount, shrinkToPoint, aspectRatio))
+                    leftCandidatePolygonIteration[g].ComputeAspectBasedShrinkDirections(aspectData); // TODO: probably only need to recalculate after statechange
+                    ShrinkablePolygon shrinkablePolygon = leftCandidatePolygonIteration[g].DeepCopy();
+                    shrinkablePolygon.m_Area = shrinkablePolygon.ComputeSignedArea(); // TODO: m_Area may be storing this already
+                    stepSize = Mathf.Min(stepSize, maxFrustumHeightBound - shrinkablePolygon.m_FrustumHeight); // ensures we don't go over the max frustum height
+                    if (shrinkablePolygon.Shrink(stepSize, shrinkToPoint, aspectRatio))
                     {
-                        var areaAfter = shrinkablePolygon.ComputeSignedArea();
-                        bool doesSelfIntersect = shrinkablePolygon.DoesSelfIntersect();
-                        bool isInverted = Mathf.Sign(areaBefore) != Mathf.Sign(areaAfter);
-                        if (doesSelfIntersect || isInverted)
-                        {
-                            // TODO: revert shrinking
-                            // then binary search step size
+                        // don't simplify at small frustumHeight, because some points at start may be close together that are important
+                        if (shrinkablePolygon.m_FrustumHeight > 0.1f) {
+                            stateChangeFound |= shrinkablePolygon.Simplify(minStepSize); // |= because we want to keep it true if it is true
                         }
-                        
-                        
-                        if (shrinkablePolygon.m_FrustumHeight > shrinkAmount * 100f)
+                        if (!stateChangeFound)
                         {
-                            shrinkablePolygon.Simplify(shrinkAmount);
+                            if (shrinkablePolygon.DoesSelfIntersect() || 
+                                shrinkablePolygon.IsInverted(shrinkablePolygon.m_Area))
+                            {
+                                stateChangeFound = true;
+                            }
                         }
-                        if (ShrinkablePolygon.DivideAlongIntersections(shrinkablePolygon,
-                            out List<ShrinkablePolygon> subPolygons) &&
+                    }
+                    
+                    candidatePolygonIteration.Add(shrinkablePolygon);
+                }
+
+                if (stateChangeFound)
+                {
+                    rightCandidatePolygonIteration = candidatePolygonIteration;
+                    stepSize = Mathf.Max(stepSize / 2f, minStepSize);
+                }
+                else
+                {
+                    leftCandidatePolygonIteration = candidatePolygonIteration;
+                    if (rightCandidatePolygonIteration != null)
+                    {
+                        // if we have not found right yet, then we don't need to decrease stepsize
+                        stepSize = Mathf.Max(stepSize / 2f, minStepSize);
+                    }
+                }
+                
+                // TODO: need to catch case when right is null and left frustum is bigger then max frustum!
+
+                // if we have a right candidate, and left and right are sufficiently close
+                if (rightCandidatePolygonIteration != null &&
+                    stepSize <= minStepSize)
+                {
+                    m_shrinkablePolygons.Add(leftCandidatePolygonIteration);
+                    
+                    var rightCandidatePolygonIterationFixed = new List<ShrinkablePolygon>();
+                    for (int rp = 0; rp < rightCandidatePolygonIteration.Count; ++rp)
+                    {
+                        if (ShrinkablePolygon.DivideAlongIntersections(
+                                rightCandidatePolygonIteration[rp], out List<ShrinkablePolygon> subPolygons) && 
                             stopAtFirstIntersection)
                         {
                             return; // stop at first intersection
                         }
+                        rightCandidatePolygonIterationFixed.AddRange(subPolygons);
+                    }
+                    m_shrinkablePolygons.Add(rightCandidatePolygonIterationFixed);
 
-                        nextPolygonIteration.AddRange(subPolygons);
-                    }
-                    else
-                    {
-                        nextPolygonIteration.Add(shrinkablePolygon);
-                    }
+                    leftCandidatePolygonIteration = rightCandidatePolygonIterationFixed;
+                    rightCandidatePolygonIteration = null;
+                    
+                    stepSize = maxStepSize;
                 }
-
-                m_cachedMaxFrustumHeight = nextPolygonIteration[0].m_FrustumHeight;
-
-                m_shrinkablePolygons.Add(nextPolygonIteration);
-                if (maxOrthosize < m_shrinkablePolygons[polyIndex][0].m_FrustumHeight)
+                else if (rightCandidatePolygonIteration == null &&
+                         leftCandidatePolygonIteration[0].m_FrustumHeight >= maxFrustumHeightBound)
                 {
-                    break;
+                    m_shrinkablePolygons.Add(leftCandidatePolygonIteration);
+                    break; // stop shrinking, because we are at the bound
                 }
-                ++polyIndex;
+                else
+                {
+#if false
+if (m_shrinkablePolygons.Count > 1000)
+    break;
+Debug.Log($"States = {m_shrinkablePolygons.Count}, Frustum height = {leftCandidatePolygonIteration[0].m_FrustumHeight}, stepSize = {stepSize}");
+#endif
+                    continue; // keep searching for a closer left and right or a non-null right
+                }
 
+                // TODO: could move this up into the if part
                 shrinking = false;
-                for (int i = 0; i < m_shrinkablePolygons[polyIndex].Count; ++i)
+                for (int i = 0; i < leftCandidatePolygonIteration.Count; ++i)
                 {
-                    ShrinkablePolygon polygon = m_shrinkablePolygons[polyIndex][i];
+                    var polygon = leftCandidatePolygonIteration[i];
                     if (polygon.IsShrinkable())
                     {
                         shrinking = true;
@@ -122,7 +173,11 @@ namespace Cinemachine
 
                 for (int i = 0; i < shrinkablePolygons.Count; ++i)
                 {
-                    shrinkablePolygons[i][0].m_MinArea = shrinkablePolygons[i][0].ComputeSignedArea() / 100f;
+                    for (var j = 0; j < shrinkablePolygons[i].Count; j++)
+                    {
+                        shrinkablePolygons[i][j].m_Area = shrinkablePolygons[i][0].ComputeSignedArea();
+                        shrinkablePolygons[i][j].m_MinArea = 0.1f; // TODO: what's a good value
+                    }
                 }
             }
             return shrinkablePolygons;
@@ -205,7 +260,7 @@ namespace Cinemachine
         /// </summary>
         public List<ConfinerState> GetShrinkablePolygonsAsConfinerStates()
         {
-            TrimShrinkablePolygons();
+            // TrimShrinkablePolygons();
 
             m_confinerStates.Clear();
             if (m_confinerStates.Capacity < m_shrinkablePolygons.Count)
