@@ -19,7 +19,8 @@ namespace Cinemachine
         private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
 
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
-        public float m_sqrPolygonDiagonal;
+
+        public float SqrPolygonDiagonal { get; private set; }
 
         public float MaxFrustumHeight
         {
@@ -37,121 +38,137 @@ namespace Cinemachine
         /// intersection point, and continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, in float bakingResolution,
-            float maxFrustumHeightBound, in bool shrinkToPoint, in bool stopAtFirstIntersection)
+        public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, 
+            float maxFrustumHeight, in bool shrinkToPoint, in bool stopAtFirstIntersection)
         {
-            float polygonHalfHeight = HeightOfAspectBasedBoundingBoxAroundPolygons(inputPath, aspectRatio) / 2f;
-            if (maxFrustumHeightBound == 0 || maxFrustumHeightBound > polygonHalfHeight) // exact comparison to 0 is intentional!
+            // Compute the aspect-adjusted height of the polygon bounding box
+            var polygonSize = PolygonSize(inputPath);
+            float polygonHeight = polygonSize.y / aspectRatio; // GML todo: why are we adjusting it for aspect?
+
+            // Cache the polygon diagonal 
+            SqrPolygonDiagonal = polygonSize.x * polygonSize.x + polygonHeight * polygonHeight;
+
+            // Ensuring that we don't compute further than what is the theoretical max
+            float polygonHalfHeight = polygonHeight * 0.5f;
+            if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
-                // ensuring that we don't compute further than what is the theoretical max
-                maxFrustumHeightBound = polygonHalfHeight; 
+                maxFrustumHeight = polygonHalfHeight; 
             }
 
+            // GML todo: scale the poly in X to make 1:1 aspect and get rid of this
             var aspectData = new ShrinkablePolygon.AspectData(aspectRatio);
             
+            // Initial polygon
             m_shrinkablePolygons = CreateShrinkablePolygons(inputPath);
-            float maxStepSize = Mathf.Sqrt(Mathf.Sqrt(m_sqrPolygonDiagonal)) / (4f * aspectRatio);
+            for (int i = 0; i < m_shrinkablePolygons[0].Count; ++i)
+                m_shrinkablePolygons[0][i].ComputeAspectBasedShrinkDirections(aspectData);
+
+            // Binary search for next non-lerpable state
+            List<ShrinkablePolygon> rightCandidate = null;
+            List<ShrinkablePolygon> leftCandidate = m_shrinkablePolygons[0];
+            float maxStepSize = polygonHalfHeight / 4f;
             float minStepSize = 0.005f;
             float stepSize = maxStepSize;
             bool shrinking = true;
-            List<ShrinkablePolygon> rightCandidatePolygonIteration = null;
-            List<ShrinkablePolygon> leftCandidatePolygonIteration = m_shrinkablePolygons[0];
             while (shrinking)
             {
-                bool stateChangeFound = false;
-                var numPaths = leftCandidatePolygonIteration.Count;
-                var candidatePolygonIteration = new List<ShrinkablePolygon>(numPaths);
-                for (int g = 0; g < numPaths; ++g)
+#if false
+                Debug.Log($"States = {m_shrinkablePolygons.Count}, "
+                    + $"Frustum height = {leftCandidate[0].m_FrustumHeight}, stepSize = {stepSize}");
+#endif
+                if (m_shrinkablePolygons.Count > 1000)
                 {
-                    leftCandidatePolygonIteration[g].ComputeAspectBasedShrinkDirections(aspectData); // TODO: probably only need to recalculate after statechange
-                    ShrinkablePolygon shrinkablePolygon = leftCandidatePolygonIteration[g].DeepCopy();
+                    Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
+                    break;
+                }
 
-                    stepSize = Mathf.Min(stepSize, maxFrustumHeightBound - shrinkablePolygon.m_FrustumHeight); // ensures we don't go over the max frustum height
-                    if (shrinkablePolygon.Shrink(stepSize, shrinkToPoint, aspectRatio))
+                bool stateChangeFound = false;
+                var numPaths = leftCandidate.Count;
+                var candidate = new List<ShrinkablePolygon>(numPaths);
+                for (int pathIndex = 0; pathIndex < numPaths; ++pathIndex)
+                {
+                    ShrinkablePolygon poly = leftCandidate[pathIndex].DeepCopy();
+
+                    stepSize = Mathf.Min(stepSize, maxFrustumHeight - poly.m_FrustumHeight);
+                    if (poly.Shrink(stepSize, shrinkToPoint, aspectRatio))
                     {
-                        // don't simplify at small frustumHeight, because some points at start may be close together that are important
-                        if (shrinkablePolygon.m_FrustumHeight > 0.1f) {
-                            stateChangeFound |= shrinkablePolygon.Simplify(minStepSize); // |= because we want to keep it true if it is true
+                        // don't simplify at small frustumHeight, because some points at 
+                        // start may be close together that are important
+                        if (poly.m_FrustumHeight > 0.1f) 
+                        {
+                            // |= because we want to keep it true if it is true
+                            stateChangeFound |= poly.Simplify(minStepSize); 
                         }
                         if (!stateChangeFound)
                         {
-                            if (shrinkablePolygon.DoesSelfIntersect() || 
-                                Mathf.Sign(shrinkablePolygon.m_Area) != Mathf.Sign(leftCandidatePolygonIteration[g].m_Area))
+                            if (poly.DoesSelfIntersect() || 
+                                Mathf.Sign(poly.m_Area) != Mathf.Sign(leftCandidate[pathIndex].m_Area))
                             {
                                 stateChangeFound = true;
                             }
                         }
                     }
-                    
-                    candidatePolygonIteration.Add(shrinkablePolygon);
+                    if (stateChangeFound)
+                        poly.ComputeAspectBasedShrinkDirections(aspectData);
+                    candidate.Add(poly);
                 }
 
                 if (stateChangeFound)
                 {
-                    rightCandidatePolygonIteration = candidatePolygonIteration;
+                    rightCandidate = candidate;
                     stepSize = Mathf.Max(stepSize / 2f, minStepSize);
                 }
                 else
                 {
-                    leftCandidatePolygonIteration = candidatePolygonIteration;
-                    if (rightCandidatePolygonIteration != null)
+                    leftCandidate = candidate;
+                    if (rightCandidate != null)
                     {
                         // if we have not found right yet, then we don't need to decrease stepsize
                         stepSize = Mathf.Max(stepSize / 2f, minStepSize);
                     }
                 }
                 
-                // TODO: need to catch case when right is null and left frustum is bigger then max frustum!
-
-                // if we have a right candidate, and left and right are sufficiently close
-                if (rightCandidatePolygonIteration != null &&
-                    stepSize <= minStepSize)
+                // if we have a right candidate, and left and right are sufficiently close, 
+                // then we have located a state change point
+                if (rightCandidate != null && stepSize <= minStepSize)
                 {
-                    m_shrinkablePolygons.Add(leftCandidatePolygonIteration);
-                    
-                    var rightCandidatePolygonIterationFixed = new List<ShrinkablePolygon>();
-                    for (int rp = 0; rp < rightCandidatePolygonIteration.Count; ++rp)
-                    {
-                        if (ShrinkablePolygon.DivideAlongIntersections(
-                                rightCandidatePolygonIteration[rp], out List<ShrinkablePolygon> subPolygons) && 
-                            stopAtFirstIntersection)
-                        {
-                            return; // stop at first intersection
-                        }
-                        rightCandidatePolygonIterationFixed.AddRange(subPolygons);
-                    }
-                    m_shrinkablePolygons.Add(rightCandidatePolygonIterationFixed);
+                    // Add both states: one before the state change and one after
+                    m_shrinkablePolygons.Add(leftCandidate);
 
-                    leftCandidatePolygonIteration = rightCandidatePolygonIterationFixed;
-                    rightCandidatePolygonIteration = null;
+                    // Split the state-changed poly where the path self-intersects
+                    var splitPoly = new List<ShrinkablePolygon>();
+                    for (int i = 0; i < rightCandidate.Count; ++i)
+                    {
+                        ShrinkablePolygon.DivideAlongIntersections(rightCandidate[i], ref s_subPolygonCache, aspectData);
+                        splitPoly.AddRange(s_subPolygonCache);
+                    }
+
+                    // Reduced-functionality version does not shrink beyond first self-intersection
+                    if (stopAtFirstIntersection && splitPoly.Count > rightCandidate.Count)
+                        break;
+
+                    m_shrinkablePolygons.Add(splitPoly);
+                    leftCandidate = splitPoly;
+                    rightCandidate = null;
                     
+                    // Back to max step.  GML todo: this can be smaller now
                     stepSize = maxStepSize;
                 }
-                else if (rightCandidatePolygonIteration == null &&
-                         leftCandidatePolygonIteration[0].m_FrustumHeight >= maxFrustumHeightBound)
+                else if (rightCandidate == null && leftCandidate[0].m_FrustumHeight >= maxFrustumHeight)
                 {
-                    m_shrinkablePolygons.Add(leftCandidatePolygonIteration);
+                    m_shrinkablePolygons.Add(leftCandidate);
                     break; // stop shrinking, because we are at the bound
                 }
                 else
                 {
-#if true
-                    if (m_shrinkablePolygons.Count > 1000)
-                    {
-                        Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
-                        break;
-                    }
-    
-                    Debug.Log($"States = {m_shrinkablePolygons.Count}, Frustum height = {leftCandidatePolygonIteration[0].m_FrustumHeight}, stepSize = {stepSize}");
-#endif
                     continue; // keep searching for a closer left and right or a non-null right
                 }
 
                 // TODO: could move this up into the if part
                 shrinking = false;
-                for (int i = 0; i < leftCandidatePolygonIteration.Count; ++i)
+                for (int i = 0; i < leftCandidate.Count; ++i)
                 {
-                    var polygon = leftCandidatePolygonIteration[i];
+                    var polygon = leftCandidate[i];
                     if (polygon.IsShrinkable())
                     {
                         shrinking = true;
@@ -160,12 +177,32 @@ namespace Cinemachine
                 }
             }
         }
-     
+
+        private static List<ShrinkablePolygon> s_subPolygonCache = new List<ShrinkablePolygon>();
+        
+        private static Vector2 PolygonSize(in List<List<Vector2>> polygons)
+        {
+            float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
+            float minY = float.PositiveInfinity, maxY = float.NegativeInfinity;
+            for (int i = 0; i < polygons.Count; ++i)
+            {
+                var path = polygons[i];
+                for (int j = 0; j < path.Count; ++j)
+                {
+                    var p = path[j];
+                    minX = Mathf.Min(minX, p.x);
+                    maxX = Mathf.Max(maxX, p.x);
+                    minY = Mathf.Min(minY, p.y);
+                    maxY = Mathf.Max(maxY, p.y);
+                }
+            }
+            return new Vector2(Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
+        }
+        
         /// <summary>
-        /// Converts and returns shrinkable polygons from a polygons
+        /// Converts and returns shrinkable polygons from a polygons.
         /// </summary>
-        public static List<List<ShrinkablePolygon>> CreateShrinkablePolygons(
-            in List<List<Vector2>> paths)
+        public static List<List<ShrinkablePolygon>> CreateShrinkablePolygons(in List<List<Vector2>> paths)
         {
             int numPaths = paths == null ? 0 : paths.Count;
             var shrinkablePolygons = new List<List<ShrinkablePolygon>>(numPaths);
@@ -272,35 +309,6 @@ namespace Cinemachine
             }
 
             return m_confinerStates;
-        }
-
-        /// <summary>
-        /// Calculates the height (y axis length) of the (unrotated) bounding box with the specified aspect ratio
-        /// around the input polygons.
-        /// </summary>
-        /// <param name="polygons">Input polygons</param>
-        /// <param name="aspect">Specifies the aspect ratio of the bounding box.</param>
-        /// <returns>The height (y axis length) of the (unrotated) bounding box with the specified aspect ratio
-        /// around the input polygon.</returns>
-        private float HeightOfAspectBasedBoundingBoxAroundPolygons(in List<List<Vector2>> polygons, in float aspect)
-        {
-            float minX = Single.PositiveInfinity, maxX = Single.NegativeInfinity;
-            float minY = Single.PositiveInfinity, maxY = Single.NegativeInfinity;
-            foreach (var path in polygons)
-            {
-                foreach (var point in path)
-                {
-                    minX = Mathf.Min(minX, point.x);
-                    maxX = Mathf.Max(maxX, point.x);
-                    minY = Mathf.Min(minY, point.y);
-                    maxY = Mathf.Max(maxY, point.y);
-                }
-            }
-
-            float pWidth = maxX - minX;
-            float pHeight = Mathf.Max(maxY - minY, pWidth / aspect);
-            m_sqrPolygonDiagonal = pWidth * pWidth + pHeight * pHeight;
-            return pHeight;
         }
     }
 }

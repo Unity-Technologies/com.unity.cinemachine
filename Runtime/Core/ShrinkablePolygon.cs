@@ -69,8 +69,9 @@ namespace Cinemachine
         /// </summary>
         public ShrinkablePolygon(List<Vector2> points) : this()
         {
-            m_Points = new List<ShrinkablePoint2>(points.Count);
-            for (int i = 0; i < points.Count; ++i)
+            int numPoints = points.Count;
+            m_Points = new List<ShrinkablePoint2>(numPoints);
+            for (int i = 0; i < numPoints; ++i)
             {
                 m_Points.Add(new ShrinkablePoint2
                 {
@@ -236,11 +237,8 @@ namespace Cinemachine
         /// </summary>
         public void ComputeAspectBasedShrinkDirections(in AspectData aspectData)
         {
-            // cache current shrink directions to check for change later
-            int numPoints = m_Points.Count;
-            
-            // calculate shrink directions
             ComputeNormals(false);
+            int numPoints = m_Points.Count;
             for (int i = 0; i < numPoints; ++i)
             {
                 int prevIndex = i == 0 ? numPoints - 1 : i - 1;
@@ -671,6 +669,7 @@ namespace Cinemachine
             m_FrustumHeight += stepSize;
             if (Mathf.Abs(m_Area) < 0.1f) // TODO: what's a good value
             {
+                // Polygon is a skeleton
                 if (shrinkToPoint)
                 {
                     Vector2 center = CenterOfMass();
@@ -678,7 +677,7 @@ namespace Cinemachine
                     {
                         var mPoint = m_Points[i];
                         Vector2 direction = center - mPoint.m_Position;
-                        // normalize direction so it is within the m_AspectRatio x 1 rectangle.
+                        // normalize direction so it is within the aspectRatio x 1 rectangle.
                         if (Math.Abs(direction.x) > aspectRatio ||
                             Math.Abs(direction.y) > 1)
                         {
@@ -721,6 +720,8 @@ namespace Cinemachine
                     return false;
                 }
             }
+
+            // move each point in its shrink direction
             for (int i = 0; i < m_Points.Count; ++i)
             {
                 var mPoint = m_Points[i];
@@ -888,7 +889,8 @@ namespace Cinemachine
         }
 
         /// <summary>Divides subPolygons into subPolygons if there are intersections.</summary>
-        /// <param name="shrinkablePolygon">ShrinkablePolygon to divide. ShrinkablePolygon will be overwritten by a subPolygons with possible intersections,
+        /// <param name="shrinkablePolygon">ShrinkablePolygon to divide. 
+        /// ShrinkablePolygon will be overwritten by a subPolygons with possible intersections,
         /// after cutting off the subPolygons part 'left' of the intersection.</param>
         /// <param name="subPolygons">Resulting subPolygons from dividing subPolygons.</param>
         /// <returns>True, if found intersection. False, otherwise.</returns>
@@ -1001,27 +1003,24 @@ namespace Cinemachine
             return false; // subPolygons does not have nice intersections
         }
 
-        private static readonly List<ShrinkablePolygon> s_subShrinkablePolygon = new List<ShrinkablePolygon>();
-        
         /// <summary>
         /// Divides input shrinkable polygon into subpolygons until it has no more intersections.
+        /// Input polygon gets reduced and added to the list.
         /// </summary>
-        /// <param name="subPolygons"></param>
-        /// <param name="subShrinkablePolygon"></param>
-        /// <returns>Returns True, if encountered an intersection. False, otherwise</returns>
-        public static bool DivideAlongIntersections(ShrinkablePolygon subPolygons, 
-            out List<ShrinkablePolygon> subShrinkablePolygon)
+        public static void DivideAlongIntersections(
+            ShrinkablePolygon poly, ref List<ShrinkablePolygon> divided, in AspectData aspectData)
         {
-            s_subShrinkablePolygon.Clear();
-            subShrinkablePolygon = s_subShrinkablePolygon;
-            var maxIteration = 10; // In practise max 1-3 intersections at the same time in the same frame.
-            while (maxIteration > 0 && DivideShrinkablePolygon(ref subPolygons, ref subShrinkablePolygon))
+            // In practice max 1-3 intersections at the same time in the same frame.
+            divided.Clear();
+            int maxIteration = 10; 
+            for (; maxIteration > 0; --maxIteration)
             {
-                maxIteration--;
+                if (!DivideShrinkablePolygon(ref poly, ref divided))
+                    break;
             }
-            subShrinkablePolygon.Add(subPolygons); // add remaining subPolygons
-
-            return maxIteration < 10; // maxIteration is decremented after an intersection
+            divided.Add(poly); // add remaining points
+            for (int i = 0; i < divided.Count - 1; ++i)
+                divided[i].ComputeAspectBasedShrinkDirections(aspectData);
         }
         
         /// <summary>
