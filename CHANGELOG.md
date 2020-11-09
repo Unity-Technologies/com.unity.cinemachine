@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.7.0-preview.1] - 2020-10-10
+- New feature: CinemachineConfiner2D - Improved 2D confiner.
 - Added ApplyAfter option to ImpulseListener, to add control over the ordering of extensions
 - Virtual Camera Lens inspector supports display of Horizontal FOV
 - Virtual Camera Lens can override orthographic and physical camera settings
@@ -13,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - bugfix (1284701) - Edge-case exception when vcam is deleted
 - UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierachy window.
 - Storyboard Global Mute moved from Cinemachine menu to Cinemachine preferences.
-- New feature: CinemachineConfiner2D - Improved 2D confiner.
+- Bugfix - long-idle vcams when reawakened sometimes had a single frame with a huge deltaTime
 
 
 ## [2.6.3] - 2020-09-16
