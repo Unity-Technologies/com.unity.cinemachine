@@ -324,13 +324,14 @@ namespace Cinemachine
                     
                     Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
                     Vector2 direction = (closestPoint - intersectionPoint).normalized;
-                    Vector2 epsilonNormal = new Vector2(direction.y, -direction.x) * 0.01f;
+                    Vector2 epsilonNormal = new Vector2(direction.y, -direction.x).normalized * 
+                                            UnityVectorExtensions.Epsilon;
 
                     clip.Add(new List<IntPoint>(4));
-                    Vector2 p1 = closestPoint + epsilonNormal;
+                    Vector2 p1 = closestPoint + epsilonNormal + direction * UnityVectorExtensions.Epsilon;
                     Vector2 p2 = intersectionPoint + epsilonNormal;
                     Vector3 p3 = intersectionPoint - epsilonNormal;
-                    Vector3 p4 = closestPoint - epsilonNormal;
+                    Vector3 p4 = closestPoint - epsilonNormal + direction * UnityVectorExtensions.Epsilon;
 
                     clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                     clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
@@ -377,10 +378,12 @@ namespace Cinemachine
                         Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
                                                 UnityVectorExtensions.Epsilon;
                         clip.Add(new List<IntPoint>(4));
-                        Vector2 p1 = point.m_Position + epsilonNormal;
+                        Vector2 p1 = point.m_Position + epsilonNormal + 
+                                     shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
                         Vector2 p2 = cornerTouchingPoint + epsilonNormal;
                         Vector2 p3 = cornerTouchingPoint - epsilonNormal;
-                        Vector2 p4 = point.m_Position - epsilonNormal;
+                        Vector2 p4 = point.m_Position - epsilonNormal + 
+                                     shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
                         clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
