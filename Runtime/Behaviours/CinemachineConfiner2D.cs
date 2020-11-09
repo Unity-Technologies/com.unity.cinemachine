@@ -213,7 +213,14 @@ namespace Cinemachine
             {
                 return positionToConfine;
             }
-            bool outsideOfOriginal = !ShrinkablePolygon.IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
+
+            // If the poly has bones and if the position to confine is not outside of the original
+            // bounding shape, then it is possible that the bone in a neighbouring section of the 
+            // is closer than the bone in the correct section of the polygon, if the current section 
+            // is very large and the neighbouring section is small.  In that case, we'll need to 
+            // add an extra check when calculating the nearest point.
+            bool checkIntersectOriginal = hasBone 
+                && ShrinkablePolygon.IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
 
             Vector2 closest = positionToConfine;
             float minDistance = float.MaxValue;
@@ -230,11 +237,11 @@ namespace Cinemachine
                     if (Mathf.Abs(difference.x) > windowWidth || Mathf.Abs(difference.y) > windowHeight)
                     {
                         // penalty for points from which the target is not visible, prefering visibility over proximity
-                        distance += m_confinerBaker.m_sqrPolygonDiagonal; 
+                        distance += m_confinerBaker.SqrPolygonDiagonal; 
                     }
 
-                    if (distance < minDistance && 
-                        (outsideOfOriginal || !hasBone || !DoesIntersectOriginal(positionToConfine, c)))
+                    if (distance < minDistance 
+                        && (!checkIntersectOriginal || !DoesIntersectOriginal(positionToConfine, c)))
                     {
                         minDistance = distance;
                         closest = c;
@@ -400,9 +407,9 @@ namespace Cinemachine
                 }
                 
 #if CINEMACHINE_EXPERIMENTAL_CONFINER2D
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, true, false);
+                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize, true, false);
 #else
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, bakingResolution, maxOrthoSize, false, true);
+                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize, false, true);
 #endif
                 m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
                 m_aspectRatio = aspectRatio;
