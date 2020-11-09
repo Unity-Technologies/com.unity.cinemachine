@@ -134,10 +134,14 @@ namespace Cinemachine
                 }
                 else
                 {
-#if false
-if (m_shrinkablePolygons.Count > 1000)
-    break;
-Debug.Log($"States = {m_shrinkablePolygons.Count}, Frustum height = {leftCandidatePolygonIteration[0].m_FrustumHeight}, stepSize = {stepSize}");
+#if true
+                    if (m_shrinkablePolygons.Count > 1000)
+                    {
+                        Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
+                        break;
+                    }
+    
+                    Debug.Log($"States = {m_shrinkablePolygons.Count}, Frustum height = {leftCandidatePolygonIteration[0].m_FrustumHeight}, stepSize = {stepSize}");
 #endif
                     continue; // keep searching for a closer left and right or a non-null right
                 }
@@ -260,8 +264,6 @@ Debug.Log($"States = {m_shrinkablePolygons.Count}, Frustum height = {leftCandida
         /// </summary>
         public List<ConfinerState> GetShrinkablePolygonsAsConfinerStates()
         {
-            // TrimShrinkablePolygons();
-
             m_confinerStates.Clear();
             if (m_confinerStates.Capacity < m_shrinkablePolygons.Count)
                 m_confinerStates.Capacity = m_shrinkablePolygons.Count;
@@ -311,42 +313,6 @@ Debug.Log($"States = {m_shrinkablePolygons.Count}, Frustum height = {leftCandida
             float pHeight = Mathf.Max(maxY - minY, pWidth / aspect);
             m_sqrPolygonDiagonal = pWidth * pWidth + pHeight * pHeight;
             return pHeight;
-        }
-
-        /// <summary>
-        /// Removes redundant shrinkable polygons from the baked shrinkable polygons. A shrinkable polygon is
-        /// redundant, if it is lerpable polygon between two other shrinkable polygons.
-        /// </summary>
-        private void TrimShrinkablePolygons()
-        {
-            int stateStart = m_shrinkablePolygons.Count - 1;
-            // going backwards, so we can remove without problems
-            for (int i = m_shrinkablePolygons.Count - 2; i >= 0; --i)
-            {
-                bool stateChanged = m_shrinkablePolygons[stateStart].Count != m_shrinkablePolygons[i].Count;
-                if (!stateChanged)
-                {
-                    for (int j = 0; j < m_shrinkablePolygons[stateStart].Count; ++j)
-                    {
-                        if (m_shrinkablePolygons[stateStart][j].m_State != m_shrinkablePolygons[i][j].m_State)
-                        {
-                            stateChanged = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (stateChanged || i == 0)
-                {
-                    int stateEnd = i != 0 ? i + 2 : 1;
-                    if (stateEnd < stateStart)
-                    {
-                        m_shrinkablePolygons.RemoveRange(stateEnd, stateStart - stateEnd);
-                    }
-
-                    stateStart = i;
-                }
-            }
         }
     }
 }

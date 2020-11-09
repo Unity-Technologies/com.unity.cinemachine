@@ -57,7 +57,7 @@ namespace Cinemachine
     /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
     /// </para>
     /// </summary>
-    [SaveDuringPlay]//, ExecuteAlways] // TODO: when safe, turn back on
+    [SaveDuringPlay, ExecuteAlways] // TODO: when safe, turn back on
     public class CinemachineConfiner2D : CinemachineExtension
     {
         /// <summary>The 2D shape within which the camera is to be contained.</summary>

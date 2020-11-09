@@ -130,8 +130,7 @@ namespace Cinemachine
         /// <returns>True, if the polygon is inverted. False, otherwise.</returns>
         public bool IsInverted(float areaBefore)
         {
-            m_Area = ComputeSignedArea(); 
-            return Mathf.Sign(areaBefore) != Mathf.Sign(m_Area);
+            return Mathf.Sign(areaBefore) != Mathf.Sign(ComputeSignedArea());
         }
 
         /// <summary>
@@ -701,8 +700,6 @@ namespace Cinemachine
         /// </summary>
         public bool Shrink(float stepSize, bool shrinkToPoint, in float aspectRatio)
         {
-            // TODO: state change is not added to polygons to mark boundary
-            // TODO: seems like camera window is twice as big as it should. 
             m_FrustumHeight += stepSize;
             if (Mathf.Abs(m_Area) < m_MinArea)
             {
