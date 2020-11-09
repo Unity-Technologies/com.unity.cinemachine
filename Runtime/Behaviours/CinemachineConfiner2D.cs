@@ -85,19 +85,6 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
-        /// <summary>
-        /// Lower values will significantly improve performance but confine less precisely.  
-        /// Set this to the lowest value that gives acceptable results for the specific confining shape.
-        /// </summary>
-        [Tooltip("Lower values will significantly improve performance but confine less precisely.  "
-                 + "Set this to the lowest value that gives acceptable results for the specific confining shape.")]
-        [Range(1, 1 + k_BakingResolutionSteps)]
-#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
-        public float m_CacheResolution;
-#else
-        private float m_CacheResolution;
-#endif
-
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
         {
@@ -110,7 +97,7 @@ namespace Cinemachine
         public bool ValidateCache(float cameraAspectRatio)
         {
             return m_shapeCache.ValidateCache(
-                m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker, BakingResolution, cameraAspectRatio, out _);
+                m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker, cameraAspectRatio, out _);
         }
 
         private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
@@ -119,9 +106,6 @@ namespace Cinemachine
         internal const float k_BakingMinResolution = 0.1f; // internal, because Tests access it
         internal const float k_BakingMaxResolution = 0.005f; // internal, because Tests access it
         private const float k_BakingResolutionSteps = 10;
-
-        private float BakingResolution => Mathf.Lerp(
-            k_BakingMinResolution, k_BakingMaxResolution, (m_CacheResolution - 1) / k_BakingResolutionSteps);
 
         private float m_currentFrustumHeight = 0;
         
@@ -132,7 +116,7 @@ namespace Cinemachine
             {
                 var aspectRatio = state.Lens.Aspect;
                 if (!m_shapeCache.ValidateCache(
-                    m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker, BakingResolution,
+                    m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker,
                     aspectRatio, out bool confinerStateChanged))
                 {
                     return; // invalid path
@@ -145,7 +129,7 @@ namespace Cinemachine
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(
                     m_confinerBaker, confinerStateChanged, 
-                    aspectRatio, m_currentFrustumHeight, BakingResolution);
+                    aspectRatio, m_currentFrustumHeight);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
@@ -291,7 +275,7 @@ namespace Cinemachine
                 /// </summary>
                 public void ValidateCache(
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float aspectRatio, in float frustumHeight, float bakedResolution)
+                    in float aspectRatio, in float frustumHeight)
                 {
                     if (!confinerStateChanged && m_Path != null && 
                         Math.Abs(frustumHeight - m_frustumHeight) < UnityVectorExtensions.Epsilon)
@@ -324,7 +308,6 @@ namespace Cinemachine
 
             private float m_aspectRatio;
             private float m_maxOrthoSize;
-            private float m_bakingResolution;
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
             private Collider2D m_boundingShape2D;
@@ -337,7 +320,6 @@ namespace Cinemachine
             {
                 m_aspectRatio = 0;
                 m_maxOrthoSize = 0;
-                m_bakingResolution = 0;
                 m_DeltaBakedToWorld = m_DeltaWorldToBaked = Matrix4x4.identity;
 
                 m_boundingShape2D = null;
@@ -355,10 +337,10 @@ namespace Cinemachine
             /// <returns>True, if path is baked and valid. False, otherwise.</returns>
             public bool ValidateCache(
                 Collider2D boundingShape2D, float maxOrthoSize, ConfinerOven confinerBaker,
-                 float bakingResolution, float aspectRatio, out bool confinerStateChanged)
+                float aspectRatio, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
-                if (IsValid(boundingShape2D, aspectRatio, maxOrthoSize, bakingResolution))
+                if (IsValid(boundingShape2D, aspectRatio, maxOrthoSize))
                 {
                     CalculateDeltaTransformationMatrix();
                     return true;
@@ -415,22 +397,20 @@ namespace Cinemachine
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxOrthoSize;
-                m_bakingResolution = bakingResolution;
 
                 CalculateDeltaTransformationMatrix();
 
                 return true;
             }
             
-            private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize, in float bakingResolution)
+            private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
             {
                 return boundingShape2D != null && 
                        m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
                        m_OriginalPath != null && // first time?
                        m_confinerStates != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
-                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon && // max ortho changed?
-                       Mathf.Abs(m_bakingResolution - bakingResolution) < UnityVectorExtensions.Epsilon; // baking resolution changed?
+                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
 
             private void CalculateDeltaTransformationMatrix()
@@ -477,14 +457,12 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxWindowSize = Mathf.Max(0, m_MaxWindowSize);
-            m_CacheResolution = Mathf.Clamp(m_CacheResolution, 1, 1 + k_BakingResolutionSteps);
         }
 
         private void Reset()
         {
             m_Damping = 0.5f;
             m_MaxWindowSize = 0;
-            m_CacheResolution = 1;
         }
     }
 #endif
