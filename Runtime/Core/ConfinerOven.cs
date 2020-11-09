@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
+
 namespace Cinemachine
 {
     /// <summary>
@@ -34,14 +36,23 @@ namespace Cinemachine
 
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
-        /// The algorithm is divide and conquer. It iteratively shrinks down the input polygon towards its shrink
-        /// directions. If the polygon intersects with itself, then we divide the polygon into two polygons at the
-        /// intersection point, and continue the algorithm on these two polygons separately. We need to keep track of
+        /// The algorithm is divide and conquer. It iteratively shrinks down the input 
+        /// polygon towards its shrink directions. If the polygon intersects with itself, 
+        /// then we divide the polygon into two polygons at the intersection point, and 
+        /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, 
-            float maxFrustumHeight, in bool shrinkToPoint, in bool stopAtFirstIntersection)
+        public void BakeConfiner(
+            in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
+#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
+            bool shrinkToPoint = true;
+            bool stopAtFirstIntersection = false;
+#else
+            bool shrinkToPoint = false;
+            bool stopAtFirstIntersection = true;
+#endif
+
             // Compute the aspect-adjusted height of the polygon bounding box
             var polygonSize = PolygonSize(inputPath);
             float polygonHeight = polygonSize.y / aspectRatio; // GML todo: why are we adjusting it for aspect?

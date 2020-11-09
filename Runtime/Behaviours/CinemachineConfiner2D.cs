@@ -1,7 +1,6 @@
 #if !UNITY_2019_3_OR_NEWER
 #define CINEMACHINE_PHYSICS_2D
 #endif
-// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
 
 using System;
 using System.Collections.Generic;
@@ -57,7 +56,11 @@ namespace Cinemachine
     /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
     /// </para>
     /// </summary>
-    [SaveDuringPlay, ExecuteAlways]
+    [AddComponentMenu("")] // Hide in menu
+    [SaveDuringPlay]
+    [ExecuteAlways]
+    [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineConfiner2D.html")]
     public class CinemachineConfiner2D : CinemachineExtension
     {
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
@@ -385,11 +388,7 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-#if CINEMACHINE_EXPERIMENTAL_CONFINER2D
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize, true, false);
-#else
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize, false, true);
-#endif
+                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize);
                 m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
