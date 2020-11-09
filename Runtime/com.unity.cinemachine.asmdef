@@ -14,7 +14,9 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+    	"clipper_library.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
