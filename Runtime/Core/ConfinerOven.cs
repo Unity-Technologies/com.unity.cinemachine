@@ -16,6 +16,7 @@ namespace Cinemachine
             public float m_FrustumHeight;
             public float m_State;
         }
+        private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
 
         private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
         public float m_sqrPolygonDiagonal;
@@ -64,7 +65,7 @@ namespace Cinemachine
                 {
                     leftCandidatePolygonIteration[g].ComputeAspectBasedShrinkDirections(aspectData); // TODO: probably only need to recalculate after statechange
                     ShrinkablePolygon shrinkablePolygon = leftCandidatePolygonIteration[g].DeepCopy();
-                    shrinkablePolygon.m_Area = shrinkablePolygon.ComputeSignedArea(); // TODO: m_Area may be storing this already
+
                     stepSize = Mathf.Min(stepSize, maxFrustumHeightBound - shrinkablePolygon.m_FrustumHeight); // ensures we don't go over the max frustum height
                     if (shrinkablePolygon.Shrink(stepSize, shrinkToPoint, aspectRatio))
                     {
@@ -75,7 +76,7 @@ namespace Cinemachine
                         if (!stateChangeFound)
                         {
                             if (shrinkablePolygon.DoesSelfIntersect() || 
-                                shrinkablePolygon.IsInverted(shrinkablePolygon.m_Area))
+                                Mathf.Sign(shrinkablePolygon.m_Area) != Mathf.Sign(leftCandidatePolygonIteration[g].m_Area))
                             {
                                 stateChangeFound = true;
                             }
@@ -168,21 +169,9 @@ namespace Cinemachine
         {
             int numPaths = paths == null ? 0 : paths.Count;
             var shrinkablePolygons = new List<List<ShrinkablePolygon>>(numPaths);
-            if (numPaths > 0)
+            for (int i = 0; i < numPaths; ++i)
             {
-                for (int i = 0; i < numPaths; ++i)
-                {
-                    shrinkablePolygons.Add(new List<ShrinkablePolygon> { new ShrinkablePolygon(paths[i]) });
-                }
-
-                for (int i = 0; i < shrinkablePolygons.Count; ++i)
-                {
-                    for (var j = 0; j < shrinkablePolygons[i].Count; j++)
-                    {
-                        shrinkablePolygons[i][j].m_Area = shrinkablePolygons[i][0].ComputeSignedArea();
-                        shrinkablePolygons[i][j].m_MinArea = 0.1f; // TODO: what's a good value
-                    }
-                }
+                shrinkablePolygons.Add(new List<ShrinkablePolygon> { new ShrinkablePolygon(paths[i]) });
             }
             return shrinkablePolygons;
         }
@@ -202,7 +191,7 @@ namespace Cinemachine
                     }
                     
                     if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 
-                        ShrinkablePolygon.s_nonLerpableStateChangePenalty)
+                        ShrinkablePolygon.k_NonLerpableStateChangePenalty)
                     {
                         // blend between m_confinerStates with same m_State
                         return ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
@@ -258,7 +247,6 @@ namespace Cinemachine
             return result;
         }
         
-        private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
         /// <summary>
         /// Converts and returns m_shrinkablePolygons into List<ConfinerState>
         /// </summary>
