@@ -100,8 +100,6 @@ namespace Cinemachine
                     }
                 }
                 
-                // TODO: need to catch case when right is null and left frustum is bigger then max frustum!
-
                 // if we have a right candidate, and left and right are sufficiently close
                 if (rightCandidatePolygonIteration != null &&
                     stepSize <= minStepSize)
