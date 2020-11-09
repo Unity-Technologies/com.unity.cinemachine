@@ -11,7 +11,8 @@ public class Confiner2DTests
     [UnityTest]
     public IEnumerator TestPolygonDivision()
     {
-        List<ShrinkablePolygon> subShrinkablePolygon1;
+        var aspectData = new ShrinkablePolygon.AspectData(1);
+        List<ShrinkablePolygon> subShrinkablePolygon1 = new List<ShrinkablePolygon>();
         {
             List<List<Vector2>> points = new List<List<Vector2>>();
             {
@@ -27,7 +28,7 @@ public class Confiner2DTests
             List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points);
             Assert.IsTrue(polygons.Count == 1);
             Assert.IsTrue(polygons[0].Count == 1);
-            ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], out subShrinkablePolygon1);
+            ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], ref subShrinkablePolygon1, aspectData);
 
             Assert.IsTrue(subShrinkablePolygon1.Count == 2);
             for (var index = 0; index < subShrinkablePolygon1.Count; index++)
@@ -39,7 +40,7 @@ public class Confiner2DTests
             Assert.IsTrue(subShrinkablePolygon1[0].m_Points[2].m_Position == Vector2.zero);
             Assert.IsTrue(subShrinkablePolygon1[1].m_Points[0].m_Position == Vector2.zero);
         }
-        List<ShrinkablePolygon> subShrinkablePolygon2;
+        List<ShrinkablePolygon> subShrinkablePolygon2 = new List<ShrinkablePolygon>();
         {
             List<List<Vector2>> points = new List<List<Vector2>>();
             {
@@ -55,7 +56,7 @@ public class Confiner2DTests
             List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points);
             Assert.IsTrue(polygons.Count == 1);
             Assert.IsTrue(polygons[0].Count == 1);
-            ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], out subShrinkablePolygon2);
+            ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], ref subShrinkablePolygon2, aspectData);
         
             Assert.IsTrue(subShrinkablePolygon2.Count == 2);
             for (var index = 0; index < subShrinkablePolygon2.Count; index++)
