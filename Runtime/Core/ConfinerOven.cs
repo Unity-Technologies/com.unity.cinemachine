@@ -1,4 +1,4 @@
-// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
+#define CINEMACHINE_EXPERIMENTAL_CONFINER2D
 
 using System;
 using System.Collections.Generic;
@@ -89,8 +89,8 @@ namespace Cinemachine
 #endif
                 if (m_shrinkablePolygons.Count > 1000)
                 {
-                    Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
-                    break;
+                    //Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
+                    //break;
                 }
 
                 bool stateChangeFound = false;
@@ -151,6 +151,10 @@ namespace Cinemachine
                     for (int i = 0; i < rightCandidate.Count; ++i)
                     {
                         ShrinkablePolygon.DivideAlongIntersections(rightCandidate[i], ref s_subPolygonCache, aspectData);
+                        for (int subpoly = 0; subpoly < s_subPolygonCache.Count; ++subpoly)
+                        {
+                            s_subPolygonCache[subpoly].ComputeAspectBasedShrinkDirections(aspectData);
+                        }
                         splitPoly.AddRange(s_subPolygonCache);
                     }
 
