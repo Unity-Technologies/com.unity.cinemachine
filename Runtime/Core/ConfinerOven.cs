@@ -1,9 +1,9 @@
+// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-
-// #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
 
 namespace Cinemachine
 {
