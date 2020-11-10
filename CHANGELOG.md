@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierachy window.
 - Storyboard Global Mute moved from Cinemachine menu to Cinemachine preferences.
 - Bugfix - long-idle vcams when reawakened sometimes had a single frame with a huge deltaTime
+- Bugfix - PostProcessing temporarily stopped being applied after exiting play mode
 
 
 ## [2.6.3] - 2020-09-16
