@@ -89,8 +89,8 @@ namespace Cinemachine
 #endif
                 if (m_shrinkablePolygons.Count > 1000)
                 {
-                    //Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
-                    //break;
+                    Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
+                    break;
                 }
 
                 bool stateChangeFound = false;
