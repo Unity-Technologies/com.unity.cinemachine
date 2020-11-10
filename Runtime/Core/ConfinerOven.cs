@@ -107,8 +107,11 @@ namespace Cinemachine
                         // start may be close together that are important
                         if (poly.m_FrustumHeight > 0.1f) 
                         {
-                            // |= because we want to keep it true if it is true
-                            stateChangeFound |= poly.Simplify(k_MinStepSize); 
+                            if (poly.Simplify(k_MinStepSize))
+                            {
+                                poly.ComputeAspectBasedShrinkDirections(aspectData);
+                                stateChangeFound = true;
+                            }
                         }
                         if (!stateChangeFound)
                         {
@@ -119,8 +122,7 @@ namespace Cinemachine
                             }
                         }
                     }
-                    if (stateChangeFound)
-                        poly.ComputeAspectBasedShrinkDirections(aspectData);
+                        
                     candidate.Add(poly);
                 }
 
