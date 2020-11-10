@@ -385,7 +385,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor, bool isActive)
+        public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor, bool isActive, bool showsRollPath = false)
         {
             // Draw the path
             Color colorOld = Gizmos.color;
@@ -413,13 +413,15 @@ namespace Cinemachine.Editor
                     Gizmos.DrawLine(p0, p1);
                     Gizmos.DrawLine(lastPos - lastW, p - w);
                     Gizmos.DrawLine(lastPos + lastW, p + w);
-#if false
-                    // Show the normals, for debugging
-                    Gizmos.color = Color.red;
-                    Vector3 y = (q * Vector3.up) * halfWidth;
-                    Gizmos.DrawLine(p, p + y);
-                    Gizmos.color = pathColor;
-#endif
+                    if (showsRollPath)
+                    {
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawLine(p, lastPos);
+                        Vector3 y = (q * Vector3.up) * halfWidth;
+                        Gizmos.DrawLine(p, p + y);
+                        Gizmos.color = pathColor;
+                    }
+
                     lastW = w;
                 }
 

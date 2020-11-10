@@ -2,6 +2,7 @@
 using UnityEngine.Splines;
 using Unity.Mathematics;
 using System.Collections.Generic;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -16,6 +17,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     public sealed class CinemachineSplinePath : CinemachinePathBase, ISplineProvider
     {
+        public bool m_RollAppearance = false;
 
         readonly Spline[] m_SplineArray = new Spline[1];
 
@@ -53,7 +55,7 @@ namespace Cinemachine
             return SplineUtility.EvaluateSegmentTangent(Spline, segmentIndex, t);
         }
 
-        
+        public AnimationCurve m_Roll;
 
         /// <summary>The minimum value for the path position</summary>
         public override float MinPos { get { return 0; } }
@@ -168,6 +170,18 @@ namespace Cinemachine
             Quaternion transformRot = transform.rotation;
             Vector3 transformUp = transformRot * Vector3.up;
             Quaternion result = transformRot;
+            if (m_Roll != null && Spline.KnotCount > 0)
+            {
+                pos = StandardizePos(pos);
+                float roll = m_Roll.Evaluate(pos);
+
+                Vector3 fwd = EvaluateTangent(pos);
+                if (!fwd.AlmostZero())
+                {
+                    Quaternion q = Quaternion.LookRotation(fwd, transformUp);
+                    result = q * RollAroundForward(roll);
+                }
+            }
             return result;
         }
 

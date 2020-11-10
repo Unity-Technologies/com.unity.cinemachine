@@ -1,6 +1,5 @@
 ﻿using UnityEditor;
-using UnityEditor.Splines;
-using UnityEditor.EditorTools;
+using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -12,8 +11,19 @@ namespace Cinemachine.Editor
         static void DrawGizmos(CinemachineSplinePath path, GizmoType selectionType)
         {
             var isActive = Selection.activeGameObject == path.gameObject;
+            if (isActive && path.m_RollAppearance)
+            {
+                Keyframe[] keys = path.m_Roll.keys;
+
+                Gizmos.color = Color.red;
+                foreach (var key in keys)
+                {
+                    Gizmos.DrawSphere(path.EvaluatePosition(key.time), 0.1f);
+                }
+            }
+
             CinemachinePathEditor.DrawPathGizmo(path,
-                isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
+                isActive && !path.m_RollAppearance ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive, path.m_RollAppearance);
         }
         
     }
