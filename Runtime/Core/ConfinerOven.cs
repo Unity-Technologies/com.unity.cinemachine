@@ -25,12 +25,11 @@ namespace Cinemachine
             public float m_CenterX; // used for aspect ratio scaling
 
             private const int FloatToIntScaler = 10000000; // same as in Physics2D
+            private const float Epsilon = UnityVectorExtensions.Epsilon;
 
             /// <summary>
             /// Converts shrinkable polygons into a simple path made of 2D points.
             /// </summary>
-            /// <param name="aspectRatio">Current camera aspect ratio</param>
-            /// For the path touching the corners this may be relevant.</param>
             /// <param name="maxCachedFrustumHeight">Maximum cached frustum height.</param>
             /// <param name="path">Resulting path.</param>
             /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
@@ -59,15 +58,14 @@ namespace Cinemachine
                         hasIntersections = true;
                     
                         Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
-                        Vector2 direction = (closestPoint - intersectionPoint).normalized;
-                        Vector2 epsilonNormal = new Vector2(direction.y, -direction.x).normalized * 
-                                                UnityVectorExtensions.Epsilon;
+                        Vector2 direction = (closestPoint - intersectionPoint).normalized * Epsilon;
+                        Vector2 normal = new Vector2(direction.y, -direction.x);
 
                         clip.Add(new List<IntPoint>(4));
-                        Vector2 p1 = closestPoint + epsilonNormal + direction * UnityVectorExtensions.Epsilon;
-                        Vector2 p2 = intersectionPoint + epsilonNormal;
-                        Vector3 p3 = intersectionPoint - epsilonNormal;
-                        Vector3 p4 = closestPoint - epsilonNormal + direction * UnityVectorExtensions.Epsilon;
+                        Vector2 p1 = closestPoint + normal + direction;
+                        Vector2 p2 = intersectionPoint + normal - direction;
+                        Vector3 p3 = intersectionPoint - normal - direction;
+                        Vector3 p4 = closestPoint - normal + direction;
 
                         clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                         clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
@@ -107,19 +105,19 @@ namespace Cinemachine
                                 continue; // camera is already touching this point
                             }
                             Vector2 cornerTouchingPoint = corner + shrinkDirection;
-                            if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < UnityVectorExtensions.Epsilon)
+                            if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < Epsilon)
                             {
                                 continue;
                             }
-                            Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
-                                                    UnityVectorExtensions.Epsilon;
+
+                            var direction = shrinkDirection.normalized * Epsilon;
+                            var normal = new Vector2(direction.y, -direction.x);
+
                             clip.Add(new List<IntPoint>(4));
-                            Vector2 p1 = point.m_Position + epsilonNormal + 
-                                         shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
-                            Vector2 p2 = cornerTouchingPoint + epsilonNormal;
-                            Vector2 p3 = cornerTouchingPoint - epsilonNormal;
-                            Vector2 p4 = point.m_Position - epsilonNormal + 
-                                         shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
+                            Vector2 p1 = point.m_Position + normal + direction;
+                            Vector2 p2 = cornerTouchingPoint + normal - direction;
+                            Vector2 p3 = cornerTouchingPoint - normal - direction;
+                            Vector2 p4 = point.m_Position - normal + direction;
                             clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
                             clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
                             clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
@@ -148,6 +146,7 @@ namespace Cinemachine
                         var p_int = polySegment[index];
                         var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
 #if ASPECT_RATIO_EXPERIMENT
+                        // Restore the original aspect ratio
                         p.x = ((p.x - m_CenterX) / m_AspectRatio) + m_CenterX;
 #endif
                         pathSegment.Add(p);
