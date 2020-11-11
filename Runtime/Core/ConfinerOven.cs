@@ -56,23 +56,8 @@ namespace Cinemachine
                     foreach (var intersectionPoint in polygon.m_IntersectionPoints)
                     {
                         hasIntersections = true;
-                    
-                        Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
-                        Vector2 direction = (closestPoint - intersectionPoint).normalized * Epsilon;
-                        Vector2 normal = new Vector2(direction.y, -direction.x);
-
-                        clip.Add(new List<IntPoint>(4));
-                        Vector2 p1 = closestPoint + normal + direction;
-                        Vector2 p2 = intersectionPoint + normal - direction;
-                        Vector3 p3 = intersectionPoint - normal - direction;
-                        Vector3 p4 = closestPoint - normal + direction;
-
-                        clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
-                        clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
-                        clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
-                        clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
-
-                        index++;
+                        AddConnectingSegment(clip, intersectionPoint, polygon.ClosestPolygonPoint(intersectionPoint));
+                        ++index;
                     }
                 
                     // Add twigs to ensure that all original points can be seen
@@ -81,13 +66,14 @@ namespace Cinemachine
                         if (!point.m_OriginalPosition.IsNaN())
                         {
 #if ASPECT_RATIO_EXPERIMENT
-                            Vector2 corner = point.m_OriginalPosition;
-                            Vector2 direction = point.m_Position - corner;
-                            if (Mathf.Abs(direction.x) <= m_FrustumHeight && Mathf.Abs(direction.y) <= m_FrustumHeight)
-                                continue; // camera is already touching this point
-                            Vector2 cornerTouchingPoint = corner + new Vector2(
-                                Mathf.Sign(direction.x) * m_FrustumHeight, Mathf.Sign(direction.y) * m_FrustumHeight);
-                            direction = direction.normalized * Epsilon;
+                            Vector2 direction = point.m_Position - point.m_OriginalPosition;
+                            if (Mathf.Abs(direction.x) > m_FrustumHeight || Mathf.Abs(direction.y) > m_FrustumHeight)
+                            {
+                                Vector2 cornerTouchingPoint = point.m_OriginalPosition + new Vector2(
+                                    Mathf.Sign(direction.x) * m_FrustumHeight, Mathf.Sign(direction.y) * m_FrustumHeight);
+                                AddConnectingSegment(clip, point.m_Position, cornerTouchingPoint);
+                                ++index;
+                            }
 #else
                             Vector2 corner = point.m_OriginalPosition;
                             Vector2 shrinkDirection = point.m_Position - corner;
@@ -120,7 +106,6 @@ namespace Cinemachine
                                 continue;
                             }
                             var direction = shrinkDirection.normalized * Epsilon;
-#endif
                             var normal = new Vector2(direction.y, -direction.x);
 
                             clip.Add(new List<IntPoint>(4));
@@ -134,6 +119,7 @@ namespace Cinemachine
                             clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
      
                             index++;
+#endif
                         }
     
                     }
@@ -165,7 +151,26 @@ namespace Cinemachine
                     path.Add(pathSegment);
                 }
             }
+
+            private void AddConnectingSegment(List<List<IntPoint>> clip, Vector2 p1, Vector2 p2)
+            {
+                Vector2 direction = (p2 - p1).normalized * Epsilon;
+                Vector2 normal = new Vector2(direction.y, -direction.x);
+
+                Vector2 pA = p2 + normal + direction;
+                Vector2 pB = p1 + normal - direction;
+                Vector3 pC = p1 - normal - direction;
+                Vector3 pD = p2 - normal + direction;
+
+                var path = new List<IntPoint>(4);
+                path.Add(new IntPoint(pA.x * FloatToIntScaler, pA.y * FloatToIntScaler));
+                path.Add(new IntPoint(pB.x * FloatToIntScaler, pB.y * FloatToIntScaler));
+                path.Add(new IntPoint(pC.x * FloatToIntScaler, pC.y * FloatToIntScaler));
+                path.Add(new IntPoint(pD.x * FloatToIntScaler, pD.y * FloatToIntScaler));
+                clip.Add(path);
+            }
         }
+
         private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
 
         internal const float k_MinStepSize = 0.005f; // internal, because Tests access it
