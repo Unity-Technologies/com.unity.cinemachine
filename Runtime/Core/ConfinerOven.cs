@@ -80,14 +80,14 @@ namespace Cinemachine
                     {
                         if (!point.m_OriginalPosition.IsNaN())
                         {
-#if ASPECT_RATIO_EXPERIMENT && false // GML why doesn't this work?
+#if ASPECT_RATIO_EXPERIMENT
                             Vector2 corner = point.m_OriginalPosition;
                             Vector2 direction = point.m_Position - corner;
                             if (Mathf.Abs(direction.x) <= m_FrustumHeight && Mathf.Abs(direction.y) <= m_FrustumHeight)
                                 continue; // camera is already touching this point
-                            direction.Normalize();
-                            Vector2 cornerTouchingPoint = corner + direction * m_FrustumHeight;
-                            direction *= Epsilon;
+                            Vector2 cornerTouchingPoint = corner + new Vector2(
+                                Mathf.Sign(direction.x) * m_FrustumHeight, Mathf.Sign(direction.y) * m_FrustumHeight);
+                            direction = direction.normalized * Epsilon;
 #else
                             Vector2 corner = point.m_OriginalPosition;
                             Vector2 shrinkDirection = point.m_Position - corner;
