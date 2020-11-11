@@ -388,8 +388,7 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize);
-                m_confinerStates = confinerBaker.GetShrinkablePolygonsAsConfinerStates();
+                m_confinerStates = confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxOrthoSize;

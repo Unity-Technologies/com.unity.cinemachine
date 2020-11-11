@@ -1,4 +1,5 @@
 #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
+#define ASPECT_RATIO_EXPERIMENT
 
 using System;
 using System.Collections.Generic;
@@ -21,18 +22,9 @@ namespace Cinemachine
         private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
 
         internal const float k_MinStepSize = 0.005f; // internal, because Tests access it
-        private List<List<ShrinkablePolygon>> m_shrinkablePolygons;
 
         public float SqrPolygonDiagonal { get; private set; }
-
-        public float MaxFrustumHeight
-        {
-            get
-            {
-                int last = (m_shrinkablePolygons == null ? 0 : m_shrinkablePolygons.Count) - 1;
-                return last < 0 ? 0 : m_shrinkablePolygons[last][0].m_FrustumHeight;
-            }
-        }
+        public float MaxFrustumHeight { get; private set; }
 
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
@@ -42,7 +34,7 @@ namespace Cinemachine
         /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner(
+        public List<ConfinerState> BakeConfiner(
             in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
 #if CINEMACHINE_EXPERIMENTAL_CONFINER2D
@@ -54,11 +46,11 @@ namespace Cinemachine
 #endif
 
             // Compute the aspect-adjusted height of the polygon bounding box
-            var polygonSize = PolygonSize(inputPath);
-            float polygonHeight = polygonSize.y / aspectRatio; // GML todo: why are we adjusting it for aspect?
+            var polygonRect = GetPolygonBoundingBox(inputPath);
+            float polygonHeight = polygonRect.height / aspectRatio; // GML todo: why are we adjusting it for aspect?
 
             // Cache the polygon diagonal 
-            SqrPolygonDiagonal = polygonSize.x * polygonSize.x + polygonHeight * polygonHeight;
+            SqrPolygonDiagonal = polygonRect.width * polygonRect.width + polygonHeight * polygonHeight;
 
             // Ensuring that we don't compute further than what is the theoretical max
             float polygonHalfHeight = polygonHeight * 0.5f;
@@ -67,29 +59,50 @@ namespace Cinemachine
                 maxFrustumHeight = polygonHalfHeight; 
             }
 
-            // GML todo: scale the poly in X to make 1:1 aspect and get rid of this
+            // GML todo: get rid of ShrinkablePolygon.AspectData
+#if ASPECT_RATIO_EXPERIMENT
+            var aspectData = new ShrinkablePolygon.AspectData(1);
+
+            // Scale the polygon's X values to compensate for aspect ratio
+            {
+                var c = polygonRect.center.x;
+                var s = aspectRatio;
+                for (int i = 0; i < inputPath.Count; ++i)
+                {
+                    var path = inputPath[i];
+                    for (int j = 0; j < path.Count; ++j)
+                    {
+                        var p = path[j];
+                        path[j] = new Vector2((p.x - c) * s + c, p.y);
+                    }
+                }
+            }
+#else
             var aspectData = new ShrinkablePolygon.AspectData(aspectRatio);
-            
+#endif
+
             // Initial polygon
-            m_shrinkablePolygons = CreateShrinkablePolygons(inputPath);
-            for (int i = 0; i < m_shrinkablePolygons[0].Count; ++i)
-                m_shrinkablePolygons[0][i].ComputeAspectBasedShrinkDirections(aspectData);
+            List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>(100);
+            shrinkablePolygons.Add(CreateShrinkablePolygons(inputPath));
+
+            for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
+                shrinkablePolygons[0][i].ComputeAspectBasedShrinkDirections(aspectData);
 
             // Binary search for next non-lerpable state
             List<ShrinkablePolygon> rightCandidate = null;
-            List<ShrinkablePolygon> leftCandidate = m_shrinkablePolygons[0];
+            List<ShrinkablePolygon> leftCandidate = shrinkablePolygons[0];
             float maxStepSize = polygonHalfHeight / 4f;
             float stepSize = maxStepSize;
             bool shrinking = true;
             while (shrinking)
             {
-#if false
-                Debug.Log($"States = {m_shrinkablePolygons.Count}, "
+#if true
+                Debug.Log($"States = {shrinkablePolygons.Count}, "
                     + $"Frustum height = {leftCandidate[0].m_FrustumHeight}, stepSize = {stepSize}");
 #endif
-                if (m_shrinkablePolygons.Count > 1000)
+                if (shrinkablePolygons.Count > 1000)
                 {
-                    Debug.Log("Error: exited with iteration count limit: " + m_shrinkablePolygons.Count);
+                    Debug.LogError("Exited with iteration count limit: " + shrinkablePolygons.Count);
                     break;
                 }
 
@@ -101,7 +114,7 @@ namespace Cinemachine
                     ShrinkablePolygon poly = leftCandidate[pathIndex].DeepCopy();
 
                     stepSize = Mathf.Min(stepSize, maxFrustumHeight - poly.m_FrustumHeight);
-                    if (poly.Shrink(stepSize, shrinkToPoint, aspectRatio))
+                    if (poly.Shrink(stepSize, shrinkToPoint, aspectData.m_AspectRatio))
                     {
                         // don't simplify at small frustumHeight, because some points at 
                         // start may be close together that are important
@@ -146,7 +159,7 @@ namespace Cinemachine
                 if (rightCandidate != null && stepSize <= k_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
-                    m_shrinkablePolygons.Add(leftCandidate);
+                    shrinkablePolygons.Add(leftCandidate);
 
                     // Split the state-changed poly where the path self-intersects
                     var splitPoly = new List<ShrinkablePolygon>();
@@ -164,7 +177,7 @@ namespace Cinemachine
                     if (stopAtFirstIntersection && splitPoly.Count > rightCandidate.Count)
                         break;
 
-                    m_shrinkablePolygons.Add(splitPoly);
+                    shrinkablePolygons.Add(splitPoly);
                     leftCandidate = splitPoly;
                     rightCandidate = null;
                     
@@ -173,7 +186,7 @@ namespace Cinemachine
                 }
                 else if (rightCandidate == null && leftCandidate[0].m_FrustumHeight >= maxFrustumHeight)
                 {
-                    m_shrinkablePolygons.Add(leftCandidate);
+                    shrinkablePolygons.Add(leftCandidate);
                     break; // stop shrinking, because we are at the bound
                 }
                 else
@@ -193,11 +206,76 @@ namespace Cinemachine
                     }
                 }
             }
+
+            // Cache the max confinable view size
+            MaxFrustumHeight = shrinkablePolygons.Count == 0 
+                ? 0 : shrinkablePolygons[shrinkablePolygons.Count-1][0].m_FrustumHeight;
+
+#if ASPECT_RATIO_EXPERIMENT
+            // Restore the aspect ratio
+            {
+                var c = polygonRect.center.x;
+                var s = 1 / aspectRatio;
+                for (int i = 0; i < shrinkablePolygons.Count; ++i)
+                {
+                    var pathList = shrinkablePolygons[i];
+                    for (int j = 0; j < pathList.Count; ++j)
+                    {
+                        var path = pathList[j];
+                        for (int k = 0; k < path.m_Points.Count; ++k)
+                        {
+                            var p = path.m_Points[k];
+                            p.m_Position.x = (p.m_Position.x - c) * s + c;
+                            p.m_OriginalPosition.x = (p.m_OriginalPosition.x - c) * s + c;
+                            p.m_ShrinkDirection.x *= s;
+                            path.m_Points[k] = p;
+                        }
+                        for (int k = 0; k < path.m_IntersectionPoints.Count; ++k)
+                        {
+                            var p = path.m_IntersectionPoints[k];
+                            p.x = (p.x - c) * s + c;
+                            path.m_IntersectionPoints[k] = p;
+                        }
+                    }
+                }
+                for (int i = 0; i < inputPath.Count; ++i)
+                {
+                    var path = inputPath[i];
+                    for (int j = 0; j < path.Count; ++j)
+                    {
+                        var p = path[j];
+                        path[j] = new Vector2((p.x - c) * s + c, p.y);
+                    }
+                }
+            }
+#endif
+
+            // Generate the confiner states
+            m_confinerStates.Clear();
+            if (m_confinerStates.Capacity < shrinkablePolygons.Count)
+                m_confinerStates.Capacity = shrinkablePolygons.Count;
+            for (int i = 0; i < shrinkablePolygons.Count; ++i)
+            {
+                float stateSum = 0;
+                for (int j = 0; j < shrinkablePolygons[i].Count; ++j)
+                {
+                    stateSum += shrinkablePolygons[i][j].m_State;
+                }
+                
+                m_confinerStates.Add(new ConfinerState
+                {
+                    m_FrustumHeight = shrinkablePolygons[i][0].m_FrustumHeight,
+                    m_Polygons = shrinkablePolygons[i],
+                    m_State = stateSum,
+                });
+            }
+
+            return m_confinerStates;
         }
 
         private static List<ShrinkablePolygon> s_subPolygonCache = new List<ShrinkablePolygon>();
         
-        private static Vector2 PolygonSize(in List<List<Vector2>> polygons)
+        private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
         {
             float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
             float minY = float.PositiveInfinity, maxY = float.NegativeInfinity;
@@ -213,19 +291,19 @@ namespace Cinemachine
                     maxY = Mathf.Max(maxY, p.y);
                 }
             }
-            return new Vector2(Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
+            return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
         }
         
         /// <summary>
-        /// Converts and returns shrinkable polygons from a polygons.
+        /// Creates shrinkable polygons from a list of polygons
         /// </summary>
-        public static List<List<ShrinkablePolygon>> CreateShrinkablePolygons(in List<List<Vector2>> paths)
+        public static List<ShrinkablePolygon> CreateShrinkablePolygons(in List<List<Vector2>> paths)
         {
             int numPaths = paths == null ? 0 : paths.Count;
-            var shrinkablePolygons = new List<List<ShrinkablePolygon>>(numPaths);
+            var shrinkablePolygons = new List<ShrinkablePolygon>(numPaths);
             for (int i = 0; i < numPaths; ++i)
             {
-                shrinkablePolygons.Add(new List<ShrinkablePolygon> { new ShrinkablePolygon(paths[i]) });
+                shrinkablePolygons.Add(new ShrinkablePolygon(paths[i]));
             }
             return shrinkablePolygons;
         }
@@ -276,6 +354,8 @@ namespace Cinemachine
             ConfinerState result = new ConfinerState
             {
                 m_Polygons = new List<ShrinkablePolygon>(left.m_Polygons.Count),
+                m_FrustumHeight = frustumHeight,
+                m_State = left.m_State
             };
             
             float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);
@@ -299,33 +379,6 @@ namespace Cinemachine
                 result.m_Polygons.Add(r);   
             }
             return result;
-        }
-        
-        /// <summary>
-        /// Converts and returns m_shrinkablePolygons into List<ConfinerState>
-        /// </summary>
-        public List<ConfinerState> GetShrinkablePolygonsAsConfinerStates()
-        {
-            m_confinerStates.Clear();
-            if (m_confinerStates.Capacity < m_shrinkablePolygons.Count)
-                m_confinerStates.Capacity = m_shrinkablePolygons.Count;
-            for (int i = 0; i < m_shrinkablePolygons.Count; ++i)
-            {
-                float stateSum = 0;
-                for (int j = 0; j < m_shrinkablePolygons[i].Count; ++j)
-                {
-                    stateSum += m_shrinkablePolygons[i][j].m_State;
-                }
-                
-                m_confinerStates.Add(new ConfinerState
-                {
-                    m_FrustumHeight = m_shrinkablePolygons[i][0].m_FrustumHeight,
-                    m_Polygons = m_shrinkablePolygons[i],
-                    m_State = stateSum,
-                });
-            }
-
-            return m_confinerStates;
         }
     }
 }
