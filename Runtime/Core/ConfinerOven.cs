@@ -75,20 +75,30 @@ namespace Cinemachine
                         index++;
                     }
                 
+                    // Add twigs to ensure that all original points can be seen
                     foreach (var point in polygon.m_Points)
                     {
                         if (!point.m_OriginalPosition.IsNaN())
                         {
+#if ASPECT_RATIO_EXPERIMENT && false // GML why doesn't this work?
+                            Vector2 corner = point.m_OriginalPosition;
+                            Vector2 direction = point.m_Position - corner;
+                            if (Mathf.Abs(direction.x) <= m_FrustumHeight && Mathf.Abs(direction.y) <= m_FrustumHeight)
+                                continue; // camera is already touching this point
+                            direction.Normalize();
+                            Vector2 cornerTouchingPoint = corner + direction * m_FrustumHeight;
+                            direction *= Epsilon;
+#else
                             Vector2 corner = point.m_OriginalPosition;
                             Vector2 shrinkDirection = point.m_Position - corner;
                             float sqrCornerDistance = shrinkDirection.sqrMagnitude;
                             if (shrinkDirection.x > 0)
                             {
-                                shrinkDirection *= (1 / shrinkDirection.x);
+                                shrinkDirection *= (m_AspectRatio / shrinkDirection.x);
                             }
                             else if (shrinkDirection.x < 0)
                             {
-                                shrinkDirection *= -(1 / shrinkDirection.x);
+                                shrinkDirection *= -(m_AspectRatio / shrinkDirection.x);
                             }
                             if (shrinkDirection.y > 1)
                             {
@@ -109,8 +119,8 @@ namespace Cinemachine
                             {
                                 continue;
                             }
-
                             var direction = shrinkDirection.normalized * Epsilon;
+#endif
                             var normal = new Vector2(direction.y, -direction.x);
 
                             clip.Add(new List<IntPoint>(4));
@@ -147,7 +157,7 @@ namespace Cinemachine
                         var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
 #if ASPECT_RATIO_EXPERIMENT
                         // Restore the original aspect ratio
-                        p.x = ((p.x - m_CenterX) / m_AspectRatio) + m_CenterX;
+                        p.x = ((p.x - m_CenterX) * m_AspectRatio) + m_CenterX;
 #endif
                         pathSegment.Add(p);
                     }
@@ -203,7 +213,7 @@ namespace Cinemachine
             // Scale the polygon's X values to neutralize aspect ratio
             {
                 var c = polygonRect.center.x;
-                var s = aspectRatio;
+                var s = 1 / aspectRatio;
                 for (int i = 0; i < inputPath.Count; ++i)
                 {
                     var path = inputPath[i];
@@ -226,7 +236,7 @@ namespace Cinemachine
             // Restore the aspect ratio
             {
                 var c = polygonRect.center.x;
-                var s = 1 / aspectRatio;
+                var s = aspectRatio;
                 for (int i = 0; i < inputPath.Count; ++i)
                 {
                     var path = inputPath[i];
