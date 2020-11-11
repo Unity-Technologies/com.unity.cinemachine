@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
-using ClipperLib;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -250,186 +249,6 @@ namespace Cinemachine
                 m_Points[i] = p;
             }
         }
-        
-        private static readonly int FloatToIntScaler = 10000000; // same as in Physics2D
-
-        /// <summary>
-        /// Converts shrinkable polygons into a simple path made of 2D points.
-        /// </summary>
-        /// <param name="shrinkablePolygons">input shrinkable polygons</param>
-        /// <param name="aspectRatio">Current camera aspect ratio</param>
-        /// <param name="frustumHeight">Frustum height requested by the user.
-        /// For the path touching the corners this may be relevant.</param>
-        /// <param name="maxCachedFrustumHeight">Maximum cached frustum height.</param>
-        /// <param name="path">Resulting path.</param>
-        /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
-        public static void ConvertToPath(in List<ShrinkablePolygon> shrinkablePolygons, 
-            in float aspectRatio, in float frustumHeight, in float maxCachedFrustumHeight,
-            out List<List<Vector2>> path, out bool hasIntersections)
-        {
-            hasIntersections = maxCachedFrustumHeight < frustumHeight;
-            // convert shrinkable polygons points to int based points for Clipper
-            List<List<IntPoint>> clip = new List<List<IntPoint>>(shrinkablePolygons.Count);
-            int index = 0;
-            for (var polyIndex = 0; polyIndex < shrinkablePolygons.Count; polyIndex++)
-            {
-                var polygon = shrinkablePolygons[polyIndex];
-                clip.Add(new List<IntPoint>(polygon.m_Points.Count));
-                foreach (var point in polygon.m_Points)
-                {
-                    clip[index].Add(new IntPoint(point.m_Position.x * FloatToIntScaler,
-                        point.m_Position.y * FloatToIntScaler));
-                }
-                index++;
-
-                // add a thin line to each intersection point, thus connecting disconnected polygons
-                foreach (var intersectionPoint in polygon.m_IntersectionPoints)
-                {
-                    hasIntersections = true;
-                    
-                    Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
-                    Vector2 direction = (closestPoint - intersectionPoint).normalized;
-                    Vector2 epsilonNormal = new Vector2(direction.y, -direction.x).normalized * 
-                                            UnityVectorExtensions.Epsilon;
-
-                    clip.Add(new List<IntPoint>(4));
-                    Vector2 p1 = closestPoint + epsilonNormal + direction * UnityVectorExtensions.Epsilon;
-                    Vector2 p2 = intersectionPoint + epsilonNormal;
-                    Vector3 p3 = intersectionPoint - epsilonNormal;
-                    Vector3 p4 = closestPoint - epsilonNormal + direction * UnityVectorExtensions.Epsilon;
-
-                    clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
-                    clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
-                    clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
-                    clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
-
-                    index++;
-                }
-                
-                foreach (var point in polygon.m_Points)
-                {
-                    if (!point.m_OriginalPosition.IsNaN())
-                    {
-                        Vector2 corner = point.m_OriginalPosition;
-                        Vector2 shrinkDirection = point.m_Position - corner;
-                        float sqrCornerDistance = shrinkDirection.sqrMagnitude;
-                        if (shrinkDirection.x > 0)
-                        {
-                            shrinkDirection *= (aspectRatio / shrinkDirection.x);
-                        }
-                        else if (shrinkDirection.x < 0)
-                        {
-                            shrinkDirection *= -(aspectRatio / shrinkDirection.x);
-                        }
-                        if (shrinkDirection.y > 1)
-                        {
-                            shrinkDirection *= (1f / shrinkDirection.y);
-                        }
-                        else if (shrinkDirection.y < -1)
-                        {
-                            shrinkDirection *= -(1f / shrinkDirection.y);
-                        }
-
-                        shrinkDirection *= frustumHeight;
-                        if (shrinkDirection.sqrMagnitude >= sqrCornerDistance)
-                        {
-                            continue; // camera is already touching this point
-                        }
-                        Vector2 cornerTouchingPoint = corner + shrinkDirection;
-                        if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < UnityVectorExtensions.Epsilon)
-                        {
-                            continue;
-                        }
-                        Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
-                                                UnityVectorExtensions.Epsilon;
-                        clip.Add(new List<IntPoint>(4));
-                        Vector2 p1 = point.m_Position + epsilonNormal + 
-                                     shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
-                        Vector2 p2 = cornerTouchingPoint + epsilonNormal;
-                        Vector2 p3 = cornerTouchingPoint - epsilonNormal;
-                        Vector2 p4 = point.m_Position - epsilonNormal + 
-                                     shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
-                        clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
-                        clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
-                        clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
-                        clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
-     
-                        index++;
-                    }
-    
-                }
-            }
-
-            // Merge polygons with Clipper
-            List<List<IntPoint>> solution = new List<List<IntPoint>>();
-            Clipper c = new Clipper();
-            c.AddPaths(clip, PolyType.ptClip, true);
-            c.Execute(ClipType.ctUnion, solution, 
-                PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-            
-            // Convert result to float points
-            path = new List<List<Vector2>>(solution.Count);
-            foreach (var polySegment in solution)
-            {
-                var pathSegment = new List<Vector2>(polySegment.Count);
-                for (index = 0; index < polySegment.Count; index++)
-                {
-                    var p_int = polySegment[index];
-                    var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
-                    pathSegment.Add(p);
-                }
-
-                path.Add(pathSegment);
-            }
-        }
-
-        /// <summary>
-        /// Checks whether p is inside or outside the polygons. The algorithm determines if a point is inside based
-        /// on a horizontal raycast from p. If the ray intersects the polygon odd number of times, then p is inside.
-        /// Otherwise, p is outside.
-        /// </summary>
-        /// <param name="polygons">Input polygons</param>
-        /// <param name="p">Input point.</param>
-        /// <returns>True, if inside. False, otherwise.</returns>
-        public static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p)
-        {
-            float minX = Single.PositiveInfinity;
-            float maxX = Single.NegativeInfinity;
-            foreach (var path in polygons)
-            {
-                foreach (var point in path)
-                {
-                    var pointInWorldCoordinates = point;
-                    minX = Mathf.Min(minX, pointInWorldCoordinates.x);
-                    maxX = Mathf.Max(maxX, pointInWorldCoordinates.x);
-                }
-            }
-            float polygonXWidth = maxX - minX;
-            if (!(minX <= p.x && p.x <= maxX))
-            {
-                return false; // p is outside to the left or to the right
-            }
-            
-            int intersectionCount = 0;
-            Vector2 camRayEndFromCamPos2D = p + Vector2.right * polygonXWidth;
-            foreach (var polygon in polygons)
-            {
-                for (int index = 0; index < polygon.Count; ++index)
-                {
-                    Vector2 p1 = polygon[index];
-                    Vector2 p2 = polygon[(index + 1) % polygon.Count];
-                    int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
-                        out _);
-                    if (intersectionType == 2)
-                    {
-                        intersectionCount++;
-                    }
-                }
-            }
-
-            return intersectionCount % 2 != 0; // inside polygon when odd number of intersections
-        }
-
         
         /// <summary>
         /// Finds midpoint of a rectangle's side touching CA and CB.
@@ -770,7 +589,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="p">Point from which the distance is calculated.</param>
         /// <returns>A point that is part of the subPolygons points and is closest to P.</returns>
-        private Vector2 ClosestPolygonPoint(Vector2 p)
+        public Vector2 ClosestPolygonPoint(Vector2 p)
         {
             float minDistance = float.MaxValue;
             Vector2 closestPoint = Vector2.zero;

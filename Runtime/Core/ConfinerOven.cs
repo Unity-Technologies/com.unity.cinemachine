@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using ClipperLib;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -18,6 +20,142 @@ namespace Cinemachine
             public List<ShrinkablePolygon> m_Polygons;
             public float m_FrustumHeight;
             public float m_State;
+
+            public float m_AspectRatio;
+            public float m_CenterX; // used for aspect ratio scaling
+
+            private const int FloatToIntScaler = 10000000; // same as in Physics2D
+
+            /// <summary>
+            /// Converts shrinkable polygons into a simple path made of 2D points.
+            /// </summary>
+            /// <param name="aspectRatio">Current camera aspect ratio</param>
+            /// For the path touching the corners this may be relevant.</param>
+            /// <param name="maxCachedFrustumHeight">Maximum cached frustum height.</param>
+            /// <param name="path">Resulting path.</param>
+            /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
+            public void ConvertToPath(
+                in float maxCachedFrustumHeight,
+                out List<List<Vector2>> path, out bool hasIntersections)
+            {
+                hasIntersections = maxCachedFrustumHeight < m_FrustumHeight;
+                // convert shrinkable polygons points to int based points for Clipper
+                List<List<IntPoint>> clip = new List<List<IntPoint>>(m_Polygons.Count);
+                int index = 0;
+                for (var polyIndex = 0; polyIndex < m_Polygons.Count; polyIndex++)
+                {
+                    var polygon = m_Polygons[polyIndex];
+                    clip.Add(new List<IntPoint>(polygon.m_Points.Count));
+                    foreach (var point in polygon.m_Points)
+                    {
+                        clip[index].Add(new IntPoint(point.m_Position.x * FloatToIntScaler,
+                            point.m_Position.y * FloatToIntScaler));
+                    }
+                    index++;
+
+                    // add a thin line to each intersection point, thus connecting disconnected polygons
+                    foreach (var intersectionPoint in polygon.m_IntersectionPoints)
+                    {
+                        hasIntersections = true;
+                    
+                        Vector2 closestPoint = polygon.ClosestPolygonPoint(intersectionPoint);
+                        Vector2 direction = (closestPoint - intersectionPoint).normalized;
+                        Vector2 epsilonNormal = new Vector2(direction.y, -direction.x).normalized * 
+                                                UnityVectorExtensions.Epsilon;
+
+                        clip.Add(new List<IntPoint>(4));
+                        Vector2 p1 = closestPoint + epsilonNormal + direction * UnityVectorExtensions.Epsilon;
+                        Vector2 p2 = intersectionPoint + epsilonNormal;
+                        Vector3 p3 = intersectionPoint - epsilonNormal;
+                        Vector3 p4 = closestPoint - epsilonNormal + direction * UnityVectorExtensions.Epsilon;
+
+                        clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
+                        clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
+                        clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
+                        clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
+
+                        index++;
+                    }
+                
+                    foreach (var point in polygon.m_Points)
+                    {
+                        if (!point.m_OriginalPosition.IsNaN())
+                        {
+                            Vector2 corner = point.m_OriginalPosition;
+                            Vector2 shrinkDirection = point.m_Position - corner;
+                            float sqrCornerDistance = shrinkDirection.sqrMagnitude;
+                            if (shrinkDirection.x > 0)
+                            {
+                                shrinkDirection *= (1 / shrinkDirection.x);
+                            }
+                            else if (shrinkDirection.x < 0)
+                            {
+                                shrinkDirection *= -(1 / shrinkDirection.x);
+                            }
+                            if (shrinkDirection.y > 1)
+                            {
+                                shrinkDirection *= (1f / shrinkDirection.y);
+                            }
+                            else if (shrinkDirection.y < -1)
+                            {
+                                shrinkDirection *= -(1f / shrinkDirection.y);
+                            }
+
+                            shrinkDirection *= m_FrustumHeight;
+                            if (shrinkDirection.sqrMagnitude >= sqrCornerDistance)
+                            {
+                                continue; // camera is already touching this point
+                            }
+                            Vector2 cornerTouchingPoint = corner + shrinkDirection;
+                            if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < UnityVectorExtensions.Epsilon)
+                            {
+                                continue;
+                            }
+                            Vector2 epsilonNormal = new Vector2(shrinkDirection.y, -shrinkDirection.x).normalized * 
+                                                    UnityVectorExtensions.Epsilon;
+                            clip.Add(new List<IntPoint>(4));
+                            Vector2 p1 = point.m_Position + epsilonNormal + 
+                                         shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
+                            Vector2 p2 = cornerTouchingPoint + epsilonNormal;
+                            Vector2 p3 = cornerTouchingPoint - epsilonNormal;
+                            Vector2 p4 = point.m_Position - epsilonNormal + 
+                                         shrinkDirection.normalized * UnityVectorExtensions.Epsilon;
+                            clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
+                            clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
+                            clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
+                            clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
+     
+                            index++;
+                        }
+    
+                    }
+                }
+
+                // Merge polygons with Clipper
+                List<List<IntPoint>> solution = new List<List<IntPoint>>();
+                Clipper c = new Clipper();
+                c.AddPaths(clip, PolyType.ptClip, true);
+                c.Execute(ClipType.ctUnion, solution, 
+                    PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+            
+                // Convert result to float points
+                path = new List<List<Vector2>>(solution.Count);
+                foreach (var polySegment in solution)
+                {
+                    var pathSegment = new List<Vector2>(polySegment.Count);
+                    for (index = 0; index < polySegment.Count; index++)
+                    {
+                        var p_int = polySegment[index];
+                        var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
+#if ASPECT_RATIO_EXPERIMENT
+                        p.x = ((p.x - m_CenterX) / m_AspectRatio) + m_CenterX;
+#endif
+                        pathSegment.Add(p);
+                    }
+
+                    path.Add(pathSegment);
+                }
+            }
         }
         private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
 
@@ -63,7 +201,7 @@ namespace Cinemachine
 #if ASPECT_RATIO_EXPERIMENT
             var aspectData = new ShrinkablePolygon.AspectData(1);
 
-            // Scale the polygon's X values to compensate for aspect ratio
+            // Scale the polygon's X values to neutralize aspect ratio
             {
                 var c = polygonRect.center.x;
                 var s = aspectRatio;
@@ -84,6 +222,23 @@ namespace Cinemachine
             // Initial polygon
             List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>(100);
             shrinkablePolygons.Add(CreateShrinkablePolygons(inputPath));
+
+#if ASPECT_RATIO_EXPERIMENT
+            // Restore the aspect ratio
+            {
+                var c = polygonRect.center.x;
+                var s = 1 / aspectRatio;
+                for (int i = 0; i < inputPath.Count; ++i)
+                {
+                    var path = inputPath[i];
+                    for (int j = 0; j < path.Count; ++j)
+                    {
+                        var p = path[j];
+                        path[j] = new Vector2((p.x - c) * s + c, p.y);
+                    }
+                }
+            }
+#endif
 
             for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
                 shrinkablePolygons[0][i].ComputeAspectBasedShrinkDirections(aspectData);
@@ -211,45 +366,6 @@ namespace Cinemachine
             MaxFrustumHeight = shrinkablePolygons.Count == 0 
                 ? 0 : shrinkablePolygons[shrinkablePolygons.Count-1][0].m_FrustumHeight;
 
-#if ASPECT_RATIO_EXPERIMENT
-            // Restore the aspect ratio
-            {
-                var c = polygonRect.center.x;
-                var s = 1 / aspectRatio;
-                for (int i = 0; i < shrinkablePolygons.Count; ++i)
-                {
-                    var pathList = shrinkablePolygons[i];
-                    for (int j = 0; j < pathList.Count; ++j)
-                    {
-                        var path = pathList[j];
-                        for (int k = 0; k < path.m_Points.Count; ++k)
-                        {
-                            var p = path.m_Points[k];
-                            p.m_Position.x = (p.m_Position.x - c) * s + c;
-                            p.m_OriginalPosition.x = (p.m_OriginalPosition.x - c) * s + c;
-                            p.m_ShrinkDirection.x *= s;
-                            path.m_Points[k] = p;
-                        }
-                        for (int k = 0; k < path.m_IntersectionPoints.Count; ++k)
-                        {
-                            var p = path.m_IntersectionPoints[k];
-                            p.x = (p.x - c) * s + c;
-                            path.m_IntersectionPoints[k] = p;
-                        }
-                    }
-                }
-                for (int i = 0; i < inputPath.Count; ++i)
-                {
-                    var path = inputPath[i];
-                    for (int j = 0; j < path.Count; ++j)
-                    {
-                        var p = path[j];
-                        path[j] = new Vector2((p.x - c) * s + c, p.y);
-                    }
-                }
-            }
-#endif
-
             // Generate the confiner states
             m_confinerStates.Clear();
             if (m_confinerStates.Capacity < shrinkablePolygons.Count)
@@ -267,6 +383,8 @@ namespace Cinemachine
                     m_FrustumHeight = shrinkablePolygons[i][0].m_FrustumHeight,
                     m_Polygons = shrinkablePolygons[i],
                     m_State = stateSum,
+                    m_AspectRatio = aspectRatio,
+                    m_CenterX = polygonRect.center.x
                 });
             }
 
@@ -355,7 +473,9 @@ namespace Cinemachine
             {
                 m_Polygons = new List<ShrinkablePolygon>(left.m_Polygons.Count),
                 m_FrustumHeight = frustumHeight,
-                m_State = left.m_State
+                m_State = left.m_State,
+                m_AspectRatio = left.m_AspectRatio,
+                m_CenterX = left.m_CenterX
             };
             
             float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);

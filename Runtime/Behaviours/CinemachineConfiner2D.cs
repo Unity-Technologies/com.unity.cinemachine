@@ -128,8 +128,7 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(
-                    m_confinerBaker, confinerStateChanged, 
-                    aspectRatio, m_currentFrustumHeight);
+                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
@@ -193,7 +192,7 @@ namespace Cinemachine
         private Vector2 ConfinePoint(Vector2 positionToConfine, in List<List<Vector2>> pathCache,
             in bool hasBone, in float windowWidth, in float windowHeight)
         {
-            if (ShrinkablePolygon.IsInside(pathCache, positionToConfine))
+            if (IsInside(pathCache, positionToConfine))
             {
                 return positionToConfine;
             }
@@ -204,7 +203,7 @@ namespace Cinemachine
             // is very large and the neighbouring section is small.  In that case, we'll need to 
             // add an extra check when calculating the nearest point.
             bool checkIntersectOriginal = hasBone 
-                && ShrinkablePolygon.IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
+                && IsInside(m_shapeCache.m_OriginalPath, positionToConfine);
 
             Vector2 closest = positionToConfine;
             float minDistance = float.MaxValue;
@@ -234,6 +233,53 @@ namespace Cinemachine
             }
 
             return closest;
+        }
+
+        /// <summary>
+        /// Checks whether p is inside or outside the polygons. The algorithm determines if a point is inside based
+        /// on a horizontal raycast from p. If the ray intersects the polygon odd number of times, then p is inside.
+        /// Otherwise, p is outside.
+        /// </summary>
+        /// <param name="polygons">Input polygons</param>
+        /// <param name="p">Input point.</param>
+        /// <returns>True, if inside. False, otherwise.</returns>
+        static bool IsInside(in List<List<Vector2>> polygons, in Vector2 p)
+        {
+            float minX = Single.PositiveInfinity;
+            float maxX = Single.NegativeInfinity;
+            foreach (var path in polygons)
+            {
+                foreach (var point in path)
+                {
+                    var pointInWorldCoordinates = point;
+                    minX = Mathf.Min(minX, pointInWorldCoordinates.x);
+                    maxX = Mathf.Max(maxX, pointInWorldCoordinates.x);
+                }
+            }
+            float polygonXWidth = maxX - minX;
+            if (!(minX <= p.x && p.x <= maxX))
+            {
+                return false; // p is outside to the left or to the right
+            }
+            
+            int intersectionCount = 0;
+            Vector2 camRayEndFromCamPos2D = p + Vector2.right * polygonXWidth;
+            foreach (var polygon in polygons)
+            {
+                for (int index = 0; index < polygon.Count; ++index)
+                {
+                    Vector2 p1 = polygon[index];
+                    Vector2 p2 = polygon[(index + 1) % polygon.Count];
+                    int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
+                        out _);
+                    if (intersectionType == 2)
+                    {
+                        intersectionCount++;
+                    }
+                }
+            }
+
+            return intersectionCount % 2 != 0; // inside polygon when odd number of intersections
         }
 
         private bool DoesIntersectOriginal(Vector2 l1, Vector2 l2)
@@ -275,7 +321,7 @@ namespace Cinemachine
                 /// </summary>
                 public void ValidateCache(
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float aspectRatio, in float frustumHeight)
+                    in float frustumHeight)
                 {
                     if (!confinerStateChanged && m_Path != null && 
                         Math.Abs(frustumHeight - m_frustumHeight) < UnityVectorExtensions.Epsilon)
@@ -284,10 +330,7 @@ namespace Cinemachine
                     }
             
                     var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                    ShrinkablePolygon.ConvertToPath(confinerCache.m_Polygons, 
-                        aspectRatio, frustumHeight, confinerBaker.MaxFrustumHeight, 
-                        out m_Path, out m_PathHasBone);
-                
+                    confinerCache.ConvertToPath(confinerBaker.MaxFrustumHeight, out m_Path, out m_PathHasBone);
                     m_frustumHeight = frustumHeight;
                 }
             }
