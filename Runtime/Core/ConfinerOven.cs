@@ -1,5 +1,4 @@
 #define CINEMACHINE_EXPERIMENTAL_CONFINER2D
-#define ASPECT_RATIO_EXPERIMENT
 
 using System;
 using System.Collections.Generic;
@@ -65,7 +64,6 @@ namespace Cinemachine
                     {
                         if (!point.m_OriginalPosition.IsNaN())
                         {
-#if ASPECT_RATIO_EXPERIMENT
                             Vector2 direction = point.m_Position - point.m_OriginalPosition;
                             if (Mathf.Abs(direction.x) > m_FrustumHeight || Mathf.Abs(direction.y) > m_FrustumHeight)
                             {
@@ -79,40 +77,6 @@ namespace Cinemachine
                                 AddConnectingSegment(clip, point.m_Position, cornerTouchingPoint);
                                 ++index;
                             }
-#else
-                            Vector2 direction = point.m_Position - point.m_OriginalPosition;
-                            float sqrCornerDistance = direction.sqrMagnitude;
-                            if (direction.x > 0)
-                            {
-                                direction *= (m_AspectRatio / direction.x);
-                            }
-                            else if (direction.x < 0)
-                            {
-                                direction *= -(m_AspectRatio / direction.x);
-                            }
-                            if (direction.y > 1)
-                            {
-                                direction *= (1f / direction.y);
-                            }
-                            else if (direction.y < -1)
-                            {
-                                direction *= -(1f / direction.y);
-                            }
-
-                            direction *= m_FrustumHeight;
-                            if (direction.sqrMagnitude >= sqrCornerDistance)
-                            {
-                                continue; // camera is already touching this point
-                            }
-                            Vector2 cornerTouchingPoint = point.m_OriginalPosition + direction;
-                            if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < Epsilon)
-                            {
-                                continue;
-                            }
-                            AddConnectingSegment(clip, point.m_Position, cornerTouchingPoint);
-     
-                            index++;
-#endif
                         }
     
                     }
@@ -134,10 +98,8 @@ namespace Cinemachine
                     {
                         var p_int = polySegment[index];
                         var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
-#if ASPECT_RATIO_EXPERIMENT
                         // Restore the original aspect ratio
                         p.x = ((p.x - m_CenterX) * m_AspectRatio) + m_CenterX;
-#endif
                         pathSegment.Add(p);
                     }
 
@@ -204,8 +166,6 @@ namespace Cinemachine
                 maxFrustumHeight = polygonHalfHeight; 
             }
 
-            // GML todo: get rid of ShrinkablePolygon.AspectData
-#if ASPECT_RATIO_EXPERIMENT
             // Scale the polygon's X values to neutralize aspect ratio
             {
                 var c = polygonRect.center.x;
@@ -220,15 +180,11 @@ namespace Cinemachine
                     }
                 }
             }
-#else
-            var aspectData = new ShrinkablePolygon.AspectData(aspectRatio);
-#endif
 
             // Initial polygon
             List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>(100);
             shrinkablePolygons.Add(CreateShrinkablePolygons(inputPath));
 
-#if ASPECT_RATIO_EXPERIMENT
             // Restore the aspect ratio
             {
                 var c = polygonRect.center.x;
@@ -243,7 +199,6 @@ namespace Cinemachine
                     }
                 }
             }
-#endif
 
             for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
                 shrinkablePolygons[0][i].ComputeShrinkDirections();
