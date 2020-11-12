@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.7.0] - 2020-11-12
 - New feature: CinemachineConfiner2D - Improved 2D confiner.
 - Added ApplyAfter option to ImpulseListener, to add control over the ordering of extensions
-- UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierachy.
+- UI update - Moved Cinemachine menu to GameObject Create menu and Right Click context menu for Hierarchy.
 - Virtual Camera Lens inspector supports display of Horizontal FOV
 - Virtual Camera Lens can override orthographic and physical camera settings
 - Bugfix (1060230) - lens inspector sometimes displayed ortho vs perspective incorrectly for a brief time
