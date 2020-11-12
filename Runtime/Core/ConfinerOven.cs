@@ -206,8 +206,6 @@ namespace Cinemachine
 
             // GML todo: get rid of ShrinkablePolygon.AspectData
 #if ASPECT_RATIO_EXPERIMENT
-            var aspectData = new ShrinkablePolygon.AspectData(1);
-
             // Scale the polygon's X values to neutralize aspect ratio
             {
                 var c = polygonRect.center.x;
@@ -276,7 +274,7 @@ namespace Cinemachine
                     ShrinkablePolygon poly = leftCandidate[pathIndex].DeepCopy();
 
                     stepSize = Mathf.Min(stepSize, maxFrustumHeight - poly.m_FrustumHeight);
-                    if (poly.Shrink(stepSize, shrinkToPoint, aspectData.m_AspectRatio))
+                    if (poly.Shrink(stepSize, shrinkToPoint, aspectRatio))
                     {
                         // don't simplify at small frustumHeight, because some points at 
                         // start may be close together that are important

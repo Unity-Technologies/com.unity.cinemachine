@@ -11,8 +11,6 @@ public class Confiner2DUnitTests
     [UnityTest]
     public IEnumerator Test_PolygonDivision_OrderIndependent()
     {
-        var aspectData = new ShrinkablePolygon.AspectData(1);    
-
         List<ShrinkablePolygon> subShrinkablePolygon1 = new List<ShrinkablePolygon>();
         {
             List<List<Vector2>> points = new List<List<Vector2>>();

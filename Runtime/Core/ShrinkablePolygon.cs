@@ -23,33 +23,6 @@ namespace Cinemachine
             public static readonly Vector2 m_Vector2NaN = new Vector2(float.NaN, float.NaN);
         }
 
-        /// <summary>
-        /// Info relating to current aspect ratio
-        /// </summary>
-        public struct AspectData
-        {
-            public float m_AspectRatio;
-            public float m_AspectRatioBasedDiagonal;
-            public Vector2[] m_NormalDirections;
-
-            public AspectData(float aspectRatio)
-            {
-                m_AspectRatio = aspectRatio;
-                m_AspectRatioBasedDiagonal = Mathf.Sqrt(aspectRatio*aspectRatio + 1);
-                m_NormalDirections = new[]
-                {
-                    Vector2.up,
-                    new Vector2(aspectRatio, 1),
-                    new Vector2(aspectRatio, 0),
-                    new Vector2(aspectRatio, -1),
-                    Vector2.down,
-                    new Vector2(-aspectRatio, -1),
-                    new Vector2(-aspectRatio, 0),
-                    new Vector2(-aspectRatio, 1),
-                };
-            }
-        }
-
         public List<ShrinkablePoint2> m_Points;
         public float m_FrustumHeight;
         public int m_State;
