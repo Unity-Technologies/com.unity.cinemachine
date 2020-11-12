@@ -62,6 +62,7 @@ namespace Cinemachine
                     // Add twigs to ensure that all original points can be seen
                     foreach (var point in polygon.m_Points)
                     {
+#if false // KB's way
                         if (!point.m_OriginalPosition.IsNaN())
                         {
                             Vector2 direction = point.m_Position - point.m_OriginalPosition;
@@ -78,6 +79,22 @@ namespace Cinemachine
                                 ++index;
                             }
                         }
+#else // GML's way
+                        if (!point.m_OriginalPosition.IsNaN())
+                        {
+                            var delta = point.m_OriginalPosition - point.m_Position;
+                            var correction = new Vector2(
+                                Mathf.Max(0, Mathf.Abs(delta.x) - m_FrustumHeight),
+                                Mathf.Max(0, Mathf.Abs(delta.y) - m_FrustumHeight));
+                            if (correction.x > Epsilon || correction.y > Epsilon)
+                            {
+                                correction.x *= Mathf.Sign(delta.x);
+                                correction.y *= Mathf.Sign(delta.y);
+                                AddConnectingSegment(clip, point.m_Position, point.m_Position + correction);
+                                ++index;
+                            }
+                        }
+#endif
     
                     }
                 }
@@ -109,20 +126,21 @@ namespace Cinemachine
 
             private void AddConnectingSegment(List<List<IntPoint>> clip, Vector2 p1, Vector2 p2)
             {
-                Vector2 direction = (p2 - p1).normalized * Epsilon;
-                Vector2 normal = new Vector2(direction.y, -direction.x);
+                Vector2 tangent = (p2 - p1).normalized * Epsilon;
+                Vector2 normal = new Vector2(tangent.y, -tangent.x);
 
-                Vector2 pA = p2 + normal + direction;
-                Vector2 pB = p1 + normal - direction;
-                Vector3 pC = p1 - normal - direction;
-                Vector3 pD = p2 - normal + direction;
+                Vector2 pA = p2 + normal + tangent;
+                Vector2 pB = p1 + normal - tangent;
+                Vector3 pC = p1 - normal - tangent;
+                Vector3 pD = p2 - normal + tangent;
 
-                var path = new List<IntPoint>(4);
-                path.Add(new IntPoint(pA.x * FloatToIntScaler, pA.y * FloatToIntScaler));
-                path.Add(new IntPoint(pB.x * FloatToIntScaler, pB.y * FloatToIntScaler));
-                path.Add(new IntPoint(pC.x * FloatToIntScaler, pC.y * FloatToIntScaler));
-                path.Add(new IntPoint(pD.x * FloatToIntScaler, pD.y * FloatToIntScaler));
-                clip.Add(path);
+                clip.Add(new List<IntPoint>(4)
+                {
+                    new IntPoint(pA.x * FloatToIntScaler, pA.y * FloatToIntScaler),
+                    new IntPoint(pB.x * FloatToIntScaler, pB.y * FloatToIntScaler),
+                    new IntPoint(pC.x * FloatToIntScaler, pC.y * FloatToIntScaler),
+                    new IntPoint(pD.x * FloatToIntScaler, pD.y * FloatToIntScaler)
+                });
             }
         }
 
@@ -167,38 +185,14 @@ namespace Cinemachine
             }
 
             // Scale the polygon's X values to neutralize aspect ratio
-            {
-                var c = polygonRect.center.x;
-                var s = 1 / aspectRatio;
-                for (int i = 0; i < inputPath.Count; ++i)
-                {
-                    var path = inputPath[i];
-                    for (int j = 0; j < path.Count; ++j)
-                    {
-                        var p = path[j];
-                        path[j] = new Vector2((p.x - c) * s + c, p.y);
-                    }
-                }
-            }
+            ScaleX(inputPath, polygonRect.center.x, 1 / aspectRatio);
 
             // Initial polygon
             List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>(100);
             shrinkablePolygons.Add(CreateShrinkablePolygons(inputPath));
 
             // Restore the aspect ratio
-            {
-                var c = polygonRect.center.x;
-                var s = aspectRatio;
-                for (int i = 0; i < inputPath.Count; ++i)
-                {
-                    var path = inputPath[i];
-                    for (int j = 0; j < path.Count; ++j)
-                    {
-                        var p = path[j];
-                        path[j] = new Vector2((p.x - c) * s + c, p.y);
-                    }
-                }
-            }
+            ScaleX(inputPath, polygonRect.center.x, aspectRatio);
 
             for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
                 shrinkablePolygons[0][i].ComputeShrinkDirections();
@@ -372,6 +366,19 @@ namespace Cinemachine
             return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
         }
         
+        private void ScaleX(List<List<Vector2>> inputPath, float origin, float scale)
+        {
+            for (int i = 0; i < inputPath.Count; ++i)
+            {
+                var path = inputPath[i];
+                for (int j = 0; j < path.Count; ++j)
+                {
+                    var p = path[j];
+                    path[j] = new Vector2((p.x - origin) * scale + origin, p.y);
+                }
+            }
+        }
+
         /// <summary>
         /// Creates shrinkable polygons from a list of polygons
         /// </summary>
