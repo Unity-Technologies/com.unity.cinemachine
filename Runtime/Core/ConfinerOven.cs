@@ -69,54 +69,47 @@ namespace Cinemachine
                             Vector2 direction = point.m_Position - point.m_OriginalPosition;
                             if (Mathf.Abs(direction.x) > m_FrustumHeight || Mathf.Abs(direction.y) > m_FrustumHeight)
                             {
-                                Vector2 cornerTouchingPoint = point.m_OriginalPosition + new Vector2(
-                                    Mathf.Sign(direction.x) * m_FrustumHeight, Mathf.Sign(direction.y) * m_FrustumHeight);
+                                direction *= Mathf.Sign(direction.x) / direction.x;
+                                if (Mathf.Abs(direction.y) > 1)
+                                {
+                                    direction *= Mathf.Sign(direction.y) / direction.y;
+                                }
+                                direction *= m_FrustumHeight;
+                                Vector2 cornerTouchingPoint = point.m_OriginalPosition + direction;
                                 AddConnectingSegment(clip, point.m_Position, cornerTouchingPoint);
                                 ++index;
                             }
 #else
-                            Vector2 corner = point.m_OriginalPosition;
-                            Vector2 shrinkDirection = point.m_Position - corner;
-                            float sqrCornerDistance = shrinkDirection.sqrMagnitude;
-                            if (shrinkDirection.x > 0)
+                            Vector2 direction = point.m_Position - point.m_OriginalPosition;
+                            float sqrCornerDistance = direction.sqrMagnitude;
+                            if (direction.x > 0)
                             {
-                                shrinkDirection *= (m_AspectRatio / shrinkDirection.x);
+                                direction *= (m_AspectRatio / direction.x);
                             }
-                            else if (shrinkDirection.x < 0)
+                            else if (direction.x < 0)
                             {
-                                shrinkDirection *= -(m_AspectRatio / shrinkDirection.x);
+                                direction *= -(m_AspectRatio / direction.x);
                             }
-                            if (shrinkDirection.y > 1)
+                            if (direction.y > 1)
                             {
-                                shrinkDirection *= (1f / shrinkDirection.y);
+                                direction *= (1f / direction.y);
                             }
-                            else if (shrinkDirection.y < -1)
+                            else if (direction.y < -1)
                             {
-                                shrinkDirection *= -(1f / shrinkDirection.y);
+                                direction *= -(1f / direction.y);
                             }
 
-                            shrinkDirection *= m_FrustumHeight;
-                            if (shrinkDirection.sqrMagnitude >= sqrCornerDistance)
+                            direction *= m_FrustumHeight;
+                            if (direction.sqrMagnitude >= sqrCornerDistance)
                             {
                                 continue; // camera is already touching this point
                             }
-                            Vector2 cornerTouchingPoint = corner + shrinkDirection;
+                            Vector2 cornerTouchingPoint = point.m_OriginalPosition + direction;
                             if (Vector2.Distance(cornerTouchingPoint, point.m_Position) < Epsilon)
                             {
                                 continue;
                             }
-                            var direction = shrinkDirection.normalized * Epsilon;
-                            var normal = new Vector2(direction.y, -direction.x);
-
-                            clip.Add(new List<IntPoint>(4));
-                            Vector2 p1 = point.m_Position + normal + direction;
-                            Vector2 p2 = cornerTouchingPoint + normal - direction;
-                            Vector2 p3 = cornerTouchingPoint - normal - direction;
-                            Vector2 p4 = point.m_Position - normal + direction;
-                            clip[index].Add(new IntPoint(p1.x * FloatToIntScaler, p1.y * FloatToIntScaler));
-                            clip[index].Add(new IntPoint(p2.x * FloatToIntScaler, p2.y * FloatToIntScaler));
-                            clip[index].Add(new IntPoint(p3.x * FloatToIntScaler, p3.y * FloatToIntScaler));
-                            clip[index].Add(new IntPoint(p4.x * FloatToIntScaler, p4.y * FloatToIntScaler));
+                            AddConnectingSegment(clip, point.m_Position, cornerTouchingPoint);
      
                             index++;
 #endif
