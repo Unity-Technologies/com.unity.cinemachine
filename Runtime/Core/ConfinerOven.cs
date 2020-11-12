@@ -64,11 +64,11 @@ namespace Cinemachine
                     {
                         if (!point.m_OriginalPosition.IsNaN())
                         {
-                            Vector2 twig = point.m_OriginalPosition - point.m_Position;
-                            if (Mathf.Abs(twig.x) > m_FrustumHeight || Mathf.Abs(twig.y) > m_FrustumHeight)
+                            Vector2 delta = point.m_Position - point.m_OriginalPosition;
+                            if (Mathf.Abs(delta.x) > m_FrustumHeight || Mathf.Abs(delta.y) > m_FrustumHeight)
                             {
-                                twig = twig.SquareNormalize() * m_FrustumHeight;
-                                AddConnectingSegment(clip, point.m_Position, point.m_Position + twig);
+                                delta = delta.SquareNormalize() * m_FrustumHeight;
+                                AddConnectingSegment(clip, point.m_Position, point.m_OriginalPosition + delta);
                                 ++index;
                             }
                         }
