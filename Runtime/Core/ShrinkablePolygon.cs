@@ -464,19 +464,22 @@ namespace Cinemachine
                 // Polygon is a skeleton
                 if (shrinkToPoint)
                 {
+                    m_State += k_NonLerpableStateChangePenalty;
                     Vector2 center = CenterOfMass();
                     for (int i = 0; i < m_Points.Count; ++i)
                     {
                         var mPoint = m_Points[i];
                         
                         Vector2 direction = center - mPoint.m_Position;
-                        // normalize direction so it is within the 1 x 1 rectangle.
-                        direction *= Mathf.Sign(direction.x) / direction.x;
-                        if (Mathf.Abs(direction.y) > 1)
+                        // normalize direction so it is within the 1 x 1 square.
+                        if (Math.Abs(direction.x) > 1f || Math.Abs(direction.y) > 1f)
                         {
-                            direction *= Mathf.Sign(direction.y) / direction.y;
+                            direction.x *= Mathf.Sign(direction.x) / direction.x;
+                            if (Math.Abs(direction.y) > 1f)
+                            {
+                                direction *= Mathf.Sign(direction.y) / direction.y;
+                            }
                         }
-
                         mPoint.m_ShrinkDirection = direction;
                         
                         m_Points[i] = mPoint;
