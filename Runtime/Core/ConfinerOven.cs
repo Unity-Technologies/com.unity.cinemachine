@@ -255,7 +255,7 @@ namespace Cinemachine
 #endif
 
             for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
-                shrinkablePolygons[0][i].ComputeAspectBasedShrinkDirections(aspectData);
+                shrinkablePolygons[0][i].ComputeShrinkDirections();
 
             // Binary search for next non-lerpable state
             List<ShrinkablePolygon> rightCandidate = null;
@@ -291,7 +291,7 @@ namespace Cinemachine
                         {
                             if (poly.Simplify(k_MinStepSize))
                             {
-                                poly.ComputeAspectBasedShrinkDirections(aspectData);
+                                poly.ComputeShrinkDirections();
                                 stateChangeFound = true;
                             }
                         }
@@ -334,10 +334,10 @@ namespace Cinemachine
                     var splitPoly = new List<ShrinkablePolygon>();
                     for (int i = 0; i < rightCandidate.Count; ++i)
                     {
-                        ShrinkablePolygon.DivideAlongIntersections(rightCandidate[i], ref s_subPolygonCache, aspectData);
+                        ShrinkablePolygon.DivideAlongIntersections(rightCandidate[i], ref s_subPolygonCache);
                         for (int subpoly = 0; subpoly < s_subPolygonCache.Count; ++subpoly)
                         {
-                            s_subPolygonCache[subpoly].ComputeAspectBasedShrinkDirections(aspectData);
+                            s_subPolygonCache[subpoly].ComputeShrinkDirections();
                         }
                         splitPoly.AddRange(s_subPolygonCache);
                     }

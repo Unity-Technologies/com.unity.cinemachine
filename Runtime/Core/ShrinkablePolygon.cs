@@ -234,7 +234,7 @@ namespace Cinemachine
         /// Computes shrink directions that respect the aspect ratio of the camera. If the camera window is a square,
         /// then the shrink directions will be equivalent to the normals.
         /// </summary>
-        public void ComputeAspectBasedShrinkDirections(in AspectData aspectData)
+        public void ComputeShrinkDirections()
         {
             ComputeNormals(false);
             int numPoints = m_Points.Count;
@@ -245,7 +245,7 @@ namespace Cinemachine
 
                 var p = m_Points[i];
                 p.m_ShrinkDirection = CalculateShrinkDirection(p.m_ShrinkDirection, 
-                    m_Points[prevIndex].m_Position, p.m_Position, m_Points[nextIndex].m_Position, aspectData);
+                    m_Points[prevIndex].m_Position, p.m_Position, m_Points[nextIndex].m_Position);
                 m_Points[i] = p;
             }
         }
@@ -308,8 +308,7 @@ namespace Cinemachine
         /// <param name="nextPoint">next neighbouring of thisPoint</param>
         /// <returns>Returns shrink direction for thisPoint</returns>
         private Vector2 CalculateShrinkDirection(in Vector2 normal, 
-            in Vector2 prevPoint, in Vector2 thisPoint, in Vector2 nextPoint, 
-            in AspectData aspectData)
+            in Vector2 prevPoint, in Vector2 thisPoint, in Vector2 nextPoint)
         {
             Vector2 A = prevPoint;
             Vector2 B = nextPoint;
@@ -321,33 +320,33 @@ namespace Cinemachine
             float angle1_abs = Vector2.Angle(CA, normal);
             float angle2_abs = Vector2.Angle(CB, normal);
             
-            Vector2 R = normal.normalized * aspectData.m_AspectRatioBasedDiagonal;
-            float angle = Vector2.SignedAngle(R, aspectData.m_NormalDirections[0]);
+            Vector2 R = normal.normalized;
+            float angle = Vector2.SignedAngle(R, Vector2.up);
             if (0 < angle && angle < 90)
             {
                 if (angle - angle1_abs <= 1f && 89 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = aspectData.m_NormalDirections[1];
+                    R = Vector2.up + Vector2.right;
                 }
                 else if (angle - angle1_abs <= 0 && angle + angle2_abs < 90)
                 {
                     // case 1a - 2 point intersection with camera window's bottom
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[3], aspectData.m_NormalDirections[5]); // bottom side's midpoint
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[0]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.down + Vector2.right, Vector2.down + Vector2.left); // bottom side's midpoint
+                    Vector2 rectangleMidPoint = M + Vector2.up; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (0 < angle - angle1_abs && 90 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's left side
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[7], aspectData.m_NormalDirections[5]); // left side's midpoint
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[2]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.up + Vector2.left, Vector2.down + Vector2.left); // left side's midpoint
+                    Vector2 rectangleMidPoint = M + Vector2.right; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (0 < angle - angle1_abs && angle + angle2_abs < 90)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[3], aspectData.m_NormalDirections[7]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, Vector2.down + Vector2.right, Vector2.up + Vector2.left); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -361,26 +360,26 @@ namespace Cinemachine
                 if (angle - angle1_abs <= 91 && 179 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = aspectData.m_NormalDirections[3];
+                    R = Vector2.down + Vector2.right;
                 }
                 else if (angle - angle1_abs <= 90 && angle + angle2_abs < 180)
                 {
                     // case 1a - 2 point intersection with camera window's left
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[0], aspectData.m_NormalDirections[4]); // left side's midpoint
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[2]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.up, Vector2.down); // left side's midpoint
+                    Vector2 rectangleMidPoint = M + Vector2.right; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (90 < angle - angle1_abs && 180 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's top side
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[7]); // top side's midpoint
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[4]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.up + Vector2.right, Vector2.up + Vector2.left); // top side's midpoint
+                    Vector2 rectangleMidPoint = M + Vector2.down; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (90 < angle - angle1_abs && angle + angle2_abs < 180)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[5]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, Vector2.up + Vector2.right, Vector2.down + Vector2.left); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -394,26 +393,26 @@ namespace Cinemachine
                 if (angle - angle1_abs <= -179 && -91 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = aspectData.m_NormalDirections[5];
+                    R = Vector2.down + Vector2.left;
                 }
                 else if (angle - angle1_abs <= -180 && angle + angle2_abs < -90)
                 {
                     // case 1a - 2 point intersection with camera window's top
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[7], aspectData.m_NormalDirections[1]); // top side's midpoint
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[4]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.up + Vector2.left, Vector2.up + Vector2.right); // top side's midpoint
+                    Vector2 rectangleMidPoint = M + Vector2.down; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-180 < angle - angle1_abs && -90 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's right side
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[3]); // right side's midpoint
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[6]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.up + Vector2.right, Vector2.down + Vector2.right); // right side's midpoint
+                    Vector2 rectangleMidPoint = M + Vector2.left; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-180 < angle - angle1_abs && angle + angle2_abs < -90)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-left to bottom-right)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[3], aspectData.m_NormalDirections[7]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, Vector2.down + Vector2.right, Vector2.up + Vector2.left); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -427,26 +426,26 @@ namespace Cinemachine
                 if (angle - angle1_abs <= -89 && -1 <= angle + angle2_abs)
                 {
                     // case 0 - 1 point intersection with camera window
-                    R = aspectData.m_NormalDirections[7];
+                    R = Vector2.up + Vector2.left;
                 }
                 else if (angle - angle1_abs <= -90 && angle + angle2_abs < 0)
                 {
                     // case 1a - 2 point intersection with camera window's right side
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[7], aspectData.m_NormalDirections[5]); // right side's midpoint
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[6]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.up + Vector2.left, Vector2.down + Vector2.left); // right side's midpoint
+                    Vector2 rectangleMidPoint = M + Vector2.left; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-90 < angle - angle1_abs && 0 <= angle + angle2_abs)
                 {
                     // case 1b - 2 point intersection with camera window's bottom side
-                    Vector2 M = FindMidPoint(A, B, C, aspectData.m_NormalDirections[5], aspectData.m_NormalDirections[3]); // bottom side's mid point
-                    Vector2 rectangleMidPoint = M + aspectData.m_NormalDirections[0]; // rectangle's midpoint
+                    Vector2 M = FindMidPoint(A, B, C, Vector2.down + Vector2.left, Vector2.down + Vector2.right); // bottom side's mid point
+                    Vector2 rectangleMidPoint = M + Vector2.up; // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else if (-90 < angle - angle1_abs && angle + angle2_abs < 0)
                 {
                     // case 2 - 2 point intersection with camera window's diagonal (top-right to bottom-left)
-                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, aspectData.m_NormalDirections[1], aspectData.m_NormalDirections[5]); // rectangle's midpoint
+                    Vector2 rectangleMidPoint = FindMidPoint(A, B, C, Vector2.up + Vector2.right, Vector2.down + Vector2.left); // rectangle's midpoint
                     R = rectangleMidPoint - C;
                 }
                 else
@@ -457,7 +456,7 @@ namespace Cinemachine
             }
             else
             {
-                R.x = Mathf.Clamp(R.x, -aspectData.m_AspectRatio, aspectData.m_AspectRatio);
+                R.x = Mathf.Clamp(R.x, -1, 1);
                 R.y = Mathf.Clamp(R.y, -1, 1);
             }
             
@@ -827,7 +826,7 @@ namespace Cinemachine
         /// Input polygon gets reduced and added to the list.
         /// </summary>
         public static void DivideAlongIntersections(
-            ShrinkablePolygon poly, ref List<ShrinkablePolygon> divided, in AspectData aspectData)
+            ShrinkablePolygon poly, ref List<ShrinkablePolygon> divided)
         {
             // In practice max 1-3 intersections at the same time in the same frame.
             divided.Clear();
@@ -839,7 +838,7 @@ namespace Cinemachine
             }
             divided.Add(poly); // add remaining points
             for (int i = 0; i < divided.Count - 1; ++i)
-                divided[i].ComputeAspectBasedShrinkDirections(aspectData);
+                divided[i].ComputeShrinkDirections();
         }
         
         /// <summary>

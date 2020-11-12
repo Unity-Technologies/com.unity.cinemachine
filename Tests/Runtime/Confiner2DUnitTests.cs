@@ -28,7 +28,7 @@ public class Confiner2DUnitTests
             }
             List<ShrinkablePolygon> polygons = ConfinerOven.CreateShrinkablePolygons(points);
             Assert.IsTrue(polygons.Count == 1);
-            ShrinkablePolygon.DivideAlongIntersections(polygons[0], ref subShrinkablePolygon1, aspectData);
+            ShrinkablePolygon.DivideAlongIntersections(polygons[0], ref subShrinkablePolygon1);
 
             Assert.IsTrue(subShrinkablePolygon1.Count == 2);
             for (var index = 0; index < subShrinkablePolygon1.Count; index++)
@@ -55,7 +55,7 @@ public class Confiner2DUnitTests
             }
             List<ShrinkablePolygon> polygons = ConfinerOven.CreateShrinkablePolygons(points);
             Assert.IsTrue(polygons.Count == 1);
-            ShrinkablePolygon.DivideAlongIntersections(polygons[0], ref subShrinkablePolygon2, aspectData);
+            ShrinkablePolygon.DivideAlongIntersections(polygons[0], ref subShrinkablePolygon2);
         
             Assert.IsTrue(subShrinkablePolygon2.Count == 2);
             for (var index = 0; index < subShrinkablePolygon2.Count; index++)
