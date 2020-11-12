@@ -455,11 +455,12 @@ namespace Cinemachine
         /// <summary>
         /// Shrink shrinkablePolygon points towards their shrink direction by stepSize.
         /// </summary>
-        public bool Shrink(float stepSize, bool shrinkToPoint, in float aspectRatio)
+        public bool Shrink(float stepSize, bool shrinkToPoint)
         {
             m_FrustumHeight += stepSize;
             if (Mathf.Abs(m_Area) < 0.1f) // TODO: what's a good value
             {
+                m_State += k_NonLerpableStateChangePenalty;
                 // Polygon is a skeleton
                 if (shrinkToPoint)
                 {
@@ -467,35 +468,17 @@ namespace Cinemachine
                     for (int i = 0; i < m_Points.Count; ++i)
                     {
                         var mPoint = m_Points[i];
+                        
                         Vector2 direction = center - mPoint.m_Position;
-                        // normalize direction so it is within the aspectRatio x 1 rectangle.
-                        if (Math.Abs(direction.x) > aspectRatio ||
-                            Math.Abs(direction.y) > 1)
+                        // normalize direction so it is within the 1 x 1 rectangle.
+                        direction *= Mathf.Sign(direction.x) / direction.x;
+                        if (Mathf.Abs(direction.y) > 1)
                         {
-                            if (direction.x > aspectRatio)
-                            {
-                                direction *= (aspectRatio / direction.x);
-                            }
-                            else if (direction.x < -aspectRatio)
-                            {
-                                direction *= -(aspectRatio / direction.x);
-                            }
-                            if (direction.y > 1)
-                            {
-                                direction *= (1f / direction.y);
-                            }
-                            else if (direction.y < -1)
-                            {
-                                direction *= -(1f / direction.y);
-                            }
-
-                            mPoint.m_ShrinkDirection = direction;
-                        }
-                        else
-                        {
-                            mPoint.m_ShrinkDirection = Vector2.zero;
+                            direction *= Mathf.Sign(direction.y) / direction.y;
                         }
 
+                        mPoint.m_ShrinkDirection = direction;
+                        
                         m_Points[i] = mPoint;
                     }
                 }

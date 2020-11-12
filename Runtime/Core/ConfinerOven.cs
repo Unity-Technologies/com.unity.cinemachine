@@ -274,7 +274,7 @@ namespace Cinemachine
                     ShrinkablePolygon poly = leftCandidate[pathIndex].DeepCopy();
 
                     stepSize = Mathf.Min(stepSize, maxFrustumHeight - poly.m_FrustumHeight);
-                    if (poly.Shrink(stepSize, shrinkToPoint, aspectRatio))
+                    if (poly.Shrink(stepSize, shrinkToPoint))
                     {
                         // don't simplify at small frustumHeight, because some points at 
                         // start may be close together that are important
