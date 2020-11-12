@@ -472,7 +472,8 @@ namespace Cinemachine
                         
                         Vector2 direction = center - mPoint.m_Position;
                         // normalize direction so it is within the 1 x 1 square.
-                        if (Math.Abs(direction.x) > 1f || Math.Abs(direction.y) > 1f)
+                        if (Math.Abs(direction.x) > UnityVectorExtensions.Epsilon || 
+                            Math.Abs(direction.y) > UnityVectorExtensions.Epsilon)
                         {
                             direction.x *= Mathf.Sign(direction.x) / direction.x;
                             if (Math.Abs(direction.y) > 1f)
