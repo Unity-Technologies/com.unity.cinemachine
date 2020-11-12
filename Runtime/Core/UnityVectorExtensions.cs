@@ -77,12 +77,12 @@ namespace Cinemachine.Utility
         /// Normalized the vector onto the unit square instead of the unit circle
         /// </summary>
         /// <param name="v">The vector to normalize</param>
-        /// <returns>The normalized vector, or the original vector if its magnitude 
+        /// <returns>The normalized vector, or the zero vector if its magnitude 
         /// was too small to normalize</returns>
         public static Vector2 SquareNormalize(this Vector2 v)
         {
             var d = Mathf.Max(Mathf.Abs(v.x), Mathf.Abs(v.y));
-            return d < Epsilon ? v : v / d;
+            return d < Epsilon ? Vector2.zero : v / d;
         }
 
         /// <summary>
