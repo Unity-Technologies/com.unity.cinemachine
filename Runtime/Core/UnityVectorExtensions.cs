@@ -74,6 +74,18 @@ namespace Cinemachine.Utility
         }
         
         /// <summary>
+        /// Normalized the vector onto the unit square instead of the unit circle
+        /// </summary>
+        /// <param name="v">The vector to normalize</param>
+        /// <returns>The normalized vector, or the original vector if its magnitude 
+        /// was too small to normalize</returns>
+        public static Vector2 SquareNormalize(this Vector2 v)
+        {
+            var d = Mathf.Max(Mathf.Abs(v.x), Mathf.Abs(v.y));
+            return d < Epsilon ? v : v / d;
+        }
+
+        /// <summary>
         /// Calculates the intersection point defined by line_1 [p1, p2], and line_2 [p3, p4).
         /// Meaning of brackets:
         /// <list type="bullet">

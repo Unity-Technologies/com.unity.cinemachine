@@ -62,40 +62,16 @@ namespace Cinemachine
                     // Add twigs to ensure that all original points can be seen
                     foreach (var point in polygon.m_Points)
                     {
-#if false // KB's way
                         if (!point.m_OriginalPosition.IsNaN())
                         {
                             Vector2 direction = point.m_Position - point.m_OriginalPosition;
                             if (Mathf.Abs(direction.x) > m_FrustumHeight || Mathf.Abs(direction.y) > m_FrustumHeight)
                             {
-                                direction *= Mathf.Sign(direction.x) / direction.x;
-                                if (Mathf.Abs(direction.y) > 1)
-                                {
-                                    direction *= Mathf.Sign(direction.y) / direction.y;
-                                }
-                                direction *= m_FrustumHeight;
-                                Vector2 cornerTouchingPoint = point.m_OriginalPosition + direction;
-                                AddConnectingSegment(clip, point.m_Position, cornerTouchingPoint);
+                                direction = direction.SquareNormalize() * m_FrustumHeight;
+                                AddConnectingSegment(clip, point.m_Position, point.m_OriginalPosition + direction);
                                 ++index;
                             }
                         }
-#else // GML's way
-                        if (!point.m_OriginalPosition.IsNaN())
-                        {
-                            var delta = point.m_OriginalPosition - point.m_Position;
-                            var correction = new Vector2(
-                                Mathf.Max(0, Mathf.Abs(delta.x) - m_FrustumHeight),
-                                Mathf.Max(0, Mathf.Abs(delta.y) - m_FrustumHeight));
-                            if (correction.x > Epsilon || correction.y > Epsilon)
-                            {
-                                correction.x *= Mathf.Sign(delta.x);
-                                correction.y *= Mathf.Sign(delta.y);
-                                AddConnectingSegment(clip, point.m_Position, point.m_Position + correction);
-                                ++index;
-                            }
-                        }
-#endif
-    
                     }
                 }
 
@@ -366,11 +342,11 @@ namespace Cinemachine
             return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
         }
         
-        private void ScaleX(List<List<Vector2>> inputPath, float origin, float scale)
+        private void ScaleX(List<List<Vector2>> polygons, float origin, float scale)
         {
-            for (int i = 0; i < inputPath.Count; ++i)
+            for (int i = 0; i < polygons.Count; ++i)
             {
-                var path = inputPath[i];
+                var path = polygons[i];
                 for (int j = 0; j < path.Count; ++j)
                 {
                     var p = path[j];
