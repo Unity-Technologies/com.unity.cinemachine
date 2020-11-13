@@ -510,7 +510,7 @@ namespace Cinemachine
 
             var result = new ClipperPolygonSolution
             {
-                m_Solution = left.m_Solution,
+                m_Solution = new List<List<IntPoint>>(left.m_Solution.Count),
                 m_FrustumHeight = frustumHeight,
             };
             // ConfinerState result = new ConfinerState
@@ -523,13 +523,14 @@ namespace Cinemachine
             // };
             
             float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);
-            for (int i = 0; i < result.m_Solution.Count; ++i)
+            for (int i = 0; i < left.m_Solution.Count; ++i)
             {
-                for (int j = 0; j < result.m_Solution[i].Count; ++j)
+                result.m_Solution.Add(new List<IntPoint>(left.m_Solution[i].Count));
+                for (int j = 0; j < left.m_Solution[i].Count; ++j)
                 {
-                    result.m_Solution[i][j] = new IntPoint(
-                        Mathf.Lerp(result.m_Solution[i][j].X, right.m_Solution[i][j].X, lerpValue),
-                        Mathf.Lerp(result.m_Solution[i][j].Y, right.m_Solution[i][j].Y, lerpValue));
+                    result.m_Solution[i].Add(new IntPoint(
+                        Mathf.Lerp(left.m_Solution[i][j].X, right.m_Solution[i][j].X, lerpValue), 
+                        Mathf.Lerp(left.m_Solution[i][j].Y, right.m_Solution[i][j].Y, lerpValue)));
                 }
                 
                 // var r = new ShrinkablePolygon
