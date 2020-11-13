@@ -37,7 +37,7 @@ public class CameraPositionTests
         Vector3 oldPos = vcam.transform.position;
         followPbject.transform.position += new Vector3(2, 2, 2);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.transform.position, oldPos), 0, 0.01f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 0, 0.01f);
     }
 
     [UnityTest]
@@ -48,7 +48,7 @@ public class CameraPositionTests
         Vector3 oldPos = vcam.transform.position;
         followPbject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.transform.position, oldPos), 10, 0.01f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
     }
 
     [UnityTest]
@@ -63,7 +63,7 @@ public class CameraPositionTests
         Vector3 oldPos = vcam.transform.position;
         followPbject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.transform.position, oldPos), 10, 0.01f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
     }
 
     [UnityTest]
@@ -74,7 +74,7 @@ public class CameraPositionTests
         Vector3 oldPos = vcam.transform.position;
         followPbject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.transform.position, oldPos), 10, 0.01f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
     }
 
     [UnityTest]
@@ -89,7 +89,7 @@ public class CameraPositionTests
         Vector3 oldPos = vcam.transform.position;
         followPbject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.transform.position, oldPos), 10, 0.01f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
     }
 
     [UnityTest]
@@ -100,7 +100,7 @@ public class CameraPositionTests
         Vector3 oldPos = vcam.transform.position;
         followPbject.transform.position += new Vector3(2, 2, 2);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.transform.position, oldPos), 0, 0.01f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 0, 0.01f);
     }
 
     [UnityTest]
@@ -115,7 +115,7 @@ public class CameraPositionTests
         Vector3 oldPos = vcam.transform.position;
         followPbject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.transform.position, oldPos), 10, 0.01f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
     }
 
 }
