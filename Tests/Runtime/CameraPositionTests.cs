@@ -8,7 +8,7 @@ public class CameraPositionTests
 {
     private Camera cam;
     private CinemachineVirtualCamera vcam;
-    private GameObject followPbject; 
+    private GameObject followObject; 
 
     [SetUp]
     public void Setup()
@@ -19,7 +19,7 @@ public class CameraPositionTests
         var vcamHolder = new GameObject("CM Vcam");
         vcam = vcamHolder.AddComponent<CinemachineVirtualCamera>();
         vcam.Priority = 100;
-        followPbject = new GameObject("Follow Object");
+        followObject = new GameObject("Follow Object");
     }
 
     [TearDown]
@@ -33,22 +33,21 @@ public class CameraPositionTests
     [UnityTest]
     public IEnumerator DoNothing()
     {
-        vcam.Follow = followPbject.transform;
+        vcam.Follow = followObject.transform;
         Vector3 oldPos = vcam.transform.position;
-        followPbject.transform.position += new Vector3(2, 2, 2);
+        followObject.transform.position += new Vector3(2, 2, 2);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 0, 0.01f);
+        Assert.IsTrue(vcam.State.FinalPosition == oldPos);
     }
 
     [UnityTest]
     public IEnumerator ThirdPerson()
     {
         vcam.AddCinemachineComponent<Cinemachine3rdPersonFollow>();
-        vcam.Follow = followPbject.transform;
-        Vector3 oldPos = vcam.transform.position;
-        followPbject.transform.position += new Vector3(10, 0, 0);
-        yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
+        vcam.Follow = followObject.transform;
+        followObject.transform.position += new Vector3(10, 0, 0);
+        yield return null; 
+        Assert.IsTrue(vcam.State.FinalPosition == followObject.transform.position);
     }
 
     [UnityTest]
@@ -58,23 +57,21 @@ public class CameraPositionTests
         component.m_XDamping = 0;
         component.m_YDamping = 0;
         component.m_ZDamping = 0;
-        component.m_CameraDistance = 0;
-        vcam.Follow = followPbject.transform;
-        Vector3 oldPos = vcam.transform.position;
-        followPbject.transform.position += new Vector3(10, 0, 0);
+        component.m_CameraDistance = 1f;
+        vcam.Follow = followObject.transform;
+        followObject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
+        Assert.IsTrue(vcam.State.FinalPosition == new Vector3(10, 0, -component.m_CameraDistance));
     }
 
     [UnityTest]
     public IEnumerator HardLockToTarget()
     {
         vcam.AddCinemachineComponent<CinemachineHardLockToTarget>();
-        vcam.Follow = followPbject.transform;
-        Vector3 oldPos = vcam.transform.position;
-        followPbject.transform.position += new Vector3(10, 0, 0);
+        vcam.Follow = followObject.transform;
+        followObject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
+        Assert.IsTrue(vcam.State.FinalPosition == followObject.transform.position);
     }
 
     [UnityTest]
@@ -85,22 +82,21 @@ public class CameraPositionTests
         component.m_YDamping = 0;
         component.m_ZDamping = 0;
         component.m_FollowOffset = new Vector3(0, 0, 0);
-        vcam.Follow = followPbject.transform;
-        Vector3 oldPos = vcam.transform.position;
-        followPbject.transform.position += new Vector3(10, 0, 0);
+        vcam.Follow = followObject.transform;
+        followObject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
+        Assert.IsTrue(vcam.State.FinalPosition == followObject.transform.position);
     }
 
     [UnityTest]
     public IEnumerator TrackedDolly()
     {
         vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
-        vcam.Follow = followPbject.transform;
+        vcam.Follow = followObject.transform;
         Vector3 oldPos = vcam.transform.position;
-        followPbject.transform.position += new Vector3(2, 2, 2);
+        followObject.transform.position += new Vector3(2, 2, 2);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 0, 0.01f);
+        Assert.IsTrue(vcam.State.FinalPosition == oldPos);
     }
 
     [UnityTest]
@@ -111,11 +107,10 @@ public class CameraPositionTests
         component.m_YDamping = 0;
         component.m_ZDamping = 0;
         component.m_FollowOffset = new Vector3(0, 0, 0);
-        vcam.Follow = followPbject.transform;
-        Vector3 oldPos = vcam.transform.position;
-        followPbject.transform.position += new Vector3(10, 0, 0);
+        vcam.Follow = followObject.transform;
+        followObject.transform.position += new Vector3(10, 0, 0);
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(vcam.State.FinalPosition, oldPos), 10, 0.01f);
+        Assert.IsTrue(vcam.State.FinalPosition == followObject.transform.position);
     }
 
 }
