@@ -354,7 +354,7 @@ namespace Cinemachine
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
             private Collider2D m_boundingShape2D;
-            private List<ConfinerOven.ConfinerState> m_confinerStates;
+            private List<ConfinerOven.ClipperPolygonSolution> m_confinerStates;
 
             /// <summary>
             /// Invalidates shapeCache

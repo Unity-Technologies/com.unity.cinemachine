@@ -14,6 +14,7 @@ namespace Cinemachine
     /// </summary>
     internal class ConfinerOven
     {
+        private const int FloatToIntScaler = 10000000; // same as in Physics2D
         public class ConfinerState
         {
             public List<ShrinkablePolygon> m_Polygons;
@@ -23,7 +24,6 @@ namespace Cinemachine
             public float m_AspectRatio;
             public float m_CenterX; // used for aspect ratio scaling
 
-            private const int FloatToIntScaler = 10000000; // same as in Physics2D
             private const float Epsilon = UnityVectorExtensions.Epsilon;
 
             /// <summary>
@@ -127,6 +127,37 @@ namespace Cinemachine
         public float SqrPolygonDiagonal { get; private set; }
         public float MaxFrustumHeight { get; private set; }
 
+        internal struct ClipperPolygonSolution
+        {
+            public List<List<IntPoint>> solution;
+            public float frustumHeight;
+            
+            public static bool StateChanged(in List<List<IntPoint>> left, in ClipperPolygonSolution right)
+            {
+                if (left.Count != right.solution.Count)
+                {
+                    return true;
+                }
+                else
+                {
+                    for (var i = 0; i < left.Count; i++)
+                    {
+                        if (left[i].Count != right.solution[i].Count)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+        private ClipperPolygonSolution nullClipperPolygonSolution = new ClipperPolygonSolution
+        {
+            solution = null,
+            frustumHeight = -1f,
+        };
+
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
         /// The algorithm is divide and conquer. It iteratively shrinks down the input 
@@ -135,7 +166,7 @@ namespace Cinemachine
         /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public List<ConfinerState> BakeConfiner(
+        public List<ClipperPolygonSolution> BakeConfiner(
             in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
 #if CINEMACHINE_EXPERIMENTAL_CONFINER2D
@@ -162,77 +193,121 @@ namespace Cinemachine
 
             // Scale the polygon's X values to neutralize aspect ratio
             ScaleX(inputPath, polygonRect.center.x, 1 / aspectRatio);
+            
+            // Initialize clipper
+            List<List<IntPoint>> clipperInput = new List<List<IntPoint>>(inputPath.Count);
+            for (var i = 0; i < inputPath.Count; ++i)
+            {
+                var srcPath = inputPath[i];
+                int numPoints = srcPath.Count;
+                var path = new List<IntPoint>(numPoints);
+                for (int j = 0; j < numPoints; ++j)
+                    path.Add(new IntPoint(srcPath[j].x * FloatToIntScaler, srcPath[j].y * FloatToIntScaler));
+                clipperInput.Add(path);
+            }
 
-            // Initial polygon
-            List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>(100);
-            shrinkablePolygons.Add(CreateShrinkablePolygons(inputPath));
+            var offsetter = new ClipperOffset();
+            offsetter.AddPaths(clipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
+
+            List<ClipperPolygonSolution> solutions = new List<ClipperPolygonSolution>();
+            List<List<IntPoint>> solution = new List<List<IntPoint>>();
+            offsetter.Execute(ref solution, 0);
+            solutions.Add(new ClipperPolygonSolution
+            {
+                solution = solution,
+                frustumHeight = 0,
+            });
+
+            // // Initial polygon
+            // List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>(100);
+            // shrinkablePolygons.Add(CreateShrinkablePolygons(inputPath));
 
             // Restore the aspect ratio
-            ScaleX(inputPath, polygonRect.center.x, aspectRatio);
+            // ScaleX(inputPath, polygonRect.center.x, aspectRatio);
 
-            for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
-                shrinkablePolygons[0][i].ComputeShrinkDirections();
+            // for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
+            //     shrinkablePolygons[0][i].ComputeShrinkDirections();
 
             // Binary search for next non-lerpable state
-            List<ShrinkablePolygon> rightCandidate = null;
-            List<ShrinkablePolygon> leftCandidate = shrinkablePolygons[0];
+            // List<ShrinkablePolygon> rightCandidate = null;
+            // List<ShrinkablePolygon> leftCandidate = shrinkablePolygons[0];
+            ClipperPolygonSolution rightCandidate = nullClipperPolygonSolution;
+            ClipperPolygonSolution leftCandidate = new ClipperPolygonSolution
+            {
+                solution = solution,
+                frustumHeight = 0,
+            };
+            float currentFrustumHeight = 0;
+            
             float maxStepSize = polygonHalfHeight / 4f;
             float stepSize = maxStepSize;
             bool shrinking = true;
             while (shrinking)
             {
-#if true
-                Debug.Log($"States = {shrinkablePolygons.Count}, "
-                    + $"Frustum height = {leftCandidate[0].m_FrustumHeight}, stepSize = {stepSize}");
-#endif
-                if (shrinkablePolygons.Count > 1000)
-                {
-                    Debug.LogError("Exited with iteration count limit: " + shrinkablePolygons.Count);
-                    break;
-                }
+// #if true
+//                 Debug.Log($"States = {shrinkablePolygons.Count}, "
+//                     + $"Frustum height = {leftCandidate[0].m_FrustumHeight}, stepSize = {stepSize}");
+// #endif
+                // if (shrinkablePolygons.Count > 1000)
+                // {
+                //     Debug.LogError("Exited with iteration count limit: " + shrinkablePolygons.Count);
+                //     break;
+                // }
 
                 bool stateChangeFound = false;
-                var numPaths = leftCandidate.Count;
-                var candidate = new List<ShrinkablePolygon>(numPaths);
-                for (int pathIndex = 0; pathIndex < numPaths; ++pathIndex)
-                {
-                    ShrinkablePolygon poly = leftCandidate[pathIndex].DeepCopy();
+                var numPaths = leftCandidate.solution.Count;
+                // var candidate = new List<ShrinkablePolygon>(numPaths);
+                var candidate = new List<List<IntPoint>>(numPaths);
+                // for (int pathIndex = 0; pathIndex < numPaths; ++pathIndex)
+                // {
+                    // ShrinkablePolygon poly = leftCandidate[pathIndex].DeepCopy();
 
-                    stepSize = Mathf.Min(stepSize, maxFrustumHeight - poly.m_FrustumHeight);
-                    if (poly.Shrink(stepSize, shrinkToPoint))
-                    {
-                        // don't simplify at small frustumHeight, because some points at 
-                        // start may be close together that are important
-                        if (poly.m_FrustumHeight > 0.1f) 
-                        {
-                            if (poly.Simplify(k_MinStepSize))
-                            {
-                                poly.ComputeShrinkDirections();
-                                stateChangeFound = true;
-                            }
-                        }
-                        if (!stateChangeFound)
-                        {
-                            if (poly.DoesSelfIntersect() || 
-                                Mathf.Sign(poly.m_Area) != Mathf.Sign(leftCandidate[pathIndex].m_Area))
-                            {
-                                stateChangeFound = true;
-                            }
-                        }
-                    }
+                    stepSize = Mathf.Min(stepSize, maxFrustumHeight - leftCandidate.frustumHeight);
+                    currentFrustumHeight = leftCandidate.frustumHeight + stepSize;
+                    offsetter.Execute(ref candidate, currentFrustumHeight * FloatToIntScaler);
+                    stateChangeFound = ClipperPolygonSolution.StateChanged(in candidate, in leftCandidate);
+                    // if (poly.Shrink(stepSize, shrinkToPoint))
+                    // {
+                    //     // don't simplify at small frustumHeight, because some points at 
+                    //     // start may be close together that are important
+                    //     if (poly.m_FrustumHeight > 0.1f) 
+                    //     {
+                    //         if (poly.Simplify(k_MinStepSize))
+                    //         {
+                    //             poly.ComputeShrinkDirections();
+                    //             stateChangeFound = true;
+                    //         }
+                    //     }
+                    //     if (!stateChangeFound)
+                    //     {
+                    //         if (poly.DoesSelfIntersect() || 
+                    //             Mathf.Sign(poly.m_Area) != Mathf.Sign(leftCandidate[pathIndex].m_Area))
+                    //         {
+                    //             stateChangeFound = true;
+                    //         }
+                    //     }
+                    // }
                         
-                    candidate.Add(poly);
-                }
+                //     candidate.Add(poly);
+                // }
 
                 if (stateChangeFound)
                 {
-                    rightCandidate = candidate;
+                    rightCandidate = new ClipperPolygonSolution
+                    {
+                        solution = candidate,
+                        frustumHeight = currentFrustumHeight,
+                    };
                     stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
                 }
                 else
                 {
-                    leftCandidate = candidate;
-                    if (rightCandidate != null)
+                    leftCandidate = new ClipperPolygonSolution
+                    {
+                        solution = candidate,
+                        frustumHeight = currentFrustumHeight,
+                    };
+                    if (rightCandidate.solution != null)
                     {
                         // if we have not found right yet, then we don't need to decrease stepsize
                         stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
@@ -241,37 +316,47 @@ namespace Cinemachine
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
                 // then we have located a state change point
-                if (rightCandidate != null && stepSize <= k_MinStepSize)
+                if (rightCandidate.solution != null && stepSize <= k_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
-                    shrinkablePolygons.Add(leftCandidate);
-
-                    // Split the state-changed poly where the path self-intersects
-                    var splitPoly = new List<ShrinkablePolygon>();
-                    for (int i = 0; i < rightCandidate.Count; ++i)
+                    // shrinkablePolygons.Add(leftCandidate);
+                    solutions.Add(leftCandidate);
+                    var frustumHeightJustBeforeRight = rightCandidate.frustumHeight - (k_MinStepSize / 2f);
+                    offsetter.Execute(ref candidate, frustumHeightJustBeforeRight * FloatToIntScaler);
+                    solutions.Add(new ClipperPolygonSolution
                     {
-                        ShrinkablePolygon.DivideAlongIntersections(rightCandidate[i], ref s_subPolygonCache);
-                        for (int subpoly = 0; subpoly < s_subPolygonCache.Count; ++subpoly)
-                        {
-                            s_subPolygonCache[subpoly].ComputeShrinkDirections();
-                        }
-                        splitPoly.AddRange(s_subPolygonCache);
-                    }
+                        solution = candidate,
+                        frustumHeight = frustumHeightJustBeforeRight,
+                    });
+                    solutions.Add(rightCandidate);
 
-                    // Reduced-functionality version does not shrink beyond first self-intersection
-                    if (stopAtFirstIntersection && splitPoly.Count > rightCandidate.Count)
-                        break;
-
-                    shrinkablePolygons.Add(splitPoly);
-                    leftCandidate = splitPoly;
-                    rightCandidate = null;
+                    // // Split the state-changed poly where the path self-intersects
+                    // var splitPoly = new List<ShrinkablePolygon>();
+                    // for (int i = 0; i < rightCandidate.solution.Count; ++i)
+                    // {
+                    //     ShrinkablePolygon.DivideAlongIntersections(rightCandidate[i], ref s_subPolygonCache);
+                    //     for (int subpoly = 0; subpoly < s_subPolygonCache.Count; ++subpoly)
+                    //     {
+                    //         s_subPolygonCache[subpoly].ComputeShrinkDirections();
+                    //     }
+                    //     splitPoly.AddRange(s_subPolygonCache);
+                    // }
+                    //
+                    // // Reduced-functionality version does not shrink beyond first self-intersection
+                    // if (stopAtFirstIntersection && splitPoly.Count > rightCandidate.Count)
+                    //     break;
+                    //
+                    // shrinkablePolygons.Add(splitPoly);
+                    leftCandidate = rightCandidate;
+                    rightCandidate = nullClipperPolygonSolution;
                     
                     // Back to max step.  GML todo: this can be smaller now
                     stepSize = maxStepSize;
                 }
-                else if (rightCandidate == null && leftCandidate[0].m_FrustumHeight >= maxFrustumHeight)
+                else if (rightCandidate.solution == null && leftCandidate.frustumHeight >= maxFrustumHeight)
                 {
-                    shrinkablePolygons.Add(leftCandidate);
+                    solutions.Add(leftCandidate);
+                    // shrinkablePolygons.Add(leftCandidate);
                     break; // stop shrinking, because we are at the bound
                 }
                 else
@@ -279,46 +364,46 @@ namespace Cinemachine
                     continue; // keep searching for a closer left and right or a non-null right
                 }
 
-                // TODO: could move this up into the if part
-                shrinking = false;
-                for (int i = 0; i < leftCandidate.Count; ++i)
-                {
-                    var polygon = leftCandidate[i];
-                    if (polygon.IsShrinkable())
-                    {
-                        shrinking = true;
-                        break;
-                    }
-                }
+                // no need to do this. We'll go until theoritical max
+                // // TODO: could move this up into the if part
+                // shrinking = false;
+                // for (int i = 0; i < leftCandidate.Count; ++i)
+                // {
+                //     var polygon = leftCandidate[i];
+                //     if (polygon.IsShrinkable())
+                //     {
+                //         shrinking = true;
+                //         break;
+                //     }
+                // }
             }
 
             // Cache the max confinable view size
-            MaxFrustumHeight = shrinkablePolygons.Count == 0 
-                ? 0 : shrinkablePolygons[shrinkablePolygons.Count-1][0].m_FrustumHeight;
+            MaxFrustumHeight = solutions.Count == 0 ? 0 : solutions[solutions.Count-1].frustumHeight;
 
             // Generate the confiner states
-            m_confinerStates.Clear();
-            if (m_confinerStates.Capacity < shrinkablePolygons.Count)
-                m_confinerStates.Capacity = shrinkablePolygons.Count;
-            for (int i = 0; i < shrinkablePolygons.Count; ++i)
-            {
-                float stateSum = 0;
-                for (int j = 0; j < shrinkablePolygons[i].Count; ++j)
-                {
-                    stateSum += shrinkablePolygons[i][j].m_State;
-                }
-                
-                m_confinerStates.Add(new ConfinerState
-                {
-                    m_FrustumHeight = shrinkablePolygons[i][0].m_FrustumHeight,
-                    m_Polygons = shrinkablePolygons[i],
-                    m_State = stateSum,
-                    m_AspectRatio = aspectRatio,
-                    m_CenterX = polygonRect.center.x
-                });
-            }
+            // m_confinerStates.Clear();
+            // if (m_confinerStates.Capacity < shrinkablePolygons.Count)
+            //     m_confinerStates.Capacity = shrinkablePolygons.Count;
+            // for (int i = 0; i < shrinkablePolygons.Count; ++i)
+            // {
+            //     float stateSum = 0;
+            //     for (int j = 0; j < shrinkablePolygons[i].Count; ++j)
+            //     {
+            //         stateSum += shrinkablePolygons[i][j].m_State;
+            //     }
+            //     
+            //     m_confinerStates.Add(new ConfinerState
+            //     {
+            //         m_FrustumHeight = shrinkablePolygons[i][0].m_FrustumHeight,
+            //         m_Polygons = shrinkablePolygons[i],
+            //         m_State = stateSum,
+            //         m_AspectRatio = aspectRatio,
+            //         m_CenterX = polygonRect.center.x
+            //     });
+            // }
 
-            return m_confinerStates;
+            return solutions;
         }
 
         private static List<ShrinkablePolygon> s_subPolygonCache = new List<ShrinkablePolygon>();
