@@ -128,7 +128,7 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(
-                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight);
+                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight, aspectRatio);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
@@ -321,7 +321,7 @@ namespace Cinemachine
                 /// </summary>
                 public void ValidateCache(
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float frustumHeight)
+                    in float frustumHeight, in float aspectRatio)
                 {
                     if (!confinerStateChanged && m_Path != null && 
                         Math.Abs(frustumHeight - m_frustumHeight) < UnityVectorExtensions.Epsilon)
@@ -329,8 +329,27 @@ namespace Cinemachine
                         return;
                     }
             
-                    var confinerCache = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                    confinerCache.ConvertToPath(confinerBaker.MaxFrustumHeight, out m_Path, out m_PathHasBone);
+                    var clipperSolution = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
+                    m_Path = new List<List<Vector2>>(clipperSolution.m_Solution.Count);
+                    foreach (var cPoly in clipperSolution.m_Solution)
+                    {
+                        var pathSegment = new List<Vector2>(cPoly.Count);
+                        for (int i = 0; i < cPoly.Count; i++)
+                        {
+                            var p = new Vector2(
+                                cPoly[i].X / (float) ConfinerOven.FloatToIntScaler, 
+                                cPoly[i].Y / (float) ConfinerOven.FloatToIntScaler);
+                            
+                            // Restore the original aspect ratio
+                            p.x = (p.x - clipperSolution.m_CenterX) * aspectRatio + clipperSolution.m_CenterX;
+                            pathSegment.Add(p);
+                        }
+                    
+                        m_Path.Add(pathSegment);
+                    }
+                    
+                    // m_PathHasBone -> if it is not in the first 2 frustum height 0 - x, then it is bones
+                    // clipperSolution.ConvertToPath(confinerBaker.MaxFrustumHeight, out m_Path, out m_PathHasBone);
                     m_frustumHeight = frustumHeight;
                 }
             }

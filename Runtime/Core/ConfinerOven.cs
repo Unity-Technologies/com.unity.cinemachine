@@ -14,113 +14,114 @@ namespace Cinemachine
     /// </summary>
     internal class ConfinerOven
     {
-        private const int FloatToIntScaler = 10000000; // same as in Physics2D
-        public class ConfinerState
-        {
-            public List<ShrinkablePolygon> m_Polygons;
-            public float m_FrustumHeight;
-            public float m_State;
+        internal const int FloatToIntScaler = 10000000; // same as in Physics2D
+        // public class ConfinerState
+        // {
+        //     // public List<ShrinkablePolygon> m_Polygons;
+        //     public float m_FrustumHeight;
+        //     public float m_State;
+        //
+        //     public float m_AspectRatio;
+        //     public float m_CenterX; // used for aspect ratio scaling
+        //
+        //     private const float Epsilon = UnityVectorExtensions.Epsilon;
+        //
+        //     /// <summary>
+        //     /// Converts shrinkable polygons into a simple path made of 2D points.
+        //     /// </summary>
+        //     /// <param name="maxCachedFrustumHeight">Maximum cached frustum height.</param>
+        //     /// <param name="path">Resulting path.</param>
+        //     /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
+        //     public void ConvertToPath(
+        //         in float maxCachedFrustumHeight,
+        //         out List<List<Vector2>> path, out bool hasIntersections)
+        //     {
+        //         hasIntersections = maxCachedFrustumHeight < m_FrustumHeight;
+        //         // convert shrinkable polygons points to int based points for Clipper
+        //         List<List<IntPoint>> clip = new List<List<IntPoint>>(m_Polygons.Count);
+        //         int index = 0;
+        //         for (var polyIndex = 0; polyIndex < m_Polygons.Count; polyIndex++)
+        //         {
+        //             var polygon = m_Polygons[polyIndex];
+        //             clip.Add(new List<IntPoint>(polygon.m_Points.Count));
+        //             foreach (var point in polygon.m_Points)
+        //             {
+        //                 clip[index].Add(new IntPoint(point.m_Position.x * FloatToIntScaler,
+        //                     point.m_Position.y * FloatToIntScaler));
+        //             }
+        //             index++;
+        //
+        //             // add a thin line to each intersection point, thus connecting disconnected polygons
+        //             foreach (var intersectionPoint in polygon.m_IntersectionPoints)
+        //             {
+        //                 hasIntersections = true;
+        //                 AddConnectingSegment(clip, intersectionPoint, polygon.ClosestPolygonPoint(intersectionPoint));
+        //                 ++index;
+        //             }
+        //         
+        //             // Add twigs to ensure that all original points can be seen
+        //             foreach (var point in polygon.m_Points)
+        //             {
+        //                 if (!point.m_OriginalPosition.IsNaN())
+        //                 {
+        //                     Vector2 delta = point.m_Position - point.m_OriginalPosition;
+        //                     if (Mathf.Abs(delta.x) > m_FrustumHeight || Mathf.Abs(delta.y) > m_FrustumHeight)
+        //                     {
+        //                         delta = delta.SquareNormalize() * m_FrustumHeight;
+        //                         AddConnectingSegment(clip, point.m_Position, point.m_OriginalPosition + delta);
+        //                         ++index;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //
+        //         // Merge polygons with Clipper
+        //         List<List<IntPoint>> solution = new List<List<IntPoint>>();
+        //         Clipper c = new Clipper();
+        //         c.AddPaths(clip, PolyType.ptClip, true);
+        //         c.Execute(ClipType.ctUnion, solution, 
+        //             PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+        //     
+        //         // Convert result to float points
+        //         path = new List<List<Vector2>>(solution.Count);
+        //         foreach (var polySegment in solution)
+        //         {
+        //             var pathSegment = new List<Vector2>(polySegment.Count);
+        //             for (index = 0; index < polySegment.Count; index++)
+        //             {
+        //                 var p_int = polySegment[index];
+        //                 var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
+        //                 // Restore the original aspect ratio
+        //                 p.x = ((p.x - m_CenterX) * m_AspectRatio) + m_CenterX;
+        //                 pathSegment.Add(p);
+        //             }
+        //
+        //             path.Add(pathSegment);
+        //         }
+        //     }
+        //
+        //     private void AddConnectingSegment(List<List<IntPoint>> clip, Vector2 p1, Vector2 p2)
+        //     {
+        //         Vector2 tangent = (p2 - p1).normalized * Epsilon;
+        //         Vector2 normal = new Vector2(tangent.y, -tangent.x);
+        //
+        //         Vector2 pA = p2 + normal + tangent;
+        //         Vector2 pB = p1 + normal - tangent;
+        //         Vector3 pC = p1 - normal - tangent;
+        //         Vector3 pD = p2 - normal + tangent;
+        //
+        //         clip.Add(new List<IntPoint>(4)
+        //         {
+        //             new IntPoint(pA.x * FloatToIntScaler, pA.y * FloatToIntScaler),
+        //             new IntPoint(pB.x * FloatToIntScaler, pB.y * FloatToIntScaler),
+        //             new IntPoint(pC.x * FloatToIntScaler, pC.y * FloatToIntScaler),
+        //             new IntPoint(pD.x * FloatToIntScaler, pD.y * FloatToIntScaler)
+        //         });
+        //     }
+        // }
 
-            public float m_AspectRatio;
-            public float m_CenterX; // used for aspect ratio scaling
-
-            private const float Epsilon = UnityVectorExtensions.Epsilon;
-
-            /// <summary>
-            /// Converts shrinkable polygons into a simple path made of 2D points.
-            /// </summary>
-            /// <param name="maxCachedFrustumHeight">Maximum cached frustum height.</param>
-            /// <param name="path">Resulting path.</param>
-            /// <param name="hasIntersections">True, if the polygon has intersections. False, otherwise.</param>
-            public void ConvertToPath(
-                in float maxCachedFrustumHeight,
-                out List<List<Vector2>> path, out bool hasIntersections)
-            {
-                hasIntersections = maxCachedFrustumHeight < m_FrustumHeight;
-                // convert shrinkable polygons points to int based points for Clipper
-                List<List<IntPoint>> clip = new List<List<IntPoint>>(m_Polygons.Count);
-                int index = 0;
-                for (var polyIndex = 0; polyIndex < m_Polygons.Count; polyIndex++)
-                {
-                    var polygon = m_Polygons[polyIndex];
-                    clip.Add(new List<IntPoint>(polygon.m_Points.Count));
-                    foreach (var point in polygon.m_Points)
-                    {
-                        clip[index].Add(new IntPoint(point.m_Position.x * FloatToIntScaler,
-                            point.m_Position.y * FloatToIntScaler));
-                    }
-                    index++;
-
-                    // add a thin line to each intersection point, thus connecting disconnected polygons
-                    foreach (var intersectionPoint in polygon.m_IntersectionPoints)
-                    {
-                        hasIntersections = true;
-                        AddConnectingSegment(clip, intersectionPoint, polygon.ClosestPolygonPoint(intersectionPoint));
-                        ++index;
-                    }
-                
-                    // Add twigs to ensure that all original points can be seen
-                    foreach (var point in polygon.m_Points)
-                    {
-                        if (!point.m_OriginalPosition.IsNaN())
-                        {
-                            Vector2 delta = point.m_Position - point.m_OriginalPosition;
-                            if (Mathf.Abs(delta.x) > m_FrustumHeight || Mathf.Abs(delta.y) > m_FrustumHeight)
-                            {
-                                delta = delta.SquareNormalize() * m_FrustumHeight;
-                                AddConnectingSegment(clip, point.m_Position, point.m_OriginalPosition + delta);
-                                ++index;
-                            }
-                        }
-                    }
-                }
-
-                // Merge polygons with Clipper
-                List<List<IntPoint>> solution = new List<List<IntPoint>>();
-                Clipper c = new Clipper();
-                c.AddPaths(clip, PolyType.ptClip, true);
-                c.Execute(ClipType.ctUnion, solution, 
-                    PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-            
-                // Convert result to float points
-                path = new List<List<Vector2>>(solution.Count);
-                foreach (var polySegment in solution)
-                {
-                    var pathSegment = new List<Vector2>(polySegment.Count);
-                    for (index = 0; index < polySegment.Count; index++)
-                    {
-                        var p_int = polySegment[index];
-                        var p = new Vector2(p_int.X / (float) FloatToIntScaler, p_int.Y / (float) FloatToIntScaler);
-                        // Restore the original aspect ratio
-                        p.x = ((p.x - m_CenterX) * m_AspectRatio) + m_CenterX;
-                        pathSegment.Add(p);
-                    }
-
-                    path.Add(pathSegment);
-                }
-            }
-
-            private void AddConnectingSegment(List<List<IntPoint>> clip, Vector2 p1, Vector2 p2)
-            {
-                Vector2 tangent = (p2 - p1).normalized * Epsilon;
-                Vector2 normal = new Vector2(tangent.y, -tangent.x);
-
-                Vector2 pA = p2 + normal + tangent;
-                Vector2 pB = p1 + normal - tangent;
-                Vector3 pC = p1 - normal - tangent;
-                Vector3 pD = p2 - normal + tangent;
-
-                clip.Add(new List<IntPoint>(4)
-                {
-                    new IntPoint(pA.x * FloatToIntScaler, pA.y * FloatToIntScaler),
-                    new IntPoint(pB.x * FloatToIntScaler, pB.y * FloatToIntScaler),
-                    new IntPoint(pC.x * FloatToIntScaler, pC.y * FloatToIntScaler),
-                    new IntPoint(pD.x * FloatToIntScaler, pD.y * FloatToIntScaler)
-                });
-            }
-        }
-
-        private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
+        // private List<ConfinerState> m_confinerStates = new List<ConfinerState>();
+        private List<ClipperPolygonSolution> solutions = new List<ClipperPolygonSolution>();
 
         internal const float k_MinStepSize = 0.005f; // internal, because Tests access it
 
@@ -129,12 +130,13 @@ namespace Cinemachine
 
         internal struct ClipperPolygonSolution
         {
-            public List<List<IntPoint>> solution;
-            public float frustumHeight;
+            public List<List<IntPoint>> m_Solution;
+            public float m_FrustumHeight;
+            public float m_CenterX; // used for aspect ratio scaling
             
             public static bool StateChanged(in List<List<IntPoint>> left, in ClipperPolygonSolution right)
             {
-                if (left.Count != right.solution.Count)
+                if (left.Count != right.m_Solution.Count)
                 {
                     return true;
                 }
@@ -142,7 +144,7 @@ namespace Cinemachine
                 {
                     for (var i = 0; i < left.Count; i++)
                     {
-                        if (left[i].Count != right.solution[i].Count)
+                        if (left[i].Count != right.m_Solution[i].Count)
                         {
                             return true;
                         }
@@ -154,8 +156,8 @@ namespace Cinemachine
         }
         private ClipperPolygonSolution nullClipperPolygonSolution = new ClipperPolygonSolution
         {
-            solution = null,
-            frustumHeight = -1f,
+            m_Solution = null,
+            m_FrustumHeight = -1f,
         };
 
         /// <summary>
@@ -205,25 +207,26 @@ namespace Cinemachine
                     path.Add(new IntPoint(srcPath[j].x * FloatToIntScaler, srcPath[j].y * FloatToIntScaler));
                 clipperInput.Add(path);
             }
+            
+            // Restore the aspect ratio
+            ScaleX(inputPath, polygonRect.center.x, aspectRatio);
 
             var offsetter = new ClipperOffset();
             offsetter.AddPaths(clipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
 
-            List<ClipperPolygonSolution> solutions = new List<ClipperPolygonSolution>();
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, 0);
+            solutions.Clear();
             solutions.Add(new ClipperPolygonSolution
             {
-                solution = solution,
-                frustumHeight = 0,
+                m_Solution = solution,
+                m_FrustumHeight = 0,
             });
 
             // // Initial polygon
             // List<List<ShrinkablePolygon>> shrinkablePolygons = new List<List<ShrinkablePolygon>>(100);
             // shrinkablePolygons.Add(CreateShrinkablePolygons(inputPath));
 
-            // Restore the aspect ratio
-            // ScaleX(inputPath, polygonRect.center.x, aspectRatio);
 
             // for (int i = 0; i < shrinkablePolygons[0].Count; ++i)
             //     shrinkablePolygons[0][i].ComputeShrinkDirections();
@@ -234,8 +237,8 @@ namespace Cinemachine
             ClipperPolygonSolution rightCandidate = nullClipperPolygonSolution;
             ClipperPolygonSolution leftCandidate = new ClipperPolygonSolution
             {
-                solution = solution,
-                frustumHeight = 0,
+                m_Solution = solution,
+                m_FrustumHeight = 0,
             };
             float currentFrustumHeight = 0;
             
@@ -255,16 +258,16 @@ namespace Cinemachine
                 // }
 
                 bool stateChangeFound = false;
-                var numPaths = leftCandidate.solution.Count;
+                var numPaths = leftCandidate.m_Solution.Count;
                 // var candidate = new List<ShrinkablePolygon>(numPaths);
                 var candidate = new List<List<IntPoint>>(numPaths);
                 // for (int pathIndex = 0; pathIndex < numPaths; ++pathIndex)
                 // {
                     // ShrinkablePolygon poly = leftCandidate[pathIndex].DeepCopy();
 
-                    stepSize = Mathf.Min(stepSize, maxFrustumHeight - leftCandidate.frustumHeight);
-                    currentFrustumHeight = leftCandidate.frustumHeight + stepSize;
-                    offsetter.Execute(ref candidate, currentFrustumHeight * FloatToIntScaler);
+                    stepSize = Mathf.Min(stepSize, maxFrustumHeight - leftCandidate.m_FrustumHeight);
+                    currentFrustumHeight = leftCandidate.m_FrustumHeight + stepSize;
+                    offsetter.Execute(ref candidate, -1f * currentFrustumHeight * FloatToIntScaler);
                     stateChangeFound = ClipperPolygonSolution.StateChanged(in candidate, in leftCandidate);
                     // if (poly.Shrink(stepSize, shrinkToPoint))
                     // {
@@ -295,8 +298,8 @@ namespace Cinemachine
                 {
                     rightCandidate = new ClipperPolygonSolution
                     {
-                        solution = candidate,
-                        frustumHeight = currentFrustumHeight,
+                        m_Solution = candidate,
+                        m_FrustumHeight = currentFrustumHeight,
                     };
                     stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
                 }
@@ -304,10 +307,10 @@ namespace Cinemachine
                 {
                     leftCandidate = new ClipperPolygonSolution
                     {
-                        solution = candidate,
-                        frustumHeight = currentFrustumHeight,
+                        m_Solution = candidate,
+                        m_FrustumHeight = currentFrustumHeight,
                     };
-                    if (rightCandidate.solution != null)
+                    if (rightCandidate.m_Solution != null)
                     {
                         // if we have not found right yet, then we don't need to decrease stepsize
                         stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
@@ -316,18 +319,11 @@ namespace Cinemachine
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
                 // then we have located a state change point
-                if (rightCandidate.solution != null && stepSize <= k_MinStepSize)
+                if (rightCandidate.m_Solution != null && stepSize <= k_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
                     // shrinkablePolygons.Add(leftCandidate);
                     solutions.Add(leftCandidate);
-                    var frustumHeightJustBeforeRight = rightCandidate.frustumHeight - (k_MinStepSize / 2f);
-                    offsetter.Execute(ref candidate, frustumHeightJustBeforeRight * FloatToIntScaler);
-                    solutions.Add(new ClipperPolygonSolution
-                    {
-                        solution = candidate,
-                        frustumHeight = frustumHeightJustBeforeRight,
-                    });
                     solutions.Add(rightCandidate);
 
                     // // Split the state-changed poly where the path self-intersects
@@ -353,7 +349,7 @@ namespace Cinemachine
                     // Back to max step.  GML todo: this can be smaller now
                     stepSize = maxStepSize;
                 }
-                else if (rightCandidate.solution == null && leftCandidate.frustumHeight >= maxFrustumHeight)
+                else if (rightCandidate.m_Solution == null && leftCandidate.m_FrustumHeight >= maxFrustumHeight)
                 {
                     solutions.Add(leftCandidate);
                     // shrinkablePolygons.Add(leftCandidate);
@@ -379,7 +375,7 @@ namespace Cinemachine
             }
 
             // Cache the max confinable view size
-            MaxFrustumHeight = solutions.Count == 0 ? 0 : solutions[solutions.Count-1].frustumHeight;
+            MaxFrustumHeight = solutions.Count == 0 ? 0 : solutions[solutions.Count-1].m_FrustumHeight;
 
             // Generate the confiner states
             // m_confinerStates.Clear();
@@ -406,7 +402,7 @@ namespace Cinemachine
             return solutions;
         }
 
-        private static List<ShrinkablePolygon> s_subPolygonCache = new List<ShrinkablePolygon>();
+        // private static List<ShrinkablePolygon> s_subPolygonCache = new List<ShrinkablePolygon>();
         
         private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
         {
@@ -443,88 +439,115 @@ namespace Cinemachine
         /// <summary>
         /// Creates shrinkable polygons from a list of polygons
         /// </summary>
-        public static List<ShrinkablePolygon> CreateShrinkablePolygons(in List<List<Vector2>> paths)
-        {
-            int numPaths = paths == null ? 0 : paths.Count;
-            var shrinkablePolygons = new List<ShrinkablePolygon>(numPaths);
-            for (int i = 0; i < numPaths; ++i)
-            {
-                shrinkablePolygons.Add(new ShrinkablePolygon(paths[i]));
-            }
-            return shrinkablePolygons;
-        }
+        // public static List<ShrinkablePolygon> CreateShrinkablePolygons(in List<List<Vector2>> paths)
+        // {
+        //     int numPaths = paths == null ? 0 : paths.Count;
+        //     var shrinkablePolygons = new List<ShrinkablePolygon>(numPaths);
+        //     for (int i = 0; i < numPaths; ++i)
+        //     {
+        //         shrinkablePolygons.Add(new ShrinkablePolygon(paths[i]));
+        //     }
+        //     return shrinkablePolygons;
+        // }
 
         /// <summary>
         /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
         /// </summary>
-        public ConfinerState GetConfinerAtFrustumHeight(float frustumHeight)
+        public ClipperPolygonSolution GetConfinerAtFrustumHeight(float frustumHeight)
         {
-            for (int i = m_confinerStates.Count - 1; i >= 0; --i)
+            for (int i = solutions.Count - 1; i >= 0; --i)
             {
-                if (m_confinerStates[i].m_FrustumHeight <= frustumHeight)
+                if (solutions[i].m_FrustumHeight <= frustumHeight)
                 {
-                    if (i == m_confinerStates.Count - 1)
+                    if (i == solutions.Count - 1)
                     {
-                        return m_confinerStates[i];
+                        return solutions[i];
+                    }
+
+                    if (i % 2 == 0)
+                    {
+                        return ClipperSolutionLerp(solutions[i], solutions[i+1], frustumHeight);
+                    }
+                    else
+                    {
+                        return
+                            Mathf.Abs(solutions[i].m_FrustumHeight - frustumHeight) < 
+                            Mathf.Abs(solutions[i + 1].m_FrustumHeight - frustumHeight) 
+                                ? solutions[i] 
+                                : solutions[i + 1];
                     }
                     
-                    if (Math.Abs(m_confinerStates[i].m_State - m_confinerStates[i + 1].m_State) < 
-                        ShrinkablePolygon.k_NonLerpableStateChangePenalty)
-                    {
-                        // blend between m_confinerStates with same m_State
-                        return ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
-                    }
-                    
-                    // choose m_confinerStates with windowSize closer to frustumHeight
-                    return
-                        Mathf.Abs(m_confinerStates[i].m_FrustumHeight - frustumHeight) < 
-                        Mathf.Abs(m_confinerStates[i + 1].m_FrustumHeight - frustumHeight) ? 
-                            m_confinerStates[i] : 
-                            m_confinerStates[i+1];
+                    // if (Math.Abs(solutions[i].m_State - m_confinerStates[i + 1].m_State) < 
+                    //     ShrinkablePolygon.k_NonLerpableStateChangePenalty)
+                    // {
+                    //     // blend between m_confinerStates with same m_State
+                    //     return ConfinerStateLerp(m_confinerStates[i], m_confinerStates[i+1], frustumHeight);
+                    // }
+                    //
+                    // // choose m_confinerStates with windowSize closer to frustumHeight
+                    // return
+                    //     Mathf.Abs(m_confinerStates[i].m_FrustumHeight - frustumHeight) < 
+                    //     Mathf.Abs(m_confinerStates[i + 1].m_FrustumHeight - frustumHeight) ? 
+                    //         m_confinerStates[i] : 
+                    //         m_confinerStates[i+1];
                 }
             }
 
-            return new ConfinerState();
+            return new ClipperPolygonSolution();
         }
 
         /// <summary>
         /// Linearly interpolates between ConfinerStates.
         /// </summary>
-        private ConfinerState ConfinerStateLerp(in ConfinerState left, in ConfinerState right, float frustumHeight)
+        private ClipperPolygonSolution ClipperSolutionLerp(
+            in ClipperPolygonSolution left, in ClipperPolygonSolution right, float frustumHeight)
         {
-            if (left.m_Polygons.Count != right.m_Polygons.Count)
+            if (left.m_Solution.Count != right.m_Solution.Count)
             {
-                Assert.IsTrue(false, "Error in ConfinerStateLerp - Let us know on the Cinemachine forum please!");
+                Assert.IsTrue(false, "Error in ClipperSolutionLerp - Let us know on the Cinemachine forum please!");
                 return left;
             }
-            ConfinerState result = new ConfinerState
+
+            var result = new ClipperPolygonSolution
             {
-                m_Polygons = new List<ShrinkablePolygon>(left.m_Polygons.Count),
+                m_Solution = left.m_Solution,
                 m_FrustumHeight = frustumHeight,
-                m_State = left.m_State,
-                m_AspectRatio = left.m_AspectRatio,
-                m_CenterX = left.m_CenterX
             };
+            // ConfinerState result = new ConfinerState
+            // {
+            //     m_Polygons = new List<ShrinkablePolygon>(left.m_Polygons.Count),
+            //     m_FrustumHeight = frustumHeight,
+            //     m_State = left.m_State,
+            //     m_AspectRatio = left.m_AspectRatio,
+            //     m_CenterX = left.m_CenterX
+            // };
             
             float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);
-            for (int i = 0; i < left.m_Polygons.Count; ++i)
+            for (int i = 0; i < result.m_Solution.Count; ++i)
             {
-                var r = new ShrinkablePolygon
+                for (int j = 0; j < result.m_Solution[i].Count; ++j)
                 {
-                    m_Points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.m_Polygons[i].m_Points.Count),
-                    m_FrustumHeight = frustumHeight,
-                };
-                for (int j = 0; j < left.m_Polygons[i].m_Points.Count; ++j)
-                {
-                    r.m_IntersectionPoints = left.m_Polygons[i].m_IntersectionPoints;
-                    Vector2 rightPoint = right.m_Polygons[i].ClosestPolygonPoint(left.m_Polygons[i].m_Points[j]);
-                    r.m_Points.Add(new ShrinkablePolygon.ShrinkablePoint2
-                    {
-                        m_Position = Vector2.Lerp(left.m_Polygons[i].m_Points[j].m_Position, rightPoint, lerpValue),
-                        m_OriginalPosition = left.m_Polygons[i].m_Points[j].m_OriginalPosition,
-                    });
+                    result.m_Solution[i][j] = new IntPoint(
+                        Mathf.Lerp(result.m_Solution[i][j].X, right.m_Solution[i][j].X, lerpValue),
+                        Mathf.Lerp(result.m_Solution[i][j].Y, right.m_Solution[i][j].Y, lerpValue));
                 }
-                result.m_Polygons.Add(r);   
+                
+                // var r = new ShrinkablePolygon
+                // {
+                //     m_Points = new List<ShrinkablePolygon.ShrinkablePoint2>(left.m_Polygons[i].m_Points.Count),
+                //     m_FrustumHeight = frustumHeight,
+                // };
+                // for (int j = 0; j < left.m_Polygons[i].m_Points.Count; ++j)
+                // {
+                //     r.m_IntersectionPoints = left.m_Polygons[i].m_IntersectionPoints;
+                //     Vector2 rightPoint = right.m_Polygons[i].ClosestPolygonPoint(left.m_Polygons[i].m_Points[j]);
+                //     r.m_Points.Add(new ShrinkablePolygon.ShrinkablePoint2
+                //     {
+                //         m_Position = Vector2.Lerp(left.m_Polygons[i].m_Points[j].m_Position, rightPoint, lerpValue),
+                //         m_OriginalPosition = left.m_Polygons[i].m_Points[j].m_OriginalPosition,
+                //     });
+                // }
+                // result.m_Polygons.Add(r);   
             }
             return result;
         }
