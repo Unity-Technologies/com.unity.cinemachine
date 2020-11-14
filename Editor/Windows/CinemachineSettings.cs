@@ -1,3 +1,7 @@
+#if !UNITY_2019_1_OR_NEWER
+#define CINEMACHINE_UGUI
+#endif
+
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -298,7 +302,8 @@ namespace Cinemachine.Editor
         [SettingsProvider]
         static SettingsProvider CreateProjectSettingsProvider()
         {
-            var provider = new SettingsProvider("Preferences/Cinemachine", SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
+            var provider = new SettingsProvider("Preferences/Cinemachine", 
+                SettingsScope.User, SettingsProvider.GetSearchKeywordsFromGUIContentProperties<Styles>());
             provider.guiHandler = (sarchContext) => OnGUI();
             return provider;
         }
@@ -321,10 +326,12 @@ namespace Cinemachine.Editor
                 GUILayout.EndScrollView();
             }
 
+#if CINEMACHINE_UGUI
             // Storyboard global mute
             CinemachineStoryboardMute.Enabled = EditorGUILayout.Toggle(
                 new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted."), 
                 CinemachineStoryboardMute.Enabled);
+#endif
 
             sScrollPosition = GUILayout.BeginScrollView(sScrollPosition);
 
