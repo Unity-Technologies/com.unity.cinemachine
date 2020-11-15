@@ -221,6 +221,7 @@ namespace Cinemachine
             {
                 m_Solution = solution,
                 m_FrustumHeight = 0,
+                m_CenterX = polygonRect.center.x,
             });
 
             // // Initial polygon
@@ -300,6 +301,7 @@ namespace Cinemachine
                     {
                         m_Solution = candidate,
                         m_FrustumHeight = currentFrustumHeight,
+                        m_CenterX = polygonRect.center.x,
                     };
                     stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
                 }
@@ -309,6 +311,7 @@ namespace Cinemachine
                     {
                         m_Solution = candidate,
                         m_FrustumHeight = currentFrustumHeight,
+                        m_CenterX = polygonRect.center.x,
                     };
                     if (rightCandidate.m_Solution != null)
                     {
@@ -512,6 +515,7 @@ namespace Cinemachine
             {
                 m_Solution = new List<List<IntPoint>>(left.m_Solution.Count),
                 m_FrustumHeight = frustumHeight,
+                m_CenterX = left.m_CenterX,
             };
             // ConfinerState result = new ConfinerState
             // {
