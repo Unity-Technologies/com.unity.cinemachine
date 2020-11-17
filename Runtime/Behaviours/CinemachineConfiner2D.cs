@@ -271,8 +271,8 @@ namespace Cinemachine
                     Vector2 p1 = polygon[index];
                     Vector2 p2 = polygon[(index + 1) % polygon.Count];
                     int intersectionType = UnityVectorExtensions.FindIntersection(p, camRayEndFromCamPos2D, p1, p2, 
-                        out _);
-                    if (intersectionType == 2)
+                        out var intersection);
+                    if (intersectionType == 2 && (intersection - p2).sqrMagnitude < 0.01f)
                     {
                         intersectionCount++;
                     }
@@ -288,8 +288,9 @@ namespace Cinemachine
             {
                 for (int i = 0; i < originalPath.Count; ++i)
                 {
-                    if (UnityVectorExtensions.FindIntersection(l1, l2, originalPath[i], 
-                        originalPath[(i + 1) % originalPath.Count], out _) == 2)
+                    var p4 = originalPath[(i + 1) % originalPath.Count];
+                    if (UnityVectorExtensions.FindIntersection(l1, l2, originalPath[i], p4, 
+                        out var intersection) == 2 && (intersection - p4).sqrMagnitude < 0.01f)
                     {
                         return true;
                     }

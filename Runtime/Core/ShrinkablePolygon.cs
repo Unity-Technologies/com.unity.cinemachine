@@ -469,10 +469,10 @@ namespace Cinemachine
                     for (int i = 0; i < m_Points.Count; ++i)
                     {
                         var mPoint = m_Points[i];
-                        
+
                         Vector2 direction = center - mPoint.m_Position;
                         mPoint.m_ShrinkDirection = direction.SquareNormalize();
-                        
+
                         m_Points[i] = mPoint;
                     }
                 }
@@ -685,13 +685,13 @@ namespace Cinemachine
                         shrinkablePolygon.m_Points[j].m_Position, shrinkablePolygon.m_Points[nextJ].m_Position,
                         out Vector2 intersection);
 
-                    if (intersectionType == 2 && intersection.sqrMagnitude >= Vector2.positiveInfinity.sqrMagnitude)
+                    if (intersectionType > 2)
                     {
                         // parallel lines so no need to divide.
                         shrinkablePolygon.m_State += k_NonLerpableStateChangePenalty;
                         return true; // subPolygons has nice intersections
                     }
-                    if (intersectionType == 2) // so we divide g into g1 and g2.
+                    if (intersectionType == 2 && (intersection - shrinkablePolygon.m_Points[nextJ].m_Position).sqrMagnitude < 0.01f) // so we divide g into g1 and g2.
                     {
                         var g1 = new ShrinkablePolygon();
                         {

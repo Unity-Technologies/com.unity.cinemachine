@@ -86,54 +86,88 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>
-        /// Calculates the intersection point defined by line_1 [p1, p2], and line_2 [p3, p4).
-        /// Meaning of brackets:
-        /// <list type="bullet">
-        /// <item><description> If line_1 intersects line_2 at exactly p4, then segments do not intersect, but lines do.</description></item>
-        /// <item><description> If line_1 intersects line_2 at exactly p3, then segments intersect.</description></item>
-        /// </list>
-        /// <para>Returns intersection type (0 = no intersection, 1 = lines intersect, 2 = segments intersect).</para>
+        /// Calculates the intersection point defined by line_1 [p1, p2], and line_2 [q1, q2].
         /// </summary>
         /// <param name="p1">line_1 is defined by (p1, p2)</param>
         /// <param name="p2">line_1 is defined by (p1, p2)</param>
-        /// <param name="p3">line_2 is defined by (p3, p4)</param>
-        /// <param name="p4">line_2 is defined by (p3, p4)</param>
-        /// <param name="intersection">If lines intersect, then this will hold the intersection point. Otherwise, it will be Vector2.positiveInfinity.</param>
-        /// <returns>0 = no intersection, 1 = lines intersect, 2 = segments intersect.</returns>
-        public static int FindIntersection(in Vector2 p1, in Vector2 p2, in Vector2 p3, in Vector2 p4, 
+        /// <param name="q1">line_2 is defined by (q1, q2)</param>
+        /// <param name="q2">line_2 is defined by (q1, q2)</param>
+        /// <param name="intersection">If lines intersect at a single point, 
+        /// then this will hold the intersection point. 
+        /// Otherwise, it will be Vector2.positiveInfinity.</param>
+        /// <returns>
+        ///     0 = no intersection, 
+        ///     1 = lines intersect, 
+        ///     2 = segments intersect, 
+        ///     3 = lines are colinear, segments do not touch, 
+        ///     4 = lines are colinear, segments touch (at one or at multiple points)
+        /// </returns>
+        public static int FindIntersection(
+            in Vector2 p1, in Vector2 p2, in Vector2 q1, in Vector2 q2, 
             out Vector2 intersection)
         {
-            // Get the segments' parameters.
-            float dx12 = p2.x - p1.x;
-            float dy12 = p2.y - p1.y;
-            float dx34 = p4.x - p3.x;
-            float dy34 = p4.y - p3.y;
-
-            // Solve for t1 and t2
-            float denominator = (dy12 * dx34 - dx12 * dy34);
-
-            float t1 =
-                ((p1.x - p3.x) * dy34 + (p3.y - p1.y) * dx34)
-                / denominator;
-            if (float.IsInfinity(t1) || float.IsNaN(t1))
+            var p = p2 - p1;
+            var q = q2 - q1;
+            var pq = q1 - p1;
+            var pXq = p.Cross(q);
+            if (Mathf.Abs(pXq) < 0.00001f)
             {
-                // The lines are parallel (or close enough to it).
+                // The lines are parallel (or close enough to it)
                 intersection = Vector2.positiveInfinity;
-                if ((p1 - p3).sqrMagnitude < 0.01f || (p1 - p4).sqrMagnitude < 0.01f ||
-                    (p2 - p3).sqrMagnitude < 0.01f || (p2 - p4).sqrMagnitude < 0.01f)
+                if (Mathf.Abs(pq.Cross(p)) < 0.00001f)
                 {
-                    return 2; // they are the same line, or very close parallels
+                    // The lines are colinear.  Do the segments touch?
+                    var dotPQ = Vector2.Dot(q, p);
+
+                    if (dotPQ > 0 && (p1 - q2).sqrMagnitude < 0.001f)
+                    {
+                        // q points to start of p
+                        intersection = q2;
+                        return 4;
+                    }
+                    if (dotPQ < 0 && (p2 - q2).sqrMagnitude < 0.001f)
+                    {
+                        // p and q point at the same point
+                        intersection = p2;
+                        return 4;
+                    }
+
+                    var dot = Vector2.Dot(pq, p);
+                    if (0 <= dot && dot <= Vector2.Dot(p, p))
+                    {
+                        if (dot < 0.0001f)
+                        {
+                            if (dotPQ <= 0 && (p1 - q1).sqrMagnitude < 0.001f)
+                                intersection = p1; // p and q start at the same point and point away
+                        }
+                        else if (dotPQ > 0 && (p2 - q1).sqrMagnitude < 0.001f)
+                            intersection = p2; // p points at start of q
+
+                        return 4;   // colinear segments touch
+                    }
+
+                    dot = Vector2.Dot(p1 - q1, q);
+                    if (0 <= dot && dot <= Vector2.Dot(q, q))
+                        return 4;   // colinear segments overlap
+
+                    return 3;   // colinear segments don't touch
                 }
-                return 0; // no intersection
+                return 0; // the lines are parallel and not colinear
             }
-            
-            // Find the point of intersection.
-            intersection = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
-            
-            float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / -denominator;
-            return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
+
+            var t = pq.Cross(q) / pXq;
+            intersection = p1 + t * p;
+
+            var u = pq.Cross(p) / pXq;
+            if (0 <= t && t <= 1 && 0 <= u && u <= 1)
+                return 2;   // segments touch
+
+            return 1;   // segments don't touch but lines intersect
         }
-        
+
+        static float Cross(this Vector2 v1, Vector2 v2) { return (v1.x * v2.y) - (v1.y * v2.x); }
+
+
         /// <summary>
         /// Component-wise absolute value
         /// </summary>
