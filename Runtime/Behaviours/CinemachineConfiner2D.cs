@@ -329,25 +329,9 @@ namespace Cinemachine
                         return;
                     }
             
-                    var clipperSolution = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                    m_Path = new List<List<Vector2>>(clipperSolution.m_Solution.Count);
-                    foreach (var cPoly in clipperSolution.m_Solution)
-                    {
-                        var pathSegment = new List<Vector2>(cPoly.Count);
-                        for (int i = 0; i < cPoly.Count; i++)
-                        {
-                            var p = new Vector2(
-                                cPoly[i].X / (float) ConfinerOven.FloatToIntScaler, 
-                                cPoly[i].Y / (float) ConfinerOven.FloatToIntScaler);
-                            
-                            // Restore the original aspect ratio
-                            p.x = (p.x - clipperSolution.m_CenterX) * aspectRatio + clipperSolution.m_CenterX;
-                            pathSegment.Add(p);
-                        }
+                    m_Path = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight).GetConfinerPath();
                     
-                        m_Path.Add(pathSegment);
-                    }
-                    
+                    m_PathHasBone = false; // GML for now
                     // m_PathHasBone -> if it is not in the first 2 frustum height 0 - x, then it is bones
                     // clipperSolution.ConvertToPath(confinerBaker.MaxFrustumHeight, out m_Path, out m_PathHasBone);
                     m_frustumHeight = frustumHeight;
@@ -373,7 +357,7 @@ namespace Cinemachine
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
             private Collider2D m_boundingShape2D;
-            private List<ConfinerOven.ClipperPolygonSolution> m_confinerStates;
+            private List<ConfinerOven.PolygonSolution> m_confinerStates;
 
             /// <summary>
             /// Invalidates shapeCache
