@@ -10,22 +10,22 @@ namespace Cinemachine
     /// </summary>
     internal class ConfinerOven
     {
+        public float SqrPolygonDiagonal { get; private set; }
+        public float MaxFrustumHeight { get; private set; }
+
         private List<PolygonSolution> m_Solutions = new List<PolygonSolution>();
 
         const int k_FloatToIntScaler = 10000000; // same as in Physics2D
         const float k_MinStepSize = 0.005f; 
 
-        public float SqrPolygonDiagonal { get; private set; }
-        public float MaxFrustumHeight { get; private set; }
-
-        public struct PolygonSolution
+        private float m_CenterX; // used for aspect ratio scaling
+        private float m_AspectRatio;
+            
+        private struct PolygonSolution
         {
             public List<List<IntPoint>> m_Solution;
             public float m_FrustumHeight;
 
-            public float m_CenterX; // used for aspect ratio scaling
-            public float m_AspectRatio;
-            
             public bool StateChanged(in List<List<IntPoint>> paths)
             {
                 if (paths.Count != m_Solution.Count)
@@ -38,7 +38,7 @@ namespace Cinemachine
                 return false;
             }
 
-            public List<List<Vector2>> GetConfinerPath()
+            public List<List<Vector2>> GetConfinerPath(float centerX, float aspectRatio)
             {
                 var numPaths = m_Solution.Count;
                 var paths = new List<List<Vector2>>(numPaths);
@@ -52,7 +52,7 @@ namespace Cinemachine
                     {
                         // Restore the original aspect ratio
                         var x = srcPoly[j].X * IntToFloatScaler;
-                        x = (x - m_CenterX) * m_AspectRatio + m_CenterX;
+                        x = (x - centerX) * aspectRatio + centerX;
                         pathSegment.Add(new Vector2(x, srcPoly[j].Y * IntToFloatScaler));
                     }
                     paths.Add(pathSegment);
@@ -72,7 +72,7 @@ namespace Cinemachine
         /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public List<PolygonSolution> BakeConfiner(
+        public void BakeConfiner(
             in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             // Compute the aspect-adjusted height of the polygon bounding box
@@ -89,6 +89,9 @@ namespace Cinemachine
                 maxFrustumHeight = polygonHalfHeight; 
             }
 
+            m_CenterX = polygonRect.center.x;
+            m_AspectRatio = aspectRatio;
+
             // Initialize clipper
             List<List<IntPoint>> clipperInput = new List<List<IntPoint>>(inputPath.Count);
             for (var i = 0; i < inputPath.Count; ++i)
@@ -100,7 +103,7 @@ namespace Cinemachine
                 var path = new List<IntPoint>(numPoints);
                 for (int j = 0; j < numPoints; ++j)
                 {
-                    var x = (srcPath[j].x - polygonRect.center.x) * xScale + polygonRect.center.x;
+                    var x = (srcPath[j].x - m_CenterX) * xScale + m_CenterX;
                     path.Add(new IntPoint(x * k_FloatToIntScaler, srcPath[j].y * k_FloatToIntScaler));
                 }
                 clipperInput.Add(path);
@@ -116,8 +119,6 @@ namespace Cinemachine
             {
                 m_Solution = solution,
                 m_FrustumHeight = 0,
-                m_CenterX = polygonRect.center.x,
-                m_AspectRatio = aspectRatio
             });
 
             // Binary search for next non-lerpable state
@@ -126,8 +127,6 @@ namespace Cinemachine
             {
                 m_Solution = solution,
                 m_FrustumHeight = 0,
-                m_CenterX = polygonRect.center.x,
-                m_AspectRatio = aspectRatio
             };
             float currentFrustumHeight = 0;
             
@@ -161,8 +160,6 @@ namespace Cinemachine
                     {
                         m_Solution = candidate,
                         m_FrustumHeight = currentFrustumHeight,
-                        m_CenterX = polygonRect.center.x,
-                        m_AspectRatio = aspectRatio
                     };
                     stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
                 }
@@ -172,8 +169,6 @@ namespace Cinemachine
                     {
                         m_Solution = candidate,
                         m_FrustumHeight = currentFrustumHeight,
-                        m_CenterX = polygonRect.center.x,
-                        m_AspectRatio = aspectRatio
                     };
 
                     // if we have not found right yet, then we don't need to decrease stepsize
@@ -224,8 +219,31 @@ namespace Cinemachine
 
             // Cache the max confinable view size
             MaxFrustumHeight = m_Solutions.Count == 0 ? 0 : m_Solutions[m_Solutions.Count-1].m_FrustumHeight;
+        }
 
-            return m_Solutions;
+        /// <summary>
+        /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
+        /// </summary>
+        public List<List<Vector2>> GetConfinerAtFrustumHeight(float frustumHeight)
+        {
+            var solution = new PolygonSolution();
+            for (int i = m_Solutions.Count - 1; i >= 0; --i)
+            {
+                if (m_Solutions[i].m_FrustumHeight <= frustumHeight)
+                {
+                    if (i == m_Solutions.Count - 1)
+                        solution = m_Solutions[i];
+                    else if (i % 2 == 0)
+                        solution = ClipperSolutionLerp(m_Solutions[i], m_Solutions[i+1], frustumHeight);
+                    else if (Mathf.Abs(m_Solutions[i].m_FrustumHeight - frustumHeight) < 
+                             Mathf.Abs(m_Solutions[i + 1].m_FrustumHeight - frustumHeight))
+                        solution = m_Solutions[i];
+                    else
+                        solution = m_Solutions[i + 1];
+                    break;
+                }
+            }
+            return solution.GetConfinerPath(m_CenterX, m_AspectRatio);
         }
 
         private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
@@ -248,32 +266,6 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
-        /// </summary>
-        public PolygonSolution GetConfinerAtFrustumHeight(float frustumHeight)
-        {
-            for (int i = m_Solutions.Count - 1; i >= 0; --i)
-            {
-                if (m_Solutions[i].m_FrustumHeight <= frustumHeight)
-                {
-                    if (i == m_Solutions.Count - 1)
-                        return m_Solutions[i];
-
-                    if (i % 2 == 0)
-                        return ClipperSolutionLerp(m_Solutions[i], m_Solutions[i+1], frustumHeight);
-
-                    return
-                        Mathf.Abs(m_Solutions[i].m_FrustumHeight - frustumHeight) < 
-                        Mathf.Abs(m_Solutions[i + 1].m_FrustumHeight - frustumHeight) 
-                            ? m_Solutions[i] 
-                            : m_Solutions[i + 1];
-                }
-            }
-
-            return new PolygonSolution();
-        }
-
-        /// <summary>
         /// Linearly interpolates between ConfinerStates.
         /// </summary>
         private PolygonSolution ClipperSolutionLerp(
@@ -289,8 +281,6 @@ namespace Cinemachine
             {
                 m_Solution = new List<List<IntPoint>>(left.m_Solution.Count),
                 m_FrustumHeight = frustumHeight,
-                m_CenterX = left.m_CenterX,
-                m_AspectRatio = left.m_AspectRatio
             };
             
             float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);

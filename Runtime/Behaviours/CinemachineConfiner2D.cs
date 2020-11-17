@@ -99,11 +99,8 @@ namespace Cinemachine
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
         public bool ValidateCache(float cameraAspectRatio)
         {
-            return m_shapeCache.ValidateCache(
-                m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker, cameraAspectRatio, out _);
+            return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, out _);
         }
-
-        private readonly ConfinerOven m_confinerBaker = new ConfinerOven();
 
         private const float m_cornerAngleTreshold = 10f;
 
@@ -116,8 +113,7 @@ namespace Cinemachine
             {
                 var aspectRatio = state.Lens.Aspect;
                 if (!m_shapeCache.ValidateCache(
-                    m_BoundingShape2D, m_MaxWindowSize, m_confinerBaker,
-                    aspectRatio, out bool confinerStateChanged))
+                    m_BoundingShape2D, m_MaxWindowSize, aspectRatio, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
@@ -128,7 +124,7 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 extra.m_VcamShapeCache.ValidateCache(
-                    m_confinerBaker, confinerStateChanged, m_currentFrustumHeight, aspectRatio);
+                    m_shapeCache.m_confinerBaker, confinerStateChanged, m_currentFrustumHeight);
                 
                 cameraPosLocal = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
@@ -220,7 +216,7 @@ namespace Cinemachine
                     if (Mathf.Abs(difference.x) > windowWidth || Mathf.Abs(difference.y) > windowHeight)
                     {
                         // penalty for points from which the target is not visible, prefering visibility over proximity
-                        distance += m_confinerBaker.SqrPolygonDiagonal; 
+                        distance += m_shapeCache.m_confinerBaker.SqrPolygonDiagonal; 
                     }
 
                     if (distance < minDistance 
@@ -321,20 +317,15 @@ namespace Cinemachine
                 /// </summary>
                 public void ValidateCache(
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float frustumHeight, in float aspectRatio)
+                    in float frustumHeight)
                 {
-                    if (!confinerStateChanged && m_Path != null && 
-                        Math.Abs(frustumHeight - m_frustumHeight) < UnityVectorExtensions.Epsilon)
+                    if (confinerStateChanged || m_Path == null 
+                        || Math.Abs(frustumHeight - m_frustumHeight) > UnityVectorExtensions.Epsilon)
                     {
-                        return;
+                        m_Path = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
+                        m_PathHasBone = false; // GML for now
+                        m_frustumHeight = frustumHeight;
                     }
-            
-                    m_Path = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight).GetConfinerPath();
-                    
-                    m_PathHasBone = false; // GML for now
-                    // m_PathHasBone -> if it is not in the first 2 frustum height 0 - x, then it is bones
-                    // clipperSolution.ConvertToPath(confinerBaker.MaxFrustumHeight, out m_Path, out m_PathHasBone);
-                    m_frustumHeight = frustumHeight;
                 }
             }
         };
@@ -346,6 +337,7 @@ namespace Cinemachine
         /// </summary>
         private struct ShapeCache
         {
+            public ConfinerOven m_confinerBaker;
             public List<List<Vector2>> m_OriginalPath;  // in baked space, not including offset
 
             // These account for offset and transform change since baking
@@ -357,7 +349,6 @@ namespace Cinemachine
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
             private Collider2D m_boundingShape2D;
-            private List<ConfinerOven.PolygonSolution> m_confinerStates;
 
             /// <summary>
             /// Invalidates shapeCache
@@ -371,7 +362,7 @@ namespace Cinemachine
                 m_boundingShape2D = null;
                 m_OriginalPath = null;
 
-                m_confinerStates = null;
+                m_confinerBaker = null;
             }
             
             /// <summary>
@@ -382,7 +373,7 @@ namespace Cinemachine
             /// False, otherwise.</param>
             /// <returns>True, if path is baked and valid. False, otherwise.</returns>
             public bool ValidateCache(
-                Collider2D boundingShape2D, float maxOrthoSize, ConfinerOven confinerBaker,
+                Collider2D boundingShape2D, float maxOrthoSize, 
                 float aspectRatio, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
@@ -434,7 +425,8 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                m_confinerStates = confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize);
+                m_confinerBaker = new ConfinerOven();
+                m_confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxOrthoSize;
@@ -449,7 +441,7 @@ namespace Cinemachine
                 return boundingShape2D != null && 
                        m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
                        m_OriginalPath != null && // first time?
-                       m_confinerStates != null && // cache not empty? 
+                       m_confinerBaker != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
                        Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
@@ -491,7 +483,9 @@ namespace Cinemachine
         // Used by editor gizmo drawer
         internal bool IsOverCachedMaxFrustumHeight()
         {
-            return m_confinerBaker.MaxFrustumHeight < m_currentFrustumHeight;
+            if (m_shapeCache.m_confinerBaker == null)
+                return false;
+            return m_shapeCache.m_confinerBaker.MaxFrustumHeight < m_currentFrustumHeight;
         }
 
         private void OnValidate()
