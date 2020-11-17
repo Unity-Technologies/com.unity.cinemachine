@@ -103,6 +103,7 @@ namespace Cinemachine
                 var path = new List<IntPoint>(numPoints);
                 for (int j = 0; j < numPoints; ++j)
                 {
+                    // Neutralize the aspect ratio
                     var x = (srcPath[j].x - m_CenterX) * xScale + m_CenterX;
                     path.Add(new IntPoint(x * k_FloatToIntScaler, srcPath[j].y * k_FloatToIntScaler));
                 }
