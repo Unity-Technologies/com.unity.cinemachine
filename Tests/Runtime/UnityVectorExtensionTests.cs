@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Cinemachine;
-using UnityEngine;
+﻿using UnityEngine;
 using NUnit.Framework;
 using Cinemachine.Utility;
 using Assert = UnityEngine.Assertions.Assert;
