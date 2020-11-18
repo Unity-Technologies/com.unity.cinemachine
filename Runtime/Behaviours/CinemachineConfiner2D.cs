@@ -30,9 +30,9 @@ namespace Cinemachine
     /// <para>
     /// The cached secondary polygon needs to be recomputed in the following circumstances:
     /// <list type="bullet">
-    /// <item><description> when the input polygon's points change.</description></item>
-    /// <item><description> when the input polygon is non-uniformly scaled, or.</description></item>
-    /// <item><description> when the input polygon is rotated.</description></item>
+    /// <item>when the input polygon's points change</item>
+    /// <item>when the input polygon is non-uniformly scaled</item>
+    /// <item>when the input polygon is rotated</item>
     /// </list>
     /// For efficiency reasons, Cinemachine will not automatically regenerate the inner polygon 
     /// in these cases, and it is the responsibility of the client to call the InvalidateCache() 

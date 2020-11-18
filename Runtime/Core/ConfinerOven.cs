@@ -14,8 +14,10 @@ namespace Cinemachine
         public float MaxFrustumHeight { get; private set; }
 
         private List<PolygonSolution> m_Solutions = new List<PolygonSolution>();
+        private List<List<IntPoint>> m_Skeleton;
 
-        const int k_FloatToIntScaler = 10000000; // same as in Physics2D
+        const long k_FloatToIntScaler = 10000000; // same as in Physics2D
+        const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
         const float k_MinStepSize = 0.005f; 
 
         private float m_CenterX; // used for aspect ratio scaling
@@ -23,44 +25,22 @@ namespace Cinemachine
             
         private struct PolygonSolution
         {
-            public List<List<IntPoint>> m_Solution;
+            public List<List<IntPoint>> m_Polygons;
             public float m_FrustumHeight;
 
             public bool StateChanged(in List<List<IntPoint>> paths)
             {
-                if (paths.Count != m_Solution.Count)
+                if (paths.Count != m_Polygons.Count)
                     return true;
                 for (var i = 0; i < paths.Count; i++)
                 {
-                    if (paths[i].Count != m_Solution[i].Count)
+                    if (paths[i].Count != m_Polygons[i].Count)
                         return true;
                 }
                 return false;
             }
 
-            public List<List<Vector2>> GetConfinerPath(float centerX, float aspectRatio)
-            {
-                var numPaths = m_Solution.Count;
-                var paths = new List<List<Vector2>>(numPaths);
-                const float IntToFloatScaler = 1.0f / k_FloatToIntScaler;
-                for (int i = 0; i < numPaths; ++i)
-                {
-                    var srcPoly = m_Solution[i];
-                    int numPoints = srcPoly.Count;
-                    var pathSegment = new List<Vector2>(numPoints);
-                    for (int j = 0; j < numPoints; j++)
-                    {
-                        // Restore the original aspect ratio
-                        var x = srcPoly[j].X * IntToFloatScaler;
-                        x = (x - centerX) * aspectRatio + centerX;
-                        pathSegment.Add(new Vector2(x, srcPoly[j].Y * IntToFloatScaler));
-                    }
-                    paths.Add(pathSegment);
-                }
-                return paths;
-            }
-
-            public bool IsEmpty => m_Solution == null;
+            public bool IsEmpty => m_Polygons == null;
         }
 
 
@@ -118,7 +98,7 @@ namespace Cinemachine
             m_Solutions.Clear();
             m_Solutions.Add(new PolygonSolution
             {
-                m_Solution = solution,
+                m_Polygons = solution,
                 m_FrustumHeight = 0,
             });
 
@@ -126,28 +106,21 @@ namespace Cinemachine
             PolygonSolution rightCandidate = new PolygonSolution();
             PolygonSolution leftCandidate = new PolygonSolution
             {
-                m_Solution = solution,
+                m_Polygons = solution,
                 m_FrustumHeight = 0,
             };
             float currentFrustumHeight = 0;
             
             float maxStepSize = polygonHalfHeight / 4f;
             float stepSize = maxStepSize;
-            bool shrinking = true;
-            while (shrinking)
+            while (m_Solutions.Count < 1000)
             {
 #if false
                 Debug.Log($"States = {m_Solutions.Count}, "
                     + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
 #endif
-                if (m_Solutions.Count > 1000)
-                {
-                    Debug.LogError("Exited with iteration count limit: " + m_Solutions.Count);
-                    break;
-                }
-
                 bool stateChangeFound = false;
-                var numPaths = leftCandidate.m_Solution.Count;
+                var numPaths = leftCandidate.m_Polygons.Count;
                 var candidate = new List<List<IntPoint>>(numPaths);
 
                 stepSize = Mathf.Min(stepSize, maxFrustumHeight - leftCandidate.m_FrustumHeight);
@@ -159,7 +132,7 @@ namespace Cinemachine
                 {
                     rightCandidate = new PolygonSolution
                     {
-                        m_Solution = candidate,
+                        m_Polygons = candidate,
                         m_FrustumHeight = currentFrustumHeight,
                     };
                     stepSize = Mathf.Max(stepSize / 2f, k_MinStepSize);
@@ -168,7 +141,7 @@ namespace Cinemachine
                 {
                     leftCandidate = new PolygonSolution
                     {
-                        m_Solution = candidate,
+                        m_Polygons = candidate,
                         m_FrustumHeight = currentFrustumHeight,
                     };
 
@@ -202,24 +175,11 @@ namespace Cinemachine
                 {
                     continue; // keep searching for a closer left and right or a non-null right
                 }
-
-                // GML todo: think about this:
-                // no need to do this. We'll go until theoritical max
-                // // TODO: could move this up into the if part
-                // shrinking = false;
-                // for (int i = 0; i < leftCandidate.Count; ++i)
-                // {
-                //     var polygon = leftCandidate[i];
-                //     if (polygon.IsShrinkable())
-                //     {
-                //         shrinking = true;
-                //         break;
-                //     }
-                // }
             }
 
             // Cache the max confinable view size
             MaxFrustumHeight = m_Solutions.Count == 0 ? 0 : m_Solutions[m_Solutions.Count-1].m_FrustumHeight;
+            m_Skeleton = ComputeSkeleton();
         }
 
         /// <summary>
@@ -227,6 +187,7 @@ namespace Cinemachine
         /// </summary>
         public List<List<Vector2>> GetConfinerAtFrustumHeight(float frustumHeight)
         {
+            // Get the best solution
             var solution = new PolygonSolution();
             for (int i = m_Solutions.Count - 1; i >= 0; --i)
             {
@@ -244,7 +205,32 @@ namespace Cinemachine
                     break;
                 }
             }
-            return solution.GetConfinerPath(m_CenterX, m_AspectRatio);
+
+            // Add in the skeleton
+            var skeletonAdded = new List<List<IntPoint>>();
+            Clipper c = new Clipper();
+            c.AddPaths(solution.m_Polygons, PolyType.ptSubject, true);
+            c.AddPaths(m_Skeleton, PolyType.ptClip, true);
+            c.Execute(ClipType.ctUnion, skeletonAdded, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+
+            // Convert to client space
+            var numPaths = skeletonAdded.Count;
+            var paths = new List<List<Vector2>>(numPaths);
+            for (int i = 0; i < numPaths; ++i)
+            {
+                var srcPoly = skeletonAdded[i];
+                int numPoints = srcPoly.Count;
+                var pathSegment = new List<Vector2>(numPoints);
+                for (int j = 0; j < numPoints; j++)
+                {
+                    // Restore the original aspect ratio
+                    var x = srcPoly[j].X * k_IntToFloatScaler;
+                    x = (x - m_CenterX) * m_AspectRatio + m_CenterX;
+                    pathSegment.Add(new Vector2(x, srcPoly[j].Y * k_IntToFloatScaler));
+                }
+                paths.Add(pathSegment);
+            }
+            return paths;
         }
 
         private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
@@ -272,7 +258,7 @@ namespace Cinemachine
         private PolygonSolution ClipperSolutionLerp(
             in PolygonSolution left, in PolygonSolution right, float frustumHeight)
         {
-            if (left.m_Solution.Count != right.m_Solution.Count)
+            if (left.m_Polygons.Count != right.m_Polygons.Count)
             {
                 Assert.IsTrue(false, "Error in ClipperSolutionLerp - Let us know on the Cinemachine forum please!");
                 return left;
@@ -280,22 +266,62 @@ namespace Cinemachine
 
             var result = new PolygonSolution
             {
-                m_Solution = new List<List<IntPoint>>(left.m_Solution.Count),
+                m_Polygons = new List<List<IntPoint>>(left.m_Polygons.Count),
                 m_FrustumHeight = frustumHeight,
             };
             
             float lerpValue = Mathf.InverseLerp(left.m_FrustumHeight, right.m_FrustumHeight, frustumHeight);
-            for (int i = 0; i < left.m_Solution.Count; ++i)
+            for (int i = 0; i < left.m_Polygons.Count; ++i)
             {
-                result.m_Solution.Add(new List<IntPoint>(left.m_Solution[i].Count));
-                for (int j = 0; j < left.m_Solution[i].Count; ++j)
+                result.m_Polygons.Add(new List<IntPoint>(left.m_Polygons[i].Count));
+                for (int j = 0; j < left.m_Polygons[i].Count; ++j)
                 {
-                    result.m_Solution[i].Add(new IntPoint(
-                        Mathf.Lerp(left.m_Solution[i][j].X, right.m_Solution[i][j].X, lerpValue), 
-                        Mathf.Lerp(left.m_Solution[i][j].Y, right.m_Solution[i][j].Y, lerpValue)));
+                    result.m_Polygons[i].Add(new IntPoint(
+                        Mathf.Lerp(left.m_Polygons[i][j].X, right.m_Polygons[i][j].X, lerpValue), 
+                        Mathf.Lerp(left.m_Polygons[i][j].Y, right.m_Polygons[i][j].Y, lerpValue)));
                 }
             }
             return result;
+        }
+
+        List<List<IntPoint>> ComputeSkeleton()
+        {
+            var skeleton = new List<List<IntPoint>>();
+
+            // At each state change point, collect geometry that gets lost over the transition
+            Clipper clipper = new Clipper();
+            var offsetter = new ClipperOffset();
+            for (int i = 1; i < m_Solutions.Count - 2; i += 2)
+            {
+                var prev = m_Solutions[i];
+                var next = m_Solutions[i+1];
+
+                const int padding = 5; // to counteract precision problems - inflates small regions
+                double step = padding * k_FloatToIntScaler * (next.m_FrustumHeight - prev.m_FrustumHeight);
+
+                // Grow the larger polygon to inflate marginal regions
+                List<List<IntPoint>> expandedPrev = new List<List<IntPoint>>();
+                offsetter.Clear();
+                offsetter.AddPaths(prev.m_Polygons, JoinType.jtMiter, EndType.etClosedPolygon);
+                offsetter.Execute(ref expandedPrev, step);
+
+                // Grow the smaller polygon to be a bit bigger than the expanded larger one
+                List<List<IntPoint>> expandedNext = new List<List<IntPoint>>();
+                offsetter.Clear();
+                offsetter.AddPaths(next.m_Polygons, JoinType.jtMiter, EndType.etClosedPolygon);
+                offsetter.Execute(ref expandedNext, step * 2);
+
+                // Compute the difference - this is the lost geometry
+                var solution = new List<List<IntPoint>>();
+                clipper.Clear();
+                clipper.AddPaths(expandedPrev, PolyType.ptSubject, true);
+                clipper.AddPaths(expandedNext, PolyType.ptClip, true);
+                clipper.Execute(ClipType.ctDifference, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+
+                // Add that lost geometry to the skeleton
+                skeleton.AddRange(solution);
+            }
+            return skeleton;
         }
     }
 }

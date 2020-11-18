@@ -69,17 +69,17 @@ namespace Cinemachine.Editor
             var oldMatrix = Gizmos.matrix;
             Gizmos.matrix = pathLocalToWorld;
 
-            // Draw confiner for current camera size
-            Gizmos.color = colorDimmed;
-            foreach (var path in s_currentPathCache)
+            // Draw input confiner
+            Gizmos.color = color;
+            foreach (var path in originalPath )
             {
                 for (var index = 0; index < path.Count; index++)
                     Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
             }
 
-            // Draw input confiner
-            Gizmos.color = color;
-            foreach (var path in originalPath )
+            // Draw confiner for current camera size
+            Gizmos.color = colorDimmed;
+            foreach (var path in s_currentPathCache)
             {
                 for (var index = 0; index < path.Count; index++)
                     Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
