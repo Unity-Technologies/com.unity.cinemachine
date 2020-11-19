@@ -1,22 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.Splines;
-using Unity.Mathematics;
 using System.Collections.Generic;
 
 namespace Cinemachine
 {
-    /// <summary>Defines a world-space path, consisting of an array of waypoints,
-    /// each of which has position and roll settings.  Bezier interpolation
-    /// is performed between the waypoints, to get a smooth and continuous path.
-    /// The path will pass through all waypoints, and (unlike CinemachinePath) first 
-    /// and second order continuity is guaranteed</summary>
+    /// <summary>Defines a world-space path, consisting of an array of knots,
+    /// each of which has position setting.  Different kinds of interpolation
+    /// can be chose from to perform between the waypoints to get a continuous path. </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachineSplinePath")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
+    [ExecuteInEditMode]
     public sealed class CinemachineSplinePath : CinemachinePathBase, ISplineProvider
     {
-
         readonly Spline[] m_SplineArray = new Spline[1];
 
         [SerializeField]
@@ -36,24 +33,6 @@ namespace Cinemachine
                 return m_SplineArray;
             }
         }
-
-        private float3 EvaluateCurvePosition(int segmentIndex, float t)
-        {
-            if (Spline == null)
-                return float.PositiveInfinity;
-
-            return SplineUtility.EvaluateSegmentPosition(Spline, segmentIndex, t);
-        }
-
-        private float3 EvaluateCurveTangent(int segmentIndex, float t)
-        {
-            if (Spline == null)
-                return float.PositiveInfinity;
-
-            return SplineUtility.EvaluateSegmentTangent(Spline, segmentIndex, t);
-        }
-
-        
 
         /// <summary>The minimum value for the path position</summary>
         public override float MinPos { get { return 0; } }
@@ -77,6 +56,11 @@ namespace Cinemachine
         public override int DistanceCacheSampleStepsPerSegment { get { return m_Resolution; } }
 
         private void OnValidate() { InvalidateDistanceCache(); }
+
+        void Awake()
+        {
+            m_Spline.changed += InvalidateDistanceCache;
+        }
 
         private void Reset()
         {
@@ -134,10 +118,11 @@ namespace Cinemachine
                 int indexA, indexB;
                 pos = GetBoundingIndices(pos, out indexA, out indexB);
                 if (indexA == indexB)
-                    result = EvaluateCurvePosition(indexA, 0);
+                    result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, 0);
                 else
-                    result = EvaluateCurvePosition(indexA, pos - indexA);
+                    result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, pos - indexA);
             }
+            
             return transform.TransformPoint(result);
         }
 
@@ -153,10 +138,11 @@ namespace Cinemachine
                 int indexA, indexB;
                 pos = GetBoundingIndices(pos, out indexA, out indexB);
                 if (indexA == indexB)
-                    result = EvaluateCurveTangent(indexA, 0);
+                    result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, 0);
                 else
-                    result = EvaluateCurveTangent(indexA, pos - indexA);
+                    result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, pos - indexA);
             }
+            
             return transform.TransformDirection(result);
         }
 
@@ -166,20 +152,9 @@ namespace Cinemachine
         public override Quaternion EvaluateOrientation(float pos)
         {
             Quaternion transformRot = transform.rotation;
-            Vector3 transformUp = transformRot * Vector3.up;
             Quaternion result = transformRot;
             return result;
         }
 
-        // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
-        Quaternion RollAroundForward(float angle)
-        {
-            float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
-            return new Quaternion(
-                0,
-                0,
-                Mathf.Sin(halfAngle),
-                Mathf.Cos(halfAngle));
-        }
     }
 }

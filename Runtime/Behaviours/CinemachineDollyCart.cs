@@ -72,7 +72,6 @@ namespace Cinemachine
         {
             if (m_Path != null)
             {
-                m_Path.InvalidateDistanceCache();
                 m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
                 transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
                 transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);

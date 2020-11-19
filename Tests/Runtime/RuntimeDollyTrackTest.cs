@@ -40,31 +40,31 @@ public class RuntimeDollyTrackTest
         DollyCart.m_PositionUnits = CinemachinePathBase.PositionUnits.Distance;
         DollyCart.m_Position = 0;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 0.5f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7.5f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7.5f, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 6;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(12.98846f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(12.98846f, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 10;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -2)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -2)), 0, 0.01f);
         
         DollyCart.m_Position = 15;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(11, 1, 1)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(11, 1, 1)), 0, 0.01f);
         
         DollyCart.m_Position = 20;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, 0)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, 0)), 0, 0.01f);
         
-        DollyCart.m_Position = 26;
+        DollyCart.m_Position = 25;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -5)), 0, 0.01f);
     }
 
     [UnityTest]
@@ -73,23 +73,23 @@ public class RuntimeDollyTrackTest
         DollyCart.m_PositionUnits = CinemachinePathBase.PositionUnits.Normalized;
         DollyCart.m_Position = 0;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 0.125f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(10.25f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(10.25f, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 0.5f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, 1)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, 1)), 0, 0.01f);
         
         DollyCart.m_Position = 0.75f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, 0.5f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, 0.5f)), 0, 0.01f);
         
         DollyCart.m_Position = 1;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.01f);
     }
 
     [UnityTest]
@@ -98,34 +98,34 @@ public class RuntimeDollyTrackTest
         DollyCart.m_PositionUnits = CinemachinePathBase.PositionUnits.PathUnits;
         DollyCart.m_Position = 0;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 0.125f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7.75f, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7.75f, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 0.5f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(10, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(10, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 1;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -6)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -6)), 0, 0.01f);
         
         DollyCart.m_Position = 1.5f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -2.5f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -2.5f)), 0, 0.01f);
         
         DollyCart.m_Position = 1.75f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -0.75f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(13, 1, -0.75f)), 0, 0.01f);
         
         DollyCart.m_Position = 3;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, 1)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, 1)), 0, 0.01f);
         
         DollyCart.m_Position = 3.5f;
         yield return null;
-        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -2.5f)), 0, 0.1f);
+        UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(DollyCart.transform.position, new Vector3(7, 1, -2.5f)), 0, 0.01f);
     }
 }
