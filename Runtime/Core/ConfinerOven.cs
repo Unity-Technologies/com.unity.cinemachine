@@ -12,13 +12,14 @@ namespace Cinemachine
     {
         public float SqrPolygonDiagonal { get; private set; }
         public float MaxFrustumHeight { get; private set; }
+        public float MinFrustumHeightWithBones { get; private set; }
 
         private List<List<IntPoint>> clipperInput;
         private List<List<IntPoint>> m_Skeleton;
 
         const long k_FloatToIntScaler = 10000000; // same as in Physics2D
         const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
-        const float k_MinStepSize = 0.005f; 
+        const float k_MinStepSize = 0.005f;
 
         private float m_CenterX; // used for aspect ratio scaling
         private float m_AspectRatio;
@@ -68,6 +69,8 @@ namespace Cinemachine
             {
                 maxFrustumHeight = polygonHalfHeight; 
             }
+
+            MinFrustumHeightWithBones = maxFrustumHeight;
 
             m_CenterX = polygonRect.center.x;
             m_AspectRatio = aspectRatio;
@@ -180,6 +183,7 @@ namespace Cinemachine
 
             // Cache the max confinable view size
             MaxFrustumHeight = solutions.Count == 0 ? 0 : solutions[solutions.Count-1].m_FrustumHeight;
+            MinFrustumHeightWithBones = solutions.Count <= 1 ? 0 : solutions[1].m_FrustumHeight;
             m_Skeleton = ComputeSkeleton(in solutions);
         }
 

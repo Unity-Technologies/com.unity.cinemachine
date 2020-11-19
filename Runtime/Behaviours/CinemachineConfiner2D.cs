@@ -331,7 +331,7 @@ namespace Cinemachine
                         || Math.Abs(frustumHeight - m_frustumHeight) > UnityVectorExtensions.Epsilon)
                     {
                         m_Path = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
-                        m_PathHasBone = false; // GML for now
+                        m_PathHasBone = confinerBaker.MinFrustumHeightWithBones < frustumHeight;
                         m_frustumHeight = frustumHeight;
                     }
                 }
