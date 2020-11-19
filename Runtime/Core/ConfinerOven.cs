@@ -188,31 +188,11 @@ namespace Cinemachine
         /// </summary>
         public List<List<Vector2>> GetConfinerAtFrustumHeight(float frustumHeight)
         {
-            // Get the best solution
-            // var solution = new PolygonSolution();
-            // for (int i = m_Solutions.Count - 1; i >= 0; --i)
-            // {
-            //     if (m_Solutions[i].m_FrustumHeight <= frustumHeight)
-            //     {
-            //         if (i == m_Solutions.Count - 1)
-            //             solution = m_Solutions[i];
-            //         else if (i % 2 == 0)
-            //             solution = ClipperSolutionLerp(m_Solutions[i], m_Solutions[i+1], frustumHeight);
-            //         else if (Mathf.Abs(m_Solutions[i].m_FrustumHeight - frustumHeight) < 
-            //                  Mathf.Abs(m_Solutions[i + 1].m_FrustumHeight - frustumHeight))
-            //             solution = m_Solutions[i];
-            //         else
-            //             solution = m_Solutions[i + 1];
-            //         break;
-            //     }
-            // }
-
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
             offsetter.AddPaths(clipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
-            
             
             // Add in the skeleton
             var skeletonAdded = new List<List<IntPoint>>();
