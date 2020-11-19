@@ -13,7 +13,7 @@ namespace Cinemachine
         public float SqrPolygonDiagonal { get; private set; }
         public float MaxFrustumHeight { get; private set; }
 
-        private List<PolygonSolution> m_Solutions = new List<PolygonSolution>();
+        private List<List<IntPoint>> clipperInput;
         private List<List<IntPoint>> m_Skeleton;
 
         const long k_FloatToIntScaler = 10000000; // same as in Physics2D
@@ -73,7 +73,7 @@ namespace Cinemachine
             m_AspectRatio = aspectRatio;
 
             // Initialize clipper
-            List<List<IntPoint>> clipperInput = new List<List<IntPoint>>(inputPath.Count);
+            clipperInput = new List<List<IntPoint>>(inputPath.Count);
             for (var i = 0; i < inputPath.Count; ++i)
             {
                 var xScale = 1 / aspectRatio;
@@ -95,8 +95,9 @@ namespace Cinemachine
 
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, 0);
-            m_Solutions.Clear();
-            m_Solutions.Add(new PolygonSolution
+            
+            List<PolygonSolution> solutions = new List<PolygonSolution>();
+            solutions.Add(new PolygonSolution
             {
                 m_Polygons = solution,
                 m_FrustumHeight = 0,
@@ -113,7 +114,7 @@ namespace Cinemachine
             
             float maxStepSize = polygonHalfHeight / 4f;
             float stepSize = maxStepSize;
-            while (m_Solutions.Count < 1000)
+            while (solutions.Count < 1000)
             {
 #if false
                 Debug.Log($"States = {m_Solutions.Count}, "
@@ -157,8 +158,8 @@ namespace Cinemachine
                 if (!rightCandidate.IsEmpty && stepSize <= k_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
-                    m_Solutions.Add(leftCandidate);
-                    m_Solutions.Add(rightCandidate);
+                    solutions.Add(leftCandidate);
+                    solutions.Add(rightCandidate);
 
                     leftCandidate = rightCandidate;
                     rightCandidate = new PolygonSolution();
@@ -168,7 +169,7 @@ namespace Cinemachine
                 }
                 else if (rightCandidate.IsEmpty && leftCandidate.m_FrustumHeight >= maxFrustumHeight)
                 {
-                    m_Solutions.Add(leftCandidate);
+                    solutions.Add(leftCandidate);
                     break; // stop shrinking, because we are at the bound
                 }
                 else
@@ -178,8 +179,8 @@ namespace Cinemachine
             }
 
             // Cache the max confinable view size
-            MaxFrustumHeight = m_Solutions.Count == 0 ? 0 : m_Solutions[m_Solutions.Count-1].m_FrustumHeight;
-            m_Skeleton = ComputeSkeleton();
+            MaxFrustumHeight = solutions.Count == 0 ? 0 : solutions[solutions.Count-1].m_FrustumHeight;
+            m_Skeleton = ComputeSkeleton(in solutions);
         }
 
         /// <summary>
@@ -188,28 +189,35 @@ namespace Cinemachine
         public List<List<Vector2>> GetConfinerAtFrustumHeight(float frustumHeight)
         {
             // Get the best solution
-            var solution = new PolygonSolution();
-            for (int i = m_Solutions.Count - 1; i >= 0; --i)
-            {
-                if (m_Solutions[i].m_FrustumHeight <= frustumHeight)
-                {
-                    if (i == m_Solutions.Count - 1)
-                        solution = m_Solutions[i];
-                    else if (i % 2 == 0)
-                        solution = ClipperSolutionLerp(m_Solutions[i], m_Solutions[i+1], frustumHeight);
-                    else if (Mathf.Abs(m_Solutions[i].m_FrustumHeight - frustumHeight) < 
-                             Mathf.Abs(m_Solutions[i + 1].m_FrustumHeight - frustumHeight))
-                        solution = m_Solutions[i];
-                    else
-                        solution = m_Solutions[i + 1];
-                    break;
-                }
-            }
+            // var solution = new PolygonSolution();
+            // for (int i = m_Solutions.Count - 1; i >= 0; --i)
+            // {
+            //     if (m_Solutions[i].m_FrustumHeight <= frustumHeight)
+            //     {
+            //         if (i == m_Solutions.Count - 1)
+            //             solution = m_Solutions[i];
+            //         else if (i % 2 == 0)
+            //             solution = ClipperSolutionLerp(m_Solutions[i], m_Solutions[i+1], frustumHeight);
+            //         else if (Mathf.Abs(m_Solutions[i].m_FrustumHeight - frustumHeight) < 
+            //                  Mathf.Abs(m_Solutions[i + 1].m_FrustumHeight - frustumHeight))
+            //             solution = m_Solutions[i];
+            //         else
+            //             solution = m_Solutions[i + 1];
+            //         break;
+            //     }
+            // }
 
+            // Inflate with clipper to frustumHeight
+            var offsetter = new ClipperOffset();
+            offsetter.AddPaths(clipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
+            List<List<IntPoint>> solution = new List<List<IntPoint>>();
+            offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
+            
+            
             // Add in the skeleton
             var skeletonAdded = new List<List<IntPoint>>();
             Clipper c = new Clipper();
-            c.AddPaths(solution.m_Polygons, PolyType.ptSubject, true);
+            c.AddPaths(solution, PolyType.ptSubject, true);
             c.AddPaths(m_Skeleton, PolyType.ptClip, true);
             c.Execute(ClipType.ctUnion, skeletonAdded, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
 
@@ -284,17 +292,17 @@ namespace Cinemachine
             return result;
         }
 
-        List<List<IntPoint>> ComputeSkeleton()
+        List<List<IntPoint>> ComputeSkeleton(in List<PolygonSolution> solutions)
         {
             var skeleton = new List<List<IntPoint>>();
 
             // At each state change point, collect geometry that gets lost over the transition
             Clipper clipper = new Clipper();
             var offsetter = new ClipperOffset();
-            for (int i = 1; i < m_Solutions.Count - 2; i += 2)
+            for (int i = 1; i < solutions.Count - 1; i += 2)
             {
-                var prev = m_Solutions[i];
-                var next = m_Solutions[i+1];
+                var prev = solutions[i];
+                var next = solutions[i+1];
 
                 const int padding = 5; // to counteract precision problems - inflates small regions
                 double step = padding * k_FloatToIntScaler * (next.m_FrustumHeight - prev.m_FrustumHeight);
