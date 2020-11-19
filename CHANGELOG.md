@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Storyboard Global Mute moved from Cinemachine menu to Cinemachine preferences.
 - Bugfix - long-idle vcams when reawakened sometimes had a single frame with a huge deltaTime
 - Bugfix - PostProcessing temporarily stopped being applied after exiting play mode
+- Bugfix (1272146) - Adding vcam to a prefab asset no longer causes errors in console
 
 
 ## [2.6.3] - 2020-09-16
