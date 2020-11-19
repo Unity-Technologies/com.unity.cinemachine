@@ -63,7 +63,7 @@ namespace Cinemachine
             SqrPolygonDiagonal = polygonRect.width * polygonRect.width + polygonHeight * polygonHeight;
 
             // Ensuring that we don't compute further than what is the theoretical max
-            float polygonHalfHeight = polygonHeight * 0.5f;
+            float polygonHalfHeight = polygonHeight;
             if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
                 maxFrustumHeight = polygonHalfHeight; 
