@@ -134,9 +134,10 @@ namespace Cinemachine
                 extra.m_VcamShapeCache.ValidateCache(
                     m_shapeCache.m_confinerBaker, confinerStateChanged, m_currentFrustumHeight);
                 
-                cameraPosLocal = ConfinePoint(cameraPosLocal, 
+                var cameraPosLocal2 = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
                     state.Lens.Aspect * m_currentFrustumHeight, m_currentFrustumHeight);
+                cameraPosLocal = m_shapeCache.m_confinerBaker.ConfinePoint(cameraPosLocal);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
@@ -327,10 +328,11 @@ namespace Cinemachine
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
                     in float frustumHeight)
                 {
-                    if (confinerStateChanged || m_Path == null 
+                    if (confinerStateChanged //|| m_Path == null 
                         || Math.Abs(frustumHeight - m_frustumHeight) > UnityVectorExtensions.Epsilon)
                     {
-                        m_Path = confinerBaker.GetConfinerAtFrustumHeight(frustumHeight);
+                        //m_Path = 
+                            confinerBaker.CalculateConfinerAtFrustumHeight(frustumHeight);
                         m_PathHasBone = confinerBaker.MinFrustumHeightWithBones < frustumHeight;
                         m_frustumHeight = frustumHeight;
                     }

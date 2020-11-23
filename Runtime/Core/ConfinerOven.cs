@@ -48,7 +48,7 @@ namespace Cinemachine
             public bool IsEmpty => m_Polygons == null;
         }
 
-        public Vector2 ConfinerPoint(in Vector2 pointToConfine)
+        public Vector2 ConfinePoint(in Vector2 pointToConfine)
         {
             IntPoint p = new IntPoint(pointToConfine.x * k_FloatToIntScaler, pointToConfine.y * k_FloatToIntScaler);
             foreach (List<IntPoint> sol in m_Solution)
