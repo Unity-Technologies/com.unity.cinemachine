@@ -206,7 +206,6 @@ namespace Cinemachine
                 m_PathPosition = 0;
                 return;
             }
-            m_Path.InvalidateDistanceCache();
             m_PathPosition = m_Path.StandardizeUnit(m_PathPosition, m_PositionUnits);
 
             // Get the new ideal path base position
