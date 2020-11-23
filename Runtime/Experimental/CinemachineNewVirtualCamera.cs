@@ -54,6 +54,13 @@ namespace Cinemachine
             DestroyComponents();
         }
 
+        /// <summary>Validates the settings avter inspector edit</summary>
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            m_Lens.Validate();
+        }
+
         /// <summary>The camera state, which will be a blend of the child rig states</summary>
         override public CameraState State { get { return m_State; } }
 
