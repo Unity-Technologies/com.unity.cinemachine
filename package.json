@@ -18,11 +18,6 @@
             "displayName": "Cinemachine Example Scenes",
             "description": "Sample scenes illustrating various ways to use Cinemachine",
             "path": "Samples~/Cinemachine Example Scenes"
-        },
-        {
-            "displayName": "Cached Scrubbing support for Nested Timelines (experimental)",
-            "description": "Experimental feature.  Adds a Timeline extension to support Cached Scrubbing for nested timelines.  This extension will become obsolete when Timeline adds native support for the missing API",
-            "path": "Samples~/Nested Timeline Scrub Bubble"
         }
     ]
 }

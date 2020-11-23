@@ -1,5 +1,0 @@
-{
-    "displayName": "Cached Scrubbing support for Nested Timelines (for Timeline versions < 1.5.0)",
-    "interactiveImport": "false",
-    "description": "Adds a Timeline extension to support Cached Scrubbing for nested timelines.  This extension is only necessary for Timeline versions prior to 1.5.0, when the API was missing"
-}
