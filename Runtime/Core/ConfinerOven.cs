@@ -77,7 +77,7 @@ namespace Cinemachine
             bool checkIntersectOriginal = hasBone && isInsideOriginal;
             // Confine point
             IntPoint closest = p;
-            float minDistance = float.MaxValue;
+            double minDistance = double.MaxValue;
             for (int i = 0; i < m_Solution.Count; ++i)
             {
                 int numPoints = m_Solution[i].Count;
@@ -86,7 +86,7 @@ namespace Cinemachine
                     IntPoint l1 = m_Solution[i][j];
                     IntPoint l2 = m_Solution[i][(j + 1) % numPoints];
 
-                    float distanceSqr = DistanceFromLineSqrd(p, l1, l2);
+                    double distanceSqr = DistanceFromLineSqrd(p, l1, l2);
 
                     IntPoint c = IntPointLerp(l1, l2, ClosestPointOnSegment(p, l1, l2));
                     IntPoint difference = new IntPoint
@@ -94,10 +94,11 @@ namespace Cinemachine
                         X = p.X - c.X,
                         Y = p.Y - c.Y,
                     };
-                    float distance = difference.X * difference.X + difference.Y * difference.Y;
+                    double distance = difference.X * difference.X + difference.Y * difference.Y;
                     // Debug.Log("Distance diff:" + (distanceSqr - distance)); // TODO: check!
                     
-                    if (Mathf.Abs(difference.X) > m_PolygonRect.width || Mathf.Abs(difference.Y) > m_PolygonRect.height)
+                    if (Mathf.Abs(difference.X) > m_PolygonRect.width * k_FloatToIntScaler || 
+                        Mathf.Abs(difference.Y) > m_PolygonRect.height * k_FloatToIntScaler)
                     {
                         // penalty for points from which the target is not visible, prefering visibility over proximity
                         distance += SqrPolygonDiagonal; 
@@ -149,7 +150,7 @@ namespace Cinemachine
         /// <summary>
         /// Taken from clipper
         /// </summary>
-        private float DistanceFromLineSqrd(IntPoint pt, IntPoint ln1, IntPoint ln2)
+        private double DistanceFromLineSqrd(IntPoint pt, IntPoint ln1, IntPoint ln2)
         {
             //The equation of a line in general form (Ax + By + C = 0)
             //given 2 points (x¹,y¹) & (x²,y²) is ...
@@ -157,9 +158,9 @@ namespace Cinemachine
             //A = (y¹ - y²); B = (x² - x¹); C = (y² - y¹)x¹ - (x² - x¹)y¹
             //perpendicular distance of point (x³,y³) = (Ax³ + By³ + C)/Sqrt(A² + B²)
             //see http://en.wikipedia.org/wiki/Perpendicular_distance
-            float A = ln1.Y - ln2.Y;
-            float B = ln2.X - ln1.X;
-            float C = A * ln1.X  + B * ln1.Y;
+            double A = ln1.Y - ln2.Y;
+            double B = ln2.X - ln1.X;
+            double C = A * ln1.X  + B * ln1.Y;
             C = A * pt.X + B * pt.Y - C;
             return (C * C) / (A * A + B * B);
         }
@@ -181,7 +182,8 @@ namespace Cinemachine
 
             return false;
         }
-        
+
+        private const long LongEpsilon = (long) 0.01f * k_FloatToIntScaler;
         private int FindIntersection(in IntPoint p1, in IntPoint p2, in IntPoint p3, in IntPoint p4)
         {
             // Get the segments' parameters.
@@ -200,8 +202,8 @@ namespace Cinemachine
             {
                 // The lines are parallel (or close enough to it).
                 
-                if (IntPointDiffSqrMagnitude(p1, p3) < 0.01f || IntPointDiffSqrMagnitude(p1, p4) < 0.01f ||
-                    IntPointDiffSqrMagnitude(p2, p3) < 0.01f || IntPointDiffSqrMagnitude(p2, p4) < 0.01f)
+                if (IntPointDiffSqrMagnitude(p1, p3) < LongEpsilon || IntPointDiffSqrMagnitude(p1, p4) < LongEpsilon ||
+                    IntPointDiffSqrMagnitude(p2, p3) < LongEpsilon || IntPointDiffSqrMagnitude(p2, p4) < LongEpsilon)
                 {
                     return 2; // they are the same line, or very close parallels
                 }
@@ -214,7 +216,7 @@ namespace Cinemachine
             return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
         }
 
-        private double IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
+        private long IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
         {
             long X = p1.X - p2.X;
             long Y = p1.Y - p2.Y;
