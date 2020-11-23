@@ -14,7 +14,7 @@ namespace Cinemachine
         public float MaxFrustumHeight { get; private set; }
         public float MinFrustumHeightWithBones { get; private set; }
 
-        private List<List<IntPoint>> clipperInput;
+        private List<List<IntPoint>> m_ClipperInput;
         private List<List<IntPoint>> m_Skeleton;
 
         const long k_FloatToIntScaler = 10000000; // same as in Physics2D
@@ -76,7 +76,7 @@ namespace Cinemachine
             m_AspectRatio = aspectRatio;
 
             // Initialize clipper
-            clipperInput = new List<List<IntPoint>>(inputPath.Count);
+            m_ClipperInput = new List<List<IntPoint>>(inputPath.Count);
             for (var i = 0; i < inputPath.Count; ++i)
             {
                 var xScale = 1 / aspectRatio;
@@ -90,11 +90,11 @@ namespace Cinemachine
                     var x = (srcPath[j].x - m_CenterX) * xScale + m_CenterX;
                     path.Add(new IntPoint(x * k_FloatToIntScaler, srcPath[j].y * k_FloatToIntScaler));
                 }
-                clipperInput.Add(path);
+                m_ClipperInput.Add(path);
             }
             
             var offsetter = new ClipperOffset();
-            offsetter.AddPaths(clipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
+            offsetter.AddPaths(m_ClipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
 
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, 0);
@@ -194,7 +194,7 @@ namespace Cinemachine
         {
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
-            offsetter.AddPaths(clipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
+            offsetter.AddPaths(m_ClipperInput, JoinType.jtMiter, EndType.etClosedPolygon);
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
             
