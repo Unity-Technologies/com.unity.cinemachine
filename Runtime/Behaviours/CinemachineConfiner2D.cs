@@ -138,6 +138,7 @@ namespace Cinemachine
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
                     state.Lens.Aspect * m_currentFrustumHeight, m_currentFrustumHeight);
                 var cameraPosLocalNew = m_shapeCache.m_confinerBaker.ConfinePoint(cameraPosLocal);
+                
                 Debug.Log("cameraPosLocalOld("+cameraPosLocal2 + ")-cameraPosLocal("+cameraPosLocalNew+")="+(cameraPosLocal2 - cameraPosLocalNew));
                 
                 cameraPosLocal = cameraPosLocalNew;

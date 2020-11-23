@@ -113,6 +113,10 @@ namespace Cinemachine
                 }
             }
 
+            var result = new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
+            result.x = (result.x - m_CenterX) * m_AspectRatio + m_CenterX;
+            return result; 
+            
             return new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
         }
 
