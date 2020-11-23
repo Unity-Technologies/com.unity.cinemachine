@@ -55,7 +55,7 @@ namespace Cinemachine
             return SplineUtility.EvaluateSegmentTangent(Spline, segmentIndex, t);
         }
 
-        public AnimationCurve m_Roll;
+        public AnimationCurve m_Roll = new AnimationCurve();
 
         /// <summary>The minimum value for the path position</summary>
         public override float MinPos { get { return 0; } }
