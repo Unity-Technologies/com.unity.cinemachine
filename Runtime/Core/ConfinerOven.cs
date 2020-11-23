@@ -95,7 +95,7 @@ namespace Cinemachine
                         Y = p.Y - c.Y,
                     };
                     float distance = difference.X * difference.X + difference.Y * difference.Y;
-                    Debug.Log("Distance diff:" + (distanceSqr - distance)); // TODO: check!
+                    // Debug.Log("Distance diff:" + (distanceSqr - distance)); // TODO: check!
                     
                     if (Mathf.Abs(difference.X) > m_PolygonRect.width || Mathf.Abs(difference.Y) > m_PolygonRect.height)
                     {
@@ -224,7 +224,7 @@ namespace Cinemachine
         /// <summary>
         /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
         /// </summary>
-        public void CalculateConfinerAtFrustumHeight(float frustumHeight)
+        public List<List<Vector2>> CalculateConfinerAtFrustumHeight(float frustumHeight)
         {
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
@@ -239,6 +239,25 @@ namespace Cinemachine
             c.AddPaths(solution, PolyType.ptSubject, true);
             c.AddPaths(m_Skeleton, PolyType.ptClip, true);
             c.Execute(ClipType.ctUnion, m_Solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+            
+            // Convert to client space
+            var numPaths = m_Solution.Count;
+            var paths = new List<List<Vector2>>(numPaths);
+            for (int i = 0; i < numPaths; ++i)
+            {
+                var srcPoly = m_Solution[i];
+                int numPoints = srcPoly.Count;
+                var pathSegment = new List<Vector2>(numPoints);
+                for (int j = 0; j < numPoints; j++)
+                {
+                    // Restore the original aspect ratio
+                    var x = srcPoly[j].X * k_IntToFloatScaler;
+                    x = (x - m_CenterX) * m_AspectRatio + m_CenterX;
+                    pathSegment.Add(new Vector2(x, srcPoly[j].Y * k_IntToFloatScaler));
+                }
+                paths.Add(pathSegment);
+            }
+            return paths;
         }
         
         /// <summary>

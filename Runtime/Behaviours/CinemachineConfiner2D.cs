@@ -137,7 +137,10 @@ namespace Cinemachine
                 var cameraPosLocal2 = ConfinePoint(cameraPosLocal, 
                     extra.m_VcamShapeCache.m_Path, extra.m_VcamShapeCache.m_PathHasBone,
                     state.Lens.Aspect * m_currentFrustumHeight, m_currentFrustumHeight);
-                cameraPosLocal = m_shapeCache.m_confinerBaker.ConfinePoint(cameraPosLocal);
+                var cameraPosLocalNew = m_shapeCache.m_confinerBaker.ConfinePoint(cameraPosLocal);
+                Debug.Log("cameraPosLocalOld("+cameraPosLocal2 + ")-cameraPosLocal("+cameraPosLocalNew+")="+(cameraPosLocal2 - cameraPosLocalNew));
+                
+                cameraPosLocal = cameraPosLocalNew;
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
@@ -328,10 +331,10 @@ namespace Cinemachine
                     in ConfinerOven confinerBaker, in bool confinerStateChanged, 
                     in float frustumHeight)
                 {
-                    if (confinerStateChanged //|| m_Path == null 
+                    if (confinerStateChanged || m_Path == null 
                         || Math.Abs(frustumHeight - m_frustumHeight) > UnityVectorExtensions.Epsilon)
                     {
-                        //m_Path = 
+                        m_Path = 
                             confinerBaker.CalculateConfinerAtFrustumHeight(frustumHeight);
                         m_PathHasBone = confinerBaker.MinFrustumHeightWithBones < frustumHeight;
                         m_frustumHeight = frustumHeight;
