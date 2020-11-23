@@ -293,9 +293,6 @@ namespace Cinemachine.Editor
             public static readonly GUIContent sComposerTargetOverlayPixels = new GUIContent("Target Size (px)", "The size of the composer overlay's target box in pixels");
         }
 
-        private const string kCinemachineHeaderPath = "cinemachine_header.tif";
-        private const string kCinemachineDocURL = @"http://www.cinemachineimagery.com/documentation/";
-
         private static Vector2 sScrollPosition = Vector2.zero;
 
 #if UNITY_2019_1_OR_NEWER
@@ -474,11 +471,6 @@ namespace Cinemachine.Editor
             }
 
             GUILayout.EndScrollView();
-
-            //if (GUILayout.Button("Open Documentation"))
-            //{
-            //    Application.OpenURL(kCinemachineDocURL);
-            //}
         }
 
         private static void OnHierarchyGUI(int instanceID, Rect selectionRect)
