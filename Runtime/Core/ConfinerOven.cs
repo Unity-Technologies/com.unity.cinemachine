@@ -21,7 +21,7 @@ namespace Cinemachine
         private float m_FrustumHeightOfSolution;
         private List<List<IntPoint>> m_Solution = new List<List<IntPoint>>();
 
-        const long k_FloatToIntScaler = 10000000; // same as in Physics2D
+        const long k_FloatToIntScaler = 10000; // same as in Physics2D
         const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
         const float k_MinStepSize = 0.005f;
 
@@ -94,10 +94,9 @@ namespace Cinemachine
                         X = p.X - c.X,
                         Y = p.Y - c.Y,
                     };
-                    ulong diffX = (ulong) difference.X;
-                    ulong diffY = (ulong) difference.Y;
+                    double diffX = difference.X;
+                    double diffY = difference.Y;
                     double distance = diffX * diffX + diffY * diffY;
-                    // Debug.Log("Distance diff:" + (distanceSqr - distance)); // TODO: check!
                     
                     if (Mathf.Abs(difference.X) > m_PolygonRect.width * k_FloatToIntScaler || 
                         Mathf.Abs(difference.Y) > m_PolygonRect.height * k_FloatToIntScaler)
@@ -122,20 +121,18 @@ namespace Cinemachine
             return new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
         }
 
-        private IntPoint m_s;
-        private IntPoint m_s0p;
         private float ClosestPointOnSegment(IntPoint p, IntPoint s0, IntPoint s1)
         {
-            m_s.X = s1.X - s0.X;
-            m_s.Y = s1.Y - s0.Y;
-            float len2 = m_s.X * m_s.X + m_s.Y * m_s.Y;
+            double sX = s1.X - s0.X;
+            double sY = s1.Y - s0.Y;
+            double len2 = sX * sX + sY * sY;
             if (len2 < LongEpsilon)
                 return 0; // degenerate segment
-
-            m_s0p.X = p.X - s0.X;
-            m_s0p.Y = p.Y - s0.Y;
-            float dot = m_s0p.X * m_s.X + m_s0p.Y * m_s.Y;
-            return Mathf.Clamp01(dot / len2);
+            
+            double s0pX = p.X - s0.X;
+            double s0pY = p.Y - s0.Y;
+            double dot = s0pX * sX + s0pY * sY;
+            return Mathf.Clamp01((float) (dot / len2));
         }
 
         private IntPoint IntPointLerp(IntPoint a, IntPoint b, float lerp)
@@ -175,13 +172,13 @@ namespace Cinemachine
         private int FindIntersection(in IntPoint p1, in IntPoint p2, in IntPoint p3, in IntPoint p4)
         {
             // Get the segments' parameters.
-            long dx12 = p2.X - p1.X;
-            long dy12 = p2.Y - p1.Y;
-            long dx34 = p4.X - p3.X;
-            long dy34 = p4.Y - p3.Y;
+            double dx12 = p2.X - p1.X;
+            double dy12 = p2.Y - p1.Y;
+            double dx34 = p4.X - p3.X;
+            double dy34 = p4.Y - p3.Y;
 
             // Solve for t1 and t2
-            double denominator = (dy12 * dx34 - dx12 * dy34);
+            double denominator = dy12 * dx34 - dx12 * dy34;
 
             double t1 =
                 ((p1.X - p3.X) * dy34 + (p3.Y - p1.Y) * dx34)
