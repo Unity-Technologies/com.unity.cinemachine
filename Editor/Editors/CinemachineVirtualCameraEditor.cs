@@ -252,8 +252,8 @@ namespace Cinemachine.Editor
                         // Create a new pipeline
                         GameObject go =  InspectorUtility.CreateGameObject(name);
                         Undo.RegisterCreatedObjectUndo(go, "created pipeline");
-                        bool isPrefabOriginal = PrefabUtility.GetPrefabParent(vcam.gameObject) == null && PrefabUtility.GetPrefabObject(vcam.gameObject.transform) != null;
-                        if (!isPrefabOriginal)
+                        bool partOfPrefab = PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject);
+                        if (!partOfPrefab)
                             Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
                         Undo.AddComponent<CinemachinePipeline>(go);
 
