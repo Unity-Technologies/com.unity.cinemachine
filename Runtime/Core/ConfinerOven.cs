@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine;
-using UnityEngine.Assertions;
 using ClipperLib;
 
 namespace Cinemachine
@@ -21,7 +19,7 @@ namespace Cinemachine
         private float m_FrustumHeightOfSolution;
         private List<List<IntPoint>> m_Solution = new List<List<IntPoint>>();
 
-        const long k_FloatToIntScaler = 10000; // same as in Physics2D
+        const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
         const float k_MinStepSize = 0.005f;
 
@@ -117,8 +115,6 @@ namespace Cinemachine
             var result = new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
             result.x = (result.x - m_CenterX) * m_AspectRatio + m_CenterX;
             return result; 
-            
-            return new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
         }
 
         private float ClosestPointOnSegment(IntPoint p, IntPoint s0, IntPoint s1)
@@ -137,17 +133,10 @@ namespace Cinemachine
 
         private IntPoint IntPointLerp(IntPoint a, IntPoint b, float lerp)
         {
-            return new IntPoint
-                {
-                    X = Mathf.RoundToInt(a.X + (b.X - a.X) * lerp),
-                    Y = Mathf.RoundToInt(a.Y + (b.Y - a.Y) * lerp),
-                };
-            
-            // public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
-            // {
-            //     t = Mathf.Clamp01(t);
-            //     return new Vector2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
-            // }
+            return new IntPoint {
+                X = Mathf.RoundToInt(a.X + (b.X - a.X) * lerp),
+                Y = Mathf.RoundToInt(a.Y + (b.Y - a.Y) * lerp),
+            };
         }
 
         private bool DoesIntersectOriginal(IntPoint l1, IntPoint l2)
@@ -186,7 +175,6 @@ namespace Cinemachine
             if (double.IsInfinity(t1) || double.IsNaN(t1))
             {
                 // The lines are parallel (or close enough to it).
-                
                 if (IntPointDiffSqrMagnitude(p1, p3) < LongEpsilon || IntPointDiffSqrMagnitude(p1, p4) < LongEpsilon ||
                     IntPointDiffSqrMagnitude(p2, p3) < LongEpsilon || IntPointDiffSqrMagnitude(p2, p4) < LongEpsilon)
                 {
