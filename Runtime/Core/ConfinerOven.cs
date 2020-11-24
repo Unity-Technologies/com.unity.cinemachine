@@ -94,7 +94,9 @@ namespace Cinemachine
                         X = p.X - c.X,
                         Y = p.Y - c.Y,
                     };
-                    double distance = difference.X * difference.X + difference.Y * difference.Y;
+                    ulong diffX = (ulong) difference.X;
+                    ulong diffY = (ulong) difference.Y;
+                    double distance = diffX * diffX + diffY * diffY;
                     // Debug.Log("Distance diff:" + (distanceSqr - distance)); // TODO: check!
                     
                     if (Mathf.Abs(difference.X) > m_PolygonRect.width * k_FloatToIntScaler || 
