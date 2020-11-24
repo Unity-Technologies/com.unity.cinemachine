@@ -122,7 +122,7 @@ namespace Cinemachine
             double sX = s1.X - s0.X;
             double sY = s1.Y - s0.Y;
             double len2 = sX * sX + sY * sY;
-            if (len2 < LongEpsilon)
+            if (len2 < m_ClipperEpsilon)
                 return 0; // degenerate segment
             
             double s0pX = p.X - s0.X;
@@ -157,7 +157,7 @@ namespace Cinemachine
             return false;
         }
 
-        private const long LongEpsilon = (long)(0.01f * k_FloatToIntScaler);
+        private const double m_ClipperEpsilon = 0.01f * k_FloatToIntScaler;
         private int FindIntersection(in IntPoint p1, in IntPoint p2, in IntPoint p3, in IntPoint p4)
         {
             // Get the segments' parameters.
@@ -168,15 +168,14 @@ namespace Cinemachine
 
             // Solve for t1 and t2
             double denominator = dy12 * dx34 - dx12 * dy34;
-
             double t1 =
                 ((p1.X - p3.X) * dy34 + (p3.Y - p1.Y) * dx34)
                 / denominator;
             if (double.IsInfinity(t1) || double.IsNaN(t1))
             {
                 // The lines are parallel (or close enough to it).
-                if (IntPointDiffSqrMagnitude(p1, p3) < LongEpsilon || IntPointDiffSqrMagnitude(p1, p4) < LongEpsilon ||
-                    IntPointDiffSqrMagnitude(p2, p3) < LongEpsilon || IntPointDiffSqrMagnitude(p2, p4) < LongEpsilon)
+                if (IntPointDiffSqrMagnitude(p1, p3) < m_ClipperEpsilon || IntPointDiffSqrMagnitude(p1, p4) < m_ClipperEpsilon ||
+                    IntPointDiffSqrMagnitude(p2, p3) < m_ClipperEpsilon || IntPointDiffSqrMagnitude(p2, p4) < m_ClipperEpsilon)
                 {
                     return 2; // they are the same line, or very close parallels
                 }
@@ -189,10 +188,10 @@ namespace Cinemachine
             return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
         }
 
-        private long IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
+        private double IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
         {
-            long X = p1.X - p2.X;
-            long Y = p1.Y - p2.Y;
+            double X = p1.X - p2.X;
+            double Y = p1.Y - p2.Y;
             return X * X + Y * Y;
         }
         
