@@ -50,7 +50,9 @@ namespace Cinemachine
 
         public Vector2 ConfinePoint(in Vector2 pointToConfine)
         {
-            IntPoint p = new IntPoint(pointToConfine.x * k_FloatToIntScaler, pointToConfine.y * k_FloatToIntScaler);
+            Vector2 pInConfinerSpace = pointToConfine;
+            pInConfinerSpace.x = (pInConfinerSpace.x - m_CenterX) * (1f / m_AspectRatio) + m_CenterX;
+            IntPoint p = new IntPoint(pInConfinerSpace.x * k_FloatToIntScaler, pInConfinerSpace.y * k_FloatToIntScaler);
             foreach (List<IntPoint> sol in m_Solution)
             {
                 if (Clipper.PointInPolygon(p, sol) != 0) // 0: outside, +1: inside , -1: point on poly boundary
@@ -86,8 +88,6 @@ namespace Cinemachine
                     IntPoint l1 = m_Solution[i][j];
                     IntPoint l2 = m_Solution[i][(j + 1) % numPoints];
 
-                    double distanceSqr = DistanceFromLineSqrd(p, l1, l2);
-
                     IntPoint c = IntPointLerp(l1, l2, ClosestPointOnSegment(p, l1, l2));
                     IntPoint difference = new IntPoint
                     {
@@ -112,7 +112,7 @@ namespace Cinemachine
                     }
                 }
             }
-
+            
             var result = new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
             result.x = (result.x - m_CenterX) * m_AspectRatio + m_CenterX;
             return result; 
@@ -127,7 +127,7 @@ namespace Cinemachine
             m_s.X = s1.X - s0.X;
             m_s.Y = s1.Y - s0.Y;
             float len2 = m_s.X * m_s.X + m_s.Y * m_s.Y;
-            if (len2 < UnityVectorExtensions.Epsilon)
+            if (len2 < LongEpsilon)
                 return 0; // degenerate segment
 
             m_s0p.X = p.X - s0.X;
@@ -150,25 +150,7 @@ namespace Cinemachine
             //     return new Vector2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
             // }
         }
-        
-        /// <summary>
-        /// Taken from clipper
-        /// </summary>
-        private double DistanceFromLineSqrd(IntPoint pt, IntPoint ln1, IntPoint ln2)
-        {
-            //The equation of a line in general form (Ax + By + C = 0)
-            //given 2 points (x¹,y¹) & (x²,y²) is ...
-            //(y¹ - y²)x + (x² - x¹)y + (y² - y¹)x¹ - (x² - x¹)y¹ = 0
-            //A = (y¹ - y²); B = (x² - x¹); C = (y² - y¹)x¹ - (x² - x¹)y¹
-            //perpendicular distance of point (x³,y³) = (Ax³ + By³ + C)/Sqrt(A² + B²)
-            //see http://en.wikipedia.org/wiki/Perpendicular_distance
-            double A = ln1.Y - ln2.Y;
-            double B = ln2.X - ln1.X;
-            double C = A * ln1.X  + B * ln1.Y;
-            C = A * pt.X + B * pt.Y - C;
-            return (C * C) / (A * A + B * B);
-        }
-        
+
         private bool DoesIntersectOriginal(IntPoint l1, IntPoint l2)
         {
             foreach (var original in m_ClipperInput)
@@ -187,7 +169,7 @@ namespace Cinemachine
             return false;
         }
 
-        private const long LongEpsilon = (long) 0.01f * k_FloatToIntScaler;
+        private const long LongEpsilon = (long)(0.01f * k_FloatToIntScaler);
         private int FindIntersection(in IntPoint p1, in IntPoint p2, in IntPoint p3, in IntPoint p4)
         {
             // Get the segments' parameters.
