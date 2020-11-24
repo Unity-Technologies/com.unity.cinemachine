@@ -163,7 +163,7 @@ namespace Cinemachine
 
             curState.RawPosition = camPos;
             curState.RawOrientation = FollowTargetRotation;
-            curState.ReferenceLookAt = camPos + 1000.0f * (FollowTargetRotation * Vector3.forward);
+            curState.ReferenceLookAt = CameraState.kNoPoint;
             curState.ReferenceUp = up;
         }
 
