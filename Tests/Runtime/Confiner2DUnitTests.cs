@@ -51,11 +51,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
 
         { // counter clockwise
@@ -88,11 +83,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
         
         vcam.m_Lens.OrthographicSize = 1;
@@ -151,11 +141,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
 
         { // counter clockwise
@@ -188,11 +173,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
         
         vcam.m_Lens.OrthographicSize = 1;

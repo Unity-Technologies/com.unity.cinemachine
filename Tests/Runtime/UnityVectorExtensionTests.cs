@@ -57,7 +57,7 @@ public class UnityVectorExtensionTests
             var l2_p2 = new Vector2(1, 0);
             int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
                 out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 0);
+            Assert.IsTrue(intersectionType == 4);
         }
         {
             var l1_p1 = new Vector2(0, 0);
@@ -66,7 +66,7 @@ public class UnityVectorExtensionTests
             var l2_p2 = new Vector2(1, 0);
             int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
                 out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 1);
+            Assert.IsTrue(intersectionType == 2);
             Assert.IsTrue(intersection == l2_p2);
         }
         {
