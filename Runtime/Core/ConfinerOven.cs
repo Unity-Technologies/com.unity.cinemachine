@@ -34,7 +34,7 @@ namespace Cinemachine
                 m_OriginalPolygon = originalPolygon;
                 m_Solution = solution;
 
-                m_PolygonSizeX = polygonBounds.width * k_FloatToIntScaler;
+                m_PolygonSizeX = polygonBounds.width / aspectRatio * k_FloatToIntScaler;
                 m_PolygonSizeY = polygonBounds.height * k_FloatToIntScaler;
                 m_SqrPolygonDiagonal = m_PolygonSizeX * m_PolygonSizeX + m_PolygonSizeY * m_PolygonSizeY;
             }
@@ -81,9 +81,9 @@ namespace Cinemachine
                         double diffY = Mathf.Abs(p.Y - c.Y);
                         double distance = diffX * diffX + diffY * diffY;
                     
+                        // penalty for points from which the target is not visible, prefering visibility over proximity
                         if (diffX > m_PolygonSizeX || diffY > m_PolygonSizeY)
                         {
-                            // penalty for points from which the target is not visible, prefering visibility over proximity
                             distance += m_SqrPolygonDiagonal; 
                         }
 
@@ -314,7 +314,7 @@ namespace Cinemachine
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
 
             // Don't compute further than what is the theoretical max
-            float polygonHalfHeight = m_PolygonRect.height / 2f;
+            float polygonHalfHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
             if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
                 maxFrustumHeight = polygonHalfHeight; 
@@ -359,15 +359,14 @@ namespace Cinemachine
             };
             float currentFrustumHeight = 0;
             
-            float maxStepSize = maxFrustumHeight;
-            float stepSize = maxStepSize;
+            float stepSize = maxFrustumHeight;
             while (solutions.Count < 1000)
             {
                 bool stateChangeFound = false;
                 var numPaths = leftCandidate.m_Polygons.Count;
                 var candidate = new List<List<IntPoint>>(numPaths);
 
-                stepSize = Mathf.Min(stepSize, maxStepSize - leftCandidate.m_FrustumHeight);
+                stepSize = Mathf.Min(stepSize, maxFrustumHeight - leftCandidate.m_FrustumHeight);
 #if false
                 Debug.Log($"States = {solutions.Count}, "
                           + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
@@ -411,8 +410,8 @@ namespace Cinemachine
                     leftCandidate = rightCandidate;
                     rightCandidate = new PolygonSolution();
                     
-                    // Back to max step.  GML todo: this can be smaller now
-                    stepSize = maxStepSize;
+                    // Back to max step
+                    stepSize = maxFrustumHeight;
                 }
                 else if (rightCandidate.IsEmpty || leftCandidate.m_FrustumHeight >= maxFrustumHeight)
                 {
