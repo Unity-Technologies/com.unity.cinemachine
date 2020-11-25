@@ -226,16 +226,17 @@ namespace Cinemachine
             /// <summary>
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
-            /// <param name="aspectRatio">Camera window ratio (width / height)</param>
+            /// <param name="boundingShape2D">Bounding shape</param>
+            /// <param name="maxWindowSize">Max Window size</param>
+            /// <param name="aspectRatio">Aspect ratio/param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
-            /// <returns>True, if path is baked and valid. False, otherwise.</returns>
             public bool ValidateCache(
-                Collider2D boundingShape2D, float maxOrthoSize, 
+                Collider2D boundingShape2D, float maxWindowSize, 
                 float aspectRatio, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
-                if (IsValid(boundingShape2D, aspectRatio, maxOrthoSize))
+                if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
                 {
                     CalculateDeltaTransformationMatrix();
                     return true;
@@ -284,10 +285,10 @@ namespace Cinemachine
                 }
                 
                 m_confinerBaker = new ConfinerOven();
-                m_confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxOrthoSize);
+                m_confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxWindowSize);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
-                m_maxOrthoSize = maxOrthoSize;
+                m_maxOrthoSize = maxWindowSize;
 
                 CalculateDeltaTransformationMatrix();
 
@@ -296,8 +297,8 @@ namespace Cinemachine
             
             private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
             {
-                return boundingShape2D != null && 
-                       m_boundingShape2D != null && m_boundingShape2D == boundingShape2D && // same boundingShape?
+                return boundingShape2D != null && m_boundingShape2D != null && 
+                       m_boundingShape2D == boundingShape2D && // same boundingShape?
                        m_OriginalPath != null && // first time?
                        m_confinerBaker != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
