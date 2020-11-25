@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using ClipperLib;
 
@@ -65,16 +66,7 @@ namespace Cinemachine
             // is very large and the neighbouring section is small.  In that case, we'll need to 
             // add an extra check when calculating the nearest point.
             bool hasBone = MinFrustumHeightWithBones < m_FrustumHeightOfSolution;
-            bool isInsideOriginal = false;
-            foreach (List<IntPoint> original in m_ClipperInput)
-            {
-                if (Clipper.PointInPolygon(p, original) != 0)
-                {
-                    isInsideOriginal = true;
-                    break;
-                }
-            }
-            bool checkIntersectOriginal = hasBone && isInsideOriginal;
+            bool checkIntersectOriginal = hasBone && IsInsideOriginal(p);
             // Confine point
             IntPoint closest = p;
             double minDistance = double.MaxValue;
@@ -115,6 +107,18 @@ namespace Cinemachine
             var result = new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
             result.x = (result.x - m_CenterX) * m_AspectRatio + m_CenterX;
             return result; 
+        }
+
+        private bool IsInsideOriginal(IntPoint p)
+        {
+            foreach (List<IntPoint> original in m_ClipperInput)
+            {
+                if (Clipper.PointInPolygon(p, original) != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private float ClosestPointOnSegment(IntPoint p, IntPoint s0, IntPoint s1)
