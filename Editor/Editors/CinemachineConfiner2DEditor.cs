@@ -37,6 +37,15 @@ namespace Cinemachine.Editor
 #endif
 
             DrawRemainingPropertiesInInspector();
+
+            if (Target.ConfinerOvenTimedOut())
+            {
+                EditorGUILayout.HelpBox(
+                    "Polygon skeleton computation timed out.  Confiner result might be incomplete."
+                    + "\n\nTo fix this, reduce the number of points in the confining shape, "
+                    + "or set the MaxWindowSize parameter to limit skeleton computation.",
+                    MessageType.Warning);
+            }
             
             if (GUILayout.Button("Invalidate Cache"))
             {

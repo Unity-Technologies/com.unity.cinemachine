@@ -349,6 +349,11 @@ namespace Cinemachine
             }
             return originalPath != null;
         }
+
+        internal bool ConfinerOvenTimedOut()
+        {
+            return m_shapeCache.m_confinerBaker != null && m_shapeCache.m_confinerBaker.CalculationTimedOut;
+        }
 #endif
 
         private void OnValidate()

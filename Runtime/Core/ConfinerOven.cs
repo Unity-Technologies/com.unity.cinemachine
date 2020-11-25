@@ -253,6 +253,8 @@ namespace Cinemachine
             m_maxComputationTimeinSeconds = maxComputationTimeInSeconds;
         }
         
+        public bool CalculationTimedOut { get; private set; }
+
         /// <summary>
         /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
         /// </summary>
@@ -308,6 +310,7 @@ namespace Cinemachine
         public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             var startTime = Time.realtimeSinceStartup;
+            CalculationTimedOut = false;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
 
@@ -420,11 +423,7 @@ namespace Cinemachine
 
                 if (Time.realtimeSinceStartup - startTime > m_maxComputationTimeinSeconds)
                 {
-                    Debug.LogWarning("CinemachineConfiner2D timed out. Your confiner result may be " +
-                              "incomplete. Reduce the number of points in the input polygon or " +
-                              "set MaxWindowSize parameter of Confiner2D or " +
-                              "increase max computation time by setting m_MaxComputationTimeInSeconds parameter of " +
-                              "Confiner2D in script");
+                    CalculationTimedOut = true;
                     break;
                 }
             }
