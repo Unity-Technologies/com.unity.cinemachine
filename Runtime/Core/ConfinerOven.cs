@@ -377,10 +377,6 @@ namespace Cinemachine
                     solutions.Add(leftCandidate);
                     break; // stop shrinking, because we are at the bound
                 }
-                else
-                {
-                    continue; // keep searching for a closer left and right or a non-null right
-                }
             }
 
             // Cache the max confinable view size
