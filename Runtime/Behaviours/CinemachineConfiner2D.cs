@@ -103,7 +103,6 @@ namespace Cinemachine
         }
 
         private const float m_cornerAngleTreshold = 10f;
-
         private float m_currentFrustumHeight = 0;
         
         /// <summary>
@@ -129,11 +128,7 @@ namespace Cinemachine
                 var oldCameraPos = state.CorrectedPosition;
                 var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 m_currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
-                var extra = GetExtraState<VcamExtraState>(vcam);
-                extra.m_vcam = vcam;
-                extra.m_VcamShapeCache.ValidateCache(
-                    m_shapeCache.m_confinerBaker, confinerStateChanged, m_currentFrustumHeight);
-                
+                m_shapeCache.m_confinerBaker.ValidateCache(confinerStateChanged, m_currentFrustumHeight);
                 cameraPosLocal = m_shapeCache.m_confinerBaker.ConfinePoint(cameraPosLocal);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
@@ -142,8 +137,9 @@ namespace Cinemachine
                 newCameraPos -= fwd * Vector3.Dot(fwd, newCameraPos - oldCameraPos);
 
                 // Remember the desired displacement for next frame
-                var displacement = newCameraPos - oldCameraPos;
+                var extra = GetExtraState<VcamExtraState>(vcam);
                 var prev = extra.m_PreviousDisplacement;
+                var displacement = newCameraPos - oldCameraPos;
                 extra.m_PreviousDisplacement = displacement;
 
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
@@ -190,36 +186,6 @@ namespace Cinemachine
         {
             public Vector3 m_PreviousDisplacement;
             public Vector3 m_DampedDisplacement;
-            public VcamShapeCache m_VcamShapeCache;
-            
-            internal CinemachineVirtualCameraBase m_vcam;
-            
-            /// <summary> Contains all the cache items that are dependent on something in the vcam. </summary>
-            internal struct VcamShapeCache
-            {
-                public List<List<Vector2>> m_Path;
-                public bool m_PathHasBone;
-                
-                private float m_frustumHeight;
-                
-                /// <summary>
-                /// Check that the path cache was converted from the current confiner cache, or
-                /// converts it if the frustum height was changed.
-                /// </summary>
-                public void ValidateCache(
-                    in ConfinerOven confinerBaker, in bool confinerStateChanged, 
-                    in float frustumHeight)
-                {
-                    if (confinerStateChanged || m_Path == null 
-                        || Math.Abs(frustumHeight - m_frustumHeight) > UnityVectorExtensions.Epsilon)
-                    {
-                        m_Path = 
-                            confinerBaker.CalculateConfinerAtFrustumHeight(frustumHeight);
-                        m_PathHasBone = confinerBaker.MinFrustumHeightWithBones < frustumHeight;
-                        m_frustumHeight = frustumHeight;
-                    }
-                }
-            }
         };
         
         private ShapeCache m_shapeCache; 
@@ -356,19 +322,7 @@ namespace Cinemachine
         {
             originalPath = m_shapeCache.m_OriginalPath;
             pathLocalToWorld = m_shapeCache.m_DeltaBakedToWorld;
-
-            currentPath.Clear();
-            var allExtraStates = GetAllExtraStates<VcamExtraState>();
-            for (int i = 0; i < allExtraStates.Count; ++i)
-            {
-                if (CinemachineCore.Instance.IsLive(allExtraStates[i].m_vcam))
-                {
-                    for (int p = 0; p < allExtraStates[i].m_VcamShapeCache.m_Path.Count; ++p)
-                    {
-                        currentPath.Add(allExtraStates[i].m_VcamShapeCache.m_Path[p]);
-                    }
-                }
-            }
+            currentPath = m_shapeCache.m_confinerBaker.m_Path;
             return originalPath != null;
         }
 

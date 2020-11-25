@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using Cinemachine.Utility;
 using UnityEngine;
 using ClipperLib;
 
@@ -10,43 +10,23 @@ namespace Cinemachine
     /// </summary>
     internal class ConfinerOven
     {
-        public float SqrPolygonDiagonal { get; private set; }
-        private Rect m_PolygonRect;
         public float MaxFrustumHeight { get; private set; }
-        public float MinFrustumHeightWithBones { get; private set; }
+        private float m_MinFrustumHeightWithBones;
 
         private List<List<IntPoint>> m_ClipperInput;
         private List<List<IntPoint>> m_Skeleton = new List<List<IntPoint>>();
         private float m_FrustumHeightOfSolution;
         private List<List<IntPoint>> m_Solution = new List<List<IntPoint>>();
-
-        const long k_FloatToIntScaler = 100000;
-        const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
-        const float k_MinStepSize = 0.005f;
-
+        
+        private const long k_FloatToIntScaler = 100000;
+        private const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
+        private const float k_MinStepSize = 0.005f;
+        
+        private float m_SqrPolygonDiagonal;
+        private Rect m_PolygonRect;
         private float m_CenterX; // used for aspect ratio scaling
         private float m_AspectRatio;
-            
-        private struct PolygonSolution
-        {
-            public List<List<IntPoint>> m_Polygons;
-            public float m_FrustumHeight;
-
-            public bool StateChanged(in List<List<IntPoint>> paths)
-            {
-                if (paths.Count != m_Polygons.Count)
-                    return true;
-                for (var i = 0; i < paths.Count; i++)
-                {
-                    if (paths[i].Count != m_Polygons[i].Count)
-                        return true;
-                }
-                return false;
-            }
-
-            public bool IsEmpty => m_Polygons == null;
-        }
-
+        
         public Vector2 ConfinePoint(in Vector2 pointToConfine)
         {
             Vector2 pInConfinerSpace = pointToConfine;
@@ -65,7 +45,7 @@ namespace Cinemachine
             // is closer than the bone in the correct section of the polygon, if the current section 
             // is very large and the neighbouring section is small.  In that case, we'll need to 
             // add an extra check when calculating the nearest point.
-            bool hasBone = MinFrustumHeightWithBones < m_FrustumHeightOfSolution;
+            bool hasBone = m_MinFrustumHeightWithBones < m_FrustumHeightOfSolution;
             bool checkIntersectOriginal = hasBone && IsInsideOriginal(p);
             // Confine point
             IntPoint closest = p;
@@ -92,7 +72,7 @@ namespace Cinemachine
                         Mathf.Abs(difference.Y) > m_PolygonRect.height * k_FloatToIntScaler)
                     {
                         // penalty for points from which the target is not visible, prefering visibility over proximity
-                        distance += SqrPolygonDiagonal; 
+                        distance += m_SqrPolygonDiagonal; 
                     }
 
                     if (distance < minDistance 
@@ -186,8 +166,6 @@ namespace Cinemachine
                 return 0; // no intersection
             }
             
-            // Find the point of intersection.
-            
             double t2 = ((p3.X - p1.X) * dy12 + (p1.Y - p3.Y) * dx12) / -denominator;
             return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
         }
@@ -202,7 +180,7 @@ namespace Cinemachine
         /// <summary>
         /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
         /// </summary>
-        public List<List<Vector2>> CalculateConfinerAtFrustumHeight(float frustumHeight)
+        private List<List<Vector2>> CalculateConfinerAtFrustumHeight(float frustumHeight)
         {
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
@@ -217,27 +195,61 @@ namespace Cinemachine
             c.AddPaths(solution, PolyType.ptSubject, true);
             c.AddPaths(m_Skeleton, PolyType.ptClip, true);
             c.Execute(ClipType.ctUnion, m_Solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-            
-            // Convert to client space
-            var numPaths = m_Solution.Count;
-            var paths = new List<List<Vector2>>(numPaths);
-            for (int i = 0; i < numPaths; ++i)
+
+            if (Application.isEditor) // #if UNITY_EDITOR
             {
-                var srcPoly = m_Solution[i];
-                int numPoints = srcPoly.Count;
-                var pathSegment = new List<Vector2>(numPoints);
-                for (int j = 0; j < numPoints; j++)
+                // Convert to client space
+                var numPaths = m_Solution.Count;
+                var paths = new List<List<Vector2>>(numPaths);
+                for (int i = 0; i < numPaths; ++i)
                 {
-                    // Restore the original aspect ratio
-                    var x = srcPoly[j].X * k_IntToFloatScaler;
-                    x = (x - m_CenterX) * m_AspectRatio + m_CenterX;
-                    pathSegment.Add(new Vector2(x, srcPoly[j].Y * k_IntToFloatScaler));
+                    var srcPoly = m_Solution[i];
+                    int numPoints = srcPoly.Count;
+                    var pathSegment = new List<Vector2>(numPoints);
+                    for (int j = 0; j < numPoints; j++)
+                    {
+                        // Restore the original aspect ratio
+                        var x = srcPoly[j].X * k_IntToFloatScaler;
+                        x = (x - m_CenterX) * m_AspectRatio + m_CenterX;
+                        pathSegment.Add(new Vector2(x, srcPoly[j].Y * k_IntToFloatScaler));
+                    }
+                    paths.Add(pathSegment);
                 }
-                paths.Add(pathSegment);
+                return paths;
+            } //#endif
+            return null;
+        }
+
+        internal List<List<Vector2>> m_Path = null;
+        public void ValidateCache(in bool confinerStateChanged, in float frustumHeight)
+        {
+            if (confinerStateChanged || m_Path == null 
+                                     || Mathf.Abs(frustumHeight - m_FrustumHeightOfSolution) > k_MinStepSize)
+            {
+                m_Path = CalculateConfinerAtFrustumHeight(frustumHeight);
             }
-            return paths;
         }
         
+        private struct PolygonSolution
+        {
+            public List<List<IntPoint>> m_Polygons;
+            public float m_FrustumHeight;
+
+            public bool StateChanged(in List<List<IntPoint>> paths)
+            {
+                if (paths.Count != m_Polygons.Count)
+                    return true;
+                for (var i = 0; i < paths.Count; i++)
+                {
+                    if (paths[i].Count != m_Polygons[i].Count)
+                        return true;
+                }
+                return false;
+            }
+
+            public bool IsEmpty => m_Polygons == null;
+        }
+
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
         /// The algorithm is divide and conquer. It iteratively shrinks down the input 
@@ -246,24 +258,21 @@ namespace Cinemachine
         /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner(
-            in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             // Compute the aspect-adjusted height of the polygon bounding box
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
-            float polygonHeight = m_PolygonRect.height / aspectRatio; // GML todo: why are we adjusting it for aspect?
 
             // Cache the polygon diagonal 
-            SqrPolygonDiagonal = m_PolygonRect.width * m_PolygonRect.width + polygonHeight * polygonHeight;
+            m_SqrPolygonDiagonal = m_PolygonRect.width * m_PolygonRect.width + 
+                                   m_PolygonRect.height * m_PolygonRect.height;
 
             // Ensuring that we don't compute further than what is the theoretical max
-            float polygonHalfHeight = polygonHeight;
+            float polygonHalfHeight = m_PolygonRect.height / 2f;
             if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
                 maxFrustumHeight = polygonHalfHeight; 
             }
-
-            MinFrustumHeightWithBones = maxFrustumHeight;
 
             m_CenterX = m_PolygonRect.center.x;
             m_AspectRatio = aspectRatio;
@@ -308,19 +317,19 @@ namespace Cinemachine
             };
             float currentFrustumHeight = 0;
             
-            float maxStepSize = polygonHalfHeight / 4f;
+            float maxStepSize = maxFrustumHeight;
             float stepSize = maxStepSize;
             while (solutions.Count < 1000)
             {
-#if false
-                Debug.Log($"States = {m_Solutions.Count}, "
-                    + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
-#endif
                 bool stateChangeFound = false;
                 var numPaths = leftCandidate.m_Polygons.Count;
                 var candidate = new List<List<IntPoint>>(numPaths);
 
-                stepSize = Mathf.Min(stepSize, maxFrustumHeight - leftCandidate.m_FrustumHeight);
+                stepSize = Mathf.Min(stepSize, maxStepSize - leftCandidate.m_FrustumHeight);
+#if false
+                Debug.Log($"States = {solutions.Count}, "
+                          + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
+#endif
                 currentFrustumHeight = leftCandidate.m_FrustumHeight + stepSize;
                 offsetter.Execute(ref candidate, -1f * currentFrustumHeight * k_FloatToIntScaler);
                 stateChangeFound = leftCandidate.StateChanged(in candidate);
@@ -376,7 +385,7 @@ namespace Cinemachine
 
             // Cache the max confinable view size
             MaxFrustumHeight = solutions.Count == 0 ? 0 : solutions[solutions.Count-1].m_FrustumHeight;
-            MinFrustumHeightWithBones = solutions.Count <= 1 ? 0 : solutions[1].m_FrustumHeight;
+            m_MinFrustumHeightWithBones = solutions.Count <= 1 ? 0 : solutions[1].m_FrustumHeight;
             
             ComputeSkeleton(in solutions);
         }
