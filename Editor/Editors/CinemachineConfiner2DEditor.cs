@@ -37,16 +37,6 @@ namespace Cinemachine.Editor
 #endif
 
             DrawRemainingPropertiesInInspector();
-
-            if (Target.IsOverCachedMaxFrustumHeight())
-            {
-                EditorGUILayout.HelpBox(
-                    "Camera window size is bigger than the maximum confinable size.  "
-                    + "\n\nTo be fully confined, the camera window must be smaller "
-                    + "than the value of Max Window Size (if nonzero), and also must fit completely "
-                    + "inside the smallest region of the confining shape.",
-                    MessageType.Warning);
-            }
             
             if (GUILayout.Button("Invalidate Cache"))
             {

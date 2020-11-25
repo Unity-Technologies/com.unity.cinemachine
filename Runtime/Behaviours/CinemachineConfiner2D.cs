@@ -104,8 +104,7 @@ namespace Cinemachine
             return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, out _);
         }
 
-        private const float m_cornerAngleTreshold = 10f;
-        private float m_currentFrustumHeight = 0;
+        private const float k_cornerAngleTreshold = 10f;
         
         /// <summary>
         /// Callback to do the camera confining
@@ -129,9 +128,18 @@ namespace Cinemachine
                 
                 var oldCameraPos = state.CorrectedPosition;
                 var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
-                m_currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
-                m_shapeCache.m_confinerBaker.ValidateCache(confinerStateChanged, m_currentFrustumHeight);
-                cameraPosLocal = m_shapeCache.m_confinerBaker.ConfinePoint(cameraPosLocal);
+                var currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
+
+                // Make sure we have a solution for our current frustum size
+                var extra = GetExtraState<VcamExtraState>(vcam);
+                extra.m_vcam = vcam;
+                if (confinerStateChanged || extra.m_BakedSolution == null 
+                    || !extra.m_BakedSolution.IsValid(currentFrustumHeight))
+                {
+                    extra.m_BakedSolution = m_shapeCache.m_confinerBaker.GetBakedSolution(currentFrustumHeight);
+                }
+
+                cameraPosLocal = extra.m_BakedSolution.ConfinePoint(cameraPosLocal);
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
@@ -139,7 +147,6 @@ namespace Cinemachine
                 newCameraPos -= fwd * Vector3.Dot(fwd, newCameraPos - oldCameraPos);
 
                 // Remember the desired displacement for next frame
-                var extra = GetExtraState<VcamExtraState>(vcam);
                 var prev = extra.m_PreviousDisplacement;
                 var displacement = newCameraPos - oldCameraPos;
                 extra.m_PreviousDisplacement = displacement;
@@ -150,7 +157,7 @@ namespace Cinemachine
                 {
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
-                    if (prev.sqrMagnitude > 0.01f && Vector2.Angle(prev, displacement) > m_cornerAngleTreshold)
+                    if (prev.sqrMagnitude > 0.01f && Vector2.Angle(prev, displacement) > k_cornerAngleTreshold)
                         extra.m_DampedDisplacement += displacement - prev;
 
                     extra.m_DampedDisplacement -= Damper.Damp(extra.m_DampedDisplacement, m_Damping, deltaTime);
@@ -188,6 +195,8 @@ namespace Cinemachine
         {
             public Vector3 m_PreviousDisplacement;
             public Vector3 m_DampedDisplacement;
+            public ConfinerOven.BakedSolution m_BakedSolution;
+            public CinemachineVirtualCameraBase m_vcam;
         };
         
         private ShapeCache m_shapeCache; 
@@ -241,6 +250,7 @@ namespace Cinemachine
                 confinerStateChanged = false;
                 if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
                 {
+                    // Update in case the polygon's transform changed
                     CalculateDeltaTransformationMatrix();
                     return true;
                 }
@@ -317,7 +327,8 @@ namespace Cinemachine
                 m_DeltaBakedToWorld = m_DeltaWorldToBaked.inverse;
             }
         }
-        
+
+#if UNITY_EDITOR
         // Used by editor gizmo drawer
         internal bool GetGizmoPaths(
             out List<List<Vector2>> originalPath,
@@ -326,17 +337,19 @@ namespace Cinemachine
         {
             originalPath = m_shapeCache.m_OriginalPath;
             pathLocalToWorld = m_shapeCache.m_DeltaBakedToWorld;
-            currentPath = m_shapeCache.m_confinerBaker.m_Path;
+            currentPath.Clear();
+            var allExtraStates = GetAllExtraStates<VcamExtraState>();
+            for (int i = 0; i < allExtraStates.Count; ++i)
+            {
+                var e = allExtraStates[i];
+                if (e.m_BakedSolution != null && CinemachineCore.Instance.IsLive(e.m_vcam))
+                {
+                    currentPath.AddRange(e.m_BakedSolution.GetBakedPath());
+                }
+            }
             return originalPath != null;
         }
-
-        // Used by editor gizmo drawer
-        internal bool IsOverCachedMaxFrustumHeight()
-        {
-            if (m_shapeCache.m_confinerBaker == null)
-                return false;
-            return m_shapeCache.m_confinerBaker.MaxFrustumHeight < m_currentFrustumHeight;
-        }
+#endif
 
         private void OnValidate()
         {
