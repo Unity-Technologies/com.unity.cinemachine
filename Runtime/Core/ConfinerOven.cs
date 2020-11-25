@@ -25,6 +25,11 @@ namespace Cinemachine
         private Rect m_PolygonRect;
         private float m_CenterX; // used for aspect ratio scaling
         private float m_AspectRatio;
+
+        public ConfinerOven(float maxComputationTimeInSeconds) : base()
+        {
+            m_maxComputationTimeinSeconds = maxComputationTimeInSeconds;
+        }
         
         public Vector2 ConfinePoint(in Vector2 pointToConfine)
         {
@@ -249,6 +254,7 @@ namespace Cinemachine
             public bool IsEmpty => m_Polygons == null;
         }
 
+        private float m_maxComputationTimeinSeconds = 1f;
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
         /// The algorithm is divide and conquer. It iteratively shrinks down the input 
@@ -259,6 +265,7 @@ namespace Cinemachine
         /// </summary>
         public void BakeConfiner(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
+            var startTime = Time.realtimeSinceStartup;
             // Compute the aspect-adjusted height of the polygon bounding box
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
 
@@ -375,6 +382,16 @@ namespace Cinemachine
                 {
                     solutions.Add(leftCandidate);
                     break; // stop shrinking, because we are at the bound
+                }
+
+                if (Time.realtimeSinceStartup - startTime > m_maxComputationTimeinSeconds)
+                {
+                    Debug.Log("Cinemachine Warning! CinemachineConfiner2D timed out. Your confiner result may be " +
+                              "incomplete or wrong! Reduce the number of points in the input polygon or " +
+                              "set MaxWindowSize parameter of Confiner2D or " +
+                              "increase max computation time by setting m_MaxComputationTimeInSeconds parameter of " +
+                              "Confiner2D in script!");
+                    break;
                 }
             }
 

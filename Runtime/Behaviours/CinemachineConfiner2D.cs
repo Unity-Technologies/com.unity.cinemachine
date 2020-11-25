@@ -88,6 +88,8 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
+        public float m_MaxComputationTimeInSeconds { private get; set; } = 1f;
+
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
         {
@@ -204,6 +206,7 @@ namespace Cinemachine
 
             private float m_aspectRatio;
             private float m_maxOrthoSize;
+            internal float m_maxComputationTimeInSeconds;
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
             private Collider2D m_boundingShape2D;
@@ -284,7 +287,7 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                m_confinerBaker = new ConfinerOven();
+                m_confinerBaker = new ConfinerOven(m_maxComputationTimeInSeconds);
                 m_confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxWindowSize);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
@@ -339,6 +342,7 @@ namespace Cinemachine
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_MaxWindowSize = Mathf.Max(0, m_MaxWindowSize);
+            m_shapeCache.m_maxComputationTimeInSeconds = m_MaxComputationTimeInSeconds;
         }
 
         private void Reset()
