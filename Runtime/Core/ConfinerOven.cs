@@ -178,7 +178,6 @@ namespace Cinemachine
                 return false;
             }
 
-            // GML todo: this function is doing too much work
             private static int FindIntersection(in IntPoint p1, in IntPoint p2, in IntPoint p3, in IntPoint p4)
             {
                 // Get the segments' parameters.
