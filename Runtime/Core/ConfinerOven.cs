@@ -314,13 +314,6 @@ namespace Cinemachine
             CalculationTimedOut = false;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
-
-            // Don't compute further than what is the theoretical max
-            float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
-            if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
-            {
-                maxFrustumHeight = polygonHalfHeight; 
-            }
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
 
             // Initialize clipper
@@ -339,6 +332,20 @@ namespace Cinemachine
                 m_OriginalPolygon.Add(path);
             }
             
+            // Skip the expensive skeleton calculation if it's not wanted
+            if (maxFrustumHeight < 0)
+            {
+                m_MinFrustumHeightWithBones = float.MaxValue;
+                return;
+            }
+
+            // Don't compute further than what is the theoretical max
+            float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
+            if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
+            {
+                maxFrustumHeight = polygonHalfHeight; 
+            }
+
             // Binary search for state changes so we can compute the skeleton
             var offsetter = new ClipperOffset();
             offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);

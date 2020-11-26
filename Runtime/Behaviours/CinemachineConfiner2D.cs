@@ -360,14 +360,13 @@ namespace Cinemachine
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
-            m_MaxWindowSize = Mathf.Max(0, m_MaxWindowSize);
             m_shapeCache.m_maxComputationTimeInSeconds = m_MaxComputationTimeInSeconds;
         }
 
         private void Reset()
         {
             m_Damping = 0.5f;
-            m_MaxWindowSize = 0;
+            m_MaxWindowSize = -1;
         }
     }
 #endif
