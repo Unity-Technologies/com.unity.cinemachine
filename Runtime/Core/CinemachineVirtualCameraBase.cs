@@ -350,8 +350,11 @@ namespace Cinemachine
         public int Priority { get { return m_Priority; }
             set
             {
-                m_Priority = value;
-                UpdateVcamPoolStatus();
+                if (m_Priority != value)
+                {
+                    m_Priority = value;
+                    UpdateVcamPoolStatus();
+                }
             } }
 
         /// <summary>Hint for blending to and from this virtual camera</summary>
