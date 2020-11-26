@@ -51,7 +51,8 @@ namespace Cinemachine
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
                 Vector2 pInConfinerSpace = m_AspectStretcher.Stretch(pointToConfine);
-                IntPoint p = new IntPoint(pInConfinerSpace.x * k_FloatToIntScaler, pInConfinerSpace.y * k_FloatToIntScaler);
+                IntPoint p = 
+                    new IntPoint(pInConfinerSpace.x * k_FloatToIntScaler, pInConfinerSpace.y * k_FloatToIntScaler);
                 foreach (List<IntPoint> sol in m_Solution)
                 {
                     if (Clipper.PointInPolygon(p, sol) != 0) // 0: outside, +1: inside , -1: point on poly boundary
@@ -83,14 +84,13 @@ namespace Cinemachine
                         double diffY = Mathf.Abs(p.Y - c.Y);
                         double distance = diffX * diffX + diffY * diffY;
                     
-                        // penalty for points from which the target is not visible, prefering visibility over proximity
+                        // penalty for points from which the target is not visible, preferring visibility over proximity
                         if (diffX > m_PolygonSizeX || diffY > m_PolygonSizeY)
                         {
-                            distance += m_SqrPolygonDiagonal; 
+                            distance += m_SqrPolygonDiagonal; // penalty is the biggest distance between any two points
                         }
 
-                        if (distance < minDistance 
-                            && (!checkIntersectOriginal || !DoesIntersectOriginal(p, c)))
+                        if (distance < minDistance && (!checkIntersectOriginal || !DoesIntersectOriginal(p, c)))
                         {
                             minDistance = distance;
                             closest = c;
@@ -196,8 +196,10 @@ namespace Cinemachine
                 if (double.IsInfinity(t1) || double.IsNaN(t1))
                 {
                     // The lines are parallel (or close enough to it).
-                    if (IntPointDiffSqrMagnitude(p1, p3) < k_ClipperEpsilon || IntPointDiffSqrMagnitude(p1, p4) < k_ClipperEpsilon ||
-                        IntPointDiffSqrMagnitude(p2, p3) < k_ClipperEpsilon || IntPointDiffSqrMagnitude(p2, p4) < k_ClipperEpsilon)
+                    if (IntPointDiffSqrMagnitude(p1, p3) < k_ClipperEpsilon || 
+                        IntPointDiffSqrMagnitude(p1, p4) < k_ClipperEpsilon ||
+                        IntPointDiffSqrMagnitude(p2, p3) < k_ClipperEpsilon || 
+                        IntPointDiffSqrMagnitude(p2, p4) < k_ClipperEpsilon)
                     {
                         return 2; // they are the same line, or very close parallels
                     }

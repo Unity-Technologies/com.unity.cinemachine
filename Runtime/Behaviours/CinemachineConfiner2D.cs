@@ -322,7 +322,8 @@ namespace Cinemachine
             {
                 // Account for current collider offset (in local space) and 
                 // incorporate the worldspace delta that the confiner has moved since baking
-                var m = Matrix4x4.Translate(-m_boundingShape2D.offset) * m_boundingShape2D.transform.worldToLocalMatrix;
+                var m = Matrix4x4.Translate(-m_boundingShape2D.offset) * 
+                        m_boundingShape2D.transform.worldToLocalMatrix;
                 m_DeltaWorldToBaked = m_bakedToWorld * m;
                 m_DeltaBakedToWorld = m_DeltaWorldToBaked.inverse;
             }
