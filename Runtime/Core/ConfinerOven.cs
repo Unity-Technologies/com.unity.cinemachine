@@ -39,7 +39,6 @@ namespace Cinemachine
                 m_PolygonSizeX = polygonBounds.width / aspectRatio * k_FloatToIntScaler;
                 m_PolygonSizeY = polygonBounds.height * k_FloatToIntScaler;
                 m_SqrPolygonDiagonal = m_PolygonSizeX * m_PolygonSizeX + m_PolygonSizeY * m_PolygonSizeY;
-
             }
 
             public void Clear()
@@ -266,6 +265,7 @@ namespace Cinemachine
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
 
         private float m_maxComputationTimePerFrameInSeconds;
+        private float m_maxComputationTimeForFullSkeletonBakeInSeconds = 10f;
 
         public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, 
             float maxFrustumHeight, in float maxComputationTimePerFrameInSeconds) : base()
@@ -334,6 +334,7 @@ namespace Cinemachine
             UNINITIALIZED, BAKING, BAKED
         }
         public BakingState m_BakingState;
+        public float m_BakeProgress;
 
         private struct BakingStateCache
         {
@@ -345,6 +346,8 @@ namespace Cinemachine
             public float stepSize;
             public float maxFrustumHeight;
             public float currentFrustumHeight;
+
+            public float bakeTime;
         }
         private BakingStateCache m_cache;
 
@@ -412,10 +415,11 @@ namespace Cinemachine
             };
             m_cache.currentFrustumHeight = 0;
             m_cache.maxCandidate = new List<List<IntPoint>>();
-            m_cache.offsetter.Execute(ref m_cache.maxCandidate, 
-                -1f * m_cache.maxFrustumHeight * k_FloatToIntScaler);
+            m_cache.offsetter.Execute(ref m_cache.maxCandidate, -1f * m_cache.maxFrustumHeight * k_FloatToIntScaler);
 
+            m_cache.bakeTime = 0;
             m_BakingState = BakingState.BAKING;
+            m_BakeProgress = 0;
         }
         
         /// <summary>
@@ -428,6 +432,8 @@ namespace Cinemachine
         /// </summary>
         public void BakeConfiner()
         {
+            if (CalculationTimedOut) return; // don't allow bake to continue in the background
+            
             var startTime = Time.realtimeSinceStartup;
             
             while (m_cache.solutions.Count < 1000)
@@ -503,8 +509,13 @@ namespace Cinemachine
 
                 if (Time.realtimeSinceStartup - startTime > m_maxComputationTimePerFrameInSeconds)
                 {
-                    //CalculationTimedOut = true; 
-                    // TODO: We can add a timer that keeps track of time, and we don't allow more than 10 seconds of baking overall
+                    m_cache.bakeTime += m_maxComputationTimePerFrameInSeconds;
+                    if (m_cache.bakeTime > m_maxComputationTimeForFullSkeletonBakeInSeconds)
+                    {
+                        CalculationTimedOut = true; 
+                    }
+
+                    m_BakeProgress = m_cache.leftCandidate.m_FrustumHeight / m_cache.maxFrustumHeight;
                     return;
                 }
             }

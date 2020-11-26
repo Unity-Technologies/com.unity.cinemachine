@@ -364,6 +364,17 @@ namespace Cinemachine
             return originalPath != null;
         }
 
+        internal bool IsBaking()
+        {
+            return m_shapeCache.m_confinerOven != null && 
+                   m_shapeCache.m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKING;
+        }
+
+        internal float BakeProgress()
+        {
+            return 100f * m_shapeCache.m_confinerOven.m_BakeProgress;
+        }
+
         internal bool ConfinerOvenTimedOut()
         {
             return m_shapeCache.m_confinerOven != null && m_shapeCache.m_confinerOven.CalculationTimedOut;

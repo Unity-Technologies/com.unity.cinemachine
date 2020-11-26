@@ -97,6 +97,11 @@ namespace Cinemachine.Editor
                     EditorUtility.SetDirty(Target);
                 }
             }
+
+            if (Target.IsBaking())
+            {
+                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), Target.BakeProgress(), "Baking Progress");
+            }
             if (Target.ConfinerOvenTimedOut())
             {
                 EditorGUILayout.HelpBox(
