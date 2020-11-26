@@ -256,12 +256,10 @@ namespace Cinemachine
                     {
                         m_confinerOven.BakeConfiner();
                     }
-
-                    if (m_prevBakingState == ConfinerOven.BakingState.BAKING &&
-                        m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKED)
-                    {
-                        confinerStateChanged = true;
-                    }
+                    
+                    // if Bake state changed from baking to baked, then confinerStateChanged
+                    confinerStateChanged = m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKED && 
+                                           m_prevBakingState == ConfinerOven.BakingState.BAKING;
                     m_prevBakingState = m_confinerOven.m_BakingState;
                     CalculateDeltaTransformationMatrix();
                     return true;
