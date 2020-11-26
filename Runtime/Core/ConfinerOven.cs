@@ -104,7 +104,7 @@ namespace Cinemachine
 
 #if UNITY_EDITOR
             // Used by inspector to draw the baked path
-            List<List<Vector2>> m_Vector2Path;
+            private List<List<Vector2>> m_Vector2Path;
             public List<List<Vector2>> GetBakedPath()
             {
                 // Convert to client space
@@ -132,9 +132,9 @@ namespace Cinemachine
 
             private bool IsInsideOriginal(IntPoint p)
             {
-                foreach (List<IntPoint> original in m_OriginalPolygon)
+                for (int i = 0; i < m_OriginalPolygon.Count; ++i)
                 {
-                    if (Clipper.PointInPolygon(p, original) != 0)
+                    if (Clipper.PointInPolygon(p, m_OriginalPolygon[i]) != 0)
                     {
                         return true;
                     }
@@ -234,8 +234,7 @@ namespace Cinemachine
             public Vector2 Stretch(Vector2 p) { return new Vector2((p.x - m_CenterX) * m_InverseAspect + m_CenterX, p.y); }
             public Vector2 Unstretch(Vector2 p) { return new Vector2((p.x - m_CenterX) * Aspect + m_CenterX, p.y); }
         }
-
-        public float MaxFrustumHeight { get; private set; }
+        
         private float m_MinFrustumHeightWithBones;
 
         private List<List<IntPoint>> m_OriginalPolygon;
@@ -248,9 +247,8 @@ namespace Cinemachine
         private Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
 
-        private float m_maxComputationTimeinSeconds = 1f;
-
-
+        private float m_maxComputationTimeinSeconds;
+        
         public ConfinerOven(float maxComputationTimeInSeconds) : base()
         {
             m_maxComputationTimeinSeconds = maxComputationTimeInSeconds;
@@ -291,7 +289,7 @@ namespace Cinemachine
             {
                 if (paths.Count != m_Polygons.Count)
                     return true;
-                for (var i = 0; i < paths.Count; i++)
+                for (int i = 0; i < paths.Count; ++i)
                 {
                     if (paths[i].Count != m_Polygons[i].Count)
                         return true;
@@ -429,7 +427,7 @@ namespace Cinemachine
                 else if (rightCandidate.IsEmpty || leftCandidate.m_FrustumHeight >= maxFrustumHeight)
                 {
                     solutions.Add(leftCandidate);
-                    break; // stop searchng, because we are at the bound
+                    break; // stop searching, because we are at the bound
                 }
 
                 if (Time.realtimeSinceStartup - startTime > m_maxComputationTimeinSeconds)
@@ -440,7 +438,6 @@ namespace Cinemachine
             }
 
             // Cache the max confinable view size
-            MaxFrustumHeight = solutions.Count == 0 ? 0 : solutions[solutions.Count-1].m_FrustumHeight;
             m_MinFrustumHeightWithBones = solutions.Count <= 1 ? 0 : solutions[1].m_FrustumHeight;
             
             ComputeSkeleton(in solutions);
@@ -470,7 +467,7 @@ namespace Cinemachine
             m_Skeleton.Clear();
 
             // At each state change point, collect geometry that gets lost over the transition
-            Clipper clipper = new Clipper();
+            var clipper = new Clipper();
             var offsetter = new ClipperOffset();
             for (int i = 1; i < solutions.Count - 1; i += 2)
             {
@@ -481,13 +478,13 @@ namespace Cinemachine
                 double step = padding * k_FloatToIntScaler * (next.m_FrustumHeight - prev.m_FrustumHeight);
 
                 // Grow the larger polygon to inflate marginal regions
-                List<List<IntPoint>> expandedPrev = new List<List<IntPoint>>();
+                var expandedPrev = new List<List<IntPoint>>();
                 offsetter.Clear();
                 offsetter.AddPaths(prev.m_Polygons, JoinType.jtMiter, EndType.etClosedPolygon);
                 offsetter.Execute(ref expandedPrev, step);
 
                 // Grow the smaller polygon to be a bit bigger than the expanded larger one
-                List<List<IntPoint>> expandedNext = new List<List<IntPoint>>();
+                var expandedNext = new List<List<IntPoint>>();
                 offsetter.Clear();
                 offsetter.AddPaths(next.m_Polygons, JoinType.jtMiter, EndType.etClosedPolygon);
                 offsetter.Execute(ref expandedNext, step * 2);

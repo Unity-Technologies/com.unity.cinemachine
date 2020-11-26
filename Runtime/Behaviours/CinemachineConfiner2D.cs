@@ -88,7 +88,7 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
-        public float m_MaxComputationTimeInSeconds { private get; set; } = 1f;
+        private float m_MaxComputationTimeInSeconds = 1f;
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
