@@ -349,11 +349,11 @@ namespace Cinemachine
 
             public float bakeTime;
         }
-        private BakingStateCache m_cache;
+        private BakingStateCache m_Cache;
 
         private void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
-            m_cache.maxFrustumHeight = maxFrustumHeight;
+            m_Cache.maxFrustumHeight = maxFrustumHeight;
             CalculationTimedOut = false;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
@@ -376,7 +376,7 @@ namespace Cinemachine
             }
             
             // Skip the expensive skeleton calculation if it's not wanted
-            if (m_cache.maxFrustumHeight  < 0)
+            if (m_Cache.maxFrustumHeight  < 0)
             {
                 m_MinFrustumHeightWithBones = float.MaxValue;
                 m_BakingState = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
@@ -387,37 +387,37 @@ namespace Cinemachine
             float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
             
             // exact comparison to 0 is intentional!
-            if (m_cache.maxFrustumHeight  == 0 || m_cache.maxFrustumHeight  > polygonHalfHeight) 
+            if (m_Cache.maxFrustumHeight  == 0 || m_Cache.maxFrustumHeight  > polygonHalfHeight) 
             {
-                m_cache.maxFrustumHeight = polygonHalfHeight; 
+                m_Cache.maxFrustumHeight = polygonHalfHeight; 
             }
-            m_cache.stepSize = m_cache.maxFrustumHeight;
+            m_Cache.stepSize = m_Cache.maxFrustumHeight;
 
             // Binary search for state changes so we can compute the skeleton
-            m_cache.offsetter = new ClipperOffset();
-            m_cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
+            m_Cache.offsetter = new ClipperOffset();
+            m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
 
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
-            m_cache.offsetter.Execute(ref solution, 0);
+            m_Cache.offsetter.Execute(ref solution, 0);
             
-            m_cache.solutions = new List<PolygonSolution>();
-            m_cache.solutions.Add(new PolygonSolution
+            m_Cache.solutions = new List<PolygonSolution>();
+            m_Cache.solutions.Add(new PolygonSolution
             {
                 m_Polygons = solution,
                 m_FrustumHeight = 0,
             });
 
-            m_cache.rightCandidate = new PolygonSolution();
-            m_cache.leftCandidate = new PolygonSolution
+            m_Cache.rightCandidate = new PolygonSolution();
+            m_Cache.leftCandidate = new PolygonSolution
             {
                 m_Polygons = solution,
                 m_FrustumHeight = 0,
             };
-            m_cache.currentFrustumHeight = 0;
-            m_cache.maxCandidate = new List<List<IntPoint>>();
-            m_cache.offsetter.Execute(ref m_cache.maxCandidate, -1f * m_cache.maxFrustumHeight * k_FloatToIntScaler);
+            m_Cache.currentFrustumHeight = 0;
+            m_Cache.maxCandidate = new List<List<IntPoint>>();
+            m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.maxFrustumHeight * k_FloatToIntScaler);
 
-            m_cache.bakeTime = 0;
+            m_Cache.bakeTime = 0;
             m_BakingState = BakingState.BAKING;
             m_BakeProgress = 0;
         }
@@ -436,96 +436,96 @@ namespace Cinemachine
             
             var startTime = Time.realtimeSinceStartup;
             
-            while (m_cache.solutions.Count < 1000)
+            while (m_Cache.solutions.Count < 1000)
             {
                 bool stateChangeFound = false;
-                var numPaths = m_cache.leftCandidate.m_Polygons.Count;
+                var numPaths = m_Cache.leftCandidate.m_Polygons.Count;
                 var candidate = new List<List<IntPoint>>(numPaths);
 
-                m_cache.stepSize = Mathf.Min(m_cache.stepSize, 
-                    m_cache.maxFrustumHeight - m_cache.leftCandidate.m_FrustumHeight);
+                m_Cache.stepSize = Mathf.Min(m_Cache.stepSize, 
+                    m_Cache.maxFrustumHeight - m_Cache.leftCandidate.m_FrustumHeight);
 #if false
                 Debug.Log($"States = {solutions.Count}, "
                           + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
 #endif
-                m_cache.currentFrustumHeight = 
-                    m_cache.leftCandidate.m_FrustumHeight + m_cache.stepSize;
-                if (Math.Abs(m_cache.currentFrustumHeight - m_cache.maxFrustumHeight) < 
+                m_Cache.currentFrustumHeight = 
+                    m_Cache.leftCandidate.m_FrustumHeight + m_Cache.stepSize;
+                if (Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < 
                     UnityVectorExtensions.Epsilon)
                 {
-                    candidate = m_cache.maxCandidate;
+                    candidate = m_Cache.maxCandidate;
                 }
                 else
                 {
-                    m_cache.offsetter.Execute(
-                        ref candidate, -1f * m_cache.currentFrustumHeight * k_FloatToIntScaler);
+                    m_Cache.offsetter.Execute(
+                        ref candidate, -1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
                 }
-                stateChangeFound = m_cache.leftCandidate.StateChanged(in candidate);
+                stateChangeFound = m_Cache.leftCandidate.StateChanged(in candidate);
 
                 if (stateChangeFound)
                 {
-                    m_cache.rightCandidate = new PolygonSolution
+                    m_Cache.rightCandidate = new PolygonSolution
                     {
                         m_Polygons = candidate,
-                        m_FrustumHeight = m_cache.currentFrustumHeight,
+                        m_FrustumHeight = m_Cache.currentFrustumHeight,
                     };
-                    m_cache.stepSize = Mathf.Max(m_cache.stepSize / 2f, k_MinStepSize);
+                    m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
                 }
                 else
                 {
-                    m_cache.leftCandidate = new PolygonSolution
+                    m_Cache.leftCandidate = new PolygonSolution
                     {
                         m_Polygons = candidate,
-                        m_FrustumHeight = m_cache.currentFrustumHeight,
+                        m_FrustumHeight = m_Cache.currentFrustumHeight,
                     };
 
                     // if we have not found right yet, then we don't need to decrease stepsize
-                    if (!m_cache.rightCandidate.IsEmpty)
+                    if (!m_Cache.rightCandidate.IsEmpty)
                     {
-                        m_cache.stepSize = Mathf.Max(m_cache.stepSize / 2f, k_MinStepSize);
+                        m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
                     }
                 }
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
                 // then we have located a state change point
-                if (!m_cache.rightCandidate.IsEmpty && m_cache.stepSize <= k_MinStepSize)
+                if (!m_Cache.rightCandidate.IsEmpty && m_Cache.stepSize <= k_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
-                    m_cache.solutions.Add(m_cache.leftCandidate);
-                    m_cache.solutions.Add(m_cache.rightCandidate);
+                    m_Cache.solutions.Add(m_Cache.leftCandidate);
+                    m_Cache.solutions.Add(m_Cache.rightCandidate);
 
-                    m_cache.leftCandidate = m_cache.rightCandidate;
-                    m_cache.rightCandidate = new PolygonSolution();
+                    m_Cache.leftCandidate = m_Cache.rightCandidate;
+                    m_Cache.rightCandidate = new PolygonSolution();
                     
                     // Back to max step
-                    m_cache.stepSize = m_cache.maxFrustumHeight;
+                    m_Cache.stepSize = m_Cache.maxFrustumHeight;
                 }
-                else if (m_cache.rightCandidate.IsEmpty || 
-                         m_cache.leftCandidate.m_FrustumHeight >= m_cache.maxFrustumHeight)
+                else if (m_Cache.rightCandidate.IsEmpty || 
+                         m_Cache.leftCandidate.m_FrustumHeight >= m_Cache.maxFrustumHeight)
                 {
-                    m_cache.solutions.Add(m_cache.leftCandidate);
+                    m_Cache.solutions.Add(m_Cache.leftCandidate);
                     break; // stop searching, because we are at the bound
                 }
 
                 if (Time.realtimeSinceStartup - startTime > m_maxComputationTimePerFrameInSeconds)
                 {
-                    m_cache.bakeTime += m_maxComputationTimePerFrameInSeconds;
-                    if (m_cache.bakeTime > m_maxComputationTimeForFullSkeletonBakeInSeconds)
+                    m_Cache.bakeTime += m_maxComputationTimePerFrameInSeconds;
+                    if (m_Cache.bakeTime > m_maxComputationTimeForFullSkeletonBakeInSeconds)
                     {
                         CalculationTimedOut = true; 
                     }
 
-                    m_BakeProgress = m_cache.leftCandidate.m_FrustumHeight / m_cache.maxFrustumHeight;
+                    m_BakeProgress = m_Cache.leftCandidate.m_FrustumHeight / m_Cache.maxFrustumHeight;
                     return;
                 }
             }
 
             // Cache the max confinable view size
-            m_MinFrustumHeightWithBones = m_cache.solutions.Count <= 1 
+            m_MinFrustumHeightWithBones = m_Cache.solutions.Count <= 1 
                 ? 0 
-                : m_cache.solutions[1].m_FrustumHeight;
+                : m_Cache.solutions[1].m_FrustumHeight;
             
-            ComputeSkeleton(in m_cache.solutions);
+            ComputeSkeleton(in m_Cache.solutions);
             m_BakingState = BakingState.BAKED;
         }
         
