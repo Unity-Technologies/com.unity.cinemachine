@@ -265,7 +265,7 @@ namespace Cinemachine
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
 
         private float m_maxComputationTimePerFrameInSeconds;
-        private float m_maxComputationTimeForFullSkeletonBakeInSeconds = 10f;
+        private float m_maxComputationTimeForFullSkeletonBakeInSeconds = 5f;
 
         public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, 
             float maxFrustumHeight, in float maxComputationTimePerFrameInSeconds) : base()
@@ -526,6 +526,7 @@ namespace Cinemachine
                 : m_Cache.solutions[1].m_FrustumHeight;
             
             ComputeSkeleton(in m_Cache.solutions);
+            m_BakeProgress = 1;
             m_BakingState = BakingState.BAKED;
         }
         

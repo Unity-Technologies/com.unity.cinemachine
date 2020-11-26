@@ -96,12 +96,11 @@ namespace Cinemachine.Editor
                     Target.InvalidateCache();
                     EditorUtility.SetDirty(Target);
                 }
+                
+                var progress = Target.BakeProgress();
+                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), progress, progress >= 1f ? "Baked" : "Baking");
             }
-
-            if (Target.IsBaking())
-            {
-                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), Target.BakeProgress(), "Baking Progress");
-            }
+            
             if (Target.ConfinerOvenTimedOut())
             {
                 EditorGUILayout.HelpBox(

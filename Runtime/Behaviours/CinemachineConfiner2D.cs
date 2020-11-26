@@ -362,15 +362,11 @@ namespace Cinemachine
             return originalPath != null;
         }
 
-        internal bool IsBaking()
-        {
-            return m_shapeCache.m_confinerOven != null && 
-                   m_shapeCache.m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKING;
-        }
-
         internal float BakeProgress()
         {
-            return 100f * m_shapeCache.m_confinerOven.m_BakeProgress;
+            if (m_shapeCache.m_confinerOven != null)
+                return m_shapeCache.m_confinerOven.m_BakeProgress;
+            return 0f;
         }
 
         internal bool ConfinerOvenTimedOut()
