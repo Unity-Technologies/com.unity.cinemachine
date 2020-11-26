@@ -88,7 +88,7 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
-        private float m_MaxComputationTimePerFrameInSeconds = 1f / 60f; // 60 fps
+        private float m_MaxComputationTimePerFrameInSeconds = 1f / 120f; // 60 fps
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
@@ -215,7 +215,6 @@ namespace Cinemachine
 
             private float m_aspectRatio;
             private float m_maxOrthoSize;
-            private ConfinerOven.BakingState m_prevBakingState;
             internal float m_maxComputationTimePerFrameInSeconds;
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
@@ -251,16 +250,16 @@ namespace Cinemachine
                 confinerStateChanged = false;
                 if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
                 {
-                    // Update in case the polygon's transform changed
-                    if (m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKING)
+                    // Advance confiner baking
+                    if (m_confinerOven.State == ConfinerOven.BakingState.BAKING)
                     {
-                        m_confinerOven.BakeConfiner();
+                        m_confinerOven.BakeConfiner(m_maxComputationTimePerFrameInSeconds);
+
+                        // If no longer baking, then confinerStateChanged
+                        confinerStateChanged = m_confinerOven.State != ConfinerOven.BakingState.BAKING;
                     }
                     
-                    // if Bake state changed from baking to baked, then confinerStateChanged
-                    confinerStateChanged = m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKED && 
-                                           m_prevBakingState == ConfinerOven.BakingState.BAKING;
-                    m_prevBakingState = m_confinerOven.m_BakingState;
+                    // Update in case the polygon's transform changed
                     CalculateDeltaTransformationMatrix();
                     return true;
                 }
@@ -307,9 +306,7 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize, 
-                    m_maxComputationTimePerFrameInSeconds);
-                m_prevBakingState = m_confinerOven.m_BakingState;
+                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxWindowSize;
@@ -371,7 +368,8 @@ namespace Cinemachine
 
         internal bool ConfinerOvenTimedOut()
         {
-            return m_shapeCache.m_confinerOven != null && m_shapeCache.m_confinerOven.CalculationTimedOut;
+            return m_shapeCache.m_confinerOven != null 
+                && m_shapeCache.m_confinerOven.State == ConfinerOven.BakingState.TIMEOUT;
         }
 #endif
 

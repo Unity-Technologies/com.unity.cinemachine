@@ -264,18 +264,14 @@ namespace Cinemachine
         private Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
 
-        private float m_maxComputationTimePerFrameInSeconds;
         private float m_maxComputationTimeForFullSkeletonBakeInSeconds = 5f;
 
-        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, 
-            float maxFrustumHeight, in float maxComputationTimePerFrameInSeconds) : base()
+        public ConfinerOven(
+            in List<List<Vector2>> inputPath, 
+            in float aspectRatio, float maxFrustumHeight) : base()
         {
-            m_maxComputationTimePerFrameInSeconds = maxComputationTimePerFrameInSeconds;
-            m_BakingState = BakingState.UNINITIALIZED;
             Initialize(inputPath, aspectRatio, maxFrustumHeight);
         }
-
-        public bool CalculationTimedOut { get; private set; }
 
         /// <summary>
         /// Converts and returns a prebaked ConfinerState for the input frustumHeight.
@@ -290,7 +286,7 @@ namespace Cinemachine
             
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
-            if (m_BakingState == BakingState.BAKING)
+            if (State == BakingState.BAKING)
             {
                 bakedSolution = solution;
             }
@@ -329,11 +325,12 @@ namespace Cinemachine
             public bool IsEmpty => m_Polygons == null;
         }
 
-        public enum BakingState
+        public enum BakingState 
         {
-            UNINITIALIZED, BAKING, BAKED
+            BAKING, BAKED, TIMEOUT
         }
-        public BakingState m_BakingState;
+        public BakingState State { get; private set; }
+
         public float m_BakeProgress;
 
         private struct BakingStateCache
@@ -354,7 +351,6 @@ namespace Cinemachine
         private void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             m_Cache.maxFrustumHeight = maxFrustumHeight;
-            CalculationTimedOut = false;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
@@ -379,7 +375,7 @@ namespace Cinemachine
             if (m_Cache.maxFrustumHeight  < 0)
             {
                 m_MinFrustumHeightWithBones = float.MaxValue;
-                m_BakingState = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
+                State = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
                 return;
             }
 
@@ -418,7 +414,7 @@ namespace Cinemachine
             m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.maxFrustumHeight * k_FloatToIntScaler);
 
             m_Cache.bakeTime = 0;
-            m_BakingState = BakingState.BAKING;
+            State = BakingState.BAKING;
             m_BakeProgress = 0;
         }
         
@@ -430,9 +426,10 @@ namespace Cinemachine
         /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner()
+        public void BakeConfiner(float maxComputationTimePerFrameInSeconds)
         {
-            if (CalculationTimedOut) return; // don't allow bake to continue in the background
+            if (State != BakingState.BAKING) 
+                return;
             
             var startTime = Time.realtimeSinceStartup;
             
@@ -507,12 +504,14 @@ namespace Cinemachine
                     break; // stop searching, because we are at the bound
                 }
 
-                if (Time.realtimeSinceStartup - startTime > m_maxComputationTimePerFrameInSeconds)
+                // Pause after max time per iteration reached
+                var elapsedTime = Time.realtimeSinceStartup - startTime;
+                if (elapsedTime > maxComputationTimePerFrameInSeconds)
                 {
-                    m_Cache.bakeTime += m_maxComputationTimePerFrameInSeconds;
+                    m_Cache.bakeTime += elapsedTime;
                     if (m_Cache.bakeTime > m_maxComputationTimeForFullSkeletonBakeInSeconds)
                     {
-                        CalculationTimedOut = true; 
+                        State = BakingState.TIMEOUT; 
                     }
 
                     m_BakeProgress = m_Cache.leftCandidate.m_FrustumHeight / m_Cache.maxFrustumHeight;
@@ -527,7 +526,7 @@ namespace Cinemachine
             
             ComputeSkeleton(in m_Cache.solutions);
             m_BakeProgress = 1;
-            m_BakingState = BakingState.BAKED;
+            State = BakingState.BAKED;
         }
         
         private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
