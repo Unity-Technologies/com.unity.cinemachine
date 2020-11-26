@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Cinemachine.Utility;
 using UnityEngine;
 using ClipperLib;
 
@@ -319,7 +321,6 @@ namespace Cinemachine
             {
                 maxFrustumHeight = polygonHalfHeight; 
             }
-            Debug.Log("maxFrustumHeight:"+maxFrustumHeight);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
 
             // Initialize clipper
@@ -359,7 +360,9 @@ namespace Cinemachine
                 m_FrustumHeight = 0,
             };
             float currentFrustumHeight = 0;
-            
+            List<List<IntPoint>> maxCandidate = new List<List<IntPoint>>();
+            offsetter.Execute(ref maxCandidate, -1f * maxFrustumHeight * k_FloatToIntScaler);
+
             float stepSize = maxFrustumHeight;
             while (solutions.Count < 1000)
             {
@@ -373,7 +376,14 @@ namespace Cinemachine
                           + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
 #endif
                 currentFrustumHeight = leftCandidate.m_FrustumHeight + stepSize;
-                offsetter.Execute(ref candidate, -1f * currentFrustumHeight * k_FloatToIntScaler);
+                if (Math.Abs(currentFrustumHeight - maxFrustumHeight) < UnityVectorExtensions.Epsilon)
+                {
+                    candidate = maxCandidate;
+                }
+                else
+                {
+                    offsetter.Execute(ref candidate, -1f * currentFrustumHeight * k_FloatToIntScaler);
+                }
                 stateChangeFound = leftCandidate.StateChanged(in candidate);
 
                 if (stateChangeFound)
