@@ -314,11 +314,12 @@ namespace Cinemachine
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
 
             // Don't compute further than what is the theoretical max
-            float polygonHalfHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
+            float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
             if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
                 maxFrustumHeight = polygonHalfHeight; 
             }
+            Debug.Log("maxFrustumHeight:"+maxFrustumHeight);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
 
             // Initialize clipper
