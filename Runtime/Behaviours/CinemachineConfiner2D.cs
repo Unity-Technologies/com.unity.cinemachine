@@ -88,7 +88,7 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
-        private float m_MaxComputationTimeInSeconds = 1f;
+        private float m_MaxComputationTimePerFrameInSeconds = 1f / 30f; // 30 fps
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
@@ -136,7 +136,7 @@ namespace Cinemachine
                 if (confinerStateChanged || extra.m_BakedSolution == null 
                     || !extra.m_BakedSolution.IsValid(currentFrustumHeight))
                 {
-                    extra.m_BakedSolution = m_shapeCache.m_confinerBaker.GetBakedSolution(currentFrustumHeight);
+                    extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(currentFrustumHeight);
                 }
 
                 cameraPosLocal = extra.m_BakedSolution.ConfinePoint(cameraPosLocal);
@@ -206,7 +206,7 @@ namespace Cinemachine
         /// </summary>
         private struct ShapeCache
         {
-            public ConfinerOven m_confinerBaker;
+            public ConfinerOven m_confinerOven;
             public List<List<Vector2>> m_OriginalPath;  // in baked space, not including offset
 
             // These account for offset and transform change since baking
@@ -215,7 +215,8 @@ namespace Cinemachine
 
             private float m_aspectRatio;
             private float m_maxOrthoSize;
-            internal float m_maxComputationTimeInSeconds;
+            private ConfinerOven.BakingState m_prevBakingState;
+            internal float m_maxComputationTimePerFrameInSeconds;
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
             private Collider2D m_boundingShape2D;
@@ -232,7 +233,7 @@ namespace Cinemachine
                 m_boundingShape2D = null;
                 m_OriginalPath = null;
 
-                m_confinerBaker = null;
+                m_confinerOven = null;
             }
             
             /// <summary>
@@ -251,6 +252,18 @@ namespace Cinemachine
                 if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
                 {
                     // Update in case the polygon's transform changed
+                    if (m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKING)
+                    {
+                        m_confinerOven.BakeConfiner(maxWindowSize);
+                    }
+
+                    if (m_prevBakingState == ConfinerOven.BakingState.BAKING &&
+                        m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKED)
+                    {
+                        confinerStateChanged = true;
+                    }
+                    Debug.Log("m_prevBakingState:"+m_prevBakingState+"|m_confinerOven.m_BakingState:"+m_confinerOven.m_BakingState);
+                    m_prevBakingState = m_confinerOven.m_BakingState;
                     CalculateDeltaTransformationMatrix();
                     return true;
                 }
@@ -297,8 +310,8 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                m_confinerBaker = new ConfinerOven(m_maxComputationTimeInSeconds);
-                m_confinerBaker.BakeConfiner(m_OriginalPath, aspectRatio, maxWindowSize);
+                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize, 
+                    m_maxComputationTimePerFrameInSeconds);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxWindowSize;
@@ -313,7 +326,7 @@ namespace Cinemachine
                 return boundingShape2D != null && m_boundingShape2D != null && 
                        m_boundingShape2D == boundingShape2D && // same boundingShape?
                        m_OriginalPath != null && // first time?
-                       m_confinerBaker != null && // cache not empty? 
+                       m_confinerOven != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
                        Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
@@ -353,14 +366,14 @@ namespace Cinemachine
 
         internal bool ConfinerOvenTimedOut()
         {
-            return m_shapeCache.m_confinerBaker != null && m_shapeCache.m_confinerBaker.CalculationTimedOut;
+            return m_shapeCache.m_confinerOven != null && m_shapeCache.m_confinerOven.CalculationTimedOut;
         }
 #endif
 
         private void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
-            m_shapeCache.m_maxComputationTimeInSeconds = m_MaxComputationTimeInSeconds;
+            m_shapeCache.m_maxComputationTimePerFrameInSeconds = m_MaxComputationTimePerFrameInSeconds;
         }
 
         private void Reset()
