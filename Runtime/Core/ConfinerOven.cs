@@ -347,7 +347,8 @@ namespace Cinemachine
             public float currentFrustumHeight;
         }
         private BakingStateCache m_bakingStateCache;
-        public void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+
+        private void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             m_bakingStateCache.maxFrustumHeight = maxFrustumHeight;
             CalculationTimedOut = false;
@@ -381,8 +382,9 @@ namespace Cinemachine
 
             // Don't compute further than what is the theoretical max
             float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
-        
-            if (m_bakingStateCache.maxFrustumHeight  == 0 || m_bakingStateCache.maxFrustumHeight  > polygonHalfHeight) // exact comparison to 0 is intentional!
+            
+            // exact comparison to 0 is intentional!
+            if (m_bakingStateCache.maxFrustumHeight  == 0 || m_bakingStateCache.maxFrustumHeight  > polygonHalfHeight) 
             {
                 m_bakingStateCache.maxFrustumHeight = polygonHalfHeight; 
             }
@@ -410,7 +412,8 @@ namespace Cinemachine
             };
             m_bakingStateCache.currentFrustumHeight = 0;
             m_bakingStateCache.maxCandidate = new List<List<IntPoint>>();
-            m_bakingStateCache.offsetter.Execute(ref m_bakingStateCache.maxCandidate, -1f * m_bakingStateCache.maxFrustumHeight * k_FloatToIntScaler);
+            m_bakingStateCache.offsetter.Execute(ref m_bakingStateCache.maxCandidate, 
+                -1f * m_bakingStateCache.maxFrustumHeight * k_FloatToIntScaler);
 
             m_BakingState = BakingState.BAKING;
         }
@@ -441,7 +444,8 @@ namespace Cinemachine
 #endif
                 m_bakingStateCache.currentFrustumHeight = 
                     m_bakingStateCache.leftCandidate.m_FrustumHeight + m_bakingStateCache.stepSize;
-                if (Math.Abs(m_bakingStateCache.currentFrustumHeight - m_bakingStateCache.maxFrustumHeight) < UnityVectorExtensions.Epsilon)
+                if (Math.Abs(m_bakingStateCache.currentFrustumHeight - m_bakingStateCache.maxFrustumHeight) < 
+                    UnityVectorExtensions.Epsilon)
                 {
                     candidate = m_bakingStateCache.maxCandidate;
                 }
@@ -501,7 +505,7 @@ namespace Cinemachine
                 {
                     //CalculationTimedOut = true; 
                     // TODO: We can add a timer that keeps track of time, and we don't allow more than 10 seconds of baking overall
-                    //return;
+                    return;
                 }
             }
 
