@@ -136,15 +136,7 @@ namespace Cinemachine
                 if (confinerStateChanged || extra.m_BakedSolution == null 
                     || !extra.m_BakedSolution.IsValid(currentFrustumHeight))
                 {
-                    Debug.Log(">>>called m_shapeCache.m_confinerOven.GetBakedSolution");
                     extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(currentFrustumHeight);
-                    // foreach (var listpoint in extra.m_BakedSolution.m_Solution)
-                    // {
-                    //     foreach (var point in listpoint)
-                    //     {
-                    //         Debug.Log(">>>" + point.X + ","+point.Y);
-                    //     }
-                    // }
                 }
 
                 cameraPosLocal = extra.m_BakedSolution.ConfinePoint(cameraPosLocal);
@@ -262,7 +254,7 @@ namespace Cinemachine
                     // Update in case the polygon's transform changed
                     if (m_confinerOven.m_BakingState == ConfinerOven.BakingState.BAKING)
                     {
-                        m_confinerOven.BakeConfiner(maxWindowSize);
+                        m_confinerOven.BakeConfiner();
                     }
 
                     if (m_prevBakingState == ConfinerOven.BakingState.BAKING &&

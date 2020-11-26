@@ -343,11 +343,13 @@ namespace Cinemachine
             public PolygonSolution leftCandidate;
             public List<List<IntPoint>> maxCandidate;
             public float stepSize;
+            public float maxFrustumHeight;
             public float currentFrustumHeight;
         }
         private BakingStateCache m_bakingStateCache;
         public void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
+            m_bakingStateCache.maxFrustumHeight = maxFrustumHeight;
             CalculationTimedOut = false;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
@@ -370,7 +372,7 @@ namespace Cinemachine
             }
             
             // Skip the expensive skeleton calculation if it's not wanted
-            if (maxFrustumHeight < 0)
+            if (m_bakingStateCache.maxFrustumHeight  < 0)
             {
                 m_MinFrustumHeightWithBones = float.MaxValue;
                 m_BakingState = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
@@ -379,11 +381,12 @@ namespace Cinemachine
 
             // Don't compute further than what is the theoretical max
             float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
-            if (maxFrustumHeight == 0 || maxFrustumHeight > polygonHalfHeight) // exact comparison to 0 is intentional!
+        
+            if (m_bakingStateCache.maxFrustumHeight  == 0 || m_bakingStateCache.maxFrustumHeight  > polygonHalfHeight) // exact comparison to 0 is intentional!
             {
-                maxFrustumHeight = polygonHalfHeight; 
+                m_bakingStateCache.maxFrustumHeight = polygonHalfHeight; 
             }
-            m_bakingStateCache.stepSize = maxFrustumHeight;
+            m_bakingStateCache.stepSize = m_bakingStateCache.maxFrustumHeight;
 
             // Binary search for state changes so we can compute the skeleton
             m_bakingStateCache.offsetter = new ClipperOffset();
@@ -407,7 +410,7 @@ namespace Cinemachine
             };
             m_bakingStateCache.currentFrustumHeight = 0;
             m_bakingStateCache.maxCandidate = new List<List<IntPoint>>();
-            m_bakingStateCache.offsetter.Execute(ref m_bakingStateCache.maxCandidate, -1f * maxFrustumHeight * k_FloatToIntScaler);
+            m_bakingStateCache.offsetter.Execute(ref m_bakingStateCache.maxCandidate, -1f * m_bakingStateCache.maxFrustumHeight * k_FloatToIntScaler);
 
             m_BakingState = BakingState.BAKING;
         }
@@ -420,7 +423,7 @@ namespace Cinemachine
         /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
-        public void BakeConfiner(float maxFrustumHeight)
+        public void BakeConfiner()
         {
             var startTime = Time.realtimeSinceStartup;
             
@@ -431,14 +434,14 @@ namespace Cinemachine
                 var candidate = new List<List<IntPoint>>(numPaths);
 
                 m_bakingStateCache.stepSize = Mathf.Min(m_bakingStateCache.stepSize, 
-                    maxFrustumHeight - m_bakingStateCache.leftCandidate.m_FrustumHeight);
+                    m_bakingStateCache.maxFrustumHeight - m_bakingStateCache.leftCandidate.m_FrustumHeight);
 #if false
                 Debug.Log($"States = {solutions.Count}, "
                           + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
 #endif
                 m_bakingStateCache.currentFrustumHeight = 
                     m_bakingStateCache.leftCandidate.m_FrustumHeight + m_bakingStateCache.stepSize;
-                if (Math.Abs(m_bakingStateCache.currentFrustumHeight - maxFrustumHeight) < UnityVectorExtensions.Epsilon)
+                if (Math.Abs(m_bakingStateCache.currentFrustumHeight - m_bakingStateCache.maxFrustumHeight) < UnityVectorExtensions.Epsilon)
                 {
                     candidate = m_bakingStateCache.maxCandidate;
                 }
@@ -485,10 +488,10 @@ namespace Cinemachine
                     m_bakingStateCache.rightCandidate = new PolygonSolution();
                     
                     // Back to max step
-                    m_bakingStateCache.stepSize = maxFrustumHeight;
+                    m_bakingStateCache.stepSize = m_bakingStateCache.maxFrustumHeight;
                 }
                 else if (m_bakingStateCache.rightCandidate.IsEmpty || 
-                         m_bakingStateCache.leftCandidate.m_FrustumHeight >= maxFrustumHeight)
+                         m_bakingStateCache.leftCandidate.m_FrustumHeight >= m_bakingStateCache.maxFrustumHeight)
                 {
                     m_bakingStateCache.solutions.Add(m_bakingStateCache.leftCandidate);
                     break; // stop searching, because we are at the bound
