@@ -347,7 +347,12 @@ namespace Cinemachine
 
         /// <summary>Get the Priority of the virtual camera.  This determines its placement
         /// in the CinemachineCore's queue of eligible shots.</summary>
-        public int Priority { get { return m_Priority; } set { m_Priority = value; } }
+        public int Priority { get { return m_Priority; }
+            set
+            {
+                m_Priority = value;
+                UpdateVcamPoolStatus();
+            } }
 
         /// <summary>Hint for blending to and from this virtual camera</summary>
         public enum BlendHint
