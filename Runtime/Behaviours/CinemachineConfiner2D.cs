@@ -136,7 +136,15 @@ namespace Cinemachine
                 if (confinerStateChanged || extra.m_BakedSolution == null 
                     || !extra.m_BakedSolution.IsValid(currentFrustumHeight))
                 {
+                    Debug.Log(">>>called m_shapeCache.m_confinerOven.GetBakedSolution");
                     extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(currentFrustumHeight);
+                    // foreach (var listpoint in extra.m_BakedSolution.m_Solution)
+                    // {
+                    //     foreach (var point in listpoint)
+                    //     {
+                    //         Debug.Log(">>>" + point.X + ","+point.Y);
+                    //     }
+                    // }
                 }
 
                 cameraPosLocal = extra.m_BakedSolution.ConfinePoint(cameraPosLocal);
@@ -262,7 +270,6 @@ namespace Cinemachine
                     {
                         confinerStateChanged = true;
                     }
-                    Debug.Log("m_prevBakingState:"+m_prevBakingState+"|m_confinerOven.m_BakingState:"+m_confinerOven.m_BakingState);
                     m_prevBakingState = m_confinerOven.m_BakingState;
                     CalculateDeltaTransformationMatrix();
                     return true;
@@ -312,6 +319,7 @@ namespace Cinemachine
                 
                 m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize, 
                     m_maxComputationTimePerFrameInSeconds);
+                m_prevBakingState = m_confinerOven.m_BakingState;
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxOrthoSize = maxWindowSize;

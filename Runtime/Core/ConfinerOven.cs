@@ -22,7 +22,7 @@ namespace Cinemachine
             private readonly double m_SqrPolygonDiagonal;
 
             private List<List<IntPoint>> m_OriginalPolygon;
-            private List<List<IntPoint>> m_Solution;
+            public List<List<IntPoint>> m_Solution;
 
             private const double k_ClipperEpsilon = 0.01f * k_FloatToIntScaler;
 
@@ -373,6 +373,7 @@ namespace Cinemachine
             if (maxFrustumHeight < 0)
             {
                 m_MinFrustumHeightWithBones = float.MaxValue;
+                m_BakingState = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
                 return;
             }
 
