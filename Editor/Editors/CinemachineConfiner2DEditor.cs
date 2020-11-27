@@ -88,6 +88,7 @@ namespace Cinemachine.Editor
                 EditorGUI.EndProperty();
             }
 
+            bool timedOut = Target.ConfinerOvenTimedOut();
             if (computeSkeleton)
             {
                 rect = EditorGUILayout.GetControlRect(true);
@@ -98,10 +99,11 @@ namespace Cinemachine.Editor
                 }
                 
                 var progress = Target.BakeProgress();
-                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), progress, progress >= 1f ? "Baked" : "Baking");
+                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), progress, 
+                    timedOut ? "Timed out" : progress >= 1f ? "Baked" : "Baking");
             }
             
-            if (Target.ConfinerOvenTimedOut())
+            if (timedOut)
             {
                 EditorGUILayout.HelpBox(
                     "Polygon skeleton computation timed out.  Confiner result might be incomplete."
