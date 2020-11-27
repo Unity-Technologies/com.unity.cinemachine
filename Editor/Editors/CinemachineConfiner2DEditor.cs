@@ -1,5 +1,4 @@
 #if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
 #define CINEMACHINE_PHYSICS_2D
 #endif
 
@@ -10,7 +9,7 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+#if CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineConfiner2D))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
