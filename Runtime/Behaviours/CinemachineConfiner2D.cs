@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEditor;
 using UnityEngine;
 
 namespace Cinemachine
@@ -337,7 +338,7 @@ namespace Cinemachine
             }
         }
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
         // Used by editor gizmo drawer
         internal bool GetGizmoPaths(
             out List<List<Vector2>> originalPath,
@@ -371,7 +372,7 @@ namespace Cinemachine
             return m_shapeCache.m_confinerOven != null 
                 && m_shapeCache.m_confinerOven.State == ConfinerOven.BakingState.TIMEOUT;
         }
-#endif
+    #endif
 
         private void OnValidate()
         {
@@ -384,6 +385,21 @@ namespace Cinemachine
             m_Damping = 0.5f;
             m_MaxWindowSize = -1;
         }
+
+
+    #if UNITY_EDITOR
+        // Forces updates in editor until bake is done.
+        void Update()
+        {
+            if (Application.isPlaying) return;
+            
+            if (m_shapeCache.m_confinerOven == null || 
+                m_shapeCache.m_confinerOven.State == ConfinerOven.BakingState.BAKING)
+            {
+                EditorApplication.delayCall += EditorApplication.QueuePlayerLoopUpdate;
+            }
+        }
+    #endif
     }
 #endif
 }

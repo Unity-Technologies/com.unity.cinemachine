@@ -4,6 +4,7 @@
 #endif
 
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
 
@@ -100,7 +101,7 @@ namespace Cinemachine.Editor
                 
                 var progress = Target.BakeProgress();
                 EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), progress, 
-                    timedOut ? "Timed out" : progress >= 1f ? "Baked" : "Baking");
+                    timedOut ? "Timed out" : progress < 1f ? "Baking" : "Baked");
             }
             
             if (timedOut)
@@ -112,7 +113,7 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
             }
         }
-
+        
         private static List<List<Vector2>> s_currentPathCache = new List<List<Vector2>>();
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
