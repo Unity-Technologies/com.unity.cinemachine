@@ -89,7 +89,7 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
-        private float m_MaxComputationTimePerFrameInSeconds = 1f / 120f; // 60 fps
+        private float m_MaxComputationTimePerFrameInSeconds = 1f / 120f;
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
