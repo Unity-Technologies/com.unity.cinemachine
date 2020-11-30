@@ -158,29 +158,6 @@ namespace Cinemachine
         private List<CinemachineVirtualCameraBase> mActiveCameras = new List<CinemachineVirtualCameraBase>();
 
         internal bool m_ActiveCamerasAreSorted;
-
-        /// <summary>
-        /// Moves max priority vcam to index 0 in mActiveCameras. Not a full sort!
-        /// </summary>
-        internal void PseudoSortActiveCameras()
-        {
-            int indexOfMax = 0;
-            int priorityOfMax = int.MinValue;
-            uint activationSequenceOfMax = 0;
-            for (int i = 0; i < mActiveCameras.Count; ++i)
-            {
-                if (mActiveCameras[i].Priority > priorityOfMax ||
-                    (mActiveCameras[i].Priority == priorityOfMax && 
-                     mActiveCameras[i].m_ActivationSequence > activationSequenceOfMax))
-                {
-                    priorityOfMax = mActiveCameras[i].Priority;
-                    indexOfMax = i;
-                    activationSequenceOfMax = mActiveCameras[i].m_ActivationSequence;
-                }
-            }
-            (mActiveCameras[0], mActiveCameras[indexOfMax]) = (mActiveCameras[indexOfMax], mActiveCameras[0]); // swap
-        }
-
         internal void SortActiveCameras()
         {
             mActiveCameras.Sort(delegate(CinemachineVirtualCameraBase x, CinemachineVirtualCameraBase y)
