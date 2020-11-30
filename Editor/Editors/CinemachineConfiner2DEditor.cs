@@ -103,7 +103,7 @@ namespace Cinemachine.Editor
                 EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), progress, 
                     timedOut ? "Timed out" : progress < 1f ? "Baking" : "Baked");
                 if (progress > 0 && progress < 1 && Event.current.type == EventType.Repaint)
-                    Repaint();
+                    EditorUtility.SetDirty(target);
             }
             
             if (timedOut)
