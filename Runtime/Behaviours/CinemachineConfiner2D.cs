@@ -215,7 +215,7 @@ namespace Cinemachine
             public Matrix4x4 m_DeltaBakedToWorld;
 
             private float m_aspectRatio;
-            private float m_maxOrthoSize;
+            private float m_maxWindowSize;
             internal float m_maxComputationTimePerFrameInSeconds;
 
             private Matrix4x4 m_bakedToWorld; // defines baked space
@@ -227,7 +227,7 @@ namespace Cinemachine
             public void Invalidate()
             {
                 m_aspectRatio = 0;
-                m_maxOrthoSize = 0;
+                m_maxWindowSize = -1;
                 m_DeltaBakedToWorld = m_DeltaWorldToBaked = Matrix4x4.identity;
 
                 m_boundingShape2D = null;
@@ -310,7 +310,7 @@ namespace Cinemachine
                 m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
-                m_maxOrthoSize = maxWindowSize;
+                m_maxWindowSize = maxWindowSize;
 
                 CalculateDeltaTransformationMatrix();
 
@@ -324,7 +324,7 @@ namespace Cinemachine
                        m_OriginalPath != null && // first time?
                        m_confinerOven != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
-                       Mathf.Abs(m_maxOrthoSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
+                       Mathf.Abs(m_maxWindowSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
 
             private void CalculateDeltaTransformationMatrix()

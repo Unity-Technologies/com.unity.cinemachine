@@ -21,7 +21,8 @@ namespace Cinemachine.Editor
                 + "confining polygon.  Enable only if needed, because it's costly");
         GUIContent m_MaxWindowSizeLabel;
         GUIContent m_InvalidateCacheLabel = new GUIContent(
-            "Invalidate Cache", "Force a recomputation of the oversize window cache");
+            "Invalidate Cache", "Force a recomputation of the polygon cache.  "
+                + "This needs to be done if points inside the bounding polygon change");
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
@@ -88,19 +89,21 @@ namespace Cinemachine.Editor
                 EditorGUI.EndProperty();
             }
 
+            rect = EditorGUILayout.GetControlRect(true);
+            if (GUI.Button(rect, m_InvalidateCacheLabel))
+            {
+                Target.InvalidateCache();
+                EditorUtility.SetDirty(Target);
+            }
+
             bool timedOut = Target.ConfinerOvenTimedOut();
             if (computeSkeleton)
             {
-                rect = EditorGUILayout.GetControlRect(true);
-                if (GUI.Button(rect, m_InvalidateCacheLabel))
-                {
-                    Target.InvalidateCache();
-                    EditorUtility.SetDirty(Target);
-                }
-                
                 var progress = Target.BakeProgress();
                 EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), progress, 
                     timedOut ? "Timed out" : progress < 1f ? "Baking" : "Baked");
+                if (progress > 0 && progress < 1 && Event.current.type == EventType.Repaint)
+                    Repaint();
             }
             
             if (timedOut)
