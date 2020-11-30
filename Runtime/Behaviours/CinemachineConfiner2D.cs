@@ -385,21 +385,6 @@ namespace Cinemachine
             m_Damping = 0.5f;
             m_MaxWindowSize = -1;
         }
-
-
-    #if UNITY_EDITOR
-        // Forces updates in editor until bake is done.
-        void Update()
-        {
-            if (Application.isPlaying) return;
-            
-            if (m_shapeCache.m_confinerOven == null || 
-                m_shapeCache.m_confinerOven.State == ConfinerOven.BakingState.BAKING)
-            {
-                EditorApplication.delayCall += EditorApplication.QueuePlayerLoopUpdate;
-            }
-        }
-    #endif
     }
 #endif
 }
