@@ -93,7 +93,6 @@ namespace Cinemachine
                         double diffY = Mathf.Abs(p.Y - c.Y);
                         double distance = diffX * diffX + diffY * diffY;
 
-                        Debug.Log("Distance:"+distance+"|||X,Y:("+diffX+","+diffY+")");
                         // penalty for points from which the target is not visible, preferring visibility over proximity
                         if (diffX > m_frustumWidthIntSpace || diffY > m_frustumHeightIntSpace)
                         {
