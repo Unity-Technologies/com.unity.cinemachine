@@ -15,8 +15,7 @@ namespace Cinemachine
         {
             public float FrustumHeight { get; }
             
-            private float m_frustumHeightIntSpace;
-            private float m_frustumWidthIntSpace;
+            private float m_frustumSizeIntSpace;
 
             private readonly AspectStretcher m_AspectStretcher;
             private readonly bool m_HasBones;
@@ -33,8 +32,7 @@ namespace Cinemachine
             {
                 m_AspectStretcher = new AspectStretcher(aspectRatio, polygonBounds.center.x);
                 FrustumHeight = frustumHeight;
-                m_frustumHeightIntSpace = frustumHeight * k_FloatToIntScaler;
-                m_frustumWidthIntSpace = m_frustumHeightIntSpace; // aspect is 1 in Int Space
+                m_frustumSizeIntSpace = frustumHeight * k_FloatToIntScaler;
                 m_HasBones = hasBones;
                 m_OriginalPolygon = originalPolygon;
                 m_Solution = solution;
@@ -92,7 +90,7 @@ namespace Cinemachine
                         double distance = diffX * diffX + diffY * diffY;
 
                         // penalty for points from which the target is not visible, preferring visibility over proximity
-                        if (diffX > m_frustumWidthIntSpace || diffY > m_frustumHeightIntSpace)
+                        if (diffX > m_frustumSizeIntSpace || diffY > m_frustumSizeIntSpace)
                         {
                             distance += m_SqrPolygonDiagonal; // penalty is the biggest distance between any two points
                         }
