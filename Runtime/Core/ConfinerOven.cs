@@ -286,7 +286,7 @@ namespace Cinemachine
             
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
-            if (State == BakingState.BAKING)
+            if (State == BakingState.BAKING || m_Skeleton.Count == 0)
             {
                 bakedSolution = solution;
             }
@@ -350,6 +350,7 @@ namespace Cinemachine
 
         private void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
+            m_Skeleton.Clear();
             m_Cache.maxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
 
@@ -545,8 +546,6 @@ namespace Cinemachine
         
         private void ComputeSkeleton(in List<PolygonSolution> solutions)
         {
-            m_Skeleton.Clear();
-
             // At each state change point, collect geometry that gets lost over the transition
             var clipper = new Clipper();
             var offsetter = new ClipperOffset();
