@@ -158,6 +158,11 @@ namespace Cinemachine
         private List<CinemachineVirtualCameraBase> mActiveCameras = new List<CinemachineVirtualCameraBase>();
 
         internal bool m_ActiveCamerasAreSorted;
+        
+        /// <summary>
+        /// Sorts active cameras, so that the vcam with highest priority is first. When two vcams have the same
+        /// priority, then the one activated later is selected as higher priority.
+        /// </summary>
         internal void SortActiveCameras()
         {
             mActiveCameras.Sort(delegate(CinemachineVirtualCameraBase x, CinemachineVirtualCameraBase y)
