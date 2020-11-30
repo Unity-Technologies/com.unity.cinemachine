@@ -785,7 +785,7 @@ namespace Cinemachine
             int numCameras = core.VirtualCameraCount;
             if (!core.m_ActiveCamerasAreSorted)
             {
-                core.PseudoSortActiveCameras();
+                core.SortActiveCameras();
             }
             for (int i = 0; i < numCameras; ++i)
             {

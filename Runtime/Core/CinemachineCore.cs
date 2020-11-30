@@ -178,8 +178,25 @@ namespace Cinemachine
                     activationSequenceOfMax = mActiveCameras[i].m_ActivationSequence;
                 }
             }
-
             (mActiveCameras[0], mActiveCameras[indexOfMax]) = (mActiveCameras[indexOfMax], mActiveCameras[0]); // swap
+        }
+
+        internal void SortActiveCameras()
+        {
+            mActiveCameras.Sort(delegate(CinemachineVirtualCameraBase x, CinemachineVirtualCameraBase y)
+            {
+                if (x.Priority < y.Priority || 
+                   (x.Priority == y.Priority && x.m_ActivationSequence < y.m_ActivationSequence))
+                {
+                    return 1;
+                }
+                if (x.Priority > y.Priority || 
+                   (x.Priority == y.Priority && x.m_ActivationSequence > y.m_ActivationSequence))
+                {
+                    return -1;
+                }
+                return 0;
+            });
         }
 
         /// <summary>
