@@ -351,6 +351,7 @@ namespace Cinemachine
         private void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             m_Cache.maxFrustumHeight = maxFrustumHeight;
+            m_MinFrustumHeightWithBones = float.MaxValue;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
@@ -374,7 +375,6 @@ namespace Cinemachine
             // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.maxFrustumHeight  < 0)
             {
-                m_MinFrustumHeightWithBones = float.MaxValue;
                 State = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
                 return;
             }
@@ -519,11 +519,6 @@ namespace Cinemachine
                 }
             }
 
-            // Cache the max confinable view size
-            m_MinFrustumHeightWithBones = m_Cache.solutions.Count <= 1 
-                ? 0 
-                : m_Cache.solutions[1].m_FrustumHeight;
-            
             ComputeSkeleton(in m_Cache.solutions);
             m_BakeProgress = 1;
             State = BakingState.BAKED;
@@ -583,7 +578,12 @@ namespace Cinemachine
                 clipper.Execute(ClipType.ctDifference, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
 
                 // Add that lost geometry to the skeleton
-                m_Skeleton.AddRange(solution);
+                if (solution.Count > 0 && solution[0].Count > 0)
+                {
+                    m_Skeleton.AddRange(solution);
+                    if (m_MinFrustumHeightWithBones == float.MaxValue)
+                        m_MinFrustumHeightWithBones = next.m_FrustumHeight;
+                }
             }
         }
     }
