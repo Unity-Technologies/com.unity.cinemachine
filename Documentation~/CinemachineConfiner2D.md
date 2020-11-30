@@ -21,7 +21,7 @@ In the event that there are sections of the confining polygon that are too small
 Skeleton computation is the most expensive part of the cache calculation, so it is a good idea to tune this with some care:
 
 - If it is known that the camera window will always be small enough to fit in every part of the bounding shape, then it is wise to disable skeleton calculation.  Do so by turning off the **Oversize Window** checkbox.
-- Skeleton calculation can be optimized by setting the **Max Window Size** property to the largest size the camera window is expected to have.  Cinemachine will not spend time calculating the skeleton for window sizes larger than that.
+- Skeleton calculation can be optimized by setting the **Max Window Size** property to the largest size the camera window is expected to have.  Cinemachine will not spend time calculating the skeleton for window sizes larger than that.  Setting this property to 0 will cause the skeleton to be calculated for all window sizes.
 
 
 # Properties:
