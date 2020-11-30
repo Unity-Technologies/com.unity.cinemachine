@@ -57,6 +57,8 @@ namespace Cinemachine
             + "other cameras and this camera.  Higher numbers have greater priority.")]
         public int m_Priority = 10;
 
+        internal uint m_ActivationSequence;
+
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
         /// attachment to the target.  Range is 0...1.  
@@ -347,15 +349,7 @@ namespace Cinemachine
 
         /// <summary>Get the Priority of the virtual camera.  This determines its placement
         /// in the CinemachineCore's queue of eligible shots.</summary>
-        public int Priority { get { return m_Priority; }
-            set
-            {
-                if (m_Priority != value)
-                {
-                    m_Priority = value;
-                    UpdateVcamPoolStatus();
-                }
-            } }
+        public int Priority { get { return m_Priority; } set { m_Priority = value; } }
 
         /// <summary>Hint for blending to and from this virtual camera</summary>
         public enum BlendHint
@@ -584,11 +578,11 @@ namespace Cinemachine
             CinemachineCore.Instance.CameraDisabled(this);
         }
 
-        /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
+        /// <summary>Base class implementation makes sure the priority queue is up-to-date when access.</summary>
         protected virtual void Update()
         {
             if (m_Priority != m_QueuePriority)
-                UpdateVcamPoolStatus();
+                CinemachineCore.Instance.m_ActiveCamerasAreSorted = false;
         }
 
         private bool mSlaveStatusUpdated = false;

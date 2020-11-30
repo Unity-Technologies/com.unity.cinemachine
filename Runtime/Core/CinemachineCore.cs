@@ -157,6 +157,31 @@ namespace Cinemachine
         /// <summary>List of all active ICinemachineCameras.</summary>
         private List<CinemachineVirtualCameraBase> mActiveCameras = new List<CinemachineVirtualCameraBase>();
 
+        internal bool m_ActiveCamerasAreSorted;
+
+        /// <summary>
+        /// Moves max priority vcam to index 0 in mActiveCameras. Not a full sort!
+        /// </summary>
+        internal void PseudoSortActiveCameras()
+        {
+            int indexOfMax = 0;
+            int priorityOfMax = int.MinValue;
+            uint activationSequenceOfMax = 0;
+            for (int i = 0; i < mActiveCameras.Count; ++i)
+            {
+                if (mActiveCameras[i].Priority > priorityOfMax ||
+                    (mActiveCameras[i].Priority == priorityOfMax && 
+                     mActiveCameras[i].m_ActivationSequence > activationSequenceOfMax))
+                {
+                    priorityOfMax = mActiveCameras[i].Priority;
+                    indexOfMax = i;
+                    activationSequenceOfMax = mActiveCameras[i].m_ActivationSequence;
+                }
+            }
+
+            (mActiveCameras[0], mActiveCameras[indexOfMax]) = (mActiveCameras[indexOfMax], mActiveCameras[0]); // swap
+        }
+
         /// <summary>
         /// List of all active Cinemachine Virtual Cameras for all brains.
         /// This list is kept sorted by priority.
@@ -172,6 +197,7 @@ namespace Cinemachine
             return mActiveCameras[index];
         }
 
+        private uint m_ActivationSequence;
         /// <summary>Called when a Cinemachine Virtual Camera is enabled.</summary>
         internal void AddActiveCamera(CinemachineVirtualCameraBase vcam)
         {
@@ -184,6 +210,7 @@ namespace Cinemachine
                 if (vcam.Priority >= mActiveCameras[insertIndex].Priority)
                     break;
 
+            vcam.m_ActivationSequence = m_ActivationSequence++;
             mActiveCameras.Insert(insertIndex, vcam);
         }
 
@@ -428,7 +455,7 @@ namespace Cinemachine
         /// send an activation event.
         /// </summary>
         /// <param name="vcam">The virtual camera being activated</param>
-        /// <param name="vcamFrom">The previouslay-active virtual camera (may be null)</param>
+        /// <param name="vcamFrom">The previously-active virtual camera (may be null)</param>
         public void GenerateCameraActivationEvent(ICinemachineCamera vcam, ICinemachineCamera vcamFrom)
         {
             if (vcam != null)

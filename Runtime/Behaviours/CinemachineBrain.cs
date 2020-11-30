@@ -783,6 +783,10 @@ namespace Cinemachine
             Camera outputCamera = OutputCamera;
             int mask = outputCamera == null ? ~0 : outputCamera.cullingMask;
             int numCameras = core.VirtualCameraCount;
+            if (!core.m_ActiveCamerasAreSorted)
+            {
+                core.PseudoSortActiveCameras();
+            }
             for (int i = 0; i < numCameras; ++i)
             {
                 var cam = core.GetVirtualCamera(i);
