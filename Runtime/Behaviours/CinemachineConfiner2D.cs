@@ -130,12 +130,13 @@ namespace Cinemachine
                 var oldCameraPos = state.CorrectedPosition;
                 var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 var currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
+                // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
+                var bakedSpaceFrustumHeight = currentFrustumHeight * 
+                                              m_shapeCache.m_DeltaWorldToBaked.lossyScale.x;
 
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
-                var bakedSpaceFrustumHeight = currentFrustumHeight * Mathf.Max(
-                    m_shapeCache.m_DeltaWorldToBaked.lossyScale.x, m_shapeCache.m_DeltaWorldToBaked.lossyScale.y);
                 if (confinerStateChanged || extra.m_BakedSolution == null 
                     || !extra.m_BakedSolution.IsValid(bakedSpaceFrustumHeight))
                 {
@@ -264,7 +265,13 @@ namespace Cinemachine
                     
                     // Update in case the polygon's transform changed
                     CalculateDeltaTransformationMatrix();
-                    return true;
+                    
+                    // If delta world to baked scale is uniform, cache is valid.
+                    Vector2 lossyScaleXY = m_DeltaWorldToBaked.lossyScale;
+                    if (lossyScaleXY.IsUniform())
+                    {
+                        return true; 
+                    }
                 }
                 
                 Invalidate();

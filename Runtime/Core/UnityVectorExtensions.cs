@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Cinemachine.Utility
@@ -185,6 +186,26 @@ namespace Cinemachine.Utility
         public static Vector3 Abs(this Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+        }
+
+        /// <summary>
+        /// Checks whether the vector components are the same value.
+        /// </summary>
+        /// <param name="v">Vector to check</param>
+        /// <returns>True, if the vector elements are the same. False, otherwise.</returns>
+        public static bool IsUniform(this Vector2 v)
+        {
+            return Math.Abs(v.x - v.y) < Epsilon;
+        }
+        
+        /// <summary>
+        /// Checks whether the vector components are the same value.
+        /// </summary>
+        /// <param name="v">Vector to check</param>
+        /// <returns>True, if the vector elements are the same. False, otherwise.</returns>
+        public static bool IsUniform(this Vector3 v)
+        {
+            return Math.Abs(v.x - v.y) < Epsilon && Math.Abs(v.x - v.z) < Epsilon;
         }
 
         /// <summary>Is the vector within Epsilon of zero length?</summary>
