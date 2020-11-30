@@ -14,6 +14,9 @@ namespace Cinemachine
         public class BakedSolution
         {
             public float FrustumHeight { get; }
+            
+            private float m_frustumHeightIntSpace;
+            private float m_frustumWidthIntSpace;
 
             private readonly AspectStretcher m_AspectStretcher;
             private readonly bool m_HasBones;
@@ -32,6 +35,8 @@ namespace Cinemachine
             {
                 m_AspectStretcher = new AspectStretcher(aspectRatio, polygonBounds.center.x);
                 FrustumHeight = frustumHeight;
+                m_frustumHeightIntSpace = frustumHeight * k_FloatToIntScaler;
+                m_frustumWidthIntSpace = m_frustumHeightIntSpace * aspectRatio;
                 m_HasBones = hasBones;
                 m_OriginalPolygon = originalPolygon;
                 m_Solution = solution;
@@ -88,8 +93,9 @@ namespace Cinemachine
                         double diffY = Mathf.Abs(p.Y - c.Y);
                         double distance = diffX * diffX + diffY * diffY;
 
+                        Debug.Log("Distance:"+distance+"|||X,Y:("+diffX+","+diffY+")");
                         // penalty for points from which the target is not visible, preferring visibility over proximity
-                        if (diffX > m_PolygonSizeX || diffY > m_PolygonSizeY)
+                        if (diffX > m_frustumWidthIntSpace || diffY > m_frustumHeightIntSpace)
                         {
                             distance += m_SqrPolygonDiagonal; // penalty is the biggest distance between any two points
                         }
