@@ -2,13 +2,13 @@
 
 ![](images/CinemachineConfiner2D.png)
 
-Use the **Cinemachine Confiner 2D** [extension](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.6/manual/CinemachineVirtualCameraExtensions.html) to confine the camera’s position such that the screen edges stay within a shape defined by a 2D polygon. This will work for orthographic or perspective cameras, provided that the camera's forward vector remains parallel to the bounding shape’s  normal, i.e. that the camera is looking straight at the polygon, and not obliquely at it.
+Use the **Cinemachine Confiner 2D** [extension](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.6/manual/CinemachineVirtualCameraExtensions.html) to confine the camera's position such that the screen edges stay within a shape defined by a 2D polygon. This will work for orthographic or perspective cameras, provided that the camera's forward vector remains parallel to the bounding shape's  normal, i.e. that the camera is looking straight at the polygon, and not obliquely at it.
 
-When confining the camera, the camera’s view size at the polygon plane is considered, and also its aspect ratio. Based on this information and the input polygon, a second (smaller) polygon is computed to which the camera’s transform is constrained. Computation of this secondary polygon is nontrivial and expensive, so it should be done only when absolutely necessary.  
+When confining the camera, the camera's view size at the polygon plane is considered, and also its aspect ratio. Based on this information and the input polygon, a second (smaller) polygon is computed to which the camera's transform is constrained. Computation of this secondary polygon is nontrivial and expensive, so it should be done only when absolutely necessary.  
 
 The cached secondary polygon needs to be recomputed in the following circumstances:
 
-*   when the input polygon’s points change, 
+*   when the input polygon's points change, 
 *   when the input polygon is non-uniformly scaled
 
 **For efficiency reasons, Cinemachine will not automatically regenerate the inner polygon in these cases, and it is the responsibility of the client to call the InvalidateCache() method to trigger the recalculation**. An inspector button is also provided for this purpose.

@@ -16,7 +16,7 @@ namespace Cinemachine.Editor
     {
         SerializedProperty m_MaxWindowSizeProperty;
         GUIContent m_ComputeSkeletonLabel = new GUIContent(
-            "Oversize Window", "If enabled, confiner will compute a skeleton polygon to "
+            "Oversize Window", "If enabled, the confiner will compute a skeleton polygon to "
                 + "support cases where camera window size is bigger than some regions of the "
                 + "confining polygon.  Enable only if needed, because it's costly");
         GUIContent m_MaxWindowSizeLabel;
