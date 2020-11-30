@@ -20,8 +20,6 @@ namespace Cinemachine
 
             private readonly AspectStretcher m_AspectStretcher;
             private readonly bool m_HasBones;
-            private readonly double m_PolygonSizeX;
-            private readonly double m_PolygonSizeY;
             private readonly double m_SqrPolygonDiagonal;
 
             private List<List<IntPoint>> m_OriginalPolygon;
@@ -36,14 +34,14 @@ namespace Cinemachine
                 m_AspectStretcher = new AspectStretcher(aspectRatio, polygonBounds.center.x);
                 FrustumHeight = frustumHeight;
                 m_frustumHeightIntSpace = frustumHeight * k_FloatToIntScaler;
-                m_frustumWidthIntSpace = m_frustumHeightIntSpace * aspectRatio;
+                m_frustumWidthIntSpace = m_frustumHeightIntSpace; // aspect is 1 in Int Space
                 m_HasBones = hasBones;
                 m_OriginalPolygon = originalPolygon;
                 m_Solution = solution;
 
-                m_PolygonSizeX = polygonBounds.width / aspectRatio * k_FloatToIntScaler;
-                m_PolygonSizeY = polygonBounds.height * k_FloatToIntScaler;
-                m_SqrPolygonDiagonal = m_PolygonSizeX * m_PolygonSizeX + m_PolygonSizeY * m_PolygonSizeY;
+                float polygonSizeX = polygonBounds.width / aspectRatio * k_FloatToIntScaler;
+                float polygonSizeY = polygonBounds.height * k_FloatToIntScaler;
+                m_SqrPolygonDiagonal = polygonSizeX * polygonSizeX + polygonSizeY * polygonSizeY;
             }
 
             public void Clear()
