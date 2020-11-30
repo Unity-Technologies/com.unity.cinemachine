@@ -134,10 +134,12 @@ namespace Cinemachine
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
+                var bakedSpaceFrustumHeight = currentFrustumHeight * Mathf.Max(
+                    m_shapeCache.m_DeltaWorldToBaked.lossyScale.x, m_shapeCache.m_DeltaWorldToBaked.lossyScale.y);
                 if (confinerStateChanged || extra.m_BakedSolution == null 
-                    || !extra.m_BakedSolution.IsValid(currentFrustumHeight))
+                    || !extra.m_BakedSolution.IsValid(bakedSpaceFrustumHeight))
                 {
-                    extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(currentFrustumHeight);
+                    extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
                 }
 
                 cameraPosLocal = extra.m_BakedSolution.ConfinePoint(cameraPosLocal);
