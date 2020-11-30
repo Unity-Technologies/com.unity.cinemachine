@@ -112,6 +112,11 @@ namespace SaveDuringPlay
         public delegate bool FilterFieldDelegate(string fullName, FieldInfo fieldInfo);
 
         /// <summary>
+        /// The leafmost UnityEngine.Object
+        /// </summary>
+        public UnityEngine.Object LeafObject { get; private set; }
+
+        /// <summary>
         /// Which fields will be scanned
         /// </summary>
         public BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance;
@@ -189,6 +194,8 @@ namespace SaveDuringPlay
         public bool ScanFields(string fullName, MonoBehaviour b)
         {
             bool doneSomething = false;
+            LeafObject = b;
+
             FieldInfo[] fields = b.GetType().GetFields(bindingFlags);
             if (fields.Length > 0)
             {
@@ -299,6 +306,8 @@ namespace SaveDuringPlay
             scanner.OnFieldValueChanged = (fullName, fieldInfo, fieldOwner, value) =>
                 {
                     fieldInfo.SetValue(fieldOwner, value);
+                    if (PrefabUtility.GetPrefabInstanceStatus(go) != PrefabInstanceStatus.NotAPrefab)
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(scanner.LeafObject);
                     return true;
                 };
             return scanner.ScanFields(go);
