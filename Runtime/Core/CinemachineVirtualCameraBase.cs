@@ -57,7 +57,7 @@ namespace Cinemachine
             + "other cameras and this camera.  Higher numbers have greater priority.")]
         public int m_Priority = 10;
 
-        internal uint m_ActivationSequence;
+        internal uint m_ActivationId;
 
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
@@ -582,7 +582,10 @@ namespace Cinemachine
         protected virtual void Update()
         {
             if (m_Priority != m_QueuePriority)
+            {
                 CinemachineCore.Instance.m_ActiveCamerasAreSorted = false;
+                UpdateVcamPoolStatus();
+            }
         }
 
         private bool mSlaveStatusUpdated = false;

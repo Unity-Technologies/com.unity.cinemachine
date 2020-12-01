@@ -165,20 +165,10 @@ namespace Cinemachine
         /// </summary>
         internal void SortActiveCameras()
         {
-            mActiveCameras.Sort(delegate(CinemachineVirtualCameraBase x, CinemachineVirtualCameraBase y)
-            {
-                if (x.Priority < y.Priority || 
-                   (x.Priority == y.Priority && x.m_ActivationSequence < y.m_ActivationSequence))
-                {
-                    return 1;
-                }
-                if (x.Priority > y.Priority || 
-                   (x.Priority == y.Priority && x.m_ActivationSequence > y.m_ActivationSequence))
-                {
-                    return -1;
-                }
-                return 0;
-            });
+            mActiveCameras.Sort((x, y) => 
+                x.Priority < y.Priority || (x.Priority == y.Priority && x.m_ActivationId < y.m_ActivationId) ? 1 :
+                x.Priority > y.Priority || (x.Priority == y.Priority && x.m_ActivationId > y.m_ActivationId) ? -1 : 0);
+            m_ActiveCamerasAreSorted = true;
         }
 
         /// <summary>
@@ -209,7 +199,7 @@ namespace Cinemachine
                 if (vcam.Priority >= mActiveCameras[insertIndex].Priority)
                     break;
 
-            vcam.m_ActivationSequence = m_ActivationSequence++;
+            vcam.m_ActivationId = m_ActivationSequence++;
             mActiveCameras.Insert(insertIndex, vcam);
         }
 
