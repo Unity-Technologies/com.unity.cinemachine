@@ -580,7 +580,7 @@ namespace Cinemachine
             CinemachineCore.Instance.CameraDisabled(this);
         }
 
-        /// <summary>Base class implementation makes sure the priority queue is up-to-date when access.</summary>
+        /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
         protected virtual void Update()
         {
             if (m_Priority != m_QueuePriority)
