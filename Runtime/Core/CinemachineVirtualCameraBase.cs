@@ -57,6 +57,10 @@ namespace Cinemachine
             + "other cameras and this camera.  Higher numbers have greater priority.")]
         public int m_Priority = 10;
 
+        /// <summary>A sequence number that represents object activation order of vcams.  
+        /// Used for priority sorting.</summary>
+        internal int m_ActivationId;
+
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
         /// attachment to the target.  Range is 0...1.  
@@ -580,7 +584,9 @@ namespace Cinemachine
         protected virtual void Update()
         {
             if (m_Priority != m_QueuePriority)
-                UpdateVcamPoolStatus();
+            {
+                UpdateVcamPoolStatus(); // Force a re-sort
+            }
         }
 
         private bool mSlaveStatusUpdated = false;
@@ -644,7 +650,7 @@ namespace Cinemachine
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
         public void MoveToTopOfPrioritySubqueue()
         {
-            UpdateVcamPoolStatus();
+            UpdateVcamPoolStatus(); // Force a re-sort
         }
 
         /// <summary>This is called to notify the component that a target got warped,
