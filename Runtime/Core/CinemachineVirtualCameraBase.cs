@@ -583,7 +583,6 @@ namespace Cinemachine
         {
             if (m_Priority != m_QueuePriority)
             {
-                CinemachineCore.Instance.m_ActiveCamerasAreSorted = false;
                 UpdateVcamPoolStatus();
             }
         }
@@ -635,7 +634,11 @@ namespace Cinemachine
         {
             CinemachineCore.Instance.RemoveActiveCamera(this);
             if (m_parentVcam == null && isActiveAndEnabled)
+            {
                 CinemachineCore.Instance.AddActiveCamera(this);
+                CinemachineCore.Instance.m_ActiveCamerasAreSorted = false;
+            }
+
             m_QueuePriority = m_Priority;
         }
 
