@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix - long-idle vcams when reawakened sometimes had a single frame with a huge deltaTime
 - Bugfix - PostProcessing temporarily stopped being applied after exiting play mode
 - Bugfix (1272146) - Adding vcam to a prefab asset no longer causes errors in console
+- Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases.
 
 
 ## [2.6.3] - 2020-09-16
