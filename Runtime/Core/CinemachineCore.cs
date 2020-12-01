@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 namespace Cinemachine
 {
@@ -157,56 +158,44 @@ namespace Cinemachine
         /// <summary>List of all active ICinemachineCameras.</summary>
         private List<CinemachineVirtualCameraBase> mActiveCameras = new List<CinemachineVirtualCameraBase>();
 
-        internal bool m_ActiveCamerasAreSorted;
+        private bool m_ActiveCamerasAreSorted;
+        private int m_ActivationSequence;
         
-        /// <summary>
-        /// Sorts active cameras, so that the vcam with highest priority is first. When two vcams have the same
-        /// priority, then the one activated later is selected as higher priority.
-        /// </summary>
-        internal void SortActiveCameras()
-        {
-            mActiveCameras.Sort((x, y) => 
-                x.Priority < y.Priority || (x.Priority == y.Priority && x.m_ActivationId < y.m_ActivationId) ? 1 :
-                x.Priority > y.Priority || (x.Priority == y.Priority && x.m_ActivationId > y.m_ActivationId) ? -1 : 0);
-            m_ActiveCamerasAreSorted = true;
-        }
-
         /// <summary>
         /// List of all active Cinemachine Virtual Cameras for all brains.
         /// This list is kept sorted by priority.
         /// </summary>
         public int VirtualCameraCount { get { return mActiveCameras.Count; } }
 
-        /// <summary>Access the array of active ICinemachineCamera in the scene
-        /// without gebnerating garbage</summary>
+        /// <summary>Access the priority-sorted array of active ICinemachineCamera in the scene
+        /// without generating garbage</summary>
         /// <param name="index">Index of the camera to access, range 0-VirtualCameraCount</param>
         /// <returns>The virtual camera at the specified index</returns>
         public CinemachineVirtualCameraBase GetVirtualCamera(int index)
         {
+            if (!m_ActiveCamerasAreSorted && mActiveCameras.Count > 1)
+            {
+                mActiveCameras.Sort((x, y) => 
+                    x.Priority == y.Priority ? y.m_ActivationId - x.m_ActivationId : y.Priority - x.Priority);
+                m_ActiveCamerasAreSorted = true;
+            }
             return mActiveCameras[index];
         }
 
-        private uint m_ActivationSequence;
         /// <summary>Called when a Cinemachine Virtual Camera is enabled.</summary>
         internal void AddActiveCamera(CinemachineVirtualCameraBase vcam)
         {
-            // Bring it to the top of the list
-            RemoveActiveCamera(vcam);
-
-            // Keep list sorted by priority
-            int insertIndex;
-            for (insertIndex = 0; insertIndex < mActiveCameras.Count; ++insertIndex)
-                if (vcam.Priority >= mActiveCameras[insertIndex].Priority)
-                    break;
-
+            Assert.IsFalse(mActiveCameras.Contains(vcam));
             vcam.m_ActivationId = m_ActivationSequence++;
-            mActiveCameras.Insert(insertIndex, vcam);
+            mActiveCameras.Add(vcam);
+            m_ActiveCamerasAreSorted = false;
         }
 
         /// <summary>Called when a Cinemachine Virtual Camera is disabled.</summary>
         internal void RemoveActiveCamera(CinemachineVirtualCameraBase vcam)
         {
-            mActiveCameras.Remove(vcam);
+            if (mActiveCameras.Contains(vcam))
+                mActiveCameras.Remove(vcam);
         }
 
         /// <summary>Called when a Cinemachine Virtual Camera is destroyed.</summary>
