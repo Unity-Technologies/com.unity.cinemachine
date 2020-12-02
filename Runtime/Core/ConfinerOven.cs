@@ -55,12 +55,14 @@ namespace Cinemachine
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
+                if (m_Solution.Count <= 0) return pointToConfine; // empty confiner -> no need to confine
+                
                 Vector2 pInConfinerSpace = m_AspectStretcher.Stretch(pointToConfine);
                 IntPoint p =
                     new IntPoint(pInConfinerSpace.x * k_FloatToIntScaler, pInConfinerSpace.y * k_FloatToIntScaler);
-                foreach (List<IntPoint> sol in m_Solution)
+                for (int i = 0; i < m_Solution.Count; ++i)
                 {
-                    if (Clipper.PointInPolygon(p, sol) != 0) // 0: outside, +1: inside , -1: point on poly boundary
+                    if (Clipper.PointInPolygon(p, m_Solution[i]) != 0) // 0: outside, +1: inside , -1: point on poly boundary
                     {
                         return pointToConfine; // inside, no confinement needed
                     }
