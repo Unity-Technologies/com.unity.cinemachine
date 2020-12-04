@@ -9,85 +9,6 @@ using UnityEngine.TestTools;
 public class Confiner2DUnitTests
 {
     [UnityTest]
-    public IEnumerator Test_PolygonDivision_OrderIndependent()
-    {
-        var aspectData = new ShrinkablePolygon.AspectData(1);    
-
-        List<ShrinkablePolygon> subShrinkablePolygon1 = new List<ShrinkablePolygon>();
-        {
-            List<List<Vector2>> points = new List<List<Vector2>>();
-            {
-                var inputPolygon = new List<Vector2>
-                {
-                    new Vector2(0, 1),
-                    new Vector2(0, -1),
-                    new Vector2(1, 0),
-                    new Vector2(-1, 0)
-                };
-                points.Add(inputPolygon);
-            }
-            List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points);
-            Assert.IsTrue(polygons.Count == 1);
-            Assert.IsTrue(polygons[0].Count == 1);
-            ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], ref subShrinkablePolygon1, aspectData);
-
-            Assert.IsTrue(subShrinkablePolygon1.Count == 2);
-            for (var index = 0; index < subShrinkablePolygon1.Count; index++)
-            {
-                subShrinkablePolygon1[index].Simplify(ConfinerOven.k_MinStepSize);
-                Assert.IsTrue(subShrinkablePolygon1[index].m_Points.Count == 3);
-            }
-
-            Assert.IsTrue(subShrinkablePolygon1[0].m_Points[2].m_Position == Vector2.zero);
-            Assert.IsTrue(subShrinkablePolygon1[1].m_Points[0].m_Position == Vector2.zero);
-        }
-        List<ShrinkablePolygon> subShrinkablePolygon2 = new List<ShrinkablePolygon>();
-        {
-            List<List<Vector2>> points = new List<List<Vector2>>();
-            {
-                var inputPolygon = new List<Vector2>
-                {
-                    new Vector2(-1, 0),
-                    new Vector2(1, 0),
-                    new Vector2(0, -1),
-                    new Vector2(0, 1), 
-                };
-                points.Add(inputPolygon);
-            }
-            List<List<ShrinkablePolygon>> polygons = ConfinerOven.CreateShrinkablePolygons(points);
-            Assert.IsTrue(polygons.Count == 1);
-            Assert.IsTrue(polygons[0].Count == 1);
-            ShrinkablePolygon.DivideAlongIntersections(polygons[0][0], ref subShrinkablePolygon2, aspectData);
-        
-            Assert.IsTrue(subShrinkablePolygon2.Count == 2);
-            for (var index = 0; index < subShrinkablePolygon2.Count; index++)
-            {
-                subShrinkablePolygon2[index].Simplify(ConfinerOven.k_MinStepSize);
-                Assert.IsTrue(subShrinkablePolygon2[index].m_Points.Count == 3);
-            }
-
-            Assert.IsTrue(subShrinkablePolygon2[0].m_Points[1].m_Position == Vector2.zero);
-            Assert.IsTrue(subShrinkablePolygon2[1].m_Points[0].m_Position == Vector2.zero);
-        }
-
-        
-        Assert.IsTrue(
-            subShrinkablePolygon1[0].m_Points[0].m_Position == subShrinkablePolygon2[0].m_Points[0].m_Position);
-        Assert.IsTrue(
-            subShrinkablePolygon1[0].m_Points[1].m_Position == subShrinkablePolygon2[0].m_Points[2].m_Position);
-        Assert.IsTrue(
-            subShrinkablePolygon1[0].m_Points[2].m_Position == subShrinkablePolygon2[0].m_Points[1].m_Position);
-        Assert.IsTrue(
-            subShrinkablePolygon1[1].m_Points[0].m_Position == subShrinkablePolygon2[1].m_Points[0].m_Position);
-        Assert.IsTrue(
-            subShrinkablePolygon1[1].m_Points[1].m_Position == subShrinkablePolygon2[1].m_Points[2].m_Position);
-        Assert.IsTrue(
-            subShrinkablePolygon1[1].m_Points[2].m_Position == subShrinkablePolygon2[1].m_Points[1].m_Position);
-
-        yield return null;
-    }
-   
-    [UnityTest]
     public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_PolygonCollider2D()
     {
         CreateCameraAndAddVcam(out Camera cam, out CinemachineVirtualCamera vcam);
@@ -130,11 +51,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
 
         { // counter clockwise
@@ -167,11 +83,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
         
         vcam.m_Lens.OrthographicSize = 1;
@@ -230,11 +141,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
 
         { // counter clockwise
@@ -267,11 +173,6 @@ public class Confiner2DUnitTests
             vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
             Assert.IsTrue((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude < UnityVectorExtensions.Epsilon);
-            
-            vcam.transform.position = 1.5f * (Vector2.down + Vector2.right) / 2f;
-            yield return null; // wait one frame
-            Assert.IsTrue((vcam.State.CorrectedPosition - (Vector3.down + Vector3.right) / 2f).sqrMagnitude < 
-                          UnityVectorExtensions.Epsilon);
         }
         
         vcam.m_Lens.OrthographicSize = 1;
