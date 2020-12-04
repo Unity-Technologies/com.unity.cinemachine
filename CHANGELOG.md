@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] - 2020-12-31
+- CinemachineConfiner2D now handles cases where camera window is oversized
+- Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases.
+- Bugfix: SaveDuringPlay also works on prefab instances
+- Bugfix (1272146) - Adding vcam to a prefab asset no longer causes errors in console
+- Nested Scrub Bubble sample removed (filenames too long), available as embedded package
+
+
 ## [2.7.1] - 2020-11-14
 - New feature: CinemachineConfiner2D - Improved 2D confiner.
 - Added ApplyAfter option to ImpulseListener, to add control over the ordering of extensions
@@ -16,8 +24,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Storyboard Global Mute moved from Cinemachine menu to Cinemachine preferences.
 - Bugfix - long-idle vcams when reawakened sometimes had a single frame with a huge deltaTime
 - Bugfix - PostProcessing temporarily stopped being applied after exiting play mode
-- Bugfix (1272146) - Adding vcam to a prefab asset no longer causes errors in console
-- Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases.
 
 
 ## [2.6.3] - 2020-09-16
