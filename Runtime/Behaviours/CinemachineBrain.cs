@@ -1,3 +1,7 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_UNITY_IMGUI
+#endif
+
 using Cinemachine.Utility;
 using System;
 using System.Collections;
@@ -238,6 +242,7 @@ namespace Cinemachine
 
         private void OnGuiHandler()
         {
+#if CINEMACHINE_UNITY_IMGUI
             if (!m_ShowDebugText)
                 CinemachineDebug.ReleaseScreenPos(this);
             else
@@ -275,6 +280,7 @@ namespace Cinemachine
                 GUI.color = color;
                 CinemachineDebug.ReturnToPool(sb);
             }
+#endif
         }
 
 #if UNITY_EDITOR

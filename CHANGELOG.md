@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1272146) - Adding vcam to a prefab asset no longer causes errors in console
 - Bugfix (1290171) - Impulse manager was not cleared at playmode start
 - Nested Scrub Bubble sample removed (filenames too long), available now as embedded package
+- Compilation guards for physics, animation, and imgui. Cinemachine does not hard depend on anything now.
 
 
 ## [2.7.1] - 2020-11-14

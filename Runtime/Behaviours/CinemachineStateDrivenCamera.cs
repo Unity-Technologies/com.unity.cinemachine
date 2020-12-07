@@ -1,3 +1,7 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_UNITY_ANIMATION
+#endif
+
 using Cinemachine.Utility;
 using System;
 using System.Collections.Generic;
@@ -5,6 +9,7 @@ using UnityEngine;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_UNITY_ANIMATION
     /// <summary>
     /// This is a virtual camera "manager" that owns and manages a collection
     /// of child Virtual Cameras.  These child vcams are mapped to individual states in
@@ -552,4 +557,5 @@ namespace Cinemachine
             return blend;
         }
     }
+#endif
 }

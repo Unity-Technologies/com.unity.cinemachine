@@ -1,3 +1,7 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_UNITY_ANIMATION
+#endif
+
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -5,6 +9,7 @@ using UnityEditor.Animations;
 
 namespace Cinemachine.Editor
 {
+#if CINEMACHINE_UNITY_ANIMATION
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
     internal sealed class CinemachineStateDrivenCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineStateDrivenCamera>
@@ -451,4 +456,5 @@ namespace Cinemachine.Editor
                 };
         }
     }
+#endif
 }
