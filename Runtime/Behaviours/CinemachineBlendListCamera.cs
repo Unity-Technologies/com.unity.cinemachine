@@ -274,7 +274,6 @@ namespace Cinemachine
         /// Will only be called if Unity Editor - never in build
         private void OnGuiHandler()
         {
-
             if (!m_ShowDebugText)
                 CinemachineDebug.ReleaseScreenPos(this);
             else
@@ -288,7 +287,6 @@ namespace Cinemachine
                 CinemachineDebug.ReturnToPool(sb);
 #endif
             }
-
         }
 
         CameraState m_State = CameraState.Default;
