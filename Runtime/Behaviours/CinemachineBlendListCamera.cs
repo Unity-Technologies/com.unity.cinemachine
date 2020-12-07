@@ -274,17 +274,21 @@ namespace Cinemachine
         /// Will only be called if Unity Editor - never in build
         private void OnGuiHandler()
         {
+
             if (!m_ShowDebugText)
                 CinemachineDebug.ReleaseScreenPos(this);
             else
             {
+#if CINEMACHINE_UNITY_IMGUI
                 var sb = CinemachineDebug.SBFromPool();
                 sb.Append(Name); sb.Append(": "); sb.Append(Description);
                 string text = sb.ToString();
                 Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 CinemachineDebug.ReturnToPool(sb);
+#endif
             }
+
         }
 
         CameraState m_State = CameraState.Default;

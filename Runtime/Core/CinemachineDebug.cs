@@ -17,6 +17,7 @@ namespace Cinemachine.Utility
                 mClients.Remove(client);
         }
 
+#if CINEMACHINE_UNITY_IMGUI
         /// <summary>Reserve an on-screen rectangle for debugging output.</summary>
         /// <param name="client">The client caller.  This is used as a handle.</param>
         /// <param name="text">Sample text, for determining rectangle size</param>
@@ -44,6 +45,7 @@ namespace Cinemachine.Utility
             }
             return new Rect(pos, size);
         }
+#endif
 
         /// <summary>
         /// Delegate for OnGUI debugging.  

@@ -244,7 +244,9 @@ namespace Cinemachine
             {
                 // Show the active camera and blend
                 var sb = CinemachineDebug.SBFromPool();
+#if CINEMACHINE_UNITY_IMGUI
                 Color color = GUI.color;
+#endif
                 sb.Length = 0;
                 sb.Append("CM ");
                 sb.Append(gameObject.name);
@@ -252,7 +254,9 @@ namespace Cinemachine
                 if (SoloCamera != null)
                 {
                     sb.Append("SOLO ");
+#if CINEMACHINE_UNITY_IMGUI
                     GUI.color = GetSoloGUIColor();
+#endif
                 }
 
                 if (IsBlending)
@@ -270,9 +274,11 @@ namespace Cinemachine
                     }
                 }
                 string text = sb.ToString();
+#if CINEMACHINE_UNITY_IMGUI
                 Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 GUI.color = color;
+#endif
                 CinemachineDebug.ReturnToPool(sb);
             }
         }
