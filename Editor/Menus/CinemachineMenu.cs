@@ -1,6 +1,7 @@
 #if !UNITY_2019_3_OR_NEWER
 #define CINEMACHINE_PHYSICS
 #define CINEMACHINE_PHYSICS_2D
+#define CINEMACHINE_UNITY_ANIMATION
 #endif
 
 using UnityEngine;

@@ -1,3 +1,7 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_UNITY_IMGUI
+#endif
+
 using Cinemachine.Utility;
 using System;
 using System.Collections;
@@ -238,15 +242,14 @@ namespace Cinemachine
 
         private void OnGuiHandler()
         {
+#if CINEMACHINE_UNITY_IMGUI
             if (!m_ShowDebugText)
                 CinemachineDebug.ReleaseScreenPos(this);
             else
             {
                 // Show the active camera and blend
                 var sb = CinemachineDebug.SBFromPool();
-#if CINEMACHINE_UNITY_IMGUI
                 Color color = GUI.color;
-#endif
                 sb.Length = 0;
                 sb.Append("CM ");
                 sb.Append(gameObject.name);
@@ -254,9 +257,7 @@ namespace Cinemachine
                 if (SoloCamera != null)
                 {
                     sb.Append("SOLO ");
-#if CINEMACHINE_UNITY_IMGUI
                     GUI.color = GetSoloGUIColor();
-#endif
                 }
 
                 if (IsBlending)
@@ -274,13 +275,12 @@ namespace Cinemachine
                     }
                 }
                 string text = sb.ToString();
-#if CINEMACHINE_UNITY_IMGUI
                 Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 GUI.color = color;
-#endif
                 CinemachineDebug.ReturnToPool(sb);
             }
+#endif
         }
 
 #if UNITY_EDITOR

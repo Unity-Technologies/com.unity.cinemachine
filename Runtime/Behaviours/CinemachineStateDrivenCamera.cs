@@ -1,3 +1,7 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_UNITY_ANIMATION
+#endif
+
 using Cinemachine.Utility;
 using System;
 using System.Collections.Generic;
