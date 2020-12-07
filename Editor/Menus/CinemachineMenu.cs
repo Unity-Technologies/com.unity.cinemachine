@@ -83,7 +83,8 @@ namespace Cinemachine.Editor
             vcam.m_Instructions[1].m_Blend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
             vcam.m_Instructions[1].m_Blend.m_Time = 2f;
         }
-
+        
+#if CINEMACHINE_UNITY_ANIMATION
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_MenuPriority)]
         private static void CreateStateDivenCamera()
         {
@@ -99,6 +100,7 @@ namespace Cinemachine.Editor
             // Give it a child
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create state driven camera");
         }
+#endif
 
 #if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_MenuPriority)]

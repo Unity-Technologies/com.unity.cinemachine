@@ -68,6 +68,11 @@
             "name": "com.unity.timeline",
             "expression": "1.5.0-preview.5",
             "define": "CINEMACHINE_TIMELINE_1_5_0"
+        },
+        {
+            "name": "com.unity.modules.animation",
+            "expression": "1.0.0",
+            "define": "#if CINEMACHINE_UNITY_ANIMATION"
         }
     ],
     "noEngineReferences": false

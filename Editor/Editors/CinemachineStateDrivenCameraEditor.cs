@@ -5,6 +5,7 @@ using UnityEditor.Animations;
 
 namespace Cinemachine.Editor
 {
+#if CINEMACHINE_UNITY_ANIMATION
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
     internal sealed class CinemachineStateDrivenCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineStateDrivenCamera>
@@ -451,4 +452,5 @@ namespace Cinemachine.Editor
                 };
         }
     }
+#endif
 }
