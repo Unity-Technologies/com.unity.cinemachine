@@ -46,6 +46,7 @@ using Cinemachine;
             driver.AddFromName<Transform>("m_LocalRotation.x");
             driver.AddFromName<Transform>("m_LocalRotation.y");
             driver.AddFromName<Transform>("m_LocalRotation.z");
+            driver.AddFromName<Transform>("m_LocalRotation.w");
 
             driver.AddFromName<Camera>("field of view");
             driver.AddFromName<Camera>("near clip plane");
