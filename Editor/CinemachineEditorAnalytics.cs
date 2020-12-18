@@ -104,34 +104,12 @@ public class CinemachineEditorAnalytics : IPostprocessBuildWithReport
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit("editor_analytics_cm_select_aim", data);
         }
-
     }
     
     struct ProjectData
     {
         public int brain_count;
         public int vcam_count;
-        // public VcamData[] vcams;
-        
-        // public string ToJson()
-        // {
-        //     // {"brain_count":1,"vcam_count":3}
-        //     string jsonFormat = "{";
-        //     jsonFormat += "\"" + nameof(brain_count) + "\":" + brain_count + ",\"" 
-        //                   + nameof(vcam_count) + "\":" + vcam_count + ",\"vcams\":[";
-        //     
-        //     // ,"addresses":[{"status":"current","address":"123 First Avenue","city":"Seattle","state":"WA","zip":"11111","numberOfYears":"1"},{"status":"previous","address":"456 Main Street","city":"Portland","state":"OR","zip":"22222","numberOfYears":"5"}]}
-        //     for (var i = 0; i < vcams.Length; i++)
-        //     {
-        //         var vcam = vcams[i];
-        //         jsonFormat += JsonUtility.ToJson(vcam);
-        //
-        //         if (i < vcams.Length - 1)
-        //             jsonFormat += ",";
-        //     }
-        //
-        //     return jsonFormat + "]}";
-        // }
     }
 
     struct VcamData
@@ -229,13 +207,8 @@ public class CinemachineEditorAnalytics : IPostprocessBuildWithReport
         {
             brain_count = cinemachineCore.BrainCount,
             vcam_count = cinemachineCore.VirtualCameraCount,
-            // vcams = vcamDatas.ToArray(),
         };
         
-        // TODO: server does not understand json data weirdly...
-        // instead disinsect tables
-        // vcam cont, brain count - table 1
-        // vams rows, send separately.
 
         // Register our event like this
         EditorAnalytics.RegisterEventWithLimit("vcams_at_build", k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
@@ -252,51 +225,5 @@ public class CinemachineEditorAnalytics : IPostprocessBuildWithReport
         {
             EditorAnalytics.SendEventWithLimit("vcam_at_build", vcamData);
         }
-    }
-
-// This should be called when entering playmode
-    // [MenuItem("Test Analytics/Send Data")]
-    public static void SendTestEvent()
-    {
-        // // First thing we should check is to see if the user has Analytics turned on or not.
-        // // So we only send data if we really should send data.
-        // if (!EditorAnalytics.enabled)
-        //     return;
-        //
-        // // If Analytics is on, we need to register our event like this
-        // EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
-        //
-        // /////////////// SOME DATA /////////////////////////////
-        // // Lets grab some data to send.
-        // // Looking at the Analytics Data we want to send, we need to do the following
-        // // Create a hashset, since we only care about unique names
-        // HashSet<string> allGameObjectNames = new HashSet<string>();
-        //
-        // // Get all GameObjects in the scene
-        // GameObject[] allGameObjects = Object.FindObjectsOfType<GameObject>();
-        //
-        // // Iterate over all the GameObjects and get their names
-        // foreach (GameObject gameObject in allGameObjects)
-        // {
-        //     allGameObjectNames.Add(gameObject.name);
-        // }
-        //
-        // // Get the amount of game objects
-        // int amountOfObjects = allGameObjects.Length;
-        //
-        // // Get the active Editor Scene Name
-        // string sceneName = EditorSceneManager.GetActiveScene().name;
-        // /////////////// SOME DATA /////////////////////////////
-        //
-        // // Populate the analytics data with the gathered data
-        // AnalyticsData data = new AnalyticsData()
-        // {
-        //     all_object_names = allGameObjectNames.ToArray(),
-        //     amount_of_objects = amountOfObjects,
-        //     scene_name = sceneName
-        // };
-        //
-        // // Send the data to the database
-        // EditorAnalytics.SendEventWithLimit(k_EventName, data);
     }
 }
