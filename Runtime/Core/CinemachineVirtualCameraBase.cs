@@ -243,7 +243,7 @@ namespace Cinemachine
         }
 
         /// <summary> Tee extensions connected to this vcam</summary>
-        List<CinemachineExtension> mExtensions;
+        internal List<CinemachineExtension> mExtensions { get; private set; }
 
         /// <summary>
         /// Invokes the PostPipelineStageDelegate for this camera, and up the hierarchy for all

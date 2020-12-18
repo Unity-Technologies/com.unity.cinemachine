@@ -57,6 +57,12 @@ namespace Cinemachine.Editor
     public class CinemachineVirtualCameraBaseEditor<T>
         : BaseEditor<T> where T : CinemachineVirtualCameraBase
     {
+        
+        public void OnValidate()
+        {
+            Debug.Log("Onvalidate in VcamBaseEditor");
+        }
+        
         /// <summary>A collection of GUIContent for use in the inspector</summary>
         public static class Styles
         {
@@ -194,6 +200,7 @@ namespace Cinemachine.Editor
                 if (selection > 0)
                 {
                     Type extType = sExtensionTypes[selection];
+                    CinemachineEditorAnalytics.SendAddExtensionEvent(extType.ToString());
                     for (int i = 0; i < targets.Length; i++)
                     {
                         var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject;

@@ -176,6 +176,7 @@ namespace Cinemachine.Editor
                 Type type = sStageData[index].types[newSelection];
                 if (EditorGUI.EndChangeCheck())
                 {
+                    CinemachineEditorAnalytics.SendModifyAimBodyEvent(stage, type.ToString());
                     SetPipelineStage(stage, type);
                     if (newSelection != 0)
                         sStageData[index].IsExpanded = true;
