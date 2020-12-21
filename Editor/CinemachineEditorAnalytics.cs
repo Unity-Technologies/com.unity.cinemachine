@@ -11,6 +11,12 @@ public static class CinemachineEditorAnalytics
     private const int k_MaxNumberOfElements = 1000;
     private const string k_VendorKey = "unity.cinemachine";
 
+    // register an event handler when the class is initialized
+    static CinemachineEditorAnalytics()
+    {
+        EditorApplication.playModeStateChanged += SendAnalyticsOnPlayEnter;
+    }
+    
     /// <summary>
     /// Send analytics event when using Create -> Cinemachine menu
     /// </summary>
@@ -34,12 +40,6 @@ public static class CinemachineEditorAnalytics
     private struct CreateEventData
     {
         public string vcam_created; // vcam created from Create -> Cinemachine menu
-    }
-
-    // register an event handler when the class is initialized
-    static CinemachineEditorAnalytics()
-    {
-        EditorApplication.playModeStateChanged += SendAnalyticsOnPlayEnter;
     }
 
     private static void SendAnalyticsOnPlayEnter(PlayModeStateChange state)
