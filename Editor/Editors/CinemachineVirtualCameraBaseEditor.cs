@@ -200,7 +200,6 @@ namespace Cinemachine.Editor
                 if (selection > 0)
                 {
                     Type extType = sExtensionTypes[selection];
-                    CinemachineEditorAnalytics.SendAddExtensionEvent(extType.ToString());
                     for (int i = 0; i < targets.Length; i++)
                     {
                         var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject;

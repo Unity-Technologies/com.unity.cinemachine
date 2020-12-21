@@ -242,7 +242,7 @@ namespace Cinemachine
                 mExtensions.Remove(extension);
         }
 
-        /// <summary> Tee extensions connected to this vcam</summary>
+        /// <summary> The extensions connected to this vcam</summary>
         internal List<CinemachineExtension> mExtensions { get; private set; }
 
         /// <summary>
