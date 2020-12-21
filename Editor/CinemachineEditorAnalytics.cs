@@ -77,8 +77,7 @@ public static class CinemachineEditorAnalytics
                 vcamDatas.Add(new VcamData
                 {
                     id = id,
-                    vcam_class =
-                        vcamBase.GetType().ToString(),
+                    vcam_class = GetVcamClassName(vcamBase),
                     has_follow_target = vcamBase.Follow != null,
                     has_lookat_target = vcamBase.LookAt != null,
                     blend_hint = "",
@@ -231,7 +230,7 @@ public static class CinemachineEditorAnalytics
         return new VcamData
         {
             id = id,
-            vcam_class = vcam.GetType().ToString(),
+            vcam_class = GetVcamClassName(vcam),
             has_follow_target = vcam.Follow != null,
             has_lookat_target = vcam.LookAt != null,
             blend_hint = vcam.m_Transitions.m_BlendHint.ToString(),
@@ -277,5 +276,11 @@ public static class CinemachineEditorAnalytics
                 vcamExtensions.Add(extensionName);
             }
         }
+    }
+
+    private static string GetVcamClassName(CinemachineVirtualCameraBase vcamBase)
+    {
+        string type = vcamBase.GetType().ToString();
+        return type.Contains("Cinemachine.") ? type.Substring("Cinemachine.".Length) : k_customStr;
     }
 }
