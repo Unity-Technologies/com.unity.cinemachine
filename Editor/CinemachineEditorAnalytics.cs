@@ -4,6 +4,7 @@ using Cinemachine;
 using UnityEditor;
 using UnityEngine;
 
+[InitializeOnLoadAttribute]
 public static class CinemachineEditorAnalytics
 {
     private const int k_MaxEventsPerHour = 1000;
