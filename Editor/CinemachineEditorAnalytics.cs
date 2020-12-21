@@ -280,7 +280,7 @@ public static class CinemachineEditorAnalytics
 
     private static string GetVcamClassName(CinemachineVirtualCameraBase vcamBase)
     {
-        string type = vcamBase.GetType().ToString();
+        var type = vcamBase.GetType().ToString();
         return type.Contains("Cinemachine.") ? type.Substring("Cinemachine.".Length) : k_customStr;
     }
 }
