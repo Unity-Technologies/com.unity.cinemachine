@@ -56,13 +56,7 @@ namespace Cinemachine.Editor
     /// <typeparam name="T">The type of CinemachineVirtualCameraBase being edited</typeparam>
     public class CinemachineVirtualCameraBaseEditor<T>
         : BaseEditor<T> where T : CinemachineVirtualCameraBase
-    {
-        
-        public void OnValidate()
-        {
-            Debug.Log("Onvalidate in VcamBaseEditor");
-        }
-        
+    {    
         /// <summary>A collection of GUIContent for use in the inspector</summary>
         public static class Styles
         {
