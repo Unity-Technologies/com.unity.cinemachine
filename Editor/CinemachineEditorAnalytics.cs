@@ -42,6 +42,10 @@ public static class CinemachineEditorAnalytics
         public string vcam_created; // vcam created from Create -> Cinemachine menu
     }
 
+    /// <summary>
+    /// Send analytics event when using entering playmode
+    /// </summary>
+    /// <param name="state">State change to detect entering playmode</param>
     private static void SendAnalyticsOnPlayEnter(PlayModeStateChange state)
     {
         // Only send analytics if it is enabled
