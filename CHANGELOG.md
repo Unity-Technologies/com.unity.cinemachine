@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Nested Scrub Bubble sample removed (filenames too long), available now as embedded package
 - Compilation guards for physics, animation, and imgui. Cinemachine does not hard depend on anything now.
 - Bugfix: CM StoryBoard had a 1 pixel border.
+- Bugfix: CM StoryBoard lost viewport reference after hot reload.
 
 
 ## [2.7.1] - 2020-11-14
