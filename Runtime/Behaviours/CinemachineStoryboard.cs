@@ -294,8 +294,6 @@ namespace Cinemachine
                 ci.mRawImage.rectTransform.localScale = scale;
                 ci.mRawImage.rectTransform.ForceUpdateRectTransforms();
                 ci.mRawImage.rectTransform.sizeDelta = screen.size;
-
-
             }
         }
 
