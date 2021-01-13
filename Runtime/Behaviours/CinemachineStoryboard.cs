@@ -254,7 +254,7 @@ namespace Cinemachine
                 ci.mViewport.localRotation = Quaternion.identity;
                 ci.mViewport.localScale = Vector3.one;
                 ci.mViewport.ForceUpdateRectTransforms();
-                ci.mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(wipeAmount), screen.height);
+                ci.mViewport.sizeDelta = new Vector2(screen.width + 1 - Mathf.Abs(wipeAmount), screen.height + 1);
 
                 Vector2 scale = Vector2.one;
                 if (m_Image != null

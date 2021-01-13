@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Position predictor not properly reset
 - Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick
 - Bugfix: CM StoryBoard lost viewport reference after hot reload
+- Bugfix: CM StoryBoard had a 1 pixel border.
 
 
 ## [2.6.3] - 2020-09-16
