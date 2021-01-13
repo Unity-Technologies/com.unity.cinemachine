@@ -1,13 +1,10 @@
 ﻿#if !UNITY_2019_1_OR_NEWER
 #define CINEMACHINE_UGUI
 #endif
-
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 #if CINEMACHINE_UGUI
 using System.Collections.Generic;
-using UnityEditor.SearchService;
 
 namespace Cinemachine
 {
