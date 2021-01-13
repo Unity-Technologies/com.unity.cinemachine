@@ -2,10 +2,12 @@
 #define CINEMACHINE_UGUI
 #endif
 
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 #if CINEMACHINE_UGUI
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 
 namespace Cinemachine
 {
@@ -172,7 +174,7 @@ namespace Cinemachine
                         if (child != null && child.name == CanvasName)
                         {
                             ci.mCanvas = child.gameObject;
-                            ci.mViewport = ci.mCanvas.GetComponentInChildren<RectTransform>();
+                            ci.mViewport = ci.mCanvas.GetComponentsInChildren<RectTransform>()[1]; // 0 is mCanvas
                             ci.mRawImage = ci.mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
                         }
                     }
@@ -292,6 +294,8 @@ namespace Cinemachine
                 ci.mRawImage.rectTransform.localScale = scale;
                 ci.mRawImage.rectTransform.ForceUpdateRectTransforms();
                 ci.mRawImage.rectTransform.sizeDelta = screen.size;
+
+
             }
         }
 
