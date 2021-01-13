@@ -4,9 +4,6 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.7.3]
-- Bugfix: CM StoryBoard had a 1 pixel border.
-
 ## [2.7.2] - 2020-12-31
 - CinemachineConfiner2D now handles cases where camera window is oversized
 - Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases.
@@ -15,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1290171) - Impulse manager was not cleared at playmode start
 - Nested Scrub Bubble sample removed (filenames too long), available now as embedded package
 - Compilation guards for physics, animation, and imgui. Cinemachine does not hard depend on anything now.
+- Bugfix: CM StoryBoard had a 1 pixel border.
 
 
 ## [2.7.1] - 2020-11-14
