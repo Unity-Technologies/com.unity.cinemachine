@@ -6,11 +6,11 @@ using UnityEngine;
 namespace Cinemachine
 {
     [InitializeOnLoad]
-    internal static class CinemachineEditorAnalytics
+    static class CinemachineEditorAnalytics
     {
-        private const int k_MaxEventsPerHour = 1000;
-        private const int k_MaxNumberOfElements = 1000;
-        private const string k_VendorKey = "unity.cinemachine";
+        const int k_MaxEventsPerHour = 1000;
+        const int k_MaxNumberOfElements = 1000;
+        const string k_VendorKey = "unity.cinemachine";
 
         // register an event handler when the class is initialized
         static CinemachineEditorAnalytics()
@@ -39,7 +39,7 @@ namespace Cinemachine
             EditorAnalytics.SendEventWithLimit("cm_create_vcam", data);
         }
 
-        private struct CreateEventData
+        struct CreateEventData
         {
             public string vcam_created; // vcam created from Create -> Cinemachine menu
         }
@@ -48,7 +48,7 @@ namespace Cinemachine
         /// Send analytics event when using entering playmode
         /// </summary>
         /// <param name="state">State change to detect entering playmode</param>
-        private static void SendAnalyticsOnPlayEnter(PlayModeStateChange state)
+        static void SendAnalyticsOnPlayEnter(PlayModeStateChange state)
         {
             // Only send analytics if it is enabled
             if (!EditorAnalytics.enabled)
@@ -123,7 +123,7 @@ namespace Cinemachine
         }
 
         [Serializable]
-        private struct ProjectData
+        struct ProjectData
         {
             public int brain_count;
             public int vcam_count;
@@ -133,7 +133,7 @@ namespace Cinemachine
         }
 
         [Serializable]
-        private struct VcamData
+        struct VcamData
         {
             public string id;
             public string vcam_class;
@@ -151,10 +151,10 @@ namespace Cinemachine
             public int custom_extension_count;
         }
 
-        private static readonly VcamData k_nullData = new VcamData { vcam_class = "null" };
-        private const string k_customStr = "Custom";
+        static readonly VcamData k_nullData = new VcamData { vcam_class = "null" };
+        const string k_customStr = "Custom";
 
-        private static VcamData ConvertVcamToVcamData(in CinemachineVirtualCamera vcam, string id)
+        static VcamData ConvertVcamToVcamData(in CinemachineVirtualCamera vcam, string id)
         {
             if (vcam == null) return k_nullData;
 
@@ -253,7 +253,7 @@ namespace Cinemachine
             };
         }
 
-        private static void GetExtensions(CinemachineVirtualCameraBase vcamBase, out List<string> vcamExtensions, out int customExtensionCount)
+        static void GetExtensions(CinemachineVirtualCameraBase vcamBase, out List<string> vcamExtensions, out int customExtensionCount)
         {
             customExtensionCount = 0;
 
@@ -287,7 +287,7 @@ namespace Cinemachine
             }
         }
 
-        private static string GetVcamClassName(CinemachineVirtualCameraBase vcamBase)
+        static string GetVcamClassName(CinemachineVirtualCameraBase vcamBase)
         {
             var type = vcamBase.GetType().ToString();
             return type.Contains("Cinemachine.") ? type.Substring(12) : k_customStr; // 12 = "Cinemachine.".Length
