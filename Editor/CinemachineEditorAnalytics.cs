@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,10 +13,17 @@ namespace Cinemachine
         const int k_MaxNumberOfElements = 1000;
         const string k_VendorKey = "unity.cinemachine";
 
+        static List<Type> TypesDefinedInCinemachineNamespace;
+
         // register an event handler when the class is initialized
         static CinemachineEditorAnalytics()
         {
             EditorApplication.playModeStateChanged += SendAnalyticsOnPlayEnter;
+            
+            // Query for all types in cinemachine namespace
+            TypesDefinedInCinemachineNamespace = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(t => t.GetTypes())
+                .Where(t => t.IsClass && t.Namespace == "Cinemachine").ToList();
         }
 
         /// <summary>
@@ -152,7 +160,7 @@ namespace Cinemachine
         }
 
         static readonly VcamData k_nullData = new VcamData { vcam_class = "null" };
-        const string k_customStr = "Custom";
+        const string k_customStr = "Custom"; // used for hiding user created class names
 
         static VcamData ConvertVcamToVcamData(in CinemachineVirtualCamera vcam, string id)
         {
@@ -169,66 +177,22 @@ namespace Cinemachine
             {
                 foreach (var cmComp in cmComps)
                 {
-                    var type = cmComp.GetType().ToString();
-                    int indexOf = type.IndexOf("Cinemachine.");
-                    if (indexOf >= 0)
-                    {
-                        type = type.Substring("Cinemachine.".Length);
-                    }
+                    var type = cmComp.GetType();
+                    var cinemachineType = TypesDefinedInCinemachineNamespace.Contains(type);
+                    if (!cinemachineType) customComponentCount++;
 
                     switch (cmComp.Stage)
                     {
                         case CinemachineCore.Stage.Body:
-                            switch (type) // TODO: string to consts
-                            {
-                                // built in
-                                case "Cinemachine3rdPersonFollow":
-                                case "CinemachineFramingTransposer":
-                                case "CinemachineHardLockToTarget":
-                                case "CinemachineOrbitalTransposer":
-                                case "CinemachineTrackedDolly":
-                                case "CinemachineTransposer":
-                                    bodyComponent = type;
-                                    break;
-                                default:
-                                    bodyComponent = k_customStr; // hide users component's name
-                                    customComponentCount++;
-                                    break;
-                            }
-
+                            bodyComponent = cinemachineType ? GetCMTypeName(type) : k_customStr;
                             break;
                         case CinemachineCore.Stage.Aim:
-                            switch (type)
-                            {
-                                case "CinemachineComposer":
-                                case "CinemachineGroupComposer":
-                                case "CinemachineHardLookAt":
-                                case "CinemachinePOV":
-                                case "CinemachineSameAsFollowTarget":
-                                    aimComponent = type;
-                                    break;
-                                default:
-                                    aimComponent = k_customStr; // hide users component's name
-                                    customComponentCount++;
-                                    break;
-                            }
-
+                            aimComponent = cinemachineType ? GetCMTypeName(type) : k_customStr;
                             break;
                         case CinemachineCore.Stage.Noise:
-                            switch (type) // TODO: string to consts
-                            {
-                                case "CinemachineBasicMultiChannelPerlin":
-                                    noiseComponent = type;
-                                    break;
-                                default:
-                                    noiseComponent = k_customStr; // hide users component's name
-                                    customComponentCount++;
-                                    break;
-                            }
-
+                            noiseComponent = cinemachineType ? GetCMTypeName(type) : k_customStr;
                             break;
                         default:
-                            customComponentCount++;
                             break;
                     }
                 }
@@ -264,33 +228,25 @@ namespace Cinemachine
             {
                 foreach (var extension in extensions)
                 {
-                    string extensionName = extension.GetType().ToString();
-                    switch (extensionName)
-                    {
-                        case "CinemachineCameraOffset":
-                        case "Cinemachine3rdPersonAim":
-                        case "CinemachineCollider":
-                        case "CinemachineConfiner":
-                        case "CinemachineConfiner2D":
-                        case "CinemachineFollowZoom":
-                        case "CinemachineRecomposer":
-                        case "CinemachineStoryboard":
-                            break;
-                        default:
-                            extensionName = k_customStr; // hide users extension's name
-                            customExtensionCount++;
-                            break;
-                    }
-
-                    vcamExtensions.Add(extensionName);
+                    var type = extension.GetType();
+                    var cinemachineType = TypesDefinedInCinemachineNamespace.Contains(type);
+                    if (!cinemachineType) customExtensionCount++;
+                    
+                    vcamExtensions.Add(cinemachineType ? GetCMTypeName(type) : k_customStr);
                 }
             }
         }
 
         static string GetVcamClassName(CinemachineVirtualCameraBase vcamBase)
         {
-            var type = vcamBase.GetType().ToString();
-            return type.Contains("Cinemachine.") ? type.Substring(12) : k_customStr; // 12 = "Cinemachine.".Length
+            var type = vcamBase.GetType();
+            var cinemachineType = TypesDefinedInCinemachineNamespace.Contains(type);
+            return cinemachineType ? GetCMTypeName(type) : k_customStr; // 12 = "Cinemachine.".Length
+        }
+        
+        static string GetCMTypeName(Type type)
+        {
+            return type.ToString().Substring(12); // 12 = "Cinemachine.".Length
         }
     }
 }
