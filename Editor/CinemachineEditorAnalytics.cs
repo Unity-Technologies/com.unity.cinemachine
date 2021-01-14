@@ -4,8 +4,8 @@ using Cinemachine;
 using UnityEditor;
 using UnityEngine;
 
-[InitializeOnLoadAttribute]
-public static class CinemachineEditorAnalytics
+[InitializeOnLoad]
+internal static class CinemachineEditorAnalytics
 {
     private const int k_MaxEventsPerHour = 1000;
     private const int k_MaxNumberOfElements = 1000;
@@ -21,7 +21,7 @@ public static class CinemachineEditorAnalytics
     /// Send analytics event when using Create -> Cinemachine menu
     /// </summary>
     /// <param name="name">Name of the vcam created</param>
-    internal static void SendCreateEvent(string name)
+    public static void SendCreateEvent(string name)
     {
         if (!EditorAnalytics.enabled)
             return;
