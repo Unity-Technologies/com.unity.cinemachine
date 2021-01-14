@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
     static class CinemachineEditorAnalytics
