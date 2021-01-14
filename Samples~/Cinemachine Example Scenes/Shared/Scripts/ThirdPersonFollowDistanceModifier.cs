@@ -3,20 +3,19 @@
 namespace Cinemachine.Examples
 {
     /// <summary>
-    /// This component is an add-of for virtual cameras containing the ThirdPersonFollow component.
+    /// This is an add-on for Cinemachine virtual cameras containing the ThirdPersonFollow component.
     /// It modifies the camera distance as a function of vertical angle.
     /// </summary>
     [SaveDuringPlay]
     public class ThirdPersonFollowDistanceModifier : MonoBehaviour
     {
-
-        [Tooltip("Camera angle that corresponts to the start of the distance graph")]
+        [Tooltip("Camera angle that corresponds to the start of the distance graph")]
         public float MinAngle;
 
-        [Tooltip("Camera angle that corresponts to the end of the distance graph")]
+        [Tooltip("Camera angle that corresponds to the end of the distance graph")]
         public float MaxAngle;
 
-        [Tooltip("Defines how the camera distance scales as a function of camera angle.  "
+        [Tooltip("Defines how the camera distance scales as a function of vertical camera angle.  "
             + "X axis of graph go from 0 to 1, Y axis is the multiplier that will be "
             + "applied to the base distance.")]
         public AnimationCurve DistanceScale;
