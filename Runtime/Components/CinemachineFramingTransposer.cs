@@ -518,7 +518,7 @@ namespace Cinemachine
 
             // Optionally allow undamped camera orientation change
             Quaternion localToWorld = curState.RawOrientation;
-            if (previousStateIsValid && m_TargetMovementOnly && m_prevRotation != localToWorld)
+            if (previousStateIsValid && m_TargetMovementOnly)
             {
                 var q = localToWorld * Quaternion.Inverse(m_prevRotation);
                 m_PreviousCameraPosition = TrackedPoint + q * (m_PreviousCameraPosition - TrackedPoint);
