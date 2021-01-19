@@ -38,7 +38,7 @@ namespace Cinemachine.Editor
                 vcam_created = name,
             };
 
-            // Register our event like this
+            // Register our event
             EditorAnalytics.RegisterEventWithLimit("cm_create_vcam", k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
 
             // Send the data to the database
@@ -121,7 +121,7 @@ namespace Cinemachine.Editor
                 time_elapsed = Time.realtimeSinceStartup - startTime,
             };
 
-            // Register our event like this
+            // Register our event
             EditorAnalytics.RegisterEventWithLimit("cm_vcams_on_play", k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
 
             // Send the data to the database
@@ -162,7 +162,7 @@ namespace Cinemachine.Editor
         {
             if (vcam == null) return k_NullData;
 
-            // collect extensions
+            // collect extensions on vcam
             GetExtensions(vcam, out List<string> vcamExtensions, out int customExtensionCount);
 
             // collect components on vcam
