@@ -89,7 +89,7 @@ namespace Cinemachine.Editor
                     vcamDatas.Add(new VcamData
                     {
                         id = id,
-                        vcam_class = GetVcamClassName(vcamBase),
+                        vcam_class = GetVcamTypeName(vcamBase),
                         has_follow_target = vcamBase.Follow != null,
                         has_lookat_target = vcamBase.LookAt != null,
                         blend_hint = "",
@@ -157,12 +157,11 @@ namespace Cinemachine.Editor
             public int custom_extension_count;
         }
 
-        static readonly VcamData k_nullData = new VcamData { vcam_class = "null" };
-        const string k_customStr = "Custom"; // used for hiding user created class names
-
+        static readonly VcamData k_NullData = new VcamData { vcam_class = "null" };
+        const string k_CustomStr = "Custom"; // used for hiding user created class names
         static VcamData ConvertVcamToVcamData(in CinemachineVirtualCamera vcam, string id)
         {
-            if (vcam == null) return k_nullData;
+            if (vcam == null) return k_NullData;
 
             // collect extensions
             GetExtensions(vcam, out List<string> vcamExtensions, out int customExtensionCount);
@@ -173,22 +172,19 @@ namespace Cinemachine.Editor
             var cmComps = vcam.GetComponentPipeline();
             if (cmComps != null)
             {
-                foreach (var cmComp in cmComps)
+                for (var i = 0; i < cmComps.Length; i++)
                 {
-                    var type = cmComp.GetType();
-                    var cinemachineType = s_CinemachineAssembly == type.Assembly;
-                    if (!cinemachineType) customComponentCount++;
-
+                    var cmComp = cmComps[i];
                     switch (cmComp.Stage)
                     {
                         case CinemachineCore.Stage.Body:
-                            bodyComponent = cinemachineType ? GetCMTypeName(type) : k_customStr;
+                            bodyComponent = GetTypeName(cmComp.GetType(), ref customComponentCount);
                             break;
                         case CinemachineCore.Stage.Aim:
-                            aimComponent = cinemachineType ? GetCMTypeName(type) : k_customStr;
+                            aimComponent = GetTypeName(cmComp.GetType(), ref customComponentCount);
                             break;
                         case CinemachineCore.Stage.Noise:
-                            noiseComponent = cinemachineType ? GetCMTypeName(type) : k_customStr;
+                            noiseComponent = GetTypeName(cmComp.GetType(), ref customComponentCount);
                             break;
                         default:
                             break;
@@ -199,7 +195,7 @@ namespace Cinemachine.Editor
             return new VcamData
             {
                 id = id,
-                vcam_class = GetVcamClassName(vcam),
+                vcam_class = GetVcamTypeName(vcam),
                 has_follow_target = vcam.Follow != null,
                 has_lookat_target = vcam.LookAt != null,
                 blend_hint = vcam.m_Transitions.m_BlendHint.ToString(),
@@ -224,27 +220,27 @@ namespace Cinemachine.Editor
             var extensions = vcamBase.mExtensions;
             if (extensions != null)
             {
-                foreach (var extension in extensions)
+                for (var i = 0; i < extensions.Count; i++)
                 {
-                    var type = extension.GetType();
-                    var cinemachineType = s_CinemachineAssembly == type.Assembly;
-                    if (!cinemachineType) customExtensionCount++;
-                    
-                    vcamExtensions.Add(cinemachineType ? GetCMTypeName(type) : k_customStr);
+                    vcamExtensions.Add(GetTypeName(extensions[i].GetType(), ref customExtensionCount));
                 }
             }
         }
 
-        static string GetVcamClassName(CinemachineVirtualCameraBase vcamBase)
+        static string GetVcamTypeName(CinemachineVirtualCameraBase vcamBase)
         {
             var type = vcamBase.GetType();
-            var cinemachineType = s_CinemachineAssembly == type.Assembly;
-            return cinemachineType ? GetCMTypeName(type) : k_customStr;
+            return s_CinemachineAssembly == type.Assembly ? type.Name : k_CustomStr;
         }
-        
-        static string GetCMTypeName(Type type)
+
+        static string GetTypeName(Type type, ref int customTypeCount)
         {
-            return type.ToString().Substring(12); // 12 = "Cinemachine.".Length
+            if (typeof(CinemachineBrain).Assembly != type.Assembly)
+            {
+                ++customTypeCount;
+                return k_CustomStr;
+            }
+            return type.Name;
         }
     }
 }
