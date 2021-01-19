@@ -39,7 +39,8 @@ namespace Cinemachine.Editor
             };
 
             // Register our event
-            EditorAnalytics.RegisterEventWithLimit("cm_create_vcam", k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
+            EditorAnalytics.RegisterEventWithLimit("cm_create_vcam", 
+                k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
 
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit("cm_create_vcam", data);
@@ -104,7 +105,8 @@ namespace Cinemachine.Editor
                         custom_extension_count = customExtensionCount,
                     });
 
-                    var vcamChildren = vcamBase.GetComponentsInChildren<CinemachineVirtualCamera>();
+                    var vcamChildren = 
+                        vcamBase.GetComponentsInChildren<CinemachineVirtualCamera>();
                     for (var c = 0; c < vcamChildren.Length; c++)
                     {
                         vcamDatas.Add(ConvertVcamToVcamData(vcamChildren[c], id + "." + c));
@@ -122,7 +124,8 @@ namespace Cinemachine.Editor
             };
 
             // Register our event
-            EditorAnalytics.RegisterEventWithLimit("cm_vcams_on_play", k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
+            EditorAnalytics.RegisterEventWithLimit("cm_vcams_on_play", 
+                k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
 
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit("cm_vcams_on_play", projectData);
