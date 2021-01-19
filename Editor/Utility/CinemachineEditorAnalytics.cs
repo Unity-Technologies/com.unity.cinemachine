@@ -13,15 +13,11 @@ namespace Cinemachine.Editor
         const int k_MaxEventsPerHour = 1000;
         const int k_MaxNumberOfElements = 1000;
         const string k_VendorKey = "unity.cinemachine";
-
-        static Assembly s_CinemachineAssembly;
-
+        
         // register an event handler when the class is initialized
         static CinemachineEditorAnalytics()
         {
             EditorApplication.playModeStateChanged += SendAnalyticsOnPlayEnter;
-
-            s_CinemachineAssembly = typeof(CinemachineBrain).Assembly;
         }
 
         /// <summary>
@@ -75,43 +71,7 @@ namespace Cinemachine.Editor
             for (int i = 0; i < vcamCount; ++i)
             {
                 var vcamBase = cinemachineCore.GetVirtualCamera(i);
-                if (vcamBase == null) continue;
-
-                var vcam = vcamBase as CinemachineVirtualCamera;
-                if (vcam != null)
-                {
-                    vcamDatas.Add(ConvertVcamToVcamData(vcam, i.ToString()));
-                }
-                else // Composite vcam (Freelook, Mixing, Statedriven, Clearshot):
-                {
-                    GetExtensions(vcamBase, out List<string> vcamExtensions, out int customExtensionCount);
-
-                    string id = i.ToString();
-                    vcamDatas.Add(new VcamData
-                    {
-                        id = id,
-                        vcam_class = GetVcamTypeName(vcamBase),
-                        has_follow_target = vcamBase.Follow != null,
-                        has_lookat_target = vcamBase.LookAt != null,
-                        blend_hint = "",
-                        inherit_position = false,
-                        standby_update = vcamBase.m_StandbyUpdate.ToString(),
-                        mode_overwrite = "",
-                        body_component = "",
-                        aim_component = "",
-                        noise_component = "",
-                        custom_component_count = 0,
-                        extensions = vcamExtensions.ToArray(),
-                        custom_extension_count = customExtensionCount,
-                    });
-
-                    var vcamChildren = 
-                        vcamBase.GetComponentsInChildren<CinemachineVirtualCamera>();
-                    for (var c = 0; c < vcamChildren.Length; c++)
-                    {
-                        vcamDatas.Add(ConvertVcamToVcamData(vcamChildren[c], id + "." + c));
-                    }
-                }
+                CollectData(vcamBase, i.ToString(), ref vcamDatas);
             }
 
             var projectData = new ProjectData
@@ -129,6 +89,47 @@ namespace Cinemachine.Editor
 
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit("cm_vcams_on_play", projectData);
+        }
+
+        static void CollectData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
+        {
+            if (vcamBase == null) return;
+
+            var vcam = vcamBase as CinemachineVirtualCamera;
+            if (vcam != null)
+            {
+                vcamDatas.Add(ConvertVcamToVcamData(vcam, id));
+            }
+            else // Composite vcam (Freelook, Mixing, Statedriven, Clearshot):
+            {
+                GetExtensions(vcamBase, out List<string> vcamExtensions, out int customExtensionCount);
+
+                vcamDatas.Add(new VcamData
+                {
+                    id = id,
+                    vcam_class = GetTypeName(vcamBase.GetType()),
+                    has_follow_target = vcamBase.Follow != null,
+                    has_lookat_target = vcamBase.LookAt != null,
+                    blend_hint = "",
+                    inherit_position = false,
+                    standby_update = vcamBase.m_StandbyUpdate.ToString(),
+                    mode_overwrite = "",
+                    body_component = "",
+                    aim_component = "",
+                    noise_component = "",
+                    custom_component_count = 0,
+                    extensions = vcamExtensions.ToArray(),
+                    custom_extension_count = customExtensionCount,
+                });
+
+                var vcamChildren = 
+                    vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
+                for (var c = 1; c < vcamChildren.Length; c++)
+                {
+                    if ((CinemachineVirtualCameraBase)vcamChildren[c].ParentCamera == vcamBase)
+                        CollectData(vcamChildren[c], id + "." + c, ref vcamDatas);
+                }
+            }
         }
 
         [Serializable]
@@ -175,7 +176,7 @@ namespace Cinemachine.Editor
             return new VcamData
             {
                 id = id,
-                vcam_class = GetVcamTypeName(vcam),
+                vcam_class = GetTypeName(vcam.GetType()),
                 has_follow_target = vcam.Follow != null,
                 has_lookat_target = vcam.LookAt != null,
                 blend_hint = vcam.m_Transitions.m_BlendHint.ToString(),
@@ -238,10 +239,9 @@ namespace Cinemachine.Editor
         }
         
         const string k_CustomStr = "Custom"; // used for hiding user created class names
-        static string GetVcamTypeName(CinemachineVirtualCameraBase vcamBase)
+        static string GetTypeName(Type type)
         {
-            var type = vcamBase.GetType();
-            return s_CinemachineAssembly == type.Assembly ? type.Name : k_CustomStr;
+            return typeof(CinemachineBrain).Assembly == type.Assembly ? type.Name : k_CustomStr;
         }
 
         static string GetTypeName(Type type, ref int customTypeCount)
