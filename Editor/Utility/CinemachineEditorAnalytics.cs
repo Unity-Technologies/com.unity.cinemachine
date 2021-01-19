@@ -166,30 +166,8 @@ namespace Cinemachine.Editor
             GetExtensions(vcam, out List<string> vcamExtensions, out int customExtensionCount);
 
             // collect components on vcam
-            int customComponentCount = 0;
-            string bodyComponent = "", aimComponent = "", noiseComponent = "";
-            var cmComps = vcam.GetComponentPipeline();
-            if (cmComps != null)
-            {
-                for (var i = 0; i < cmComps.Length; i++)
-                {
-                    var componentName = GetTypeName(cmComps[i].GetType(), ref customComponentCount);
-                    switch (cmComps[i].Stage)
-                    {
-                        case CinemachineCore.Stage.Body:
-                            bodyComponent = componentName;
-                            break;
-                        case CinemachineCore.Stage.Aim:
-                            aimComponent = componentName;
-                            break;
-                        case CinemachineCore.Stage.Noise:
-                            noiseComponent = componentName;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
+            GetComponents(vcam, out string bodyComponent, out string aimComponent, 
+                out string noiseComponent, out int customComponentCount);
 
             return new VcamData
             {
@@ -210,9 +188,10 @@ namespace Cinemachine.Editor
             };
         }
 
-        static void GetExtensions(CinemachineVirtualCameraBase vcamBase, out List<string> vcamExtensions, out int customExtensionCount)
+        static void GetExtensions(CinemachineVirtualCameraBase vcamBase, 
+            out List<string> vcamExtensions, out int customCount)
         {
-            customExtensionCount = 0;
+            customCount = 0;
 
             // collect extensions on vcam
             vcamExtensions = new List<string>();
@@ -221,7 +200,36 @@ namespace Cinemachine.Editor
             {
                 for (var i = 0; i < extensions.Count; i++)
                 {
-                    vcamExtensions.Add(GetTypeName(extensions[i].GetType(), ref customExtensionCount));
+                    vcamExtensions.Add(GetTypeName(extensions[i].GetType(), ref customCount));
+                }
+            }
+        }
+
+        static void GetComponents(CinemachineVirtualCamera vcam,
+            out string body, out string aim, out string noise, out int customCount)
+        {
+            customCount = 0;
+            body = aim = noise = "";
+            var cmComps = vcam.GetComponentPipeline();
+            if (cmComps != null)
+            {
+                for (var i = 0; i < cmComps.Length; i++)
+                {
+                    var componentName = GetTypeName(cmComps[i].GetType(), ref customCount);
+                    switch (cmComps[i].Stage)
+                    {
+                        case CinemachineCore.Stage.Body:
+                            body = componentName;
+                            break;
+                        case CinemachineCore.Stage.Aim:
+                            aim = componentName;
+                            break;
+                        case CinemachineCore.Stage.Noise:
+                            noise = componentName;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
