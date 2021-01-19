@@ -2462,8 +2462,8 @@ MonoBehaviour:
   m_Title: BlendList camera
   m_Description: "This example shows how a shader can be used to fade out objects
     in front of the camera.\nThe shader is on all Cylinders in the scene. Shaders
-    are not part of Cinemachine. \n\nFor more information on shaders, see: https://docs.unity3d.com/Manual/ShadersOverview.html\n\nor
-    the shader forum:\nhttps://forum.unity.com/forums/shaders.16/"
+    are not part of cinemachine. \n\nFor more information on shaders, see https://docs.unity3d.com/Manual/ShadersOverview.html.
+    \nor the shader forum:\n https://forum.unity.com/forums/shaders.16/"
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
