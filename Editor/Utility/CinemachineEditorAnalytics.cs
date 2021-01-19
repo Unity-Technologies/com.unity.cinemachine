@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,16 +14,14 @@ namespace Cinemachine.Editor
         const int k_MaxNumberOfElements = 1000;
         const string k_VendorKey = "unity.cinemachine";
 
-        static List<Type> s_CinemachineAssemblyTypes;
+        static Assembly s_CinemachineAssembly;
 
         // register an event handler when the class is initialized
         static CinemachineEditorAnalytics()
         {
             EditorApplication.playModeStateChanged += SendAnalyticsOnPlayEnter;
-            
-            // Query for all types in cinemachine assembly
-            s_CinemachineAssemblyTypes = typeof(CinemachineBrain).Assembly.GetTypes().
-                Where(t => t.IsClass && t.Namespace == "Cinemachine").ToList();
+
+            s_CinemachineAssembly = typeof(CinemachineBrain).Assembly;
         }
 
         /// <summary>
@@ -177,7 +176,7 @@ namespace Cinemachine.Editor
                 foreach (var cmComp in cmComps)
                 {
                     var type = cmComp.GetType();
-                    var cinemachineType = s_CinemachineAssemblyTypes.Contains(type);
+                    var cinemachineType = s_CinemachineAssembly == type.Assembly;
                     if (!cinemachineType) customComponentCount++;
 
                     switch (cmComp.Stage)
@@ -228,7 +227,7 @@ namespace Cinemachine.Editor
                 foreach (var extension in extensions)
                 {
                     var type = extension.GetType();
-                    var cinemachineType = s_CinemachineAssemblyTypes.Contains(type);
+                    var cinemachineType = s_CinemachineAssembly == type.Assembly;
                     if (!cinemachineType) customExtensionCount++;
                     
                     vcamExtensions.Add(cinemachineType ? GetCMTypeName(type) : k_customStr);
@@ -239,7 +238,7 @@ namespace Cinemachine.Editor
         static string GetVcamClassName(CinemachineVirtualCameraBase vcamBase)
         {
             var type = vcamBase.GetType();
-            var cinemachineType = s_CinemachineAssemblyTypes.Contains(type);
+            var cinemachineType = s_CinemachineAssembly == type.Assembly;
             return cinemachineType ? GetCMTypeName(type) : k_customStr;
         }
         
