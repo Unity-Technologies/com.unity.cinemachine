@@ -173,17 +173,17 @@ namespace Cinemachine.Editor
             {
                 for (var i = 0; i < cmComps.Length; i++)
                 {
-                    var cmComp = cmComps[i];
-                    switch (cmComp.Stage)
+                    var componentName = GetTypeName(cmComps[i].GetType(), ref customComponentCount);
+                    switch (cmComps[i].Stage)
                     {
                         case CinemachineCore.Stage.Body:
-                            bodyComponent = GetTypeName(cmComp.GetType(), ref customComponentCount);
+                            bodyComponent = componentName;
                             break;
                         case CinemachineCore.Stage.Aim:
-                            aimComponent = GetTypeName(cmComp.GetType(), ref customComponentCount);
+                            aimComponent = componentName;
                             break;
                         case CinemachineCore.Stage.Noise:
-                            noiseComponent = GetTypeName(cmComp.GetType(), ref customComponentCount);
+                            noiseComponent = componentName;
                             break;
                         default:
                             break;
@@ -225,7 +225,6 @@ namespace Cinemachine.Editor
                 }
             }
         }
-
         
         const string k_CustomStr = "Custom"; // used for hiding user created class names
         static string GetVcamTypeName(CinemachineVirtualCameraBase vcamBase)
