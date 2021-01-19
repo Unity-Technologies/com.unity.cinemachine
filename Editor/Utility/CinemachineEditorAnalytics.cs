@@ -238,10 +238,10 @@ namespace Cinemachine.Editor
             }
         }
         
-        const string k_CustomStr = "Custom"; // used for hiding user created class names
         static string GetTypeName(Type type)
         {
-            return typeof(CinemachineBrain).Assembly == type.Assembly ? type.Name : k_CustomStr;
+            var _ = 0;
+            return GetTypeName(type, ref _);
         }
 
         static string GetTypeName(Type type, ref int customTypeCount)
@@ -249,7 +249,7 @@ namespace Cinemachine.Editor
             if (typeof(CinemachineBrain).Assembly != type.Assembly)
             {
                 ++customTypeCount;
-                return k_CustomStr;
+                return "Custom";
             }
             return type.Name;
         }
