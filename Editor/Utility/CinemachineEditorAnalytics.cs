@@ -158,7 +158,6 @@ namespace Cinemachine.Editor
         }
 
         static readonly VcamData k_NullData = new VcamData { vcam_class = "null" };
-        const string k_CustomStr = "Custom"; // used for hiding user created class names
         static VcamData ConvertVcamToVcamData(in CinemachineVirtualCamera vcam, string id)
         {
             if (vcam == null) return k_NullData;
@@ -227,6 +226,8 @@ namespace Cinemachine.Editor
             }
         }
 
+        
+        const string k_CustomStr = "Custom"; // used for hiding user created class names
         static string GetVcamTypeName(CinemachineVirtualCameraBase vcamBase)
         {
             var type = vcamBase.GetType();
