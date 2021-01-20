@@ -166,8 +166,10 @@ namespace Cinemachine.Editor
 
             public VcamData(string id, CinemachineVirtualCameraBase vcamBase) : this()
             {
+                var _ = 0;
+                
                 this.id = id;
-                vcam_class = GetTypeName(vcamBase.GetType());
+                vcam_class = GetTypeName(vcamBase.GetType(), ref _);
                 has_follow_target = vcamBase.Follow != null;
                 has_lookat_target = vcamBase.LookAt != null;
                 blend_hint = "";
@@ -230,12 +232,6 @@ namespace Cinemachine.Editor
                         }
                     }
                 }
-            }
-
-            string GetTypeName(Type type)
-            {
-                var _ = 0;
-                return GetTypeName(type, ref _);
             }
 
             string GetTypeName(Type type, ref int customTypeCount)
