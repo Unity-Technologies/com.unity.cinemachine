@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -82,11 +80,11 @@ namespace Cinemachine.Editor
                 vcams = vcamDatas,
                 time_elapsed = Time.realtimeSinceStartup - startTime,
             };
-
+            
             // Register our event
             EditorAnalytics.RegisterEventWithLimit("cm_vcams_on_play", 
                 k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
-
+            
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit("cm_vcams_on_play", projectData);
         }
@@ -94,24 +92,11 @@ namespace Cinemachine.Editor
         static void CollectData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
         {
             if (vcamBase == null) return;
-            var vcamData = new VcamData()
-            {
-                id = id,
-                vcam_class = GetTypeName(vcamBase.GetType()),
-                has_follow_target = vcamBase.Follow != null,
-                has_lookat_target = vcamBase.LookAt != null,
-                blend_hint = "",
-                inherit_position = false,
-                standby_update = vcamBase.m_StandbyUpdate.ToString(),
-                mode_overwrite = "",
-                body_component = "",
-                aim_component = "",
-                noise_component = "",
-                custom_component_count = 0,
-                custom_extension_count = 0,
-            };
+            
+            var vcamData = new VcamData(id, vcamBase);
             GetExtensions(vcamBase, out vcamData.extensions, out vcamData.custom_extension_count);
             
+            // VirtualCamera
             var vcam = vcamBase as CinemachineVirtualCamera;
             if (vcam != null)
             {
@@ -120,22 +105,40 @@ namespace Cinemachine.Editor
                 vcamData.mode_overwrite = vcam.m_Lens.ModeOverride.ToString();
 
                 // collect components on vcam
-                GetComponents(vcam, out vcamData.body_component, out vcamData.aim_component, 
+                GetComponents(vcam.GetComponentPipeline(), out vcamData.body_component, out vcamData.aim_component, 
                     out vcamData.noise_component, out vcamData.custom_component_count);
                 
                 vcamDatas.Add(vcamData);
-            }
-            else // Composite vcam (Freelook, Mixing, Statedriven, Clearshot):
+                return;
+            }     
+#if CINEMACHINE_EXPERIMENTAL_VCAM
+            // NewVirtualCamera
+            var vcamNew = vcamBase as CinemachineNewVirtualCamera;
+            var vcamNewFreelook = vcamBase as CinemachineNewFreeLook;
+            if (vcamNew != null && vcamNewFreelook == null)
             {
+                vcamData.blend_hint = vcamNew.m_Transitions.m_BlendHint.ToString();
+                vcamData.inherit_position = vcamNew.m_Transitions.m_InheritPosition;
+                vcamData.mode_overwrite = vcamNew.m_Lens.ModeOverride.ToString();
+                
+                // collect components on vcam
+                GetComponents(vcamNew.ComponentCache, out vcamData.body_component, out vcamData.aim_component, 
+                    out vcamData.noise_component, out vcamData.custom_component_count);
+                
                 vcamDatas.Add(vcamData);
+                return;
+            }
+#endif
+            
+            // Composite vcam (Freelook, NewFreeLook if opted-in, Mixing, StateDriven, ClearShot...):
+            vcamDatas.Add(vcamData);
 
-                var vcamChildren = 
-                    vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
-                for (var c = 1; c < vcamChildren.Length; c++)
-                {
-                    if ((CinemachineVirtualCameraBase)vcamChildren[c].ParentCamera == vcamBase)
-                        CollectData(vcamChildren[c], id + "." + c, ref vcamDatas);
-                }
+            var vcamChildren = 
+                vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
+            for (var c = 1; c < vcamChildren.Length; c++)
+            {
+                if ((CinemachineVirtualCameraBase)vcamChildren[c].ParentCamera == vcamBase)
+                    CollectData(vcamChildren[c], id + "." + c, ref vcamDatas);
             }
         }
 
@@ -166,8 +169,26 @@ namespace Cinemachine.Editor
             public int custom_component_count;
             public string[] extensions;
             public int custom_extension_count;
-        }
 
+            public VcamData(string id, CinemachineVirtualCameraBase vcamBase)
+            {
+                this.id = id;
+                vcam_class = GetTypeName(vcamBase.GetType());
+                has_follow_target = vcamBase.Follow != null;
+                has_lookat_target = vcamBase.LookAt != null;
+                blend_hint = "";
+                inherit_position = false;
+                standby_update = vcamBase.m_StandbyUpdate.ToString();
+                mode_overwrite = "";
+                body_component = "";
+                aim_component = "";
+                noise_component = "";
+                custom_component_count = 0;
+                custom_extension_count = 0;
+                extensions = Array.Empty<string>();
+            }
+        }
+        
         static void GetExtensions(CinemachineVirtualCameraBase vcamBase, 
             out string[] vcamExtensions, out int customCount)
         {
@@ -189,16 +210,18 @@ namespace Cinemachine.Editor
             }
         }
 
-        static void GetComponents(CinemachineVirtualCamera vcam,
+        static void GetComponents(CinemachineComponentBase[] cmComps,
             out string body, out string aim, out string noise, out int customCount)
         {
             customCount = 0;
             body = aim = noise = "";
-            var cmComps = vcam.GetComponentPipeline();
             if (cmComps != null)
             {
                 for (var i = 0; i < cmComps.Length; i++)
                 {
+#if CINEMACHINE_EXPERIMENTAL_VCAM
+                    if (cmComps[i] == null) continue;
+#endif
                     var componentName = GetTypeName(cmComps[i].GetType(), ref customCount);
                     switch (cmComps[i].Stage)
                     {
