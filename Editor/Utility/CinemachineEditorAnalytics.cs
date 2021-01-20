@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
     [InitializeOnLoad]
     static class CinemachineEditorAnalytics
     {
-        const int k_MaxEventsPerHour = 1000;
+        const int k_MaxEventsPerHour = 360;
         const int k_MaxNumberOfElements = 1000;
         const string k_VendorKey = "unity.cinemachine";
         
@@ -94,19 +94,13 @@ namespace Cinemachine.Editor
             if (vcamBase == null) return;
             
             var vcamData = new VcamData(id, vcamBase);
-            GetExtensions(vcamBase, out vcamData.extensions, out vcamData.custom_extension_count);
             
             // VirtualCamera
             var vcam = vcamBase as CinemachineVirtualCamera;
             if (vcam != null)
             {
-                vcamData.blend_hint = vcam.m_Transitions.m_BlendHint.ToString();
-                vcamData.inherit_position = vcam.m_Transitions.m_InheritPosition;
-                vcamData.mode_overwrite = vcam.m_Lens.ModeOverride.ToString();
-
-                // collect components on vcam
-                GetComponents(vcam.GetComponentPipeline(), out vcamData.body_component, out vcamData.aim_component, 
-                    out vcamData.noise_component, out vcamData.custom_component_count);
+                vcamData.SetTransitionsAndLens(vcam.m_Transitions, vcam.m_Lens);
+                vcamData.SetComponents(vcam.GetComponentPipeline());
                 
                 vcamDatas.Add(vcamData);
                 return;
@@ -117,13 +111,8 @@ namespace Cinemachine.Editor
             var vcamNew = vcamBase as CinemachineNewVirtualCamera;
             if (vcamNew != null)
             {
-                vcamData.blend_hint = vcamNew.m_Transitions.m_BlendHint.ToString();
-                vcamData.inherit_position = vcamNew.m_Transitions.m_InheritPosition;
-                vcamData.mode_overwrite = vcamNew.m_Lens.ModeOverride.ToString();
-                
-                // collect components on vcam
-                GetComponents(vcamNew.ComponentCache, out vcamData.body_component, out vcamData.aim_component, 
-                    out vcamData.noise_component, out vcamData.custom_component_count);
+                vcamData.SetTransitionsAndLens(vcamNew.m_Transitions, vcamNew.m_Lens);
+                vcamData.SetComponents(vcamNew.ComponentCache);
                 
                 vcamDatas.Add(vcamData);
                 return;
@@ -131,6 +120,11 @@ namespace Cinemachine.Editor
 #endif
             
             // Composite vcam (Freelook, Mixing, StateDriven, ClearShot...):
+            var freeLook = vcamBase as CinemachineFreeLook;
+            if (freeLook != null)
+            {
+                vcamData.SetTransitionsAndLens(freeLook.m_Transitions, freeLook.m_Lens);
+            }
             vcamDatas.Add(vcamData);
 
             var vcamChildren = 
@@ -170,7 +164,7 @@ namespace Cinemachine.Editor
             public string[] extensions;
             public int custom_extension_count;
 
-            public VcamData(string id, CinemachineVirtualCameraBase vcamBase)
+            public VcamData(string id, CinemachineVirtualCameraBase vcamBase) : this()
             {
                 this.id = id;
                 vcam_class = GetTypeName(vcamBase.GetType());
@@ -184,77 +178,75 @@ namespace Cinemachine.Editor
                 aim_component = "";
                 noise_component = "";
                 custom_component_count = 0;
-                custom_extension_count = 0;
-                extensions = Array.Empty<string>();
-            }
-        }
-        
-        static void GetExtensions(CinemachineVirtualCameraBase vcamBase, 
-            out string[] vcamExtensions, out int customCount)
-        {
-            customCount = 0;
-
-            // collect extensions on vcam
-            var extensions = vcamBase.mExtensions;
-            if (extensions != null)
-            {
-                vcamExtensions = new string[extensions.Count];
-                for (var i = 0; i < extensions.Count; i++)
+                
+                var vcamExtensions = vcamBase.mExtensions;
+                if (vcamExtensions != null)
                 {
-                    vcamExtensions[i] = (GetTypeName(extensions[i].GetType(), ref customCount));
+                    extensions = new string[vcamExtensions.Count];
+                    for (var i = 0; i < vcamExtensions.Count; i++)
+                    {
+                        extensions[i] = (GetTypeName(vcamExtensions[i].GetType(), ref custom_extension_count));
+                    }
+                }
+                else
+                {
+                    extensions = Array.Empty<string>();
                 }
             }
-            else
+            
+            public void SetTransitionsAndLens(
+                CinemachineVirtualCameraBase.TransitionParams transitions, LensSettings lens)
             {
-                vcamExtensions = Array.Empty<string>();
+                blend_hint = transitions.m_BlendHint.ToString();
+                inherit_position = transitions.m_InheritPosition;
+                mode_overwrite = lens.ModeOverride.ToString();
             }
-        }
 
-        static void GetComponents(CinemachineComponentBase[] cmComps,
-            out string body, out string aim, out string noise, out int customCount)
-        {
-            customCount = 0;
-            body = aim = noise = "";
-            if (cmComps != null)
+            public void SetComponents(CinemachineComponentBase[] cmComps)
             {
-                for (var i = 0; i < cmComps.Length; i++)
+                custom_component_count = 0;
+                body_component = aim_component = noise_component = "";
+                if (cmComps != null)
                 {
-#if CINEMACHINE_EXPERIMENTAL_VCAM
-                    if (cmComps[i] == null) continue;
-#endif
-                    var componentName = GetTypeName(cmComps[i].GetType(), ref customCount);
-                    switch (cmComps[i].Stage)
+                    for (var i = 0; i < cmComps.Length; i++)
                     {
-                        case CinemachineCore.Stage.Body:
-                            body = componentName;
-                            break;
-                        case CinemachineCore.Stage.Aim:
-                            aim = componentName;
-                            break;
-                        case CinemachineCore.Stage.Noise:
-                            noise = componentName;
-                            break;
-                        default:
-                            break;
+#if CINEMACHINE_EXPERIMENTAL_VCAM
+                        if (cmComps[i] == null) continue;
+#endif
+                        var componentName = GetTypeName(cmComps[i].GetType(), ref custom_component_count);
+                        switch (cmComps[i].Stage)
+                        {
+                            case CinemachineCore.Stage.Body:
+                                body_component = componentName;
+                                break;
+                            case CinemachineCore.Stage.Aim:
+                                aim_component = componentName;
+                                break;
+                            case CinemachineCore.Stage.Noise:
+                                noise_component = componentName;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
-        }
-        
-        static string GetTypeName(Type type)
-        {
-            var _ = 0;
-            return GetTypeName(type, ref _);
-        }
 
-        static string GetTypeName(Type type, ref int customTypeCount)
-        {
-            if (typeof(CinemachineBrain).Assembly != type.Assembly)
+            string GetTypeName(Type type)
             {
-                ++customTypeCount;
-                return "Custom";
+                var _ = 0;
+                return GetTypeName(type, ref _);
             }
-            return type.Name;
+
+            string GetTypeName(Type type, ref int customTypeCount)
+            {
+                if (typeof(CinemachineBrain).Assembly != type.Assembly)
+                {
+                    ++customTypeCount;
+                    return "Custom";
+                }
+                return type.Name;
+            }
         }
     }
 }
