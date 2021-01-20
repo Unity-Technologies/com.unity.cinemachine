@@ -94,33 +94,40 @@ namespace Cinemachine.Editor
         static void CollectData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
         {
             if (vcamBase == null) return;
-
+            var vcamData = new VcamData()
+            {
+                id = id,
+                vcam_class = GetTypeName(vcamBase.GetType()),
+                has_follow_target = vcamBase.Follow != null,
+                has_lookat_target = vcamBase.LookAt != null,
+                blend_hint = "",
+                inherit_position = false,
+                standby_update = vcamBase.m_StandbyUpdate.ToString(),
+                mode_overwrite = "",
+                body_component = "",
+                aim_component = "",
+                noise_component = "",
+                custom_component_count = 0,
+                custom_extension_count = 0,
+            };
+            GetExtensions(vcamBase, out vcamData.extensions, out vcamData.custom_extension_count);
+            
             var vcam = vcamBase as CinemachineVirtualCamera;
             if (vcam != null)
             {
-                vcamDatas.Add(ConvertVcamToVcamData(vcam, id));
+                vcamData.blend_hint = vcam.m_Transitions.m_BlendHint.ToString();
+                vcamData.inherit_position = vcam.m_Transitions.m_InheritPosition;
+                vcamData.mode_overwrite = vcam.m_Lens.ModeOverride.ToString();
+
+                // collect components on vcam
+                GetComponents(vcam, out vcamData.body_component, out vcamData.aim_component, 
+                    out vcamData.noise_component, out vcamData.custom_component_count);
+                
+                vcamDatas.Add(vcamData);
             }
             else // Composite vcam (Freelook, Mixing, Statedriven, Clearshot):
             {
-                GetExtensions(vcamBase, out List<string> vcamExtensions, out int customExtensionCount);
-
-                vcamDatas.Add(new VcamData
-                {
-                    id = id,
-                    vcam_class = GetTypeName(vcamBase.GetType()),
-                    has_follow_target = vcamBase.Follow != null,
-                    has_lookat_target = vcamBase.LookAt != null,
-                    blend_hint = "",
-                    inherit_position = false,
-                    standby_update = vcamBase.m_StandbyUpdate.ToString(),
-                    mode_overwrite = "",
-                    body_component = "",
-                    aim_component = "",
-                    noise_component = "",
-                    custom_component_count = 0,
-                    extensions = vcamExtensions.ToArray(),
-                    custom_extension_count = customExtensionCount,
-                });
+                vcamDatas.Add(vcamData);
 
                 var vcamChildren = 
                     vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
@@ -161,51 +168,24 @@ namespace Cinemachine.Editor
             public int custom_extension_count;
         }
 
-        static readonly VcamData k_NullData = new VcamData { vcam_class = "null" };
-        static VcamData ConvertVcamToVcamData(in CinemachineVirtualCamera vcam, string id)
-        {
-            if (vcam == null) return k_NullData;
-
-            // collect extensions on vcam
-            GetExtensions(vcam, out List<string> vcamExtensions, out int customExtensionCount);
-
-            // collect components on vcam
-            GetComponents(vcam, out string bodyComponent, out string aimComponent, 
-                out string noiseComponent, out int customComponentCount);
-
-            return new VcamData
-            {
-                id = id,
-                vcam_class = GetTypeName(vcam.GetType()),
-                has_follow_target = vcam.Follow != null,
-                has_lookat_target = vcam.LookAt != null,
-                blend_hint = vcam.m_Transitions.m_BlendHint.ToString(),
-                inherit_position = vcam.m_Transitions.m_InheritPosition,
-                standby_update = vcam.m_StandbyUpdate.ToString(),
-                mode_overwrite = vcam.m_Lens.ModeOverride.ToString(),
-                body_component = bodyComponent,
-                aim_component = aimComponent,
-                noise_component = noiseComponent,
-                custom_component_count = customComponentCount,
-                extensions = vcamExtensions.ToArray(),
-                custom_extension_count = customExtensionCount,
-            };
-        }
-
         static void GetExtensions(CinemachineVirtualCameraBase vcamBase, 
-            out List<string> vcamExtensions, out int customCount)
+            out string[] vcamExtensions, out int customCount)
         {
             customCount = 0;
 
             // collect extensions on vcam
-            vcamExtensions = new List<string>();
             var extensions = vcamBase.mExtensions;
             if (extensions != null)
             {
+                vcamExtensions = new string[extensions.Count];
                 for (var i = 0; i < extensions.Count; i++)
                 {
-                    vcamExtensions.Add(GetTypeName(extensions[i].GetType(), ref customCount));
+                    vcamExtensions[i] = (GetTypeName(extensions[i].GetType(), ref customCount));
                 }
+            }
+            else
+            {
+                vcamExtensions = Array.Empty<string>();
             }
         }
 
