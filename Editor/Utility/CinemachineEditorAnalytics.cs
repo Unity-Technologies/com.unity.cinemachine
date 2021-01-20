@@ -178,7 +178,7 @@ namespace Cinemachine.Editor
                 aim_component = "";
                 noise_component = "";
                 custom_component_count = 0;
-                
+                custom_extension_count = 0;
                 var vcamExtensions = vcamBase.mExtensions;
                 if (vcamExtensions != null)
                 {
