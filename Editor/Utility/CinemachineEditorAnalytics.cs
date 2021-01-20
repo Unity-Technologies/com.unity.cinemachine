@@ -234,7 +234,7 @@ namespace Cinemachine.Editor
                 }
             }
 
-            string GetTypeName(Type type, ref int customTypeCount)
+            static string GetTypeName(Type type, ref int customTypeCount)
             {
                 if (typeof(CinemachineBrain).Assembly != type.Assembly)
                 {
