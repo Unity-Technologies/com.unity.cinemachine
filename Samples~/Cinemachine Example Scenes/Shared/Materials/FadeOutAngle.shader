@@ -39,7 +39,7 @@ Shader "Custom/FadeOutAngle" {
             if (_MinDistance < distanceFromCamera && distanceFromCamera < _MaxDistance) {
                 float3 cameraForward = mul((float3x3)unity_CameraToWorld, float3(0,0,1));
                 float3 cameraUp = mul((float3x3)unity_CameraToWorld, float3(0,1,0));
-                float3 cameraToObject = IN.worldPos - _WorldSpaceCameraPos; // cameraToObject
+                float3 cameraToObject = IN.worldPos - _WorldSpaceCameraPos;
                 float3 cameraToObject_ProjPlane = cameraToObject - cameraUp * dot(cameraToObject, cameraUp);
                 float angle = acos(dot(normalize(cameraForward), normalize(cameraToObject_ProjPlane)));
                 
