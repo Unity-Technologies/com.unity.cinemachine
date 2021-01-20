@@ -80,7 +80,7 @@ namespace Cinemachine.Editor
                 vcams = vcamDatas,
                 time_elapsed = Time.realtimeSinceStartup - startTime,
             };
-            
+
             // Register our event
             EditorAnalytics.RegisterEventWithLimit("cm_vcams_on_play", 
                 k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
@@ -111,11 +111,11 @@ namespace Cinemachine.Editor
                 vcamDatas.Add(vcamData);
                 return;
             }     
+            
 #if CINEMACHINE_EXPERIMENTAL_VCAM
-            // NewVirtualCamera
+            // NewVirtualCamera or NewFreeLook
             var vcamNew = vcamBase as CinemachineNewVirtualCamera;
-            var vcamNewFreelook = vcamBase as CinemachineNewFreeLook;
-            if (vcamNew != null && vcamNewFreelook == null)
+            if (vcamNew != null)
             {
                 vcamData.blend_hint = vcamNew.m_Transitions.m_BlendHint.ToString();
                 vcamData.inherit_position = vcamNew.m_Transitions.m_InheritPosition;
@@ -130,7 +130,7 @@ namespace Cinemachine.Editor
             }
 #endif
             
-            // Composite vcam (Freelook, NewFreeLook if opted-in, Mixing, StateDriven, ClearShot...):
+            // Composite vcam (Freelook, Mixing, StateDriven, ClearShot...):
             vcamDatas.Add(vcamData);
 
             var vcamChildren = 
