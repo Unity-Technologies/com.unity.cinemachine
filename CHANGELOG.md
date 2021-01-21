@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CM StoryBoard had a 1 pixel border.
 - Bugfix: CM StoryBoard lost viewport reference after hot reload.
 - Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick.
+- Bugfix: FreeLook small drift when no user input if SimpleFollowWithWorldUp
 
 
 ## [2.7.1] - 2020-11-14
