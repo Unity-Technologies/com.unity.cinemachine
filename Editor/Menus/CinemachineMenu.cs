@@ -79,7 +79,6 @@ namespace Cinemachine.Editor
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create Blend List camera");
             var vcam = go.GetComponent<CinemachineBlendListCamera>();
-            Selection.activeGameObject = go;
 
             // Give it a couple of children
             var child1 = CreateDefaultVirtualCamera();
@@ -110,7 +109,6 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create state driven camera");
-            Selection.activeGameObject = go;
 
             // Give it a child
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create state driven camera");
@@ -130,7 +128,6 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create ClearShot camera");
-            Selection.activeGameObject = go;
 
             // Give it a child
             var child = CreateDefaultVirtualCamera();
@@ -147,6 +144,8 @@ namespace Cinemachine.Editor
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
+            SetParentToMenuContextObject(vcam.gameObject, command);
+
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
                     typeof(CinemachineSmoothPath));
@@ -172,7 +171,6 @@ namespace Cinemachine.Editor
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
             CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
-            Selection.activeGameObject = go;
 
             go = InspectorUtility.CreateGameObject(
                 GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"),
@@ -215,7 +213,6 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create MixingCamera camera");
-            Selection.activeGameObject = go;
 
             // Give it a couple of children
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create MixedCamera child");
