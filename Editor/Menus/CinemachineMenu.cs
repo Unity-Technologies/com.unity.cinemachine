@@ -39,6 +39,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_MenuPriority)]
         public static CinemachineVirtualCamera CreateVirtualCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
             return InternalCreateVirtualCamera(
                 "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTransposer));
         }
@@ -46,6 +47,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_MenuPriority)]
         private static void CreateFreeLookCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineFreeLook), "CM FreeLook"),
@@ -58,6 +60,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_MenuPriority)]
         private static void CreateBlendListCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Blend List Camera");
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineBlendListCamera), "CM BlendListCamera"),
@@ -88,6 +91,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_MenuPriority)]
         private static void CreateStateDivenCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("State-Driven Camera");
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineStateDrivenCamera), "CM StateDrivenCamera"),
@@ -106,6 +110,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_MenuPriority)]
         private static void CreateClearShotVirtualCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("ClearShot Camera");
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineClearShot), "CM ClearShot"),
@@ -127,6 +132,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_MenuPriority)]
         private static void CreateDollyCameraWithPath()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
             GameObject go = InspectorUtility.CreateGameObject(
@@ -144,6 +150,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_MenuPriority)]
         private static void CreateDollyTrackWithCart()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
                     typeof(CinemachineSmoothPath));
@@ -167,6 +174,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_MenuPriority)]
         private static void CreateTargetGroupCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineGroupComposer), typeof(CinemachineTransposer));
             GameObject go = InspectorUtility.CreateGameObject(
@@ -182,6 +190,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_MenuPriority)]
         private static void CreateMixingCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Mixing Camera");
             CreateCameraBrainIfAbsent();
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineMixingCamera), "CM MixingCamera"),
@@ -199,6 +208,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_MenuPriority)]
         private static void Create2DCamera()
         {
+            CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
             InternalCreateVirtualCamera("CM vcam", true, typeof(CinemachineFramingTransposer));
         }
 
