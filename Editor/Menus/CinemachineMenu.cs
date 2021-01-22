@@ -12,36 +12,36 @@ namespace Cinemachine.Editor
     internal static class CinemachineMenu
     {
         // Assets Menu
-        private const string m_CinemachineAssetsRootMenu = "Assets/Create/Cinemachine/";
+        const string m_CinemachineAssetsRootMenu = "Assets/Create/Cinemachine/";
 
         [MenuItem(m_CinemachineAssetsRootMenu + "BlenderSettings")]
-        private static void CreateBlenderSettingAsset()
+        static void CreateBlenderSettingAsset()
         {
             ScriptableObjectUtility.Create<CinemachineBlenderSettings>();
         }
 
         [MenuItem(m_CinemachineAssetsRootMenu + "NoiseSettings")]
-        private static void CreateNoiseSettingAsset()
+        static void CreateNoiseSettingAsset()
         {
             ScriptableObjectUtility.Create<NoiseSettings>();
         }
 
         [MenuItem(m_CinemachineAssetsRootMenu + "Fixed Signal Definition")]
-        private static void CreateFixedSignalDefinition()
+        static void CreateFixedSignalDefinition()
         {
             ScriptableObjectUtility.Create<CinemachineFixedSignal>();
         }
         
         // GameObject Menu
-        private const string m_CinemachineGameObjectRootMenu = "GameObject/Cinemachine/";
-        private const int m_MenuPriority = 11; // right after Camera
+        const string m_CinemachineGameObjectRootMenu = "GameObject/Cinemachine/";
+        const int m_MenuPriority = 11; // right after Camera
         
         static void SetParentToMenuContextObject(GameObject child, MenuCommand command)
         {
             var go = command.context as GameObject;
-            var parent = go == null ? null : go.transform;
-            if (parent != null)
-                Undo.SetTransformParent(child.transform, parent, "set parent");
+            if (go != null)
+                Undo.SetTransformParent(child.transform, go.transform, "set parent");
+            Selection.activeObject = child;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_MenuPriority)]
@@ -54,7 +54,7 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_MenuPriority)]
-        private static void CreateFreeLookCamera(MenuCommand command)
+        static void CreateFreeLookCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
             CreateCameraBrainIfAbsent();
@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_MenuPriority)]
-        private static void CreateBlendListCamera(MenuCommand command)
+        static void CreateBlendListCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Blend List Camera");
             CreateCameraBrainIfAbsent();
@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
         
 #if CINEMACHINE_UNITY_ANIMATION
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_MenuPriority)]
-        private static void CreateStateDivenCamera(MenuCommand command)
+        static void CreateStateDivenCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("State-Driven Camera");
             CreateCameraBrainIfAbsent();
@@ -117,7 +117,7 @@ namespace Cinemachine.Editor
 
 #if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_MenuPriority)]
-        private static void CreateClearShotVirtualCamera(MenuCommand command)
+        static void CreateClearShotVirtualCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("ClearShot Camera");
             CreateCameraBrainIfAbsent();
@@ -139,13 +139,9 @@ namespace Cinemachine.Editor
 #endif
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_MenuPriority)]
-        private static void CreateDollyCameraWithPath(MenuCommand command)
+        static void CreateDollyCameraWithPath(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
-            CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
-                    "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
-            SetParentToMenuContextObject(vcam.gameObject, command);
-
             GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
                     typeof(CinemachineSmoothPath));
@@ -154,13 +150,15 @@ namespace Cinemachine.Editor
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
             CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
-            var dolly = vcam.GetCinemachineComponent<CinemachineTrackedDolly>();
-            Undo.RecordObject(dolly, "create track");
-            dolly.m_Path = path;
+
+            CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
+                    "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
+            SetParentToMenuContextObject(vcam.gameObject, command);
+            vcam.GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = path;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_MenuPriority)]
-        private static void CreateDollyTrackWithCart(MenuCommand command)
+        static void CreateDollyTrackWithCart(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
             GameObject go = InspectorUtility.CreateGameObject(
@@ -179,13 +177,11 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create cart");
-            CinemachineDollyCart cart = go.GetComponent<CinemachineDollyCart>();
-            Undo.RecordObject(cart, "create track");
-            cart.m_Path = path;
+            go.GetComponent<CinemachineDollyCart>().m_Path = path;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_MenuPriority)]
-        private static void CreateTargetGroupCamera(MenuCommand command)
+        static void CreateTargetGroupCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
             CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
@@ -202,7 +198,7 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_MenuPriority)]
-        private static void CreateMixingCamera(MenuCommand command)
+        static void CreateMixingCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Mixing Camera");
             CreateCameraBrainIfAbsent();
@@ -220,7 +216,7 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_MenuPriority)]
-        private static void Create2DCamera(MenuCommand command)
+        static void Create2DCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
             var go = InternalCreateVirtualCamera(
@@ -230,7 +226,7 @@ namespace Cinemachine.Editor
 
 #if !UNITY_2019_1_OR_NEWER
         [MenuItem("Cinemachine/Import Post Processing V2 Adapter Asset Package")]
-        private static void ImportPostProcessingV2Package()
+        static void ImportPostProcessingV2Package()
         {
             var message = "In Cinemachine 2.4.0 and up, the PostProcessing adapter is built-in, and "
                 + "can be auto-enabled by Unity 2019 and up.\n\n"
@@ -245,7 +241,7 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem("Cinemachine/Import CinemachineExamples Asset Package")]
-        private static void ImportExamplePackage()
+        static void ImportExamplePackage()
         {
             string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
                 + "/Extras~/CinemachineExamples.unitypackage";
