@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FadeOutAngle
-  m_Shader: {fileID: 4800000, guid: 73fb0c4d3ca694a0a84d1a10625a0c98, type: 3}
+  m_Name: FadeOut
+  m_Shader: {fileID: 4800000, guid: 9392babd99652479d80820a9a52efdd6, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -63,10 +63,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MaxAngle: 0.5
-    - _MaxDistance: 10
+    - _MaxDistance: 13.221463
     - _Metallic: 0
-    - _MinAngle: 0.1
     - _MinDistance: 0
     - _Mode: 0
     - _OcclusionStrength: 1
