@@ -21,8 +21,6 @@ Shader "Custom/FadeOut" {
             float2 uv_MainTex;
             float3 worldPos;
         };
-        half _Glossiness;
-        half _Metallic;
         float _MinDistance;
         float _MaxDistance;
         fixed4 _Color;
