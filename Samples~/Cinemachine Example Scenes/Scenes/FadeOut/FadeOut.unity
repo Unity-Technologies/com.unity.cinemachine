@@ -5709,7 +5709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: Dual Target
+  m_Title: Fade Out
   m_Description: "Use WASD to move, and mouse to aim.\n\nThe example shows how you
     can fade out objects between the camera and the target using a shader, and how
     you can control shader parameters from a cinemachine extension. \n\nThe Freelook
