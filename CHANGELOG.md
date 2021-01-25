@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.7.2] - 2020-12-31
+## [2.7.2] - unreleased
 - CinemachineConfiner2D now handles cases where camera window is oversized
 - Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases.
 - Bugfix: SaveDuringPlay also works on prefab instances
@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CM StoryBoard had a 1 pixel border.
 - Bugfix: CM StoryBoard lost viewport reference after hot reload.
 - Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick.
-- New sample scenes (FadeOut) demostrating fade out effect for objects between camera and target using shaders. The example includes a cinemachine extension giving simpler control over the shader parameters.
+- New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a cinemachine extension giving convenient control over the shader parameters.
 
 
 ## [2.7.1] - 2020-11-14

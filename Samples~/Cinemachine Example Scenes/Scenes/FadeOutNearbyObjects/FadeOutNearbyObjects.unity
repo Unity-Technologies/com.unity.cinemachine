@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: bcb0c0881649e334c854cf9afc39d25b, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: bcb0c0881649e334c854cf9afc39d25b,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -500,7 +501,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 2.0644295, y: 1}
+    m_SensorSize: {x: 1.1794333, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -516,8 +517,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 199725281}
-  m_LocalRotation: {x: -0.028947277, y: 0.46144062, z: 0.015066428, w: 0.88657075}
-  m_LocalPosition: {x: 3.1793013, y: -3.1614542, z: 2.226833}
+  m_LocalRotation: {x: 0.07827225, y: 0.45988563, z: -0.040738996, w: 0.88358307}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1164793095}
@@ -1058,7 +1059,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 2.0644295, y: 1}
+    m_SensorSize: {x: 1.1794333, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1140,7 +1141,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385349248}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.467006, y: 3.5, z: -4.231675}
+  m_LocalPosition: {x: -11.467005, y: 3.5, z: -4.231675}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 199725283}
@@ -1161,9 +1162,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d881864f964441db82e075e58d1ee01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LookAtTargetRadius: 1
+  m_LookAtTargetRadius: -1
   m_MinDistance: 0
-  m_MaxDistance: 13.221463
+  m_MaxDistance: 15.221463
   m_SetToCameraToLookAtDistance: 1
   m_FadeOutMaterial: {fileID: 2100000, guid: c43213e1494d8486881b6aa626ebee03, type: 2}
 --- !u!1 &402555472
@@ -1462,7 +1463,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 2.0644295, y: 1}
+    m_SensorSize: {x: 1.1794333, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1478,7 +1479,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 551194883}
-  m_LocalRotation: {x: 0.062187392, y: 0.46055058, z: -0.03236718, w: 0.88486063}
+  m_LocalRotation: {x: 0.062187385, y: 0.46055058, z: -0.03236717, w: 0.88486063}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2607,8 +2608,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.062187407, y: 0.4605506, z: -0.032367185, w: 0.8848606}
-  m_LocalPosition: {x: -11.467006, y: 3.5, z: -4.231675}
+  m_LocalRotation: {x: 0.06218739, y: 0.46055058, z: -0.03236718, w: 0.8848606}
+  m_LocalPosition: {x: -11.467005, y: 3.5, z: -4.231675}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3097,7 +3098,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.75
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3144,7 +3145,6 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &1090385220
@@ -3340,7 +3340,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 2.0644295, y: 1}
+    m_SensorSize: {x: 1.1794333, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -3356,7 +3356,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1169215561}
-  m_LocalRotation: {x: 0.04612451, y: 0.46106198, z: -0.024006799, w: 0.88584316}
+  m_LocalRotation: {x: 0.046124488, y: 0.46106195, z: -0.024006786, w: 0.88584316}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5130,13 +5130,13 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.25
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -5177,7 +5177,6 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &2034178984
@@ -5709,11 +5708,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: Fade Out
+  m_Title: Dual Target
   m_Description: "Use WASD to move, and mouse to aim.\n\nThe example shows how you
     can fade out objects between the camera and the target using a shader, and how
     you can control shader parameters from a cinemachine extension. \n\nThe Freelook
-    camera has the CinemachineFadeOutShader extension, and all children gameObjects
+    camera has the CinemachineFadeOutNearbyObjects extension, and all children gameObjects
     of FadeOutObjects use the FadeOut material.\n"
 --- !u!4 &2145189106
 Transform:
