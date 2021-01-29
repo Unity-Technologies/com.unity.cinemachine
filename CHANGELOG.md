@@ -6,16 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.7.2] - unreleased
 - CinemachineConfiner2D now handles cases where camera window is oversized
-- Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases.
+- New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a cinemachine extension giving convenient control over the shader parameters
+- Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases
 - Bugfix: SaveDuringPlay also works on prefab instances
 - Bugfix (1272146) - Adding vcam to a prefab asset no longer causes errors in console
 - Bugfix (1290171) - Impulse manager was not cleared at playmode start
 - Nested Scrub Bubble sample removed (filenames too long), available now as embedded package
-- Compilation guards for physics, animation, and imgui. Cinemachine does not hard depend on anything now.
-- Bugfix: CM StoryBoard had a 1 pixel border.
-- Bugfix: CM StoryBoard lost viewport reference after hot reload.
+- Compilation guards for physics, animation, and imgui. Cinemachine does not hard depend on anything now
+- Bugfix: CM StoryBoard had a 1 pixel border
+- Bugfix: CM StoryBoard lost viewport reference after hot reload
 - Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick.
-- New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a cinemachine extension giving convenient control over the shader parameters.
+- Bugfix: InheritPosition did not work with SimpleFollow binding mode
+
 
 
 ## [2.7.1] - 2020-11-14
