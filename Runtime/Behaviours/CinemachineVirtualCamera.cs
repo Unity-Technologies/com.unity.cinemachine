@@ -594,7 +594,7 @@ namespace Cinemachine
             bool forceUpdate = false;
 
             if (m_Transitions.m_InheritPosition && fromCam != null)
-                ForceCameraPosition(fromCam.State.FinalPosition, transform.rotation);
+                ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
 
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             if (m_ComponentPipeline != null)
