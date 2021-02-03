@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Cinemachine.Examples
@@ -69,6 +70,13 @@ namespace Cinemachine.Examples
                 m_FadeOutMaterial.SetFloat(k_MaxDistanceID, m_MaxDistance);
                 m_FadeOutMaterial.SetFloat(k_MinDistanceID, m_MinDistance);
             }
+        }
+        
+        void OnValidate()
+        {
+            m_LookAtTargetRadius = Math.Max(0, m_LookAtTargetRadius);
+            m_MinDistance = Math.Max(0, m_MinDistance);
+            m_MaxDistance = Math.Max(0, m_MaxDistance);
         }
     }
 }
