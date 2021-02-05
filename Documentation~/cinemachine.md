@@ -1,6 +1,6 @@
 # Cinemachine
 
-![Unity Cinemachine](images/CinemachineSplash.png)
+![Unity Cinemachine](images/CinemachineIntroImage.png)
 
 Cinemachine is a suite of modules for operating the Unity camera. Cinemachine solves the complex mathematics and logic of tracking targets, composing, blending, and cutting between shots. It is designed to significantly reduce the number of time-consuming manual manipulations and script revisions that take place during development.
 
@@ -14,6 +14,6 @@ Cinemachine works well with other Unity tools, acting as a powerful complement t
 
 Cinemachine has no external dependencies. Just install it and start using it. 
 
-This Cinemachine version 2.6 is compatible with the following versions of the Unity Editor:
+This Cinemachine version 2.7.2 is compatible with the following versions of the Unity Editor:
 
 * 2018.4.17f1 and later
