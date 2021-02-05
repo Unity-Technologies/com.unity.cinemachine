@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CM StoryBoard had a 1 pixel border
 - Bugfix: CM StoryBoard lost viewport reference after hot reload
 - Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick.
+- Bugfix: FreeLook small drift when no user input if SimpleFollowWithWorldUp
 - Bugfix: InheritPosition did not work with SimpleFollow binding mode
 - Bugfix: cleanup straggling post processing profiles when no active vcams
 - Bugfix: Checking whether the Input Action passed to CinemachineInputHandler is enabled before using it.
