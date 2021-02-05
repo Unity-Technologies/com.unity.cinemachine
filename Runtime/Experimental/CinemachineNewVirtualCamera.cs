@@ -150,12 +150,8 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
             if (m_Transitions.m_InheritPosition && fromCam != null)
-            {
-                transform.position = fromCam.State.RawPosition;
-                //transform.rotation = fromCam.State.RawOrientation;
-                PreviousStateIsValid = false;
-                forceUpdate = true;
-            }
+                ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
+
             UpdateComponentCache();
             for (int i = 0; i < m_Components.Length; ++i)
             {

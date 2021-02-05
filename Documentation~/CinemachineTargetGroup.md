@@ -10,7 +10,7 @@ To create a Virtual Camera with a Target Group:
 
 3. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), click the + sign to add a new item to the group.
 
-4. In the new item, assign a GameObject, and edit the __Weight__ and __Radius__ properties.
+4. In the new item, assign a GameObject (you can drag and drop from the Hierarchy), and edit the __Weight__ and __Radius__ properties.
 
 5. To add more GameObjects to the Target Group, repeat steps 3-4.
 

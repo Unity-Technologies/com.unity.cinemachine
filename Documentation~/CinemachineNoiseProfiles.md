@@ -6,7 +6,7 @@ Cinemachine includes some predefined profile assets. Choose a predefined noise p
 
 The properties in the Inspector show graphs that give a visual representation of the noise profile. There are properties for the x, y, and z axes for position and rotation. Each axis may have more than one layer.
 
-![Editing the first noise layer for Position X](images/CinemachineNoiseProfile.png)
+![Editing the first noise layer for Position X](images/CinemachineNoiseProfileb.png)
 
 For realistic procedural noise, choose frequencies and amplitudes with care to ensure an interesting noise quality that is not obviously repetitive. The most convincing camera shakes use __Rotation__ noise because that’s where the camera is aiming. Handheld camera operators tend to shake more rotationally than they do positionally. After specifying __Rotation__ noise, add __Position__ noise.
 
