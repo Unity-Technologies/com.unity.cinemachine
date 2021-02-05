@@ -19,7 +19,7 @@ In these cases, for efficiency reasons, Cinemachine does not automatically regen
 If the input polygon scales uniformly or translates or rotates, the cache remains valid. 
 
 ## Oversize Windows
-Oversize WindowIf sections of the confining polygon are too small to fully contain the camera window, Cinemachine calculates a polygon skeleton for those regions. This is a shape with no area, that serves as a place to put the camera when it is confined to this region of the shape.
+If sections of the confining polygon are too small to fully contain the camera window, Cinemachine calculates a polygon skeleton for those regions. This is a shape with no area, that serves as a place to put the camera when it is confined to this region of the shape.
 
 Skeleton computation is the most resource-heavy part of the cache calculation, so it is a good idea to tune this with some care:
 

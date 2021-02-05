@@ -9,7 +9,7 @@ Cinemachine includes these algorithms for moving a Virtual Camera:
 
 
 - [__Do Nothing__](CinemachineBodyDoNothing.html): does not move the Virtual Camera.
-- 3rd Person follow: Pivots the camera horizontally and vertically around the player, to the __Follow__ target.
+- [__3rd Person follow__](Cinemachine3rdPersonFollow.html): Pivots the camera horizontally and vertically around the player, to the __Follow__ target.
 - [__Framing Transposer__](CinemachineBodyFramingTransposer.html): moves in a fixed screen-space relationship to the __Follow__ target.
 - [__Hard Lock to Target__](CinemachineBodyHardLockTarget.html): uses the same position at the __Follow__ target.
 - [__Orbital Transposer__](CinemachineBodyOrbitalTransposer.html): moves in a variable relationship to the __Follow__ target, optionally accepting player input.

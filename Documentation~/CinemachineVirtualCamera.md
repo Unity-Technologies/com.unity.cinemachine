@@ -38,7 +38,7 @@ At any time, each Virtual Camera may be in one of these states:
 | | _Mode Override_ | Controls whether the Perspective/Orth, SensorSize, and GateFit are set in the Camera object, or are overidden in the virtual camera component. |
 | __Dutch__ || Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the Virtual Camera; there is no counterpart property in the Unity camera. |
 | __Blend Hint__ || Provides hints for blending positions to and from the virtual camera. |
-| __Inherit Position__ || When enabled, whenever this virtual camera goes live, forces the initial position to be the same as the current position of the Unity Camera. |
+| __Inherit Position__ || When enabled, whenever this virtual camera goes live, forces the initial position to be the same as the current position of the Unity Camera, if possible. |
 | __Extensions__ || Components that add extra behaviors to the Virtual Camera.  |
 | | _Add Extension_ | Choose a new [extension](CinemachineVirtualCameraExtensions.html) to add to the Virtual Camera. |
 
