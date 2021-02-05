@@ -1,14 +1,12 @@
 test_editors:
-  - version: 2018.4
   - version: 2019.4
-  - version: 2020.1
-  - version: trunk
 test_platforms:
   - name: win
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
 ---
+
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
 promotion_test_{{ platform.name }}_{{ editor.version }}:
@@ -21,33 +19,22 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test --unity-version {{ editor.version }}
+    - upm-ci package test --unity-version {{ editor.version }} --package-path package
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci.yml#pack
+    - .yamato/package-pack.yml#pack
 {% endfor %}
 {% endfor %}
 
 promotion_test_trigger:
   name: Promotion Tests Trigger
-  agent:
-    type: Unity::VM
-    image: package-ci/win10:stable
-    flavor: b1.large
-  artifacts:
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"
-    packages:
-      paths:
-        - "upm-ci~/packages/**/*"
   dependencies:
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
-    - .yamato/promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
+    - .yamato/package-promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
 {% endfor %}
 {% endfor %}
 
@@ -61,19 +48,19 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package promote
+    - upm-ci package promote --package-path package --dry-run
   triggers:
     tags:
       only:
-        - /^(r|R)elease-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+        - /^[Rr]elease-(0\.\d+\.\d+|[1-9]\d*\.\d+\.\d+(-preview(\.\d+)?|-exp(\.\d+|-\w+\.\d+)|-pre\.\d+))$/
   artifacts:
     artifacts:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci.yml#pack
+    - .yamato/package-pack.yml#pack
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
-    - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
+    - .yamato/package-promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
 {% endfor %}
