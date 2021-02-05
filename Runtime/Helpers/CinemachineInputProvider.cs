@@ -69,12 +69,11 @@ namespace Cinemachine
         /// <returns>The cached action for the player specified in PlayerIndex</returns>
         protected InputAction ResolveForPlayer(int axis, InputActionReference actionRef)
         {
-            if (!actionRef.action.enabled)
-                return null;
-            
             if (axis < 0 || axis >= NUM_AXES)
                 return null;
             if (actionRef == null || actionRef.action == null)
+                return null;
+            if (!actionRef.action.enabled)
                 return null;
             if (m_cachedActions == null || m_cachedActions.Length != NUM_AXES)
                 m_cachedActions = new InputAction[NUM_AXES];
