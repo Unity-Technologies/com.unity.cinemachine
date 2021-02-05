@@ -6,12 +6,17 @@ Storyboard simplifies animatics for your team. Start with still images to pre-vi
 
 Use the properties in the Storyboard component to hide and show the image to compare it to the actual rendering of the Unity camera.
 
-Storyboards can be muted at a global level - completely disabling them.  To toggle this, go to the Cinemachine main menu and select _Storyboard Global Mute_.
+Storyboards can be muted at a global level - completely disabling them. To toggle this, go to the Cinemachine Storyboard component and enable _Storyboard Global Mute_.
+
+
+
+![Storyboard in Cinemachine](images/CineMachineStoryboard.png)
 
 ## Properties:
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
+| __Storyboard Global Mute__ || When enabled, all storyboards are globally muted. |
 | __Show Image__ || Toggle the visibility of the storyboard image. |
 | __Image__ || The image to display as an overlay over the output of the Virtual Camera. |
 | __Aspect__ || How to handle differences between image aspect and screen aspect. |
@@ -25,3 +30,4 @@ Storyboards can be muted at a global level - completely disabling them.  To togg
 | __Sync Scale__ || Check to synchronize the scale of the x and y axes. |
 | __Mute Camera__ || Check to prevent the Virtual Camera from updating the position, rotation, or scale of the Unity camera. Use this feature to prevent Timeline from [blending](CinemachineBlending.html) the camera to an unintended position in the Scene. |
 | __Split View__ || Wipe the image on and off horizontally. |
+| __Waveform Monitor__ || Opens the Waveform monitor window.  This is very performance-intensive, use with care. |

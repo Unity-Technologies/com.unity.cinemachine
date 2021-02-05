@@ -23,6 +23,7 @@ To apply noise:
 | __Noise Profile__ | The noise profile asset to use.|
 | __Amplitude Gain__ | Gain to apply to the amplitudes defined in the noise profile. Use 1 to use the amplitudes defined in the noise profile. Setting this to 0 mutes the noise. Tip: Animate this property to ramp the noise effect up and down.|
 | __Frequency Gain__ | Factor to apply to the frequencies defined in the noise profile. Use 1 to use the frequencies defined in the noise profile. Use larger values to shake the camera more rapidly. Tip: Animate this property to ramp the noise effect up and down. |
+| __Pivot Offset__ | When rotating the camera, offset the camera's pivot by the indicated x, y, and z distance when applying rotational noise.  This generates some positional variation that corresponds to the rotation noise. |
 
 
 

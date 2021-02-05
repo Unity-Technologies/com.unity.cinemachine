@@ -12,5 +12,5 @@ To add a Virtual Camera to a Scene:
 
 4. [Customize the Virtual Camera](CinemachineVirtualCamera.html) as needed. <br/>Choose the algorithm for following and looking at, and adjust settings such as the follow offset, the follow damping, the screen composition, and the damping used when re-aiming the camera.
 
-![Adding a Virtual Camera to a Scene. Note the Cinemachine Brain icon next to the Main Camera.](images/CinemachineNewVCam.png)
+
 

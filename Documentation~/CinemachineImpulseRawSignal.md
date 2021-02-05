@@ -15,9 +15,13 @@ In the Impulse Source Inspector window, use the **Raw Signal** field to see whic
 - **Edit** opens the signal in either the Noise Profile Inspector or the Fixed Signal Inspector.
 - **Clone** duplicates the signal Asset. This is useful when you want to use a preset or an existing Asset as a base for a new signal.
 - **Locate** finds the signal in the Project view.
-- **Presets** provides a menu of preset Noise Profile Assets.
 - **New Noise Settings** creates a new Noise Profile Asset from scratch. See [Creating a new noise profile](CinemachineImpulseNoiseProfiles.md#CreateNoiseProfile) for details.
 - **New Fixed Signal** creates a new Fixed Signal Asset from scratch. See [Creating a new fixed signal](CinemachineImpulseFixedSignals.md#CreateFixedSignal) for details.
+
+Note: Preset Noise Profile Assets are now integrated in the Raw Signal selector.
+
+![img](images/InspectorImpulseSourcePresetsGear.png)
+
 
 
 ## Creating Custom Signals

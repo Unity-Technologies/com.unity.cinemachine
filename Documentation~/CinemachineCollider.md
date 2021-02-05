@@ -25,13 +25,14 @@ The Collider uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script-P
 | | _Pull Camera Forward_ | Move the camera forward along its Z axis until it is in front of the obstacle that is nearest to the target. |
 | | _Preserve Camera Height_ | Move the camera to an alternate point of view while attempting to keep the camera at its original height. |
 | | _Preserve Camera Distance_ | Move the camera to an alternate point of view while attempting to keep the camera at its original distance from the target. |
-| | _Smoothing Time_ | Minimum number of seconds to hold the camera at the nearest point to the target. Can be used to reduce excess camera movement in environments with lots of obstacles.  Available when Avoid Obstacles is checked. |
+| __Smoothing Time__ |  | Minimum number of seconds to hold the camera at the nearest point to the target. Can be used to reduce excess camera movement in environments with lots of obstacles.  Available when Avoid Obstacles is checked. |
 | __Damping__ || How quickly to return the camera to its normal position after an occlusion has gone away. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  Available when Avoid Obstacles is checked. |
 | __Damping When Occluded__ || How quickly to move the camera to avoid an obstacle. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. Available when Avoid Obstacles is checked. |
 | __Optimal Target Distance__ || If greater than zero, give a higher score to shots when the target is closer to this distance. Set this property to 0 to disable this feature. |
 | __Transparent Layers__ || Objects on these layers will never obstruct the view of the target. |
 | __Minimum Occlusion Time__ || Do not take action action unless the occulsion has lasted at least this long. |
 | __Maximum Effort__ || Upper limit on how many obstacle hits to process. Higher numbers may impact performance.  In most environments four (4) hits is enough. |
+| **Ignore Tag** || Obstacles with this tag will be ignored. It is recommended to set this field to the target's tag. |
 
 
 
