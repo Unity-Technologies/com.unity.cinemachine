@@ -71,9 +71,7 @@ namespace Cinemachine
         {
             if (axis < 0 || axis >= NUM_AXES)
                 return null;
-            if (actionRef == null || actionRef.action == null)
-                return null;
-            if (!actionRef.action.enabled)
+            if (actionRef == null || actionRef.action == null || !actionRef.action.enabled)
                 return null;
             if (m_cachedActions == null || m_cachedActions.Length != NUM_AXES)
                 m_cachedActions = new InputAction[NUM_AXES];
