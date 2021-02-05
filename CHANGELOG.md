@@ -18,7 +18,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick.
 - Bugfix: InheritPosition did not work with SimpleFollow binding mode
 - Bugfix: Checking whether the Input Action passed to CinemachineInputHandler is enabled before using it.
-
+- Bugfix: 3rdPersonFollow FOV was blended incorrectly when ReferenceLookAt was set to a faraway target
+- Bugfix: Position predictor not properly reset
+- Bugfix: Create via menu doesn't create as child of selected object
+- Bugfix: Drift in FreeLook with SimpleFollow
+- Bugfix: Post-processing profiles not cleaned up when no active vcams
 
 
 ## [2.7.1] - 2020-11-14

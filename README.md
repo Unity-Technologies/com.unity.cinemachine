@@ -47,12 +47,12 @@ https://forum.unity3d.com/forums/cinemachine.136/
 - Ensure that Jira release issues are correct and up to date
 - Ensure that all Jira issues have landed in master and are closed (verified by QA)
 - Ensure that CHANGELOG.md is up-to-date (issues listed, version number, date)
-- Make sure that `package.json` has the correct verion number
+- Make sure that `package.json` has the correct version number
 - In Runtime/Core/CinemachineCore.cs, update the `BaseURL` string to pint to the correct documentation version, and `kVersionString` to reflect the current version
 - Publish to the candidates registry
-- When CI is green, request realease-management to publish 
+- When CI is green, request promotion on #devs-pkg-promotion 
 - Make a release tag on the commit
-- Merge `releases/1.2.3` to master
+- Merge `release/x.y` to master
 
 ### Verified Releases
 - Publish to the candidates registry
