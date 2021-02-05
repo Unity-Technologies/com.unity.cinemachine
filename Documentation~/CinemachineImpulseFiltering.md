@@ -23,7 +23,7 @@ The **CinemachineImpulseChannels** script creates channels in your Scene. It has
 
 To add new channels:
 
-1. Inspect the **CinemachineImpulseChannels** script by doing one of the following:
+1. Inspect the **CinemachineImpulseChannels** (**Impulse Channel > Edit**) script by doing one of the following:
 
     - In the Cinemachine Impulse Listener inspector, navigate to the **Channel Mask** drop-down and click the **Edit** button next to it.
     

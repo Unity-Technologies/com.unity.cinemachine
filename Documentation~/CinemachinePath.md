@@ -14,9 +14,10 @@ __Cinemachine Path__ is a component that defines a world-space path, consisting 
 | | _Inactive Path Color_ | The color of the path when it is not selected. |
 | | _Width_ | The width of the railroad tracks that represent the path. |
 | __Looped__ || Check to join the ends of the path to form a continuous loop. |
+| __Path Length__ || The length of the path in distance units (read-only). |
 | __Selected Waypoint__ || Properties for the waypoint you selected in the Scene view or in the Waypoints list. |
 | __Prefer Tangent Drag__ || Check to use the Gizmo for the tangent of a waypoint when the Gizmos for the tangent and position coincide in the Scene view.  |
-| __Waypoints__ || The list of waypoints that define the path. |
+| __Path Details__ || The list of waypoints that define the path. |
 | | _Position_ | Position in path-local space (i.e. relative to the transform of the path object itself) |
 | | _Tangent_ | Offset from the position, which defines the tangent of the curve at the waypoint. The length of the tangent encodes the strength of the bezier handle. The same handle is used symmetrically on both sides of the waypoint, to ensure smoothness. |
 | | _Roll_ | The roll of the path at this waypoint. The other orientation axes are inferred from the tangent and world up. |

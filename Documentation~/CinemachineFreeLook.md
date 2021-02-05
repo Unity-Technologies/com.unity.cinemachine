@@ -24,7 +24,7 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | __Look At__ || The target GameObject to aim at. The [Aim properties](CinemachineVirtualCameraAim.html) use this target to update the rotation of the Unity camera. This property is normally the same as the Follow target. |
 | __Common Lens__ || Check to apply a common lens setting to all three child rigs. Uncheck to use separate lens settings for each child rig. |
 | __Lens__ || If Common Lens is checked, these lens settings apply to all three rigs. These properties mirror their counterparts in the property settings for the [Unity camera](https://docs.unity3d.com/Manual/class-Camera.html). |
-| | _Field Of View_ | This is the camera view in vertical degrees. For example, to specify the equivalent of a 50mm lens on a Super 35 sensor, enter a Field of View of 19.6 degrees. This property is available when the Unity camera with the Cinemachine Brain component uses a Projection of Perspective.   |
+| | _Vertical FOV_ | This is the camera view in vertical degrees. For example, to specify the equivalent of a 50mm lens on a Super 35 sensor, enter a Field of View of 19.6 degrees. This property is available when the Unity camera with the Cinemachine Brain component uses a Projection of Perspective.   |
 | | _Orthographic Size_ | When using an orthographic camera, this defines the half-height, in world coordinates, of the camera view. This property is available when the Unity camera with the Cinemachine Brain component uses a Projection of Orthographic. |
 | | _Near Clip Plane_ | The closest point relative to the camera where drawing occurs. |
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. |
