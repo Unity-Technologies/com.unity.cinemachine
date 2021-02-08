@@ -36,7 +36,7 @@ https://forum.unity3d.com/forums/cinemachine.136/
 ## Development
 
 ### General
-- [Yamato] is triggered automatically for commits in `master` (one should not normally commit directly to `master`).
+- [Yamato] CI is triggered automatically for branches (one should not normally commit directly to `master`).
 - **Be very deliberate if adding new public APIs**, prefer to keep classes private/internal if possible; public APIs cannot be removed without bumping the major version. Remember to document (`///`) all public APIs.
 - We want to catch potential API validator errors early on, so set the planned versions preemptively to `package.json`s in `master`, don't forget to add dummy changelog entries. Let's say we're planning to make a minor +0.0.1 bugfix release: we want to prevent making changes that would require a major version bump. For preview packages, breaking changes require a new minor version, for non-preview packages, breaking changes require a new major version. Meaning, it's best to develop in non-preview "mode" and add the preview tag only when making an actual preview release.
 - Develop the features for the release(s) using feature branches named like `dev/my-new-feature`, merge to `master` preferably using squashing (if applicable) and rebasing so that we can keep a clean history.
