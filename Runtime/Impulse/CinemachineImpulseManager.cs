@@ -7,7 +7,7 @@ namespace Cinemachine
 {
     /// <summary>
     /// Property applied to CinemachineImpulseManager.EnvelopeDefinition.
-    /// Used for custom drawing in the inspector.
+    /// Used for custom drawing in the inspector.  This attribute is obsolete and not used.
     /// </summary>
     public sealed class CinemachineImpulseEnvelopePropertyAttribute : PropertyAttribute {}
 

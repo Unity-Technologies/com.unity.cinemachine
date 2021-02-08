@@ -78,7 +78,6 @@ namespace Cinemachine
         /// The raw signal will be time-scaled to fit in the envelope.
         /// </summary>
         [Tooltip("This defines the time-envelope of the signal.  The raw signal will be time-scaled to fit in the envelope.")]
-        [CinemachineImpulseEnvelopeProperty]
         public CinemachineImpulseManager.EnvelopeDefinition m_TimeEnvelope
             = CinemachineImpulseManager.EnvelopeDefinition.Default();
 
