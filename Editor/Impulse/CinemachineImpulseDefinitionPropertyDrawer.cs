@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
-    [CustomPropertyDrawer(typeof(CinemachineImpulseDefinitionPropertyAttribute))]
+    [CustomPropertyDrawer(typeof(CinemachineImpulseDefinition))]
     internal sealed class CinemachineImpulseDefinitionPropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;

@@ -48,7 +48,7 @@ namespace Cinemachine
 #endif
         }
         
-        #if CINEMACHINE_PHYSICS
+#if CINEMACHINE_PHYSICS
         /// <summary>
         /// Perform a raycast, but pass through any objects that have a given tag
         /// </summary>
@@ -133,6 +133,56 @@ namespace Cinemachine
             return false;
         }
 #endif
+
+        /// <summary>
+        /// Normalize a curve so that its X and Y axes range from 0 to 1
+        /// </summary>
+        /// <param name="curve">Curve to normalize</param>
+        /// <param name="normalizeX">If true, normalize the X axis</param>
+        /// <param name="normalizeY">If true, normalize the Y axis</param>
+        /// <returns>The normalized curve</returns>
+        public static AnimationCurve NormalizeCurve(
+            AnimationCurve curve, bool normalizeX, bool normalizeY)
+        {
+            if (!normalizeX && !normalizeY)
+                return curve;
+            Keyframe[] keys = curve.keys;
+            if (keys.Length > 0)
+            {
+                float minTime = keys[0].time;
+                float maxTime = minTime;
+                float minVal = keys[0].value;
+                float maxVal = minVal;
+                for (int i = 0; i < keys.Length; ++i)
+                {
+                    minTime = Mathf.Min(minTime, keys[i].time);
+                    maxTime = Mathf.Max(maxTime, keys[i].time);
+                    minVal = Mathf.Min(minVal, keys[i].value);
+                    maxVal = Mathf.Max(maxVal, keys[i].value);
+                }
+                float range = maxTime - minTime;
+                float timeScale = range < 0.0001f ? 1 : 1 / range;
+                range = maxVal - minVal;
+                float valScale = range < 1 ? 1 : 1 / range;
+                float valOffset = 0;
+                if (range < 1)
+                {
+                    if (minVal > 0 && minVal + range <= 1)
+                        valOffset = minVal;
+                    else
+                        valOffset = 1 - range;
+                }
+                for (int i = 0; i < keys.Length; ++i)
+                {
+                    if (normalizeX)
+                        keys[i].time = (keys[i].time - minTime) * timeScale;
+                    if (normalizeY)
+                        keys[i].value = ((keys[i].value - minVal) * valScale) + valOffset;
+                }
+                curve.keys = keys;
+            }
+            return curve;
+        }
     }
 }
 

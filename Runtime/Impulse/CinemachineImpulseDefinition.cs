@@ -6,7 +6,7 @@ namespace Cinemachine
 {
     /// <summary>
     /// Property applied to CinemachineImpulseManager Channels.  
-    /// Used for custom drawing in the inspector.
+    /// Used for custom drawing in the inspector.  This is obsolete and no longer used.
     /// </summary>
     public sealed class CinemachineImpulseDefinitionPropertyAttribute : PropertyAttribute {}
 

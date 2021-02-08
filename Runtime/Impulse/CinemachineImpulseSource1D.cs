@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Cinemachine
 {
@@ -12,26 +14,43 @@ namespace Cinemachine
     /// methods from your custom code, or hook them up to game events in the Editor.
     /// 
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseSourceOverview.html")]
-    public class CinemachineImpulseSource : MonoBehaviour
+    public class CinemachineImpulseSource1D : MonoBehaviour
     {
         /// <summary>
         /// This defines the complete impulse signal that will be broadcast.
         /// </summary>
-        public CinemachineImpulseDefinition m_ImpulseDefinition = new CinemachineImpulseDefinition();
+        public CinemachineImpulseDefinition1D m_ImpulseDefinition = new CinemachineImpulseDefinition1D();
 
-        private void OnValidate()
+        public Vector3 m_DefaultVelocity;
+
+        void OnValidate()
         {
             m_ImpulseDefinition.OnValidate();
+        }
+
+        void Reset()
+        {
+            m_ImpulseDefinition = new CinemachineImpulseDefinition1D
+            {
+                m_ImpulseChannel = 1,
+                m_ImpulseShape = CinemachineImpulseDefinition1D.ImpulseShapes.Bump,
+                m_CustomImpulseShape = new AnimationCurve(),
+                m_ImpulseDuration = 0.2f,
+                m_SpatialRange = CinemachineImpulseDefinition1D.PropagationModes.Uniform,
+                m_EffectRadius = 100,
+                m_DissipationRate = 0.25f,
+                m_PropagationSpeed = 343
+            };
+            m_DefaultVelocity = Vector3.down;
         }
 
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels,
         /// using a custom position and impact velocity</summary>
         /// <param name="position">The world-space position from which the impulse will emanate</param>
         /// <param name="velocity">The impact magnitude and direction</param>
-        public void GenerateImpulseAt(Vector3 position, Vector3 velocity)
+        public void GenerateImpulseAtPositionWithVelocity(Vector3 position, Vector3 velocity)
         {
             if (m_ImpulseDefinition != null)
                 m_ImpulseDefinition.CreateEvent(position, velocity);
@@ -40,17 +59,18 @@ namespace Cinemachine
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels, using
         /// a custom impact velocity, and this transfom's position.</summary>
         /// <param name="velocity">The impact magnitude and direction</param>
-        public void GenerateImpulse(Vector3 velocity)
+        public void GenerateImpulseWithVelocity(Vector3 velocity)
         {
-            GenerateImpulseAt(transform.position, velocity);
+            GenerateImpulseAtPositionWithVelocity(transform.position, velocity);
         }
 
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels, using
         /// a custom impact force, with the standard direction, and this transfom's position.</summary>
         /// <param name="force">The impact magnitude.  1 is normal</param>
-        public void GenerateImpulse(float force)
+        public void GenerateImpulseWithForce(float force)
         {
-            GenerateImpulseAt(transform.position, new Vector3(0, -force, 0));
+            GenerateImpulseAtPositionWithVelocity(
+                transform.position, m_DefaultVelocity * force);
         }
 
         /// <summary>Broadcast the Impulse Signal onto the appropriate channels, 
@@ -58,7 +78,17 @@ namespace Cinemachine
         /// this transform's location.</summary>
         public void GenerateImpulse()
         {
-            GenerateImpulse(Vector3.down);
+            GenerateImpulseWithVelocity(m_DefaultVelocity);
+        }
+
+        public bool m_Invoke;
+        private void Update()
+        {
+            if (m_Invoke)
+            {
+                GenerateImpulse();
+                m_Invoke = false;
+            }
         }
     }
 }
