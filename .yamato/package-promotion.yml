@@ -64,7 +64,7 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package promote --dry-run
+    - upm-ci package promote
   triggers:
     tags:
       only:
