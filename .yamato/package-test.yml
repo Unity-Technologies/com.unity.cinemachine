@@ -17,9 +17,13 @@ test_platforms:
     type: Unity::VM
     image: package-ci/ubuntu:stable
     flavor: b1.large
-  - name: centos
-    type: Unity::VM::GPU
-    image: package-ci/centos:stable
+
+validation_editors:
+  - version: 2020.2
+validation_platforms:
+  - name: win
+    type: Unity::VM
+    image: package-ci/win10:stable
     flavor: b1.large
 ---
 
@@ -80,6 +84,10 @@ test_trigger:
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
     - .yamato/package-test.yml#test_{{platform.name}}_{{editor.version}}
+    {% endfor %}
+    {% endfor %}
+    {% for editor in validation_editors %}
+    {% for platform in validation_platforms %}
     - .yamato/package-test.yml#validate_{{platform.name}}_{{editor.version}}
     {% endfor %}
     {% endfor %}
