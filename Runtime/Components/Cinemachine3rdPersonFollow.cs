@@ -169,7 +169,6 @@ namespace Cinemachine
             var handDisplacement = hand - handResolved;
             // Post correction damping
             if (!handHasHit && 
-                m_prevHandDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon &&
                 PostCorrectionDamping > 0 && deltaTime >= 0)
             {
                 Vector3 delta = handDisplacement - m_prevHandDisplacement;
@@ -187,7 +186,6 @@ namespace Cinemachine
             
             // Post correction damping
             if (!camPosHasHit && 
-                m_prevCameraPosDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon && 
                 PostCorrectionDamping > 0 && deltaTime >= 0)
             {
                 Vector3 delta = camPosDisplacement - m_prevCameraPosDisplacement;
