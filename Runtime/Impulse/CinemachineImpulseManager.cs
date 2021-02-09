@@ -172,7 +172,7 @@ namespace Cinemachine
             var b = kMin + (kMax - kMin) * (1f - spread);
             b = (1f - b) * 0.5f;
             var t = Mathf.Clamp01(normalizedDistance) / ((((1f/Mathf.Clamp01(b)) - 2f) * (1f - normalizedDistance)) + 1f);
-            return SplineHelpers.Bezier1(t, 0, 0, 1, 1);
+            return 1 - SplineHelpers.Bezier1(t, 0, 0, 1, 1);
         }
 
         /// <summary>Describes an event that generates an impulse signal on one or more channels.

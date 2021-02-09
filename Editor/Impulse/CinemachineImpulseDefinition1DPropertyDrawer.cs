@@ -236,9 +236,9 @@ namespace Cinemachine.Editor
                 for (int i = 0; i <= kNumSamples >> 1; ++i)
                 {
                     var x = (float)i / kNumSamples;
-                    var y = CinemachineImpulseManager.EvaluateDissipationScale(spread, 1 - x * 2);
-                    m_SpreadGraphSnapshot[i] = new Vector2(x * rect.width, y * rect.height);
-                    m_SpreadGraphSnapshot[kNumSamples - i] = new Vector2((1 - x) * rect.width, y * rect.height);
+                    var y = CinemachineImpulseManager.EvaluateDissipationScale(spread, Mathf.Abs(1 - x * 2));
+                    m_SpreadGraphSnapshot[i] = new Vector2(x * rect.width, rect.height * (1 - y));
+                    m_SpreadGraphSnapshot[kNumSamples - i] = new Vector2((1 - x) * rect.width, rect.height * (1 - y));
                 }
             }
             EditorGUI.DrawRect(rect, new Color(0.2f, 0.2f, 0.2f, 1));

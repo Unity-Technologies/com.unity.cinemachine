@@ -38,11 +38,26 @@ namespace Cinemachine
         [Tooltip("Enable this to perform distance calculation in 2D (ignore Z)")]
         public bool m_Use2DDistance;
 
+        /// <summary>
+        /// Enable this to process all impulse signals in camera space.
+        /// </summary>
+        [Tooltip("Enable this to process all impulse signals in camera space")]
+        public bool m_UseLocalSpace;
+
+        public CinemachineImpulseListener.ImpulseReaction m_ReactionSettings;
+
         private void Reset()
         {
             m_ChannelMask = 1;
             m_Gain = 1;
             m_Use2DDistance = false;
+            m_UseLocalSpace = true;
+            m_ReactionSettings = new CinemachineImpulseListener.ImpulseReaction 
+            { 
+                m_AmplitudeGain = 1, 
+                m_FrequencyGain = 1,
+                m_Duration = 1f
+            };
         }
 
         private void OnEnable()
@@ -63,13 +78,28 @@ namespace Cinemachine
         private void LateUpdate()
         {
             // Apply the shake
-            if (CinemachineImpulseManager.Instance.GetImpulseAt(
+            bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
                 transform.position, m_Use2DDistance, m_ChannelMask, 
-                out impulsePosLastFrame, out impulseRotLastFrame))
+                out impulsePosLastFrame, out impulseRotLastFrame);
+            bool haveReaction = m_ReactionSettings.GetReaction(
+                Time.deltaTime, impulsePosLastFrame, out var reactionPos, out var reactionRot);
+
+            if (haveImpulse)
             {
-                impulsePosLastFrame *= m_Gain;
                 impulseRotLastFrame = Quaternion.SlerpUnclamped(
-                    Quaternion.identity, impulseRotLastFrame, -m_Gain);
+                    Quaternion.identity, impulseRotLastFrame, m_Gain);
+                impulsePosLastFrame *= m_Gain;
+            }
+            if (haveReaction)
+            {
+                impulsePosLastFrame += reactionPos;
+                impulseRotLastFrame *= reactionRot;
+            }
+            if (haveImpulse || haveReaction)
+            {
+                if (m_UseLocalSpace)
+                    impulsePosLastFrame = transform.rotation * impulsePosLastFrame;
+
                 transform.position += impulsePosLastFrame;
                 transform.rotation = transform.rotation * impulseRotLastFrame;
             }

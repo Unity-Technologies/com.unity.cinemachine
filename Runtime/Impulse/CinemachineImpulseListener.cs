@@ -75,10 +75,10 @@ namespace Cinemachine
             public float m_FrequencyGain;
 
             /// <summary>
-            /// How slowly the secondary reaction dissipates.  Smaller values dissipate faster.
+            /// How long the secondary reaction lasts.
             /// </summary>
-            [Tooltip("How slowly the secondary reaction dissipates.  Smaller values dissipate faster.")]
-            public float m_Damping;
+            [Tooltip("How long the secondary reaction lasts.")]
+            public float m_Duration;
 
             float m_CurrentAmount;
             float m_CurrentTime;
@@ -98,7 +98,9 @@ namespace Cinemachine
                         UnityEngine.Random.Range(-1000f, 1000f));
             }
 
-            public void ApplyReaction(float deltaTime, ref Vector3 impulsePos, ref Quaternion impulseRot)
+            public bool GetReaction(
+                float deltaTime, Vector3 impulsePos, 
+                out Vector3 pos, out Quaternion rot)
             {
                 if (!m_Initialized)
                 {
@@ -111,9 +113,11 @@ namespace Cinemachine
                 }
 
                 // Is there any reacting to do?
+                pos = Vector3.zero;
+                rot = Quaternion.identity;
                 var sqrMag = impulsePos.sqrMagnitude;
-                if (m_SecondaryNoise == null || sqrMag < 0.001f && m_CurrentAmount < 0.001f)
-                    return;
+                if (m_SecondaryNoise == null || (sqrMag < 0.001f && m_CurrentAmount < 0.0001f))
+                    return false;
 
                 // Advance the current reaction time
                 if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
@@ -122,20 +126,20 @@ namespace Cinemachine
                 else
                     m_CurrentTime += deltaTime * m_FrequencyGain;
 
+                // Adjust the envelope height and duration of the secondary noise, 
+                // acording to the strength of the incoming signal
                 m_CurrentAmount = Mathf.Max(m_CurrentAmount, Mathf.Sqrt(sqrMag));
-                m_CurrentDamping = Mathf.Max(m_CurrentDamping, m_CurrentAmount * m_Damping);
+                m_CurrentDamping = Mathf.Max(m_CurrentDamping, m_CurrentAmount * m_Duration * 3); // 3 determined experimentally
 
                 var gain = m_CurrentAmount * m_AmplitudeGain;
-                var posNoise = NoiseSettings.GetCombinedFilterResults(
+                pos = NoiseSettings.GetCombinedFilterResults(
                         m_SecondaryNoise.PositionNoise, m_CurrentTime, m_NoiseOffsets) * gain;
-                Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
+                rot = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
                         m_SecondaryNoise.OrientationNoise, m_CurrentTime, m_NoiseOffsets) * gain);
-
-                impulsePos += posNoise;
-                impulseRot *= rotNoise;
 
                 m_CurrentAmount -= Damper.Damp(m_CurrentAmount, m_CurrentDamping, deltaTime);
                 m_CurrentDamping -= Damper.Damp(m_CurrentDamping, m_CurrentDamping, deltaTime);
+                return true;
             }
         }
 
@@ -152,7 +156,7 @@ namespace Cinemachine
             { 
                 m_AmplitudeGain = 1, 
                 m_FrequencyGain = 1,
-                m_Damping = 0.2f
+                m_Duration = 1f
             };
         }
 
@@ -167,16 +171,29 @@ namespace Cinemachine
         {
             if (stage == m_ApplyAfter && deltaTime >= 0)
             {
-                if (CinemachineImpulseManager.Instance.GetImpulseAt(
+                bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
                     state.FinalPosition, m_Use2DDistance, m_ChannelMask, 
-                    out var impulsePos, out var impulseRot))
+                    out var impulsePos, out var impulseRot);
+                bool haveReaction = m_ReactionSettings.GetReaction(
+                    deltaTime, impulsePos, out var reactionPos, out var reactionRot);
+
+                if (haveImpulse)
                 {
-                    state.PositionCorrection += impulsePos * -m_Gain;
-                    impulseRot = Quaternion.SlerpUnclamped(Quaternion.identity, impulseRot, -m_Gain);
+                    impulseRot = Quaternion.SlerpUnclamped(Quaternion.identity, impulseRot, m_Gain);
+                    impulsePos *= m_Gain;
                 }
-                m_ReactionSettings.ApplyReaction(deltaTime, ref impulsePos, ref impulseRot);
-                state.PositionCorrection += impulsePos * -m_Gain;
-                state.OrientationCorrection = state.OrientationCorrection * impulseRot;
+                if (haveReaction)
+                {
+                    impulsePos += reactionPos;
+                    impulseRot *= reactionRot;
+                }
+                if (haveImpulse || haveReaction)
+                {
+                    if (m_UseCameraSpace)
+                        impulsePos = state.RawOrientation * impulsePos;
+                    state.PositionCorrection += impulsePos;
+                    state.OrientationCorrection = state.OrientationCorrection * impulseRot;
+                }
             }
         }
     }
