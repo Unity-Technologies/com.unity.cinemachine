@@ -166,36 +166,18 @@ namespace Cinemachine
             // player, using a bigger radius, this won't happen.
             bool handHasHit = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, 
                 CameraRadius * 1.05f, out var handResolved);
-            var handDisplacement = hand - handResolved;
-            // Post correction damping
-            if (!handHasHit && 
-                PostCorrectionDamping > 0 && deltaTime >= 0)
-            {
-                Vector3 delta = handDisplacement - m_prevHandDisplacement;
-                delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
-                handDisplacement = m_prevHandDisplacement + delta;
-                handResolved = hand - handDisplacement;
-            }
-            m_prevHandDisplacement = handDisplacement;
+            DampedPullBackPostCollision(handHasHit, deltaTime, hand, ref handResolved);
+            
 
             // 2. Try to place the camera to the preferred distance
-            var camPos = handResolved - (followTargetForward * CameraDistance);
+            Vector3 camPos = handResolved - (followTargetForward * CameraDistance);
             bool camPosHasHit = PullTowardsStartOnCollision(in handResolved, in camPos, in CameraCollisionFilter, 
                 CameraRadius, out var camPosResolved);
-            var camPosDisplacement = camPos - camPosResolved;
-            
             // Post correction damping
-            if (!camPosHasHit && 
-                PostCorrectionDamping > 0 && deltaTime >= 0)
-            {
-                Vector3 delta = camPosDisplacement - m_prevCameraPosDisplacement;
-                delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
-                camPosDisplacement = m_prevCameraPosDisplacement + delta;
-                camPosResolved = camPos - camPosDisplacement;
-            }
+            DampedPullBackPostCollision(camPosHasHit, deltaTime, camPos, ref camPosResolved);
             
-            m_prevCameraPosDisplacement = camPosDisplacement;
-            
+
+            // Set state
             curState.RawPosition = camPosResolved;
             curState.RawOrientation = FollowTargetRotation;
             curState.ReferenceUp = up;
@@ -210,8 +192,8 @@ namespace Cinemachine
         public void GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
             root = PreviousFollowTargetPosition;
-            var ShoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
-            var shoulderOffset = Vector3.Lerp(ShoulderPivotReflected, ShoulderOffset, CameraSide);
+            var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
+            var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
             var handOffset = new Vector3(0, VerticalArmLength, 0);
             shoulder = root + Quaternion.AngleAxis(PreviousHeadingAngle, Vector3.up) * shoulderOffset;
             hand = shoulder + FollowTargetRotation * handOffset;
@@ -227,6 +209,20 @@ namespace Cinemachine
                 rayStart, radius, dir, out RaycastHit hitInfo, dir.magnitude, filter, IgnoreTag);
             result = hasHit ? hitInfo.point + hitInfo.normal * radius: rayEnd;
             return hasHit;
+        }
+
+        void DampedPullBackPostCollision(bool hasHit, float deltaTime, Vector3 original, ref Vector3 resolved)
+        {
+            var handDisplacement = original - resolved;
+            // Post correction damping
+            if (!hasHit && PostCorrectionDamping > 0 && deltaTime >= 0)
+            {
+                Vector3 delta = handDisplacement - m_prevHandDisplacement;
+                delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
+                handDisplacement = m_prevHandDisplacement + delta;
+                resolved = original - handDisplacement;
+            }
+            m_prevHandDisplacement = handDisplacement;
         }
     }
 #endif
