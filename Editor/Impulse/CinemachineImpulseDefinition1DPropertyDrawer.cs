@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
         #pragma warning restore 649
 
         GUIContent m_TimeText = null;
-        Vector2 m_TimeTextDimensions;
+        float m_TimeTextWidth;
 
         SerializedProperty m_ShapeProperty;
         float m_ShapePropertyHeight;
@@ -98,13 +98,13 @@ namespace Cinemachine.Editor
 
         void DrawImpulseShapeCombo(Rect fullRect, SerializedProperty property)
         {
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
+            float floatFieldWidth = EditorGUIUtility.fieldWidth + 2;
 
             SerializedProperty timeProp = property.FindPropertyRelative(() => m_MyClass.m_ImpulseDuration);
-            if (m_TimeText == null)
+            if (true || m_TimeText == null)
             {
                 m_TimeText = new GUIContent(" s", timeProp.tooltip);
-                m_TimeTextDimensions = GUI.skin.label.CalcSize(m_TimeText);
+                m_TimeTextWidth = GUI.skin.label.CalcSize(m_TimeText).x;
             }
 
             var graphRect = fullRect; 
@@ -118,7 +118,7 @@ namespace Cinemachine.Editor
                 r, new GUIContent(m_ShapeProperty.displayName, m_ShapeProperty.tooltip), property));
             m_ShapeProperty.isExpanded =  EditorGUI.Foldout(r, m_ShapeProperty.isExpanded, GUIContent.none);
 
-            r.width -= floatFieldWidth + m_TimeTextDimensions.x;
+            r.width -= floatFieldWidth + m_TimeTextWidth;
             if (m_ShapeProperty.intValue != (int)CinemachineImpulseDefinition1D.ImpulseShapes.Custom)
             {
                 EditorGUI.BeginChangeCheck();
@@ -150,7 +150,7 @@ namespace Cinemachine.Editor
 
             // Time
             float oldWidth = EditorGUIUtility.labelWidth;
-            EditorGUIUtility.labelWidth = m_TimeTextDimensions.x;
+            EditorGUIUtility.labelWidth = m_TimeTextWidth;
             r.x += r.width; r.width = floatFieldWidth + EditorGUIUtility.labelWidth;
             EditorGUI.BeginChangeCheck();
             EditorGUI.PropertyField(r, timeProp, m_TimeText);

@@ -80,15 +80,5 @@ namespace Cinemachine
         {
             GenerateImpulseWithVelocity(m_DefaultVelocity);
         }
-
-        public bool m_Invoke;
-        private void Update()
-        {
-            if (m_Invoke)
-            {
-                GenerateImpulse();
-                m_Invoke = false;
-            }
-        }
     }
 }
