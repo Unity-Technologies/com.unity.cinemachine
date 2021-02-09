@@ -1,5 +1,3 @@
-using UnityEngine;
-using UnityEngine.TestTools;
 using NUnit.Framework;
 using Cinemachine.Editor;
 using System.IO;
