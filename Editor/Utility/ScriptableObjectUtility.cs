@@ -15,47 +15,23 @@ namespace Cinemachine.Editor
         /// </summary>
         public static string kPackageRoot = "Packages/com.unity.cinemachine";
 
-        /// <summary>Get the Cinemachine package install path.  Works whether CM is
-        /// a packman package or an ordinary asset.</summary>
+        /// <summary>Get the Cinemachine package install path.</summary>
         public static string CinemachineInstallPath
         {
             get
             {
-                // First see if we're a UPM package - use some asset that we expect to find
-                string path = Path.GetFullPath(kPackageRoot + "/Editor/EditorResources/cm_logo_sm.png");
-                int index = path.LastIndexOf("/Editor");
-                if (index < 0 || !File.Exists(path))
-                {
-                    // Try as an ordinary asset
-                    ScriptableObject dummy = ScriptableObject.CreateInstance<ScriptableObjectUtility>();
-                    path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(dummy));
-                    if (path.Length > 0)
-                        path = Path.GetFullPath(path);
-                    DestroyImmediate(dummy);
-                }
+                string path = Path.GetFullPath(kPackageRoot);
                 path = path.Replace('\\', '/'); // because of GetFullPath()
-                index = path.LastIndexOf("/Editor");
-                if (index >= 0)
-                    path = path.Substring(0, index);
-                if (path.Length > 0)
-                    path = Path.GetFullPath(path);  // stupid backslashes
                 return path;
             }
         }
 
-        /// <summary>Get the Cinemachine package install path.  Works whether CM is
-        /// a packman package or an ordinary asset.</summary>
+        /// <summary>Get the relative Cinemachine package install path.</summary>
         public static string CinemachineRealativeInstallPath
         {
             get
             {
-                ScriptableObject dummy = ScriptableObject.CreateInstance<ScriptableObjectUtility>();
-                var path = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(dummy));
-                DestroyImmediate(dummy);
-                var index = path.LastIndexOf("/Editor");
-                if (index >= 0)
-                    path = path.Substring(0, index);
-                return path;
+                return kPackageRoot;
             }
         }
 
