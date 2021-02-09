@@ -77,7 +77,7 @@ namespace Cinemachine
         [Range(0, 10)]
         [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
             "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
-        public float PostCorrectionDamping = 0;
+        public float PostCorrectionDamping;
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
@@ -92,6 +92,7 @@ namespace Cinemachine
             Damping.y = Mathf.Max(0, Damping.y);
             Damping.z = Mathf.Max(0, Damping.z);
             CameraRadius = Mathf.Max(0.001f, CameraRadius);
+            PostCorrectionDamping = Mathf.Max(0, PostCorrectionDamping);
         }
 
         void Reset()
@@ -103,6 +104,7 @@ namespace Cinemachine
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
             CameraRadius = 0.2f;
+            PostCorrectionDamping = 2f;
         }
 
         /// <summary>True if component is enabled and has a Follow target defined</summary>
