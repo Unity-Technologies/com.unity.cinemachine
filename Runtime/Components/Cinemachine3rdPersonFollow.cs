@@ -69,10 +69,20 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("Specifies how close the camera can get to obstacles")]
         public float CameraRadius;
+        
+        /// <summary>
+        /// How gradually the camera returns to its normal position after having been corrected.
+        /// Higher numbers will move the camera more gradually back to normal.
+        /// </summary>
+        [Range(0, 10)]
+        [Tooltip("How gradually the camera returns to its normal position after having been corrected.  Higher numbers will move the camera more gradually back to normal.")]
+        public float PostCorrectionDamping = 0;
 
         // State info
         private Vector3 PreviousFollowTargetPosition;
         private float PreviousHeadingAngle;
+        Vector3 m_prevHandDisplacement;
+        Vector3 m_prevCameraPosDisplacement;
 
         private void OnValidate()
         {
@@ -154,13 +164,39 @@ namespace Cinemachine
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
             // next to walls. Where the preferred distance would be pulled completely to the 
             // player, using a bigger radius, this won't happen.
-            hand = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, CameraRadius * 1.05f);
+            var handResolved = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, CameraRadius * 1.05f);
+            var handDisplacement = hand - handResolved;
+            
+            // Post correction damping
+            if (m_prevHandDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon &&
+                PostCorrectionDamping > 0 && deltaTime >= 0)
+            {
+                Vector3 delta = handDisplacement - m_prevHandDisplacement;
+                delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
+                handDisplacement = m_prevHandDisplacement + delta;
+                handResolved = hand - handDisplacement;
+            }
+            
+            m_prevHandDisplacement = handDisplacement;
 
             // 2. Try to place the camera to the preferred distance
-            var camPos = hand - (followTargetForward * CameraDistance);
-            camPos = PullTowardsStartOnCollision(in hand, in camPos, in CameraCollisionFilter, CameraRadius);
-
-            curState.RawPosition = camPos;
+            var camPos = handResolved - (followTargetForward * CameraDistance);
+            var camPosResolved = PullTowardsStartOnCollision(in handResolved, in camPos, in CameraCollisionFilter, CameraRadius);
+            var camPosDisplacement = camPos - camPosResolved;
+            
+            // Post correction damping
+            if (m_prevCameraPosDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon && 
+                PostCorrectionDamping > 0 && deltaTime >= 0)
+            {
+                Vector3 delta = camPosDisplacement - m_prevCameraPosDisplacement;
+                delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
+                camPosDisplacement = m_prevCameraPosDisplacement + delta;
+                camPosResolved = camPos - camPosDisplacement;
+            }
+            
+            m_prevCameraPosDisplacement = camPosDisplacement;
+            
+            curState.RawPosition = camPosResolved;
             curState.RawOrientation = FollowTargetRotation;
             curState.ReferenceUp = up;
         }
