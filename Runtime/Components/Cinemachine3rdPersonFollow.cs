@@ -211,7 +211,8 @@ namespace Cinemachine
             return hasHit;
         }
 
-        void DampedPullBackPostCollision(bool hasHit, float deltaTime, Vector3 original, ref Vector3 prevDisplacement, ref Vector3 resolved)
+        void DampedPullBackPostCollision(bool hasHit, float deltaTime, Vector3 original, 
+            ref Vector3 prevDisplacement, ref Vector3 resolved)
         {
             var handDisplacement = original - resolved;
             // Post correction damping
