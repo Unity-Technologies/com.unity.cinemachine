@@ -166,17 +166,17 @@ namespace Cinemachine
             // player, using a bigger radius, this won't happen.
             bool handHasHit = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, 
                 CameraRadius * 1.05f, out var handResolved);
-            DampedPullBackPostCollision(handHasHit, deltaTime, hand, ref handResolved);
+            DampedPullBackPostCollision(handHasHit, deltaTime, hand, 
+                ref m_prevHandDisplacement, ref handResolved);
             
-
             // 2. Try to place the camera to the preferred distance
             Vector3 camPos = handResolved - (followTargetForward * CameraDistance);
             bool camPosHasHit = PullTowardsStartOnCollision(in handResolved, in camPos, in CameraCollisionFilter, 
                 CameraRadius, out var camPosResolved);
             // Post correction damping
-            DampedPullBackPostCollision(camPosHasHit, deltaTime, camPos, ref camPosResolved);
+            DampedPullBackPostCollision(camPosHasHit, deltaTime, camPos, 
+                ref m_prevCameraPosDisplacement, ref camPosResolved);
             
-
             // Set state
             curState.RawPosition = camPosResolved;
             curState.RawOrientation = FollowTargetRotation;
@@ -211,18 +211,18 @@ namespace Cinemachine
             return hasHit;
         }
 
-        void DampedPullBackPostCollision(bool hasHit, float deltaTime, Vector3 original, ref Vector3 resolved)
+        void DampedPullBackPostCollision(bool hasHit, float deltaTime, Vector3 original, ref Vector3 prevDisplacement, ref Vector3 resolved)
         {
             var handDisplacement = original - resolved;
             // Post correction damping
             if (!hasHit && PostCorrectionDamping > 0 && deltaTime >= 0)
             {
-                Vector3 delta = handDisplacement - m_prevHandDisplacement;
+                Vector3 delta = handDisplacement - prevDisplacement;
                 delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
-                handDisplacement = m_prevHandDisplacement + delta;
+                handDisplacement = prevDisplacement + delta;
                 resolved = original - handDisplacement;
             }
-            m_prevHandDisplacement = handDisplacement;
+            prevDisplacement = handDisplacement;
         }
     }
 #endif
