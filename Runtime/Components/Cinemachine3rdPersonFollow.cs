@@ -80,12 +80,12 @@ namespace Cinemachine
         public float PostCorrectionDamping = 0;
 
         // State info
-        private Vector3 PreviousFollowTargetPosition;
-        private float PreviousHeadingAngle;
-        float m_prevHandDistance;
-        float m_prevCamPosDistance;
+        Vector3 m_PreviousFollowTargetPosition;
+        float m_PreviousHeadingAngle;
+        float m_PrevHandDistance;
+        float m_PrevCamPosDistance;
 
-        private void OnValidate()
+        void OnValidate()
         {
             CameraSide = Mathf.Clamp(CameraSide, -1.0f, 1.0f);
             Damping.x = Mathf.Max(0, Damping.x);
@@ -94,7 +94,7 @@ namespace Cinemachine
             CameraRadius = Mathf.Max(0.001f, CameraRadius);
         }
 
-        private void Reset()
+        void Reset()
         {
             CameraCollisionFilter = 1;
             ShoulderOffset = new Vector3(0.5f, -0.4f, 0.0f);
@@ -106,7 +106,7 @@ namespace Cinemachine
         }
 
         /// <summary>True if component is enabled and has a Follow target defined</summary>
-        public override bool IsValid { get { return enabled && FollowTarget != null; } }
+        public override bool IsValid => enabled && FollowTarget != null;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
@@ -132,7 +132,7 @@ namespace Cinemachine
 
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
-            var prevTargetPos = deltaTime >= 0 ? PreviousFollowTargetPosition : FollowTargetPosition;
+            var prevTargetPos = deltaTime >= 0 ? m_PreviousFollowTargetPosition : FollowTargetPosition;
 
             // Compute damped target pos (compute in camera space)
             var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) 
@@ -149,16 +149,16 @@ namespace Cinemachine
             var followTargetForward = followTargetRotation * fwd;
             var angle = UnityVectorExtensions.SignedAngle(
                 fwd, followTargetForward.ProjectOntoPlane(up), up);
-            var previousHeadingAngle = deltaTime >= 0 ? PreviousHeadingAngle : angle;
+            var previousHeadingAngle = deltaTime >= 0 ? m_PreviousHeadingAngle : angle;
             var deltaHeading = angle - previousHeadingAngle;
-            PreviousHeadingAngle = angle;
+            m_PreviousHeadingAngle = angle;
 
             // Bypass user-sourced rotation
             dampedTargetPos = FollowTargetPosition 
                 + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - FollowTargetPosition);
-            PreviousFollowTargetPosition = dampedTargetPos;
+            m_PreviousFollowTargetPosition = dampedTargetPos;
 
-            GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand);
+            GetRigPositions(out Vector3 root, out _, out Vector3 hand);
 
             // 1. Check if pivot itself is colliding with something, if yes, then move the pivot 
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
@@ -167,16 +167,16 @@ namespace Cinemachine
             bool handHasHit = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, 
                 CameraRadius * 1.05f, out var handResolved);
             // Post correction damping
-            var dampedHandResolved = DampedPullBackPostCollision(handHasHit, deltaTime, 
-                root, handResolved, ref m_prevHandDistance);
+            Vector3 dampedHandResolved = DampedPullBackPostCollision(handHasHit, deltaTime, 
+                root, handResolved, ref m_PrevHandDistance);
             
             // 2. Try to place the camera to the preferred distance
             Vector3 camPos = dampedHandResolved - (followTargetForward * CameraDistance);
             bool camPosHasHit = PullTowardsStartOnCollision(in dampedHandResolved, in camPos, in CameraCollisionFilter, 
                 CameraRadius, out var camPosResolved);
             // Post correction damping
-            var dampedCamPosResolved = DampedPullBackPostCollision(camPosHasHit, deltaTime, 
-                    root, camPosResolved, ref m_prevCamPosDistance);
+            Vector3 dampedCamPosResolved = DampedPullBackPostCollision(camPosHasHit, deltaTime, 
+                    root, camPosResolved, ref m_PrevCamPosDistance);
             
             // Set state
             curState.RawPosition = dampedCamPosResolved;
@@ -187,18 +187,19 @@ namespace Cinemachine
         /// <summary>
         /// Internal use only.  Public for the inspector gizmo
         /// </summary>
-        /// <param name="root"></param>
-        /// <param name="shoulder"></param>
-        /// <param name="hand"></param>
+        /// <param name="root">Root of the rig.</param>
+        /// <param name="shoulder">Shoulder of the rig.</param>
+        /// <param name="hand">Hand of the rig.</param>
         public void GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
-            root = PreviousFollowTargetPosition;
+            root = m_PreviousFollowTargetPosition;
             var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
             var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
-            var handOffset = new Vector3(0, VerticalArmLength, 0);
-            shoulder = root + Quaternion.AngleAxis(PreviousHeadingAngle, Vector3.up) * shoulderOffset;
-            hand = shoulder + FollowTargetRotation * handOffset;
+            t_HandOffset.y = VerticalArmLength;
+            shoulder = root + Quaternion.AngleAxis(m_PreviousHeadingAngle, Vector3.up) * shoulderOffset;
+            hand = shoulder + FollowTargetRotation * t_HandOffset;
         }
+        Vector3 t_HandOffset = Vector3.zero; // minor opt. - to avoid creating a new vector in GetRigPositions
 
         bool PullTowardsStartOnCollision(
             in Vector3 rayStart, in Vector3 rayEnd,
@@ -219,7 +220,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="isColliding">Is the camera currently colliding?</param>
         /// <param name="deltaTime">Used for damping.</param>
-        /// <param name="root">Root of the rig, the follow target.</param>
+        /// <param name="root">Root of the rig</param>
         /// <param name="resolved">Position of the camera.</param>
         /// <param name="previousDistance">Distance of the camera from root in the previous frame.</param>
         /// <returns>Damped position</returns>
