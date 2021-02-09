@@ -79,6 +79,7 @@ test_trigger:
       - targets:
           only:
             - "/.*/"
+    cancel_old_ci: true
   dependencies:
     - .yamato/package-pack.yml#pack
     {% for editor in test_editors %}
