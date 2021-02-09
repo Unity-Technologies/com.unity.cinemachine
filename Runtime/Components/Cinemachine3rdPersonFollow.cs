@@ -164,11 +164,12 @@ namespace Cinemachine
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
             // next to walls. Where the preferred distance would be pulled completely to the 
             // player, using a bigger radius, this won't happen.
-            var handResolved = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, CameraRadius * 1.05f);
+            bool handHasHit = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, 
+                CameraRadius * 1.05f, out var handResolved);
             var handDisplacement = hand - handResolved;
-            
             // Post correction damping
-            if (m_prevHandDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon &&
+            if (!handHasHit && 
+                m_prevHandDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon &&
                 PostCorrectionDamping > 0 && deltaTime >= 0)
             {
                 Vector3 delta = handDisplacement - m_prevHandDisplacement;
@@ -176,16 +177,17 @@ namespace Cinemachine
                 handDisplacement = m_prevHandDisplacement + delta;
                 handResolved = hand - handDisplacement;
             }
-            
             m_prevHandDisplacement = handDisplacement;
 
             // 2. Try to place the camera to the preferred distance
             var camPos = handResolved - (followTargetForward * CameraDistance);
-            var camPosResolved = PullTowardsStartOnCollision(in handResolved, in camPos, in CameraCollisionFilter, CameraRadius);
+            bool camPosHasHit = PullTowardsStartOnCollision(in handResolved, in camPos, in CameraCollisionFilter, 
+                CameraRadius, out var camPosResolved);
             var camPosDisplacement = camPos - camPosResolved;
             
             // Post correction damping
-            if (m_prevCameraPosDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon && 
+            if (!camPosHasHit && 
+                m_prevCameraPosDisplacement.sqrMagnitude > UnityVectorExtensions.Epsilon && 
                 PostCorrectionDamping > 0 && deltaTime >= 0)
             {
                 Vector3 delta = camPosDisplacement - m_prevCameraPosDisplacement;
@@ -217,14 +219,16 @@ namespace Cinemachine
             hand = shoulder + FollowTargetRotation * handOffset;
         }
 
-        private Vector3 PullTowardsStartOnCollision(
+        bool PullTowardsStartOnCollision(
             in Vector3 rayStart, in Vector3 rayEnd,
-            in LayerMask filter, float radius)
+            in LayerMask filter, float radius,
+            out Vector3 result)
         {
             var dir = rayEnd - rayStart;
             bool hasHit = RuntimeUtility.SphereCastIgnoreTag(
                 rayStart, radius, dir, out RaycastHit hitInfo, dir.magnitude, filter, IgnoreTag);
-            return hasHit ? hitInfo.point + hitInfo.normal * radius: rayEnd;
+            result = hasHit ? hitInfo.point + hitInfo.normal * radius: rayEnd;
+            return hasHit;
         }
     }
 #endif
