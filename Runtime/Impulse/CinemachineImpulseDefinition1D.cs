@@ -156,8 +156,15 @@ namespace Cinemachine
             sStandardShapes[(int)ImpulseShapes.Rumble] = new AnimationCurve(new Keyframe[] 
             { 
                 new Keyframe(0, 0, 0, 0),
-                new Keyframe(0.333f, 1, 0, 0),
-                new Keyframe(0.666f, 1, 0, 0),
+                new Keyframe(0.1f, 0.25f, 0, 0),
+                new Keyframe(0.2f, 0, 0, 0),
+                new Keyframe(0.3f, 0.75f, 0, 0),
+                new Keyframe(0.4f, 0, 0, 0),
+                new Keyframe(0.5f, 1, 0, 0),
+                new Keyframe(0.6f, 0, 0, 0),
+                new Keyframe(0.7f, 0.75f, 0, 0),
+                new Keyframe(0.8f, 0, 0, 0),
+                new Keyframe(0.9f, 0.25f, 0, 0),
                 new Keyframe(1, 0, 0, 0)
             });
         }
