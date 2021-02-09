@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Create via menu doesn't create as child of selected object
 - Bugfix: Drift in FreeLook with SimpleFollow
 - Bugfix: Post-processing profiles not cleaned up when no active vcams
+- Added PostCorrectionDamping parameter to Cinemachine3rdPersonFollow with which the user can control how gradually the camera returns to its normal position after having been corrected by the built-in collision resolution system.
 
 
 ## [2.7.1] - 2020-11-14
