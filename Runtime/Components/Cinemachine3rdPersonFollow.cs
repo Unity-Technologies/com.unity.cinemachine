@@ -71,18 +71,19 @@ namespace Cinemachine
         public float CameraRadius;
         
         /// <summary>
-        /// How gradually the camera returns to its normal position after having been corrected.
-        /// Higher numbers will move the camera more gradually back to normal.
+        /// How gradually the camera returns to its normal position after having been corrected by the built-in
+        /// collision resolution system. Higher numbers will move the camera more gradually back to normal.
         /// </summary>
         [Range(0, 10)]
-        [Tooltip("How gradually the camera returns to its normal position after having been corrected.  Higher numbers will move the camera more gradually back to normal.")]
+        [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
+            "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
         public float PostCorrectionDamping = 0;
 
         // State info
         private Vector3 PreviousFollowTargetPosition;
         private float PreviousHeadingAngle;
-        Vector3 m_prevHandDisplacement;
-        Vector3 m_prevCameraPosDisplacement;
+        float m_prevHandDistance;
+        float m_prevCamPosDistance;
 
         private void OnValidate()
         {
@@ -131,12 +132,11 @@ namespace Cinemachine
 
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
-            var targetPos = FollowTargetPosition;
-            var prevTargetPos = deltaTime >= 0 ? PreviousFollowTargetPosition : targetPos;
+            var prevTargetPos = deltaTime >= 0 ? PreviousFollowTargetPosition : FollowTargetPosition;
 
             // Compute damped target pos (compute in camera space)
             var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) 
-                * (targetPos - prevTargetPos);
+                * (FollowTargetPosition - prevTargetPos);
             if (deltaTime >= 0)
                 dampedTargetPos = VirtualCamera.DetachedFollowTargetDamp(
                     dampedTargetPos, Damping, deltaTime);
@@ -154,8 +154,8 @@ namespace Cinemachine
             PreviousHeadingAngle = angle;
 
             // Bypass user-sourced rotation
-            dampedTargetPos = targetPos 
-                + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - targetPos);
+            dampedTargetPos = FollowTargetPosition 
+                + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - FollowTargetPosition);
             PreviousFollowTargetPosition = dampedTargetPos;
 
             GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand);
@@ -166,19 +166,20 @@ namespace Cinemachine
             // player, using a bigger radius, this won't happen.
             bool handHasHit = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, 
                 CameraRadius * 1.05f, out var handResolved);
-            DampedPullBackPostCollision(handHasHit, deltaTime, hand, 
-                ref m_prevHandDisplacement, ref handResolved);
+            // Post correction damping
+            var dampedHandResolved = DampedPullBackPostCollision(handHasHit, deltaTime, 
+                root, handResolved, ref m_prevHandDistance);
             
             // 2. Try to place the camera to the preferred distance
-            Vector3 camPos = handResolved - (followTargetForward * CameraDistance);
-            bool camPosHasHit = PullTowardsStartOnCollision(in handResolved, in camPos, in CameraCollisionFilter, 
+            Vector3 camPos = dampedHandResolved - (followTargetForward * CameraDistance);
+            bool camPosHasHit = PullTowardsStartOnCollision(in dampedHandResolved, in camPos, in CameraCollisionFilter, 
                 CameraRadius, out var camPosResolved);
             // Post correction damping
-            DampedPullBackPostCollision(camPosHasHit, deltaTime, camPos, 
-                ref m_prevCameraPosDisplacement, ref camPosResolved);
+            var dampedCamPosResolved = DampedPullBackPostCollision(camPosHasHit, deltaTime, 
+                    root, camPosResolved, ref m_prevCamPosDistance);
             
             // Set state
-            curState.RawPosition = camPosResolved;
+            curState.RawPosition = dampedCamPosResolved;
             curState.RawOrientation = FollowTargetRotation;
             curState.ReferenceUp = up;
         }
@@ -210,20 +211,33 @@ namespace Cinemachine
             result = hasHit ? hitInfo.point + hitInfo.normal * radius: rayEnd;
             return hasHit;
         }
-
-        void DampedPullBackPostCollision(bool hasHit, float deltaTime, Vector3 original, 
-            ref Vector3 prevDisplacement, ref Vector3 resolved)
+        
+        
+        /// <summary>
+        /// Pulls camera back to its normal position when not colliding. The pull back speed is determined by
+        /// the PostCorrectionDamping class member and deltaTime.
+        /// </summary>
+        /// <param name="isColliding">Is the camera currently colliding?</param>
+        /// <param name="deltaTime">Used for damping.</param>
+        /// <param name="root">Root of the rig, the follow target.</param>
+        /// <param name="resolved">Position of the camera.</param>
+        /// <param name="previousDistance">Distance of the camera from root in the previous frame.</param>
+        /// <returns>Damped position</returns>
+        Vector3 DampedPullBackPostCollision(bool isColliding, float deltaTime, 
+            Vector3 root, Vector3 resolved, ref float previousDistance)
         {
-            var handDisplacement = original - resolved;
-            // Post correction damping
-            if (!hasHit && PostCorrectionDamping > 0 && deltaTime >= 0)
+            // Post correction damping without rotational damp
+            var dampedResolved = resolved;
+            if (!isColliding && PostCorrectionDamping > 0 && deltaTime >= 0)
             {
-                Vector3 delta = handDisplacement - prevDisplacement;
+                Vector3 difference = resolved - root;
+                float delta = difference.magnitude - previousDistance;
                 delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
-                handDisplacement = prevDisplacement + delta;
-                resolved = original - handDisplacement;
+                dampedResolved = root + difference.normalized * (delta + previousDistance);
             }
-            prevDisplacement = handDisplacement;
+            previousDistance = (dampedResolved - root).magnitude;
+
+            return dampedResolved;
         }
     }
 #endif
