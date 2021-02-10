@@ -101,7 +101,7 @@ namespace Cinemachine.Editor
             float floatFieldWidth = EditorGUIUtility.fieldWidth + 2;
 
             SerializedProperty timeProp = property.FindPropertyRelative(() => m_MyClass.m_ImpulseDuration);
-            if (true || m_TimeText == null)
+            if (m_TimeText == null)
             {
                 m_TimeText = new GUIContent(" s", timeProp.tooltip);
                 m_TimeTextWidth = GUI.skin.label.CalcSize(m_TimeText).x;

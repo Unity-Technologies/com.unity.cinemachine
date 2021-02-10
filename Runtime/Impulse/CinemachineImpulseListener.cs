@@ -129,7 +129,7 @@ namespace Cinemachine
                 // Adjust the envelope height and duration of the secondary noise, 
                 // acording to the strength of the incoming signal
                 m_CurrentAmount = Mathf.Max(m_CurrentAmount, Mathf.Sqrt(sqrMag));
-                m_CurrentDamping = Mathf.Max(m_CurrentDamping, m_CurrentAmount * m_Duration * 3); // 3 determined experimentally
+                m_CurrentDamping = Mathf.Max(m_CurrentDamping, Mathf.Max(1, Mathf.Sqrt(m_CurrentAmount)) * m_Duration);
 
                 var gain = m_CurrentAmount * m_AmplitudeGain;
                 pos = NoiseSettings.GetCombinedFilterResults(
