@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Create via menu doesn't create as child of selected object
 - Bugfix: Post-processing profiles not cleaned up when no active vcams
 - Bugfix: Install CinemachineExamples Asset Package menu item was failing on 2018.4 / macOS
+- Automatically add CinemachineInputProvider when creating Freelook Camera through Create (Create->Cinemachine->FreeLook Camera), if com.unity.inputsystem package is present.
 
 
 ## [2.7.1] - 2020-11-14
