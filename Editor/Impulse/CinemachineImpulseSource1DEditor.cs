@@ -8,6 +8,10 @@ namespace Cinemachine.Editor
         : BaseEditor<CinemachineImpulseSource1D>
     {
         float m_TestForce = 1;
+        GUIContent m_TestButton = new GUIContent(
+            "Invoke", "Generate an impulse with the default velocity scaled by this amount");
+        GUIContent m_TestLabel = new GUIContent(
+            "Test with Force", "Generate an impulse with the default velocity scaled by an amount");
 
         public override void OnInspectorGUI()
         {
@@ -22,13 +26,16 @@ namespace Cinemachine.Editor
             GUI.enabled = EditorApplication.isPlaying;
             var labelWidth = EditorGUIUtility.labelWidth;
             var r1 = EditorGUILayout.GetControlRect();
+            r1 = EditorGUI.PrefixLabel(r1, m_TestLabel);
+            var testButtonWidth = GUI.skin.button.CalcSize(m_TestButton).x;
             var r2 = r1;
-            r1.width = labelWidth - 2;
-            r2.x += labelWidth; r2.width -= labelWidth;
+            r1.width = testButtonWidth;
+            r2.x += testButtonWidth + 2; r2.width -= testButtonWidth + 2;
             m_TestForce = EditorGUI.Slider(r2, m_TestForce, 0.1f, 20f);
-            if (GUI.Button(r1, "Test"))
+            if (GUI.Button(r1, m_TestButton))
                 Target.GenerateImpulseWithForce(m_TestForce);
             GUI.enabled = true;
+            EditorGUIUtility.labelWidth = labelWidth;
         }
     }
 }
