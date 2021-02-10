@@ -779,7 +779,7 @@ MonoBehaviour:
   jumpJoystick: 330
   sprintKeyboard: 304
   jumpKeyboard: 32
-  jumpVelocity: 7
+  jumpVelocity: 2
   groundTolerance: 0.2
   checkGroundForJump: 1
 --- !u!114 &449604067

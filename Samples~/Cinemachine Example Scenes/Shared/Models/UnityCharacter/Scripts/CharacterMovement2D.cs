@@ -14,14 +14,14 @@ public class CharacterMovement2D : MonoBehaviour
     public float groundTolerance = 0.2f;
     public bool checkGroundForJump = true;
 
-    private float speed = 0f;
-    private bool isSprinting = false;
-    private Animator anim;
-    private Vector2 input;
-    private float velocity;
-    private bool headingleft = false;
-    private Quaternion targetrot;
-    private Rigidbody rigbody;
+    float speed = 0f;
+    bool isSprinting = false;
+    Animator anim;
+    Vector2 input;
+    float velocity;
+    bool headingleft = false;
+    Quaternion targetrot;
+    Rigidbody rigbody;
 
 	// Use this for initialization
 	void Start ()
@@ -57,9 +57,9 @@ public class CharacterMovement2D : MonoBehaviour
         anim.SetBool("isSprinting", isSprinting);
 
         // Jump
-	    if ((Input.GetKeyDown(jumpJoystick) || Input.GetKeyDown(jumpKeyboard)) && isGrounded())
+	    if ((Input.GetKey(jumpJoystick) || Input.GetKey(jumpKeyboard)) && isGrounded())
 	    {
-	        rigbody.velocity = new Vector3(input.x, jumpVelocity, 0f);
+		    rigbody.AddForce(new Vector3(0, jumpVelocity, 0), ForceMode.Impulse);
 	    }
 	}
 
