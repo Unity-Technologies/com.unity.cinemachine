@@ -329,7 +329,13 @@ namespace Cinemachine.Editor
                 new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted."), 
                 CinemachineStoryboardMute.Enabled);
 #endif
-
+            // Editable Game Window Guides
+            CinemachineScreenComposerGuides.sEditableGameWindowGuides = EditorGUILayout.Toggle(
+                new GUIContent("Editable Game Window Guides", "If checked, game window guides are editable in play " +
+                    "mode. If false, game window guides are only for visualization"), 
+                CinemachineScreenComposerGuides.sEditableGameWindowGuides);
+            
+            
             sScrollPosition = GUILayout.BeginScrollView(sScrollPosition);
 
             //CinemachineCore.sShowHiddenObjects

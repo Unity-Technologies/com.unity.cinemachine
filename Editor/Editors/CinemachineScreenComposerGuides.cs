@@ -120,6 +120,9 @@ namespace Cinemachine.Editor
         /// <summary>Width of the draggable guide bar in the game view</summary>
         public const float kGuideBarWidthPx = 3f;
 
+        /// <summary>If true, then allows game window guides to be edited in play mode.</summary>
+        public static bool sEditableGameWindowGuides = true;
+
         /// <summary>
         /// Helper to set the appropriate new rects in the target object, is something changed.
         /// </summary>
@@ -253,7 +256,7 @@ namespace Cinemachine.Editor
             mDragBars[(int)DragBar.Center] = new Rect(softEdgeLeft, softEdgeTop, softEdgeRight - softEdgeLeft, softEdgeBottom - softEdgeTop);
 
             // Handle dragging bars
-            if (isLive)
+            if (sEditableGameWindowGuides && isLive)
                 OnGuiHandleBarDragging(screenWidth, screenHeight);
 
             // Draw the masks
