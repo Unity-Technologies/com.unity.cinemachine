@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Drift in FreeLook with SimpleFollow
 - Bugfix: Post-processing profiles not cleaned up when no active vcams
 - New sample scene (2DConfinerUndersized) demonstrating new CinemachineConfiner2D extension.
-- Updated movement scripts in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup). 
+- Updated movement scripts in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup) to have a more responsive jump. 
 - Updated scene 2DConfinedTargetGroup to use new CinemachineConfiner2D extension. 
 
 
