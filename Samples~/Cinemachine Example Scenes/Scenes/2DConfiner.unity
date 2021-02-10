@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: d822ea833cf8c40ebbd7a4feec19ea11, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: d822ea833cf8c40ebbd7a4feec19ea11,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -259,15 +260,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 90
       objectReference: {fileID: 0}
-    - target: {fileID: 54563485177506292, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
+    - target: {fileID: 54563485177506292, guid: f9dee39d229a4bb4087224760ba2d338,
+        type: 3}
       propertyPath: m_Constraints
       value: 120
       objectReference: {fileID: 0}
-    - target: {fileID: 114640801015031044, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
+    - target: {fileID: 114640801015031044, guid: f9dee39d229a4bb4087224760ba2d338,
+        type: 3}
       propertyPath: keepDirection
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 136696895249700382, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
+    - target: {fileID: 136696895249700382, guid: f9dee39d229a4bb4087224760ba2d338,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -321,7 +325,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 2, y: 1}
+    m_SensorSize: {x: 1.1023891, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -338,7 +342,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 129940154}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.9696074, y: 2.9982433, z: -8}
+  m_LocalPosition: {x: -7.970036, y: 2.9982433, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1667617566}
@@ -362,7 +366,8 @@ MonoBehaviour:
   m_MaxWindowSize: 5
 --- !u!4 &358615508 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4910200009443296, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4910200009443296, guid: f9dee39d229a4bb4087224760ba2d338,
+    type: 3}
   m_PrefabInstance: {fileID: 101511090}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &436401187
@@ -398,7 +403,8 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &449604061 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1967615714690980, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1967615714690980, guid: f9dee39d229a4bb4087224760ba2d338,
+    type: 3}
   m_PrefabInstance: {fileID: 101511090}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &449604064
@@ -417,7 +423,7 @@ MonoBehaviour:
   jumpJoystick: 330
   sprintKeyboard: 304
   jumpKeyboard: 32
-  jumpVelocity: 2
+  jumpVelocity: 5
   groundTolerance: 0.2
   checkGroundForJump: 1
 --- !u!114 &449604067
@@ -479,7 +485,8 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 50d4e9899bac3164ea7e01493f0b5124, type: 3}
 --- !u!4 &1334237772 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4244120949986480, guid: 50d4e9899bac3164ea7e01493f0b5124, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4244120949986480, guid: 50d4e9899bac3164ea7e01493f0b5124,
+    type: 3}
   m_PrefabInstance: {fileID: 1334237771}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1667617565
@@ -691,7 +698,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1747380105}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.942051, y: 3.0333998, z: -8}
+  m_LocalPosition: {x: -7.6348896, y: 3.03671, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

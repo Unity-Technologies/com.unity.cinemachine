@@ -55,9 +55,12 @@ public class CharacterMovement2D : MonoBehaviour
 	    if ((Input.GetKeyDown(sprintJoystick) || Input.GetKeyDown(sprintKeyboard))&& input != Vector2.zero) isSprinting = true;
 	    if ((Input.GetKeyUp(sprintJoystick) || Input.GetKeyUp(sprintKeyboard))|| input == Vector2.zero) isSprinting = false;
         anim.SetBool("isSprinting", isSprinting);
+    }
 
+    private void Update()
+    {
         // Jump
-	    if ((Input.GetKey(jumpJoystick) || Input.GetKey(jumpKeyboard)) && isGrounded())
+	    if ((Input.GetKeyDown(jumpJoystick) || Input.GetKeyDown(jumpKeyboard)))
 	    {
 		    rigbody.AddForce(new Vector3(0, jumpVelocity, 0), ForceMode.Impulse);
 	    }
