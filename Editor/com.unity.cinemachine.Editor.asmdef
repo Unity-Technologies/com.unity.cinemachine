@@ -1,5 +1,6 @@
 {
     "name": "com.unity.cinemachine.editor",
+    "rootNamespace": "",
     "references": [
         "Cinemachine",
         "Unity.Timeline",
@@ -12,7 +13,8 @@
         "Unity.RenderPipelines.HighDefinition.Editor",
         "Unity.ugui",
         "Unity.RenderPipelines.Universal.Runtime",
-        "Unity.RenderPipelines.Universal.Editor"
+        "Unity.RenderPipelines.Universal.Editor",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"
@@ -78,6 +80,11 @@
             "name": "com.unity.modules.imgui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_IMGUI"
+        },
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
         }
     ],
     "noEngineReferences": false
