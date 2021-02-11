@@ -134,11 +134,12 @@ namespace Cinemachine
 
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
-            var prevTargetPos = deltaTime >= 0 ? m_PreviousFollowTargetPosition : FollowTargetPosition;
+            var followTarget = FollowTargetPosition;
+            var prevTargetPos = deltaTime >= 0 ? m_PreviousFollowTargetPosition : followTarget;
 
             // Compute damped target pos (compute in camera space)
             var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) 
-                * (FollowTargetPosition - prevTargetPos);
+                * (followTarget - prevTargetPos);
             if (deltaTime >= 0)
                 dampedTargetPos = VirtualCamera.DetachedFollowTargetDamp(
                     dampedTargetPos, Damping, deltaTime);
@@ -156,8 +157,8 @@ namespace Cinemachine
             m_PreviousHeadingAngle = angle;
 
             // Bypass user-sourced rotation
-            dampedTargetPos = FollowTargetPosition 
-                + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - FollowTargetPosition);
+            dampedTargetPos = followTarget 
+                + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - followTarget);
             m_PreviousFollowTargetPosition = dampedTargetPos;
 
             GetRigPositions(out Vector3 root, out _, out Vector3 hand);
