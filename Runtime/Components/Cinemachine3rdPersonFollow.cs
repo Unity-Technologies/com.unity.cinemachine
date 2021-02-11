@@ -84,9 +84,9 @@ namespace Cinemachine
         float m_PreviousHeadingAngle;
         float m_PrevHandDistance;
         float m_PrevCamPosDistance;
-        bool m_PrevHasHitHand;
+        bool m_PrevHandHasHit;
         bool m_IsHandPostCollision;
-        bool m_PrevHasHitCamPos;
+        bool m_PrevCamPosHasHit;
         bool m_IsCamPosPostCollision;
 
         void OnValidate()
@@ -175,7 +175,7 @@ namespace Cinemachine
                 CameraRadius * 1.05f, out var handResolved);
             // Post collision damping
             Vector3 dampedHandResolved = DampedPullBackPostCollision(handHasHit, deltaTime, root, handResolved, 
-                ref m_PrevHasHitHand, ref m_IsHandPostCollision, ref m_PrevHandDistance);
+                ref m_PrevHandHasHit, ref m_IsHandPostCollision, ref m_PrevHandDistance);
 
             // 2. Try to place the camera to the preferred distance
             Vector3 camPos = dampedHandResolved - (followTargetForward * CameraDistance);
@@ -183,7 +183,7 @@ namespace Cinemachine
                 CameraRadius, out var camPosResolved);
             // Post collision damping
             Vector3 dampedCamPosResolved = DampedPullBackPostCollision(camPosHasHit, deltaTime, root, camPosResolved, 
-                ref m_PrevHasHitCamPos, ref m_IsCamPosPostCollision, ref m_PrevCamPosDistance);
+                ref m_PrevCamPosHasHit, ref m_IsCamPosPostCollision, ref m_PrevCamPosDistance);
 
             // Set state
             curState.RawPosition = dampedCamPosResolved;
