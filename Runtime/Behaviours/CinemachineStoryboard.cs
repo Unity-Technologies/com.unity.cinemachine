@@ -92,6 +92,12 @@ namespace Cinemachine
         public bool m_MuteCamera;
 
         /// <summary>
+        /// The render mode of the canvas on which the storyboard is drawn.
+        /// </summary>
+        [Tooltip("The render mode of the canvas on which the storyboard is drawn.")]
+        public RenderMode m_RenderMode = RenderMode.ScreenSpaceOverlay;
+
+        /// <summary>
         /// Wipe the image on and off horizontally
         /// </summary>
         [Range(-1, 1)]
@@ -187,7 +193,7 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
+            ci.mCanvas.hideFlags = HideFlags.DontSave;
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
@@ -195,7 +201,8 @@ namespace Cinemachine
 #endif
 
             var c = ci.mCanvas.AddComponent<Canvas>();
-            c.renderMode = RenderMode.ScreenSpaceOverlay;
+            c.renderMode = m_RenderMode;
+            c.worldCamera = Camera.main;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
             go.transform.SetParent(ci.mCanvas.transform);

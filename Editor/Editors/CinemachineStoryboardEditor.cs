@@ -103,6 +103,7 @@ namespace Cinemachine.Editor
                     EditorGUI.showMixedValue = false;
                 }
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_RenderMode));
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
