@@ -82,12 +82,14 @@ namespace Cinemachine
         // State info
         Vector3 m_PreviousFollowTargetPosition;
         float m_PreviousHeadingAngle;
+        
         float m_PrevHandDistance;
-        float m_PrevCamPosDistance;
         bool m_PrevHandHasHit;
         bool m_IsHandPostCollision;
+        
         bool m_PrevCamPosHasHit;
         bool m_IsCamPosPostCollision;
+        float m_PrevCamPosDistance;
 
         void OnValidate()
         {
