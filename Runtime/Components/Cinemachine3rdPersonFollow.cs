@@ -77,7 +77,7 @@ namespace Cinemachine
         [Range(0, 10)]
         [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
             "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
-        public float PostCorrectionDamping;
+        public float CollisionDamping;
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
@@ -92,7 +92,7 @@ namespace Cinemachine
             Damping.y = Mathf.Max(0, Damping.y);
             Damping.z = Mathf.Max(0, Damping.z);
             CameraRadius = Mathf.Max(0.001f, CameraRadius);
-            PostCorrectionDamping = Mathf.Max(0, PostCorrectionDamping);
+            CollisionDamping = Mathf.Max(0, CollisionDamping);
         }
 
         void Reset()
@@ -104,7 +104,7 @@ namespace Cinemachine
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
             CameraRadius = 0.2f;
-            PostCorrectionDamping = 2f;
+            CollisionDamping = 2f;
         }
 
         /// <summary>True if component is enabled and has a Follow target defined</summary>
@@ -219,7 +219,7 @@ namespace Cinemachine
         
         /// <summary>
         /// Pulls camera back to its normal position when not colliding. The pull back speed is determined by
-        /// the PostCorrectionDamping class member and deltaTime.
+        /// the CollisionDamping class member and deltaTime.
         /// </summary>
         /// <param name="isColliding">Is the camera currently colliding?</param>
         /// <param name="deltaTime">Used for damping.</param>
@@ -232,11 +232,11 @@ namespace Cinemachine
         {
             // Post correction damping without rotational damp
             var dampedResolved = resolved;
-            if (!isColliding && PostCorrectionDamping > 0 && deltaTime >= 0)
+            if (!isColliding && CollisionDamping > 0 && deltaTime >= 0)
             {
                 Vector3 difference = resolved - root;
                 float delta = difference.magnitude - previousDistance;
-                delta = Damper.Damp(delta, PostCorrectionDamping, deltaTime);
+                delta = Damper.Damp(delta, CollisionDamping, deltaTime);
                 dampedResolved = root + difference.normalized * (delta + previousDistance);
             }
             previousDistance = (dampedResolved - root).magnitude;
