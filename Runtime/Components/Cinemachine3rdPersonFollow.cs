@@ -82,14 +82,8 @@ namespace Cinemachine
         // State info
         Vector3 m_PreviousFollowTargetPosition;
         float m_PreviousHeadingAngle;
-        
-        float m_PrevHandDistance;
-        bool m_PrevHandHasHit;
-        bool m_IsHandPostCollision;
-        
-        bool m_PrevCamPosHasHit;
-        bool m_IsCamPosPostCollision;
-        float m_PrevCamPosDistance;
+        float m_HandCollisionCorrection;
+        float m_CamPosCollisionCorrection;
 
         void OnValidate()
         {
@@ -131,21 +125,27 @@ namespace Cinemachine
         /// <param name="deltaTime">Not used.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (!IsValid)
-                return;
-            if (!VirtualCamera.PreviousStateIsValid)
-                deltaTime = -1;
-            PositionCamera(ref curState, deltaTime);
+            if (IsValid)
+            {
+                if (!VirtualCamera.PreviousStateIsValid)
+                    deltaTime = -1;
+                PositionCamera(ref curState, deltaTime);
+            }
         }
 
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
             var followTarget = FollowTargetPosition;
-            var prevTargetPos = deltaTime >= 0 ? m_PreviousFollowTargetPosition : followTarget;
+            if (deltaTime < 0)
+            {
+                // No damping - reset all state info
+                m_PreviousFollowTargetPosition = followTarget;
+                m_HandCollisionCorrection = m_CamPosCollisionCorrection = 0;
+            }
+            var prevTargetPos = m_PreviousFollowTargetPosition;
 
             // Compute damped target pos (compute in camera space)
-            var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) 
-                * (followTarget - prevTargetPos);
+            var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) * (followTarget - prevTargetPos);
             if (deltaTime >= 0)
                 dampedTargetPos = VirtualCamera.DetachedFollowTargetDamp(
                     dampedTargetPos, Damping, deltaTime);
@@ -158,8 +158,9 @@ namespace Cinemachine
             var followTargetForward = followTargetRotation * fwd;
             var angle = UnityVectorExtensions.SignedAngle(
                 fwd, followTargetForward.ProjectOntoPlane(up), up);
-            var previousHeadingAngle = deltaTime >= 0 ? m_PreviousHeadingAngle : angle;
-            var deltaHeading = angle - previousHeadingAngle;
+            if (deltaTime < 0)
+                m_PreviousHeadingAngle = angle; // no damping
+            var deltaHeading = angle - m_PreviousHeadingAngle;
             m_PreviousHeadingAngle = angle;
 
             // Bypass user-sourced rotation
@@ -173,23 +174,17 @@ namespace Cinemachine
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
             // next to walls. Where the preferred distance would be pulled completely to the 
             // player, using a bigger radius, this won't happen.
-            bool handHasHit = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, 
-                CameraRadius * 1.05f, out var handResolved);
-            // Post collision damping
-            Vector3 dampedHandResolved = DampedPullBackPostCollision(handHasHit, deltaTime, root, handResolved, 
-                ref m_PrevHandHasHit, ref m_IsHandPostCollision, ref m_PrevHandDistance);
+            hand = ResolveCollisions(
+                root, hand, deltaTime, CameraRadius * 1.05f, ref m_HandCollisionCorrection);
 
             // 2. Try to place the camera to the preferred distance
-            Vector3 camPos = dampedHandResolved - (followTargetForward * CameraDistance);
-            bool camPosHasHit = PullTowardsStartOnCollision(in dampedHandResolved, in camPos, in CameraCollisionFilter, 
-                CameraRadius, out var camPosResolved);
-            // Post collision damping
-            Vector3 dampedCamPosResolved = DampedPullBackPostCollision(camPosHasHit, deltaTime, root, camPosResolved, 
-                ref m_PrevCamPosHasHit, ref m_IsCamPosPostCollision, ref m_PrevCamPosDistance);
+            Vector3 camPos = hand - (followTargetForward * CameraDistance);
+            camPos = ResolveCollisions(
+                hand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
             // Set state
-            curState.RawPosition = dampedCamPosResolved;
-            curState.RawOrientation = FollowTargetRotation;
+            curState.RawPosition = camPos;
+            curState.RawOrientation = followTargetRotation;
             curState.ReferenceUp = up;
         }
 
@@ -210,51 +205,34 @@ namespace Cinemachine
         }
         Vector3 t_HandOffset = Vector3.zero; // minor opt. - to avoid creating a new vector in GetRigPositions
 
-        bool PullTowardsStartOnCollision(
-            in Vector3 rayStart, in Vector3 rayEnd,
-            in LayerMask filter, float radius,
-            out Vector3 result)
+        Vector3 ResolveCollisions(
+            Vector3 root, Vector3 tip, float deltaTime, 
+            float cameraRadius, ref float collisionCorrection)
         {
-            var dir = rayEnd - rayStart;
-            bool hasHit = RuntimeUtility.SphereCastIgnoreTag(
-                rayStart, radius, dir, out RaycastHit hitInfo, dir.magnitude, filter, IgnoreTag);
-            result = hasHit ? hitInfo.point + hitInfo.normal * radius: rayEnd;
-            return hasHit;
-        }
-        
-        
-        /// <summary>
-        /// Pulls camera back to its normal position when not colliding. The pull back speed is determined by
-        /// the CollisionDamping class member and deltaTime.
-        /// </summary>
-        /// <param name="isColliding">Is the camera currently colliding?</param>
-        /// <param name="deltaTime">Used for damping.</param>
-        /// <param name="root">Root of the rig</param>
-        /// <param name="resolved">Position of the camera.</param>
-        /// <param name="previousDistance">Distance of the camera from root in the previous frame.</param>
-        /// <returns>Damped position</returns>
-        Vector3 DampedPullBackPostCollision(bool hasHit, float deltaTime, 
-            Vector3 root, Vector3 resolved, ref bool prevHasHit, ref bool postCollision, ref float previousDistance)
-        {
-            if (!hasHit && prevHasHit)
-                postCollision = true;
-            else if (hasHit)
-                postCollision = false;
-            
-            prevHasHit = hasHit;
-            // Post correction damping without rotational damp
-            var dampedResolved = resolved;
-            if (postCollision && CollisionDamping > 0 && deltaTime >= 0)
-            {
-                Vector3 difference = resolved - root;
-                float delta = difference.magnitude - previousDistance;
-                delta = Damper.Damp(delta, CollisionDamping, deltaTime);
-                dampedResolved = root + difference.normalized * (delta + previousDistance);
+            var dir = tip - root;
+            var len = dir.magnitude;
+            dir /= len;
 
-                postCollision = (resolved - dampedResolved).sqrMagnitude >= UnityVectorExtensions.Epsilon;
+            bool hasHit = RuntimeUtility.SphereCastIgnoreTag(
+                root, cameraRadius, dir, out RaycastHit hitInfo, 
+                len, CameraCollisionFilter, IgnoreTag);
+
+            var result = tip;
+            if (hasHit)
+            {
+                // We have a collision - store the delta for damping later
+                result = hitInfo.point + hitInfo.normal * cameraRadius;
+                collisionCorrection = (result - tip).magnitude;
             }
-            previousDistance = (dampedResolved - root).magnitude;
-            return dampedResolved;
+            else if (deltaTime >= 0)
+            {
+                // Post collision damping - ease out of last collision
+                collisionCorrection -= Damper.Damp(
+                    collisionCorrection, CollisionDamping, deltaTime);
+                if (collisionCorrection > Epsilon)
+                    result -= dir * collisionCorrection;
+            }
+            return result;
         }
     }
 #endif
