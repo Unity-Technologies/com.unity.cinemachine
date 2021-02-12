@@ -20,6 +20,10 @@
 - [ ] Updated README (if applicable)
 - [ ] Commented all public classes, properties, and methods
 
+### Samples status
+
+- [ ] Re-packed Extras~/CinemachineExamples.unitypackage
+
 ### Technical risk
 
 [Overall product level assessment of risk of change. Need technical risk & halo effect.]
