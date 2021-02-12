@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.7.2] - 2021-02-08
+## [2.7.2] - 2021-02-10
 - CinemachineConfiner2D now handles cases where camera window is oversized
 - New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a cinemachine extension giving convenient control over the shader parameters
 - Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases
@@ -23,8 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow FOV was blended incorrectly when ReferenceLookAt was set to a faraway target
 - Bugfix: Position predictor not properly reset
 - Bugfix: Create via menu doesn't create as child of selected object
-- Bugfix: Drift in FreeLook with SimpleFollow
 - Bugfix: Post-processing profiles not cleaned up when no active vcams
+- Bugfix: Install CinemachineExamples Asset Package menu item was failing on 2018.4 / macOS
 - New sample scene (2DConfinerComplex) demonstrating new CinemachineConfiner2D extension.
 - Updated CharacterMovement2D script in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup) to make jumping responsive. 
 - Updated 2DConfinedTargetGroup and 2DConfiner scenes to use new CinemachineConfiner2D extension. 
