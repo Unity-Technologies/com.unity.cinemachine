@@ -103,7 +103,13 @@ namespace Cinemachine.Editor
                     EditorGUI.showMixedValue = false;
                 }
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_RenderMode));
+                var renderModeProp = FindProperty(x => x.m_RenderMode);
+                EditorGUILayout.PropertyField(renderModeProp);
+                if (renderModeProp.enumValueIndex != (int)RenderMode.ScreenSpaceOverlay)
+                {
+                    EditorGUILayout.PropertyField(FindProperty(x => x.m_RenderCamera));
+                }
+                
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();

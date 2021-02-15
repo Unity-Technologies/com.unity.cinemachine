@@ -98,6 +98,12 @@ namespace Cinemachine
         public RenderMode m_RenderMode = RenderMode.ScreenSpaceOverlay;
 
         /// <summary>
+        /// The render camera for the storyboard when render mode is not ScreenSpaceOverlay.
+        /// </summary>
+        [Tooltip("The render camera for storyboard when render mode is not ScreenSpaceOverlay.")]
+        public Camera m_RenderCamera;
+
+        /// <summary>
         /// Wipe the image on and off horizontally
         /// </summary>
         [Range(-1, 1)]
@@ -193,7 +199,7 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.DontSave;
+            ci.mCanvas.hideFlags = HideFlags.DontSave; // TODO: changeback
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
@@ -202,7 +208,7 @@ namespace Cinemachine
 
             var c = ci.mCanvas.AddComponent<Canvas>();
             c.renderMode = m_RenderMode;
-            c.worldCamera = Camera.main;
+            c.worldCamera = m_RenderCamera;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
             go.transform.SetParent(ci.mCanvas.transform);
