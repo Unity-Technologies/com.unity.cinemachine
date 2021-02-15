@@ -130,7 +130,7 @@ LightingSettings:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Settings.lighting
-  serializedVersion: 2
+  serializedVersion: 3
   m_GIWorkflowMode: 0
   m_EnableBakedLightmaps: 1
   m_EnableRealtimeLightmaps: 1
@@ -152,7 +152,7 @@ LightingSettings:
   m_MixedBakeMode: 2
   m_LightmapsBakeMode: 1
   m_FilterMode: 1
-  m_LightmapParameters: {fileID: 0}
+  m_LightmapParameters: {fileID: 15204, guid: 0000000000000000f000000000000000, type: 0}
   m_ExportTrainingData: 0
   m_TrainingDataDestination: TrainingData
   m_RealtimeResolution: 2
@@ -169,7 +169,7 @@ LightingSettings:
   m_PVREnvironmentReferencePointCount: 2048
   m_LightProbeSampleCountMultiplier: 4
   m_PVRBounces: 2
-  m_PVRRussianRouletteStartBounce: 2
+  m_PVRMinBounces: 1
   m_PVREnvironmentMIS: 0
   m_PVRFilteringMode: 2
   m_PVRDenoiserTypeDirect: 0
@@ -368,8 +368,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.108537726, y: 0.0000000042761825, z: -4.668853e-10, w: 0.99409235}
-  m_LocalPosition: {x: 0, y: 3.21, z: -10}
+  m_LocalRotation: {x: 0.17067122, y: -0.006377387, z: 0.0011046674, w: 0.9853068}
+  m_LocalPosition: {x: 0, y: 10.8, z: -14.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -473,121 +473,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed85e8ff400cee4e844f4822e2fbb33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ImpulseDefinition:
-    m_ImpulseChannel: 2
-    m_ImpulseShape: 4
-    m_CustomImpulseShape:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: -0.016563496
-        outSlope: -0.016563496
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.23337433
-      - serializedVersion: 3
-        time: 0.10073977
-        value: 0.24913979
-        inSlope: -0.0035266175
-        outSlope: -0.0035266175
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.2848037
-      - serializedVersion: 3
-        time: 0.19776814
-        value: -0.00008665545
-        inSlope: -0.011185749
-        outSlope: -0.011185749
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.17724606
-        outWeight: 0.27016476
-      - serializedVersion: 3
-        time: 0.3002278
-        value: 0.74471897
-        inSlope: -0.008022287
-        outSlope: -0.008022287
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.1822238
-        outWeight: 0.25858417
-      - serializedVersion: 3
-        time: 0.39863607
-        value: -0.00029776862
-        inSlope: 0.01745211
-        outSlope: 0.01745211
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.20647675
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.49948233
-        value: 0.99744797
-        inSlope: -0.004591005
-        outSlope: -0.004591005
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.52741385
-      - serializedVersion: 3
-        time: 0.59764415
-        value: -0.0005483503
-        inSlope: 0.014423965
-        outSlope: 0.014423965
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.26228732
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.6992589
-        value: 0.7489967
-        inSlope: -0.009223432
-        outSlope: -0.009223432
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.28202552
-      - serializedVersion: 3
-        time: 0.79913205
-        value: -0.0005173564
-        inSlope: 0.004803206
-        outSlope: 0.004803206
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.14448291
-        outWeight: 0.264921
-      - serializedVersion: 3
-        time: 0.89932644
-        value: 0.24887213
-        inSlope: -0.003993648
-        outSlope: -0.003993648
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.24794866
-      - serializedVersion: 3
-        time: 1
-        value: -0.0008506775
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_ImpulseDuration: 0.2
-    m_SpatialRange: 0
-    m_EffectRadius: 100
-    m_DissipationRate: 0.25
-    m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: 0, z: 0.06}
-  m_Active: 1
 --- !u!1 &990286185
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,7 +635,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 1.1023891, y: 1}
+    m_SensorSize: {x: 1.4897401, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -766,8 +651,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1043897086}
-  m_LocalRotation: {x: 0.108537726, y: 0.0000000042761825, z: -4.668853e-10, w: 0.99409235}
-  m_LocalPosition: {x: 0, y: 3.21, z: -10}
+  m_LocalRotation: {x: 0.17067122, y: -0.006377387, z: 0.0011046674, w: 0.9853068}
+  m_LocalPosition: {x: 0, y: 10.8, z: -14.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1407283397}
@@ -792,9 +677,9 @@ MonoBehaviour:
   m_Use2DDistance: 0
   m_UseCameraSpace: 1
   m_ReactionSettings:
-    m_SecondaryNoise: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
-    m_AmplitudeGain: 10
-    m_FrequencyGain: 1
+    m_SecondaryNoise: {fileID: 11400000, guid: e9ce97b7a206dc64d90931ea044e0c72, type: 2}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 2
     m_Duration: 1
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &1069678018
@@ -969,6 +854,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &1090385220
@@ -1026,24 +912,50 @@ MonoBehaviour:
   m_GameObject: {fileID: 1133612837}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6021cc7347e1f974c840fa59f5ae68b4, type: 3}
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_ImpulseDefinition:
     m_ImpulseChannel: 1
-    m_ImpulseShape: 3
+    m_ImpulseShape: 2
     m_CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_ImpulseDuration: 0.5
-    m_SpatialRange: 2
-    m_EffectRadius: 1000
-    m_DissipationRate: 0.248
+    m_ImpulseDuration: 0.2
+    m_ImpulseType: 2
+    m_DissipationRate: 0.25
+    m_RawSignal: {fileID: 0}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 1
+    m_RepeatMode: 0
+    m_Randomize: 1
+    m_TimeEnvelope:
+      m_AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_AttackTime: 0
+      m_SustainTime: 0.2
+      m_DecayTime: 0.7
+      m_ScaleWithImpact: 1
+      m_HoldForever: 0
+    m_ImpactRadius: 100
+    m_DirectionMode: 0
+    m_DissipationMode: 2
+    m_DissipationDistance: 1000
     m_PropagationSpeed: 100
-  m_DefaultVelocity: {x: 0, y: 1, z: 0}
+  m_DefaultVelocity: {x: 0, y: -7, z: 0}
 --- !u!1 &1407283396
 GameObject:
   m_ObjectHideFlags: 3
@@ -1095,8 +1007,8 @@ MonoBehaviour:
   m_LookaheadIgnoreY: 0
   m_HorizontalDamping: 0.5
   m_VerticalDamping: 0.5
-  m_ScreenX: 0.5
-  m_ScreenY: 0.5
+  m_ScreenX: 0.5119375
+  m_ScreenY: 0.85978127
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
   m_SoftZoneWidth: 0.8
@@ -1117,7 +1029,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 5
-  m_FollowOffset: {x: 0, y: 2.21, z: -10}
+  m_FollowOffset: {x: 0, y: 9.8, z: -14.35}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1

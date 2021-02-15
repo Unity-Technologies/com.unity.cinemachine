@@ -99,8 +99,8 @@ MonoBehaviour:
   m_Use2DDistance: 0
   m_UseLocalSpace: 1
   m_ReactionSettings:
-    m_SecondaryNoise: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
-    m_AmplitudeGain: 20
+    m_SecondaryNoise: {fileID: 11400000, guid: e9ce97b7a206dc64d90931ea044e0c72, type: 2}
+    m_AmplitudeGain: 2
     m_FrequencyGain: 1
     m_Duration: 2
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
