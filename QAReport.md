@@ -21,20 +21,16 @@ For the Cinemachine 2.7.2 release, the following bug fixes were tested and verif
 - Bugfix (CMCL-217): Post-processing profiles not cleaned up when no active vcams
 - Bugfix (CMCL-223): Install CinemachineExamples Asset Package menu item was failing on 2018.4 / macOS
 
-The following changes were done and tested in the Cinemachine Sample Scenes:
-
+The following changes were made and tested in the Cinemachine Sample Scenes:
 - New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a Cinemachine extension giving convenient control over the shader parameters
 - New sample scene (2DConfinerComplex) demonstrating new CinemachineConfiner2D extension.
 - Updated CharacterMovement2D script in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup) to make jumping responsive.
 
-Changes were also don with the previously released CinemachineConfiner2D. Both changes were validated and tested.
-
+Changes were also made to the previously released CinemachineConfiner2D. These changes were validated and tested:
 - CinemachineConfiner2D now handles cases where camera window is oversized
 - Updated 2DConfinedTargetGroup and 2DConfiner scenes to use new CinemachineConfiner2D extension.
 
-
-
-The Cinemachine 2.7.2 was also regression tested using the Sample Scenes. Each scene was loaded to make sure that the Cinemachine behavior or feature it is demonstrating was ok. Manual testing around each of the Cinemachine Sample Scene was done.
+Cinemachine 2.7.2 was also regression tested using the Sample Scenes. Each scene was loaded to make sure that the Cinemachine behaviour or feature it is demonstrating behaved as expected. Manual testing around each of the Cinemachine Sample Scene was also performed.
 
 
 
