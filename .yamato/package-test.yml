@@ -1,3 +1,27 @@
+all_editors:
+  - version: 2018.4
+  - version: 2019.4
+  - version: 2020.2
+  - version: 2021.1
+  - version: trunk
+all_platforms:
+  - name: win
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  - name: mac
+    type: Unity::VM::osx
+    image: package-ci/mac:stable
+    flavor: m1.mac
+  - name: ubuntu
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.large
+  - name: centos
+    type: Unity::VM::GPU
+    image: package-ci/centos:stable
+    flavor: b1.large
+
 test_editors:
   - version: 2018.4
   - version: 2019.4
@@ -17,14 +41,18 @@ test_platforms:
     type: Unity::VM
     image: package-ci/ubuntu:stable
     flavor: b1.large
-  - name: centos
-    type: Unity::VM::GPU
-    image: package-ci/centos:stable
+    
+validation_editors:
+  - version: 2020.2
+validation_platforms:
+  - name: win
+    type: Unity::VM
+    image: package-ci/win10:stable
     flavor: b1.large
 ---
 
-{% for editor in test_editors %}
-{% for platform in test_platforms %}
+{% for editor in all_editors %}
+{% for platform in all_platforms %}
 test_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ editor.version }} on {{ platform.name }}
   agent:
@@ -45,8 +73,8 @@ test_{{ platform.name }}_{{ editor.version }}:
 
 # Validate the package on each editor version and each platform
 # Validation only occurs in editmode.
-{% for editor in test_editors %}
-{% for platform in test_platforms %}
+{% for editor in all_editors %}
+{% for platform in all_platforms %}
 validate_{{ platform.name }}_{{ editor.version }}:
   name : Validate {{ editor.version }} on {{ platform.name }}
   agent:
@@ -75,11 +103,16 @@ test_trigger:
       - targets:
           only:
             - "/.*/"
+    cancel_old_ci: true
   dependencies:
     - .yamato/package-pack.yml#pack
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
     - .yamato/package-test.yml#test_{{platform.name}}_{{editor.version}}
+    {% endfor %}
+    {% endfor %}
+    {% for editor in validation_editors %}
+    {% for platform in validation_platforms %}
     - .yamato/package-test.yml#validate_{{platform.name}}_{{editor.version}}
     {% endfor %}
     {% endfor %}
