@@ -140,13 +140,13 @@ namespace Cinemachine
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
         
-        Canvas m_Canvas;
+        RenderMode m_PreviousRenderMode = RenderMode.ScreenSpaceOverlay;
         void UpdateRenderCanvas()
         {
-            if (m_Canvas != null && m_Canvas.renderMode != m_RenderMode)
+            if (m_PreviousRenderMode != m_RenderMode)
             {
-                m_Canvas.renderMode = m_RenderMode;
-                m_Canvas.worldCamera = m_RenderCamera;
+                m_PreviousRenderMode = m_RenderMode;
+                DestroyCanvas();
             }
         }
 
@@ -219,9 +219,9 @@ namespace Cinemachine
             CanvasesAndTheirOwners.AddCanvas(ci.mCanvas, this);
 #endif
 
-            m_Canvas = ci.mCanvas.AddComponent<Canvas>();
-            m_Canvas.renderMode = m_RenderMode;
-            m_Canvas.worldCamera = m_RenderCamera;
+            var c = ci.mCanvas.AddComponent<Canvas>();
+            c.renderMode = m_RenderMode;
+            c.worldCamera = m_RenderCamera;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
             go.transform.SetParent(ci.mCanvas.transform);
