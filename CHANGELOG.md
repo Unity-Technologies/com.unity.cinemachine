@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour.
 - Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
 - Added ability for vcam to have a negative near clip plane
+- Default PostProcessing profile priority is now configuraable, and defaults to 1000
 
 
 ## [2.7.3] - 2021-03-24
