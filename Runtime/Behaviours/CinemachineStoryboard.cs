@@ -96,7 +96,7 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("The render mode of the canvas on which the storyboard is drawn.")]
         public RenderMode m_RenderMode = RenderMode.ScreenSpaceOverlay;
-
+        
         /// <summary>
         /// The render camera for the storyboard when render mode is not ScreenSpaceOverlay.
         /// </summary>
@@ -132,11 +132,24 @@ namespace Cinemachine
             if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Finalize)
                 return;
 
+            UpdateRenderCanvas();
+
             if (m_ShowImage)
                 state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
             if (m_MuteCamera)
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
+        
+        Canvas m_Canvas;
+        void UpdateRenderCanvas()
+        {
+            if (m_Canvas != null && m_Canvas.renderMode != m_RenderMode)
+            {
+                m_Canvas.renderMode = m_RenderMode;
+                m_Canvas.worldCamera = m_RenderCamera;
+            }
+        }
+
 
         /// <summary>Connect to virtual camera.  Adds/removes listener</summary>
         /// <param name="connect">True if connecting, false if disconnecting</param>
@@ -164,7 +177,7 @@ namespace Cinemachine
             if (ci != null && ci.mCanvas != null)
                 ci.mCanvas.SetActive(showIt);
         }
-
+        
         CanvasInfo LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
         {
             CanvasInfo ci = null;
@@ -206,9 +219,9 @@ namespace Cinemachine
             CanvasesAndTheirOwners.AddCanvas(ci.mCanvas, this);
 #endif
 
-            var c = ci.mCanvas.AddComponent<Canvas>();
-            c.renderMode = m_RenderMode;
-            c.worldCamera = m_RenderCamera;
+            m_Canvas = ci.mCanvas.AddComponent<Canvas>();
+            m_Canvas.renderMode = m_RenderMode;
+            m_Canvas.worldCamera = m_RenderCamera;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
             go.transform.SetParent(ci.mCanvas.transform);
