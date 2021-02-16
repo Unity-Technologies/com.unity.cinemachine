@@ -122,7 +122,8 @@ namespace Cinemachine
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
-        /// <param name="deltaTime">Not used.</param>
+        /// <param name="deltaTime">Elapsed time since last frame, for damping calculations.  
+        /// If negative, previous state is reset.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             if (IsValid)
