@@ -105,11 +105,6 @@ namespace Cinemachine.Editor
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
                 var renderModeProp = FindProperty(x => x.m_RenderMode);
                 EditorGUILayout.PropertyField(renderModeProp);
-                if (renderModeProp.enumValueIndex != (int)RenderMode.ScreenSpaceOverlay)
-                {
-                    EditorGUILayout.PropertyField(FindProperty(x => x.m_RenderCamera));
-                }
-                
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();

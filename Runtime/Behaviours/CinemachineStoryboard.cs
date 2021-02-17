@@ -96,12 +96,6 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("The render mode of the canvas on which the storyboard is drawn.")]
         public RenderMode m_RenderMode = RenderMode.ScreenSpaceOverlay;
-        
-        /// <summary>
-        /// The render camera for the storyboard when render mode is not ScreenSpaceOverlay.
-        /// </summary>
-        [Tooltip("The render camera for storyboard when render mode is not ScreenSpaceOverlay.")]
-        public Camera m_RenderCamera;
 
         /// <summary>
         /// Wipe the image on and off horizontally
@@ -221,7 +215,7 @@ namespace Cinemachine
 
             var c = ci.mCanvas.AddComponent<Canvas>();
             c.renderMode = m_RenderMode;
-            c.worldCamera = m_RenderCamera;
+            c.worldCamera = ci.mCanvasParent.OutputCamera;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
             go.transform.SetParent(ci.mCanvas.transform);
