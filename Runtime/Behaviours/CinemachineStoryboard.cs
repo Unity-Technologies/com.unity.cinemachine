@@ -98,6 +98,12 @@ namespace Cinemachine
         public RenderMode m_RenderMode = RenderMode.ScreenSpaceOverlay;
 
         /// <summary>
+        /// Allows ordering canvases to render on top or below other canvases.
+        /// </summary>
+        [Tooltip("Allows ordering canvases to render on top or below other canvases.")]
+        public int m_SortingOrder;
+
+        /// <summary>
         /// Wipe the image on and off horizontally
         /// </summary>
         [Range(-1, 1)]
@@ -135,11 +141,14 @@ namespace Cinemachine
         }
         
         RenderMode m_PreviousRenderMode = RenderMode.ScreenSpaceOverlay;
+        int m_PreviousSortingOrder;
         void UpdateRenderCanvas()
         {
-            if (m_PreviousRenderMode != m_RenderMode)
+            if (m_PreviousRenderMode != m_RenderMode || 
+                m_PreviousSortingOrder != m_SortingOrder)
             {
                 m_PreviousRenderMode = m_RenderMode;
+                m_PreviousSortingOrder = m_SortingOrder;
                 DestroyCanvas();
             }
         }
@@ -206,7 +215,7 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
+            ci.mCanvas.hideFlags = HideFlags.DontSave;
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
@@ -215,6 +224,7 @@ namespace Cinemachine
 
             var c = ci.mCanvas.AddComponent<Canvas>();
             c.renderMode = m_RenderMode;
+            c.sortingOrder = m_SortingOrder;
             c.worldCamera = ci.mCanvasParent.OutputCamera;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
