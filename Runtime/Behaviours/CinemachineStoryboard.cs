@@ -92,24 +92,24 @@ namespace Cinemachine
         public bool m_MuteCamera;
 
         /// <summary>
-        /// The render mode of the canvas on which the storyboard is drawn.
-        /// </summary>
-        [Tooltip("The render mode of the canvas on which the storyboard is drawn.")]
-        public RenderMode m_RenderMode = RenderMode.ScreenSpaceOverlay;
-
-        /// <summary>
-        /// Allows ordering canvases to render on top or below other canvases.
-        /// </summary>
-        [Tooltip("Allows ordering canvases to render on top or below other canvases.")]
-        public int m_SortingOrder;
-
-        /// <summary>
         /// Wipe the image on and off horizontally
         /// </summary>
         [Range(-1, 1)]
         [Tooltip("Wipe the image on and off horizontally")]
         public float m_SplitView = 0f;
 
+        /// <summary>
+        /// The render mode of the canvas on which the storyboard is drawn.
+        /// </summary>
+        [Tooltip("The render mode of the canvas on which the storyboard is drawn.")]
+        public StoryboardRenderMode m_RenderMode = StoryboardRenderMode.ScreenSpaceOverlay;
+
+        /// <summary>
+        /// Allows ordering canvases to render on top or below other canvases.
+        /// </summary>
+        [Tooltip("Allows ordering canvases to render on top or below other canvases.")]
+        public int m_SortingOrder;
+        
         class CanvasInfo
         {
             public GameObject mCanvas;
@@ -139,8 +139,14 @@ namespace Cinemachine
             if (m_MuteCamera)
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
+
+        public enum StoryboardRenderMode
+        {
+            ScreenSpaceOverlay,
+            ScreenSpaceCamera
+        };
         
-        RenderMode m_PreviousRenderMode = RenderMode.ScreenSpaceOverlay;
+        StoryboardRenderMode m_PreviousRenderMode;
         int m_PreviousSortingOrder;
         void UpdateRenderCanvas()
         {
@@ -215,7 +221,7 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.DontSave;
+            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
@@ -223,7 +229,7 @@ namespace Cinemachine
 #endif
 
             var c = ci.mCanvas.AddComponent<Canvas>();
-            c.renderMode = m_RenderMode;
+            c.renderMode = (RenderMode) m_RenderMode;
             c.sortingOrder = m_SortingOrder;
             c.worldCamera = ci.mCanvasParent.OutputCamera;
 

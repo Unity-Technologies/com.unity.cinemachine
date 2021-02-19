@@ -43,6 +43,7 @@ namespace Cinemachine.Editor
 
         const float FastWaveformUpdateInterval = 0.1f;
         float mLastSplitScreenEventTime = 0;
+        bool advancedFoldout;
         
         public override void OnInspectorGUI()
         {
@@ -103,8 +104,6 @@ namespace Cinemachine.Editor
                     EditorGUI.showMixedValue = false;
                 }
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_RenderMode));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_SortingOrder));
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
@@ -125,6 +124,16 @@ namespace Cinemachine.Editor
             rect.x += EditorGUIUtility.labelWidth;
             if (GUI.Button(rect, "Open"))
                 WaveformWindow.OpenWindow();
+
+            EditorGUILayout.Space();
+            advancedFoldout = EditorGUILayout.Foldout(advancedFoldout, "Advanced");
+            if (advancedFoldout)
+            {
+                ++EditorGUI.indentLevel;
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_RenderMode));
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_SortingOrder));
+                --EditorGUI.indentLevel;
+            }
         }
     }
 }
