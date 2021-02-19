@@ -18,7 +18,7 @@ For example, a rig set up with these values:
 
 Produces this rig in the Scene view:
 
-![](images/CinemachineRIgSceneView.png)
+![](images/CinemachineRigSceneView.png)
 
 A virtual rig in the Scene view, using the values in the Inspector screenshot above.
 
