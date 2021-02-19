@@ -402,17 +402,7 @@ namespace Cinemachine
                     if (orbital != null)
                         cameraPos = orbital.GetTargetCameraPosition(worldUp);
                 }
-                UpdateRigCache();
-                if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                    m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(cameraPos, worldUp);
-                m_YAxis.Value = GetYAxisClosestValue(cameraPos, worldUp);
-
-                transform.position = cameraPos;
-                transform.rotation = fromCam.State.RawOrientation;
-                m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
-                PreviousStateIsValid = false;
-                PushSettingsToRigs();
-                forceUpdate = true;
+                ForceCameraPosition(cameraPos, fromCam.State.FinalOrientation);
             }
             if (forceUpdate)
             {

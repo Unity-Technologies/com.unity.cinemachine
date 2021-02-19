@@ -242,8 +242,8 @@ namespace Cinemachine
                 mExtensions.Remove(extension);
         }
 
-        /// <summary> Tee extensions connected to this vcam</summary>
-        List<CinemachineExtension> mExtensions;
+        /// <summary> The extensions connected to this vcam</summary>
+        internal List<CinemachineExtension> mExtensions { get; private set; }
 
         /// <summary>
         /// Invokes the PostPipelineStageDelegate for this camera, and up the hierarchy for all

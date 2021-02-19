@@ -6,7 +6,7 @@ When alternative input systems are used in a project, this default behaviour mus
 
 Cinemachine has defined an interface: `Cinemachine.AxisState.IInputAxisProvider`.  If a `MonoBehaviour` implementing this interface is added to a Virtual Camera or FreeLook, then it will be queried for input instead of the standard input system.
 
-Cinemachine ships with an example of such a behaviour that uses the new __UnityEngine.Input__ package: **CinemachineInputProvider**.  It has dual purpose:
+Cinemachine ships with an example of such a behaviour that uses the new __UnityEngine.Input__ package: **CinemachineInputProvider**. It has dual purpose:
 1. Provide a simple out-of-the-box adapter for the new UnityEngine.Input package, to cover common usecases
 2. To serve as a source code example of how to integrate Cinemachine with custom or 3rd-party input systems
 

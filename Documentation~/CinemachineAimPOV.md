@@ -11,7 +11,7 @@ This Virtual Camera __Aim__ algorithm aims the camera in response to the user’
 | | _Value Range_ | The minimum and maximum values for the vertical axis of the Virtual Camera. |
 | | _Wrap_ | If checked, the axis wraps around the Value Range values, forming a loop. |
 | | _Max Speed_ | The maximum speed of this axis in degrees/second, or the multipler for the input value if Speed Mode is set to _InputValueGain_. |
-| | _Speed Mode_ | How the axis responds to input.  _MaxSpeed_ (the default) clamps the maximum speed at which the axis can change, regardless of the input.  _Input Value Gain_ multiplies the input value by MaxSpeed. |
+| | _Speed Mode_ | How the axis responds to input. _MaxSpeed_ (the default) clamps the maximum speed at which the axis can change, regardless of the input.  _Input Value Gain_ multiplies the input value by MaxSpeed. |
 | | _Accel Time_ | The amount of time in seconds it takes to accelerate to Max Speed with the supplied axis at its maximum value. |
 | | _Decel Time_| The amount of time in seconds it takes to decelerate the axis to zero if the supplied axis is in a neutral position. |
 | | _Input Axis Name_ | The name of this axis as specified in Unity Input Manager. To disable the automatic updating of this axis, set this property to an empty string. |
@@ -23,7 +23,7 @@ This Virtual Camera __Aim__ algorithm aims the camera in response to the user’
 | | _Recentering Time_ | Maximum angular speed of recentering. Accelerates into and decelerates out of this. |
 | __Horizontal Axis__ || Controls the horizontal orientation.  |
 | | _Value_ | The current value of the axis, in degrees. Accepted values are -180 to 180. |
-| | _Value Range_ | The minimum and maximum values for the axis. |0
+| | _Value Range_ | The minimum and maximum values for the axis. |
 | | _Wrap_ | If checked, the axis wraps around the Value Range values, forming a loop. |
 | | _Max Speed_ | The maximum speed of this axis in degrees/second, or the multipler for the input value if Speed Mode is set to _InputValueGain_. |
 | | _Speed Mode_ | How the axis responds to input.  _MaxSpeed_ (the default) clamps the maximum speed at which the axis can change, regardless of the input.  _Input Value Gain_ multiplies the input value by MaxSpeed. |
