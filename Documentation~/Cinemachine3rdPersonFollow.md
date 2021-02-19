@@ -4,7 +4,7 @@ Use Cinemachine Virtual Camera’s 3rd Person Follow to keep the camera at a con
 
 The virtual camera is bolted to a virtual rig that is attached to the target. The red rods and dots visible around the target in the scene view reflect the rig setup as well as the camera position and distance relative to the target.
 
-The rig is defined by three points: the **Shoulder Offset**, the **Vertical Arm Length**, and the **Camera Distance**. 
+The rig is defined by three points: the **Shoulder Offset**, the **Vertical Arm Length**, and the **Camera Distance**.
 
 Thus, the camera position is completely controlled by the Follow target’s position and orientation, and its orientation will always match that of the Follow target.
 
@@ -23,13 +23,11 @@ Produces this rig in the Scene view:
 A virtual rig in the Scene view, using the values in the Inspector screenshot above.
 
 A: Follow target origin point
-
 B: Shoulder Offset point
-
 C: Hand offset point
 
-- The rig pivots horizontally around the Follow target’s origin point (A), and vertically around the **Shoulder Offset** point (B). 
-- An arm extends vertically from the **Shoulder Offset** point, at the end of which is another point, called the hand offset point (C). 
+- The rig pivots horizontally around the Follow target’s origin point (A), and vertically around the **Shoulder Offset** point (B).
+- An arm extends vertically from the **Shoulder Offset** point, at the end of which is another point, called the hand offset point (C).
 - The **Camera Distance** point defines how far from the hand offset point to position the camera, in the direction of the Follow target’s local back vector. The camera is oriented to match the Follow target’s forward vector. The camera always looks directly at the hand.
 
 Note: C rotates around B. B rotates around A.
