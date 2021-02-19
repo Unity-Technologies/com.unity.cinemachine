@@ -48,19 +48,19 @@ This rig can be used effectively, with a suitable shoulder offset, to produce a 
 
 
 
-##Controlling the Camera
+## Controlling the Camera
 
 There is no direct input control for the camera. You must have a controller script that moves and rotates the Follow target; the camera will position and orient itself relative to that. When the Follow target is the character itself, the camera’s rotation will always match the character’s rotation. When the Follow target is an invisible GameObject that can rotate independently of the character, the camera will then orbit the character.
 
-##Built-in Collision Resolution
+## Built-in Collision Resolution
 
 The built in collision resolution means the camera always keeps the target in sight, despite intervening obstacles. When the target moves too close to an obstacle, the rig will bend and stretch to keep the camera outside the obstacle but always with the target in view.
 
-##Shaky Movement, Steady Aim
+## Shaky Movement, Steady Aim
 
 When combined with the Cinemachine3rdPersonAim (LINK) extension, the result is a powerful rig that can maintain steady aim for a shooter-type game, even when the camera movement is shaky or noisy. Cinemachine3rdPersonAim will re-adjust the camera orientation to maintain a fixed point at the center of the screen, correcting for variations due to hand-held camera noise or shaking target motion.
 
-##Properties:
+## Properties:
 
 |**Property:**|**Function:**|
 |:---|:---|
