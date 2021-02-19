@@ -23,7 +23,9 @@ Produces this rig in the Scene view:
 A virtual rig in the Scene view, using the values in the Inspector screenshot above.
 
 A: Follow target origin point
+
 B: Shoulder Offset point
+
 C: Hand offset point
 
 - The rig pivots horizontally around the Follow target’s origin point (A), and vertically around the **Shoulder Offset** point (B).
