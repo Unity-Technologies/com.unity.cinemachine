@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.7.3] - unreleased
-- Default PostProcessing profile priority is now configuraable, and defaults to 1000
+- Default PostProcessing profile priority is now configurable, and defaults to 1000
 
 ## [2.7.2] - 2021-02-15
 - CinemachineConfiner2D now handles cases where camera window is oversized
