@@ -125,17 +125,17 @@ namespace Cinemachine
             var prevTargetPos = deltaTime >= 0 ? PreviousFollowTargetPosition : targetPos;
 
             // Compute damped target pos (compute in camera space)
-            var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) 
+            var followTargetRotation = FollowTargetRotation;
+            var dampedTargetPos = Quaternion.Inverse(followTargetRotation) 
                 * (targetPos - prevTargetPos);
             if (deltaTime >= 0)
                 dampedTargetPos = VirtualCamera.DetachedFollowTargetDamp(
                     dampedTargetPos, Damping, deltaTime);
-            dampedTargetPos = prevTargetPos + curState.RawOrientation * dampedTargetPos;
+            dampedTargetPos = prevTargetPos + followTargetRotation * dampedTargetPos;
 
             // Get target rotation (worldspace)
             var fwd = Vector3.forward;
             var up = Vector3.up;
-            var followTargetRotation = FollowTargetRotation;
             var followTargetForward = followTargetRotation * fwd;
             var angle = UnityVectorExtensions.SignedAngle(
                 fwd, followTargetForward.ProjectOntoPlane(up), up);
@@ -161,7 +161,7 @@ namespace Cinemachine
             camPos = PullTowardsStartOnCollision(in hand, in camPos, in CameraCollisionFilter, CameraRadius);
 
             curState.RawPosition = camPos;
-            curState.RawOrientation = FollowTargetRotation;
+            curState.RawOrientation = followTargetRotation;
             curState.ReferenceUp = up;
         }
 
