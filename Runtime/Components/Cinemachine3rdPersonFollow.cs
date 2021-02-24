@@ -107,6 +107,11 @@ namespace Cinemachine
             CollisionDamping = 2f;
         }
 
+        void OnDestroy()
+        {
+            RuntimeUtility.DestroyScratchCollider();
+        }
+        
         /// <summary>True if component is enabled and has a Follow target defined</summary>
         public override bool IsValid => enabled && FollowTarget != null;
 
@@ -200,11 +205,9 @@ namespace Cinemachine
             root = m_PreviousFollowTargetPosition;
             var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
             var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
-            t_HandOffset.y = VerticalArmLength;
             shoulder = root + Quaternion.AngleAxis(m_PreviousHeadingAngle, Vector3.up) * shoulderOffset;
-            hand = shoulder + FollowTargetRotation * t_HandOffset;
+            hand = shoulder + FollowTargetRotation * new Vector3(0, VerticalArmLength, 0);
         }
-        Vector3 t_HandOffset = Vector3.zero; // minor opt. - to avoid creating a new vector in GetRigPositions
 
         Vector3 ResolveCollisions(
             Vector3 root, Vector3 tip, float deltaTime, 
