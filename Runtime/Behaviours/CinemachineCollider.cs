@@ -716,7 +716,7 @@ namespace Cinemachine
             // Respect the minimum distance from target - push camera back if we have to
             if (distance > Epsilon && m_MinimumDistanceFromTarget > Epsilon)
             {
-                float minDistance = m_MinimumDistanceFromTarget + PrecisionSlush;
+                float minDistance = Mathf.Max(m_MinimumDistanceFromTarget, m_CameraRadius) + PrecisionSlush;
                 Vector3 newOffset = cameraPos + result - lookAtPos;
                 if (newOffset.magnitude < minDistance)
                     result = lookAtPos - cameraPos + dir * minDistance;
