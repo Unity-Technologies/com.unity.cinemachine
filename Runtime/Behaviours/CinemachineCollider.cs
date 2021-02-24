@@ -330,10 +330,8 @@ namespace Cinemachine
                     extra.m_previousDisplacement = displacement;
                     
                     var cameraPos = state.CorrectedPosition + displacement;
-                    Vector3 correction = RuntimeUtility.RespectCameraRadius(
-                        cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos,
-                        m_CameraRadius, m_CollideAgainst, m_TransparentLayers,
-                        m_MinimumDistanceFromTarget, m_IgnoreTag);                    
+                    Vector3 correction = RespectCameraRadius(
+                        cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
                     
                     if (damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
@@ -645,6 +643,88 @@ namespace Cinemachine
             return distance;
         }
 
+        static Collider[] s_ColliderBuffer = new Collider[5];
+
+        Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
+        {
+            Vector3 result = Vector3.zero;
+            if (m_CameraRadius < Epsilon || m_CollideAgainst == 0)
+                return result;
+
+            Vector3 dir = cameraPos - lookAtPos;
+            float distance = dir.magnitude;
+            if (distance > Epsilon)
+                dir /= distance;
+
+            // Pull it out of any intersecting obstacles
+            RaycastHit hitInfo;
+            int numObstacles = Physics.OverlapSphereNonAlloc(
+                cameraPos, m_CameraRadius, s_ColliderBuffer,
+                m_CollideAgainst, QueryTriggerInteraction.Ignore);
+            if (numObstacles == 0 && m_TransparentLayers != 0
+                && distance > m_MinimumDistanceFromTarget + Epsilon)
+            {
+                // Make sure the camera position isn't completely inside an obstacle.
+                // OverlapSphereNonAlloc won't catch those.
+                float d = distance - m_MinimumDistanceFromTarget;
+                Vector3 targetPos = lookAtPos + dir * m_MinimumDistanceFromTarget;
+                if (RuntimeUtility.RaycastIgnoreTag(new Ray(targetPos, dir), 
+                    out hitInfo, d, m_CollideAgainst, m_IgnoreTag))
+                {
+                    // Only count it if there's an incoming collision but not an outgoing one
+                    Collider c = hitInfo.collider;
+                    if (!c.Raycast(new Ray(cameraPos, -dir), out hitInfo, d))
+                        s_ColliderBuffer[numObstacles++] = c;
+                }
+            }
+            if (numObstacles > 0 && distance == 0 || distance > m_MinimumDistanceFromTarget)
+            {
+                var scratchCollider = RuntimeUtility.GetScratchCollider();
+                scratchCollider.radius = m_CameraRadius;
+
+                Vector3 newCamPos = cameraPos;
+                for (int i = 0; i < numObstacles; ++i)
+                {
+                    Collider c = s_ColliderBuffer[i];
+                    if (m_IgnoreTag.Length > 0 && c.CompareTag(m_IgnoreTag))
+                        continue;
+
+                    // If we have a lookAt target, move the camera to the nearest edge of obstacle
+                    if (distance > m_MinimumDistanceFromTarget)
+                    {
+                        dir = newCamPos - lookAtPos;
+                        float d = dir.magnitude;
+                        if (d > Epsilon)
+                        {
+                            dir /= d;
+                            var ray = new Ray(lookAtPos, dir);
+                            if (c.Raycast(ray, out hitInfo, d + m_CameraRadius))
+                                newCamPos = ray.GetPoint(hitInfo.distance) - (dir * PrecisionSlush);
+                        }
+                    }
+                    if (Physics.ComputePenetration(
+                        scratchCollider, newCamPos, Quaternion.identity,
+                        c, c.transform.position, c.transform.rotation,
+                        out var offsetDir, out var offsetDistance))
+                    {
+                        newCamPos += offsetDir * offsetDistance;
+                    }
+                }
+                result = newCamPos - cameraPos;
+            }
+
+            // Respect the minimum distance from target - push camera back if we have to
+            if (distance > Epsilon && m_MinimumDistanceFromTarget > Epsilon)
+            {
+                float minDistance = m_MinimumDistanceFromTarget + PrecisionSlush;
+                Vector3 newOffset = cameraPos + result - lookAtPos;
+                if (newOffset.magnitude < minDistance)
+                    result = lookAtPos - cameraPos + dir * minDistance;
+            }
+
+            return result;
+        }
+
         private bool CheckForTargetObstructions(CameraState state)
         {
             if (state.HasLookAt)
@@ -693,6 +773,7 @@ namespace Cinemachine
             }
             return false;
         }
+
     }
 #endif
 }
