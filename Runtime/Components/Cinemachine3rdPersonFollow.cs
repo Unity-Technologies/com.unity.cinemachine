@@ -174,19 +174,19 @@ namespace Cinemachine
                 + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - followTarget);
             m_PreviousFollowTargetPosition = dampedTargetPos;
 
-            GetRigPositions(out Vector3 root, out _, out Vector3 hand);
+            GetRawRigPositions(out Vector3 root, out _, out Vector3 hand);
 
-            // 1. Check if pivot itself is colliding with something, if yes, then move the pivot 
+            // Check if hand is colliding with something, if yes, then move the hand 
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
             // next to walls. Where the preferred distance would be pulled completely to the 
             // player, using a bigger radius, this won't happen.
-            hand = ResolveCollisions(
+            var collidedHand = ResolveCollisions(
                 root, hand, deltaTime, CameraRadius * 1.05f, ref m_HandCollisionCorrection);
 
-            // 2. Try to place the camera to the preferred distance
+            // Place the camera at the correct distance from the hand
             Vector3 camPos = hand - (followTargetForward * CameraDistance);
             camPos = ResolveCollisions(
-                hand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
+                collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
             // Set state
             curState.RawPosition = camPos;
@@ -202,11 +202,18 @@ namespace Cinemachine
         /// <param name="hand">Hand of the rig.</param>
         public void GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
+            GetRawRigPositions(out root, out shoulder, out hand);
+            float correction = 0;
+            hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref correction);
+        }
+
+        void GetRawRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
+        {
             root = m_PreviousFollowTargetPosition;
             var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
             var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
             shoulder = root + Quaternion.AngleAxis(m_PreviousHeadingAngle, Vector3.up) * shoulderOffset;
-            hand = shoulder + FollowTargetRotation * new Vector3(0, VerticalArmLength, 0);
+            hand = shoulder + FollowTargetRotation * new Vector3(0, VerticalArmLength, 0);   
         }
 
         Vector3 ResolveCollisions(

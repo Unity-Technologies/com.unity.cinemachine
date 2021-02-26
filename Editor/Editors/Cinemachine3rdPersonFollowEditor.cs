@@ -16,8 +16,9 @@ namespace Cinemachine.Editor
         {
             if (target.IsValid)
             {
+                var isLive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
                 Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+                Gizmos.color = isLive
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
 
@@ -26,7 +27,12 @@ namespace Cinemachine.Editor
                 Gizmos.DrawLine(shoulder, hand);
                 Gizmos.DrawSphere(root, 0.02f);
                 Gizmos.DrawSphere(shoulder, 0.02f);
-                Gizmos.DrawSphere(hand, 0.03f);
+                Gizmos.DrawSphere(hand, target.CameraRadius);
+
+                if (isLive)
+                    Gizmos.color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
+                Gizmos.DrawSphere(target.VirtualCamera.State.RawPosition, target.CameraRadius);
+
                 Gizmos.color = originalGizmoColour;
             }
         }
