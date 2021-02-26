@@ -128,26 +128,26 @@ namespace Cinemachine.Editor
                 r, new GUIContent(m_ShapeProperty.displayName, m_ShapeProperty.tooltip), property));
             m_ShapeProperty.isExpanded =  EditorGUI.Foldout(r, m_ShapeProperty.isExpanded, GUIContent.none);
 
+            bool isCustom = m_ShapeProperty.intValue == (int)CinemachineImpulseDefinition.ImpulseShapes.Custom;
             r.width -= floatFieldWidth + m_TimeTextWidth;
-            if (m_ShapeProperty.intValue != (int)CinemachineImpulseDefinition.ImpulseShapes.Custom)
+            if (isCustom)
+                r.width -= 2 * r.height;
+            EditorGUI.BeginChangeCheck();
             {
-                EditorGUI.BeginChangeCheck();
-                    EditorGUI.PropertyField(r, m_ShapeProperty, GUIContent.none);
+                EditorGUI.PropertyField(r, m_ShapeProperty, GUIContent.none);
                 if (EditorGUI.EndChangeCheck())
                     InvalidateImpulseGraphSample();
-                if (Event.current.type == EventType.Repaint && m_ShapeProperty.isExpanded)
+                if (!isCustom && Event.current.type == EventType.Repaint && m_ShapeProperty.isExpanded)
                     DrawImpulseGraph(graphRect, CinemachineImpulseDefinition.GetStandardCurve(
                         (CinemachineImpulseDefinition.ImpulseShapes)m_ShapeProperty.intValue));
             }
-            else
+            if (isCustom)
             {
                 SerializedProperty curveProp = property.FindPropertyRelative(() => m_MyClass.m_CustomImpulseShape);
-                r.width -= r.height;
-                r.height -= 1;
+                r.x += r.width;
+                r.width = 2 * r.height;
                 EditorGUI.BeginChangeCheck();
                 EditorGUI.PropertyField(r, curveProp, GUIContent.none);
-                r.x += r.width; r.width = r.height; ++r.height;
-                EditorGUI.PropertyField(r, m_ShapeProperty, GUIContent.none);
                 if (EditorGUI.EndChangeCheck())
                 {
                     curveProp.animationCurveValue = RuntimeUtility.NormalizeCurve(curveProp.animationCurveValue, true, false);
