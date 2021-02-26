@@ -7,7 +7,6 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS
     /// <summary>
     /// Third-person follower, with complex pivoting: horizontal about the origin, 
     /// vertical about the shoulder.  
@@ -50,6 +49,7 @@ namespace Cinemachine
         [Tooltip("How far baehind the hand the camera will be placed")]
         public float CameraDistance;
 
+#if CINEMACHINE_PHYSICS
         /// <summary>Camera will avoid obstacles on these layers.</summary>
         [Header("Obstacles")]
         [Tooltip("Camera will avoid obstacles on these layers")]
@@ -78,6 +78,11 @@ namespace Cinemachine
         [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
             "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
         public float CollisionDamping;
+#else
+        // Keep here for code simplicity
+        internal float CameraRadius;
+        internal float CollisionDamping;
+#endif
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
@@ -97,20 +102,27 @@ namespace Cinemachine
 
         void Reset()
         {
-            CameraCollisionFilter = 1;
             ShoulderOffset = new Vector3(0.5f, -0.4f, 0.0f);
             VerticalArmLength = 0.4f;
             CameraSide = 1.0f;
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
+#if CINEMACHINE_PHYSICS
+            CameraCollisionFilter = 1;
             CameraRadius = 0.2f;
             CollisionDamping = 2f;
+#else
+            CameraRadius = 0.02f;
+            CollisionDamping = 0;
+#endif
         }
 
+#if CINEMACHINE_PHYSICS
         void OnDestroy()
         {
             RuntimeUtility.DestroyScratchCollider();
         }
+#endif
         
         /// <summary>True if component is enabled and has a Follow target defined</summary>
         public override bool IsValid => enabled && FollowTarget != null;
@@ -123,7 +135,10 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() { return Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)); }
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(CollisionDamping, Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z))); 
+        }
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
@@ -220,6 +235,7 @@ namespace Cinemachine
             Vector3 root, Vector3 tip, float deltaTime, 
             float cameraRadius, ref float collisionCorrection)
         {
+#if CINEMACHINE_PHYSICS
             var dir = tip - root;
             var len = dir.magnitude;
             dir /= len;
@@ -244,7 +260,9 @@ namespace Cinemachine
                     result -= dir * collisionCorrection;
             }
             return result;
+#else
+            return tip;
+#endif
         }
     }
-#endif
 }

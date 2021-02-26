@@ -1,13 +1,8 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
-#endif
-
 using UnityEngine;
 using UnityEditor;
 
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(Cinemachine3rdPersonFollow))]
     internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
     {
@@ -37,5 +32,5 @@ namespace Cinemachine.Editor
             }
         }
     }
-#endif
 }
+
