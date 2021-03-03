@@ -30,6 +30,7 @@
             * [Extensions for avoiding collisions and evaluating shots](CinemachineColliderConfiner)
                 * [Cinemachine Collider](CinemachineCollider)
                 * [Cinemachine Confiner](CinemachineConfiner)
+                * [Cinemachine Confiner2D](CinemachineConfiner2D)
             * [Follow Zoom extension](CinemachineFollowZoom)
             * [Pixel Perfect extension](CinemachinePixelPerfect)
             * [Post Processing extension](CinemachinePostProcessing)

@@ -14,6 +14,8 @@ You can also define custom blends between the ClearShot children.
 
 | **Property:** | **Function:** |
 |:---|:---|
+| **Game Window Guides** | Enables the displays of overlays in the Game window. Adjust the color and opacity in Cinemachine Preferences. This is a global setting, shared by all virtial cameras. |
+| **Save During Play** | When enabled, virtual camera setting changes made during Play mode are propagated back to the scene when Play mode is exited.  This is a global setting, shared by all objects that support Save During Play. |
 | __Look At__ | The default target GameObject that the children Virtual Camera move with. The Clear Shot camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
 | __Follow__ | The target GameObject to aim the Unity camera at. The Clear Shot camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
 | __Show Debug Text__ | Check to display a textual summary of the live Virtual Camera and blend in the Game view. |

@@ -16,14 +16,15 @@ By default, an Impulse Source affects every [Impulse Listener](CinemachineImpuls
 
 The properties in the Cinemachine Impulse Source Inspector window are divided into the following sections.
 
-- [Impulse Channel](#ImpulseChannel) (A)
-- [Signal Shape](#SignalShape) (B)
-- [Time Envelope](#TimeEnvelope) (C)
-- [Spatial Range](#SpatialRange) (D)
+- [Impulse Channel](#ImpulseChannel)
+- [Signal Shape](#SignalShape)
+- [Time Envelope](#TimeEnvelope)
+- [Spatial Range](#SpatialRange)
 
-![](images/InspectorImpulseSource.png)
+
 
 <a name="ImpulseChannel"></a>
+
 ### Impulse Channel
 
 Impulse Listeners filter impulses based on channels to control which Impulse Sources they react to. Channels work like Camera Layers, but are distinct from them. These properties control the channels that the Impulse Source broadcasts impulse signals on. For details, see documentation on [Filtering](CinemachineImpulseFiltering.md).
@@ -35,6 +36,7 @@ Impulse Listeners filter impulses based on channels to control which Impulse Sou
 | **Impulse Channel** | Choose one or more channels from the drop-down.<br /><br />Click **Edit** to modify existing channels or add new ones. |
 
 <a name="SignalShape"></a>
+
 ### Signal Shape
 
 These properties control the basic characteristics of the raw signal when it is emitted by the Impulse Source.

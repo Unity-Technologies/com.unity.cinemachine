@@ -314,7 +314,7 @@ namespace Cinemachine
                     if (orbital != null)
                         cameraPos = orbital.GetTargetCameraPosition(worldUp);
                 }
-                m_VerticalAxis.Value = GetYAxisClosestValue(cameraPos, worldUp);
+                ForceCameraPosition(cameraPos, fromCam.State.FinalOrientation);
             }
         }
 

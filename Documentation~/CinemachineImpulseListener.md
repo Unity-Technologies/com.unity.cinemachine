@@ -26,6 +26,7 @@ By default, an Impulse Listener reacts to every Impulse Source in range, but you
 
 | Property:           | Function:                                                    |
 | ------------------- | ------------------------------------------------------------ |
-| **Channel Mask**    | Specify the Impulse channels to react to. For details, see [Filtering with channels](CinemachineImpulseFiltering.md#ChannelFiltering).                   |
+| **Apply After**     | Obstacles with this tag will be ignored. It is recommended to set this field to the target's tag. |
+| **Channel Mask**    | Specify the Impulse channels to react to. For details, see [Filtering with channels](CinemachineImpulseFiltering.md#ChannelFiltering). |
 | **Gain**            | Amplify or attenuate the impulse signal. This property enables you to configure different Impulse Listeners to react differently to the same impulse signal. |
 | **Use 2D Distance** | Enable this setting to ignore the z axis when calculating camera distance from the Impulse Source. Use this property for 2D games. |

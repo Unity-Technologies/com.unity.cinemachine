@@ -21,7 +21,7 @@ Produces this virtual rig in the Scene view:
 
 
 
-![](images/CinemachineRIgSceneView.png)
+![](images/CinemachineRigSceneView.png)
 
 Which results in this Game view:
 
@@ -52,7 +52,11 @@ Note the rotations on the rig;</br>
 
 ## Controlling the Camera
 
+<<<<<<< HEAD
 There is no direct input control for the camera. You must have a controller script that moves and rotates the Follow target; the camera will position and orient itself relative to that. When the Follow target is the character itself, the camera’s rotation always matches the character’s rotation. When the Follow target is an invisible GameObject that can rotate independently of the character, the camera will then be able to rotate around the character.
+=======
+## Controlling the Camera
+>>>>>>> c39ccda59c13100709c2eff871cd8ed4a0df3968
 
 For an example, see the **AimingRig** sample scene.
 
