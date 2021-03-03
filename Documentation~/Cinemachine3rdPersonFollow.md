@@ -1,7 +1,7 @@
 # 3rd Person Follow
 Use Cinemachine Virtual Camera’s **3rd Person Follow** to keep the camera at a constant position and distance relative to a Follow target (subject to damping controls), tracking the target’s movement and rotation.
 
-The 3rd Person Follow’s mini-rig set up defines the camera position and distance relative to the target. With a suitable shoulder offset, this mini-rig can produce a 3rd-person camera, where the character is offset in the frame and the camera looks over the character’s shoulder. With different settings, it can produce a first-person camera.
+The 3rd Person Follow’s mini-rig setup defines the camera position and distance relative to the target. With a suitable shoulder offset, this mini-rig can produce a 3rd-person camera, where the character is offset in the frame and the camera looks over the character’s shoulder. With different settings, it can produce a first-person camera.
 
 For example, a rig set up with these values:
 
@@ -35,7 +35,7 @@ Which results in this Game view:
 
 The rig and the camera position are defined by three pivot points (the origin, the shoulder, and the hand) as well as by a camera that is positioned behind the hand.
 
-- The **origin (A)**: The origin is the Follow target's position.When the target pivots horizontally, the rig rotates with it around this point.
+- The **origin (A)**: The origin is the Follow target's position. When the target pivots horizontally, the rig rotates with it around this point.
 - The **shoulder (B)**: By default, it is offset to one side, to create an over-the-shoulder follow position. Vertical rotations of the Follow target are transferred here, so the rig rotates horizontally about the origin, and vertically about the shoulder.
 - The **hand (C))**: Vertically offset in relation to the shoulder. The arm length affects the follow target's screen position when the camera rotates vertically. By default, it is offset from the shoulder, so that vertical rotations will keep the character nicely positioned on the screen. For 1st-person cameras, this can be set to 0.
 - The **camera (D)**: The camera's rotation will always be parallel to the Follow target's rotation, but positioned at Camera Distance behind the hand. The camera always looks directly at the hand. 
@@ -52,17 +52,14 @@ Note the rotations on the rig;</br>
 
 ## Controlling the Camera
 
-<<<<<<< HEAD
 There is no direct input control for the camera. You must have a controller script that moves and rotates the Follow target; the camera will position and orient itself relative to that. When the Follow target is the character itself, the camera’s rotation always matches the character’s rotation. When the Follow target is an invisible GameObject that can rotate independently of the character, the camera will then be able to rotate around the character.
-=======
-## Controlling the Camera
->>>>>>> c39ccda59c13100709c2eff871cd8ed4a0df3968
 
 For an example, see the **AimingRig** sample scene.
 
+
 ## Built-in Collision Resolution
 
-The 3rd-person Follow component has a built-in collision resolution system, so when the target moves close to an obstacle, the camera position is adjusted so that it will never be inside an obstacle; the built in collision resolution means the camera always keeps the target in sight, despite intervening obstacles. When the target moves too close to an obstacle, the rig bends and stretches to keep the camera outside the obstacle but always with the target in view.
+The 3rd-person Follow component has a built-in collision resolution system, so when the target moves close to an obstacle, the camera position is adjusted so that it will never be inside an obstacle; the built-in collision resolution means the camera always keeps the target in sight, despite intervening obstacles. When the target moves too close to an obstacle, the rig bends and stretches to keep the camera outside the obstacle but always with the target in view.
 
 ## Shaky Movement, Steady Aim
 
@@ -76,7 +73,7 @@ When combined with the [Cinemachine3rdPersonAim](Cinemachine3rdPersonAim.md) ext
 | Shoulder Offset         | Position of the shoulder pivot relative to the follow target origin. This offset is in target-local space. |
 | Vertical Arm Length     | Vertical offset of the hand in relation to the shoulder. Arm length affects the follow target's screen position when the camera rotates vertically. |
 | Camera Side             | Specifies which shoulder the camera is on (left, right, or somewhere in-between). |
-| Camera Distance         | Specifies the distance behind the hand the camera is placed.                |
+| Camera Distance         | Specifies the distance from the hand to the camera.                |
 | Camera Collision Filter | Specifies which layers will be included or excluded from collision resolution. |
 | Ignore Tag              | Obstacles with this tag will be ignored by collision resolution. It is recommended to set this field to the target's tag. |
 | Camera Radius           | Specifies how close the camera can get to collidable obstacles without adjusting its position. |
