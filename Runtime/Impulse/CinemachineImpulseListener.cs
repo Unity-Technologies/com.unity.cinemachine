@@ -121,7 +121,7 @@ namespace Cinemachine
 
                 // Advance the current reaction time
                 if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
-                        && TargetPositionCache.HasHurrentTime)
+                        && TargetPositionCache.HasCurrentTime)
                     m_CurrentTime = TargetPositionCache.CurrentTime * m_FrequencyGain;
                 else
                     m_CurrentTime += deltaTime * m_FrequencyGain;
