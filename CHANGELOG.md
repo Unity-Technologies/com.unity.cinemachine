@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
+
+
 ## [2.7.2] - 2021-02-15
 - CinemachineConfiner2D now handles cases where camera window is oversized
 - New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a cinemachine extension giving convenient control over the shader parameters
