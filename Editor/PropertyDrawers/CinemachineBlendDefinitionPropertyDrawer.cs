@@ -22,11 +22,12 @@ namespace Cinemachine.Editor
             rect.width -= floatFieldWidth + textDimensions.x;
 
             SerializedProperty styleProp = property.FindPropertyRelative(() => myClass.m_Style);
+            bool isCustom = styleProp.enumValueIndex == (int)CinemachineBlendDefinition.Style.Custom;
             var r = rect;
-            if (styleProp.enumValueIndex == (int)CinemachineBlendDefinition.Style.Custom)
+            if (isCustom)
                 r.width -= 2 * r.height;
             EditorGUI.PropertyField(r, styleProp, GUIContent.none);
-            if (styleProp.enumValueIndex == (int)CinemachineBlendDefinition.Style.Custom)
+            if (isCustom)
             {
                 SerializedProperty curveProp = property.FindPropertyRelative(() => myClass.m_CustomCurve);
                 r.x += r.width;
