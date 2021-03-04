@@ -68,6 +68,7 @@ namespace Cinemachine
         /// Specifies how close the camera can get to obstacles
         /// </summary>
         [Tooltip("Specifies how close the camera can get to obstacles")]
+        [Range(0, 1)]
         public float CameraRadius;
         
         /// <summary>

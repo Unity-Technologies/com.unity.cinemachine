@@ -49,6 +49,7 @@ namespace Cinemachine
         
 #if CINEMACHINE_PHYSICS
         private static RaycastHit[] s_HitBuffer = new RaycastHit[16];
+        private static int[] s_PenetrationIndexBuffer = new int[16];
 
         /// <summary>
         /// Perform a raycast, but pass through any objects that have a given tag
@@ -112,46 +113,74 @@ namespace Cinemachine
             int layerMask, in string ignoreTag)
         {
             int closestHit = -1;
+            int numPenetrations = 0;
+            float penetrationDistanceSum = 0;
             int numHits = Physics.SphereCastNonAlloc(
                 rayStart, radius, dir, s_HitBuffer, rayLength, layerMask, 
                 QueryTriggerInteraction.Ignore);
             for (int i = 0; i < numHits; ++i)
             {
-                if (ignoreTag.Length > 0 && s_HitBuffer[i].collider.CompareTag(ignoreTag))
+                var h = s_HitBuffer[i];
+                if (ignoreTag.Length > 0 && h.collider.CompareTag(ignoreTag))
                     continue;
-                if (closestHit < 0 || s_HitBuffer[i].distance < s_HitBuffer[closestHit].distance)
-                    closestHit = i;
-            }
-            if (closestHit >= 0)
-            {
-                hitInfo = s_HitBuffer[closestHit];
 
-                // Are colliders overlapping?  If so, hitInfo will have special
-                // values that are not helpful to the caller.  Fix that here.
-                if (hitInfo.distance == 0 && hitInfo.normal == -dir)
+                // Collect overlapping items
+                if (h.distance == 0 && h.normal == -dir)
                 {
+                    if (s_PenetrationIndexBuffer.Length > numPenetrations + 1)
+                        s_PenetrationIndexBuffer[numPenetrations++] = i;
+
+                    // hitInfo for overlapping colliders will have special
+                    // values that are not helpful to the caller.  Fix that here.
                     var scratchCollider = GetScratchCollider();
                     scratchCollider.radius = radius;
-                    var c = hitInfo.collider;
+                    var c = h.collider;
 
                     if (Physics.ComputePenetration(
                         scratchCollider, rayStart, Quaternion.identity,
                         c, c.transform.position, c.transform.rotation,
                         out var offsetDir, out var offsetDistance))
                     {
-                        hitInfo.point = rayStart + offsetDir * (offsetDistance - radius);
-                        hitInfo.distance = radius - offsetDistance;
-                        hitInfo.normal = offsetDir;
+                        h.point = rayStart + offsetDir * (offsetDistance - radius);
+                        h.distance = offsetDistance - radius; // will be -ve
+                        h.normal = offsetDir;
+                        s_HitBuffer[i] = h;
+                        penetrationDistanceSum += h.distance;
                     }
                     else
                     {
-                        closestHit = -1; // don't know what's going on, just forget about it
+                        continue; // don't know what's going on, just forget about it
                     }
                 }
+                if (closestHit < 0 || h.distance < s_HitBuffer[closestHit].distance)
+                {
+                    closestHit = i;
+                }
+            }
+
+            // Naively combine penetrating items
+            if (numPenetrations > 1)
+            {
+                hitInfo = new RaycastHit();
+                for (int i = 0; i < numPenetrations; ++i)
+                {
+                    var h = s_HitBuffer[s_PenetrationIndexBuffer[i]];
+                    var t = h.distance / penetrationDistanceSum;
+                    hitInfo.point += h.point * t;
+                    hitInfo.distance += h.distance * t;
+                    hitInfo.normal += h.normal * t;
+                }
+                hitInfo.normal = hitInfo.normal.normalized;
+                return true;
+            }
+
+            if (closestHit >= 0)
+            {
+                hitInfo = s_HitBuffer[closestHit];
                 if (numHits == s_HitBuffer.Length)
                     s_HitBuffer = new RaycastHit[s_HitBuffer.Length * 2]; // full! grow for next time
 
-                return closestHit >= 0;
+                return true;
             }
             hitInfo = new RaycastHit();
             return false;
