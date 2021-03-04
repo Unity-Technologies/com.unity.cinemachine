@@ -19,6 +19,7 @@
 - [ ] Updated [CHANGELOG](https://keepachangelog.com/en/1.0.0/)
 - [ ] Updated README (if applicable)
 - [ ] Commented all public classes, properties, and methods
+- [ ] Updated user documentation
 
 ### Samples status
 

@@ -35,7 +35,7 @@ namespace Cinemachine
         }
 
         public static bool IsRecording => UseCache && m_CacheMode == Mode.Record;
-        public static bool CurrentPlaybackTimeValid => UseCache && m_CacheMode == Mode.Playback && HasHurrentTime;
+        public static bool CurrentPlaybackTimeValid => UseCache && m_CacheMode == Mode.Playback && HasCurrentTime;
         public static bool IsEmpty => CacheTimeRange.IsEmpty;
 
         public static float CurrentTime { get; set; }
@@ -189,7 +189,7 @@ namespace Cinemachine
         }
         static TimeRange m_CacheTimeRange;
         public static TimeRange CacheTimeRange { get => m_CacheTimeRange; }
-        public static bool HasHurrentTime { get => m_CacheTimeRange.Contains(CurrentTime); }
+        public static bool HasCurrentTime { get => m_CacheTimeRange.Contains(CurrentTime); }
 
         public static void ClearCache()
         {
@@ -230,7 +230,7 @@ namespace Cinemachine
                 ClearCache();
             }
 
-            if (CacheMode == Mode.Playback && !HasHurrentTime)
+            if (CacheMode == Mode.Playback && !HasCurrentTime)
                 return target.position;
 
             if (!m_Cache.TryGetValue(target, out var entry))
@@ -271,7 +271,7 @@ namespace Cinemachine
                 ClearCache();
             }
 
-            if (CacheMode == Mode.Playback && !HasHurrentTime)
+            if (CacheMode == Mode.Playback && !HasCurrentTime)
                 return target.rotation;
 
             if (!m_Cache.TryGetValue(target, out var entry))

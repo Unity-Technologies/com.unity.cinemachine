@@ -11,7 +11,7 @@ namespace Cinemachine
         /// or
         /// [HelpURL(Documentation.BaseURL + "manual/some-page.html")]
         /// It cannot support String.Format nor string interpolation</summary>
-        public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@2.7/";
+        public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@2.8/";
     }
 
     /// <summary>A singleton that manages complete lists of CinemachineBrain and,
@@ -24,7 +24,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20170927;
 
         /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.7.2";
+        public static readonly string kVersionString = "2.8.0";
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for

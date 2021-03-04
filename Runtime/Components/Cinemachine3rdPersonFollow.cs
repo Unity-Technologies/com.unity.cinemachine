@@ -157,37 +157,37 @@ namespace Cinemachine
 
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
-            var followTarget = FollowTargetPosition;
+            var targetPos = FollowTargetPosition;
             if (deltaTime < 0)
             {
                 // No damping - reset all state info
-                m_PreviousFollowTargetPosition = followTarget;
+                m_PreviousFollowTargetPosition = targetPos;
                 m_HandCollisionCorrection = m_CamPosCollisionCorrection = 0;
             }
             var prevTargetPos = m_PreviousFollowTargetPosition;
 
             // Compute damped target pos (compute in camera space)
-            var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) * (followTarget - prevTargetPos);
+            var targetRot = FollowTargetRotation;
+            var dampedTargetPos = Quaternion.Inverse(targetRot) * (targetPos - prevTargetPos);
             if (deltaTime >= 0)
                 dampedTargetPos = VirtualCamera.DetachedFollowTargetDamp(
                     dampedTargetPos, Damping, deltaTime);
-            dampedTargetPos = prevTargetPos + curState.RawOrientation * dampedTargetPos;
+            dampedTargetPos = prevTargetPos + targetRot * dampedTargetPos;
 
             // Get target rotation (worldspace)
             var fwd = Vector3.forward;
             var up = Vector3.up;
-            var followTargetRotation = FollowTargetRotation;
-            var followTargetForward = followTargetRotation * fwd;
+            var targetForward = targetRot * fwd;
             var angle = UnityVectorExtensions.SignedAngle(
-                fwd, followTargetForward.ProjectOntoPlane(up), up);
+                fwd, targetForward.ProjectOntoPlane(up), up);
             if (deltaTime < 0)
                 m_PreviousHeadingAngle = angle; // no damping
             var deltaHeading = angle - m_PreviousHeadingAngle;
             m_PreviousHeadingAngle = angle;
 
             // Bypass user-sourced rotation
-            dampedTargetPos = followTarget 
-                + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - followTarget);
+            dampedTargetPos = targetPos 
+                + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - targetPos);
             m_PreviousFollowTargetPosition = dampedTargetPos;
 
             GetRawRigPositions(out Vector3 root, out _, out Vector3 hand);
@@ -200,13 +200,13 @@ namespace Cinemachine
                 root, hand, deltaTime, CameraRadius * 1.05f, ref m_HandCollisionCorrection);
 
             // Place the camera at the correct distance from the hand
-            Vector3 camPos = hand - (followTargetForward * CameraDistance);
+            Vector3 camPos = hand - (targetForward * CameraDistance);
             camPos = ResolveCollisions(
                 collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
             // Set state
             curState.RawPosition = camPos;
-            curState.RawOrientation = followTargetRotation;
+            curState.RawOrientation = targetRot;
             curState.ReferenceUp = up;
         }
 
