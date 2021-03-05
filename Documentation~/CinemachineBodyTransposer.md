@@ -8,7 +8,7 @@ The fixed offset can be interpreted in various ways, depending on the Binding Mo
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
-| __Binding Mode__ || The coordinate space to use when interpreting the offset from the target, and the damping. For example, for a "Door Cam or “Hood Cam" in a car racing game, use Local Space Locked To Target. |
+| __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use when interpreting the offset from the target, and the damping. For example, for a "Door Cam or “Hood Cam" in a car racing game, use Local Space Locked To Target. |
 | | _Lock To Target On Assign_|  Make the Virtual Camera use the Follow target’s local frame at the moment that the Virtual Camera is activated or when the target is assigned. This offset remains constant in world space. Also, the camera does not rotate along with the target. |
 | | _Lock To Target With World Up_ | Make the Virtual Camera use the Follow target’s local frame with tilt and roll set to 0. This binding mode ignores all target rotations except yaw.  |
 | | _Lock To Target No Roll_ | Make the Virtual Camera use the Follow target’s local frame, with roll set to 0. |
