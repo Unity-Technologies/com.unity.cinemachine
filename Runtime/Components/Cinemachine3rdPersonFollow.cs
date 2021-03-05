@@ -72,23 +72,32 @@ namespace Cinemachine
         public float CameraRadius;
         
         /// <summary>
+        /// How gradually the camera moves to correct for occlusions.  
+        /// Higher numbers will move the camera more gradually.
+        /// </summary>
+        [Range(0, 10)]
+        [Tooltip("How gradually the camera moves to correct for occlusions.  " +
+            "Higher numbers will move the camera more gradually.")]
+        public float DampingIntoCollision;
+
+        /// <summary>
         /// How gradually the camera returns to its normal position after having been corrected by the built-in
         /// collision resolution system. Higher numbers will move the camera more gradually back to normal.
         /// </summary>
         [Range(0, 10)]
         [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
             "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
-        public float CollisionDamping;
+        public float DampingFromCollision;
 #else
         // Keep here for code simplicity
         internal float CameraRadius;
-        internal float CollisionDamping;
+        internal float DampingIntoCollision;
+        internal float DampingFromCollision;
 #endif
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
         float m_PreviousHeadingAngle;
-        float m_HandCollisionCorrection;
         float m_CamPosCollisionCorrection;
 
         void OnValidate()
@@ -98,7 +107,8 @@ namespace Cinemachine
             Damping.y = Mathf.Max(0, Damping.y);
             Damping.z = Mathf.Max(0, Damping.z);
             CameraRadius = Mathf.Max(0.001f, CameraRadius);
-            CollisionDamping = Mathf.Max(0, CollisionDamping);
+            DampingIntoCollision = Mathf.Max(0, DampingIntoCollision);
+            DampingFromCollision = Mathf.Max(0, DampingFromCollision);
         }
 
         void Reset()
@@ -111,10 +121,11 @@ namespace Cinemachine
 #if CINEMACHINE_PHYSICS
             CameraCollisionFilter = 1;
             CameraRadius = 0.2f;
-            CollisionDamping = 2f;
+            DampingIntoCollision = 0;
+            DampingFromCollision = 2f;
 #else
             CameraRadius = 0.02f;
-            CollisionDamping = 0;
+            DampingIntoCollision = DampingFromCollision = 0;
 #endif
         }
 
@@ -138,7 +149,9 @@ namespace Cinemachine
         /// <returns>Highest damping setting in this component</returns>
         public override float GetMaxDampTime() 
         { 
-            return Mathf.Max(CollisionDamping, Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z))); 
+            return Mathf.Max(
+                Mathf.Max(DampingIntoCollision, DampingFromCollision), 
+                Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z))); 
         }
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
@@ -162,7 +175,7 @@ namespace Cinemachine
             {
                 // No damping - reset all state info
                 m_PreviousFollowTargetPosition = targetPos;
-                m_HandCollisionCorrection = m_CamPosCollisionCorrection = 0;
+                m_CamPosCollisionCorrection = m_CamPosCollisionCorrection = 0;
             }
             var prevTargetPos = m_PreviousFollowTargetPosition;
 
@@ -196,8 +209,8 @@ namespace Cinemachine
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
             // next to walls. Where the preferred distance would be pulled completely to the 
             // player, using a bigger radius, this won't happen.
-            var collidedHand = ResolveCollisions(
-                root, hand, deltaTime, CameraRadius * 1.05f, ref m_HandCollisionCorrection);
+            float dummy = 0;
+            var collidedHand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
 
             // Place the camera at the correct distance from the hand
             Vector3 camPos = hand - (targetForward * CameraDistance);
@@ -219,8 +232,8 @@ namespace Cinemachine
         public void GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
             GetRawRigPositions(out root, out shoulder, out hand);
-            float correction = 0;
-            hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref correction);
+            float dummy = 0;
+            hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
         }
 
         void GetRawRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
@@ -241,25 +254,26 @@ namespace Cinemachine
             var len = dir.magnitude;
             dir /= len;
 
-            bool hasHit = RuntimeUtility.SphereCastIgnoreTag(
-                root, cameraRadius, dir, out RaycastHit hitInfo, 
-                len, CameraCollisionFilter, IgnoreTag);
-
             var result = tip;
-            if (hasHit)
+            float desiredCorrection = 0;
+
+            if (RuntimeUtility.SphereCastIgnoreTag(
+                root, cameraRadius, dir, out RaycastHit hitInfo, 
+                len, CameraCollisionFilter, IgnoreTag))
             {
-                // We have a collision - store the delta for damping later
-                result = hitInfo.point + hitInfo.normal * cameraRadius;
-                collisionCorrection = (result - tip).magnitude;
+                var desiredResult = hitInfo.point + hitInfo.normal * cameraRadius;
+                desiredCorrection = (desiredResult - tip).magnitude;
             }
-            else if (deltaTime >= 0)
-            {
-                // Post collision damping - ease out of last collision
-                collisionCorrection -= Damper.Damp(
-                    collisionCorrection, CollisionDamping, deltaTime);
-                if (collisionCorrection > Epsilon)
-                    result -= dir * collisionCorrection;
-            }
+
+            collisionCorrection += deltaTime < 0 ? desiredCorrection - collisionCorrection : Damper.Damp(
+                desiredCorrection - collisionCorrection, 
+                desiredCorrection > collisionCorrection ? DampingIntoCollision : DampingFromCollision, 
+                deltaTime);
+
+            // Apply the correction
+            if (collisionCorrection > Epsilon)
+                result -= dir * collisionCorrection;
+
             return result;
 #else
             return tip;
