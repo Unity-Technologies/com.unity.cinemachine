@@ -14,7 +14,7 @@ namespace Cinemachine.Editor
         public static string kEnabledKey = "EditableScreenComposerGuides_Enabled";
         public static bool Enabled
         {
-            get => EditorPrefs.GetBool(kEnabledKey, false);
+            get => EditorPrefs.GetBool(kEnabledKey, true);
             set
             {
                 if (value != CinemachineScreenComposerGuides.sEditableGameWindowGuides)
