@@ -14,7 +14,7 @@ __Orbital Transposer__ optionally re-centers the camera automatically.  When __R
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
-| __Binding Mode__ || The coordinate space to use when interpreting the offset of the Virtual Camera from the Follow target. |
+| __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use when interpreting the offset of the Virtual Camera from the Follow target. |
 | | _Lock To Target On Assign_ | The target’s local frame at the moment when the Virtual Camera was activated, or when the target was assigned. |
 | | _Lock To Target With World Up_ | The target’s local frame, with the tilt and roll reset to zero. |
 | | _Lock To Target No Roll_ | The target’s local frame, with the roll reset to zero. |

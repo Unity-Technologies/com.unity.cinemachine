@@ -10,6 +10,7 @@
                 * [Orbital Transposer](CinemachineBodyOrbitalTransposer)
                 * [Tracked Dolly](CinemachineBodyTrackedDolly)
                 * [Transposer](CinemachineBodyTransposer)
+                  * [Binding Modes](CinemachineBindingModes.md)
             * [Aim properties](CinemachineVirtualCameraAim)
                 * [Composer](CinemachineAimComposer)
                 * [Group Composer](CinemachineAimGroupComposer)
