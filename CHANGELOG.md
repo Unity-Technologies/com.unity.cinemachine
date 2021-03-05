@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - Added CollisionDamping property to Cinemachine3rdPersonFollow to control how gradually the camera returns to its normal position after having been corrected by the built-in collision resolution system.
 - Default PostProcessing profile priority is now configurable, and defaults to 1000
+- Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
 
 

@@ -7,7 +7,6 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS
     /// <summary>
     /// Third-person follower, with complex pivoting: horizontal about the origin, 
     /// vertical about the shoulder.  
@@ -50,6 +49,7 @@ namespace Cinemachine
         [Tooltip("How far baehind the hand the camera will be placed")]
         public float CameraDistance;
 
+#if CINEMACHINE_PHYSICS
         /// <summary>Camera will avoid obstacles on these layers.</summary>
         [Header("Obstacles")]
         [Tooltip("Camera will avoid obstacles on these layers")]
@@ -68,6 +68,7 @@ namespace Cinemachine
         /// Specifies how close the camera can get to obstacles
         /// </summary>
         [Tooltip("Specifies how close the camera can get to obstacles")]
+        [Range(0, 1)]
         public float CameraRadius;
         
         /// <summary>
@@ -78,6 +79,11 @@ namespace Cinemachine
         [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
             "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
         public float CollisionDamping;
+#else
+        // Keep here for code simplicity
+        internal float CameraRadius;
+        internal float CollisionDamping;
+#endif
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
@@ -97,16 +103,28 @@ namespace Cinemachine
 
         void Reset()
         {
-            CameraCollisionFilter = 1;
             ShoulderOffset = new Vector3(0.5f, -0.4f, 0.0f);
             VerticalArmLength = 0.4f;
             CameraSide = 1.0f;
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
+#if CINEMACHINE_PHYSICS
+            CameraCollisionFilter = 1;
             CameraRadius = 0.2f;
             CollisionDamping = 2f;
+#else
+            CameraRadius = 0.02f;
+            CollisionDamping = 0;
+#endif
         }
 
+#if CINEMACHINE_PHYSICS
+        void OnDestroy()
+        {
+            RuntimeUtility.DestroyScratchCollider();
+        }
+#endif
+        
         /// <summary>True if component is enabled and has a Follow target defined</summary>
         public override bool IsValid => enabled && FollowTarget != null;
 
@@ -118,7 +136,10 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() { return Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)); }
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(CollisionDamping, Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z))); 
+        }
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
@@ -169,19 +190,19 @@ namespace Cinemachine
                 + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - targetPos);
             m_PreviousFollowTargetPosition = dampedTargetPos;
 
-            GetRigPositions(out Vector3 root, out _, out Vector3 hand);
+            GetRawRigPositions(out Vector3 root, out _, out Vector3 hand);
 
-            // 1. Check if pivot itself is colliding with something, if yes, then move the pivot 
+            // Check if hand is colliding with something, if yes, then move the hand 
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
             // next to walls. Where the preferred distance would be pulled completely to the 
             // player, using a bigger radius, this won't happen.
-            hand = ResolveCollisions(
+            var collidedHand = ResolveCollisions(
                 root, hand, deltaTime, CameraRadius * 1.05f, ref m_HandCollisionCorrection);
 
-            // 2. Try to place the camera to the preferred distance
+            // Place the camera at the correct distance from the hand
             Vector3 camPos = hand - (targetForward * CameraDistance);
             camPos = ResolveCollisions(
-                hand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
+                collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
             // Set state
             curState.RawPosition = camPos;
@@ -197,19 +218,25 @@ namespace Cinemachine
         /// <param name="hand">Hand of the rig.</param>
         public void GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
+            GetRawRigPositions(out root, out shoulder, out hand);
+            float correction = 0;
+            hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref correction);
+        }
+
+        void GetRawRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
+        {
             root = m_PreviousFollowTargetPosition;
             var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
             var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
-            t_HandOffset.y = VerticalArmLength;
             shoulder = root + Quaternion.AngleAxis(m_PreviousHeadingAngle, Vector3.up) * shoulderOffset;
-            hand = shoulder + FollowTargetRotation * t_HandOffset;
+            hand = shoulder + FollowTargetRotation * new Vector3(0, VerticalArmLength, 0);   
         }
-        Vector3 t_HandOffset = Vector3.zero; // minor opt. - to avoid creating a new vector in GetRigPositions
 
         Vector3 ResolveCollisions(
             Vector3 root, Vector3 tip, float deltaTime, 
             float cameraRadius, ref float collisionCorrection)
         {
+#if CINEMACHINE_PHYSICS
             var dir = tip - root;
             var len = dir.magnitude;
             dir /= len;
@@ -234,7 +261,9 @@ namespace Cinemachine
                     result -= dir * collisionCorrection;
             }
             return result;
+#else
+            return tip;
+#endif
         }
     }
-#endif
 }

@@ -1,13 +1,8 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
-#endif
-
 using UnityEngine;
 using UnityEditor;
 
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(Cinemachine3rdPersonFollow))]
     internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
     {
@@ -16,8 +11,9 @@ namespace Cinemachine.Editor
         {
             if (target.IsValid)
             {
+                var isLive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
                 Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+                Gizmos.color = isLive
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
 
@@ -26,10 +22,15 @@ namespace Cinemachine.Editor
                 Gizmos.DrawLine(shoulder, hand);
                 Gizmos.DrawSphere(root, 0.02f);
                 Gizmos.DrawSphere(shoulder, 0.02f);
-                Gizmos.DrawSphere(hand, 0.03f);
+                Gizmos.DrawSphere(hand, target.CameraRadius);
+
+                if (isLive)
+                    Gizmos.color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
+                Gizmos.DrawSphere(target.VirtualCamera.State.RawPosition, target.CameraRadius);
+
                 Gizmos.color = originalGizmoColour;
             }
         }
     }
-#endif
 }
+
