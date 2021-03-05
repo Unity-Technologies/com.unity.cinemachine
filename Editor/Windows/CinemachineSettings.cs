@@ -330,10 +330,10 @@ namespace Cinemachine.Editor
                 CinemachineStoryboardMute.Enabled);
 #endif
             // Editable Game Window Guides
-            CinemachineScreenComposerGuides.sEditableGameWindowGuides = EditorGUILayout.Toggle(
+            CinemachineScreenComposerGuidesGlobalEditable.Enabled = EditorGUILayout.Toggle(
                 new GUIContent("Editable Game Window Guides", "If checked, game window guides are editable in play " +
                     "mode. If false, game window guides are only for visualization"), 
-                CinemachineScreenComposerGuides.sEditableGameWindowGuides);
+                CinemachineScreenComposerGuidesGlobalEditable.Enabled);
             
             
             sScrollPosition = GUILayout.BeginScrollView(sScrollPosition);
