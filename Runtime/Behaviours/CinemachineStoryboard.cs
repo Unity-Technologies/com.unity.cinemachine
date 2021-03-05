@@ -140,6 +140,9 @@ namespace Cinemachine
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
 
+        /// <summary>
+        /// Camera render modes supported by CinemachineStoryboard.
+        /// </summary>
         public enum StoryboardRenderMode
         {
             ScreenSpaceOverlay,
