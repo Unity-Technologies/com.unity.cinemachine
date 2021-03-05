@@ -64,7 +64,7 @@ Makes the virtual camera use the local frame of the Follow target with tilt and 
 
 
 
-The offset in interpreted in world space relative to the origin of the Follow target. The camera will not change position when the target rotates.
+The offset is interpreted in world space relative to the origin of the Follow target. The camera will not change position when the target rotates.
 
 
 
