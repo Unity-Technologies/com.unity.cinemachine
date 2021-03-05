@@ -1,11 +1,11 @@
 # Binding Modes
 
-The binding mode is the coordinate space Unity uses to interpret the Camera offset from the target and the damping.
+The binding mode defines the coordinate space Unity uses to interpret the camera offset from the target and the damping.
 </br></br>
 
 ### Lock To Target
 
-Makes the virtual Camera use the local frame of the Follow target. While the target rotates, the Camera rotates with it to maintain the offset and to maintain the same view of the target.
+Makes the virtual camera use the local frame of the Follow target. When the target rotates, the camera rotates with it to maintain the offset and to maintain the same view of the target.
 
 |                                           |                                   |
 | ------------------------------------------------- | --------------------------------------------------- |
@@ -17,7 +17,7 @@ Makes the virtual Camera use the local frame of the Follow target. While the tar
 
 
 
-Makes the virtual Camera use the local frame of the Follow target, with roll set to 0.
+Makes the virtual camera use the local frame of the Follow target, with roll set to 0.
 
 |                                                    |                                            |
 | --------------------------------------------------------- | ----------------------------------------------------------- |
@@ -32,7 +32,7 @@ Makes the virtual Camera use the local frame of the Follow target, with roll set
 
 
 
-Makes the orientation of the virtual Camera match the local frame of the Follow target, at the moment when the virtual Camera is activated or when the target is assigned. This offset remains constant in world space. Also, the Camera does not rotate along with the target.
+Makes the orientation of the virtual camera match the local frame of the Follow target, at the moment when the virtual camera is activated or when the target is assigned. This offset remains constant in world space. The camera does not rotate along with the target.
 
 
 
@@ -47,7 +47,7 @@ Makes the orientation of the virtual Camera match the local frame of the Follow 
 
 
 
-Makes the virtual Camera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw.
+Makes the virtual camera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw.
 
 
 
@@ -64,7 +64,7 @@ Makes the virtual Camera use the local frame of the Follow target with tilt and 
 
 
 
-The offset interprets the world space relative to the origin of the Follow target. The Camera will not change position when the target rotates.
+The offset in interpreted in world space relative to the origin of the Follow target. The camera will not change position when the target rotates.
 
 
 
@@ -83,7 +83,7 @@ The offset interprets the world space relative to the origin of the Follow targe
 
 Simple follow with world up interprets the offset and damping values in camera-local space. This mode emulates the action a human camera operator would take when instructed to follow a target.
 
-The Camera attempts to move as little as possible to maintain the same distance from the target; the direction of the Camera with regard to the target does not matter. Regardless of the orientation of the target, the Camera tries to preserve the same distance and height from it.
+The camera attempts to move as little as possible to maintain the same distance from the target; the direction of the camera with regard to the target does not matter. Regardless of the orientation of the target, the camera tries to preserve the same distance and height from it.
 
 
 
