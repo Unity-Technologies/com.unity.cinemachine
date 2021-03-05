@@ -5,6 +5,7 @@ using UnityEngine;
 
 #if CINEMACHINE_UGUI
 using System.Collections.Generic;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -109,6 +110,12 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("Allows ordering canvases to render on top or below other canvases.")]
         public int m_SortingOrder;
+
+        /// <summary>
+        /// How far away from the camera is the storyboard's canvas generated.
+        /// </summary>
+        [Tooltip("How far away from the camera is the Canvas generated.")]
+        public float m_PlaneDistance = 100;
         
         class CanvasInfo
         {
@@ -151,13 +158,16 @@ namespace Cinemachine
         
         StoryboardRenderMode m_PreviousRenderMode;
         int m_PreviousSortingOrder;
+        float m_PreviousPlaneDistance;
         void UpdateRenderCanvas()
         {
             if (m_PreviousRenderMode != m_RenderMode || 
-                m_PreviousSortingOrder != m_SortingOrder)
+                m_PreviousSortingOrder != m_SortingOrder || 
+                Mathf.Abs(m_PreviousPlaneDistance - m_PlaneDistance) > UnityVectorExtensions.Epsilon)
             {
                 m_PreviousRenderMode = m_RenderMode;
                 m_PreviousSortingOrder = m_SortingOrder;
+                m_PreviousPlaneDistance = m_PlaneDistance;
                 DestroyCanvas();
             }
         }
@@ -234,6 +244,7 @@ namespace Cinemachine
             var c = ci.mCanvas.AddComponent<Canvas>();
             c.renderMode = (RenderMode) m_RenderMode;
             c.sortingOrder = m_SortingOrder;
+            c.planeDistance = m_PlaneDistance;
             c.worldCamera = ci.mCanvasParent.OutputCamera;
 
             var go = new GameObject("Viewport", typeof(RectTransform));

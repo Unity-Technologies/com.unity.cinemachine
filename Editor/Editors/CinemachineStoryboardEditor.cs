@@ -132,8 +132,13 @@ namespace Cinemachine.Editor
                 ++EditorGUI.indentLevel;
                 
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_RenderMode));
+                var renderModeProperty = FindProperty(x => x.m_RenderMode);
+                EditorGUILayout.PropertyField(renderModeProperty);
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_SortingOrder));
+                if (renderModeProperty.enumValueIndex != 0)
+                {
+                    EditorGUILayout.PropertyField(FindProperty(x => x.m_PlaneDistance));
+                }
                 if (EditorGUI.EndChangeCheck())
                 {
                     serializedObject.ApplyModifiedProperties();
