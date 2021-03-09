@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
 - Regression fix: CinemachineInputProvider had stopped providing input
+- Bugfix: lens aspect and sensorSize were not getting updated if lens OverrideMode != None
 
 
 ## [2.7.2] - 2021-02-15
