@@ -10,7 +10,7 @@ namespace Cinemachine
     /// This is an add-on to override the legacy input system and read input using the
     /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
     /// or FreeLook that requires user input, and drag in the the desired actions.
-    /// If the Input Syatem Package is not installed, then this behaviour does nothing.
+    /// If the Input System Package is not installed, then this behaviour does nothing.
     /// </summary>
     [HelpURL(Documentation.BaseURL + "manual/CinemachineAlternativeInput.html")]
     public class CinemachineInputProvider : MonoBehaviour, AxisState.IInputAxisProvider
@@ -113,7 +113,7 @@ namespace Cinemachine
     /// This is an add-on to override the legacy input system and read input using the
     /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
     /// or FreeLook that requires user input, and drag in the the desired actions.
-    /// If the Input Syatem Package is not installed, then this behaviour does nothing.
+    /// If the Input System Package is not installed, then this behaviour does nothing.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineInputProvider : MonoBehaviour {}
