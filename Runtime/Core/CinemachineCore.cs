@@ -503,5 +503,22 @@ namespace Cinemachine
             }
             return null;
         }
+
+        /// <summary>Call this to notify all virtual camewras that may be tracking a target
+        /// that the target's position has suddenly warped to somewhere else, so that
+        /// so that the virtual cameras can update their internal state to make the camera
+        /// warp seamlessy along with the target.
+        /// 
+        /// All virtual cameras are iterated so this call will work no matter how many 
+        /// are tracking the target, and whether they are active or inactive.
+        /// </summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            int numVcams = VirtualCameraCount;
+            for (int i = 0; i < numVcams; ++i)
+                GetVirtualCamera(i).OnTargetObjectWarped(target, positionDelta);
+        }
     }
 }
