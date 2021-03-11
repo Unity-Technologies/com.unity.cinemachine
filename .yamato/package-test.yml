@@ -3,7 +3,6 @@ all_editors:
   - version: 2019.4
   - version: 2020.2
   - version: 2021.1
-  - version: 2021.2
   - version: trunk
 all_platforms:
   - name: win
@@ -28,8 +27,7 @@ test_editors:
   - version: 2019.4
   - version: 2020.2
   - version: 2021.1
-  - version: 2021.2
-- version: trunk
+  - version: trunk
 test_platforms:
   - name: ubuntu
     type: Unity::VM
