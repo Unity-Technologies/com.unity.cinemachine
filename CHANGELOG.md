@@ -6,9 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions
+- Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object
 - Default PostProcessing profile priority is now configurable, and defaults to 1000
 - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
+- Regression fix: CinemachineInputProvider had stopped providing input
+- Bugfix: lens aspect and sensorSize were not getting updated if lens OverrideMode != None
 
 
 ## [2.7.2] - 2021-02-15
