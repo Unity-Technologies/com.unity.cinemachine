@@ -1,14 +1,12 @@
-//#if !UNITY_2019_3_OR_NEWER
+#if !UNITY_2019_3_OR_NEWER
 #define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-//#endif
+#endif
 
 using UnityEngine;
 using Cinemachine.Utility;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS
     /// <summary>
     /// Third-person follower, with complex pivoting: horizontal about the origin, 
     /// vertical about the shoulder.  
@@ -51,6 +49,7 @@ namespace Cinemachine
         [Tooltip("How far baehind the hand the camera will be placed")]
         public float CameraDistance;
 
+#if CINEMACHINE_PHYSICS
         /// <summary>Camera will avoid obstacles on these layers.</summary>
         [Header("Obstacles")]
         [Tooltip("Camera will avoid obstacles on these layers")]
@@ -69,13 +68,19 @@ namespace Cinemachine
         /// Specifies how close the camera can get to obstacles
         /// </summary>
         [Tooltip("Specifies how close the camera can get to obstacles")]
+        [Range(0, 1)]
         public float CameraRadius;
+        
+#else
+        // Keep here for code simplicity
+        internal float CameraRadius;
+#endif
 
         // State info
-        private Vector3 PreviousFollowTargetPosition;
-        private float PreviousHeadingAngle;
+        Vector3 m_PreviousFollowTargetPosition;
+        float m_PreviousHeadingAngle;
 
-        private void OnValidate()
+        void OnValidate()
         {
             CameraSide = Mathf.Clamp(CameraSide, -1.0f, 1.0f);
             Damping.x = Mathf.Max(0, Damping.x);
@@ -84,19 +89,30 @@ namespace Cinemachine
             CameraRadius = Mathf.Max(0.001f, CameraRadius);
         }
 
-        private void Reset()
+        void Reset()
         {
-            CameraCollisionFilter = 1;
             ShoulderOffset = new Vector3(0.5f, -0.4f, 0.0f);
             VerticalArmLength = 0.4f;
             CameraSide = 1.0f;
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
+#if CINEMACHINE_PHYSICS
+            CameraCollisionFilter = 1;
             CameraRadius = 0.2f;
+#else
+            CameraRadius = 0.02f;
+#endif
         }
 
+#if CINEMACHINE_PHYSICS
+        void OnDestroy()
+        {
+            RuntimeUtility.DestroyScratchCollider();
+        }
+#endif
+        
         /// <summary>True if component is enabled and has a Follow target defined</summary>
-        public override bool IsValid { get { return enabled && FollowTarget != null; } }
+        public override bool IsValid => enabled && FollowTarget != null;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
@@ -106,92 +122,124 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() { return Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)); }
+        public override float GetMaxDampTime() 
+        { 
+            return Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)); 
+        }
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
-        /// <param name="deltaTime">Not used.</param>
+        /// <param name="deltaTime">Elapsed time since last frame, for damping calculations.  
+        /// If negative, previous state is reset.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (!IsValid)
-                return;
-            if (!VirtualCamera.PreviousStateIsValid)
-                deltaTime = -1;
-            PositionCamera(ref curState, deltaTime);
+            if (IsValid)
+            {
+                if (!VirtualCamera.PreviousStateIsValid)
+                    deltaTime = -1;
+                PositionCamera(ref curState, deltaTime);
+            }
         }
 
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
             var targetPos = FollowTargetPosition;
-            var prevTargetPos = deltaTime >= 0 ? PreviousFollowTargetPosition : targetPos;
+            if (deltaTime < 0)
+            {
+                // No damping - reset all state info
+                m_PreviousFollowTargetPosition = targetPos;
+            }
+            var prevTargetPos = m_PreviousFollowTargetPosition;
 
             // Compute damped target pos (compute in camera space)
-            var dampedTargetPos = Quaternion.Inverse(curState.RawOrientation) 
-                * (targetPos - prevTargetPos);
+            var targetRot = FollowTargetRotation;
+            var dampedTargetPos = Quaternion.Inverse(targetRot) * (targetPos - prevTargetPos);
             if (deltaTime >= 0)
                 dampedTargetPos = VirtualCamera.DetachedFollowTargetDamp(
                     dampedTargetPos, Damping, deltaTime);
-            dampedTargetPos = prevTargetPos + curState.RawOrientation * dampedTargetPos;
+            dampedTargetPos = prevTargetPos + targetRot * dampedTargetPos;
 
             // Get target rotation (worldspace)
             var fwd = Vector3.forward;
             var up = Vector3.up;
-            var followTargetRotation = FollowTargetRotation;
-            var followTargetForward = followTargetRotation * fwd;
+            var targetForward = targetRot * fwd;
             var angle = UnityVectorExtensions.SignedAngle(
-                fwd, followTargetForward.ProjectOntoPlane(up), up);
-            var previousHeadingAngle = deltaTime >= 0 ? PreviousHeadingAngle : angle;
-            var deltaHeading = angle - previousHeadingAngle;
-            PreviousHeadingAngle = angle;
+                fwd, targetForward.ProjectOntoPlane(up), up);
+            if (deltaTime < 0)
+                m_PreviousHeadingAngle = angle; // no damping
+            var deltaHeading = angle - m_PreviousHeadingAngle;
+            m_PreviousHeadingAngle = angle;
 
             // Bypass user-sourced rotation
             dampedTargetPos = targetPos 
                 + Quaternion.AngleAxis(deltaHeading, up) * (dampedTargetPos - targetPos);
-            PreviousFollowTargetPosition = dampedTargetPos;
+            m_PreviousFollowTargetPosition = dampedTargetPos;
 
-            GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand);
+            GetRawRigPositions(out Vector3 root, out _, out Vector3 hand);
 
-            // 1. Check if pivot itself is colliding with something, if yes, then move the pivot 
+            // Check if hand is colliding with something, if yes, then move the hand 
             // closer to the player. The radius is bigger here than in step 2, to avoid problems 
             // next to walls. Where the preferred distance would be pulled completely to the 
             // player, using a bigger radius, this won't happen.
-            hand = PullTowardsStartOnCollision(in root, in hand, in CameraCollisionFilter, CameraRadius * 1.05f);
+            var collidedHand = ResolveCollisions(root, hand, CameraRadius * 1.05f);
 
-            // 2. Try to place the camera to the preferred distance
-            var camPos = hand - (followTargetForward * CameraDistance);
-            camPos = PullTowardsStartOnCollision(in hand, in camPos, in CameraCollisionFilter, CameraRadius);
+            // Place the camera at the correct distance from the hand
+            Vector3 camPos = hand - (targetForward * CameraDistance);
+            camPos = ResolveCollisions(collidedHand, camPos, CameraRadius);
 
+            // Set state
             curState.RawPosition = camPos;
-            curState.RawOrientation = FollowTargetRotation;
-            curState.ReferenceLookAt = camPos + 1000.0f * (FollowTargetRotation * Vector3.forward);
+            curState.RawOrientation = targetRot;
             curState.ReferenceUp = up;
         }
 
         /// <summary>
         /// Internal use only.  Public for the inspector gizmo
         /// </summary>
-        /// <param name="root"></param>
-        /// <param name="shoulder"></param>
-        /// <param name="hand"></param>
+        /// <param name="root">Root of the rig.</param>
+        /// <param name="shoulder">Shoulder of the rig.</param>
+        /// <param name="hand">Hand of the rig.</param>
         public void GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
-            root = PreviousFollowTargetPosition;
-            var ShoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
-            var shoulderOffset = Vector3.Lerp(ShoulderPivotReflected, ShoulderOffset, CameraSide);
-            var handOffset = new Vector3(0, VerticalArmLength, 0);
-            shoulder = root + Quaternion.AngleAxis(PreviousHeadingAngle, Vector3.up) * shoulderOffset;
-            hand = shoulder + FollowTargetRotation * handOffset;
+            GetRawRigPositions(out root, out shoulder, out hand);
+            hand = ResolveCollisions(root, hand, CameraRadius * 1.05f);
         }
 
-        private Vector3 PullTowardsStartOnCollision(
-            in Vector3 rayStart, in Vector3 rayEnd,
-            in LayerMask filter, float radius)
+        void GetRawRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
-            var dir = rayEnd - rayStart;
-            bool hasHit = RuntimeUtility.SphereCastIgnoreTag(
-                rayStart, radius, dir, out RaycastHit hitInfo, dir.magnitude, filter, IgnoreTag);
-            return hasHit ? hitInfo.point + hitInfo.normal * radius: rayEnd;
+            root = m_PreviousFollowTargetPosition;
+            var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
+            var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
+            shoulder = root + Quaternion.AngleAxis(m_PreviousHeadingAngle, Vector3.up) * shoulderOffset;
+            hand = shoulder + FollowTargetRotation * new Vector3(0, VerticalArmLength, 0);   
+        }
+
+        Vector3 ResolveCollisions(Vector3 root, Vector3 tip, float cameraRadius)
+        {
+#if CINEMACHINE_PHYSICS
+            var dir = tip - root;
+            var len = dir.magnitude;
+            dir /= len;
+
+            var result = tip;
+            float desiredCorrection = 0;
+
+            if (RuntimeUtility.SphereCastIgnoreTag(
+                root, cameraRadius, dir, out RaycastHit hitInfo, 
+                len, CameraCollisionFilter, IgnoreTag))
+            {
+                var desiredResult = hitInfo.point + hitInfo.normal * cameraRadius;
+                desiredCorrection = (desiredResult - tip).magnitude;
+            }
+
+            // Apply the correction
+            if (desiredCorrection > Epsilon)
+                result -= dir * desiredCorrection;
+
+            return result;
+#else
+            return tip;
+#endif
         }
     }
-#endif
 }

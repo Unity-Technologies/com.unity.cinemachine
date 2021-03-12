@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
+- Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
+
+
 ## [2.6.3] - 2020-09-16
 - Regression fix (1274989) - OnTargetObjectWarped broken for OrbitalTransposer
 - Bugfix (1276391) - CM Brain Reset did not reset Custom Blends asset in inspector

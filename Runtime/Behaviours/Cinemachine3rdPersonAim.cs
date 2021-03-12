@@ -14,11 +14,7 @@ namespace Cinemachine
     /// aim at all times, even in the presence of positional or rotational noise.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
-    #if UNITY_2018_3_OR_NEWER
     [ExecuteAlways]
-    #else
-    [ExecuteInEditMode]
-    #endif
     [DisallowMultipleComponent]
     public class Cinemachine3rdPersonAim : CinemachineExtension
     {
@@ -48,7 +44,7 @@ namespace Cinemachine
 
         private void OnValidate()
         {
-            AimDistance = Mathf.Max(0, AimDistance);
+            AimDistance = Mathf.Max(1, AimDistance);
         }
 
         private void Reset()
@@ -97,10 +93,25 @@ namespace Cinemachine
         {
             var fwd = state.CorrectedOrientation * Vector3.forward;
             var camPos = state.CorrectedPosition;
+            var aimDistance = AimDistance;
+
+            // We don't want to hit targets behind the player
+            var player = VirtualCamera.Follow;
+            if (player != null)
+            {
+                var playerPos = Quaternion.Inverse(state.CorrectedOrientation) * (player.position - camPos);
+                if (playerPos.z > 0)
+                {
+                    camPos += fwd * playerPos.z;
+                    aimDistance -= playerPos.z;
+                }
+            }
+
+            aimDistance = Mathf.Max(1, aimDistance);
             bool hasHit = RuntimeUtility.RaycastIgnoreTag(
                 new Ray(camPos, fwd), 
-                out RaycastHit hitInfo, AimDistance, AimCollisionFilter, IgnoreTag);
-            return hasHit ? hitInfo.point : camPos + fwd * AimDistance;
+                out RaycastHit hitInfo, aimDistance, AimCollisionFilter, IgnoreTag);
+            return hasHit ? hitInfo.point : camPos + fwd * aimDistance;
         }
         
         /// <summary>
