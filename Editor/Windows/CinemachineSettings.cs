@@ -323,19 +323,24 @@ namespace Cinemachine.Editor
                 GUILayout.EndScrollView();
             }
 
+            // set label width, so text is not cut for Toggles
+            float originalValue = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 180f;
+            {
 #if CINEMACHINE_UGUI
-            // Storyboard global mute
-            CinemachineStoryboardMute.Enabled = EditorGUILayout.Toggle(
-                new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted."), 
-                CinemachineStoryboardMute.Enabled);
+                // Storyboard global mute
+                CinemachineStoryboardMute.Enabled = EditorGUILayout.Toggle(
+                    new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted."),
+                    CinemachineStoryboardMute.Enabled);
 #endif
-            // Editable Game Window Guides
-            CinemachineScreenComposerGuidesGlobalEditable.Enabled = EditorGUILayout.Toggle(
-                new GUIContent("Editable Game Window Guides", "If checked, game window guides are editable in play " +
-                    "mode. If false, game window guides are only for visualization"), 
-                CinemachineScreenComposerGuidesGlobalEditable.Enabled);
-            
-            
+                // Editable Game Window Guides 
+                CinemachineScreenComposerGuidesGlobalEditable.Enabled = EditorGUILayout.Toggle(
+                    new GUIContent("Editable Game Window Guides", "If checked, game window guides are editable in play " +
+                        "mode. If false, game window guides are only for visualization"),
+                    CinemachineScreenComposerGuidesGlobalEditable.Enabled);
+            }
+            EditorGUIUtility.labelWidth = originalValue;
+
             sScrollPosition = GUILayout.BeginScrollView(sScrollPosition);
 
             //CinemachineCore.sShowHiddenObjects
