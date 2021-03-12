@@ -152,8 +152,14 @@ namespace Cinemachine
         /// </summary>
         public enum StoryboardRenderMode
         {
-            ScreenSpaceOverlay,
-            ScreenSpaceCamera
+            /// <summary>
+            /// Represents RenderMode.ScreenSpaceOverlay
+            /// </summary>
+            ScreenSpaceOverlay = RenderMode.ScreenSpaceOverlay,
+            /// <summary>
+            /// Represents RenderMode.ScreenSpaceCamera
+            /// </summary>
+            ScreenSpaceCamera = RenderMode.ScreenSpaceCamera
         };
         
         StoryboardRenderMode m_PreviousRenderMode;

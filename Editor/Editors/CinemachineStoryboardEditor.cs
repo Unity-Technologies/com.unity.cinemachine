@@ -135,7 +135,7 @@ namespace Cinemachine.Editor
                 var renderModeProperty = FindProperty(x => x.m_RenderMode);
                 EditorGUILayout.PropertyField(renderModeProperty);
                 EditorGUILayout.PropertyField(FindProperty(x => x.m_SortingOrder));
-                if (renderModeProperty.enumValueIndex != 0)
+                if (renderModeProperty.enumValueIndex == (int) RenderMode.ScreenSpaceCamera)
                 {
                     EditorGUILayout.PropertyField(FindProperty(x => x.m_PlaneDistance));
                 }
