@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
 
 
