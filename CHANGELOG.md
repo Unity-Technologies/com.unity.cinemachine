@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1256530) - disallow multiple components where appropriate
 - Bugfix: BlendList camera was incorrectly holding 0-length camera cuts
 - Bugfix: Position predictor not properly reset
+- Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick
+
 
 ## [2.6.2] - 2020-09-02
 ### Bugfixes
