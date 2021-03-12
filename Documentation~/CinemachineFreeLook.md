@@ -46,7 +46,7 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | | _Wait Time_ | When no user input has been detected on the axis, the camera waits this long in seconds before recentering. |
 | | _Recentering Time_ | Maximum angular speed of recentering. Accelerates into and decelerates out of the centered position. |
 | __Orbits__ || Properties for defining the Top, Middle, and Bottom rigs.  |
-| __Binding Mode__ || The coordinate space to use to interpret the offset from the target. Also sets the up vector. Cinemachine keeps the camera oriented in the up direction while aiming. These modes do incredibly different things, so try them out and one should work well for whatever your requirements are. |
+| __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use to interpret the offset from the target. Also sets the up vector. Cinemachine keeps the camera oriented in the up direction while aiming. These modes do incredibly different things, so try them out and one should work well for whatever your requirements are. |
 | | _Lock To Target On Assign_ | The target’s local frame at the moment when the Virtual Camera was activated, or when the target was assigned. |
 | | _Lock To Target With World Up_ | The target’s local frame, with the tilt and roll reset to zero. |
 | | _Lock To Target No Roll_ | The target’s local frame, with the roll reset to zero. |

@@ -221,13 +221,17 @@ namespace Cinemachine
             {
                 m_OrthoFromCamera = camera.orthographic;
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
-                if (IsPhysicalCamera)
+            }
+            if (IsPhysicalCamera)
+            {
+                if (camera != null)
                     m_SensorSize = camera.sensorSize;
-                else
-                {
+            }
+            else
+            {
+                if (camera != null)
                     m_SensorSize = new Vector2(camera.aspect, 1f);
-                    LensShift = Vector2.zero;
-                }
+                LensShift = Vector2.zero;
             }
         }
 
@@ -242,9 +246,9 @@ namespace Cinemachine
                 m_OrthoFromCamera = lens.Orthographic;
                 m_SensorSize = lens.m_SensorSize;
                 m_PhysicalFromCamera = lens.IsPhysicalCamera;
-                if (!IsPhysicalCamera)
-                    LensShift = Vector2.zero;
             }
+            if (!IsPhysicalCamera)
+                LensShift = Vector2.zero;
         }
 
         /// <summary>
