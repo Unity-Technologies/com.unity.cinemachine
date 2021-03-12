@@ -154,11 +154,13 @@ namespace Cinemachine
         public enum StoryboardRenderMode
         {
             /// <summary>
-            /// Represents RenderMode.ScreenSpaceOverlay
+            /// Renders in camera screen space. This means, that the storyboard is going to be displayed in front of
+            /// any objects in the scene.
             /// </summary>
             ScreenSpaceOverlay = RenderMode.ScreenSpaceOverlay,
             /// <summary>
-            /// Represents RenderMode.ScreenSpaceCamera
+            /// Render using the vcam on which the storyboard is on. This is useful, if you'd like to render
+            /// the storyboard at a specific distance from the vcam.
             /// </summary>
             ScreenSpaceCamera = RenderMode.ScreenSpaceCamera
         };
