@@ -120,6 +120,7 @@ namespace Cinemachine
         class CanvasInfo
         {
             public GameObject mCanvas;
+            public Canvas mCanvasComponent;
             public CinemachineBrain mCanvasParent;
             public RectTransform mViewport; // for mViewport clipping
             public UnityEngine.UI.RawImage mRawImage;
@@ -163,18 +164,20 @@ namespace Cinemachine
         };
         
         StoryboardRenderMode m_PreviousRenderMode;
-        int m_PreviousSortingOrder;
-        float m_PreviousPlaneDistance;
         void UpdateRenderCanvas()
         {
-            if (m_PreviousRenderMode != m_RenderMode || 
-                m_PreviousSortingOrder != m_SortingOrder || 
-                Mathf.Abs(m_PreviousPlaneDistance - m_PlaneDistance) > UnityVectorExtensions.Epsilon)
+            if (m_PreviousRenderMode != m_RenderMode)
             {
                 m_PreviousRenderMode = m_RenderMode;
-                m_PreviousSortingOrder = m_SortingOrder;
-                m_PreviousPlaneDistance = m_PlaneDistance;
                 DestroyCanvas();
+            }
+            else
+            {
+                for (int i = 0; i < mCanvasInfo.Count; ++i)
+                {
+                    mCanvasInfo[i].mCanvasComponent.planeDistance = m_PlaneDistance;
+                    mCanvasInfo[i].mCanvasComponent.sortingOrder = m_SortingOrder;
+                }
             }
         }
 
@@ -240,14 +243,14 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
+            ci.mCanvas.hideFlags = HideFlags.DontSave;
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
             CanvasesAndTheirOwners.AddCanvas(ci.mCanvas, this);
 #endif
 
-            var c = ci.mCanvas.AddComponent<Canvas>();
+            var c = ci.mCanvasComponent = ci.mCanvas.AddComponent<Canvas>();
             c.renderMode = (RenderMode) m_RenderMode;
             c.sortingOrder = m_SortingOrder;
             c.planeDistance = m_PlaneDistance;
