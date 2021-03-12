@@ -1,7 +1,6 @@
 ﻿#if !UNITY_2019_1_OR_NEWER
 #define CINEMACHINE_UGUI
 #endif
-
 using UnityEngine;
 
 #if CINEMACHINE_UGUI
@@ -176,7 +175,7 @@ namespace Cinemachine
                         if (child != null && child.name == CanvasName)
                         {
                             ci.mCanvas = child.gameObject;
-                            ci.mViewport = ci.mCanvas.GetComponentInChildren<RectTransform>();
+                            ci.mViewport = ci.mCanvas.GetComponentsInChildren<RectTransform>()[1]; // 0 is mCanvas
                             ci.mRawImage = ci.mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
                         }
                     }
@@ -255,7 +254,7 @@ namespace Cinemachine
                 ci.mViewport.localRotation = Quaternion.identity;
                 ci.mViewport.localScale = Vector3.one;
                 ci.mViewport.ForceUpdateRectTransforms();
-                ci.mViewport.sizeDelta = new Vector2(screen.width - Mathf.Abs(wipeAmount), screen.height);
+                ci.mViewport.sizeDelta = new Vector2(screen.width + 1 - Mathf.Abs(wipeAmount), screen.height + 1);
 
                 Vector2 scale = Vector2.one;
                 if (m_Image != null
