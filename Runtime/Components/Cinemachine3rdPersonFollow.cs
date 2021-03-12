@@ -175,7 +175,7 @@ namespace Cinemachine
             {
                 // No damping - reset all state info
                 m_PreviousFollowTargetPosition = targetPos;
-                m_CamPosCollisionCorrection = m_CamPosCollisionCorrection = 0;
+                m_CamPosCollisionCorrection = 0;
             }
             var prevTargetPos = m_PreviousFollowTargetPosition;
 
