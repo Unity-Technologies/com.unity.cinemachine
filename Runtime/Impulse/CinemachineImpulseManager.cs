@@ -38,6 +38,13 @@ namespace Cinemachine
             }
         }
 
+        [RuntimeInitializeOnLoadMethod]
+        static void InitializeModule()
+        {
+            if (sInstance != null)
+                sInstance.Clear();
+        }
+
         const float Epsilon = UnityVectorExtensions.Epsilon;
 
         /// <summary>This defines the time-envelope of the signal.
