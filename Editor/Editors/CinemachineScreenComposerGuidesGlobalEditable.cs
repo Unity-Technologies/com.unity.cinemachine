@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
-    class CinemachineScreenComposerGuidesGlobalEditable // why not static? (same Q for CinemachineStoryboardMute)
+    static class CinemachineScreenComposerGuidesGlobalEditable
     {
         static CinemachineScreenComposerGuidesGlobalEditable()
         {

@@ -9,7 +9,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
-    internal class CinemachineStoryboardMute
+    static class CinemachineStoryboardMute
     {
         static CinemachineStoryboardMute()
         {
