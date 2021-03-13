@@ -157,26 +157,26 @@ namespace Cinemachine
 
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
-            var targetPos = FollowTargetPosition;
-            if (deltaTime < 0)
-            {
-                // No damping - reset all state info
-                m_PreviousFollowTargetPosition = targetPos;
-                m_DampingCorrection = Vector3.zero;
-                m_HandCollisionCorrection = m_CamPosCollisionCorrection = 0;
-            }
-
-            // Get target rotation
             var up = curState.ReferenceUp;
+            var targetPos = FollowTargetPosition;
             var targetRot = FollowTargetRotation;
             var targetForward = targetRot * Vector3.forward;
             var heading = GetHeading(targetForward, up);
 
-            // Damping correction is applied to the shoulder offset - stretching the rig
-            m_DampingCorrection += Quaternion.Inverse(heading) * (m_PreviousFollowTargetPosition - targetPos);
-            if (deltaTime >= 0)
+            if (deltaTime < 0)
+            {
+                // No damping - reset damping state info
+                m_DampingCorrection = Vector3.zero;
+                m_HandCollisionCorrection = m_CamPosCollisionCorrection = 0;
+            }
+            else
+            {
+                // Damping correction is applied to the shoulder offset - stretching the rig
+                m_DampingCorrection += Quaternion.Inverse(heading) * (m_PreviousFollowTargetPosition - targetPos);
                 m_DampingCorrection -= VirtualCamera.DetachedFollowTargetDamp(m_DampingCorrection, Damping, deltaTime);
+            }
 
+            m_PreviousFollowTargetPosition = targetPos;
             var root = targetPos;
             GetRawRigPositions(root, targetRot, heading, out _, out Vector3 hand);
 
@@ -192,7 +192,6 @@ namespace Cinemachine
                 collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
             // Set state
-            m_PreviousFollowTargetPosition = targetPos;
             curState.RawPosition = camPos;
             curState.RawOrientation = targetRot;
             curState.ReferenceUp = up;
