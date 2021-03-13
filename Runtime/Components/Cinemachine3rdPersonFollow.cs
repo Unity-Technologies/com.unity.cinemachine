@@ -87,7 +87,7 @@ namespace Cinemachine
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
-        float m_PreviousHeadingAngle;
+        Vector3 m_DampingCorrection;
         float m_HandCollisionCorrection;
         float m_CamPosCollisionCorrection;
 
@@ -162,33 +162,23 @@ namespace Cinemachine
             {
                 // No damping - reset all state info
                 m_PreviousFollowTargetPosition = targetPos;
+                m_DampingCorrection = Vector3.zero;
                 m_HandCollisionCorrection = m_CamPosCollisionCorrection = 0;
             }
 
-            // Get target rotation (worldspace)
+            // Get target rotation
             var up = curState.ReferenceUp;
             var targetRot = FollowTargetRotation;
             var targetForward = targetRot * Vector3.forward;
-            var planeForward = targetForward.ProjectOntoPlane(up);
-            var heading = UnityVectorExtensions.SignedAngle(Vector3.forward, planeForward, up);
-            if (deltaTime < 0)
-                m_PreviousHeadingAngle = heading; // no angular damping
-            var deltaHeading = heading - m_PreviousHeadingAngle;
-            m_PreviousHeadingAngle = heading;
+            var heading = GetHeading(targetForward, up);
 
-            // Bypass user-sourced rotation
-            m_PreviousFollowTargetPosition = targetPos 
-                + Quaternion.AngleAxis(deltaHeading, up) * (m_PreviousFollowTargetPosition - targetPos);
-
-            // Compute damped target pos (compute in camera space - yaw only)
-            var dampingSpace = Quaternion.AngleAxis(heading, up);
-            var dampedTargetPos = Quaternion.Inverse(dampingSpace) * (targetPos - m_PreviousFollowTargetPosition);
+            // Damping correction is applied to the shoulder offset - stretching the rig
+            m_DampingCorrection += Quaternion.Inverse(heading) * (m_PreviousFollowTargetPosition - targetPos);
             if (deltaTime >= 0)
-                dampedTargetPos = VirtualCamera.DetachedFollowTargetDamp(dampedTargetPos, Damping, deltaTime);
-            m_PreviousFollowTargetPosition += dampingSpace * dampedTargetPos;
+                m_DampingCorrection -= VirtualCamera.DetachedFollowTargetDamp(m_DampingCorrection, Damping, deltaTime);
 
-            var root = m_PreviousFollowTargetPosition;
-            GetRawRigPositions(root, targetRot, out _, out Vector3 hand);
+            var root = targetPos;
+            GetRawRigPositions(root, targetRot, heading, out _, out Vector3 hand);
 
             // Check if hand is colliding with something, if yes, then move the hand 
             // closer to the player. The radius is slightly enlarged, to avoid problems 
@@ -202,6 +192,7 @@ namespace Cinemachine
                 collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
             // Set state
+            m_PreviousFollowTargetPosition = targetPos;
             curState.RawPosition = camPos;
             curState.RawOrientation = targetRot;
             curState.ReferenceUp = up;
@@ -215,17 +206,31 @@ namespace Cinemachine
         /// <param name="hand">Hand of the rig.</param>
         public void GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand)
         {
+            var up = VirtualCamera.State.ReferenceUp;
+            var targetRot = FollowTargetRotation;
+            var targetForward = targetRot * Vector3.forward;
+            var heading = GetHeading(targetForward, up);
             root = m_PreviousFollowTargetPosition;
-            GetRawRigPositions(root, FollowTargetRotation, out shoulder, out hand);
+            GetRawRigPositions(root, targetRot, heading, out shoulder, out hand);
             float correction = 0;
             hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref correction);
         }
 
-        void GetRawRigPositions(Vector3 root, Quaternion targetRot, out Vector3 shoulder, out Vector3 hand)
+        Quaternion GetHeading(Vector3 targetForward, Vector3 up)
+        {
+            var planeForward = targetForward.ProjectOntoPlane(up);
+            var heading = UnityVectorExtensions.SignedAngle(Vector3.forward, planeForward, up);
+            return Quaternion.AngleAxis(heading, up);
+        }
+
+        void GetRawRigPositions(
+            Vector3 root, Quaternion targetRot, Quaternion heading, 
+            out Vector3 shoulder, out Vector3 hand)
         {
             var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
             var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
-            shoulder = root + Quaternion.AngleAxis(m_PreviousHeadingAngle, Vector3.up) * shoulderOffset;
+            shoulderOffset += m_DampingCorrection;
+            shoulder = root + heading * shoulderOffset;
             hand = shoulder + targetRot * new Vector3(0, VerticalArmLength, 0);   
         }
 
