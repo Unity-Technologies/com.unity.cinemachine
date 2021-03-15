@@ -107,7 +107,7 @@ namespace Cinemachine
         /// <param name="layerMask">Layers to include</param>
         /// <param name="ignoreTag">Tag to ignore</param>
         /// <returns>True if something is hit.  Results in hitInfo.</returns>
-        internal static bool SphereCastIgnoreTag(
+        public static bool SphereCastIgnoreTag(
             Vector3 rayStart, float radius, Vector3 dir, 
             out RaycastHit hitInfo, float rayLength, 
             int layerMask, in string ignoreTag)
