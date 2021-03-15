@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
+- Bugfix: 3rdPersonFollow was stuttering when z damping was high
 - Bugfix: 3rdPersonFollow FOV was blended incorrectly when ReferenceLookAt was set to a faraway target
 - Bugfix: Position predictor not properly reset
 - Bugfix: FramingTransposer's TargetMovementOnly damping caused a flick
