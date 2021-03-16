@@ -11,4 +11,3 @@ pack:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
-
