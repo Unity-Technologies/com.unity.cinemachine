@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.7.3-pre.1] - 2021-03-16 
+## [2.7.3-pre.1] - 2021-03-15
 - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
 - Bugfix: 3rdPersonFollow was stuttering when z damping was high
