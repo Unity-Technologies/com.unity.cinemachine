@@ -434,7 +434,7 @@ namespace Cinemachine
         /// <param name="vcam">The virtual camera to check</param>
         /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
         public bool IsLiveInBlend(ICinemachineCamera vcam)
-        {return false;
+        {
             if (vcam != null)
             {
                 for (int i = 0; i < BrainCount; ++i)
