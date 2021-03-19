@@ -343,6 +343,7 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
+            UpdateTargetCache();
             UpdateRigCache();
 
             // Update the current state by invoking the component pipeline

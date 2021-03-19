@@ -240,8 +240,7 @@ namespace Cinemachine
             if (m_previousTarget != FollowTarget || !prevStateValid)
             {
                 m_previousTarget = FollowTarget;
-                m_targetOrientationOnAssign
-                    = (m_previousTarget == null) ? Quaternion.identity : FollowTargetRotation;
+                m_targetOrientationOnAssign = FollowTargetRotation;
             }
             if (!prevStateValid)
             {
