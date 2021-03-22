@@ -165,7 +165,6 @@ namespace Cinemachine
             ScreenSpaceCamera = RenderMode.ScreenSpaceCamera
         };
         
-        StoryboardRenderMode m_PreviousRenderMode;
         void UpdateRenderCanvas()
         {
             for (int i = 0; i < mCanvasInfo.Count; ++i)
@@ -189,7 +188,7 @@ namespace Cinemachine
                 DestroyCanvas();
         }
 
-        string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
+        string CanvasName => "_CM_canvas" + gameObject.GetInstanceID();
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
@@ -241,7 +240,7 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.DontSave;
+            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
