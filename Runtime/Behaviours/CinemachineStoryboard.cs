@@ -168,18 +168,11 @@ namespace Cinemachine
         StoryboardRenderMode m_PreviousRenderMode;
         void UpdateRenderCanvas()
         {
-            if (m_PreviousRenderMode != m_RenderMode)
+            for (int i = 0; i < mCanvasInfo.Count; ++i)
             {
-                m_PreviousRenderMode = m_RenderMode;
-                DestroyCanvas();
-            }
-            else
-            {
-                for (int i = 0; i < mCanvasInfo.Count; ++i)
-                {
-                    mCanvasInfo[i].mCanvasComponent.planeDistance = m_PlaneDistance;
-                    mCanvasInfo[i].mCanvasComponent.sortingOrder = m_SortingOrder;
-                }
+                mCanvasInfo[i].mCanvasComponent.renderMode = (RenderMode) m_RenderMode;
+                mCanvasInfo[i].mCanvasComponent.planeDistance = m_PlaneDistance;
+                mCanvasInfo[i].mCanvasComponent.sortingOrder = m_SortingOrder;
             }
         }
 
@@ -217,11 +210,29 @@ namespace Cinemachine
             for (int i = 0; ci == null && i < mCanvasInfo.Count; ++i)
                 if (mCanvasInfo[i].mCanvasParent == parent)
                     ci = mCanvasInfo[i];
-            if (createIfNotFound && ci == null)
+            if (createIfNotFound)
             {
-                ci = new CanvasInfo() { mCanvasParent = parent };
-                CreateCanvas(ci);
-                mCanvasInfo.Add(ci);
+                if (ci == null)
+                {
+                    ci = new CanvasInfo() { mCanvasParent = parent };
+                    int numChildren = parent.transform.childCount;
+                    for (int i = 0; ci.mCanvas == null && i < numChildren; ++i)
+                    {
+                        RectTransform child = parent.transform.GetChild(i) as RectTransform;
+                        if (child != null && child.name == CanvasName)
+                        {
+                            ci.mCanvas = child.gameObject;
+                            ci.mViewport = ci.mCanvas.GetComponentsInChildren<RectTransform>()[1]; // 0 is mCanvas
+                            ci.mRawImage = ci.mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
+                            ci.mCanvasComponent = ci.mCanvas.GetComponent<Canvas>();
+                        }
+                    }
+                    mCanvasInfo.Add(ci);
+                }
+                if (ci.mCanvas == null || ci.mViewport == null || ci.mRawImage == null || ci.mCanvasComponent == null)
+                    CreateCanvas(ci);
+
+                int a = 3;
             }
             return ci;
         }
@@ -230,7 +241,7 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
+            ci.mCanvas.hideFlags = HideFlags.DontSave;
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
