@@ -308,8 +308,10 @@ namespace Cinemachine.Editor
         [PreferenceItem("Cinemachine")]
 #endif
         
-        static GUIContent sDraggableText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted.");
-        static GUIContent sGlobalMuteText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted.");
+        static GUIContent sDraggableText = new GUIContent("Draggable Game Window Guides", "If checked, game window " +
+            "guides are draggable in play mode. If false, game window guides are only for visualization");
+        static GUIContent sGlobalMuteText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards " +
+            "are globally muted.");
         private static void OnGUI()
         {
             if (CinemachineHeader != null)
