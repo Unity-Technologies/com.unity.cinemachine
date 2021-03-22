@@ -9,23 +9,23 @@ using UnityEngine.UIElements;
 namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
-    static class CinemachineScreenComposerGuidesGlobalEditable
+    static class CinemachineScreenComposerGuidesGlobalDraggable
     {
-        static CinemachineScreenComposerGuidesGlobalEditable()
+        static CinemachineScreenComposerGuidesGlobalDraggable()
         {
-            CinemachineScreenComposerGuides.sEditableGameWindowGuides = Enabled;
+            CinemachineScreenComposerGuides.sDraggableGameWindowGuides = Enabled;
         }
 
-        public static string kEnabledKey = "EditableScreenComposerGuides_Enabled";
+        public static string kEnabledKey = "DraggableScreenComposerGuides_Enabled";
         public static bool Enabled
         {
             get => EditorPrefs.GetBool(kEnabledKey, true);
             set
             {
-                if (value != CinemachineScreenComposerGuides.sEditableGameWindowGuides)
+                if (value != CinemachineScreenComposerGuides.sDraggableGameWindowGuides)
                 {
                     EditorPrefs.SetBool(kEnabledKey, value);
-                    CinemachineScreenComposerGuides.sEditableGameWindowGuides = value;
+                    CinemachineScreenComposerGuides.sDraggableGameWindowGuides = value;
                 }
             }
         }
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
         public const float kGuideBarWidthPx = 3f;
 
         /// <summary>If true, then allows game window guides to be edited in play mode.</summary>
-        public static bool sEditableGameWindowGuides = true;
+        public static bool sDraggableGameWindowGuides = true;
 
         /// <summary>
         /// Helper to set the appropriate new rects in the target object, is something changed.
@@ -279,7 +279,7 @@ namespace Cinemachine.Editor
             mDragBars[(int)DragBar.Center] = new Rect(softEdgeLeft, softEdgeTop, softEdgeRight - softEdgeLeft, softEdgeBottom - softEdgeTop);
 
             // Handle dragging bars
-            if (sEditableGameWindowGuides && isLive)
+            if (sDraggableGameWindowGuides && isLive)
                 OnGuiHandleBarDragging(screenWidth, screenHeight);
 
             // Draw the masks
