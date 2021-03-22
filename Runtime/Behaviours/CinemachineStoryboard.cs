@@ -230,8 +230,6 @@ namespace Cinemachine
                 }
                 if (ci.mCanvas == null || ci.mViewport == null || ci.mRawImage == null || ci.mCanvasComponent == null)
                     CreateCanvas(ci);
-
-                int a = 3;
             }
             return ci;
         }
