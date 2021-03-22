@@ -307,6 +307,9 @@ namespace Cinemachine.Editor
 #else
         [PreferenceItem("Cinemachine")]
 #endif
+        
+        static GUIContent sDraggableText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted.");
+        static GUIContent sGlobalMuteText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted.");
         private static void OnGUI()
         {
             if (CinemachineHeader != null)
@@ -325,19 +328,18 @@ namespace Cinemachine.Editor
 
             // set label width, so text is not cut for Toggles
             float originalLabelWidth = EditorGUIUtility.labelWidth;
-            var draggableText = new GUIContent("Draggable Game Window Guides", "If checked, game window guides are editable in play " +
-                "mode. If false, game window guides are only for visualization");
-            EditorGUIUtility.labelWidth = GUI.skin.label.CalcSize(draggableText).x;
+            EditorGUIUtility.labelWidth = GUI.skin.label.CalcSize(
+                sGlobalMuteText.text.Length > sDraggableText.text.Length ? sGlobalMuteText : sDraggableText).x;
             {
 #if CINEMACHINE_UGUI
                 // Storyboard global mute
                 CinemachineStoryboardMute.Enabled = EditorGUILayout.Toggle(
-                    new GUIContent("Storyboard Global Mute", "If checked, all storyboards are globally muted."),
+                    sGlobalMuteText,
                     CinemachineStoryboardMute.Enabled);
 #endif
                 // Editable Game Window Guides 
                 CinemachineScreenComposerGuidesGlobalDraggable.Enabled = EditorGUILayout.Toggle(
-                    draggableText,
+                    sDraggableText,
                     CinemachineScreenComposerGuidesGlobalDraggable.Enabled);
             }
             EditorGUIUtility.labelWidth = originalLabelWidth;
