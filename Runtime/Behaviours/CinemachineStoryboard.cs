@@ -217,26 +217,11 @@ namespace Cinemachine
             for (int i = 0; ci == null && i < mCanvasInfo.Count; ++i)
                 if (mCanvasInfo[i].mCanvasParent == parent)
                     ci = mCanvasInfo[i];
-            if (createIfNotFound)
+            if (createIfNotFound && ci == null)
             {
-                if (ci == null)
-                {
-                    ci = new CanvasInfo() { mCanvasParent = parent };
-                    int numChildren = parent.transform.childCount;
-                    for (int i = 0; ci.mCanvas == null && i < numChildren; ++i)
-                    {
-                        RectTransform child = parent.transform.GetChild(i) as RectTransform;
-                        if (child != null && child.name == CanvasName)
-                        {
-                            ci.mCanvas = child.gameObject;
-                            ci.mViewport = ci.mCanvas.GetComponentsInChildren<RectTransform>()[1]; // 0 is mCanvas
-                            ci.mRawImage = ci.mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
-                        }
-                    }
-                    mCanvasInfo.Add(ci);
-                }
-                if (ci.mCanvas == null || ci.mViewport == null || ci.mRawImage == null)
-                    CreateCanvas(ci);
+                ci = new CanvasInfo() { mCanvasParent = parent };
+                CreateCanvas(ci);
+                mCanvasInfo.Add(ci);
             }
             return ci;
         }
@@ -245,7 +230,7 @@ namespace Cinemachine
         {
             ci.mCanvas = new GameObject(CanvasName, typeof(RectTransform));
             ci.mCanvas.layer = gameObject.layer;
-            ci.mCanvas.hideFlags = HideFlags.HideAndDontSave;
+            ci.mCanvas.hideFlags = HideFlags.DontSave;
             ci.mCanvas.transform.SetParent(ci.mCanvasParent.transform);
 #if UNITY_EDITOR
             // Workaround for Unity bug case Case 1004117
