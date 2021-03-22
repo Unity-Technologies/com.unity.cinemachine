@@ -155,12 +155,12 @@ namespace Cinemachine
         {
             /// <summary>
             /// Renders in camera screen space. This means, that the storyboard is going to be displayed in front of
-            /// any objects in the scene.
+            /// any objects in the scene. Equivalent to Unity's RenderMode.ScreenSpaceOverlay.
             /// </summary>
             ScreenSpaceOverlay = RenderMode.ScreenSpaceOverlay,
             /// <summary>
-            /// Render using the vcam on which the storyboard is on. This is useful, if you'd like to render
-            /// the storyboard at a specific distance from the vcam.
+            /// Render using the vcam on which the storyboard is on. This is useful, if you'd like to render the
+            /// storyboard at a specific distance from the vcam. Equivalent to Unity's RenderMode.ScreenSpaceCamera.
             /// </summary>
             ScreenSpaceCamera = RenderMode.ScreenSpaceCamera
         };
