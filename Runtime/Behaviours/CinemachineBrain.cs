@@ -71,6 +71,14 @@ namespace Cinemachine
         public bool m_IgnoreTimeScale = false;
 
         /// <summary>
+        /// When enabled, the delta time will be smoothed out.
+        /// This will reduce the impact of fps spikes on the camera.
+        /// </summary>
+        [Tooltip("When enabled, the delta time will be smoothed out.  " +
+            "This will reduce the impact of fps spikes on the camera.")]
+        public bool m_SmoothDeltaTime;
+
+        /// <summary>
         /// If set, this object's Y axis will define the worldspace Up vector for all the
         /// virtual cameras.  This is useful in top-down game environments.  If not set, Up is worldspace Y.
         /// </summary>
@@ -403,7 +411,7 @@ namespace Cinemachine
             }
             if (m_IgnoreTimeScale)
                 return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
-            return fixedDelta ? Time.fixedDeltaTime : Time.deltaTime;
+            return fixedDelta ? Time.fixedDeltaTime : m_SmoothDeltaTime ? Time.smoothDeltaTime : Time.deltaTime;
         }
 
         private void UpdateVirtualCameras(CinemachineCore.UpdateFilter updateFilter, float deltaTime)
