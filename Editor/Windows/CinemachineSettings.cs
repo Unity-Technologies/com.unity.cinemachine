@@ -334,12 +334,10 @@ namespace Cinemachine.Editor
                 sGlobalMuteText.text.Length > sDraggableText.text.Length ? sGlobalMuteText : sDraggableText).x;
             {
 #if CINEMACHINE_UGUI
-                // Storyboard global mute
                 CinemachineStoryboardMute.Enabled = EditorGUILayout.Toggle(
                     sGlobalMuteText,
                     CinemachineStoryboardMute.Enabled);
 #endif
-                // Editable Game Window Guides 
                 CinemachineScreenComposerGuidesGlobalDraggable.Enabled = EditorGUILayout.Toggle(
                     sDraggableText,
                     CinemachineScreenComposerGuidesGlobalDraggable.Enabled);
