@@ -308,7 +308,8 @@ namespace Cinemachine
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
                 && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
-                && transitionParams.m_InheritPosition)
+                && transitionParams.m_InheritPosition
+                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 m_XAxis.Value = GetAxisClosestValue(fromCam.State.RawPosition, worldUp);
                 return true;

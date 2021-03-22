@@ -460,6 +460,26 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// Checks if the vcam is live as part of an outgoing blend.  
+        /// Does not check whether the vcam is also the current active vcam.
+        /// </summary>
+        /// <param name="vcam">The virtual camera to check</param>
+        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
+        public bool IsLiveInBlend(ICinemachineCamera vcam)
+        {
+            // Ignore mCurrentLiveCameras.CamB
+            if (vcam == mCurrentLiveCameras.CamA)
+                return true;
+            var b = mCurrentLiveCameras.CamA as BlendSourceVirtualCamera;
+            if (b != null && b.Blend.Uses(vcam))
+                return true;
+            ICinemachineCamera parent = vcam.ParentCamera;
+            if (parent != null && parent.IsLiveChild(vcam, false))
+                return IsLiveInBlend(parent);
+            return false;
+        }
+
+        /// <summary>
         /// Is there a blend in progress?
         /// </summary>
         public bool IsBlending { get { return ActiveBlend != null; } }

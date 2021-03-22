@@ -302,7 +302,8 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, -1, 0.5f);
             m_VerticalAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && m_Transitions.m_InheritPosition)
+            if (fromCam != null && m_Transitions.m_InheritPosition
+                 && !CinemachineCore.Instance.IsLiveInBlend(this))
             {
                 // Note: horizontal axis already taken care of by base class
                 var cameraPos = fromCam.State.RawPosition;
