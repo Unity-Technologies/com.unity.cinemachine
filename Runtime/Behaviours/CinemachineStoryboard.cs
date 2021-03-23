@@ -169,9 +169,14 @@ namespace Cinemachine
         {
             for (int i = 0; i < mCanvasInfo.Count; ++i)
             {
-                mCanvasInfo[i].mCanvasComponent.renderMode = (RenderMode) m_RenderMode;
-                mCanvasInfo[i].mCanvasComponent.planeDistance = m_PlaneDistance;
-                mCanvasInfo[i].mCanvasComponent.sortingOrder = m_SortingOrder;
+                if (mCanvasInfo[i] == null || mCanvasInfo[i].mCanvasComponent == null)
+                    mCanvasInfo.RemoveAt(i--);
+                else
+                {
+                    mCanvasInfo[i].mCanvasComponent.renderMode = (RenderMode) m_RenderMode;
+                    mCanvasInfo[i].mCanvasComponent.planeDistance = m_PlaneDistance;
+                    mCanvasInfo[i].mCanvasComponent.sortingOrder = m_SortingOrder;
+                }
             }
         }
 
@@ -207,7 +212,7 @@ namespace Cinemachine
         {
             CanvasInfo ci = null;
             for (int i = 0; ci == null && i < mCanvasInfo.Count; ++i)
-                if (mCanvasInfo[i].mCanvasParent == parent)
+                if (mCanvasInfo[i] != null && mCanvasInfo[i].mCanvasParent == parent)
                     ci = mCanvasInfo[i];
             if (createIfNotFound)
             {
@@ -221,7 +226,8 @@ namespace Cinemachine
                         if (child != null && child.name == CanvasName)
                         {
                             ci.mCanvas = child.gameObject;
-                            ci.mViewport = ci.mCanvas.GetComponentsInChildren<RectTransform>()[1]; // 0 is mCanvas
+                            var kids = ci.mCanvas.GetComponentsInChildren<RectTransform>();
+                            ci.mViewport = kids.Length > 1 ? kids[1] : null; // 0 is mCanvas
                             ci.mRawImage = ci.mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
                             ci.mCanvasComponent = ci.mCanvas.GetComponent<Canvas>();
                         }
