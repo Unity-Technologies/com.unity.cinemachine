@@ -462,7 +462,7 @@ namespace Cinemachine
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = AbstractFollowTargetGroup;
-            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None;
+            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None && !group.IsEmpty;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
 
