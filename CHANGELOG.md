@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow was stuttering when z damping was high
 - Regression fix: CinemachineInputProvider had stopped providing input
 - Bugfix: lens aspect and sensorSize were not getting updated if lens OverrideMode != None
+- Bugfix: Framing transposer now handles empty groups
 - Bugfix: Interrupting a transition with InheritPosition enabled was broken
 
 
