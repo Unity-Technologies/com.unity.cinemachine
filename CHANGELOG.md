@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- New feature: Storyboard support for ScreenSpaceOverlay and ScreenSpaceCamera camera render modes.
 - Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions
 - Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object
 - Added ability for vcam to have a negative near clip plane
