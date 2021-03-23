@@ -9,8 +9,8 @@ namespace Cinemachine.Editor
     sealed class CinemachinePOVEditor : BaseEditor<CinemachinePOV>
     {
         GUIContent m_InputProviderAddLabel = new GUIContent(
-            "Add cm input provider", "Adds CinemachineInputProvider to this vcam, enabling it to read input from" +
-            "input actions using the UnityEngine.Input package API.");
+            "Add CinemachineInputProvider", "Adds CinemachineInputProvider to this vcam, if it does not have one already, " +
+            "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
 
         public override void OnInspectorGUI()
         {
@@ -20,12 +20,15 @@ namespace Cinemachine.Editor
             var rect = EditorGUILayout.GetControlRect(true);
             if (GUI.Button(rect, m_InputProviderAddLabel))
             {
-                var myGO = ((CinemachinePOV)target).gameObject;
+                var myScript = ((CinemachinePOV)target);
+                
+                // parent is the vcam, because POV is a hidden child gameobject
+                var myGO = myScript.transform.parent.gameObject; 
                 var inputProvider = myGO.GetComponent<CinemachineInputProvider>();
                 if (inputProvider == null)
                 {
                     inputProvider = myGO.AddComponent<CinemachineInputProvider>();
-                    //inputProvider.XYAxis = 
+                    inputProvider.XYAxis = CinemachineDefaultMouseInput.GetInputActionReference();
                 }
             }
         }
