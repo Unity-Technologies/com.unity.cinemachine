@@ -391,7 +391,8 @@ namespace Cinemachine
 //              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
 //            m_RecenterToTargetHeading.CancelRecentering();
 //            m_YAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && m_Transitions.m_InheritPosition)
+            if (fromCam != null && m_Transitions.m_InheritPosition 
+                && !CinemachineCore.Instance.IsLiveInBlend(this))
             {
                 var cameraPos = fromCam.State.RawPosition;
 

@@ -8,6 +8,29 @@ using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
+    [InitializeOnLoad]
+    static class CinemachineScreenComposerGuidesGlobalDraggable
+    {
+        static CinemachineScreenComposerGuidesGlobalDraggable()
+        {
+            CinemachineScreenComposerGuides.sDraggableGameWindowGuides = Enabled;
+        }
+
+        public static string kEnabledKey = "DraggableScreenComposerGuides_Enabled";
+        public static bool Enabled
+        {
+            get => EditorPrefs.GetBool(kEnabledKey, true);
+            set
+            {
+                if (value != CinemachineScreenComposerGuides.sDraggableGameWindowGuides)
+                {
+                    EditorPrefs.SetBool(kEnabledKey, value);
+                    CinemachineScreenComposerGuides.sDraggableGameWindowGuides = value;
+                }
+            }
+        }
+    }
+    
 #if !UNITY_2019_2_OR_NEWER
     internal class GameViewEventCatcher
     {
@@ -119,6 +142,9 @@ namespace Cinemachine.Editor
 
         /// <summary>Width of the draggable guide bar in the game view</summary>
         public const float kGuideBarWidthPx = 3f;
+
+        /// <summary>If true, then allows game window guides to be edited in play mode.</summary>
+        public static bool sDraggableGameWindowGuides = true;
 
         /// <summary>
         /// Helper to set the appropriate new rects in the target object, is something changed.
@@ -253,7 +279,7 @@ namespace Cinemachine.Editor
             mDragBars[(int)DragBar.Center] = new Rect(softEdgeLeft, softEdgeTop, softEdgeRight - softEdgeLeft, softEdgeBottom - softEdgeTop);
 
             // Handle dragging bars
-            if (isLive)
+            if (sDraggableGameWindowGuides && isLive)
                 OnGuiHandleBarDragging(screenWidth, screenHeight);
 
             // Draw the masks

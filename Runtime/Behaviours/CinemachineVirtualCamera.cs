@@ -595,7 +595,8 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 
-            if (m_Transitions.m_InheritPosition && fromCam != null)
+            if (m_Transitions.m_InheritPosition && fromCam != null
+                 && !CinemachineCore.Instance.IsLiveInBlend(this))
                 ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
 
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
