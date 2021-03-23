@@ -5,6 +5,7 @@ using UnityEngine;
 
 #if CINEMACHINE_UGUI
 using System.Collections.Generic;
+using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -98,9 +99,28 @@ namespace Cinemachine
         [Tooltip("Wipe the image on and off horizontally")]
         public float m_SplitView = 0f;
 
+        /// <summary>
+        /// The render mode of the canvas on which the storyboard is drawn.
+        /// </summary>
+        [Tooltip("The render mode of the canvas on which the storyboard is drawn.")]
+        public StoryboardRenderMode m_RenderMode = StoryboardRenderMode.ScreenSpaceOverlay;
+
+        /// <summary>
+        /// Allows ordering canvases to render on top or below other canvases.
+        /// </summary>
+        [Tooltip("Allows ordering canvases to render on top or below other canvases.")]
+        public int m_SortingOrder;
+
+        /// <summary>
+        /// How far away from the camera is the storyboard's canvas generated.
+        /// </summary>
+        [Tooltip("How far away from the camera is the Canvas generated.")]
+        public float m_PlaneDistance = 100;
+        
         class CanvasInfo
         {
             public GameObject mCanvas;
+            public Canvas mCanvasComponent;
             public CinemachineBrain mCanvasParent;
             public RectTransform mViewport; // for mViewport clipping
             public UnityEngine.UI.RawImage mRawImage;
@@ -120,11 +140,46 @@ namespace Cinemachine
             if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Finalize)
                 return;
 
+            UpdateRenderCanvas();
+
             if (m_ShowImage)
                 state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
             if (m_MuteCamera)
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
+
+        /// <summary>
+        /// Camera render modes supported by CinemachineStoryboard.
+        /// </summary>
+        public enum StoryboardRenderMode
+        {
+            /// <summary>
+            /// Renders in camera screen space. This means, that the storyboard is going to be displayed in front of
+            /// any objects in the scene. Equivalent to Unity's RenderMode.ScreenSpaceOverlay.
+            /// </summary>
+            ScreenSpaceOverlay = RenderMode.ScreenSpaceOverlay,
+            /// <summary>
+            /// Render using the vcam on which the storyboard is on. This is useful, if you'd like to render the
+            /// storyboard at a specific distance from the vcam. Equivalent to Unity's RenderMode.ScreenSpaceCamera.
+            /// </summary>
+            ScreenSpaceCamera = RenderMode.ScreenSpaceCamera
+        };
+        
+        void UpdateRenderCanvas()
+        {
+            for (int i = 0; i < mCanvasInfo.Count; ++i)
+            {
+                if (mCanvasInfo[i] == null || mCanvasInfo[i].mCanvasComponent == null)
+                    mCanvasInfo.RemoveAt(i--);
+                else
+                {
+                    mCanvasInfo[i].mCanvasComponent.renderMode = (RenderMode) m_RenderMode;
+                    mCanvasInfo[i].mCanvasComponent.planeDistance = m_PlaneDistance;
+                    mCanvasInfo[i].mCanvasComponent.sortingOrder = m_SortingOrder;
+                }
+            }
+        }
+
 
         /// <summary>Connect to virtual camera.  Adds/removes listener</summary>
         /// <param name="connect">True if connecting, false if disconnecting</param>
@@ -138,7 +193,7 @@ namespace Cinemachine
                 DestroyCanvas();
         }
 
-        string CanvasName { get { return "_CM_canvas" + gameObject.GetInstanceID().ToString(); } }
+        string CanvasName => "_CM_canvas" + gameObject.GetInstanceID();
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
@@ -152,12 +207,12 @@ namespace Cinemachine
             if (ci != null && ci.mCanvas != null)
                 ci.mCanvas.SetActive(showIt);
         }
-
+        
         CanvasInfo LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
         {
             CanvasInfo ci = null;
             for (int i = 0; ci == null && i < mCanvasInfo.Count; ++i)
-                if (mCanvasInfo[i].mCanvasParent == parent)
+                if (mCanvasInfo[i] != null && mCanvasInfo[i].mCanvasParent == parent)
                     ci = mCanvasInfo[i];
             if (createIfNotFound)
             {
@@ -171,13 +226,15 @@ namespace Cinemachine
                         if (child != null && child.name == CanvasName)
                         {
                             ci.mCanvas = child.gameObject;
-                            ci.mViewport = ci.mCanvas.GetComponentsInChildren<RectTransform>()[1]; // 0 is mCanvas
+                            var kids = ci.mCanvas.GetComponentsInChildren<RectTransform>();
+                            ci.mViewport = kids.Length > 1 ? kids[1] : null; // 0 is mCanvas
                             ci.mRawImage = ci.mCanvas.GetComponentInChildren<UnityEngine.UI.RawImage>();
+                            ci.mCanvasComponent = ci.mCanvas.GetComponent<Canvas>();
                         }
                     }
                     mCanvasInfo.Add(ci);
                 }
-                if (ci.mCanvas == null || ci.mViewport == null || ci.mRawImage == null)
+                if (ci.mCanvas == null || ci.mViewport == null || ci.mRawImage == null || ci.mCanvasComponent == null)
                     CreateCanvas(ci);
             }
             return ci;
@@ -194,8 +251,11 @@ namespace Cinemachine
             CanvasesAndTheirOwners.AddCanvas(ci.mCanvas, this);
 #endif
 
-            var c = ci.mCanvas.AddComponent<Canvas>();
-            c.renderMode = RenderMode.ScreenSpaceOverlay;
+            var c = ci.mCanvasComponent = ci.mCanvas.AddComponent<Canvas>();
+            c.renderMode = (RenderMode) m_RenderMode;
+            c.sortingOrder = m_SortingOrder;
+            c.planeDistance = m_PlaneDistance;
+            c.worldCamera = ci.mCanvasParent.OutputCamera;
 
             var go = new GameObject("Viewport", typeof(RectTransform));
             go.transform.SetParent(ci.mCanvas.transform);
