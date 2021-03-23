@@ -4,7 +4,23 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.7.2] - 2021-02-10
+## [Unreleased]
+- New feature: Storyboard support for ScreenSpaceOverlay and ScreenSpaceCamera camera render modes.
+- Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions
+- Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object
+- Added ability for vcam to have a negative near clip plane
+- Added Draggable Game Window Guides toggle in Cinemachine preferences. If turned off, game window guides are only for visualization.
+- Default PostProcessing profile priority is now configurable, and defaults to 1000
+- Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
+- Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
+- Bugfix: 3rdPersonFollow was stuttering when z damping was high
+- Regression fix: CinemachineInputProvider had stopped providing input
+- Bugfix: lens aspect and sensorSize were not getting updated if lens OverrideMode != None
+- Bugfix: Framing transposer now handles empty groups
+- Bugfix: Interrupting a transition with InheritPosition enabled was broken
+
+
+## [2.7.2] - 2021-02-15
 - CinemachineConfiner2D now handles cases where camera window is oversized
 - New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a cinemachine extension giving convenient control over the shader parameters
 - Bugfix (1293429) - Brain could choose vcam with not the highest priority in some cases
@@ -25,7 +41,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Create via menu doesn't create as child of selected object
 - Bugfix: Post-processing profiles not cleaned up when no active vcams
 - Bugfix: Install CinemachineExamples Asset Package menu item was failing on 2018.4 / macOS
-- Added Editable Game Window Guides toggle UI in Cinemachine preferences. If turned off, game window guides are only for visualization.
+- New sample scene (2DConfinerComplex) demonstrating new CinemachineConfiner2D extension.
+- Updated CharacterMovement2D script in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup) to make jumping responsive. 
+- Updated 2DConfinedTargetGroup and 2DConfiner scenes to use new CinemachineConfiner2D extension. 
 
 
 ## [2.7.1] - 2020-11-14

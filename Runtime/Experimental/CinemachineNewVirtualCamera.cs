@@ -149,9 +149,11 @@ namespace Cinemachine
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
-            if (m_Transitions.m_InheritPosition && fromCam != null)
+            if (m_Transitions.m_InheritPosition && fromCam != null  
+                && !CinemachineCore.Instance.IsLiveInBlend(this))
+            {
                 ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
-
+            }
             UpdateComponentCache();
             for (int i = 0; i < m_Components.Length; ++i)
             {

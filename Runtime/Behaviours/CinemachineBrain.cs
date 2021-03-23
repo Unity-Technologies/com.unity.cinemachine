@@ -460,6 +460,26 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// Checks if the vcam is live as part of an outgoing blend.  
+        /// Does not check whether the vcam is also the current active vcam.
+        /// </summary>
+        /// <param name="vcam">The virtual camera to check</param>
+        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
+        public bool IsLiveInBlend(ICinemachineCamera vcam)
+        {
+            // Ignore mCurrentLiveCameras.CamB
+            if (vcam == mCurrentLiveCameras.CamA)
+                return true;
+            var b = mCurrentLiveCameras.CamA as BlendSourceVirtualCamera;
+            if (b != null && b.Blend.Uses(vcam))
+                return true;
+            ICinemachineCamera parent = vcam.ParentCamera;
+            if (parent != null && parent.IsLiveChild(vcam, false))
+                return IsLiveInBlend(parent);
+            return false;
+        }
+
+        /// <summary>
         /// Is there a blend in progress?
         /// </summary>
         public bool IsBlending { get { return ActiveBlend != null; } }
@@ -764,7 +784,7 @@ namespace Cinemachine
         /// or part of a current blend, either directly or indirectly because its parents are live.
         /// </summary>
         /// <param name="vcam">The camera to test whether it is live</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominat live child</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominat live child</param>
         /// <returns>True if the camera is live (directly or indirectly)
         /// or part of a blend in progress.</returns>
         public bool IsLive(ICinemachineCamera vcam, bool dominantChildOnly = false)

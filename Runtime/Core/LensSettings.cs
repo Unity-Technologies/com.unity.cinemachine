@@ -221,13 +221,17 @@ namespace Cinemachine
             {
                 m_OrthoFromCamera = camera.orthographic;
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
-                if (IsPhysicalCamera)
+            }
+            if (IsPhysicalCamera)
+            {
+                if (camera != null)
                     m_SensorSize = camera.sensorSize;
-                else
-                {
+            }
+            else
+            {
+                if (camera != null)
                     m_SensorSize = new Vector2(camera.aspect, 1f);
-                    LensShift = Vector2.zero;
-                }
+                LensShift = Vector2.zero;
             }
         }
 
@@ -242,9 +246,9 @@ namespace Cinemachine
                 m_OrthoFromCamera = lens.Orthographic;
                 m_SensorSize = lens.m_SensorSize;
                 m_PhysicalFromCamera = lens.IsPhysicalCamera;
-                if (!IsPhysicalCamera)
-                    LensShift = Vector2.zero;
             }
+            if (!IsPhysicalCamera)
+                LensShift = Vector2.zero;
         }
 
         /// <summary>
@@ -312,7 +316,8 @@ namespace Cinemachine
         /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>
         public void Validate()
         {
-            NearClipPlane = Mathf.Max(NearClipPlane, Orthographic ? 0 : 0.001f);
+            if (!Orthographic)
+                NearClipPlane = Mathf.Max(NearClipPlane, 0.001f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.001f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
             m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);

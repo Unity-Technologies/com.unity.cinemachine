@@ -83,7 +83,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected, typeof(CinemachineBrain))]
         private static void DrawBrainGizmos(CinemachineBrain brain, GizmoType drawType)
         {
-            if (brain.OutputCamera != null && brain.m_ShowCameraFrustum)
+            if (brain.OutputCamera != null && brain.m_ShowCameraFrustum && brain.isActiveAndEnabled)
             {
                 DrawCameraFrustumGizmo(
                     brain, LensSettings.FromCamera(brain.OutputCamera),
@@ -113,7 +113,7 @@ namespace Cinemachine.Editor
                 Vector3 size = new Vector3(
                         aspect * lens.OrthographicSize * 2,
                         lens.OrthographicSize * 2,
-                        lens.NearClipPlane + lens.FarClipPlane);
+                        lens.FarClipPlane - lens.NearClipPlane);
                 Gizmos.DrawWireCube(
                     new Vector3(0, 0, (size.z / 2) + lens.NearClipPlane), size);
             }

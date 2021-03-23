@@ -644,6 +644,7 @@ MonoBehaviour:
     m_Bits: 1
   IgnoreTag: Player
   CameraRadius: 0.2
+  CollisionDamping: 2
 --- !u!114 &424502142
 MonoBehaviour:
   m_ObjectHideFlags: 3

@@ -11,7 +11,7 @@ namespace Cinemachine
         /// or
         /// [HelpURL(Documentation.BaseURL + "manual/some-page.html")]
         /// It cannot support String.Format nor string interpolation</summary>
-        public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@2.7/";
+        public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@2.8/";
     }
 
     /// <summary>A singleton that manages complete lists of CinemachineBrain and,
@@ -24,7 +24,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20170927;
 
         /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.7.2";
+        public static readonly string kVersionString = "2.8.0";
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
@@ -428,6 +428,26 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// Checks if the vcam is live as part of an outgoing blend in any active CinemachineBrain.  
+        /// Does not check whether the vcam is also the current active vcam.
+        /// </summary>
+        /// <param name="vcam">The virtual camera to check</param>
+        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
+        public bool IsLiveInBlend(ICinemachineCamera vcam)
+        {
+            if (vcam != null)
+            {
+                for (int i = 0; i < BrainCount; ++i)
+                {
+                    CinemachineBrain b = GetActiveBrain(i);
+                    if (b != null && b.IsLiveInBlend(vcam))
+                        return true;
+                }
+            }
+            return false;
+        }
+        
+        /// <summary>
         /// Signal that the virtual has been activated.
         /// If the camera is live, then all CinemachineBrains that are showing it will
         /// send an activation event.
@@ -502,6 +522,23 @@ namespace Cinemachine
                 }
             }
             return null;
+        }
+
+        /// <summary>Call this to notify all virtual camewras that may be tracking a target
+        /// that the target's position has suddenly warped to somewhere else, so that
+        /// so that the virtual cameras can update their internal state to make the camera
+        /// warp seamlessy along with the target.
+        /// 
+        /// All virtual cameras are iterated so this call will work no matter how many 
+        /// are tracking the target, and whether they are active or inactive.
+        /// </summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            int numVcams = VirtualCameraCount;
+            for (int i = 0; i < numVcams; ++i)
+                GetVirtualCamera(i).OnTargetObjectWarped(target, positionDelta);
         }
     }
 }

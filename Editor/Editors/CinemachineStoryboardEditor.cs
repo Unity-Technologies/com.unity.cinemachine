@@ -43,6 +43,7 @@ namespace Cinemachine.Editor
 
         const float FastWaveformUpdateInterval = 0.1f;
         float mLastSplitScreenEventTime = 0;
+        static bool sAdvancedFoldout;
         
         public override void OnInspectorGUI()
         {
@@ -123,6 +124,28 @@ namespace Cinemachine.Editor
             rect.x += EditorGUIUtility.labelWidth;
             if (GUI.Button(rect, "Open"))
                 WaveformWindow.OpenWindow();
+
+            EditorGUILayout.Space();
+            sAdvancedFoldout = EditorGUILayout.Foldout(sAdvancedFoldout, "Advanced");
+            if (sAdvancedFoldout)
+            {
+                ++EditorGUI.indentLevel;
+                
+                EditorGUI.BeginChangeCheck();
+                var renderModeProperty = FindProperty(x => x.m_RenderMode);
+                EditorGUILayout.PropertyField(renderModeProperty);
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_SortingOrder));
+                if (renderModeProperty.enumValueIndex == (int) RenderMode.ScreenSpaceCamera)
+                {
+                    EditorGUILayout.PropertyField(FindProperty(x => x.m_PlaneDistance));
+                }
+                if (EditorGUI.EndChangeCheck())
+                {
+                    serializedObject.ApplyModifiedProperties();
+                }
+                
+                --EditorGUI.indentLevel;
+            }
         }
     }
 }
