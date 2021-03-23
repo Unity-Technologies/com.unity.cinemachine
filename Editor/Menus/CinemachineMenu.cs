@@ -64,10 +64,6 @@ namespace Cinemachine.Editor
             SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
-
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            go.AddComponent<CinemachineInputProvider>();
-#endif
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_MenuPriority)]

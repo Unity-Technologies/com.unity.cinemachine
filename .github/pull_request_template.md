@@ -1,3 +1,5 @@
+[Delete any line or section that does not apply]
+
 ### Purpose of this PR
 
 [JIRA issue. Desc of feature/change. Links to screenshots, design docs, user docs, etc. Remember reviewers may be outside your team, and not know your feature/area that should be explained more.]
@@ -17,6 +19,11 @@
 - [ ] Updated [CHANGELOG](https://keepachangelog.com/en/1.0.0/)
 - [ ] Updated README (if applicable)
 - [ ] Commented all public classes, properties, and methods
+- [ ] Updated user documentation
+
+### Samples status
+
+- [ ] Re-packed Extras~/CinemachineExamples.unitypackage
 
 ### Technical risk
 

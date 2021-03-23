@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -9,5 +10,6 @@ namespace Cinemachine.Editor
         {
             Target.UpdateInputAxisProvider();
         }
+
     }
 }

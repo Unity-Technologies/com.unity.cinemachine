@@ -96,7 +96,7 @@ using System.Collections.Generic;
                     return;
                 }
 
-                if (!TargetPositionCache.HasHurrentTime)
+                if (!TargetPositionCache.HasCurrentTime)
                     return;
 
                 var cs = CachedObjects[playableIndex];
@@ -289,7 +289,7 @@ using System.Collections.Generic;
 
             // We're scrubbing or paused
             if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
-                && TargetPositionCache.HasHurrentTime)
+                && TargetPositionCache.HasCurrentTime)
             {
                 return 0;
             }
