@@ -6,14 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - New feature: Storyboard support for ScreenSpaceOverlay and ScreenSpaceCamera camera render modes.
-- Added CollisionDamping property to Cinemachine3rdPersonFollow to control how gradually the camera returns to its normal position after having been corrected by the built-in collision resolution system.
+- Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions
 - Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object
+- Added ability for vcam to have a negative near clip plane
 - Default PostProcessing profile priority is now configurable, and defaults to 1000
 - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
 - Bugfix: 3rdPersonFollow was stuttering when z damping was high
 - Regression fix: CinemachineInputProvider had stopped providing input
 - Bugfix: lens aspect and sensorSize were not getting updated if lens OverrideMode != None
+- Bugfix: Interrupting a transition with InheritPosition enabled was broken
 
 
 ## [2.7.2] - 2021-02-15

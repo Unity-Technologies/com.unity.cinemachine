@@ -428,6 +428,26 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// Checks if the vcam is live as part of an outgoing blend in any active CinemachineBrain.  
+        /// Does not check whether the vcam is also the current active vcam.
+        /// </summary>
+        /// <param name="vcam">The virtual camera to check</param>
+        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
+        public bool IsLiveInBlend(ICinemachineCamera vcam)
+        {
+            if (vcam != null)
+            {
+                for (int i = 0; i < BrainCount; ++i)
+                {
+                    CinemachineBrain b = GetActiveBrain(i);
+                    if (b != null && b.IsLiveInBlend(vcam))
+                        return true;
+                }
+            }
+            return false;
+        }
+        
+        /// <summary>
         /// Signal that the virtual has been activated.
         /// If the camera is live, then all CinemachineBrains that are showing it will
         /// send an activation event.

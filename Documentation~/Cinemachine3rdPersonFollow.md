@@ -77,4 +77,5 @@ When combined with the [Cinemachine3rdPersonAim](Cinemachine3rdPersonAim.md) ext
 | Camera Collision Filter | Specifies which layers will be included or excluded from collision resolution. |
 | Ignore Tag              | Obstacles with this tag will be ignored by collision resolution. It is recommended to set this field to the target's tag. |
 | Camera Radius           | Specifies how close the camera can get to collidable obstacles without adjusting its position. |
-| Collision Damping       | Specifies how gradually the camera returns to its normal position after having been corrected by the built-in collision resolution system. Higher numbers move the camera more gradually back to normal.|
+| Damping Into Collision  | Specifies how gradually the camera moves to correct for an occlusion. Higher numbers move the camera more gradually.|
+| Damping From Collision  | Specifies how gradually the camera returns to its normal position after having been corrected by the built-in collision resolution system. Higher numbers move the camera more gradually back to normal.|
