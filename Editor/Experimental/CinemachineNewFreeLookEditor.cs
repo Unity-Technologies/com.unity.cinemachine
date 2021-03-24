@@ -1,4 +1,5 @@
 ﻿#if CINEMACHINE_EXPERIMENTAL_VCAM
+using System;
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
@@ -19,9 +20,13 @@ namespace Cinemachine
 
         GUIContent mAllLensLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
+        
+        GUIContent mInputProviderAddLabel = new GUIContent(
+            "Add CinemachineInputProvider", "Adds CinemachineInputProvider to this vcam, if it does not have one already, " +
+            "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
 
         VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
-
+        
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -55,6 +60,12 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
+            
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            var myScript = (CinemachineNewFreeLook) target;
+            CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
+                myScript.transform.gameObject);
+#endif
 
             // Orbits
             EditorGUILayout.Space();
@@ -64,7 +75,7 @@ namespace Cinemachine
             for (int i = 0; i < 3; ++i)
             {
                 var o = orbits.GetArrayElementAtIndex(i);
-                Rect rect = EditorGUILayout.GetControlRect(true);
+                var rect = EditorGUILayout.GetControlRect(true);
                 InspectorUtility.MultiPropertyOnLine(
                     rect, mOrbitNames[i],
                     new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),

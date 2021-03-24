@@ -25,7 +25,7 @@ namespace Cinemachine
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
             }
         }
-
+        
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -56,6 +56,13 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
+
+            
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            var myScript = (CinemachineFreeLook) target;
+            CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
+                myScript.transform.gameObject);
+#endif
 
             // Orbits
             EditorGUI.BeginChangeCheck();
