@@ -24,7 +24,6 @@ test_editors:
   - version: 2018.4
   - version: 2019.4
   - version: 2020.2
-  - version: trunk
 test_platforms:
   - name: ubuntu
     type: Unity::VM
