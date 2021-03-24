@@ -55,6 +55,7 @@ namespace Cinemachine
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
+            DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
             DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             DrawInputProviderButton();
