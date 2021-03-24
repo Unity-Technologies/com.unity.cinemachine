@@ -48,8 +48,7 @@ namespace Cinemachine
             if (inputProvider != null) return;
             
             GUILayout.BeginHorizontal();
-            EditorGUILayout.HelpBox(
-                "InputSystem package is installed, but it is not used to control this vcam.", 
+            EditorGUILayout.HelpBox("InputSystem package is installed, but it is not used to control this vcam.", 
                 MessageType.Info);
             var helpBoxHeight = GUILayoutUtility.GetLastRect().height;
             var rect = EditorGUILayout.GetControlRect(true);
