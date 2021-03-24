@@ -441,9 +441,10 @@ namespace Cinemachine
             LensSettings lens = curState.Lens;
             Vector3 followTargetPosition = FollowTargetPosition + (FollowTargetRotation * m_TrackedObjectOffset);
             bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
+            if (!previousStateIsValid || VirtualCamera.FollowTargetChanged)
+                m_Predictor.Reset();
             if (!previousStateIsValid)
             {
-                m_Predictor.Reset();
                 m_PreviousCameraPosition = curState.RawPosition;
                 m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
                 m_prevRotation = curState.RawOrientation;
