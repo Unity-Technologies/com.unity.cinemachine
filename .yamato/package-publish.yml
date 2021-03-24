@@ -19,6 +19,14 @@ test_platforms:
     type: Unity::VM::GPU
     image: package-ci/centos:stable
     flavor: b1.large
+
+validation_editors:
+  - version: 2020.2
+validation_platforms:
+  - name: ubuntu
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.large    
 ---
 
 publish:
@@ -43,6 +51,10 @@ publish:
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
     - .yamato/package-test.yml#test_{{ platform.name }}_{{ editor.version }}
-    - .yamato/package-test.yml#validate_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+    {% for editor in validation_editors %}
+    {% for platform in validation_platforms %}
+    - .yamato/package-test.yml#validate_{{platform.name}}_{{editor.version}}
     {% endfor %}
     {% endfor %}
