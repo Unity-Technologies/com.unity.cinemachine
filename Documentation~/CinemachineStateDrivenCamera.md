@@ -1,6 +1,6 @@
 # Cinemachine State-Driven Camera
 
-The __Cinemachine State-Driven Camera__ component activates a child Virtual Camera when an animation target changes states. For example, consider your avatar’s local-motion system and orbit camera.  Your game feels more alive to the player when the camera shakes more as your avatar runs. When the avatar walks, blend for example to a Virtual Camera with more damping.
+The __Cinemachine State-Driven Camera__ component activates a child Virtual Camera when an animation target changes states. For example, consider your avatar’s local-motion system and orbit camera. Your game feels more alive to the player when the camera shakes more as your avatar runs. When the avatar walks, blend for example to a Virtual Camera with more damping.
 
 ![State-Driven camera with three child Virtual Cameras (red)](images/CinemachineStateDrivenChildren.png)
 
@@ -42,7 +42,10 @@ To create a State-Driven camera:
 | __Show Debug Text__ | Check to display a textual summary of the live Virtual Camera and blend in the game view. |
 | __Default Blend__ | The blend which is used if you don’t explicitly define a blend between two Virtual Cameras. |
 | __Custom Blends__ | The asset which contains custom settings for specific child blends. |
-| __State__ | The list of animation state assignments for child Virtual Cameras.  |
+| __State__ | The state to which the virtual camera will be mapped. |
+| __Camera__ | The virtual camera to activate for this state. |
+| __Wait__ | The delay to activate the virtual camera (in seconds) once this state is entered. For example, the animation target moves from an active Walk state, to a Jog state, to a Run state. If the Jog Wait time is set to four seconds, the Walk virtual camera remains active for those four seconds even though the Jog state is now active. If the Jog state duration is less than the Wait time before the animation target passes into another state, the Jog virtual camera will not activate and is bypassed. |
+| __Min__ | The minimum length of time (in seconds) the virtual camera must remain active once it is activated. For example, the animation target enters the Run state from the Jog state. It has spent five seconds in the Jog state before moving to the Run state. The Jog Min is set to 12 seconds. This means that the Jog virtual camera remains the active camera for an additional seven seconds even though the animation target is in the Run state. |
 | __Virtual Camera Children__ | The list of Virtual Cameras that are children of the State-Driven camera. |
 
 
