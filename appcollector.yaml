@@ -1,0 +1,18 @@
+application_name: Cinemachine
+application_type: Package
+language: C#
+development_stage: Production
+findings_access:
+- markv@unity3d.com
+organization: 5d8b8596cadf01000a30db1f
+poc: markv@unity3d.com
+slack_channel: devs-cinemachine
+description: Cinemachine is a suite of modules for operating the Unity camera. Cinemachine solves the complex mathematics and logic of tracking targets, composing, blending, and cutting between shots. It is designed to significantly reduce the number of time-consuming manual manipulations and script revisions that take place during development. For more information, see https://docs.unity3d.com/Packages/com.unity.cinemachine@2.7/manual/index.html
+risk_assessment:
+  internet_facing: false
+  personal_info: false
+  payment_info: false
+  authentication: No Authentication
+  hosting: N/A
+  revenue_impact: false
+  pci: false
