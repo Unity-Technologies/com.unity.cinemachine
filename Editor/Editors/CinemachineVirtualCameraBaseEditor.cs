@@ -150,7 +150,7 @@ namespace Cinemachine.Editor
         }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        void DrawInputProviderButton()
+        protected void DrawInputProviderButton()
         {
             var vcamBase = (CinemachineVirtualCameraBase) target;
             if (vcamBase.ParentCamera as CinemachineFreeLook != null)
@@ -236,10 +236,6 @@ namespace Cinemachine.Editor
         /// </summary>
         protected void DrawExtensionsWidgetInInspector()
         {
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            DrawInputProviderButton();
-#endif
-            
             if (!IsPropertyExcluded("Extensions"))
             {
                 EditorGUILayout.Space();
