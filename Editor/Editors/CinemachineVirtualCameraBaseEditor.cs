@@ -179,7 +179,15 @@ namespace Cinemachine.Editor
                 var newVcam = vcamBase as CinemachineNewVirtualCamera;
                 if (newVcam != null)
                 {
-                    components = newVcam.ComponentCache;
+                    var tempComponents = newVcam.ComponentCache.ToList();
+                    for (int i = tempComponents.Count - 1; i >= 0; --i)
+                    {
+                        if (tempComponents[i] == null)
+                        {
+                            tempComponents.RemoveAt(i);
+                        }
+                    }
+                    components = tempComponents.ToArray();
                     extensions = newVcam.mExtensions;
                 }
 #endif
