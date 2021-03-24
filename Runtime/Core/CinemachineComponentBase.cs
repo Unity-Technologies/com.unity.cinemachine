@@ -248,5 +248,8 @@ namespace Cinemachine
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
         public virtual float GetMaxDampTime() { return 0; }
+
+        /// <summary>Components that require input should implement this and return true.</summary>
+        public virtual bool InputRequired => false;
     }
 }

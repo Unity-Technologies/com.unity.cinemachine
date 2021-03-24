@@ -2,6 +2,8 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Cinemachine.Utility;
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
@@ -147,6 +149,57 @@ namespace Cinemachine.Editor
             ExcludeProperty("Header");
         }
 
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+        void DrawInputProviderButton()
+        {
+            var vcamBase = (CinemachineVirtualCameraBase) target;
+            if (vcamBase.ParentCamera as CinemachineFreeLook != null)
+            {
+                return;
+            }
+            
+            var freelook = vcamBase as CinemachineFreeLook;
+            if (freelook != null)
+            {
+                CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
+                    vcamBase.gameObject);
+            }
+            else // check if any component or extension requires input
+            {
+                CinemachineComponentBase[] components = null;
+                List<CinemachineExtension> extensions = null;
+                
+                var vcam = vcamBase as CinemachineVirtualCamera;
+                if (vcam != null)
+                {
+                    components = vcam.GetComponentPipeline();
+                    extensions = vcam.mExtensions;
+                }
+                
+#if CINEMACHINE_EXPERIMENTAL_VCAM
+                var newVcam = vcamBase as CinemachineNewVirtualCamera;
+                if (newVcam != null)
+                {
+                    components = newVcam.ComponentCache;
+                    extensions = newVcam.mExtensions;
+                }
+#endif
+                if (InputRequiredByComponentsOrExtensions(components, extensions))
+                {
+                    CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
+                        vcamBase.gameObject);
+                }
+            }
+        }
+
+        static bool InputRequiredByComponentsOrExtensions(
+            CinemachineComponentBase[] components, List<CinemachineExtension> extensions)
+        {
+            return components != null && components.Any(t => t.InputRequired) ||
+                extensions != null && extensions.Any(t => t.InputRequired);
+        }
+#endif
+
         /// <summary>
         /// Draw the LookAt and Follow targets in the inspector
         /// </summary>
@@ -183,6 +236,10 @@ namespace Cinemachine.Editor
         /// </summary>
         protected void DrawExtensionsWidgetInInspector()
         {
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            DrawInputProviderButton();
+#endif
+            
             if (!IsPropertyExcluded("Extensions"))
             {
                 EditorGUILayout.Space();

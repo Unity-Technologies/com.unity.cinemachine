@@ -57,13 +57,6 @@ namespace Cinemachine
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
 
-            
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            var myScript = (CinemachineFreeLook) target;
-            CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
-                myScript.transform.gameObject);
-#endif
-
             // Orbits
             EditorGUI.BeginChangeCheck();
             SerializedProperty orbits = FindProperty(x => x.m_Orbits);

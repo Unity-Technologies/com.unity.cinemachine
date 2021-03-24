@@ -13,12 +13,6 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
             DrawRemainingPropertiesInInspector();
-            
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            var myScript = (CinemachinePOV) target;
-            CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
-                myScript.transform.parent.gameObject);
-#endif
         }
         
         void OnEnable()

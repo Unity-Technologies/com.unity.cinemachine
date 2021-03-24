@@ -83,19 +83,6 @@ namespace Cinemachine.Editor
             Target.m_XAxis.ValueRangeLocked
                 = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
             DrawRemainingPropertiesInInspector();
-
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            // get the gameobject of this script
-            var myScript = (CinemachineOrbitalTransposer) target;
-            var vcamBase = myScript.VirtualCamera;
-            var parentCamera = vcamBase.ParentCamera;
-            if (vcamBase as CinemachineNewFreeLook == null && parentCamera as CinemachineFreeLook == null)
-            {
-                // if it is not freelook or newFreelook
-                CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
-                    vcamBase.gameObject);
-            }
-#endif
         }
 
         /// Process a position drag from the user.
