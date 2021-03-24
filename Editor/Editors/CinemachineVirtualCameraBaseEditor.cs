@@ -161,8 +161,7 @@ namespace Cinemachine.Editor
             var freelook = vcamBase as CinemachineFreeLook;
             if (freelook != null)
             {
-                CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
-                    vcamBase.gameObject);
+                CinemachineDefaultMouseInput.InputProviderButton(vcamBase.gameObject);
             }
             else // check if any component or extension requires input
             {
@@ -186,8 +185,7 @@ namespace Cinemachine.Editor
 #endif
                 if (InputRequiredByComponentsOrExtensions(components, extensions))
                 {
-                    CinemachineDefaultMouseInput.InputProviderButton(EditorGUILayout.GetControlRect(true), 
-                        vcamBase.gameObject);
+                    CinemachineDefaultMouseInput.InputProviderButton(vcamBase.gameObject);
                 }
             }
         }

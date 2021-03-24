@@ -2,6 +2,7 @@
 
 using System;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -41,17 +42,24 @@ namespace Cinemachine
         static GUIContent m_InputProviderAddLabel = new GUIContent(
             "Add CinemachineInputProvider", "Adds CinemachineInputProvider to this vcam, if it does not have one already, " +
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
-        public static void InputProviderButton(Rect rect, GameObject myGameObject)
+        public static void InputProviderButton(GameObject myGameObject)
         {
+            var inputProvider = myGameObject.GetComponent<CinemachineInputProvider>();
+            if (inputProvider != null) return;
+            
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.HelpBox(
+                "InputSystem package is installed, but it is not used to control this vcam.", 
+                MessageType.Info);
+            var helpBoxHeight = GUILayoutUtility.GetLastRect().height;
+            var rect = EditorGUILayout.GetControlRect(true);
+            rect.height = helpBoxHeight;
             if (GUI.Button(rect, m_InputProviderAddLabel))
             {
-                var inputProvider = myGameObject.GetComponent<CinemachineInputProvider>();
-                if (inputProvider == null)
-                {
-                    inputProvider = myGameObject.AddComponent<CinemachineInputProvider>();
-                    inputProvider.XYAxis = GetInputActionReference();
-                }
+                inputProvider = myGameObject.AddComponent<CinemachineInputProvider>();
+                inputProvider.XYAxis = GetInputActionReference();
             }
+            GUILayout.EndHorizontal();
         }
     }
 }
