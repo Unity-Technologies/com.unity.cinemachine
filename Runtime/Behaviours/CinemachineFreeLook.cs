@@ -415,6 +415,14 @@ namespace Cinemachine
             if (m_Transitions.m_OnCameraLive != null)
                 m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
+        
+        /// <summary>
+        /// Returns true, because FreeLook requires input.
+        /// </summary>
+        internal override bool RequiresUserInput()
+        {
+            return true;
+        }
 
         float GetYAxisClosestValue(Vector3 cameraPos, Vector3 up)
         {

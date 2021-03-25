@@ -37,8 +37,7 @@ namespace Cinemachine
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             var vcam = Target;
             var defaultMouseInput = CinemachineDefaultMouseInput.GetInstance();
-            if (defaultMouseInput.
-                UserInputRequiredByComponentsOrExtensions(vcam.ComponentCache, vcam.mExtensions))
+            if (vcam.RequiresUserInput())
             {
                 defaultMouseInput.InputProviderButton(vcam.gameObject);
             }

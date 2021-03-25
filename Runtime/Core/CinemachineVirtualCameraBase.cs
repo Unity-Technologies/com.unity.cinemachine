@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -508,6 +509,14 @@ namespace Cinemachine
         protected virtual void Start()
         {
             m_WasStarted = true;
+        }
+        
+        /// <summary>
+        /// Returns true, when the vcam has an extension that requires user input.
+        /// </summary>
+        internal virtual bool RequiresUserInput()
+        {
+            return mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
         }
 
         /// <summary>

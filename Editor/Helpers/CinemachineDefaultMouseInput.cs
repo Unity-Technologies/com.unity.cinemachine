@@ -86,19 +86,6 @@ namespace Cinemachine
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
-        
-        /// <summary>
-        /// Checks whether components or extensions require user input.
-        /// </summary>
-        /// <param name="components">Components to check.</param>
-        /// <param name="extensions">Extensions to check.</param>
-        /// <returns></returns>
-        public bool UserInputRequiredByComponentsOrExtensions(
-            CinemachineComponentBase[] components, List<CinemachineExtension> extensions)
-        { 
-            return components != null && components.Any(t => t != null && t.RequiresUserInput) || 
-                extensions != null && extensions.Any(t => t != null && t.RequiresUserInput);
-        }
     }
 }
 

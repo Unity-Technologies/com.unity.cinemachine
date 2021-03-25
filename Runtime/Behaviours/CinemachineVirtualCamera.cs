@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -613,6 +614,16 @@ namespace Cinemachine
                 UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
                 m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
+        }
+        
+        /// <summary>
+        /// Returns true, when the vcam has an extension or components that require input.
+        /// </summary>
+        internal override bool RequiresUserInput()
+        {
+            var components = GetComponentPipeline();
+            return base.RequiresUserInput() || 
+                components != null && components.Any(t => t.RequiresUserInput);
         }
     }
 }

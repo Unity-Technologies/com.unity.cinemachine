@@ -59,7 +59,10 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             var vcam = Target;
-            CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcam.gameObject);
+            if (vcam.RequiresUserInput())
+            {
+                CinemachineDefaultMouseInput.GetInstance().InputProviderButton(Target.gameObject);
+            }
 #endif
             DrawRemainingPropertiesInInspector();
             
