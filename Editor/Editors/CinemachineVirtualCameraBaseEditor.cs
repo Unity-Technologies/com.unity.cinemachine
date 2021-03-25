@@ -2,7 +2,6 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cinemachine.Utility;
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
@@ -147,74 +146,7 @@ namespace Cinemachine.Editor
             }
             ExcludeProperty("Header");
         }
-
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-        /// <summary>
-        /// Adds an information sign and a button that adds CinemachineInputProvider component to the vcam with a
-        /// default look control (XY axis), if the vcam has at least one component or extension that requires input
-        /// and the vcam does not already have a CinemachineInputProvider component. For a component or extension to
-        /// require input, the component or extension needs to override RequiresUserInput in CinemachineComponentBase or
-        /// CinemachineExtension respectively.
-        /// <seealso cref="CinemachineInputProvider"/>
-        /// <seealso cref="CinemachineComponentBase"/>
-        /// <seealso cref="CinemachineExtension"/>
-        /// </summary>
-        protected void DrawInputProviderButton()
-        {
-            var vcamBase = (CinemachineVirtualCameraBase) target;
-            if (vcamBase.ParentCamera as CinemachineFreeLook != null)
-            {
-                return;
-            }
-            
-            var freelook = vcamBase as CinemachineFreeLook;
-            if (freelook != null)
-            {
-                CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcamBase.gameObject);
-            }
-            else // check if any component or extension requires input
-            {
-                CinemachineComponentBase[] components = null;
-                List<CinemachineExtension> extensions = null;
-                
-                var vcam = vcamBase as CinemachineVirtualCamera;
-                if (vcam != null)
-                {
-                    components = vcam.GetComponentPipeline();
-                    extensions = vcam.mExtensions;
-                }
-                
-#if CINEMACHINE_EXPERIMENTAL_VCAM
-                var newVcam = vcamBase as CinemachineNewVirtualCamera;
-                if (newVcam != null)
-                {
-                    var tempComponents = newVcam.ComponentCache.ToList();
-                    for (int i = tempComponents.Count - 1; i >= 0; --i)
-                    {
-                        if (tempComponents[i] == null)
-                        {
-                            tempComponents.RemoveAt(i);
-                        }
-                    }
-                    components = tempComponents.ToArray();
-                    extensions = newVcam.mExtensions;
-                }
-#endif
-                if (InputRequiredByComponentsOrExtensions(components, extensions))
-                {
-                    CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcamBase.gameObject);
-                }
-            }
-        }
-
-        static bool InputRequiredByComponentsOrExtensions(
-            CinemachineComponentBase[] components, List<CinemachineExtension> extensions)
-        {
-            return components != null && components.Any(t => t.RequiresUserInput) ||
-                extensions != null && extensions.Any(t => t.RequiresUserInput);
-        }
-#endif
-
+        
         /// <summary>
         /// Draw the LookAt and Follow targets in the inspector
         /// </summary>

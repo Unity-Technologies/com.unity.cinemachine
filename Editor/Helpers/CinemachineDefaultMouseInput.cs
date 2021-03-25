@@ -1,5 +1,8 @@
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 
+using System.Collections.Generic;
+using System.Linq;
+using Cinemachine.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -62,7 +65,7 @@ namespace Cinemachine
         /// input and the vcam does not already have a CinemachineInputProvider component. For a component or extension
         /// to require input, the component or extension needs to override RequiresUserInput in CinemachineComponentBase or
         /// CinemachineExtension respectively.
-        /// <seealso cref="CinemachineVirtualCameraBaseEditor"/>
+        /// <seealso cref="CinemachineVirtualCameraBaseEditor{T}"/>
         /// </summary>
         /// <param name="gameObject">The gameObject to which we'd like to add the CinemachineInputProvider
         /// via a Button interface</param>
@@ -83,6 +86,19 @@ namespace Cinemachine
                 inputProvider.XYAxis = GetInputActionReference();
             }
             GUILayout.EndHorizontal();
+        }
+        
+        /// <summary>
+        /// Checks whether components or extensions require user input.
+        /// </summary>
+        /// <param name="components">Components to check.</param>
+        /// <param name="extensions">Extensions to check.</param>
+        /// <returns></returns>
+        public bool InputRequiredByComponentsOrExtensions(
+            CinemachineComponentBase[] components, List<CinemachineExtension> extensions)
+        { 
+            return components != null && components.Any(t => t != null && t.RequiresUserInput) || 
+                extensions != null && extensions.Any(t => t != null && t.RequiresUserInput);
         }
     }
 }
