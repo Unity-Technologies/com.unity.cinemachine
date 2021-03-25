@@ -7,7 +7,9 @@ using UnityEngine.InputSystem;
 namespace Cinemachine
 {
     /// <summary>
-    /// Static class that returns a reference to InputSystem package's PlayerLook input asset.
+    /// Provides a simple API to create a button that can add a CinemachineInputProvider component with a default
+    /// input asset controlling XY axis from the InputSystem package to the gameObject if it does not
+    /// already have CinemachineInputProvider.
     /// </summary>
     static class CinemachineDefaultMouseInput
     {
@@ -42,10 +44,10 @@ namespace Cinemachine
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
         
         /// <summary>
-        /// Adds a button that adds adds CinemachineInputProvider component to the vcam with a default look control
-        /// (XY axis), if the gameobject has at least one component or extension that requires input and the vcam does
-        /// not already have a CinemachineInputProvider component. For a component or extension to require input,
-        /// the component or extension needs to override RequiresInput in CinemachineComponentBase or
+        /// Adds an information sign and a button that adds adds CinemachineInputProvider component to the vcam with a
+        /// default look control (XY axis), if the gameobject has at least one component or extension that requires
+        /// input and the vcam does not already have a CinemachineInputProvider component. For a component or extension
+        /// to require input, the component or extension needs to override RequiresInput in CinemachineComponentBase or
         /// CinemachineExtension respectively.
         /// <seealso cref="CinemachineVirtualCameraBaseEditor"/>
         /// </summary>
