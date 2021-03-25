@@ -3,7 +3,6 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Cinemachine.Utility;
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
@@ -150,6 +149,15 @@ namespace Cinemachine.Editor
         }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
+        /// <summary>
+        /// Adds a button that adds CinemachineInputProvider component to the vcam, if the vcam has at least one
+        /// component or extension that requires input and the vcam does not already have a CinemachineInputProvider
+        /// component. For a component or extension to require input, the component or extension needs to override
+        /// InputRequired in CinemachineComponentBase or CinemachineExtension respectively.
+        /// <seealso cref="CinemachineInputProvider"/>
+        /// <seealso cref="CinemachineComponentBase"/>
+        /// <seealso cref="CinemachineExtension"/>
+        /// </summary>
         protected void DrawInputProviderButton()
         {
             var vcamBase = (CinemachineVirtualCameraBase) target;

@@ -42,9 +42,19 @@ namespace Cinemachine
         static GUIContent m_InputProviderAddLabel = new GUIContent(
             "Add CinemachineInputProvider", "Adds CinemachineInputProvider to this vcam, if it does not have one already, " +
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
-        public static void InputProviderButton(GameObject myGameObject)
+        
+        /// <summary>
+        /// Adds a button that adds CinemachineInputProvider component to the vcam, if the vcam has at least one
+        /// component or extension that requires input and the vcam does not already have a CinemachineInputProvider
+        /// component. For a component or extension to require input, the component or extension needs to override
+        /// InputRequired in CinemachineComponentBase or CinemachineExtension respectively.
+        /// <seealso cref="CinemachineVirtualCameraBaseEditor"/>
+        /// </summary>
+        /// <param name="gameObject">The gameObject to which we'd like to add the CinemachineInputProvider
+        /// via a Button interface</param>
+        public static void InputProviderButton(GameObject gameObject)
         {
-            var inputProvider = myGameObject.GetComponent<CinemachineInputProvider>();
+            var inputProvider = gameObject.GetComponent<CinemachineInputProvider>();
             if (inputProvider != null) return;
             
             GUILayout.BeginHorizontal();
@@ -55,7 +65,7 @@ namespace Cinemachine
             rect.height = helpBoxHeight;
             if (GUI.Button(rect, m_InputProviderAddLabel))
             {
-                inputProvider = myGameObject.AddComponent<CinemachineInputProvider>();
+                inputProvider = gameObject.AddComponent<CinemachineInputProvider>();
                 inputProvider.XYAxis = GetInputActionReference();
             }
             GUILayout.EndHorizontal();
