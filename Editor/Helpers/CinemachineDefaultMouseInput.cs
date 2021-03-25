@@ -73,18 +73,17 @@ namespace Cinemachine
         {
             var inputProvider = gameObject.GetComponent<CinemachineInputProvider>();
             if (inputProvider != null) return;
-            
-            GUILayout.BeginHorizontal();
             EditorGUILayout.HelpBox("InputSystem package is installed, but it is not used to control this vcam.", 
                 MessageType.Info);
-            var helpBoxHeight = GUILayoutUtility.GetLastRect().height;
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
             var rect = EditorGUILayout.GetControlRect(true);
-            rect.height = helpBoxHeight;
             if (GUI.Button(rect, s_InputProviderAddLabel))
             {
                 inputProvider = gameObject.AddComponent<CinemachineInputProvider>();
                 inputProvider.XYAxis = GetInputActionReference();
             }
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
         
