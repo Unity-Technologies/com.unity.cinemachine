@@ -682,6 +682,30 @@ namespace Cinemachine
                     mExtensions[i].ForceCameraPosition(pos, rot);
             }
         }
+
+        protected bool SmoothWarp = false;
+
+        /// <summary>
+        /// Changes the Follow target of the vcam, but transitions smoothly based on the damping settings of the vcam.
+        /// </summary>
+        /// <param name="newTarget">The new Follow target</param>
+        public void ChangeFollowSmoothly(Transform newTarget)
+        {
+            var vcamTransform = gameObject.transform;
+            Follow = newTarget;
+            SmoothWarp = true; // TODO: before this -> OnTargetObjectWarped
+        }
+        
+        /// <summary>
+        /// Changes the LookAt target of the vcam, but transitions smoothly based on the damping settings of the vcam.
+        /// </summary>
+        /// <param name="newTarget">The new LookAt target</param>
+        public void ChangeLookAtSmoothly(Transform newTarget)
+        {
+            var vcamTransform = gameObject.transform;
+            LookAt = newTarget;
+            SmoothWarp = true; // TODO: before this -> OnTargetObjectWarped
+        }
         
         /// <summary>Create a blend between 2 virtual cameras, taking into account
         /// any existing active blend, with special case handling if the new blend is 
