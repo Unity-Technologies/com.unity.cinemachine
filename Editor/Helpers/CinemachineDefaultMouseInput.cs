@@ -79,7 +79,7 @@ namespace Cinemachine
             var rect = EditorGUILayout.GetControlRect(true);
             if (GUI.Button(rect, s_InputProviderAddLabel))
             {
-                inputProvider = gameObject.AddComponent<CinemachineInputProvider>();
+                inputProvider = Undo.AddComponent<CinemachineInputProvider>(gameObject);
                 inputProvider.XYAxis = GetInputActionReference();
             }
             GUILayout.FlexibleSpace();
