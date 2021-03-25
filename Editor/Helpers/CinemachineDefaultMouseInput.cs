@@ -77,6 +77,7 @@ namespace Cinemachine
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             var rect = EditorGUILayout.GetControlRect(true);
+            rect.width = GUI.skin.label.CalcSize(s_InputProviderAddLabel).x + 10f; // ensure text stays nice
             if (GUI.Button(rect, s_InputProviderAddLabel))
             {
                 inputProvider = Undo.AddComponent<CinemachineInputProvider>(gameObject);
