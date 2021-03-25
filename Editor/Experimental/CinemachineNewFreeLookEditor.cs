@@ -58,7 +58,7 @@ namespace Cinemachine
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             var vcam = (CinemachineNewFreeLook) target;
             if (CinemachineDefaultMouseInput.GetInstance().
-                InputRequiredByComponentsOrExtensions(vcam.ComponentCache, vcam.mExtensions))
+                UserInputRequiredByComponentsOrExtensions(vcam.ComponentCache, vcam.mExtensions))
             {
                 CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcam.gameObject);
             }
