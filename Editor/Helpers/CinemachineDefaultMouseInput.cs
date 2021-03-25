@@ -32,11 +32,11 @@ namespace Cinemachine
             var inputActionAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>("Packages/com.unity.inputsystem/" +
                 "InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions");
 
-            var inputActions = inputActionAsset.GetEnumerator();
+            using var inputActions = inputActionAsset.GetEnumerator();
             var hasNext = true;
             while (hasNext)
             {
-                if (inputActions.Current != null && 
+                if (inputActions.Current != null &&
                     inputActions.Current.ToString() == "Player/Look[/Mouse/delta,/Pen/delta]")
                 {
                     var look = inputActions.Current;
@@ -44,6 +44,7 @@ namespace Cinemachine
                     m_InputActionReference.name = "Generic Look";
                     break;
                 }
+
                 hasNext = inputActions.MoveNext();
             }
         }
