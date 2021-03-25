@@ -1,21 +1,11 @@
-using System;
 using UnityEditor;
-using UnityEditor.VersionControl;
-using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePOV))]
-    sealed class CinemachinePOVEditor : BaseEditor<CinemachinePOV>
+    internal sealed class CinemachinePOVEditor : BaseEditor<CinemachinePOV>
     {
-        public override void OnInspectorGUI()
-        {
-            BeginInspector();
-            DrawRemainingPropertiesInInspector();
-        }
-        
-        void OnEnable()
+        private void OnEnable()
         {
             Target.UpdateInputAxisProvider();
         }
