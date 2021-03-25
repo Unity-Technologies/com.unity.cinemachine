@@ -516,7 +516,7 @@ namespace Cinemachine
         /// </summary>
         internal virtual bool RequiresUserInput()
         {
-            return mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
+            return mExtensions != null && mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
         }
 
         /// <summary>
