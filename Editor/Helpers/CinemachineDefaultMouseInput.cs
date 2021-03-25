@@ -94,7 +94,7 @@ namespace Cinemachine
         /// <param name="components">Components to check.</param>
         /// <param name="extensions">Extensions to check.</param>
         /// <returns></returns>
-        public bool InputRequiredByComponentsOrExtensions(
+        public bool UserInputRequiredByComponentsOrExtensions(
             CinemachineComponentBase[] components, List<CinemachineExtension> extensions)
         { 
             return components != null && components.Any(t => t != null && t.RequiresUserInput) || 
