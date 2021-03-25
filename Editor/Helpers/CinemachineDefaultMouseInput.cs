@@ -32,19 +32,19 @@ namespace Cinemachine
             var inputActionAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>("Packages/com.unity.inputsystem/" +
                 "InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions");
 
-            InputAction look;
-            var enumerator = inputActionAsset.GetEnumerator();
-            for (int i = 0; i < 40; ++i)
+            var inputActions = inputActionAsset.GetEnumerator();
+            var hasNext = true;
+            while (hasNext)
             {
-                if (enumerator.Current != null && 
-                    enumerator.Current.ToString() == "Player/Look[/Mouse/delta,/Pen/delta]")
+                if (inputActions.Current != null && 
+                    inputActions.Current.ToString() == "Player/Look[/Mouse/delta,/Pen/delta]")
                 {
-                    look = enumerator.Current;
+                    var look = inputActions.Current;
                     m_InputActionReference = InputActionReference.Create(look);
                     m_InputActionReference.name = "Generic Look";
                     break;
                 }
-                enumerator.MoveNext();
+                hasNext = inputActions.MoveNext();
             }
         }
         InputActionReference GetInputActionReference()
@@ -70,6 +70,7 @@ namespace Cinemachine
         {
             var inputProvider = gameObject.GetComponent<CinemachineInputProvider>();
             if (inputProvider != null) return;
+            
             EditorGUILayout.HelpBox("InputSystem package is installed, but it is not used to control this vcam.", 
                 MessageType.Info);
             GUILayout.BeginHorizontal();
