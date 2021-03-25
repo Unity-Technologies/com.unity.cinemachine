@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow was stuttering when z damping was high
 - Regression fix: CinemachineInputProvider had stopped providing input
 - Bugfix: lens aspect and sensorSize were not getting updated if lens OverrideMode != None
+- Information sign and inputProvider button added to virtual cameras that have components or extensions that require input (e.g. freelook, orbital transposer, POV), when the InputSystem package is installed. The button adds a default input control to the vcam.
 
 
 ## [2.7.2] - 2021-02-15

@@ -150,10 +150,11 @@ namespace Cinemachine.Editor
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
-        /// Adds a button that adds CinemachineInputProvider component to the vcam, if the vcam has at least one
-        /// component or extension that requires input and the vcam does not already have a CinemachineInputProvider
-        /// component. For a component or extension to require input, the component or extension needs to override
-        /// InputRequired in CinemachineComponentBase or CinemachineExtension respectively.
+        /// Adds a button that adds CinemachineInputProvider component to the vcam with a default look control
+        /// (XY axis), if the vcam has at least one component or extension that requires input and the vcam does not
+        /// already have a CinemachineInputProvider component. For a component or extension to require input, the
+        /// component or extension needs to override InputRequired in CinemachineComponentBase or CinemachineExtension
+        /// respectively.
         /// <seealso cref="CinemachineInputProvider"/>
         /// <seealso cref="CinemachineComponentBase"/>
         /// <seealso cref="CinemachineExtension"/>

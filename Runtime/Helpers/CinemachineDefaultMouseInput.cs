@@ -44,10 +44,11 @@ namespace Cinemachine
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
         
         /// <summary>
-        /// Adds a button that adds CinemachineInputProvider component to the vcam, if the vcam has at least one
-        /// component or extension that requires input and the vcam does not already have a CinemachineInputProvider
-        /// component. For a component or extension to require input, the component or extension needs to override
-        /// InputRequired in CinemachineComponentBase or CinemachineExtension respectively.
+        /// Adds a button that adds adds CinemachineInputProvider component to the vcam with a default look control
+        /// (XY axis), if the gameobject has at least one component or extension that requires input and the vcam does
+        /// not already have a CinemachineInputProvider component. For a component or extension to require input,
+        /// the component or extension needs to override InputRequired in CinemachineComponentBase or
+        /// CinemachineExtension respectively.
         /// <seealso cref="CinemachineVirtualCameraBaseEditor"/>
         /// </summary>
         /// <param name="gameObject">The gameObject to which we'd like to add the CinemachineInputProvider
