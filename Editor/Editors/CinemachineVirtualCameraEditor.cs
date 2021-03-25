@@ -139,8 +139,8 @@ namespace Cinemachine.Editor
             DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             var vcam = (CinemachineVirtualCamera) target;
-            if (CinemachineDefaultMouseInput.GetInstance().
-                InputRequiredByComponentsOrExtensions(vcam.GetComponentPipeline(), vcam.mExtensions))
+            if (vcam.ParentCamera as CinemachineFreeLook == null && CinemachineDefaultMouseInput.GetInstance().
+                    InputRequiredByComponentsOrExtensions(vcam.GetComponentPipeline(), vcam.mExtensions))
             {
                 CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcam.gameObject);
             }
