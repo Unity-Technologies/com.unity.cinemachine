@@ -14,6 +14,6 @@ Cinemachine works well with other Unity tools, acting as a powerful complement t
 
 Cinemachine has no external dependencies. Just install it and start using it. 
 
-This Cinemachine version 2.7.2 is compatible with the following versions of the Unity Editor:
+This Cinemachine version is compatible with the following versions of the Unity Editor:
 
-* 2018.4.17f1 and later
+* 2019.4 and later
