@@ -422,7 +422,7 @@ namespace Cinemachine
         }
 
         /// <summary>OrbitalTransposer is controlled by input.</summary>
-        public override bool InputRequired => true;
+        public override bool RequiresInput => true;
 
         static string GetFullName(GameObject current)
         {

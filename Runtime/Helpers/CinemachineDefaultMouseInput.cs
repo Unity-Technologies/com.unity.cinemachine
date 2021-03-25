@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 namespace Cinemachine
 {
     /// <summary>
-    /// Finds InputSystem package's default mouse control look input asset, and returns a reference to it.
+    /// Static class that returns a reference to InputSystem package's PlayerLook input asset.
     /// </summary>
     static class CinemachineDefaultMouseInput
     {
@@ -26,7 +26,7 @@ namespace Cinemachine
                 {
                     look = enumerator.Current;
                     s_InputActionReference = InputActionReference.Create(look);
-                    s_InputActionReference.name = "PlayerLook";
+                    s_InputActionReference.name = "Generic Look";
                     break;
                 }
                 enumerator.MoveNext();
@@ -37,7 +37,7 @@ namespace Cinemachine
             return s_InputActionReference;
         }
 
-        static GUIContent m_InputProviderAddLabel = new GUIContent(
+        static GUIContent s_InputProviderAddLabel = new GUIContent(
             "Add CinemachineInputProvider", "Adds CinemachineInputProvider to this vcam, if it does not have one already, " +
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
         
@@ -45,7 +45,7 @@ namespace Cinemachine
         /// Adds a button that adds adds CinemachineInputProvider component to the vcam with a default look control
         /// (XY axis), if the gameobject has at least one component or extension that requires input and the vcam does
         /// not already have a CinemachineInputProvider component. For a component or extension to require input,
-        /// the component or extension needs to override InputRequired in CinemachineComponentBase or
+        /// the component or extension needs to override RequiresInput in CinemachineComponentBase or
         /// CinemachineExtension respectively.
         /// <seealso cref="CinemachineVirtualCameraBaseEditor"/>
         /// </summary>
@@ -62,7 +62,7 @@ namespace Cinemachine
             var helpBoxHeight = GUILayoutUtility.GetLastRect().height;
             var rect = EditorGUILayout.GetControlRect(true);
             rect.height = helpBoxHeight;
-            if (GUI.Button(rect, m_InputProviderAddLabel))
+            if (GUI.Button(rect, s_InputProviderAddLabel))
             {
                 inputProvider = gameObject.AddComponent<CinemachineInputProvider>();
                 inputProvider.XYAxis = GetInputActionReference();

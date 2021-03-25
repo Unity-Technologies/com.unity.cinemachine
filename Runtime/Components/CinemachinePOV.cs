@@ -199,7 +199,7 @@ namespace Cinemachine
         }
         
         /// <summary>POV is controlled by input.</summary>
-        public override bool InputRequired => true;
+        public override bool RequiresInput => true;
 
         void SetAxesForRotation(Quaternion targetRot)
         {

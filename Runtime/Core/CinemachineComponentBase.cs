@@ -250,6 +250,6 @@ namespace Cinemachine
         public virtual float GetMaxDampTime() { return 0; }
 
         /// <summary>Components that require input should implement this and return true.</summary>
-        public virtual bool InputRequired => false;
+        public virtual bool RequiresInput => false;
     }
 }
