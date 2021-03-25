@@ -61,7 +61,7 @@ namespace Cinemachine
             var vcam = Target;
             if (vcam.RequiresUserInput())
             {
-                CinemachineDefaultMouseInput.GetInstance().InputProviderButton(Target.gameObject);
+                CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcam.gameObject);
             }
 #endif
             DrawRemainingPropertiesInInspector();
