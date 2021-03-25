@@ -1,7 +1,4 @@
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-
-using System.Collections.Generic;
-using System.Linq;
 using Cinemachine.Editor;
 using UnityEditor;
 using UnityEngine;
