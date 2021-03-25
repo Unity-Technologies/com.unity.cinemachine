@@ -1,8 +1,6 @@
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 
-using System;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

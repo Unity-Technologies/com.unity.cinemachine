@@ -1,5 +1,4 @@
 ﻿#if CINEMACHINE_EXPERIMENTAL_VCAM
-using System;
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
