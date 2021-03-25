@@ -11,10 +11,23 @@ namespace Cinemachine
     /// input asset controlling XY axis from the InputSystem package to the gameObject if it does not
     /// already have CinemachineInputProvider.
     /// </summary>
-    static class CinemachineDefaultMouseInput
+    class CinemachineDefaultMouseInput
     {
-        static InputActionReference s_InputActionReference = null;
-        static CinemachineDefaultMouseInput()
+        static CinemachineDefaultMouseInput s_Instance;
+        InputActionReference m_InputActionReference = null;
+        
+        /// <summary>
+        /// Initialize-on-demand singleton.
+        /// </summary>
+        /// <returns>Initialized instance</returns>
+        public static CinemachineDefaultMouseInput GetInstance() {
+            if (s_Instance == null) {
+                s_Instance = new CinemachineDefaultMouseInput();
+            }
+            return s_Instance;
+        }
+
+        CinemachineDefaultMouseInput()
         {
             var inputActionAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>("Packages/com.unity.inputsystem/" +
                 "InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions");
@@ -27,16 +40,16 @@ namespace Cinemachine
                     enumerator.Current.ToString() == "Player/Look[/Mouse/delta,/Pen/delta]")
                 {
                     look = enumerator.Current;
-                    s_InputActionReference = InputActionReference.Create(look);
-                    s_InputActionReference.name = "Generic Look";
+                    m_InputActionReference = InputActionReference.Create(look);
+                    m_InputActionReference.name = "Generic Look";
                     break;
                 }
                 enumerator.MoveNext();
             }
         }
-        static InputActionReference GetInputActionReference()
+        InputActionReference GetInputActionReference()
         {
-            return s_InputActionReference;
+            return m_InputActionReference;
         }
 
         static GUIContent s_InputProviderAddLabel = new GUIContent(
@@ -47,13 +60,13 @@ namespace Cinemachine
         /// Adds an information sign and a button that adds adds CinemachineInputProvider component to the vcam with a
         /// default look control (XY axis), if the gameobject has at least one component or extension that requires
         /// input and the vcam does not already have a CinemachineInputProvider component. For a component or extension
-        /// to require input, the component or extension needs to override RequiresInput in CinemachineComponentBase or
+        /// to require input, the component or extension needs to override RequiresUserInput in CinemachineComponentBase or
         /// CinemachineExtension respectively.
         /// <seealso cref="CinemachineVirtualCameraBaseEditor"/>
         /// </summary>
         /// <param name="gameObject">The gameObject to which we'd like to add the CinemachineInputProvider
         /// via a Button interface</param>
-        public static void InputProviderButton(GameObject gameObject)
+        public void InputProviderButton(GameObject gameObject)
         {
             var inputProvider = gameObject.GetComponent<CinemachineInputProvider>();
             if (inputProvider != null) return;

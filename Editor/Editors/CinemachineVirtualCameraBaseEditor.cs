@@ -153,7 +153,7 @@ namespace Cinemachine.Editor
         /// Adds an information sign and a button that adds CinemachineInputProvider component to the vcam with a
         /// default look control (XY axis), if the vcam has at least one component or extension that requires input
         /// and the vcam does not already have a CinemachineInputProvider component. For a component or extension to
-        /// require input, the omponent or extension needs to override RequiresInput in CinemachineComponentBase or
+        /// require input, the component or extension needs to override RequiresUserInput in CinemachineComponentBase or
         /// CinemachineExtension respectively.
         /// <seealso cref="CinemachineInputProvider"/>
         /// <seealso cref="CinemachineComponentBase"/>
@@ -170,7 +170,7 @@ namespace Cinemachine.Editor
             var freelook = vcamBase as CinemachineFreeLook;
             if (freelook != null)
             {
-                CinemachineDefaultMouseInput.InputProviderButton(vcamBase.gameObject);
+                CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcamBase.gameObject);
             }
             else // check if any component or extension requires input
             {
@@ -202,7 +202,7 @@ namespace Cinemachine.Editor
 #endif
                 if (InputRequiredByComponentsOrExtensions(components, extensions))
                 {
-                    CinemachineDefaultMouseInput.InputProviderButton(vcamBase.gameObject);
+                    CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcamBase.gameObject);
                 }
             }
         }
@@ -210,8 +210,8 @@ namespace Cinemachine.Editor
         static bool InputRequiredByComponentsOrExtensions(
             CinemachineComponentBase[] components, List<CinemachineExtension> extensions)
         {
-            return components != null && components.Any(t => t.RequiresInput) ||
-                extensions != null && extensions.Any(t => t.RequiresInput);
+            return components != null && components.Any(t => t.RequiresUserInput) ||
+                extensions != null && extensions.Any(t => t.RequiresUserInput);
         }
 #endif
 
