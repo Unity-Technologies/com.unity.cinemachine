@@ -19,9 +19,9 @@ namespace Cinemachine
 
         GUIContent mAllLensLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
-       
+
         VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
-        
+
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -57,10 +57,11 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             var vcam = (CinemachineNewFreeLook) target;
-            if (CinemachineDefaultMouseInput.GetInstance().
+            var defaultMouseInput = CinemachineDefaultMouseInput.GetInstance();
+            if (defaultMouseInput.
                 UserInputRequiredByComponentsOrExtensions(vcam.ComponentCache, vcam.mExtensions))
             {
-                CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcam.gameObject);
+                defaultMouseInput.InputProviderButton(vcam.gameObject);
             }
 #endif
             DrawRemainingPropertiesInInspector();

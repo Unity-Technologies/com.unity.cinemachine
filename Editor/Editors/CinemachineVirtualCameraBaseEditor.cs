@@ -146,7 +146,7 @@ namespace Cinemachine.Editor
             }
             ExcludeProperty("Header");
         }
-        
+
         /// <summary>
         /// Draw the LookAt and Follow targets in the inspector
         /// </summary>
