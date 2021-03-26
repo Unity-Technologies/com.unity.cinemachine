@@ -2,7 +2,12 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine.Utility;
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
@@ -143,9 +148,48 @@ namespace Cinemachine.Editor
             {
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+                DrawInputProviderButtonInInspector();
+#endif
+                ExcludeProperty("Header");
             }
-            ExcludeProperty("Header");
         }
+        
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+        static GUIContent s_InputProviderAddLabel = new GUIContent("Add Input Provider", 
+            "Adds CinemachineInputProvider component to this vcam, "
+            + "if it does not have one, enabling the vcam to read input from Input Actions. "
+            + "By default, a simple mouse XY input action is added.");
+
+        static InputActionReference s_InputActionReference = null;
+
+        void DrawInputProviderButtonInInspector()
+        {
+            var vcamBase = Target;
+            if (!vcamBase.RequiresUserInput() || vcamBase.GetComponent<CinemachineInputProvider>() != null)
+                return;
+                    
+            EditorGUILayout.Space();
+            EditorGUILayout.HelpBox(
+                "The InputSystem package is installed, but it is not used to control this vcam.", 
+                MessageType.Info);
+            var rect = EditorGUILayout.GetControlRect(true);
+            rect.x += EditorGUIUtility.labelWidth; 
+            rect.width -= EditorGUIUtility.labelWidth;
+            if (GUI.Button(rect, s_InputProviderAddLabel))
+            {
+                if (s_InputActionReference == null)
+                {
+                    s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                        FirstOrDefault(x => x.name == "Player/Look");
+                }
+                var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcamBase.gameObject);
+                inputProvider.XYAxis = s_InputActionReference;
+            }
+            EditorGUILayout.Space();
+        }
+#endif
 
         /// <summary>
         /// Draw the LookAt and Follow targets in the inspector
