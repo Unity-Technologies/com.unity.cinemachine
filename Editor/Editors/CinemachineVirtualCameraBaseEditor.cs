@@ -155,7 +155,8 @@ namespace Cinemachine.Editor
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
         /// <summary>
         /// Draws a button to the inspector that can add CinemachineInputProvider component to the virtual camera,
-        /// if it does not have this button, and requires input, and does not have CinemachineInputProvider component.
+        /// if the InputSystem package is installed, and the virtual camera does not already have this button,
+        /// and requires input, and does not have CinemachineInputProvider component.
         /// </summary>
         /// <param name="vcamBase">The virtual camera</param>
         protected void DrawInputProviderButton(CinemachineVirtualCameraBase vcamBase)
