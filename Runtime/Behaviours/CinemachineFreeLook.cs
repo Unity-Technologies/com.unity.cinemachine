@@ -628,8 +628,8 @@ namespace Cinemachine
                 if (rig == null)
                     continue;
                 rig.m_ExcludedPropertiesInInspector = m_CommonLens
-                    ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
-                    : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
+                    ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "InputProviderButton", "m_Lens", }
+                    : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "InputProviderButton" };
                 rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
             }
 #endif

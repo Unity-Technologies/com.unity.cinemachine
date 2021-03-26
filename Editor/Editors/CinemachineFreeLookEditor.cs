@@ -57,13 +57,7 @@ namespace Cinemachine
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
             DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            var vcam = Target;
-            if (vcam.RequiresUserInput())
-            {
-                CinemachineDefaultMouseInput.GetInstance().InputProviderButton(vcam.gameObject);
-            }
-#endif
+            DrawInputProviderButton(Target);
             DrawRemainingPropertiesInInspector();
             
             // Orbits

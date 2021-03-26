@@ -2,8 +2,9 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine.Utility;
-
+using UnityEngine.InputSystem;
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
         using UnityEngine.Rendering.HighDefinition;
@@ -145,6 +146,35 @@ namespace Cinemachine.Editor
                 DrawGlobalControlsInInspector();
             }
             ExcludeProperty("Header");
+        }
+        
+        static GUIContent s_InputProviderAddLabel = new GUIContent(
+            "Add CinemachineInputProvider", "Adds CinemachineInputProvider to this vcam, if it does not have one already, " +
+            "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
+        protected void DrawInputProviderButton(CinemachineVirtualCameraBase vcamBase)
+        {
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            if (vcamBase.RequiresUserInput() && !IsPropertyExcluded("InputProviderButton"))
+            {
+                var inputProvider = vcamBase.GetComponent<CinemachineInputProvider>();
+                if (inputProvider != null) return;
+                    
+                EditorGUILayout.HelpBox("InputSystem package is installed, but it is not used to control this vcam.", 
+                    MessageType.Info);
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                var rect = EditorGUILayout.GetControlRect(true);
+                rect.width = GUI.skin.label.CalcSize(s_InputProviderAddLabel).x + 10f; // ensure text stays nice
+                if (GUI.Button(rect, s_InputProviderAddLabel))
+                {
+                    inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcamBase.gameObject);
+                    inputProvider.XYAxis = CinemachineDefaultMouseInput.GetInstance().GetInputActionReference();
+                }
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                ExcludeProperty("InputProviderButton");
+            }
+#endif
         }
 
         /// <summary>
@@ -648,5 +678,40 @@ namespace Cinemachine.Editor
 #endif
         }
     }
+    
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+    /// <summary>
+    /// Provides a simple API to create a button that can add a CinemachineInputProvider component with a default
+    /// input asset controlling XY axis from the InputSystem package to the gameObject if it does not
+    /// already have CinemachineInputProvider.
+    /// </summary>
+    class CinemachineDefaultMouseInput
+    {
+        static CinemachineDefaultMouseInput s_Instance;
+        InputActionReference m_InputActionReference = null;
+            
+        /// <summary>
+        /// Initialize-on-demand singleton.
+        /// </summary>
+        /// <returns>Initialized instance</returns>
+        public static CinemachineDefaultMouseInput GetInstance() {
+            if (s_Instance == null) {
+                s_Instance = new CinemachineDefaultMouseInput();
+            }
+            return s_Instance;
+        }
+
+        CinemachineDefaultMouseInput()
+        {
+            m_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                    "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                FirstOrDefault(x => x.name == "Player/Look");
+        }
+        public InputActionReference GetInputActionReference()
+        {
+            return m_InputActionReference;
+        }
+    }
+#endif
 }
 
