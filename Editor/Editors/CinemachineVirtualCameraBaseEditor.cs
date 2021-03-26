@@ -144,34 +144,32 @@ namespace Cinemachine.Editor
             {
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
+                ExcludeProperty("Header");
             }
-            ExcludeProperty("Header");
         }
         
         static GUIContent s_InputProviderAddLabel = new GUIContent(
-            "Add CinemachineInputProvider", "Adds CinemachineInputProvider to this vcam, if it does not have one already, " +
+            "Add Input Provider", "Adds CinemachineInputProvider component to this vcam, if it does not have one, " +
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
         protected void DrawInputProviderButton(CinemachineVirtualCameraBase vcamBase)
         {
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            if (vcamBase.RequiresUserInput() && !IsPropertyExcluded("InputProviderButton"))
+            if (!IsPropertyExcluded("InputProviderButton") && vcamBase.RequiresUserInput())
             {
                 var inputProvider = vcamBase.GetComponent<CinemachineInputProvider>();
                 if (inputProvider != null) return;
                     
-                EditorGUILayout.HelpBox("InputSystem package is installed, but it is not used to control this vcam.", 
+                EditorGUILayout.HelpBox("The InputSystem package is installed, but it is not used to control this vcam.", 
                     MessageType.Info);
-                GUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
                 var rect = EditorGUILayout.GetControlRect(true);
-                rect.width = GUI.skin.label.CalcSize(s_InputProviderAddLabel).x + 10f; // ensure text stays nice
+                rect.x += EditorGUIUtility.labelWidth; 
+                rect.width -= EditorGUIUtility.labelWidth;
                 if (GUI.Button(rect, s_InputProviderAddLabel))
                 {
                     inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcamBase.gameObject);
                     inputProvider.XYAxis = CinemachineDefaultMouseInput.GetInstance().GetInputActionReference();
                 }
-                GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
+                
                 ExcludeProperty("InputProviderButton");
             }
 #endif
