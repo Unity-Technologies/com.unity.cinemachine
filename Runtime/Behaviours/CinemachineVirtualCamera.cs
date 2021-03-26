@@ -621,9 +621,13 @@ namespace Cinemachine
         /// </summary>
         internal override bool RequiresUserInput()
         {
+            if (base.RequiresUserInput())
+            {
+                return true;
+            }
+            
             var components = GetComponentPipeline();
-            return base.RequiresUserInput() ||
-                components != null && components.Any(component => component != null && component.RequiresUserInput);
+            return components != null && components.Any(component => component != null && component.RequiresUserInput);
         }
     }
 }
