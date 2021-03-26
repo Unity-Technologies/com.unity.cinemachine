@@ -34,7 +34,7 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
-            DrawInputProviderButton(Target);
+            DrawInputProviderButton();
             DrawRemainingPropertiesInInspector();
 
             // Pipeline Stages

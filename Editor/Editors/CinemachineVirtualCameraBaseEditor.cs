@@ -160,26 +160,29 @@ namespace Cinemachine.Editor
         /// if the InputSystem package is installed, and the virtual camera does not already have this button,
         /// and requires input, and does not have CinemachineInputProvider component.
         /// </summary>
-        /// <param name="vcamBase">The virtual camera</param>
-        protected void DrawInputProviderButton(CinemachineVirtualCameraBase vcamBase)
+        protected void DrawInputProviderButton()
         {
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            if (!IsPropertyExcluded("InputProviderButton") && vcamBase.RequiresUserInput())
+            if (!IsPropertyExcluded("InputProviderButton"))
             {
-                var inputProvider = vcamBase.GetComponent<CinemachineInputProvider>();
-                if (inputProvider != null) return;
-                    
-                EditorGUILayout.HelpBox("The InputSystem package is installed, but it is not used to control this vcam.", 
-                    MessageType.Info);
-                var rect = EditorGUILayout.GetControlRect(true);
-                rect.x += EditorGUIUtility.labelWidth; 
-                rect.width -= EditorGUIUtility.labelWidth;
-                if (GUI.Button(rect, s_InputProviderAddLabel))
+                var vcamBase = Target;
+                if (vcamBase.RequiresUserInput())
                 {
-                    inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcamBase.gameObject);
-                    inputProvider.XYAxis = CinemachineDefaultMouseInput.GetInstance().GetInputActionReference();
+                    var inputProvider = vcamBase.GetComponent<CinemachineInputProvider>();
+                    if (inputProvider != null) return;
+                    
+                    EditorGUILayout.HelpBox("The InputSystem package is installed, but it is not used to control this vcam.", 
+                        MessageType.Info);
+                    var rect = EditorGUILayout.GetControlRect(true);
+                    rect.x += EditorGUIUtility.labelWidth; 
+                    rect.width -= EditorGUIUtility.labelWidth;
+                    if (GUI.Button(rect, s_InputProviderAddLabel))
+                    {
+                        inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcamBase.gameObject);
+                        inputProvider.XYAxis = CinemachineDefaultMouseInput.GetInputActionReference();
+                    }
                 }
-                
+
                 ExcludeProperty("InputProviderButton");
             }
 #endif
@@ -686,36 +689,23 @@ namespace Cinemachine.Editor
 #endif
         }
     }
-    
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
     /// <summary>
     /// Provides a simple API to get a default XY input action from the InputSystem package.
     /// </summary>
-    class CinemachineDefaultMouseInput
+    static class CinemachineDefaultMouseInput
     {
-        static CinemachineDefaultMouseInput s_Instance;
-        InputActionReference m_InputActionReference = null;
-            
-        /// <summary>
-        /// Initialize-on-demand singleton.
-        /// </summary>
-        /// <returns>Initialized instance</returns>
-        public static CinemachineDefaultMouseInput GetInstance() {
-            if (s_Instance == null) {
-                s_Instance = new CinemachineDefaultMouseInput();
+        static InputActionReference s_InputActionReference = null;
+        public static InputActionReference GetInputActionReference()
+        {
+            if (s_InputActionReference == null)
+            {
+                s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                        "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                    FirstOrDefault(x => x.name == "Player/Look");
             }
-            return s_Instance;
-        }
-
-        CinemachineDefaultMouseInput()
-        {
-            m_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
-                    "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
-                FirstOrDefault(x => x.name == "Player/Look");
-        }
-        public InputActionReference GetInputActionReference()
-        {
-            return m_InputActionReference;
+            return s_InputActionReference;
         }
     }
 #endif
