@@ -150,9 +150,11 @@ namespace Cinemachine.Editor
             }
         }
         
+#if CINEMACHINE_UNITY_INPUTSYSTEM
         static GUIContent s_InputProviderAddLabel = new GUIContent(
             "Add Input Provider", "Adds CinemachineInputProvider component to this vcam, if it does not have one, " +
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
+#endif
         /// <summary>
         /// Draws a button to the inspector that can add CinemachineInputProvider component to the virtual camera,
         /// if the InputSystem package is installed, and the virtual camera does not already have this button,
