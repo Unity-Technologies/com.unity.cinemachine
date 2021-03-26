@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine.Utility;
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 using UnityEngine.InputSystem;
 #endif
+
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
         using UnityEngine.Rendering.HighDefinition;
@@ -151,10 +153,14 @@ namespace Cinemachine.Editor
         }
         
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        static GUIContent s_InputProviderAddLabel = new GUIContent(
-            "Add Input Provider", "Adds CinemachineInputProvider component to this vcam, if it does not have one, " +
-            "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
+        static GUIContent s_InputProviderAddLabel = new GUIContent("Add Input Provider", 
+            "Adds CinemachineInputProvider component to this vcam, "
+            + "if it does not have one, enabling the vcam to read input from Input Actions. "
+            + "By default, a simple mouse XY input action is added.");
+
+        static InputActionReference s_InputActionReference = null;
 #endif
+
         /// <summary>
         /// Draws a button to the inspector that can add CinemachineInputProvider component to the virtual camera,
         /// if the InputSystem package is installed, and the virtual camera does not already have this button,
@@ -169,20 +175,27 @@ namespace Cinemachine.Editor
                 if (vcamBase.RequiresUserInput())
                 {
                     var inputProvider = vcamBase.GetComponent<CinemachineInputProvider>();
-                    if (inputProvider != null) return;
+                    if (inputProvider != null) 
+                        return;
                     
-                    EditorGUILayout.HelpBox("The InputSystem package is installed, but it is not used to control this vcam.", 
+                    EditorGUILayout.HelpBox(
+                        "The InputSystem package is installed, but it is not used to control this vcam.", 
                         MessageType.Info);
                     var rect = EditorGUILayout.GetControlRect(true);
                     rect.x += EditorGUIUtility.labelWidth; 
                     rect.width -= EditorGUIUtility.labelWidth;
                     if (GUI.Button(rect, s_InputProviderAddLabel))
                     {
+                        if (s_InputActionReference == null)
+                        {
+                            s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                                    "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                                FirstOrDefault(x => x.name == "Player/Look");
+                        }
                         inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcamBase.gameObject);
-                        inputProvider.XYAxis = CinemachineDefaultMouseInput.GetInputActionReference();
+                        inputProvider.XYAxis = s_InputActionReference;
                     }
                 }
-
                 ExcludeProperty("InputProviderButton");
             }
 #endif
@@ -689,25 +702,5 @@ namespace Cinemachine.Editor
 #endif
         }
     }
-
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-    /// <summary>
-    /// Provides a simple API to get a default XY input action from the InputSystem package.
-    /// </summary>
-    static class CinemachineDefaultMouseInput
-    {
-        static InputActionReference s_InputActionReference = null;
-        public static InputActionReference GetInputActionReference()
-        {
-            if (s_InputActionReference == null)
-            {
-                s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
-                        "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
-                    FirstOrDefault(x => x.name == "Player/Look");
-            }
-            return s_InputActionReference;
-        }
-    }
-#endif
 }
 
