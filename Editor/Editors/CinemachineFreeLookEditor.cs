@@ -25,7 +25,7 @@ namespace Cinemachine
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
             }
         }
-        
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -59,7 +59,7 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
             DrawInputProviderButton(Target);
             DrawRemainingPropertiesInInspector();
-            
+
             // Orbits
             EditorGUI.BeginChangeCheck();
             SerializedProperty orbits = FindProperty(x => x.m_Orbits);

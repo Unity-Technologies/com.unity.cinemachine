@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine.Utility;
+#if CINEMACHINE_UNITY_INPUTSYSTEM
 using UnityEngine.InputSystem;
+#endif
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
         using UnityEngine.Rendering.HighDefinition;
@@ -151,6 +153,11 @@ namespace Cinemachine.Editor
         static GUIContent s_InputProviderAddLabel = new GUIContent(
             "Add Input Provider", "Adds CinemachineInputProvider component to this vcam, if it does not have one, " +
             "enabling the vcam to read input from Input Actions. By default, a simple mouse XY input action is added.");
+        /// <summary>
+        /// Draws a button to the inspector that can add CinemachineInputProvider component to the virtual camera,
+        /// if it does not have this button, and requires input, and does not have CinemachineInputProvider component.
+        /// </summary>
+        /// <param name="vcamBase">The virtual camera</param>
         protected void DrawInputProviderButton(CinemachineVirtualCameraBase vcamBase)
         {
 #if CINEMACHINE_UNITY_INPUTSYSTEM
@@ -679,9 +686,7 @@ namespace Cinemachine.Editor
     
 #if CINEMACHINE_UNITY_INPUTSYSTEM
     /// <summary>
-    /// Provides a simple API to create a button that can add a CinemachineInputProvider component with a default
-    /// input asset controlling XY axis from the InputSystem package to the gameObject if it does not
-    /// already have CinemachineInputProvider.
+    /// Provides a simple API to get a default XY input action from the InputSystem package.
     /// </summary>
     class CinemachineDefaultMouseInput
     {
