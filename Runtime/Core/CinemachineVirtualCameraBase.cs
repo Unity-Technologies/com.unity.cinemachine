@@ -620,7 +620,7 @@ namespace Cinemachine
         /// the parent vcam's LookAt target.</summary>
         /// <param name="localLookAt">This vcam's LookAt value.</param>
         /// <returns>The same value, or the parent's if null and a parent exists.</returns>
-        protected Transform ResolveLookAt(Transform localLookAt)
+        public Transform ResolveLookAt(Transform localLookAt)
         {
             Transform lookAt = localLookAt;
             if (lookAt == null && ParentCamera != null)
@@ -632,7 +632,7 @@ namespace Cinemachine
         /// the parent vcam's Follow target.</summary>
         /// <param name="localFollow">This vcam's Follow value.</param>
         /// <returns>The same value, or the parent's if null and a parent exists.</returns>
-        protected Transform ResolveFollow(Transform localFollow)
+        public Transform ResolveFollow(Transform localFollow)
         {
             Transform follow = localFollow;
             if (follow == null && ParentCamera != null)
@@ -745,5 +745,73 @@ namespace Cinemachine
             state.Lens = lens;
             return state;
         }
+
+        private Transform m_CachedFollowTarget;
+        private CinemachineVirtualCameraBase m_CachedFollowTargetVcam;
+        private ICinemachineTargetGroup m_CachedFollowTargetGroup;
+
+        private Transform m_CachedLookAtTarget;
+        private CinemachineVirtualCameraBase m_CachedLookAtTargetVcam;
+        private ICinemachineTargetGroup m_CachedLookAtTargetGroup;
+
+
+        /// <summary>
+        /// This property is true if the Follow target was changed this frame.
+        /// </summary>
+        public bool FollowTargetChanged { get; private set; }
+
+        /// <summary>
+        /// This property is true if the LookAttarget was changed this frame.
+        /// </summary>
+        public bool LookAtTargetChanged { get; private set; }
+
+        /// <summary>
+        /// Call this from InternalUpdateCameraState() to check for changed 
+        /// targets and update the target cache.  This is needed for tracking
+        /// when a target object changes.
+        /// </summary>
+        protected void UpdateTargetCache()
+        {
+            var target = ResolveFollow(Follow);
+            FollowTargetChanged = target != m_CachedFollowTarget;
+            m_CachedFollowTarget = target;
+            m_CachedFollowTargetVcam = null;
+            m_CachedFollowTargetGroup = null;
+            if (m_CachedFollowTarget != null)
+            {
+                m_CachedFollowTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
+                m_CachedFollowTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
+            }
+
+            target = ResolveLookAt(LookAt);
+            LookAtTargetChanged = target != m_CachedLookAtTarget;
+            m_CachedLookAtTarget = target;
+            m_CachedLookAtTargetVcam = null;
+            m_CachedLookAtTargetGroup = null;
+            if (target != null)
+            {
+                m_CachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
+                m_CachedLookAtTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
+            }
+            // Reset if target changed
+            if (FollowTargetChanged || LookAtTargetChanged)
+                PreviousStateIsValid = false;
+        }
+
+        /// <summary>Get Follow target as ICinemachineTargetGroup, 
+        /// or null if target is not a ICinemachineTargetGroup</summary>
+        public ICinemachineTargetGroup AbstractFollowTargetGroup => m_CachedFollowTargetGroup;
+
+        /// <summary>Get Follow target as CinemachineVirtualCameraBase, 
+        /// or null if target is not a CinemachineVirtualCameraBase</summary>
+        public CinemachineVirtualCameraBase FollowTargetAsVcam => m_CachedFollowTargetVcam;
+
+        /// <summary>Get LookAt target as ICinemachineTargetGroup, 
+        /// or null if target is not a ICinemachineTargetGroup</summary>
+        public ICinemachineTargetGroup AbstractLookAtTargetGroup => m_CachedLookAtTargetGroup;
+
+        /// <summary>Get LookAt target as CinemachineVirtualCameraBase, 
+        /// or null if target is not a CinemachineVirtualCameraBase</summary>
+        public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
     }
 }

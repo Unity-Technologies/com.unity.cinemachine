@@ -302,7 +302,8 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, -1, 0.5f);
             m_VerticalAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && m_Transitions.m_InheritPosition)
+            if (fromCam != null && m_Transitions.m_InheritPosition
+                 && !CinemachineCore.Instance.IsLiveInBlend(this))
             {
                 // Note: horizontal axis already taken care of by base class
                 var cameraPos = fromCam.State.RawPosition;
@@ -375,6 +376,8 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
+            UpdateTargetCache();
+
             FollowTargetAttachment = 1;
             LookAtTargetAttachment = 1;
 

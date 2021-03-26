@@ -149,6 +149,8 @@ namespace Cinemachine
         /// <param name="deltaTime">Effective deltaTime</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
+            UpdateTargetCache();
+
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
             ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
@@ -594,7 +596,8 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 
-            if (m_Transitions.m_InheritPosition && fromCam != null)
+            if (m_Transitions.m_InheritPosition && fromCam != null
+                 && !CinemachineCore.Instance.IsLiveInBlend(this))
                 ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
 
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC

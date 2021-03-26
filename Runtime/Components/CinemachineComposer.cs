@@ -153,8 +153,9 @@ namespace Cinemachine
                 TrackedPoint = pos;
             else
             {
+                var resetLookahead = VirtualCamera.LookAtTargetChanged || !VirtualCamera.PreviousStateIsValid;
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(pos, VirtualCamera.PreviousStateIsValid ? deltaTime : -1, m_LookaheadTime);
+                m_Predictor.AddPosition(pos, resetLookahead ? -1 : deltaTime, m_LookaheadTime);
                 var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
                 if (m_LookaheadIgnoreY)
                     delta = delta.ProjectOntoPlane(up);

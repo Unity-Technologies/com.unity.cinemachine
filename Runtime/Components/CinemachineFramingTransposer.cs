@@ -386,7 +386,8 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            if (fromCam != null && transitionParams.m_InheritPosition)
+            if (fromCam != null && transitionParams.m_InheritPosition
+                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 transform.rotation = fromCam.State.RawOrientation;
                 InheritingPosition = true;
@@ -440,9 +441,10 @@ namespace Cinemachine
             LensSettings lens = curState.Lens;
             Vector3 followTargetPosition = FollowTargetPosition + (FollowTargetRotation * m_TrackedObjectOffset);
             bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
+            if (!previousStateIsValid || VirtualCamera.FollowTargetChanged)
+                m_Predictor.Reset();
             if (!previousStateIsValid)
             {
-                m_Predictor.Reset();
                 m_PreviousCameraPosition = curState.RawPosition;
                 m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
                 m_prevRotation = curState.RawOrientation;
@@ -462,7 +464,7 @@ namespace Cinemachine
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = AbstractFollowTargetGroup;
-            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None;
+            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None && !group.IsEmpty;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
 
