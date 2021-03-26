@@ -1,4 +1,5 @@
 #if CINEMACHINE_UNITY_INPUTSYSTEM
+using System.Linq;
 using Cinemachine.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -29,24 +30,9 @@ namespace Cinemachine
 
         CinemachineDefaultMouseInput()
         {
-            var inputActionAsset = AssetDatabase.LoadAssetAtPath<InputActionAsset>("Packages/com.unity.inputsystem/" +
-                "InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions");
-
-            using var inputActions = inputActionAsset.GetEnumerator();
-            var hasNext = true;
-            while (hasNext)
-            {
-                if (inputActions.Current != null &&
-                    inputActions.Current.ToString() == "Player/Look[/Mouse/delta,/Pen/delta]")
-                {
-                    var look = inputActions.Current;
-                    m_InputActionReference = InputActionReference.Create(look);
-                    m_InputActionReference.name = "Player/Look";
-                    break;
-                }
-
-                hasNext = inputActions.MoveNext();
-            }
+            m_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                FirstOrDefault(x => x.name == "Player/Look");
         }
         InputActionReference GetInputActionReference()
         {
