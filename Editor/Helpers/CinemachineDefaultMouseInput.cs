@@ -41,7 +41,7 @@ namespace Cinemachine
                 {
                     var look = inputActions.Current;
                     m_InputActionReference = InputActionReference.Create(look);
-                    m_InputActionReference.name = "Generic Look";
+                    m_InputActionReference.name = "Player/Look";
                     break;
                 }
 
