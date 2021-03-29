@@ -320,7 +320,7 @@ namespace Cinemachine
             m_ChildCameras = list.ToArray();
             ValidateInstructions();
         }
-        
+
         /// <summary>Internal API for the inspector editor.</summary>
         /// // GML todo: make this private, part of UpdateListOfChildren()
         internal void ValidateInstructions()
@@ -378,6 +378,5 @@ namespace Cinemachine
         {
             m_ChildCameras = null;
         }
-
     }
 }
