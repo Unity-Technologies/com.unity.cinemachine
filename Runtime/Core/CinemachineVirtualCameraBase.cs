@@ -697,6 +697,7 @@ namespace Cinemachine
             m_PositionBeforeSmoothChange = vcamTransform.position;
             m_RotationBeforeSmoothChange = vcamTransform.rotation;
             Follow = newTarget;
+            m_CachedFollowTarget = newTarget;
             m_SmoothTargetChange = true;
         }
         
@@ -710,9 +711,8 @@ namespace Cinemachine
             m_PositionBeforeSmoothChange = vcamTransform.position;
             m_RotationBeforeSmoothChange = vcamTransform.rotation;
             LookAt = newTarget;
+            m_CachedLookAtTarget = newTarget;
             m_SmoothTargetChange = true;
-            
-            // TODO: somehow need to lerp using the rotational damping the lookat target for this to work like switching vcams
         }
         
         /// <summary>Create a blend between 2 virtual cameras, taking into account
