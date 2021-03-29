@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Added simplified modes for Impulse generation, added secondary reaction settings to Impulse Lstener
 - Added Storyboard support for ScreenSpaceOverlay and ScreenSpaceCamera camera render modes.
 - Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions
 - Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object
@@ -12,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Draggable Game Window Guides toggle in Cinemachine preferences. If turned off, game window guides are only for visualization.
 - Added button to virtual camera inspectors to auto-generate CinemachineInputProvider component if missing.
 - Default PostProcessing profile priority is now configurable, and defaults to 1000
+- Cinemachine3rdPersonFollow can operate without the physics module, without collision resolution
 - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
 - Bugfix: 3rdPersonFollow was stuttering when z damping was high
