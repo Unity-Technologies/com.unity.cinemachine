@@ -119,7 +119,7 @@ namespace Cinemachine
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
 #if CINEMACHINE_PHYSICS
-            CameraCollisionFilter = 1;
+            CameraCollisionFilter = 0;
             CameraRadius = 0.2f;
             DampingIntoCollision = 0;
             DampingFromCollision = 2f;
@@ -251,6 +251,11 @@ namespace Cinemachine
             float cameraRadius, ref float collisionCorrection)
         {
 #if CINEMACHINE_PHYSICS
+            if (CameraCollisionFilter.value == 0)
+            {
+                return tip;
+            }
+            
             var dir = tip - root;
             var len = dir.magnitude;
             dir /= len;
