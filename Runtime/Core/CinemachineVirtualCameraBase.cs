@@ -683,22 +683,14 @@ namespace Cinemachine
             }
         }
 
-        protected bool m_SmoothTargetChange = false;
-        protected Vector3 m_PositionBeforeSmoothChange = Vector3.zero;
-        protected Quaternion m_RotationBeforeSmoothChange = Quaternion.identity;
-
         /// <summary>
         /// Changes the Follow target of the vcam, but transitions smoothly based on the damping settings of the vcam.
         /// </summary>
         /// <param name="newTarget">The new Follow target</param>
         public void ChangeFollowSmoothly(Transform newTarget)
         {
-            var vcamTransform = gameObject.transform;
-            m_PositionBeforeSmoothChange = vcamTransform.position;
-            m_RotationBeforeSmoothChange = vcamTransform.rotation;
             Follow = newTarget;
             m_CachedFollowTarget = newTarget;
-            m_SmoothTargetChange = true;
         }
         
         /// <summary>
@@ -707,12 +699,8 @@ namespace Cinemachine
         /// <param name="newTarget">The new LookAt target</param>
         public void ChangeLookAtSmoothly(Transform newTarget)
         {
-            var vcamTransform = gameObject.transform;
-            m_PositionBeforeSmoothChange = vcamTransform.position;
-            m_RotationBeforeSmoothChange = vcamTransform.rotation;
             LookAt = newTarget;
             m_CachedLookAtTarget = newTarget;
-            m_SmoothTargetChange = true;
         }
         
         /// <summary>Create a blend between 2 virtual cameras, taking into account

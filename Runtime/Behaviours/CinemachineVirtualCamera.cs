@@ -164,12 +164,6 @@ namespace Cinemachine
                     transform.rotation = State.RawOrientation;
             }
             PreviousStateIsValid = true;
-
-            if (m_SmoothTargetChange)
-            {
-                m_SmoothTargetChange = false;
-                ForceCameraPosition(m_PositionBeforeSmoothChange, m_RotationBeforeSmoothChange);
-            }
         }
 
         /// <summary>Make sure that the pipeline cache is up-to-date.</summary>
