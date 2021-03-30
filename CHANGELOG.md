@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: changing targets on a live vcam was misbehaving
 - Bugfix: Framing transposer now handles empty groups
 - Bugfix: Interrupting a transition with InheritPosition enabled was broken
+- Bugfix: SaveDuringPlay only saves Cinemachine components
 
 
 ## [2.7.2] - 2021-02-15
