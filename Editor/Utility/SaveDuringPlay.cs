@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Cinemachine;
 using UnityEditor;
 using UnityEngine;
 
@@ -233,12 +234,23 @@ namespace SaveDuringPlay
             for (int i = 0; i < components.Length; ++i)
             {
                 MonoBehaviour c = components[i];
-                if (c != null && ScanFields(prefix + c.GetType().FullName + i, c))
+                
+                if (c != null && IsCinemachineComponent(c) && 
+                    ScanFields(prefix + c.GetType().FullName + i, c))
                     doneSomething = true;
             }
             return doneSomething;
         }
+
+        private bool IsCinemachineComponent(MonoBehaviour c)
+        {
+            return 
+                c as CinemachineVirtualCameraBase != null ||
+                c as CinemachineExtension != null ||
+                c as CinemachineComponentBase != null;
+        }
     };
+    
 
 
     /// <summary>
