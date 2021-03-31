@@ -4,25 +4,27 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-- Added simplified modes for Impulse generation, added secondary reaction settings to Impulse Lstener
+## [2.8.0-exp.1] - 2021-03-31
+- Added simplified modes for impulse generation, added secondary reaction settings to Impulse Listener.
 - Added Storyboard support for ScreenSpaceOverlay and ScreenSpaceCamera camera render modes.
-- Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions
-- Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object
-- Added ability for vcam to have a negative near clip plane
-- Added Draggable Game Window Guides toggle in Cinemachine preferences. If turned off, game window guides are only for visualization.
+- Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions.
+- Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object.
+- Added ability for vcam to have a negative near clip plane.
+- Added Draggable Game Window Guides toggle in Cinemachine preferences. If disabled, Game Window guides are only for visualization.
 - Added button to virtual camera inspectors to auto-generate CinemachineInputProvider component if missing.
-- Default PostProcessing profile priority is now configurable, and defaults to 1000
-- Cinemachine3rdPersonFollow can operate without the physics module, without collision resolution
-- Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large
-- Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space
-- Bugfix: 3rdPersonFollow was stuttering when z damping was high
-- Regression fix: CinemachineInputProvider had stopped providing input
-- Bugfix: lens aspect and sensorSize were not getting updated if lens OverrideMode != None
-- Bugfix: changing targets on a live vcam was misbehaving
-- Bugfix: Framing transposer now handles empty groups
-- Bugfix: Interrupting a transition with InheritPosition enabled was broken
-- Bugfix: SaveDuringPlay saves components that have SaveDuringPlay. Previously it saved all components on a gameobject with at least one component with SaveDuringPlay.
+- Default PostProcessing profile priority is now configurable and defaults to 1000.
+- Cinemachine3rdPersonFollow can operate without the physics module, and without collision resolution.
+- Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large.
+- Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space.
+- Bugfix: 3rdPersonFollow was stuttering when Z damping was high.
+- Regression fix: CinemachineInputProvider had stopped providing input.
+- Bugfix: Lens aspect and sensorSize were not getting updated if lens OverrideMode != None.
+- Bugfix: Changing targets on a live vcam was misbehaving.
+- Bugfix: Framing transposer now handles empty groups.
+- Bugfix: Interrupting a transition with InheritPosition enabled was broken.
+- Bugfix: Cinemachine3rdPersonFollow was not handling collision by default.
+- Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
+- Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
 
 
 ## [2.7.2] - 2021-02-15
