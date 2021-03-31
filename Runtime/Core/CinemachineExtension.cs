@@ -9,6 +9,7 @@ namespace Cinemachine
     /// to the vcam, modifying its generated state
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
+    [SaveDuringPlay]
     public abstract class CinemachineExtension : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>
