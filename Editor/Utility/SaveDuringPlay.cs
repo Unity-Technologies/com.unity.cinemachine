@@ -233,9 +233,7 @@ namespace SaveDuringPlay
             for (int i = 0; i < components.Length; ++i)
             {
                 MonoBehaviour c = components[i];
-                
-                if (c != null && HasSaveDuringPlay(c) && 
-                    ScanFields(prefix + c.GetType().FullName + i, c))
+                if (c != null && HasSaveDuringPlay(c) && ScanFields(prefix + c.GetType().FullName + i, c))
                     doneSomething = true;
             }
             return doneSomething;
