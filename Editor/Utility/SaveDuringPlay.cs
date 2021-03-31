@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Cinemachine;
 using UnityEditor;
 using UnityEngine;
 
@@ -221,21 +222,13 @@ namespace SaveDuringPlay
         /// Recursively scan [SaveDuringPlay] MonoBehaviours of a GameObject and its children.
         /// For each leaf field found, call the OnFieldValue delegate.
         /// </summary>
-        public bool ScanFields(MonoBehaviour mb, string prefix = null)
+        public bool ScanFields(GameObject go, string prefix = null)
         {
             bool doneSomething = false;
             if (prefix == null)
                 prefix = "";
             else if (prefix.Length > 0)
                 prefix += ".";
-<<<<<<< HEAD
-            
-            if (mb != null && ScanFields(prefix + mb.GetType().FullName, mb))
-                doneSomething = true;
-            
-            return doneSomething;
-        }
-=======
 
             MonoBehaviour[] components = go.GetComponents<MonoBehaviour>();
             for (int i = 0; i < components.Length; ++i)
@@ -261,7 +254,6 @@ namespace SaveDuringPlay
             }
             return false;
         }
->>>>>>> dev/SaveDuringPlay-saves-what-it-should-not-rev
     };
     
 
@@ -283,9 +275,9 @@ namespace SaveDuringPlay
         /// owned by this object and its descendants.  The values are stored
         /// in an internal dictionary.
         /// </summary>
-        public void CollectFieldValues(MonoBehaviour mb)
+        public void CollectFieldValues(GameObject go)
         {
-            mObjectFullPath = ObjectTreeUtil.GetFullName(mb.gameObject);
+            mObjectFullPath = ObjectTreeUtil.GetFullName(go);
             GameObjectFieldScanner scanner = new GameObjectFieldScanner();
             scanner.FilterField = FilterField;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
@@ -295,7 +287,7 @@ namespace SaveDuringPlay
                     //Debug.Log(mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
                     return false;
                 };
-            scanner.ScanFields(mb);
+            scanner.ScanFields(go);
         }
 
         public GameObject FindSavedGameObject(GameObject[] roots)
@@ -335,15 +327,7 @@ namespace SaveDuringPlay
                         PrefabUtility.RecordPrefabInstancePropertyModifications(scanner.LeafObject);
                     return true;
                 };
-
-            var doneSomething = false;
-            var components = go.GetComponents<MonoBehaviour>();
-            for (int i = 0; i < components.Length; ++i)
-            {
-                MonoBehaviour c = components[i];
-                doneSomething |= scanner.ScanFields(c);
-            }
-            return doneSomething;
+            return scanner.ScanFields(go);
         }
 
         /// Ignore fields marked with the [NoSaveDuringPlay] attribute
@@ -521,9 +505,9 @@ namespace SaveDuringPlay
         public delegate void OnHotSaveDelegate();
 
         /// Collect all relevant objects, active or not
-        static MonoBehaviour[] FindInterestingObjects()
+        static Transform[] FindInterestingObjects()
         {
-            List<MonoBehaviour> objects = new List<MonoBehaviour>();
+            List<Transform> objects = new List<Transform>();
             MonoBehaviour[] everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
             foreach (var b in everything)
             {
@@ -533,7 +517,7 @@ namespace SaveDuringPlay
                     if (attr.GetType().Name.Contains("SaveDuringPlay"))
                     {
                         //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
-                        objects.Add(b);
+                        objects.Add(b.transform);
                         break;
                     }
                 }
@@ -550,11 +534,11 @@ namespace SaveDuringPlay
                 OnHotSave();
 
             sSavedStates = new List<ObjectStateSaver>();
-            MonoBehaviour[] objects = FindInterestingObjects();
-            foreach (MonoBehaviour obj in objects)
+            Transform[] objects = FindInterestingObjects();
+            foreach (Transform obj in objects)
             {
                 ObjectStateSaver saver = new ObjectStateSaver();
-                saver.CollectFieldValues(obj);
+                saver.CollectFieldValues(obj.gameObject);
                 sSavedStates.Add(saver);
             }
             if (sSavedStates.Count == 0)
