@@ -12,6 +12,7 @@ using Cinemachine;
 [ExecuteInEditMode]
 #endif
 [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineCameraOffset.html")]
+[SaveDuringPlay]
 public class CinemachineCameraOffset : CinemachineExtension
 {
     /// <summary>
