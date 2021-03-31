@@ -219,7 +219,7 @@ namespace SaveDuringPlay
         }
 
         /// <summary>
-        /// Recursively scan the MonoBehaviours of a GameObject and its children.
+        /// Recursively scan [SaveDuringPlay] MonoBehaviours of a GameObject and its children.
         /// For each leaf field found, call the OnFieldValue delegate.
         /// </summary>
         public bool ScanFields(GameObject go, string prefix = null)
@@ -235,19 +235,24 @@ namespace SaveDuringPlay
             {
                 MonoBehaviour c = components[i];
                 
-                if (c != null && IsCinemachineComponent(c) && 
+                if (c != null && HasSaveDuringPlay(c) && 
                     ScanFields(prefix + c.GetType().FullName + i, c))
                     doneSomething = true;
             }
             return doneSomething;
         }
 
-        private bool IsCinemachineComponent(MonoBehaviour c)
+        static bool HasSaveDuringPlay(MonoBehaviour b)
         {
-            return 
-                c as CinemachineVirtualCameraBase != null ||
-                c as CinemachineExtension != null ||
-                c as CinemachineComponentBase != null;
+            var attrs = b.GetType().GetCustomAttributes(true);
+            foreach (var attr in attrs)
+            {
+                if (attr.GetType().Name.Contains("SaveDuringPlay"))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     };
     
