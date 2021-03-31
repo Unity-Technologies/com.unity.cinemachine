@@ -682,26 +682,6 @@ namespace Cinemachine
                     mExtensions[i].ForceCameraPosition(pos, rot);
             }
         }
-
-        /// <summary>
-        /// Changes the Follow target of the vcam, but transitions smoothly based on the damping settings of the vcam.
-        /// </summary>
-        /// <param name="newTarget">The new Follow target</param>
-        public void ChangeFollowSmoothly(Transform newTarget)
-        {
-            Follow = newTarget;
-            m_CachedFollowTarget = newTarget;
-        }
-        
-        /// <summary>
-        /// Changes the LookAt target of the vcam, but transitions smoothly based on the damping settings of the vcam.
-        /// </summary>
-        /// <param name="newTarget">The new LookAt target</param>
-        public void ChangeLookAtSmoothly(Transform newTarget)
-        {
-            LookAt = newTarget;
-            m_CachedLookAtTarget = newTarget;
-        }
         
         /// <summary>Create a blend between 2 virtual cameras, taking into account
         /// any existing active blend, with special case handling if the new blend is 
@@ -804,9 +784,6 @@ namespace Cinemachine
                 m_CachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
                 m_CachedLookAtTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
             }
-            // Reset if target changed
-            if (FollowTargetChanged || LookAtTargetChanged)
-                PreviousStateIsValid = false;
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, 
