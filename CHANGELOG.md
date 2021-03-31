@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - Bugfix: Framing transposer now handles empty groups
 - Bugfix: BlendListCamera inspector reset did not reset properly.
+- Bugfix: Cinemachine3rdPersonFollow handled collisions by default, now it is disabled by default.
 
 
 ## [2.7.3] - 2021-03-24
