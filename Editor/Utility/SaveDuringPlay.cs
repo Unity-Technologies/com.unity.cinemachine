@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Cinemachine;
 using UnityEditor;
 using UnityEngine;
 
@@ -245,7 +244,7 @@ namespace SaveDuringPlay
             var attrs = b.GetType().GetCustomAttributes(true);
             foreach (var attr in attrs)
             {
-                if (attr is SaveDuringPlayAttribute)
+                if (attr.GetType().Name.Equals("SaveDuringPlayAttribute"))
                 {
                     return true;
                 }
@@ -333,7 +332,7 @@ namespace SaveDuringPlay
         {
             var attrs = fieldInfo.GetCustomAttributes(false);
             foreach (var attr in attrs)
-                if (attr.GetType().Name.Contains("NoSaveDuringPlay"))
+                if (attr.GetType().Name.Equals("NoSaveDuringPlayAttribute"))
                     return false;
             return true;
         }
@@ -512,7 +511,7 @@ namespace SaveDuringPlay
                 var attrs = b.GetType().GetCustomAttributes(true);
                 foreach (var attr in attrs)
                 {
-                    if (attr is SaveDuringPlayAttribute)
+                    if (attr.GetType().Name.Equals("SaveDuringPlayAttribute"))
                     {
                         //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
                         objects.Add(b.transform);
