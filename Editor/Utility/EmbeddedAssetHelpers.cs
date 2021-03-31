@@ -63,7 +63,8 @@ namespace Cinemachine.Editor
             string showLabel, bool indent)
         {
             SerializedProperty property = m_Owner.serializedObject.FindProperty(m_PropertyName);
-            UpdateEditor(property);
+            if (m_Editor == null)
+                UpdateEditor(property);
             if (m_Editor == null)
                 AssetFieldWithCreateButton(property, title, defaultName, extension, message);
             else
@@ -103,13 +104,13 @@ namespace Cinemachine.Editor
                             OnChanged(property.objectReferenceValue as T);
                     }
                     GUI.enabled = true;
-                    if(m_Editor.target != null)
+                    if (m_Editor.target != null)
                     {
-			            if (!canEditAsset && GUILayout.Button("Check out"))
-			            {
+                        if (!canEditAsset && GUILayout.Button("Check out"))
+                        {
                             Task task = Provider.Checkout(AssetDatabase.GetAssetPath(m_Editor.target), CheckoutMode.Asset);
-			                task.Wait();
-			            }
+                            task.Wait();
+                        }
                     }
                 }
                 EditorGUILayout.EndVertical();
@@ -154,7 +155,7 @@ namespace Cinemachine.Editor
                 m_Editor = null;
             }
         }
-
+        
         public void UpdateEditor(SerializedProperty property)
         {
             var target = property.objectReferenceValue;
