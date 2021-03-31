@@ -222,32 +222,18 @@ namespace SaveDuringPlay
         /// Recursively scan the MonoBehaviours of a GameObject and its children.
         /// For each leaf field found, call the OnFieldValue delegate.
         /// </summary>
-        public bool ScanFields(GameObject go, string prefix = null)
+        public bool ScanFields(MonoBehaviour mb, string prefix = null)
         {
             bool doneSomething = false;
             if (prefix == null)
                 prefix = "";
             else if (prefix.Length > 0)
                 prefix += ".";
-
-            MonoBehaviour[] components = go.GetComponents<MonoBehaviour>();
-            for (int i = 0; i < components.Length; ++i)
-            {
-                MonoBehaviour c = components[i];
-                
-                if (c != null && IsCinemachineComponent(c) && 
-                    ScanFields(prefix + c.GetType().FullName + i, c))
-                    doneSomething = true;
-            }
+            
+            if (mb != null && ScanFields(prefix + mb.GetType().FullName, mb))
+                doneSomething = true;
+            
             return doneSomething;
-        }
-
-        private bool IsCinemachineComponent(MonoBehaviour c)
-        {
-            return 
-                c as CinemachineVirtualCameraBase != null ||
-                c as CinemachineExtension != null ||
-                c as CinemachineComponentBase != null;
         }
     };
     
@@ -270,9 +256,9 @@ namespace SaveDuringPlay
         /// owned by this object and its descendants.  The values are stored
         /// in an internal dictionary.
         /// </summary>
-        public void CollectFieldValues(GameObject go)
+        public void CollectFieldValues(MonoBehaviour mb)
         {
-            mObjectFullPath = ObjectTreeUtil.GetFullName(go);
+            mObjectFullPath = ObjectTreeUtil.GetFullName(mb.gameObject);
             GameObjectFieldScanner scanner = new GameObjectFieldScanner();
             scanner.FilterField = FilterField;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
@@ -282,7 +268,7 @@ namespace SaveDuringPlay
                     //Debug.Log(mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
                     return false;
                 };
-            scanner.ScanFields(go);
+            scanner.ScanFields(mb);
         }
 
         public GameObject FindSavedGameObject(GameObject[] roots)
@@ -322,7 +308,15 @@ namespace SaveDuringPlay
                         PrefabUtility.RecordPrefabInstancePropertyModifications(scanner.LeafObject);
                     return true;
                 };
-            return scanner.ScanFields(go);
+
+            var doneSomething = false;
+            var components = go.GetComponents<MonoBehaviour>();
+            for (int i = 0; i < components.Length; ++i)
+            {
+                MonoBehaviour c = components[i];
+                doneSomething |= scanner.ScanFields(c);
+            }
+            return doneSomething;
         }
 
         /// Ignore fields marked with the [NoSaveDuringPlay] attribute
@@ -500,9 +494,9 @@ namespace SaveDuringPlay
         public delegate void OnHotSaveDelegate();
 
         /// Collect all relevant objects, active or not
-        static Transform[] FindInterestingObjects()
+        static MonoBehaviour[] FindInterestingObjects()
         {
-            List<Transform> objects = new List<Transform>();
+            List<MonoBehaviour> objects = new List<MonoBehaviour>();
             MonoBehaviour[] everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
             foreach (var b in everything)
             {
@@ -512,7 +506,7 @@ namespace SaveDuringPlay
                     if (attr.GetType().Name.Contains("SaveDuringPlay"))
                     {
                         //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
-                        objects.Add(b.transform);
+                        objects.Add(b);
                         break;
                     }
                 }
@@ -529,11 +523,11 @@ namespace SaveDuringPlay
                 OnHotSave();
 
             sSavedStates = new List<ObjectStateSaver>();
-            Transform[] objects = FindInterestingObjects();
-            foreach (Transform obj in objects)
+            MonoBehaviour[] objects = FindInterestingObjects();
+            foreach (MonoBehaviour obj in objects)
             {
                 ObjectStateSaver saver = new ObjectStateSaver();
-                saver.CollectFieldValues(obj.gameObject);
+                saver.CollectFieldValues(obj);
                 sSavedStates.Add(saver);
             }
             if (sSavedStates.Count == 0)
