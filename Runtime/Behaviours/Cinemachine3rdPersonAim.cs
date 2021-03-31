@@ -15,6 +15,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
+    [SaveDuringPlay]
     [DisallowMultipleComponent]
     public class Cinemachine3rdPersonAim : CinemachineExtension
     {
