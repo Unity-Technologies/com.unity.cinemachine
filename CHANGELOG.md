@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: BlendListCamera inspector reset did not reset properly.
 - Bugfix: Cinemachine3rdPersonFollow handled collisions by default, now it is disabled by default.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
+- Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
 
 
 ## [2.7.3] - 2021-03-24

@@ -218,7 +218,7 @@ namespace SaveDuringPlay
         }
 
         /// <summary>
-        /// Recursively scan the MonoBehaviours of a GameObject and its children.
+        /// Recursively scan [SaveDuringPlay] MonoBehaviours of a GameObject and its children.
         /// For each leaf field found, call the OnFieldValue delegate.
         /// </summary>
         public bool ScanFields(GameObject go, string prefix = null)
@@ -233,12 +233,26 @@ namespace SaveDuringPlay
             for (int i = 0; i < components.Length; ++i)
             {
                 MonoBehaviour c = components[i];
-                if (c != null && ScanFields(prefix + c.GetType().FullName + i, c))
+                if (c != null && HasSaveDuringPlay(c) && ScanFields(prefix + c.GetType().FullName + i, c))
                     doneSomething = true;
             }
             return doneSomething;
         }
+
+        static bool HasSaveDuringPlay(MonoBehaviour b)
+        {
+            var attrs = b.GetType().GetCustomAttributes(true);
+            foreach (var attr in attrs)
+            {
+                if (attr.GetType().Name.Contains("SaveDuringPlay"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     };
+    
 
 
     /// <summary>

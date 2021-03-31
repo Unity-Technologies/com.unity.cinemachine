@@ -20,6 +20,7 @@ namespace Cinemachine.PostFX
     /// applying them to the current Post-Processing profile, provided that profile has a
     /// DepthOfField effect that is enabled.
     /// </summary>
+    [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
     public class CinemachinePostProcessing : CinemachineExtension 
     {
