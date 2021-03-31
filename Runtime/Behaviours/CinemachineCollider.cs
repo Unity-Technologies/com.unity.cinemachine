@@ -326,7 +326,8 @@ namespace Cinemachine
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, damping, deltaTime);
                         
-                        displacement = Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement + delta;
+                        displacement = 
+                            Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement + delta;
                     }
                     extra.m_previousDisplacement = displacement;
                     
