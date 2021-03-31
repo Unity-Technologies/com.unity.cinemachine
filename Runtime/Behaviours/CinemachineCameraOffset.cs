@@ -8,6 +8,7 @@ using Cinemachine;
 [AddComponentMenu("")] // Hide in menu
 [ExecuteAlways]
 [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineCameraOffset.html")]
+[SaveDuringPlay]
 public class CinemachineCameraOffset : CinemachineExtension
 {
     /// <summary>

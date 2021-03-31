@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Framing transposer now handles empty groups.
 - Bugfix: Interrupting a transition with InheritPosition enabled was broken.
 - Bugfix: Cinemachine3rdPersonFollow was not handling collision by default.
+- Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
 
 
