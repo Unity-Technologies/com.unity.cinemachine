@@ -1,6 +1,7 @@
 #if CINEMACHINE_EXPERIMENTAL_VCAM
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace Cinemachine
 {
@@ -205,6 +206,15 @@ namespace Cinemachine
             // Signal that it's all done
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
+        }
+        
+        /// <summary>
+        /// Returns true, when the vcam has extensions or components that require input.
+        /// </summary>
+        internal override bool RequiresUserInput()
+        {
+            return base.RequiresUserInput() ||
+                m_Components != null && m_Components.Any(t => t != null && t.RequiresUserInput);
         }
 
         private Transform mCachedLookAtTarget;
