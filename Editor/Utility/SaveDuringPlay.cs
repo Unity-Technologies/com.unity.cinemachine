@@ -26,7 +26,7 @@ namespace SaveDuringPlay
         /// </summary>
         public static GameObject FindObjectFromFullName(string fullName, GameObject[] roots)
         {
-            if (fullName == null || fullName.Length == 0 || roots == null)
+            if (string.IsNullOrEmpty(fullName) || roots == null)
                 return null;
 
             string[] path = fullName.Split('/');
@@ -125,7 +125,7 @@ namespace SaveDuringPlay
         /// <summary>
         /// Which fields will be scanned
         /// </summary>
-        public BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance;
+        const BindingFlags kBindingFlags = BindingFlags.Public | BindingFlags.Instance;
 
         bool ScanFields(string fullName, Type type, ref object obj)
         {
@@ -142,7 +142,7 @@ namespace SaveDuringPlay
                 if (type.IsArray)
                 {
                     isLeaf = false;
-                    Array array = obj as Array;
+                    var array = obj as Array;
                     object arrayLength = array.Length;
                     if (OnLeafField != null && OnLeafField(
                             fullName + ".Length", arrayLength.GetType(), ref arrayLength))
@@ -168,7 +168,7 @@ namespace SaveDuringPlay
                 else
                 {
                     // Check if it's a complex type
-                    FieldInfo[] fields = obj.GetType().GetFields(bindingFlags);
+                    FieldInfo[] fields = obj.GetType().GetFields(kBindingFlags);
                     if (fields.Length > 0)
                     {
                         isLeaf = false;
@@ -197,12 +197,12 @@ namespace SaveDuringPlay
             return doneSomething;
         }
 
-        public bool ScanFields(string fullName, MonoBehaviour b)
+        bool ScanFields(string fullName, MonoBehaviour b)
         {
             bool doneSomething = false;
             LeafObject = b;
 
-            FieldInfo[] fields = b.GetType().GetFields(bindingFlags);
+            FieldInfo[] fields = b.GetType().GetFields(kBindingFlags);
             if (fields.Length > 0)
             {
                 for (int i = 0; i < fields.Length; ++i)
@@ -287,7 +287,6 @@ namespace SaveDuringPlay
         {
             return ObjectTreeUtil.FindObjectFromFullName(mObjectFullPath, roots);
         }
-        public string ObjetFullPath { get { return mObjectFullPath; } }
 
         /// <summary>
         /// Recursively scan the MonoBehaviours of a GameObject and its children.
@@ -304,8 +303,7 @@ namespace SaveDuringPlay
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Lookup the value in the dictionary
-                    string savedValue;
-                    if (mValues.TryGetValue(fullName, out savedValue)
+                    if (mValues.TryGetValue(fullName, out string savedValue)
                         && StringFromLeafObject(value) != savedValue)
                     {
                         //Debug.Log("Put " + mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
@@ -385,28 +383,19 @@ namespace SaveDuringPlay
 
         static string StringFromLeafObject(object obj)
         {
-            if (obj == null)
-                return string.Empty;
-
-            if (typeof(Component).IsAssignableFrom(obj.GetType()))
+            switch (obj)
             {
-                Component c = (Component)obj;
-                if (c == null) // Component overrides the == operator, so we have to check
+                case null:
                     return string.Empty;
-                return ObjectTreeUtil.GetFullName(c.gameObject);
+                case Component c:
+                    return c == null ? string.Empty : ObjectTreeUtil.GetFullName(c.gameObject);
+                case GameObject go:
+                    return ObjectTreeUtil.GetFullName(go);
+                case ScriptableObject so:
+                    return AssetDatabase.GetAssetPath(so);
+                default:
+                    return obj.ToString();
             }
-            if (typeof(GameObject).IsAssignableFrom(obj.GetType()))
-            {
-                GameObject go = (GameObject)obj;
-                if (go == null) // GameObject overrides the == operator, so we have to check
-                    return string.Empty;
-                return ObjectTreeUtil.GetFullName(go);
-            }
-            if (typeof(ScriptableObject).IsAssignableFrom(obj.GetType()))
-            {
-                return AssetDatabase.GetAssetPath(obj as ScriptableObject);
-            }
-            return obj.ToString();
         }
     };
 
@@ -437,7 +426,7 @@ namespace SaveDuringPlay
         /// This is a global setting, saved in Editor Prefs</summary>
         public static bool Enabled
         {
-            get { return EditorPrefs.GetBool(kEnabledKey, false); }
+            get => EditorPrefs.GetBool(kEnabledKey, false);
             set
             {
                 if (value != Enabled)
@@ -463,11 +452,16 @@ namespace SaveDuringPlay
         {
             if (Enabled)
             {
-                // If exiting playmode, collect the state of all interesting objects
-                if (pmsc == PlayModeStateChange.ExitingPlayMode)
-                    SaveAllInterestingStates();
-                else if (pmsc == PlayModeStateChange.EnteredEditMode && sSavedStates != null)
-                    RestoreAllInterestingStates();
+                switch (pmsc)
+                {
+                    // If exiting playmode, collect the state of all interesting objects
+                    case PlayModeStateChange.ExitingPlayMode:
+                        SaveAllInterestingStates();
+                        break;
+                    case PlayModeStateChange.EnteredEditMode when sSavedStates != null:
+                        RestoreAllInterestingStates();
+                        break;
+                }
             }
         }
 #else
@@ -557,7 +551,6 @@ namespace SaveDuringPlay
                     Undo.RegisterFullObjectHierarchyUndo(go, "SaveDuringPlay");
                     if (saver.PutFieldValues(go, roots))
                     {
-                        //Debug.Log("SaveDuringPlay: updated settings of " + saver.ObjetFullPath);
                         EditorUtility.SetDirty(go);
                         dirty = true;
                     }
