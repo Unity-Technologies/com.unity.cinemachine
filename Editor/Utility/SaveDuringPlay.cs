@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SaveDuringPlay
 {
     /// <summary>A collection of tools for finding objects</summary>
-    internal static class ObjectTreeUtil
+    static class ObjectTreeUtil
     {
         /// <summary>
         /// Get the full name of an object, travelling up the transform parents to the root.
@@ -110,6 +110,12 @@ namespace SaveDuringPlay
         /// </summary>
         public FilterFieldDelegate FilterField;
         public delegate bool FilterFieldDelegate(string fullName, FieldInfo fieldInfo);
+
+        /// <summary>
+        /// Called for each behaviour, to test whether to proceed with scanning it.  Return true to scan.
+        /// </summary>
+        public FilterComponentDelegate FilterComponent;
+        public delegate bool FilterComponentDelegate(MonoBehaviour b);
 
         /// <summary>
         /// The leafmost UnityEngine.Object
@@ -233,23 +239,12 @@ namespace SaveDuringPlay
             for (int i = 0; i < components.Length; ++i)
             {
                 MonoBehaviour c = components[i];
-                if (c != null && HasSaveDuringPlay(c) && ScanFields(prefix + c.GetType().FullName + i, c))
+                if (c == null || (FilterComponent != null && !FilterComponent(c)))
+                    continue;
+                if (ScanFields(prefix + c.GetType().FullName + i, c))
                     doneSomething = true;
             }
             return doneSomething;
-        }
-
-        static bool HasSaveDuringPlay(MonoBehaviour b)
-        {
-            var attrs = b.GetType().GetCustomAttributes(true);
-            foreach (var attr in attrs)
-            {
-                if (attr.GetType().Name.Equals("SaveDuringPlayAttribute"))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
     };
     
@@ -277,6 +272,7 @@ namespace SaveDuringPlay
             mObjectFullPath = ObjectTreeUtil.GetFullName(go);
             GameObjectFieldScanner scanner = new GameObjectFieldScanner();
             scanner.FilterField = FilterField;
+            scanner.FilterComponent = HasSaveDuringPlay;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Save the value in the dictionary
@@ -304,6 +300,7 @@ namespace SaveDuringPlay
         {
             GameObjectFieldScanner scanner = new GameObjectFieldScanner();
             scanner.FilterField = FilterField;
+            scanner.FilterComponent = HasSaveDuringPlay;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Lookup the value in the dictionary
@@ -328,13 +325,23 @@ namespace SaveDuringPlay
         }
 
         /// Ignore fields marked with the [NoSaveDuringPlay] attribute
-        bool FilterField(string fullName, FieldInfo fieldInfo)
+        static bool FilterField(string fullName, FieldInfo fieldInfo)
         {
             var attrs = fieldInfo.GetCustomAttributes(false);
             foreach (var attr in attrs)
                 if (attr.GetType().Name.Equals("NoSaveDuringPlayAttribute"))
                     return false;
             return true;
+        }
+
+        /// Only process components with the [SaveDuringPlay] attribute
+        public static bool HasSaveDuringPlay(MonoBehaviour b)
+        {
+            var attrs = b.GetType().GetCustomAttributes(true);
+            foreach (var attr in attrs)
+                if (attr.GetType().Name.Equals("SaveDuringPlayAttribute"))
+                    return true;
+            return false;
         }
 
         /// <summary>
@@ -502,28 +509,23 @@ namespace SaveDuringPlay
         public delegate void OnHotSaveDelegate();
 
         /// Collect all relevant objects, active or not
-        static Transform[] FindInterestingObjects()
+        static HashSet<GameObject> FindInterestingObjects()
         {
-            List<Transform> objects = new List<Transform>();
+            var objects = new HashSet<GameObject>();
             MonoBehaviour[] everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
             foreach (var b in everything)
             {
-                var attrs = b.GetType().GetCustomAttributes(true);
-                foreach (var attr in attrs)
+                if (!objects.Contains(b.gameObject) && ObjectStateSaver.HasSaveDuringPlay(b))
                 {
-                    if (attr.GetType().Name.Equals("SaveDuringPlayAttribute"))
-                    {
-                        //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
-                        objects.Add(b.transform);
-                        break;
-                    }
+                    //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
+                    objects.Add(b.gameObject);
                 }
             }
-            return objects.ToArray();
+            return objects;
         }
 
         static List<ObjectStateSaver> sSavedStates = null;
-        static GameObject sSaveStatesGameObject;
+
         static void SaveAllInterestingStates()
         {
             //Debug.Log("Exiting play mode: Saving state for all interesting objects");
@@ -531,11 +533,11 @@ namespace SaveDuringPlay
                 OnHotSave();
 
             sSavedStates = new List<ObjectStateSaver>();
-            Transform[] objects = FindInterestingObjects();
-            foreach (Transform obj in objects)
+            var objects = FindInterestingObjects();
+            foreach (var obj in objects)
             {
-                ObjectStateSaver saver = new ObjectStateSaver();
-                saver.CollectFieldValues(obj.gameObject);
+                var saver = new ObjectStateSaver();
+                saver.CollectFieldValues(obj);
                 sSavedStates.Add(saver);
             }
             if (sSavedStates.Count == 0)
