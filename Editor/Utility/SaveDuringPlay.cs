@@ -383,19 +383,28 @@ namespace SaveDuringPlay
 
         static string StringFromLeafObject(object obj)
         {
-            switch (obj)
+            if (obj == null)
+                return string.Empty;
+
+            if (typeof(Component).IsAssignableFrom(obj.GetType()))
             {
-                case null:
+                Component c = (Component)obj;
+                if (c == null) // Component overrides the == operator, so we have to check
                     return string.Empty;
-                case Component c:
-                    return c == null ? string.Empty : ObjectTreeUtil.GetFullName(c.gameObject);
-                case GameObject go:
-                    return ObjectTreeUtil.GetFullName(go);
-                case ScriptableObject so:
-                    return AssetDatabase.GetAssetPath(so);
-                default:
-                    return obj.ToString();
+                return ObjectTreeUtil.GetFullName(c.gameObject);
             }
+            if (typeof(GameObject).IsAssignableFrom(obj.GetType()))
+            {
+                GameObject go = (GameObject)obj;
+                if (go == null) // GameObject overrides the == operator, so we have to check
+                    return string.Empty;
+                return ObjectTreeUtil.GetFullName(go);
+            }
+            if (typeof(ScriptableObject).IsAssignableFrom(obj.GetType()))
+            {
+                return AssetDatabase.GetAssetPath(obj as ScriptableObject);
+            }
+            return obj.ToString();
         }
     };
 
