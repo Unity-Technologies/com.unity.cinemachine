@@ -793,9 +793,6 @@ namespace Cinemachine
                 m_CachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
                 m_CachedLookAtTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
             }
-            // Reset if target changed
-            if (FollowTargetChanged || LookAtTargetChanged)
-                PreviousStateIsValid = false;
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, 

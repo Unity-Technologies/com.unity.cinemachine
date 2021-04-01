@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added button to virtual camera inspectors to auto-generate CinemachineInputProvider component if missing.
 - Default PostProcessing profile priority is now configurable and defaults to 1000.
 - Cinemachine3rdPersonFollow can operate without the physics module, and without collision resolution.
+- Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, after changing the targets, set PreviousStateIsValid to false.
 - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large.
 - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space.
 - Bugfix: 3rdPersonFollow was stuttering when Z damping was high.
