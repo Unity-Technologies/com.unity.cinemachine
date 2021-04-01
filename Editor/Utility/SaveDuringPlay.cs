@@ -551,6 +551,7 @@ namespace SaveDuringPlay
                     Undo.RegisterFullObjectHierarchyUndo(go, "SaveDuringPlay");
                     if (saver.PutFieldValues(go, roots))
                     {
+                        //Debug.Log("SaveDuringPlay: updated settings of " + saver.ObjetFullPath);
                         EditorUtility.SetDirty(go);
                         dirty = true;
                     }
