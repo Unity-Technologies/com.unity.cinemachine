@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 275253955}
   - component: {fileID: 275253954}
   m_Layer: 0
-  m_Name: Platform
+  m_Name: Platform Down
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -231,7 +231,7 @@ GameObject:
   - component: {fileID: 313100482}
   - component: {fileID: 313100481}
   m_Layer: 0
-  m_Name: Platform
+  m_Name: Platform Up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -908,7 +908,7 @@ GameObject:
   - component: {fileID: 1910455797}
   - component: {fileID: 1910455796}
   m_Layer: 0
-  m_Name: DollyTrack1
+  m_Name: DollyTrack GoesDown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1073,7 +1073,7 @@ GameObject:
   - component: {fileID: 1942116118}
   - component: {fileID: 1942116117}
   m_Layer: 0
-  m_Name: DollyTrack1 (1)
+  m_Name: DollyTrack StaysOnMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
