@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine3rdPersonFollow was not handling collision by default.
 - Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
+- Blends continue from interrupted blends progress.
 
 
 ## [2.7.2] - 2021-02-15
