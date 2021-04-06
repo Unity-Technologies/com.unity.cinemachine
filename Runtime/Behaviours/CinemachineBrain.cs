@@ -683,7 +683,7 @@ namespace Cinemachine
                                 && frame.blend.CamB == outGoingCamera
                                 && frame.blend.Duration <= blendDef.BlendTime)
                             {
-                                blendDef.m_Time = frame.blend.TimeInBlend;
+                                blendDef.m_Time = (frame.blend.TimeInBlend / frame.blend.Duration) * blendDef.BlendTime;
                             }
 
                             // Chain to existing blend
