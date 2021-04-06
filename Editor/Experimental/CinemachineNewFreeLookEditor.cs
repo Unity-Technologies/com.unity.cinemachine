@@ -11,13 +11,10 @@ namespace Cinemachine
     sealed class CinemachineNewFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
     {
-        GUIContent[] mRigNames = new GUIContent[]
-            { new GUIContent("Top Rig"), new GUIContent("Bottom Rig") };
-
         GUIContent[] mOrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
 
-        GUIContent mAllLensLabel = new GUIContent(
+        GUIContent mCustomizeLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
 
         VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
@@ -77,32 +74,47 @@ namespace Cinemachine
 
             // Pipeline Stages
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Main Rig", EditorStyles.boldLabel);
-            var components = Target.ComponentCache;
-            for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
+            var selectedRig = Selection.objects.Length == 1 
+                ? GUILayout.Toolbar(m_SelectedRig, s_RigNames) : 0;
+            if (selectedRig != m_SelectedRig)
             {
-                var ed = mPipelineSet.m_subeditors[i];
-                if (ed == null)
-                    continue;
-                if (!ed.HasImplementation)
-                    continue;
-                if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
-                    ed.TypeIsLocked = true;
-                ed.OnInspectorGUI(components[i]); // may destroy component
+                Undo.RecordObject(Target, "selected rig");
+                Target.m_VerticalAxis.Value = selectedRig == 0 ? 0.5f : (selectedRig == 1 ? 1 : 0);
             }
-
-            // Rigs
-            EditorGUILayout.Space();
-            SerializedProperty rigs = FindProperty(x => x.m_Rigs);
-            for (int i = 0; i < 2; ++i)
+            m_SelectedRig = selectedRig;
+            if (selectedRig == 0)
             {
-                EditorGUILayout.Separator();
-                DrawRigEditor(i, rigs.GetArrayElementAtIndex(i));
+                var components = Target.ComponentCache;
+                for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
+                {
+                    var ed = mPipelineSet.m_subeditors[i];
+                    if (ed == null)
+                        continue;
+                    if (!ed.HasImplementation)
+                        continue;
+                    if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
+                        ed.TypeIsLocked = true;
+                    ++EditorGUI.indentLevel;
+                    ed.OnInspectorGUI(components[i]); // may destroy component
+                    --EditorGUI.indentLevel;
+                }
+            }
+            else
+            {
+                DrawRigEditor(selectedRig - 1);
             }
 
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
+
+        static GUIContent[] s_RigNames = 
+        {
+            new GUIContent("Main Rig"), 
+            new GUIContent("Top Rig"), 
+            new GUIContent("Bottom Rig")
+        };
+        static int m_SelectedRig = 0;
 
         Vector3 mPreviousPosition; // for position dragging
         private void OnSceneGUI()
@@ -149,14 +161,15 @@ namespace Cinemachine
             }
         }
 
-        void DrawRigEditor(int rigIndex, SerializedProperty rig)
+        void DrawRigEditor(int rigIndex)
         {
             const float kBoxMargin = 3;
+
+            SerializedProperty rig = FindProperty(x => x.m_Rigs).GetArrayElementAtIndex(rigIndex);
 
             CinemachineNewFreeLook.Rig def = new CinemachineNewFreeLook.Rig(); // for properties
             EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUIUtility.labelWidth -= kBoxMargin;
-            EditorGUILayout.LabelField(new GUIContent(mRigNames[rigIndex]), EditorStyles.boldLabel);
 
             ++EditorGUI.indentLevel;
             var components = Target.ComponentCache;
@@ -223,7 +236,7 @@ namespace Cinemachine
             float labelWidth = EditorGUIUtility.labelWidth;
             bool newValue = EditorGUI.ToggleLeft(
                 new Rect(labelWidth, r.y, r.width - labelWidth, r.height),
-                mAllLensLabel, enabledProperty.boolValue);
+                mCustomizeLabel, enabledProperty.boolValue);
             if (newValue != enabledProperty.boolValue)
             {
                 enabledProperty.boolValue = newValue;

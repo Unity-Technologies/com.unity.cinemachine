@@ -55,13 +55,15 @@ namespace Cinemachine.Editor
 
         protected virtual void OnGUI()
         {
-            if (Target == null)
-                return;
-
             // Draw the camera guides
-            if (!Target.IsValid || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            if (Target == null || !Target.IsValid || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 return;
 
+            // If inspector is collapsed in the vcam editor, don't draw the guides
+            if (!ActiveEditorRegistry.IsActiveEditor(this))
+                return;
+
+            // Don't draw the guides if rendering to texture
             var vcam = Target.VirtualCamera;
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
@@ -95,10 +97,11 @@ namespace Cinemachine.Editor
                 }
             }
         }
-#if false
+
+#if true
         // debugging only
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineComposer))]
-        static void DrawTransposerGizmos(CinemachineComposer target, GizmoType selectionType)
+        static void DrawComposerGizmos(CinemachineComposer target, GizmoType selectionType)
         {
             // Draw lookahead path
             if (target.m_LookaheadTime > 0)

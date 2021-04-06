@@ -352,6 +352,8 @@ namespace Cinemachine.Editor
         /// <param name="property">The SerializedProperty for the field of type LensSettings field</param>
         protected void DrawLensSettingsInInspector(SerializedProperty property)
         {
+            if (IsPropertyExcluded(property.name))
+                return;
             if (m_LensSettingsInspectorHelper == null)
                 m_LensSettingsInspectorHelper = new LensSettingsInspectorHelper();
 

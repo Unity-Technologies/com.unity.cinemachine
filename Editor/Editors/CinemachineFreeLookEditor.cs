@@ -37,10 +37,8 @@ namespace Cinemachine
             base.OnDisable();
 
             // Must destroy child editors or we get exceptions
-            if (m_editors != null)
-                foreach (UnityEditor.Editor e in m_editors)
-                    if (e != null)
-                        UnityEngine.Object.DestroyImmediate(e);
+            if (m_rigEditor != null)
+                UnityEngine.Object.DestroyImmediate(m_rigEditor);
         }
 
         public override void OnInspectorGUI()
@@ -54,6 +52,7 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
+            DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
 
@@ -76,16 +75,14 @@ namespace Cinemachine
             // Rigs
             if (Selection.objects.Length == 1)
             {
-                UpdateRigEditors();
-                for (int i = 0; i < m_editors.Length; ++i)
+                EditorGUILayout.Separator();
+                m_SelectedRig = GUILayout.Toolbar(m_SelectedRig, s_RigNames);
+                UpdateRigEditor();
+                if (m_rigEditor != null)
                 {
-                    if (m_editors[i] == null)
-                        continue;
-                    EditorGUILayout.Separator();
                     EditorGUILayout.BeginVertical(GUI.skin.box);
-                    EditorGUILayout.LabelField(RigNames[i], EditorStyles.boldLabel);
                     ++EditorGUI.indentLevel;
-                    m_editors[i].OnInspectorGUI();
+                    m_rigEditor.OnInspectorGUI();
                     --EditorGUI.indentLevel;
                     EditorGUILayout.EndVertical();
                 }
@@ -95,27 +92,33 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-        string[] RigNames;
-        CinemachineVirtualCameraBase[] m_rigs;
-        UnityEditor.Editor[] m_editors;
-        void UpdateRigEditors()
+        static GUIContent[] s_RigNames = 
         {
-            RigNames = CinemachineFreeLook.RigNames;
-            if (m_rigs == null)
-                m_rigs = new CinemachineVirtualCameraBase[RigNames.Length];
-            if (m_editors == null)
-                m_editors = new UnityEditor.Editor[RigNames.Length];
-            for (int i = 0; i < RigNames.Length; ++i)
+            new GUIContent("Top Rig"), 
+            new GUIContent("Middle Rig"), 
+            new GUIContent("Bottom Rig")
+        };
+        int m_SelectedRig = 1;
+
+        UnityEditor.Editor m_rigEditor;
+        CinemachineVirtualCameraBase m_EditedRig = null;
+
+        void UpdateRigEditor()
+        {
+            CinemachineVirtualCamera rig = Target.GetRig(m_SelectedRig);
+            if (m_EditedRig != rig || m_rigEditor == null)
             {
-                CinemachineVirtualCamera rig = Target.GetRig(i);
-                if (rig == null || rig != m_rigs[i])
+                m_EditedRig = rig;
+                if (m_rigEditor != null)
                 {
-                    m_rigs[i] = rig;
-                    if (m_editors[i] != null)
-                        UnityEngine.Object.DestroyImmediate(m_editors[i]);
-                    m_editors[i] = null;
-                    if (rig != null)
-                        CreateCachedEditor(rig, null, ref m_editors[i]);
+                    UnityEngine.Object.DestroyImmediate(m_rigEditor);
+                    m_rigEditor = null;
+                }
+                if (rig != null)
+                {
+                    Undo.RecordObject(Target, "selected rig");
+                    Target.m_YAxis.Value = m_SelectedRig == 0 ? 1 : (m_SelectedRig == 1 ? 0.5f : 0);
+                    CreateCachedEditor(rig, null, ref m_rigEditor);
                 }
             }
         }

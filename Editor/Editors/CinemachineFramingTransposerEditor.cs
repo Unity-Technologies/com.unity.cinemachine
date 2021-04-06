@@ -138,11 +138,12 @@ namespace Cinemachine.Editor
         
         protected virtual void OnGUI()
         {
-            if (Target == null)
+            // Draw the camera guides
+            if (Target == null || !Target.IsValid || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 return;
 
-            // Draw the camera guides
-            if (!Target.IsValid || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            // If inspector is collapsed in the vcam editor, don't draw the guides
+            if (!ActiveEditorRegistry.IsActiveEditor(this))
                 return;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);

@@ -13,12 +13,7 @@ namespace Cinemachine.Editor
         // Static state and caches - Call UpdateStaticData() to refresh this
         struct StageData
         {
-            string ExpandedKey { get { return "Cinemachine_Vcam_Stage_Expanded_" + Name; } }
-            public bool IsExpanded
-            {
-                get { return EditorPrefs.GetBool(ExpandedKey, false); }
-                set { EditorPrefs.SetBool(ExpandedKey, value); }
-            }
+            public bool IsExpanded { get; set; }
             public string Name;
             public Type[] types;   // first entry is null
             public GUIContent[] PopupOptions;
@@ -109,6 +104,7 @@ namespace Cinemachine.Editor
         // Call this from OnDisable()
         public void Shutdown()
         {
+            ActiveEditorRegistry.SetActiveEditor(mComponentEditor, false);
             if (mComponentEditor != null)
                 UnityEngine.Object.DestroyImmediate(mComponentEditor);
             mComponentEditor = null;
@@ -132,6 +128,7 @@ namespace Cinemachine.Editor
             {
                 if (mComponentEditor != null)
                 {
+                    ActiveEditorRegistry.SetActiveEditor(mComponentEditor, false);
                     mComponentEditor.ResetTarget();
                     UnityEngine.Object.DestroyImmediate(mComponentEditor);
                 }
@@ -207,12 +204,13 @@ namespace Cinemachine.Editor
             if (type != null)
             {
                 r = new Rect(rect.x - kBoxMargin, rect.y, labelWidth, rect.height);
-                sStageData[index].IsExpanded = EditorGUI.Foldout(
+                var isExpanded = EditorGUI.Foldout(
                         r, sStageData[index].IsExpanded, GUIContent.none, true);
-                if (sStageData[index].IsExpanded)
+                if (isExpanded || isExpanded != sStageData[index].IsExpanded)
                 {
                     // Make the editor for that stage
-                    if (mComponentEditor != null)
+                    ActiveEditorRegistry.SetActiveEditor(mComponentEditor, isExpanded);
+                    if (isExpanded && mComponentEditor != null)
                     {
                         ++EditorGUI.indentLevel;
                         EditorGUILayout.Separator();
@@ -221,6 +219,7 @@ namespace Cinemachine.Editor
                         --EditorGUI.indentLevel;
                     }
                 }
+                sStageData[index].IsExpanded = isExpanded;
             }
             EditorGUILayout.EndVertical();
             EditorGUIUtility.labelWidth += kBoxMargin;

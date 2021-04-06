@@ -16,12 +16,7 @@ namespace Cinemachine.Editor
         // Static state and caches - Call UpdateStaticData() to refresh this
         struct StageData
         {
-            string ExpandedKey { get { return "CNMCN_Core_Vcam_Expanded_" + Name; } }
-            public bool IsExpanded
-            {
-                get { return EditorPrefs.GetBool(ExpandedKey, false); }
-                set { EditorPrefs.SetBool(ExpandedKey, value); }
-            }
+            public bool IsExpanded { get; set; }
             public string Name;
             public Type[] types;   // first entry is null
             public GUIContent[] PopupOptions;
@@ -59,9 +54,14 @@ namespace Cinemachine.Editor
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
             // Must destroy editors or we get exceptions
             if (m_componentEditors != null)
+            {
                 foreach (UnityEditor.Editor e in m_componentEditors)
+                {
+                    ActiveEditorRegistry.SetActiveEditor(e, false);
                     if (e != null)
                         UnityEngine.Object.DestroyImmediate(e);
+                }
+            }
         }
 
         Vector3 mPreviousPosition;
@@ -188,13 +188,14 @@ namespace Cinemachine.Editor
                 {
                     Rect stageRect = new Rect(
                         rect.x - indentOffset, rect.y, rect.width + indentOffset, rect.height);
-                    sStageData[index].IsExpanded = EditorGUI.Foldout(
+                    var isExpanded = EditorGUI.Foldout(
                             stageRect, sStageData[index].IsExpanded, GUIContent.none, true);
-                    if (sStageData[index].IsExpanded)
+                    if (isExpanded || sStageData[index].IsExpanded != isExpanded)
                     {
                         // Make the editor for that stage
                         UnityEditor.Editor e = GetEditorForPipelineStage(stage);
-                        if (e != null)
+                        ActiveEditorRegistry.SetActiveEditor(e, isExpanded);
+                        if (e != null && isExpanded)
                         {
                             ++EditorGUI.indentLevel;
                             EditorGUILayout.Separator();
@@ -204,6 +205,7 @@ namespace Cinemachine.Editor
                             --EditorGUI.indentLevel;
                         }
                     }
+                    sStageData[index].IsExpanded = isExpanded;
                 }
                 EditorGUILayout.EndVertical();
             }
@@ -454,9 +456,14 @@ namespace Cinemachine.Editor
             {
                 // Destroy the subeditors
                 if (m_componentEditors != null)
+                {
                     foreach (UnityEditor.Editor e in m_componentEditors)
+                    {
+                        ActiveEditorRegistry.SetActiveEditor(e, false);
                         if (e != null)
                             UnityEngine.Object.DestroyImmediate(e);
+                    }
+                }
 
                 // Create new editors
                 m_componentEditors = new UnityEditor.Editor[numComponents];
