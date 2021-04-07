@@ -36,6 +36,8 @@ namespace Cinemachine
             DrawRemainingPropertiesInInspector();
 
             // Pipeline Stages
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Procedural", EditorStyles.boldLabel);
             var components = Target.ComponentCache;
             for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
             {

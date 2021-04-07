@@ -137,6 +137,8 @@ namespace Cinemachine.Editor
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Procedural", EditorStyles.boldLabel);
             DrawPipelineInInspector();
             DrawExtensionsWidgetInInspector();
         }
@@ -146,23 +148,20 @@ namespace Cinemachine.Editor
             UpdateInstanceData();
             foreach (CinemachineCore.Stage stage in Enum.GetValues(typeof(CinemachineCore.Stage)))
             {
+                const float indentSize = 15; // GML wtf get rid of this
                 int index = (int)stage;
 
                 // Skip pipeline stages that have no implementations
                 if (index < 0 || sStageData[index].PopupOptions.Length <= 1)
                     continue;
 
-                const float indentOffset = 3;
-
-                GUIStyle stageBoxStyle = GUI.skin.box;
-                EditorGUILayout.BeginVertical(stageBoxStyle);
                 Rect rect = EditorGUILayout.GetControlRect(true);
 
                 // Don't use PrefixLabel() because it will link the enabled status of field and label
                 GUIContent label = new GUIContent(InspectorUtility.NicifyClassName(stage.ToString()));
                 if (m_stageError[index])
                     label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
-                float labelWidth = EditorGUIUtility.labelWidth - (indentOffset + EditorGUI.indentLevel * 15);
+                float labelWidth = EditorGUIUtility.labelWidth - (EditorGUI.indentLevel * indentSize);
                 Rect r = rect; r.width = labelWidth;
                 EditorGUI.LabelField(r, label);
                 r = rect; r.width -= labelWidth; r.x += labelWidth;
@@ -186,10 +185,8 @@ namespace Cinemachine.Editor
                 }
                 if (type != null)
                 {
-                    Rect stageRect = new Rect(
-                        rect.x - indentOffset, rect.y, rect.width + indentOffset, rect.height);
                     var isExpanded = EditorGUI.Foldout(
-                            stageRect, sStageData[index].IsExpanded, GUIContent.none, true);
+                            rect, sStageData[index].IsExpanded, GUIContent.none, true);
                     if (isExpanded || sStageData[index].IsExpanded != isExpanded)
                     {
                         // Make the editor for that stage
@@ -198,16 +195,12 @@ namespace Cinemachine.Editor
                         if (e != null && isExpanded)
                         {
                             ++EditorGUI.indentLevel;
-                            EditorGUILayout.Separator();
                             e.OnInspectorGUI();
-
-                            EditorGUILayout.Separator();
                             --EditorGUI.indentLevel;
                         }
                     }
                     sStageData[index].IsExpanded = isExpanded;
                 }
-                EditorGUILayout.EndVertical();
             }
         }
 

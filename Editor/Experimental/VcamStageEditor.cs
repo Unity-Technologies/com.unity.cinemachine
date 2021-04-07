@@ -156,14 +156,8 @@ namespace Cinemachine.Editor
 
         private void DrawComponentInspector()
         {
-            const float kBoxMargin = 4; // GML wtf get rid of this
             const float indentSize = 15; // GML wtf get rid of this
-
             int index = (int)mStage;
-
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            EditorGUIUtility.labelWidth -= kBoxMargin;
-
             Rect rect = EditorGUILayout.GetControlRect(true);
 
             // Don't use PrefixLabel() because it will link the enabled status of field and label
@@ -171,7 +165,7 @@ namespace Cinemachine.Editor
             if (mStageError)
                 label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
             float labelWidth = EditorGUIUtility.labelWidth - EditorGUI.indentLevel * indentSize;
-            Rect r = rect; r.width = labelWidth; r.x -= kBoxMargin;
+            Rect r = rect; r.width = labelWidth;
             EditorGUI.LabelField(r, label);
 
             r = rect; r.width -= labelWidth; r.x += labelWidth;
@@ -203,7 +197,7 @@ namespace Cinemachine.Editor
             // Draw the embedded editor
             if (type != null)
             {
-                r = new Rect(rect.x - kBoxMargin, rect.y, labelWidth, rect.height);
+                r = new Rect(rect.x, rect.y, labelWidth, rect.height);
                 var isExpanded = EditorGUI.Foldout(
                         r, sStageData[index].IsExpanded, GUIContent.none, true);
                 if (isExpanded || isExpanded != sStageData[index].IsExpanded)
@@ -213,16 +207,12 @@ namespace Cinemachine.Editor
                     if (isExpanded && mComponentEditor != null)
                     {
                         ++EditorGUI.indentLevel;
-                        EditorGUILayout.Separator();
                         mComponentEditor.OnInspectorGUI();
-                        EditorGUILayout.Separator();
                         --EditorGUI.indentLevel;
                     }
                 }
                 sStageData[index].IsExpanded = isExpanded;
             }
-            EditorGUILayout.EndVertical();
-            EditorGUIUtility.labelWidth += kBoxMargin;
         }
 
         public void OnPositionDragged(Vector3 delta)

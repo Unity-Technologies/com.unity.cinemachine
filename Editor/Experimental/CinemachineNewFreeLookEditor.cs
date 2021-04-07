@@ -75,16 +75,17 @@ namespace Cinemachine
             // Pipeline Stages
             EditorGUILayout.Space();
             var selectedRig = Selection.objects.Length == 1 
-                ? GUILayout.Toolbar(m_SelectedRig, s_RigNames) : 0;
-            if (selectedRig != m_SelectedRig)
+                ? GUILayout.Toolbar(s_SelectedRig, s_RigNames) : 0;
+            if (selectedRig != s_SelectedRig)
             {
                 Undo.RecordObject(Target, "selected rig");
-                Target.m_VerticalAxis.Value = selectedRig == 0 ? 0.5f : (selectedRig == 1 ? 1 : 0);
+                Target.m_VerticalAxis.Value = selectedRig == 0 ? 1 : (selectedRig == 1 ? 0.5f : 0);
             }
-            m_SelectedRig = selectedRig;
-            if (selectedRig == 0)
+            s_SelectedRig = selectedRig;
+            if (selectedRig == 1)
             {
                 var components = Target.ComponentCache;
+                EditorGUILayout.BeginVertical(GUI.skin.box);
                 for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
                 {
                     var ed = mPipelineSet.m_subeditors[i];
@@ -98,10 +99,11 @@ namespace Cinemachine
                     ed.OnInspectorGUI(components[i]); // may destroy component
                     --EditorGUI.indentLevel;
                 }
+                EditorGUILayout.EndVertical();
             }
             else
             {
-                DrawRigEditor(selectedRig - 1);
+                DrawRigEditor(selectedRig == 0 ? 0 : 1);
             }
 
             // Extensions
@@ -110,11 +112,11 @@ namespace Cinemachine
 
         static GUIContent[] s_RigNames = 
         {
-            new GUIContent("Main Rig"), 
             new GUIContent("Top Rig"), 
+            new GUIContent("Main Rig"), 
             new GUIContent("Bottom Rig")
         };
-        static int m_SelectedRig = 0;
+        static int s_SelectedRig = 1;
 
         Vector3 mPreviousPosition; // for position dragging
         private void OnSceneGUI()

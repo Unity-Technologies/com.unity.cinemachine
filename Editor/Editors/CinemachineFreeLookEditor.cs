@@ -76,7 +76,8 @@ namespace Cinemachine
             if (Selection.objects.Length == 1)
             {
                 EditorGUILayout.Separator();
-                m_SelectedRig = GUILayout.Toolbar(m_SelectedRig, s_RigNames);
+                EditorGUILayout.Separator();
+                s_SelectedRig = GUILayout.Toolbar(s_SelectedRig, s_RigNames);
                 UpdateRigEditor();
                 if (m_rigEditor != null)
                 {
@@ -98,14 +99,14 @@ namespace Cinemachine
             new GUIContent("Middle Rig"), 
             new GUIContent("Bottom Rig")
         };
-        int m_SelectedRig = 1;
+        static int s_SelectedRig = 1;
 
         UnityEditor.Editor m_rigEditor;
         CinemachineVirtualCameraBase m_EditedRig = null;
 
         void UpdateRigEditor()
         {
-            CinemachineVirtualCamera rig = Target.GetRig(m_SelectedRig);
+            CinemachineVirtualCamera rig = Target.GetRig(s_SelectedRig);
             if (m_EditedRig != rig || m_rigEditor == null)
             {
                 m_EditedRig = rig;
@@ -117,7 +118,7 @@ namespace Cinemachine
                 if (rig != null)
                 {
                     Undo.RecordObject(Target, "selected rig");
-                    Target.m_YAxis.Value = m_SelectedRig == 0 ? 1 : (m_SelectedRig == 1 ? 0.5f : 0);
+                    Target.m_YAxis.Value = s_SelectedRig == 0 ? 1 : (s_SelectedRig == 1 ? 0.5f : 0);
                     CreateCachedEditor(rig, null, ref m_rigEditor);
                 }
             }
