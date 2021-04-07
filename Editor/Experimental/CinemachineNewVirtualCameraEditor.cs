@@ -10,6 +10,15 @@ namespace Cinemachine
     sealed class CinemachineNewVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
     {
+        GUIContent m_ProceduralMotionLabel = new GUIContent(
+            "Procedural Motion", 
+            "Use the procedural motion algorithms to automatically drive the transform in "
+                + "relation to the LookAt and Follow targets.  \n\n"
+                + "Body controls the position, and Aim controls the rotation.\n\n"
+                + "If Do Nothing is selected, "
+                + "then the transform will not be written to, and can be controlled manually "
+                + "or otherwise driven by script.");
+
         VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
 
         protected override void OnEnable()
@@ -37,7 +46,7 @@ namespace Cinemachine
 
             // Pipeline Stages
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Procedural", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(m_ProceduralMotionLabel, EditorStyles.boldLabel);
             var components = Target.ComponentCache;
             for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
             {

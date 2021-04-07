@@ -31,6 +31,15 @@ namespace Cinemachine.Editor
         UnityEditor.Editor[] m_componentEditors = new UnityEditor.Editor[0];
         bool IsPrefab { get; set; }
 
+        GUIContent m_ProceduralMotionLabel = new GUIContent(
+            "Procedural Motion", 
+            "Use the procedural motion algorithms to automatically drive the transform in "
+                + "relation to the LookAt and Follow targets.  \n\n"
+                + "Body controls the position, and Aim controls the rotation.\n\n"
+                + "If Do Nothing is selected, "
+                + "then the transform will not be written to, and can be controlled manually "
+                + "or otherwise driven by script.");
+                
         protected override void OnEnable()
         {
             // Build static menu arrays via reflection
@@ -138,7 +147,7 @@ namespace Cinemachine.Editor
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Procedural", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(m_ProceduralMotionLabel, EditorStyles.boldLabel);
             DrawPipelineInInspector();
             DrawExtensionsWidgetInInspector();
         }
