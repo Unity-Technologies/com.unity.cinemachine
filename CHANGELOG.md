@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+- Bugfix: Reversing a blend in progress respects asymmetric blend times.
+
+
 ## [2.8.0-exp.1] - 2021-03-31
 - Added simplified modes for impulse generation, added secondary reaction settings to Impulse Listener.
 - Added Storyboard support for ScreenSpaceOverlay and ScreenSpaceCamera camera render modes.
