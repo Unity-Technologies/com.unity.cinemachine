@@ -87,10 +87,10 @@ namespace Cinemachine
 
         /// <summary>
         /// This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, 
-        /// and GateFit are set in the Camera object, or are overidden here.
+        /// and GateFit are set in the Camera object, or are overridden here.
         /// </summary>
         [Tooltip("This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, "
-            + "and GateFit are set in the Camera object, or are overidden here.")]
+            + "and GateFit are set in the Camera object, or are overridden here.")]
         public OverrideModes ModeOverride;
 
         /// <summary>
