@@ -285,7 +285,9 @@ namespace Cinemachine
                 if (m_AvoidObstacles)
                 {
                     Vector3 displacement = Vector3.zero;
-                    displacement = PreserveLignOfSight(ref state, ref extra);
+                    displacement = PreserveLineOfSight(ref state, ref extra);
+                    extra.m_previousDisplacement = 
+                        Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement;
                     if (m_MinimumOcclusionTime > Epsilon)
                     {
                         float now = CinemachineCore.CurrentTime;
@@ -325,8 +327,7 @@ namespace Cinemachine
                     {
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, damping, deltaTime);
-                        displacement = 
-                            Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement + delta;
+                        displacement = extra.m_previousDisplacement + delta;
                     }
                     extra.m_previousDisplacement = displacement;
                     
@@ -382,7 +383,13 @@ namespace Cinemachine
             }
         }
 
-        private Vector3 PreserveLignOfSight(ref CameraState state, ref VcamExtraState extra)
+
+        void DebugVector(Vector3 vec3, String name)
+        {
+            Debug.Log(name+":"+vec3.x+","+vec3.y+","+vec3.z);
+        }
+
+        private Vector3 PreserveLineOfSight(ref CameraState state, ref VcamExtraState extra)
         {
             Vector3 displacement = Vector3.zero;
             if (state.HasLookAt && m_CollideAgainst != 0
