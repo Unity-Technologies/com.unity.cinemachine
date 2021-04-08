@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, after changing the targets, set PreviousStateIsValid to false.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
 - New sample scene: Boss cam, that demonstrates how to setup a camera that follows the player and looks at the player and the boss. It also shows examples of custom extensions.
+- Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour
 
 
 ## [2.8.0-exp.1] - 2021-03-31
