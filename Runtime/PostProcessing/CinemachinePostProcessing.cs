@@ -171,7 +171,7 @@ namespace Cinemachine.PostFX
         {
             // Set the focus after the camera has been fully positioned.
             // GML todo: what about collider?
-            if (stage == CinemachineCore.Stage.Aim)
+            if (stage == CinemachineCore.Stage.Finalize)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 if (!IsValid)
