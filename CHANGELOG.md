@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [unreleased]
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, after changing the targets, set PreviousStateIsValid to false.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
+- Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
+- New sample scene: Boss cam, that demonstrates how to setup a camera that follows the player and looks at the player and the boss. It also shows examples of custom extensions.
 
 
 ## [2.8.0-exp.1] - 2021-03-31
@@ -30,8 +32,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine3rdPersonFollow was not handling collision by default.
 - Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
-- New sample scene: Boss cam, that demonstrates how to setup a camera that follows the player and looks at the player and the boss. It also shows examples of custom extensions.
-- Bugfix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
 
 
 ## [2.7.2] - 2021-02-15
