@@ -259,6 +259,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -358,6 +359,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -508,7 +510,7 @@ GameObject:
   - component: {fileID: 847669607}
   - component: {fileID: 847669606}
   m_Layer: 0
-  m_Name: DollyTrack
+  m_Name: PlayerTrack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -582,10 +584,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 905242755}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b38b93b6482145f09e4512c2c979938, type: 3}
+  m_Script: {fileID: 11500000, guid: bed38d6428294444d8470619ce9e2cc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoomSpeed: 2
+  ZoomMultiplier: 1
+  MinZoom: 1
+  MaxZoom: 50
 --- !u!114 &905242757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -608,14 +612,14 @@ MonoBehaviour:
   m_Follow: {fileID: 186750486}
   m_Lens:
     FieldOfView: 40
-    OrthographicSize: 8.824697
+    OrthographicSize: 5
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 2.201995, y: 1}
+    m_SensorSize: {x: 2.191067, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -682,6 +686,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -831,7 +836,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 8.824697
+  orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -891,7 +896,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Title: Aiming Rig
-  m_Description: A 2D setup, where you can zoom in/out with the mouse scroll.
+  m_Description: A 2D setup, where you can zoom in/out with the mouse scroll. The
+    zoom in/out is done by changing the orthographic size of the camera lens. For
+    more details, see MouseScrollZoom2D.cs script on CM ZoomCam.
 --- !u!4 &1843694285
 Transform:
   m_ObjectHideFlags: 0

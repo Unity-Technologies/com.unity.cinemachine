@@ -1,40 +1,62 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Cinemachine;
 using UnityEngine;
 
-public class LoseSightWhenTargetsFallsOffThePlatform : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public Transform platform;
-    [Range(1, 30)]
-    public float LoseSightSlowness = 10;
-    private CinemachineTargetGroup targetGroup;
-    void Start()
+    public class LoseSightWhenTargetsFallsOffThePlatform : MonoBehaviour
     {
-        targetGroup = GetComponent<CinemachineTargetGroup>();
-    }
+        [Tooltip("The platform from which LoseSightAtRange is calculated")]
+        public Transform LowerPlatform;
+        
+        [Tooltip("The weight of a transform in the target group is 1 when above the Lower Platform. When a transform is " +
+            "below the Lower Platform, then its weight decreases based on the distance between the transform and the " +
+            "Lower Platform and it reaches 0 at LoseSightAtRange. If you set this value to 0, then the transform is removed " +
+            "instantly.")]
+        [Range(0, 30)]
+        public float LoseSightAtRange = 20;
 
-    // Update is called once per frame
-    void Update()
-    {
-        for (var index = 0; index < targetGroup.m_Targets.Length; index++)
+        void Update()
         {
-            if (targetGroup.m_Targets[index].target.position.y < platform.position.y)
+            // iterate through each target in the targetGroup
+            for (var index = 0; index < m_TargetGroup.m_Targets.Length; index++)
             {
-                targetGroup.m_Targets[index].weight = 
-                    1f - (platform.position.y - targetGroup.m_Targets[index].target.position.y) / LoseSightSlowness;
-                targetGroup.m_Targets[index].weight = Mathf.Clamp(targetGroup.m_Targets[index].weight, 0, 1);
-            }
-            else
-            {
-                targetGroup.m_Targets[index].weight = 1;
+                // skip null targets
+                if (m_TargetGroup.m_Targets[index].target == null)
+                {
+                    continue;
+                }
+                
+                // if a target is below the LowerPlatform along the Y axis
+                if (m_TargetGroup.m_Targets[index].target.position.y < LowerPlatform.position.y)
+                {
+                    // calculate the distance between target and the LowerPlatform along the Y axis
+                    var yDistanceFromLowerPlatform = 
+                        LowerPlatform.position.y - m_TargetGroup.m_Targets[index].target.position.y;
+                    
+                    // weight is 0 when yDistanceFromLowerPlatform = LoseSightAtRange, and is bigger than 0 otherwise
+                    m_TargetGroup.m_Targets[index].weight = 
+                        1f - yDistanceFromLowerPlatform / LoseSightAtRange;
+                    
+                    // ensure the weight is non-negative
+                    m_TargetGroup.m_Targets[index].weight = Mathf.Max(m_TargetGroup.m_Targets[index].weight, 0);
+                }
+                // if a target is above the LowerPlatform along the Y axis
+                else
+                {
+                    m_TargetGroup.m_Targets[index].weight = 1;
+                }
             }
         }
-    }
+        
+        CinemachineTargetGroup m_TargetGroup;
+        void Awake()
+        {
+            m_TargetGroup = GetComponent<CinemachineTargetGroup>();
+        }
 
-    private void OnValidate()
-    {
-        LoseSightSlowness = Mathf.Clamp(LoseSightSlowness, 1f, 30f);
+        void OnValidate()
+        {
+            LoseSightAtRange = Mathf.Clamp(LoseSightAtRange, 0f, 30f);
+        }
     }
 }
