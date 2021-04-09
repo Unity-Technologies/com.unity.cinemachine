@@ -284,12 +284,10 @@ namespace Cinemachine
             {
                 if (m_AvoidObstacles)
                 {
-                    System.Diagnostics.Debug.Assert(extra != null, nameof(extra) + " != null");
-                    extra.m_previousDisplacement = 
-                        Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement;
-                    
                     Vector3 displacement = Vector3.zero;
                     displacement = PreserveLineOfSight(ref state, ref extra);
+                    extra.m_previousDisplacement = 
+                        Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement;
                     if (m_MinimumOcclusionTime > Epsilon)
                     {
                         float now = CinemachineCore.CurrentTime;
@@ -330,11 +328,6 @@ namespace Cinemachine
                         Vector3 delta = displacement - extra.m_previousDisplacement;
                         delta = Damper.Damp(delta, damping, deltaTime);
                         displacement = extra.m_previousDisplacement + delta;
-                        
-                        
-                        DebugVector(delta, "delta");
-                        DebugVector(extra.m_previousDisplacement, "extra.m_previousDisplacement");
-                        DebugVector(displacement, "displacement");
                     }
                     extra.m_previousDisplacement = displacement;
                     
@@ -388,12 +381,6 @@ namespace Cinemachine
                     state.ShotQuality *= (1f + nearnessBoost);
                 }
             }
-        }
-
-
-        void DebugVector(Vector3 vec3, String name)
-        {
-            Debug.Log(name + ":" + vec3.ToString("F4"));
         }
 
         private Vector3 PreserveLineOfSight(ref CameraState state, ref VcamExtraState extra)

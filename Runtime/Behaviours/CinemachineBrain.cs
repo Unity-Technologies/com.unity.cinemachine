@@ -47,28 +47,6 @@ namespace Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
     public class CinemachineBrain : MonoBehaviour
     {
-        List<Vector3> vcam_positions = new List<Vector3>();
-        void OnDrawGizmos()
-        {
-            var vcam = ActiveVirtualCamera;
-            if (vcam == null)
-            {
-                return; 
-            }
-            
-            vcam_positions.Add(vcam.State.FinalPosition);
-            if (vcam_positions.Count > 150)
-            {
-                vcam_positions.RemoveAt(0);
-            }
-
-            for (int i = 0; i < vcam_positions.Count - 1; ++i)
-            {
-                Gizmos.color = new Color(1, i % 2, i / (float) vcam_positions.Count);
-                Gizmos.DrawLine(vcam_positions[i], vcam_positions[i + 1]);
-            }
-        }
-
         /// <summary>
         /// When enabled, the current camera and blend will be indicated in the 
         /// game window, for debugging.
