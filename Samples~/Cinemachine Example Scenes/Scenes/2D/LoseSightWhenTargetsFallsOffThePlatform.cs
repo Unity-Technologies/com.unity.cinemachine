@@ -11,7 +11,7 @@ namespace Cinemachine.Examples
         [Tooltip("The weight of a transform in the target group is 1 when above the Lower Platform. When a transform is " +
             "below the Lower Platform, then its weight decreases based on the distance between the transform and the " +
             "Lower Platform and it reaches 0 at LoseSightAtRange. If you set this value to 0, then the transform is removed " +
-            "instantly.")]
+            "instantly when below the Lower Platform.")]
         [Range(0, 30)]
         public float LoseSightAtRange = 20;
 
