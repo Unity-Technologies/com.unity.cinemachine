@@ -853,7 +853,7 @@ namespace Cinemachine
                     cam.lensShift = state.Lens.LensShift;
                     cam.orthographic = state.Lens.Orthographic;
                     cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
-                    if (state.Lens.IsPhysicalCamera)
+                    if (state.Lens.IsPhysicalCamera && state.Lens.ModeOverride == LensSettings.OverrideModes.Physical)
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;

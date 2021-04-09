@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field did not work correctly with Framing Transposer. 
 - Bugfix: CinemachineCollider's displacement damping was being calculated in world space instead of camera space.
 - Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour.
+- Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
 
 
 ## [2.7.3] - 2021-03-24
