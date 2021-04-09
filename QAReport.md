@@ -1,36 +1,33 @@
-**Cinemachine 2.7.2 Testing Report**
+**Cinemachine 2.8.0-exp.1 Testing Report**
 
-For the Cinemachine 2.7.2 release, the following bug fixes were tested and verified:
+The following additions were verified and tested in Unity 2021.1.1f1:
 
-- Bugfix (1293429): Brain could choose vcam with not the highest priority in some cases
-- Bugfix (CMCL-193): SaveDuringPlay also works on prefab instances
-- Bugfix (1272146):  Adding vcam to a prefab asset no longer causes errors in console
-- Bugfix (1290171): Impulse manager was not cleared at playmode start
-- Bugfix (CMCL-190): Nested Scrub Bubble sample removed (filenames too long), available now as embedded package
-- Bugfix (CMCL-194): Compilation guards for physics, animation, and imgui. Cinemachine does not hard depend on anything now
-- Bugfix (CMCL-203): CM StoryBoard had a 1 pixel border
-- Bugfix (CMCL-203): CM StoryBoard lost viewport reference after hot reload
-- Bugfix (CMCL-204): FramingTransposer's TargetMovementOnly damping caused a flick.
-- Bugfix (CMCL-208): FreeLook small drift when no user input if SimpleFollowWithWorldUp
-- Bugfix (CMCL-214): InheritPosition did not work with SimpleFollow binding mode
-- Bugfix (CMCL-145): cleanup straggling post processing profiles when no active vcams
-- Bugfix (CMCL-221): Checking whether the Input Action passed to CinemachineInputHandler is enabled before using it.
-- Bugfix (CMCL-191): 3rdPersonFollow FOV was blended incorrectly when ReferenceLookAt was set to a faraway target
-- Bugfix (CMCL-202): Position predictor not properly reset
-- Bugfix (CMCL-207): Create via menu doesn't create as child of selected object
-- Bugfix (CMCL-217): Post-processing profiles not cleaned up when no active vcams
-- Bugfix (CMCL-223): Install CinemachineExamples Asset Package menu item was failing on 2018.4 / macOS
+- Tested new simplified modes for the Cinemachine impulse generation in the context of the Impulse sample scene. Verified the secondary reaction settings to the Impulse Listener.
+- Verified Storyboard render modes support for ScreenSpaceOverlay and ScreenSpaceCamera.
+- Verified Damping Into Collision and Damping From Collision properties to Cinemachine 3rdPersonFollow to control how gradually the camera moves to correct for occlusions. Tested using AimingRig sample scene from Cinemachine package.
+- Verified that VCam can now have a negative near clip plane when VCam set to Orthographic.
+- Verified option to make game-view guides visible but not clickable in Cinemachine preference.
+- Verified that when Input System package is installed, there is a button in virtual camera inspectors to auto-generate CinemachineInputProvider component if missing.
+- Verified that default CinemachinePostProcessing profile priority is now configurable and defaults to 1000.
+- Verified that Cinemachine3rdPersonFollow can operate without the physics module, and without collision resolution.
 
-The following changes were made and tested in the Cinemachine Sample Scenes:
-- New sample scene (FadeOutNearbyObjects) demonstrating fade out effect for objects between camera and target using shaders. The example includes a Cinemachine extension giving convenient control over the shader parameters
-- New sample scene (2DConfinerComplex) demonstrating new CinemachineConfiner2D extension.
-- Updated CharacterMovement2D script in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup) to make jumping responsive.
+- The following Bugfix were verified in Unity 2021.1.1f1:
+  - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large.
+  - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space.
+  - Bugfix: 3rdPersonFollow was stuttering when Z damping was high.
+  - Regression fix: CinemachineInputProvider had stopped providing input.
+  - Bugfix: Lens aspect and sensorSize were not getting updated if lens OverrideMode != None.
+  - Bugfix: Changing targets on a live vcam was misbehaving.
+  - Bugfix: Framing transposer now handles empty groups.
+  - Bugfix: Interrupting a transition with InheritPosition enabled was broken.
+  - Bugfix: Cinemachine3rdPersonFollow was not handling collision by default.
+  - Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
+  - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
+  
+  
+- Regression testing was done mainly using the Cinemachine Sample Scenes.
 
-Changes were also made to the previously released CinemachineConfiner2D. These changes were validated and tested:
-- CinemachineConfiner2D now handles cases where camera window is oversized
-- Updated 2DConfinedTargetGroup and 2DConfiner scenes to use new CinemachineConfiner2D extension.
 
-Cinemachine 2.7.2 was also regression tested using the Sample Scenes. Each scene was loaded to make sure that the Cinemachine behaviour or feature it is demonstrating behaved as expected. Manual testing around each of the Cinemachine Sample Scene was also performed.
 
 
 
