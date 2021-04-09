@@ -11,13 +11,14 @@ namespace Cinemachine
     sealed class CinemachineNewFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
     {
-        GUIContent[] mOrbitNames = new GUIContent[]
+        GUIContent[] m_OrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
 
-        GUIContent mCustomizeLabel = new GUIContent(
+        GUIContent m_CustomizeLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
 
-        VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
+        CinemachineNewVirtualCameraEditor.PipelineStageSubeditorSet m_PipelineSet 
+            = new CinemachineNewVirtualCameraEditor.PipelineStageSubeditorSet();
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -32,13 +33,13 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            mPipelineSet.CreateSubeditors(this);
+            m_PipelineSet.CreateSubeditors(this);
             Target.UpdateInputAxisProvider();
         }
 
         protected override void OnDisable()
         {
-            mPipelineSet.Shutdown();
+            m_PipelineSet.Shutdown();
             base.OnDisable();
         }
 
@@ -63,7 +64,7 @@ namespace Cinemachine
                 var o = orbits.GetArrayElementAtIndex(i);
                 Rect rect = EditorGUILayout.GetControlRect(true);
                 InspectorUtility.MultiPropertyOnLine(
-                    rect, mOrbitNames[i],
+                    rect, m_OrbitNames[i],
                     new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),
                             o.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
                     null);
@@ -86,9 +87,9 @@ namespace Cinemachine
             {
                 var components = Target.ComponentCache;
                 EditorGUILayout.BeginVertical(GUI.skin.box);
-                for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
+                for (int i = 0; i < m_PipelineSet.m_subeditors.Length; ++i)
                 {
-                    var ed = mPipelineSet.m_subeditors[i];
+                    var ed = m_PipelineSet.m_subeditors[i];
                     if (ed == null)
                         continue;
                     if (!ed.HasImplementation)
@@ -96,7 +97,7 @@ namespace Cinemachine
                     if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
                         ed.TypeIsLocked = true;
                     ++EditorGUI.indentLevel;
-                    ed.OnInspectorGUI(components[i]); // may destroy component
+                    ed.OnInspectorGUI(); // may destroy component
                     --EditorGUI.indentLevel;
                 }
                 EditorGUILayout.EndVertical();
@@ -131,7 +132,7 @@ namespace Cinemachine
                 Vector3 delta = Target.transform.position - mPreviousPosition;
                 if (!delta.AlmostZero())
                 {
-                    mPipelineSet.OnPositionDragged(delta);
+                    m_PipelineSet.OnPositionDragged(delta);
                     mPreviousPosition = Target.transform.position;
 
                     // Adjust the rigs height and scale
@@ -238,7 +239,7 @@ namespace Cinemachine
             float labelWidth = EditorGUIUtility.labelWidth;
             bool newValue = EditorGUI.ToggleLeft(
                 new Rect(labelWidth, r.y, r.width - labelWidth, r.height),
-                mCustomizeLabel, enabledProperty.boolValue);
+                m_CustomizeLabel, enabledProperty.boolValue);
             if (newValue != enabledProperty.boolValue)
             {
                 enabledProperty.boolValue = newValue;

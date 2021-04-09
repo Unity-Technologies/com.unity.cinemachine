@@ -192,27 +192,4 @@ namespace Cinemachine.Editor
             return obj.name;
         }
     }
-
-    /// <summary>
-    /// Hack for vcams because there's no way to find out if an editor is collaped
-    /// </summary>
-    internal static class ActiveEditorRegistry
-    {
-        static HashSet<UnityEditor.Editor> s_ActiveEditorRegistry = new HashSet<UnityEditor.Editor>();
-        public static void SetActiveEditor(UnityEditor.Editor e, bool active)
-        {
-            if (e != null && active != s_ActiveEditorRegistry.Contains(e))
-            {
-                if (active)
-                    s_ActiveEditorRegistry.Add(e);
-                else 
-                    s_ActiveEditorRegistry.Remove(e);
-                InspectorUtility.RepaintGameView();
-            }
-        }
-        public static bool IsActiveEditor(UnityEditor.Editor e)
-        {
-            return e == null ? false : s_ActiveEditorRegistry.Contains(e);
-        }
-    }
 }

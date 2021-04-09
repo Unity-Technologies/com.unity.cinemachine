@@ -59,8 +59,7 @@ namespace Cinemachine.Editor
     /// Handles drawing the header and the basic properties.
     /// </summary>
     /// <typeparam name="T">The type of CinemachineVirtualCameraBase being edited</typeparam>
-    public class CinemachineVirtualCameraBaseEditor<T>
-        : BaseEditor<T> where T : CinemachineVirtualCameraBase
+    public class CinemachineVirtualCameraBaseEditor<T> : BaseEditor<T> where T : CinemachineVirtualCameraBase
     {    
         /// <summary>A collection of GUIContent for use in the inspector</summary>
         public static class Styles

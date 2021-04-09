@@ -1,5 +1,4 @@
-﻿#if CINEMACHINE_EXPERIMENTAL_VCAM
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections.Generic;
@@ -80,20 +79,54 @@ namespace Cinemachine.Editor
             }
         }
 
-        int mStageSelection = 0;
-        bool mStageError = false;
-        CinemachineCore.Stage mStage;
-        CinemachineComponentBase mComponent;
-        UnityEditor.Editor mComponentEditor;
+        /// <summary>
+        /// Hack for vcams because there's no way to find out if an editor is collaped
+        /// </summary>
+        internal static class ActiveEditorRegistry
+        {
+            static HashSet<UnityEditor.Editor> s_ActiveEditorRegistry = new HashSet<UnityEditor.Editor>();
+            public static void SetActiveEditor(UnityEditor.Editor e, bool active)
+            {
+                if (e != null && active != s_ActiveEditorRegistry.Contains(e))
+                {
+                    if (active)
+                        s_ActiveEditorRegistry.Add(e);
+                    else 
+                        s_ActiveEditorRegistry.Remove(e);
+                    InspectorUtility.RepaintGameView();
+                }
+            }
+            public static bool IsActiveEditor(UnityEditor.Editor e)
+            {
+                return e == null ? false : s_ActiveEditorRegistry.Contains(e);
+            }
+        }
 
-        // Target game object
-        public GameObject Target { get; private set; }
+        public static GUIContent ProceduralMotionLabel = new GUIContent(
+            "Procedural Motion", 
+            "Use the procedural motion algorithms to automatically drive the transform in "
+                + "relation to the LookAt and Follow targets.  \n\n"
+                + "Body controls the position, and Aim controls the rotation.\n\n"
+                + "If Do Nothing is selected, "
+                + "then the transform will not be written to, and can be controlled manually "
+                + "or otherwise driven by script.");
+                
+        int m_StageSelection;
+        bool m_StageError;
+        bool m_IsMixedType;
+        CinemachineCore.Stage m_Stage;
+        List<CinemachineComponentBase> m_EditedComponents;
+        List<CinemachineComponentBase> m_ScratchComponentList;
+        UnityEditor.Editor m_ComponentEditor;
 
         // Call this from OnEnable()
-        public VcamStageEditor(CinemachineCore.Stage stage, GameObject target)
+        public VcamStageEditor(CinemachineCore.Stage stage)
         {
-            mStage = stage;
-            Target = target;
+            m_StageSelection = 0;
+            m_StageError = false;
+            m_Stage = stage;
+            m_EditedComponents = new List<CinemachineComponentBase>();
+            m_ScratchComponentList = new List<CinemachineComponentBase>();
         }
 
         ~VcamStageEditor()
@@ -104,41 +137,59 @@ namespace Cinemachine.Editor
         // Call this from OnDisable()
         public void Shutdown()
         {
-            ActiveEditorRegistry.SetActiveEditor(mComponentEditor, false);
-            if (mComponentEditor != null)
-                UnityEngine.Object.DestroyImmediate(mComponentEditor);
-            mComponentEditor = null;
-            Target = null;
-            mComponent = null;
+            ActiveEditorRegistry.SetActiveEditor(m_ComponentEditor, false);
+            if (m_ComponentEditor != null)
+                UnityEngine.Object.DestroyImmediate(m_ComponentEditor);
+            m_ComponentEditor = null;
+            m_EditedComponents.Clear();
+            m_ScratchComponentList.Clear();
         }
 
         // The current editor for the component (may be null)
-        public UnityEditor.Editor ComponentEditor { get { return mComponentEditor; } }
+        public UnityEditor.Editor ComponentEditor { get { return m_ComponentEditor; } }
 
         // Returns true if there are more than zero options for this pipeline stage
-        public bool HasImplementation { get { return sStageData[(int)mStage].PopupOptions.Length > 1; } }
+        public bool HasImplementation { get { return sStageData[(int)m_Stage].PopupOptions.Length > 1; } }
 
         // Can the component type be changed by the user?
         public bool TypeIsLocked { get; set; }
 
-        // Call this from Editor's OnInspectorGUI - returns new component if user changes type
-        public void OnInspectorGUI(CinemachineComponentBase component)
+        // Call this from Editor's OnInspectorGUI
+        public void OnInspectorGUI()
         {
-            if (component != mComponent)
+            m_ScratchComponentList.Clear();
+            int numNullComponents = GetComponent(m_Stage, m_ScratchComponentList);
+
+            // Have the edited components changed?
+            int numComponents = m_ScratchComponentList.Count;
+            bool dirty = numComponents != m_EditedComponents.Count;
+            for (int i = 0; !dirty && i < numComponents; ++i)
+                dirty = m_ScratchComponentList[i] != m_EditedComponents[i];
+            if (dirty)
             {
-                if (mComponentEditor != null)
+                if (m_ComponentEditor != null)
                 {
-                    ActiveEditorRegistry.SetActiveEditor(mComponentEditor, false);
-                    mComponentEditor.ResetTarget();
-                    UnityEngine.Object.DestroyImmediate(mComponentEditor);
+                    ActiveEditorRegistry.SetActiveEditor(m_ComponentEditor, false);
+                    m_ComponentEditor.ResetTarget();
+                    UnityEngine.Object.DestroyImmediate(m_ComponentEditor);
                 }
-                mComponentEditor = null;
-                mComponent = component;
+                m_ComponentEditor = null;
+                m_EditedComponents.Clear();
+                m_EditedComponents.AddRange(m_ScratchComponentList);
+                m_IsMixedType = false;
+                for (int i = 1; !m_IsMixedType && i < numComponents; ++i)
+                    m_IsMixedType = m_EditedComponents[i].GetType() != m_EditedComponents[i-1].GetType();
             }
-            if (mComponent != null && mComponentEditor == null)
-                UnityEditor.Editor.CreateCachedEditor(mComponent, null, ref mComponentEditor);
-            mStageSelection = GetPopupIndexForComponent(mComponent);
-            mStageError = mComponent  == null ? false : !mComponent.IsValid;
+            if (numNullComponents > 0 && numComponents > 0)
+                m_IsMixedType = true;
+            if (numComponents > 0 && m_ComponentEditor == null && !m_IsMixedType)
+                UnityEditor.Editor.CreateCachedEditor(m_EditedComponents.ToArray(), null, ref m_ComponentEditor);
+            m_StageSelection = GetPopupIndexForComponent(numComponents == 0 ? null : m_EditedComponents[0]);
+
+            m_StageError = false;
+            for (int i = 0; !m_StageError && i < numComponents; ++i)
+                m_StageError = !m_EditedComponents[i].IsValid;
+
             DrawComponentInspector();
         }
 
@@ -146,7 +197,7 @@ namespace Cinemachine.Editor
         {
             if (c != null)
             {
-                var types = sStageData[(int)mStage].types;
+                var types = sStageData[(int)m_Stage].types;
                 for (int i = types.Length-1; i > 0; --i)
                     if (c.GetType() == types[i])
                         return i;
@@ -157,39 +208,33 @@ namespace Cinemachine.Editor
         private void DrawComponentInspector()
         {
             const float indentSize = 15; // GML wtf get rid of this
-            int index = (int)mStage;
+            int index = (int)m_Stage;
             Rect rect = EditorGUILayout.GetControlRect(true);
 
             // Don't use PrefixLabel() because it will link the enabled status of field and label
-            GUIContent label = new GUIContent(InspectorUtility.NicifyClassName(mStage.ToString()));
-            if (mStageError)
+            GUIContent label = new GUIContent(InspectorUtility.NicifyClassName(m_Stage.ToString()));
+            if (m_StageError)
                 label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
             float labelWidth = EditorGUIUtility.labelWidth - EditorGUI.indentLevel * indentSize;
             Rect r = rect; r.width = labelWidth;
             EditorGUI.LabelField(r, label);
 
             r = rect; r.width -= labelWidth; r.x += labelWidth;
+
+            EditorGUI.BeginChangeCheck();
             bool wasEnabled = GUI.enabled;
             if (TypeIsLocked)
                 GUI.enabled = false;
-            int newSelection = EditorGUI.Popup(r, mStageSelection, sStageData[index].PopupOptions);
+            EditorGUI.showMixedValue = m_IsMixedType;
+            m_StageSelection = EditorGUI.Popup(r, m_StageSelection, sStageData[index].PopupOptions);
+            EditorGUI.showMixedValue = false;
             GUI.enabled = wasEnabled;
-
-            Type type = sStageData[index].types[newSelection];
-            if (newSelection != mStageSelection)
+            Type type = sStageData[index].types[m_StageSelection];
+            if (EditorGUI.EndChangeCheck())
             {
-                if (mComponent != null)
-                {
-                    if (DestroyComponent != null)
-                        DestroyComponent(mComponent);
-                }
-                if (newSelection != 0)
-                {
+                SetComponent(m_Stage, type);
+                if (m_StageSelection != 0)
                     sStageData[index].IsExpanded = true;
-                    if (SetComponent != null)
-                        SetComponent(type);
-                }
-                mComponent = null;
                 GUIUtility.ExitGUI();
                 return; // let the component editor be recreated
             }
@@ -198,16 +243,16 @@ namespace Cinemachine.Editor
             if (type != null)
             {
                 r = new Rect(rect.x, rect.y, labelWidth, rect.height);
-                var isExpanded = EditorGUI.Foldout(
+                var isExpanded = m_IsMixedType ? false : EditorGUI.Foldout(
                         r, sStageData[index].IsExpanded, GUIContent.none, true);
                 if (isExpanded || isExpanded != sStageData[index].IsExpanded)
                 {
                     // Make the editor for that stage
-                    ActiveEditorRegistry.SetActiveEditor(mComponentEditor, isExpanded);
-                    if (isExpanded && mComponentEditor != null)
+                    ActiveEditorRegistry.SetActiveEditor(m_ComponentEditor, isExpanded);
+                    if (isExpanded && m_ComponentEditor != null)
                     {
                         ++EditorGUI.indentLevel;
-                        mComponentEditor.OnInspectorGUI();
+                        m_ComponentEditor.OnInspectorGUI();
                         --EditorGUI.indentLevel;
                     }
                 }
@@ -217,87 +262,23 @@ namespace Cinemachine.Editor
 
         public void OnPositionDragged(Vector3 delta)
         {
-            if (mComponentEditor != null)
+            if (m_ComponentEditor != null)
             {
-                MethodInfo mi = mComponentEditor.GetType().GetMethod("OnVcamPositionDragged"
+                MethodInfo mi = m_ComponentEditor.GetType().GetMethod("OnVcamPositionDragged"
                     , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                if (mi != null && mComponentEditor.target != null)
+                if (mi != null && m_ComponentEditor.target != null)
                 {
-                    mi.Invoke(mComponentEditor, new object[] { delta } );
+                    mi.Invoke(m_ComponentEditor, new object[] { delta } );
                 }
             }
         }
 
-        public delegate void DestroyComponentDelegate(CinemachineComponentBase component);
-        public DestroyComponentDelegate DestroyComponent;
+        // Returns the number of null components in this stage
+        public delegate int GetComponentDelegate(
+            CinemachineCore.Stage stage, List<CinemachineComponentBase> result);
+        public GetComponentDelegate GetComponent;
 
-        public delegate void SetComponentDelegate(Type type);
+        public delegate void SetComponentDelegate(CinemachineCore.Stage stage, Type type);
         public SetComponentDelegate SetComponent;
     }
-
-    internal class VcamPipelineStageSubeditorSet
-    {
-        public VcamStageEditor[] m_subeditors;
-
-        UnityEditor.Editor mParentEditor;
-
-        public void CreateSubeditors(UnityEditor.Editor parentEditor)
-        {
-            mParentEditor = parentEditor;
-            m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
-            CinemachineNewVirtualCamera owner = mParentEditor == null
-                ? null : mParentEditor.target as CinemachineNewVirtualCamera;
-            if (owner == null)
-                return;
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
-                stage < CinemachineCore.Stage.Finalize; ++stage)
-            {
-                var ed = new VcamStageEditor(stage, owner.gameObject);
-                m_subeditors[(int)stage] = ed;
-                ed.SetComponent = (type)
-                    => {
-                        var vcam = mParentEditor.target as CinemachineNewVirtualCamera;
-                        if (vcam != null)
-                        {
-                            var c = Undo.AddComponent(vcam.gameObject, type);
-                            c.hideFlags |= HideFlags.HideInInspector;
-                            vcam.InvalidateComponentCache();
-                        }
-                    };
-                ed.DestroyComponent = (component)
-                    => {
-                        var vcam = mParentEditor.target as CinemachineNewVirtualCamera;
-                        if (vcam != null)
-                        {
-                            Undo.DestroyObjectImmediate(component);
-                            vcam.InvalidateComponentCache();
-                        }
-                    };
-            }
-        }
-
-        public void Shutdown()
-        {
-            if (m_subeditors != null)
-            {
-                for (int i = 0; i < m_subeditors.Length; ++i)
-                {
-                    if (m_subeditors[i] != null)
-                        m_subeditors[i].Shutdown();
-                    m_subeditors[i] = null;
-                }
-                m_subeditors = null;
-            }
-            mParentEditor = null;
-        }
-
-        // Pass the dragged event down to the CM component editors
-        public void OnPositionDragged(Vector3 delta)
-        {
-            foreach (var e in m_subeditors)
-                if (e != null)
-                    e.OnPositionDragged(delta);
-        }
-    }
 }
-#endif

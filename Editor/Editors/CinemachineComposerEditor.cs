@@ -5,22 +5,23 @@ using Cinemachine.Utility;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineComposer))]
+    [CanEditMultipleObjects]
     internal class CinemachineComposerEditor : BaseEditor<CinemachineComposer>
     {
-        CinemachineScreenComposerGuides mScreenGuideEditor;
-        GameViewEventCatcher mGameViewEventCatcher;
+        CinemachineScreenComposerGuides m_ScreenGuideEditor;
+        GameViewEventCatcher m_GameViewEventCatcher;
 
         protected virtual void OnEnable()
         {
-            mScreenGuideEditor = new CinemachineScreenComposerGuides();
-            mScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
-            mScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
-            mScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
-            mScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
-            mScreenGuideEditor.Target = () => { return serializedObject; };
+            m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
+            m_ScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
+            m_ScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
+            m_ScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
+            m_ScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
+            m_ScreenGuideEditor.Target = () => { return serializedObject; };
 
-            mGameViewEventCatcher = new GameViewEventCatcher();
-            mGameViewEventCatcher.OnEnable();
+            m_GameViewEventCatcher = new GameViewEventCatcher();
+            m_GameViewEventCatcher.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
@@ -30,7 +31,7 @@ namespace Cinemachine.Editor
 
         protected virtual void OnDisable()
         {
-            mGameViewEventCatcher.OnDisable();
+            m_GameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
@@ -39,7 +40,10 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.LookAtTarget == null)
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineComposer).LookAtTarget == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox(
                     "A LookAt target is required.  Change Aim to Do Nothing if you don't want a LookAt target.",
                     MessageType.Warning);
@@ -50,17 +54,17 @@ namespace Cinemachine.Editor
 
             // Draw the properties
             DrawRemainingPropertiesInInspector();
-            mScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
+            m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
         }
 
         protected virtual void OnGUI()
         {
             // Draw the camera guides
-            if (Target == null || !Target.IsValid || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 return;
 
             // If inspector is collapsed in the vcam editor, don't draw the guides
-            if (!ActiveEditorRegistry.IsActiveEditor(this))
+            if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
                 return;
 
             // Don't draw the guides if rendering to texture
@@ -70,8 +74,8 @@ namespace Cinemachine.Editor
                 return;
 
             // Screen guides
-            bool isLive = brain.IsLive(vcam, true);
-            mScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, true);
+            bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
+            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, true);
 
             // Draw an on-screen gizmo for the target
             if (Target.LookAtTarget != null && isLive)

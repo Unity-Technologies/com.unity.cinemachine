@@ -7,30 +7,29 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineNewVirtualCamera))]
-    sealed class CinemachineNewVirtualCameraEditor
+    [CanEditMultipleObjects]
+    internal sealed class CinemachineNewVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
     {
-        GUIContent m_ProceduralMotionLabel = new GUIContent(
-            "Procedural Motion", 
-            "Use the procedural motion algorithms to automatically drive the transform in "
-                + "relation to the LookAt and Follow targets.  \n\n"
-                + "Body controls the position, and Aim controls the rotation.\n\n"
-                + "If Do Nothing is selected, "
-                + "then the transform will not be written to, and can be controlled manually "
-                + "or otherwise driven by script.");
-
-        VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
+        PipelineStageSubeditorSet m_PipelineSet = new PipelineStageSubeditorSet();
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            mPipelineSet.CreateSubeditors(this);
+            m_PipelineSet.CreateSubeditors(this);
+            Undo.undoRedoPerformed += ResetTargetOnUndo;
         }
 
         protected override void OnDisable()
         {
-            mPipelineSet.Shutdown();
+            Undo.undoRedoPerformed -= ResetTargetOnUndo;
+            m_PipelineSet.Shutdown();
             base.OnDisable();
+        }
+
+        void ResetTargetOnUndo() 
+        {
+            ResetTarget();
         }
 
         public override void OnInspectorGUI()
@@ -46,37 +45,36 @@ namespace Cinemachine
 
             // Pipeline Stages
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField(m_ProceduralMotionLabel, EditorStyles.boldLabel);
-            var components = Target.ComponentCache;
-            for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
+            EditorGUILayout.LabelField(VcamStageEditor.ProceduralMotionLabel, EditorStyles.boldLabel);
+            for (int i = 0; i < m_PipelineSet.m_subeditors.Length; ++i)
             {
-                var ed = mPipelineSet.m_subeditors[i];
+                var ed = m_PipelineSet.m_subeditors[i];
                 if (ed == null)
                     continue;
                 if (!ed.HasImplementation)
                     continue;
-                ed.OnInspectorGUI(components[i]); // may destroy component
+                ed.OnInspectorGUI(); // may destroy component
             }
 
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
 
-        Vector3 mPreviousPosition; // for position dragging
+        Vector3 m_PreviousPosition; // for position dragging
         private void OnSceneGUI()
         {
             if (!Target.UserIsDragging)
-                mPreviousPosition = Target.transform.position;
+                m_PreviousPosition = Target.transform.position;
             if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
                 && Event.current.type == EventType.MouseDrag)
             {
                 // User might be dragging our position handle
                 Target.UserIsDragging = true;
-                Vector3 delta = Target.transform.position - mPreviousPosition;
+                Vector3 delta = Target.transform.position - m_PreviousPosition;
                 if (!delta.AlmostZero())
                 {
-                    mPipelineSet.OnPositionDragged(delta);
-                    mPreviousPosition = Target.transform.position;
+                    m_PipelineSet.OnPositionDragged(delta);
+                    m_PreviousPosition = Target.transform.position;
                 }
             }
             else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
@@ -84,6 +82,90 @@ namespace Cinemachine
                 // We're not dragging anything now, but we were
                 InspectorUtility.RepaintGameView();
                 Target.UserIsDragging = false;
+            }
+        }
+
+        internal class PipelineStageSubeditorSet
+        {
+            public VcamStageEditor[] m_subeditors;
+            UnityEditor.Editor m_ParentEditor;
+
+            public void CreateSubeditors(UnityEditor.Editor parentEditor)
+            {
+                m_ParentEditor = parentEditor;
+                m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
+                if (m_ParentEditor.target as CinemachineNewVirtualCamera == null)
+                    return;
+                for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+                    stage < CinemachineCore.Stage.Finalize; ++stage)
+                {
+                    var ed = new VcamStageEditor(stage);
+                    m_subeditors[(int)stage] = ed;
+                    ed.GetComponent = (stage, result) =>
+                    {
+                        int numNullComponents = 0;
+                        foreach (var obj in m_ParentEditor.targets)
+                        {
+                            var vcam = obj as CinemachineNewVirtualCamera;
+                            if (vcam != null)
+                            {
+                                var c = vcam.GetCinemachineComponent(stage);
+                                if (c != null)
+                                    result.Add(c);
+                                else
+                                    ++numNullComponents;
+                            }
+                        }
+                        return numNullComponents;
+                    };
+                    ed.SetComponent = (stage, type) => 
+                    {
+                        Undo.SetCurrentGroupName("Cinemachine pipeline change");
+                        foreach (var obj in m_ParentEditor.targets)
+                        {
+                            var vcam = obj as CinemachineNewVirtualCamera;
+                            if (vcam != null)
+                            {
+                                Component c = vcam.GetCinemachineComponent(stage);
+                                if (c != null && c.GetType() == type)
+                                    continue;
+                                if (c != null)
+                                {
+                                    Undo.DestroyObjectImmediate(c);
+                                    vcam.InvalidateComponentCache();
+                                }
+                                if (type != null)
+                                {
+                                    Undo.AddComponent(vcam.gameObject, type);
+                                    vcam.InvalidateComponentCache();
+                                }
+                            }
+                        }
+                    };
+                }
+            }
+
+            public void Shutdown()
+            {
+                if (m_subeditors != null)
+                {
+                    for (int i = 0; i < m_subeditors.Length; ++i)
+                    {
+                        if (m_subeditors[i] != null)
+                            m_subeditors[i].Shutdown();
+                        m_subeditors[i] = null;
+                    }
+                    m_subeditors = null;
+                }
+                m_ParentEditor = null;
+            }
+
+            // Pass the dragged event down to the CM component editors
+            public void OnPositionDragged(Vector3 delta)
+            {
+                foreach (var e in m_subeditors)
+                    if (e != null)
+                        e.OnPositionDragged(delta);
             }
         }
     }

@@ -6,10 +6,11 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineFramingTransposer))]
+    [CanEditMultipleObjects]
     internal class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>
     {
-        CinemachineScreenComposerGuides mScreenGuideEditor;
-        GameViewEventCatcher mGameViewEventCatcher;
+        CinemachineScreenComposerGuides m_ScreenGuideEditor;
+        GameViewEventCatcher m_GameViewEventCatcher;
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -78,15 +79,15 @@ namespace Cinemachine.Editor
 
         protected virtual void OnEnable()
         {
-            mScreenGuideEditor = new CinemachineScreenComposerGuides();
-            mScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
-            mScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
-            mScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
-            mScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
-            mScreenGuideEditor.Target = () => { return serializedObject; };
+            m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
+            m_ScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
+            m_ScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
+            m_ScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
+            m_ScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
+            m_ScreenGuideEditor.Target = () => { return serializedObject; };
 
-            mGameViewEventCatcher = new GameViewEventCatcher();
-            mGameViewEventCatcher.OnEnable();
+            m_GameViewEventCatcher = new GameViewEventCatcher();
+            m_GameViewEventCatcher.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
@@ -96,7 +97,7 @@ namespace Cinemachine.Editor
 
         protected virtual void OnDisable()
         {
-            mGameViewEventCatcher.OnDisable();
+            m_GameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
@@ -105,9 +106,13 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.FollowTarget == null)
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineFramingTransposer).FollowTarget == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Framing Transposer requires a Follow target.  Change Body to Do Nothing if you don't want a Follow target.",
+                    "Framing Transposer requires a Follow target.  "
+                        + "Change Body to Do Nothing if you don't want a Follow target.",
                     MessageType.Warning);
 
             // First snapshot some settings
@@ -116,7 +121,7 @@ namespace Cinemachine.Editor
 
             // Draw the properties
             DrawRemainingPropertiesInInspector();
-            mScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
+            m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
         }
 
 
@@ -139,21 +144,21 @@ namespace Cinemachine.Editor
         protected virtual void OnGUI()
         {
             // Draw the camera guides
-            if (Target == null || !Target.IsValid || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 return;
 
             // If inspector is collapsed in the vcam editor, don't draw the guides
-            if (!ActiveEditorRegistry.IsActiveEditor(this))
+            if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
                 return;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
-            bool isLive = CinemachineCore.Instance.IsLive(Target.VirtualCamera);
+            bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
 
             // Screen guides
-            mScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, !Target.m_UnlimitedSoftZone);
+            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, !Target.m_UnlimitedSoftZone);
 
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
