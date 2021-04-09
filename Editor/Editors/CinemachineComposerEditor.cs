@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
             }
         }
 
-#if true
+#if false
         // debugging only
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineComposer))]
         static void DrawComposerGizmos(CinemachineComposer target, GizmoType selectionType)
