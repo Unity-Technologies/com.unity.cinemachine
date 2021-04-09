@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [unreleased]
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, after changing the targets, set PreviousStateIsValid to false.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
+- Bugfix: CMPostProcessing components, that relied on the vcam's position (e.g. Depth of Field), did not work correctly with Framing Transposer. 
 
 
 ## [2.8.0-exp.1] - 2021-03-31
