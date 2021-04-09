@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
 - Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
+- Regression fix: 3rdPersonFollow did not keep keep player in view when Z damping is high
 
 
 ## [2.7.3] - 2021-03-24

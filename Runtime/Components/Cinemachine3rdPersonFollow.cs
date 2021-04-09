@@ -78,7 +78,7 @@ namespace Cinemachine
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
-        Vector3 m_DampingCorrection;
+        Vector3 m_DampingCorrection; // this is in local rig space
 
         void OnValidate()
         {
@@ -171,7 +171,7 @@ namespace Cinemachine
             var collidedHand = ResolveCollisions(root, hand, CameraRadius * 1.05f);
 
             // Place the camera at the correct distance from the hand
-            Vector3 camPos = hand - (targetForward * CameraDistance);
+            Vector3 camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
             camPos = ResolveCollisions(collidedHand, camPos, CameraRadius);
 
             // Set state
@@ -210,7 +210,8 @@ namespace Cinemachine
         {
             var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
             var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
-            shoulderOffset += m_DampingCorrection;
+            shoulderOffset.x += m_DampingCorrection.x;
+            shoulderOffset.y += m_DampingCorrection.y;
             shoulder = root + heading * shoulderOffset;
             hand = shoulder + targetRot * new Vector3(0, VerticalArmLength, 0);   
         }
