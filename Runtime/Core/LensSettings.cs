@@ -270,6 +270,7 @@ namespace Cinemachine
             FarClipPlane = farClip;
             Dutch = dutch;
             m_SensorSize = new Vector2(1, 1);
+            GateFit = Camera.GateFitMode.Horizontal;
 
 #if CINEMACHINE_HDRP
             Iso = 200;
