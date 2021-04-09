@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Cinemachine.Editor
 {
-    internal class VcamStageEditor
+    class VcamStageEditor
     {
         // Static state and caches - Call UpdateStaticData() to refresh this
         struct StageData
@@ -102,15 +102,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        public static GUIContent ProceduralMotionLabel = new GUIContent(
-            "Procedural Motion", 
-            "Use the procedural motion algorithms to automatically drive the transform in "
-                + "relation to the LookAt and Follow targets.  \n\n"
-                + "Body controls the position, and Aim controls the rotation.\n\n"
-                + "If Do Nothing is selected, "
-                + "then the transform will not be written to, and can be controlled manually "
-                + "or otherwise driven by script.");
-                
         int m_StageSelection;
         bool m_StageError;
         bool m_IsMixedType;
@@ -280,5 +271,82 @@ namespace Cinemachine.Editor
 
         public delegate void SetComponentDelegate(CinemachineCore.Stage stage, Type type);
         public SetComponentDelegate SetComponent;
+    }
+
+    internal class VcamStageEditorPipeline
+    {
+        static GUIContent ProceduralMotionLabel = new GUIContent(
+            "Procedural Motion", 
+            "Use the procedural motion algorithms to automatically drive the transform in "
+                + "relation to the LookAt and Follow targets.  \n\n"
+                + "Body controls the position, and Aim controls the rotation.\n\n"
+                + "If Do Nothing is selected, "
+                + "then the transform will not be written to, and can be controlled manually "
+                + "or otherwise driven by script.");
+                
+        VcamStageEditor[] m_subeditors;
+
+        // Call from editor's OnEnable
+        public void Initialize(
+            VcamStageEditor.GetComponentDelegate getComponent,
+            VcamStageEditor.SetComponentDelegate setComponent)
+        {
+            m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+                stage < CinemachineCore.Stage.Finalize; ++stage)
+            {
+                var ed = new VcamStageEditor(stage);
+                m_subeditors[(int)stage] = ed;
+                ed.GetComponent = getComponent;
+                ed.SetComponent = setComponent;
+            }
+        }
+
+        public void SetStageIsLocked(CinemachineCore.Stage stage)
+        {
+            m_subeditors[(int)stage].TypeIsLocked = true;
+        }
+
+        // Call from editor's OnDisable
+        public void Shutdown()
+        {
+            if (m_subeditors != null)
+            {
+                for (int i = 0; i < m_subeditors.Length; ++i)
+                {
+                    if (m_subeditors[i] != null)
+                        m_subeditors[i].Shutdown();
+                    m_subeditors[i] = null;
+                }
+                m_subeditors = null;
+            }
+        }
+
+        // Call from editor's OnInspectorGUI
+        public void OnInspectorGUI(bool withHeader)
+        {
+            if (withHeader)
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField(ProceduralMotionLabel, EditorStyles.boldLabel);
+            }
+            for (int i = 0; i < m_subeditors.Length; ++i)
+            {
+                var ed = m_subeditors[i];
+                if (ed == null)
+                    continue;
+                if (!ed.HasImplementation)
+                    continue;
+                ed.OnInspectorGUI(); // may destroy component
+            }
+        }
+
+        // Pass the dragged event down to the CM component editors
+        public void OnPositionDragged(Vector3 delta)
+        {
+            foreach (var e in m_subeditors)
+                if (e != null)
+                    e.OnPositionDragged(delta);
+        }
     }
 }

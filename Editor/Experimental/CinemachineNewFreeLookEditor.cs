@@ -17,8 +17,7 @@ namespace Cinemachine
         GUIContent m_CustomizeLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
 
-        CinemachineNewVirtualCameraEditor.PipelineStageSubeditorSet m_PipelineSet 
-            = new CinemachineNewVirtualCameraEditor.PipelineStageSubeditorSet();
+        VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -33,14 +32,67 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_PipelineSet.CreateSubeditors(this);
-            Target.UpdateInputAxisProvider();
+            Undo.undoRedoPerformed += ResetTargetOnUndo;
+            m_PipelineSet.Initialize(
+                // GetComponent
+                (stage, result) =>
+                {
+                    int numNullComponents = 0;
+                    foreach (var obj in targets)
+                    {
+                        var vcam = obj as CinemachineNewVirtualCamera;
+                        if (vcam != null)
+                        {
+                            var c = vcam.GetCinemachineComponent(stage);
+                            if (c != null)
+                                result.Add(c);
+                            else
+                                ++numNullComponents;
+                        }
+                    }
+                    return numNullComponents;
+                },
+                // SetComponent
+                (stage, type) => 
+                {
+                    Undo.SetCurrentGroupName("Cinemachine pipeline change");
+                    foreach (var obj in targets)
+                    {
+                        var vcam = obj as CinemachineNewVirtualCamera;
+                        if (vcam != null)
+                        {
+                            Component c = vcam.GetCinemachineComponent(stage);
+                            if (c != null && c.GetType() == type)
+                                continue;
+                            if (c != null)
+                            {
+                                Undo.DestroyObjectImmediate(c);
+                                vcam.InvalidateComponentCache();
+                            }
+                            if (type != null)
+                            {
+                                Undo.AddComponent(vcam.gameObject, type);
+                                vcam.InvalidateComponentCache();
+                            }
+                        }
+                    }
+                });
+
+            m_PipelineSet.SetStageIsLocked(CinemachineCore.Stage.Body);
+
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineNewFreeLook).UpdateInputAxisProvider();
         }
 
         protected override void OnDisable()
         {
             m_PipelineSet.Shutdown();
             base.OnDisable();
+        }
+
+        void ResetTargetOnUndo() 
+        {
+            ResetTarget();
         }
 
         public override void OnInspectorGUI()
@@ -83,29 +135,12 @@ namespace Cinemachine
                 Target.m_VerticalAxis.Value = selectedRig == 0 ? 1 : (selectedRig == 1 ? 0.5f : 0);
             }
             s_SelectedRig = selectedRig;
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             if (selectedRig == 1)
-            {
-                var components = Target.ComponentCache;
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                for (int i = 0; i < m_PipelineSet.m_subeditors.Length; ++i)
-                {
-                    var ed = m_PipelineSet.m_subeditors[i];
-                    if (ed == null)
-                        continue;
-                    if (!ed.HasImplementation)
-                        continue;
-                    if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
-                        ed.TypeIsLocked = true;
-                    ++EditorGUI.indentLevel;
-                    ed.OnInspectorGUI(); // may destroy component
-                    --EditorGUI.indentLevel;
-                }
-                EditorGUILayout.EndVertical();
-            }
+                m_PipelineSet.OnInspectorGUI(false);
             else
-            {
                 DrawRigEditor(selectedRig == 0 ? 0 : 1);
-            }
+            EditorGUILayout.EndVertical();
 
             // Extensions
             DrawExtensionsWidgetInInspector();
@@ -171,7 +206,6 @@ namespace Cinemachine
             SerializedProperty rig = FindProperty(x => x.m_Rigs).GetArrayElementAtIndex(rigIndex);
 
             CinemachineNewFreeLook.Rig def = new CinemachineNewFreeLook.Rig(); // for properties
-            EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUIUtility.labelWidth -= kBoxMargin;
 
             ++EditorGUI.indentLevel;
@@ -219,7 +253,6 @@ namespace Cinemachine
                 }
             }
             --EditorGUI.indentLevel;
-            EditorGUILayout.EndVertical();
             EditorGUIUtility.labelWidth += kBoxMargin;
         }
 

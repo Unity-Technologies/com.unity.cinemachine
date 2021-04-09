@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
     internal class CinemachineVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {
-        PipelineStageSubeditorSet m_PipelineSet = new PipelineStageSubeditorSet();
+        VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
         Vector3 m_PreviousPosition;
 
         [MenuItem("CONTEXT/CinemachineVirtualCamera/Adopt Current Camera Settings")]
@@ -39,8 +39,55 @@ namespace Cinemachine.Editor
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_PipelineSet.CreateSubeditors(this);
             Undo.undoRedoPerformed += ResetTargetOnUndo;
+            m_PipelineSet.Initialize(
+                // GetComponent
+                (stage, result) =>
+                {
+                    int numNullComponents = 0;
+                    foreach (var obj in targets)
+                    {
+                        var vcam = obj as CinemachineVirtualCamera;
+                        if (vcam != null)
+                        {
+                            var c = vcam.GetCinemachineComponent(stage);
+                            if (c != null)
+                                result.Add(c);
+                            else
+                                ++numNullComponents;
+                        }
+                    }
+                    return numNullComponents;
+                },
+                // SetComponent
+                (stage, type) => 
+                {
+                    Undo.SetCurrentGroupName("Cinemachine pipeline change");
+                    foreach (var obj in targets)
+                    {
+                        var vcam = obj as CinemachineVirtualCamera;
+                        Transform owner = vcam == null ? null : vcam.GetComponentOwner();
+                        if (owner == null)
+                            continue; // maybe it's a prefab
+                        var c = vcam.GetCinemachineComponent(stage);
+                        if (c != null && c.GetType() == type)
+                            continue;
+                        if (c != null)
+                        {
+                            Undo.DestroyObjectImmediate(c);
+                            vcam.InvalidateComponentPipeline();
+                        }
+                        if (type != null)
+                        {
+                            Undo.AddComponent(owner.gameObject, type);
+                            vcam.InvalidateComponentPipeline();
+                        }
+                    }
+                });
+
+            // We only look at the first target here, on purpose
+            foreach (var s in Target.m_LockStageInInspector)
+                m_PipelineSet.SetStageIsLocked(s);
         }
 
         protected override void OnDisable()
@@ -83,19 +130,7 @@ namespace Cinemachine.Editor
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField(VcamStageEditor.ProceduralMotionLabel, EditorStyles.boldLabel);
-            for (int i = 0; i < m_PipelineSet.m_subeditors.Length; ++i)
-            {
-                var ed = m_PipelineSet.m_subeditors[i];
-                if (ed == null)
-                    continue;
-                if (!ed.HasImplementation)
-                    continue;
-                ed.OnInspectorGUI(); // may destroy component
-            }
-
+            m_PipelineSet.OnInspectorGUI(true);
             DrawExtensionsWidgetInInspector();
         }
 
@@ -141,90 +176,6 @@ namespace Cinemachine.Editor
                     {
                         Undo.DestroyObjectImmediate(pipeline);
                     };
-            }
-        }
-
-        class PipelineStageSubeditorSet
-        {
-            public VcamStageEditor[] m_subeditors;
-            UnityEditor.Editor m_ParentEditor;
-
-            public void CreateSubeditors(UnityEditor.Editor parentEditor)
-            {
-                m_ParentEditor = parentEditor;
-                m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
-                if (m_ParentEditor.target as CinemachineVirtualCamera == null)
-                    return;
-                for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
-                    stage < CinemachineCore.Stage.Finalize; ++stage)
-                {
-                    var ed = new VcamStageEditor(stage);
-                    m_subeditors[(int)stage] = ed;
-                    ed.GetComponent = (stage, result) =>
-                    {
-                        int numNullComponents = 0;
-                        foreach (var obj in m_ParentEditor.targets)
-                        {
-                            var vcam = obj as CinemachineVirtualCamera;
-                            if (vcam != null)
-                            {
-                                var c = vcam.GetCinemachineComponent(stage);
-                                if (c != null)
-                                    result.Add(c);
-                                else
-                                    ++numNullComponents;
-                            }
-                        }
-                        return numNullComponents;
-                    };
-                    ed.SetComponent = (stage, type) => 
-                    {
-                        Undo.SetCurrentGroupName("Cinemachine pipeline change");
-                        foreach (var obj in m_ParentEditor.targets)
-                        {
-                            var vcam = obj as CinemachineVirtualCamera;
-                            Transform owner = vcam == null ? null : vcam.GetComponentOwner();
-                            if (owner == null)
-                                continue; // maybe it's a prefab
-                            var c = vcam.GetCinemachineComponent(stage);
-                            if (c != null && c.GetType() == type)
-                                continue;
-                            if (c != null)
-                            {
-                                Undo.DestroyObjectImmediate(c);
-                                vcam.InvalidateComponentPipeline();
-                            }
-                            if (type != null)
-                            {
-                                Undo.AddComponent(owner.gameObject, type);
-                                vcam.InvalidateComponentPipeline();
-                            }
-                        }
-                    };
-                }
-            }
-
-            public void Shutdown()
-            {
-                if (m_subeditors != null)
-                {
-                    for (int i = 0; i < m_subeditors.Length; ++i)
-                    {
-                        if (m_subeditors[i] != null)
-                            m_subeditors[i].Shutdown();
-                        m_subeditors[i] = null;
-                    }
-                    m_subeditors = null;
-                }
-                m_ParentEditor = null;
-            }
-
-            // Pass the dragged event down to the CM component editors
-            public void OnPositionDragged(Vector3 delta)
-            {
-                foreach (var e in m_subeditors)
-                    if (e != null)
-                        e.OnPositionDragged(delta);
             }
         }
 
