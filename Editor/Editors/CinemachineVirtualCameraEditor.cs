@@ -130,7 +130,7 @@ namespace Cinemachine.Editor
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
-            m_PipelineSet.OnInspectorGUI(true);
+            m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
             DrawExtensionsWidgetInInspector();
         }
 
