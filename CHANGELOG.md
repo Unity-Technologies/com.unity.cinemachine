@@ -4,17 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [2.8.0-pre.1] - 2021-04-15
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, after changing the targets, set PreviousStateIsValid to false.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
 - Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field did not work correctly with Framing Transposer. 
 - Regression fix: 3rdPersonFollow keeps player in view when Z damping is high
 - Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
 - New sample scene: Boss cam, that demonstrates how to setup a camera that follows the player and looks at the player and the boss. It also shows examples of custom extensions.
-
-
-## [2.8.0-exp.1] - 2021-03-31
-- Added simplified modes for impulse generation, added secondary reaction settings to Impulse Listener.
+- Added simplified modes to Impulse Source.
+- Added secondary reaction settings to Impulse Listener.
 - Added Storyboard support for ScreenSpaceOverlay and ScreenSpaceCamera camera render modes.
 - Added DampingIntoCollision and DampingFromCollision properties to Cinemachine3rdPersonFollow to control how gradually the camera moves to correct for occlusions.
 - Added CinemachineCore.OnTargetObjectWarped() to warp all vcams targeting an object.

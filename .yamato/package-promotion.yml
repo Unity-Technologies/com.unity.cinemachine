@@ -16,10 +16,6 @@ test_platforms:
     type: Unity::VM
     image: package-ci/ubuntu:stable
     flavor: b1.large
-  - name: centos
-    type: Unity::VM::GPU
-    image: package-ci/centos:stable
-    flavor: b1.large
 ---
 
 {% for editor in test_editors %}
