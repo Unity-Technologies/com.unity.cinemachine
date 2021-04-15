@@ -1,6 +1,6 @@
 all_editors:
   - version: 2019.4
-  - version: 2020.2
+  - version: 2020.3
   - version: 2021.1
   - version: trunk
 all_platforms:
@@ -19,7 +19,7 @@ all_platforms:
 
 test_editors:
   - version: 2019.4
-  - version: 2020.2
+  - version: 2020.3
   - version: 2021.1
   - version: trunk
 test_platforms:
@@ -29,7 +29,7 @@ test_platforms:
     flavor: b1.large
     
 validation_editors:
-  - version: 2020.2
+  - version: 2020.3
 validation_platforms:
   - name: ubuntu
     type: Unity::VM
