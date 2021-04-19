@@ -86,8 +86,9 @@ namespace Cinemachine.Editor
                 });
 
             // We only look at the first target here, on purpose
-            foreach (var s in Target.m_LockStageInInspector)
-                m_PipelineSet.SetStageIsLocked(s);
+            if (Target != null)
+               foreach (var s in Target.m_LockStageInInspector)
+                    m_PipelineSet.SetStageIsLocked(s);
         }
 
         protected override void OnDisable()
