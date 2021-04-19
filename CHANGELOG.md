@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, change the targets then set PreviousStateIsValid to false.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
 - Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field did not work correctly with Framing Transposer. 
-- Regression fix: 3rdPersonFollow keept player in view when Z damping is high.
+- Regression fix: 3rdPersonFollow kept player in view when Z damping is high.
 - Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
 - New sample scene: **Boss cam** sample scene demonstrates a camera setup to follow the player and to look at the player and the boss. The scene provides  examples of custom extensions.
 
@@ -31,8 +31,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Changing targets on a live vcam misbehaved.
 - Bugfix: Framing transposer did not handle empty groups.
 - Bugfix: Interrupting a transition with InheritPosition enabled was broken.
-- Bugfix: Cinemachine3rdPersonFollow did not handle collision by default.
-- Bugfix: SaveDuringPlay saved only components that have the SaveDuringPlay attribute.
+- Bugfix: Cinemachine3rdPersonFollow handled collisions by default, now it is disabled by default.
+- Bugfix: SaveDuringPlay saved some components that did not have the SaveDuringPlay attribute.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
 
 
