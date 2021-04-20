@@ -27,12 +27,15 @@ namespace Cinemachine.PostFX.Editor
     {
         SerializedProperty m_Profile;
         SerializedProperty m_FocusTracking;
+        SerializedProperty m_LayerOverride;
 
         VolumeComponentListEditor m_ComponentList;
 
         GUIContent m_ProfileLabel;
         GUIContent m_NewLabel;
         GUIContent m_CloneLabel;
+
+        static bool s_AdvancedFoldout;
 
         void OnEnable()
         {
@@ -42,6 +45,7 @@ namespace Cinemachine.PostFX.Editor
 
             m_FocusTracking = FindProperty(x => x.m_FocusTracking);
             m_Profile = FindProperty(x => x.m_Profile);
+            m_LayerOverride = FindProperty(x => x.m_LayerMaskOverride);
 
             RefreshVolumeComponentEditor(Target.m_Profile);
         }
@@ -124,6 +128,21 @@ namespace Cinemachine.PostFX.Editor
             var buttonCopyRect = new Rect(buttonNewRect.xMax, lineRect.y, buttonWidth, lineRect.height);
 
             EditorGUI.PrefixLabel(labelRect, m_ProfileLabel);
+
+            s_AdvancedFoldout = EditorGUILayout.Foldout(s_AdvancedFoldout, "Advanced");
+            if (s_AdvancedFoldout)
+            {
+                ++EditorGUI.indentLevel;
+
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(m_LayerOverride);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    serializedObject.ApplyModifiedProperties();
+                }
+
+                --EditorGUI.indentLevel;
+            }
 
             using (var scope = new EditorGUI.ChangeCheckScope())
             {

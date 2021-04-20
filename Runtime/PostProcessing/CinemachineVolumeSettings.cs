@@ -99,6 +99,14 @@ namespace Cinemachine.PostFX
         [Tooltip("This profile will be applied whenever this virtual camera is live")]
         public VolumeProfile m_Profile;
 
+        /// <summary>
+        /// Overrides the default layer selected by Cinemachine for this volume
+        /// </summary>
+        [Tooltip("Overrides the default layer selected by Cinemachine for this volume. " +
+            "It is ignored when set to Nothing.")]
+        [HideInInspector]
+        public LayerMask m_LayerMaskOverride;
+
         class VcamExtraState
         {
             public VolumeProfile mProfileCopy;
@@ -306,6 +314,8 @@ namespace Cinemachine.PostFX
                     volumeOwner.hideFlags = HideFlags.HideAndDontSave;
                     volumeOwner.transform.parent = t;
                 }
+
+                // if (m_LayerMaskOverride == )
 
                 // Update the volume's layer so it will be seen
 #if CINEMACHINE_HDRP
