@@ -138,6 +138,7 @@ namespace Cinemachine.PostFX.Editor
                 ++EditorGUI.indentLevel;
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.BeginHorizontal();
+                
                 CinemachineVolumeSettings.s_LayerMaskOverrideEnabled = EditorGUILayout.Toggle(
                     CinemachineVolumeSettings.s_LayerMaskOverrideEnabled);
                 if (CinemachineVolumeSettings.s_LayerMaskOverrideEnabled)
@@ -153,12 +154,12 @@ namespace Cinemachine.PostFX.Editor
                         CinemachineVolumeSettings.s_LayerMaskOverride);
                     GUI.enabled = true;
                 }
+                
                 EditorGUILayout.EndHorizontal();
                 if (EditorGUI.EndChangeCheck())
                 {
                     serializedObject.ApplyModifiedProperties();
                 }
-
                 --EditorGUI.indentLevel;
             }
 

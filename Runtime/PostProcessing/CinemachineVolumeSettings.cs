@@ -329,7 +329,7 @@ namespace Cinemachine.PostFX
 #if CINEMACHINE_HDRP
                     var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
 #elif CINEMACHINE_LWRP_7_3_1
-                var data = brain.gameObject.GetComponent<UniversalAdditionalCameraData>();
+                    var data = brain.gameObject.GetComponent<UniversalAdditionalCameraData>();
 #endif
                     if (data != null)
                     {
