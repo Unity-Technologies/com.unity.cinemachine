@@ -139,7 +139,7 @@ namespace Cinemachine.PostFX.Editor
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.BeginHorizontal();
                 CinemachineVolumeSettings.s_LayerMaskOverrideEnabled = EditorGUILayout.Toggle(
-                    CinemachineVolumeSettings.s_LayerMaskOverrideEnabled, GUILayout.Width(15));
+                    CinemachineVolumeSettings.s_LayerMaskOverrideEnabled);
                 if (CinemachineVolumeSettings.s_LayerMaskOverrideEnabled)
                 {
                     CinemachineVolumeSettings.s_LayerMaskOverride =
