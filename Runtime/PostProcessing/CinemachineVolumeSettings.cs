@@ -100,12 +100,16 @@ namespace Cinemachine.PostFX
         public VolumeProfile m_Profile;
 
         /// <summary>
-        /// Overrides the default layer selected by Cinemachine for this volume
+        /// Global override for the layer used by CinemachineVolumes.
         /// </summary>
-        [Tooltip("Overrides the default layer selected by Cinemachine for this volume. " +
-            "It is ignored when set to Nothing.")]
-        [HideInInspector]
-        public LayerMask m_LayerMaskOverride;
+        [Tooltip("Global override for the layer used by CinemachineVolumes. ")]
+        public static LayerMask s_LayerMaskOverride;
+
+        /// <summary>
+        /// If true, enables global layer override.
+        /// </summary>
+        [Tooltip("If true, enables global layer override. ")]
+        public static bool s_LayerMaskOverrideEnabled;
 
         class VcamExtraState
         {
@@ -315,23 +319,28 @@ namespace Cinemachine.PostFX
                     volumeOwner.transform.parent = t;
                 }
 
-                // if (m_LayerMaskOverride == )
-
                 // Update the volume's layer so it will be seen
+                if (s_LayerMaskOverrideEnabled)
+                {
+                    volumeOwner.layer = s_LayerMaskOverride;
+                }
+                else
+                {
 #if CINEMACHINE_HDRP
-                var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
+                    var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
 #elif CINEMACHINE_LWRP_7_3_1
                 var data = brain.gameObject.GetComponent<UniversalAdditionalCameraData>();
 #endif
-                if (data != null)
-                {
-                    int mask = data.volumeLayerMask;
-                    for (int i = 0; i < 32; ++i)
+                    if (data != null)
                     {
-                        if ((mask & (1 << i)) != 0)
+                        int mask = data.volumeLayerMask;
+                        for (int i = 0; i < 32; ++i)
                         {
-                            volumeOwner.layer = i;
-                            break;
+                            if ((mask & (1 << i)) != 0)
+                            {
+                                volumeOwner.layer = i;
+                                break;
+                            }
                         }
                     }
                 }
