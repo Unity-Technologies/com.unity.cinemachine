@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
 - Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field did not work correctly with Framing Transposer. 
 - Regression fix: 3rdPersonFollow keeps player in view when Z damping is high
+- Bugfix: CinemachineCollider's displacement damping was being calculated in world space instead of camera space.
 
 
 ## [2.6.4] - 2021-03-24
