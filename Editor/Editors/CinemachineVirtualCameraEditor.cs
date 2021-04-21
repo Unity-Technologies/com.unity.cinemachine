@@ -86,7 +86,7 @@ namespace Cinemachine.Editor
                 });
 
             // We only look at the first target here, on purpose
-            if (Target != null)
+            if (Target != null && Target.m_LockStageInInspector != null)
                foreach (var s in Target.m_LockStageInInspector)
                     m_PipelineSet.SetStageIsLocked(s);
         }
