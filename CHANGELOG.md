@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, change the targets then set PreviousStateIsValid to false.
 - GameView guides are drawn only if appropriate inspector subsection is expanded.
 - FreeLook rigs are now organized in tabs in the inspector.
-- New feature: Layer for CinemachineVolumeSettings can be overriden.
 - New sample scene: **Boss cam** sample scene demonstrates a camera setup to follow the player and to look at the player and the boss. The scene provides  examples of custom extensions.
 - New Sample scene: **2D zoom**, showing how to zoom an orthographic camera with mouse scroll.
 - New Sample scene: **2D fighters**, showing how to add/remove targets gradually to/from a TargetGroup based on some conditions (here, it is the y coord of the players).
