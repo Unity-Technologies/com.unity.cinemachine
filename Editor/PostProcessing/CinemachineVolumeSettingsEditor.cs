@@ -27,6 +27,8 @@ namespace Cinemachine.PostFX.Editor
     {
         SerializedProperty m_Profile;
         SerializedProperty m_FocusTracking;
+        SerializedProperty m_LayerMaskOverride;
+        SerializedProperty m_LayerMaskOverrideEnabled;
 
         VolumeComponentListEditor m_ComponentList;
 
@@ -34,6 +36,8 @@ namespace Cinemachine.PostFX.Editor
         GUIContent m_NewLabel;
         GUIContent m_CloneLabel;
         GUIContent m_LayerFieldOverrideLabel;
+        GUIContent m_LayerMaskOverrideLabel;
+        GUIContent m_LayerMaskOverrideEnabledLabel;
 
         static bool s_AdvancedFoldout;
 
@@ -46,9 +50,13 @@ namespace Cinemachine.PostFX.Editor
             m_LayerFieldOverrideLabel = new GUIContent("LayerFieldOverride", "Global override for the layer used by " +
                 "CinemachineVolumes. If Nothing is selected, then Cinemachine chooses the one found on the unity " +
                 "camera controlled by this vcam's brain.");
+            m_LayerMaskOverrideLabel = new GUIContent("LayerMaskOverrideLabel", "");
+            m_LayerMaskOverrideEnabledLabel = new GUIContent("LayerMaskOverrideEnabledLabel", "");
             
             m_FocusTracking = FindProperty(x => x.m_FocusTracking);
             m_Profile = FindProperty(x => x.m_Profile);
+            m_LayerMaskOverride = FindProperty(x => x.m_LayerMaskOverride);
+            m_LayerMaskOverrideEnabled = FindProperty(x => x.m_LayerMaskOverrideEnabled);
 
             RefreshVolumeComponentEditor(Target.m_Profile);
         }
@@ -138,20 +146,17 @@ namespace Cinemachine.PostFX.Editor
                 ++EditorGUI.indentLevel;
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.BeginHorizontal();
-                
-                CinemachineVolumeSettings.s_LayerMaskOverrideEnabled = EditorGUILayout.Toggle(
-                    CinemachineVolumeSettings.s_LayerMaskOverrideEnabled);
-                if (CinemachineVolumeSettings.s_LayerMaskOverrideEnabled)
+
+                m_LayerMaskOverrideEnabled.boolValue = EditorGUILayout.Toggle(m_LayerMaskOverrideEnabled.boolValue);
+                if (m_LayerMaskOverrideEnabled.boolValue)
                 {
-                    CinemachineVolumeSettings.s_LayerMaskOverride =
-                        EditorGUILayout.LayerField(m_LayerFieldOverrideLabel, 
-                            CinemachineVolumeSettings.s_LayerMaskOverride);
+                    m_LayerMaskOverride.intValue 
+                        = EditorGUILayout.LayerField(m_LayerFieldOverrideLabel, m_LayerMaskOverride.intValue);
                 }
                 else
                 {
                     GUI.enabled = false;
-                    EditorGUILayout.LayerField(m_LayerFieldOverrideLabel, 
-                        CinemachineVolumeSettings.s_LayerMaskOverride);
+                    EditorGUILayout.LayerField(m_LayerFieldOverrideLabel, m_LayerMaskOverride.intValue);
                     GUI.enabled = true;
                 }
                 

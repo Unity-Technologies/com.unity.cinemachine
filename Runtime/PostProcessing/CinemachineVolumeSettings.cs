@@ -102,14 +102,16 @@ namespace Cinemachine.PostFX
         /// <summary>
         /// Global override for the layer used by CinemachineVolumes.
         /// </summary>
+        [HideInInspector]
         [Tooltip("Global override for the layer used by CinemachineVolumes. ")]
-        public static LayerMask s_LayerMaskOverride;
+        public LayerMask m_LayerMaskOverride;
 
         /// <summary>
         /// If true, enables global layer override.
         /// </summary>
+        [HideInInspector]
         [Tooltip("If true, enables global layer override. ")]
-        public static bool s_LayerMaskOverrideEnabled;
+        public bool m_LayerMaskOverrideEnabled;
 
         class VcamExtraState
         {
@@ -251,11 +253,12 @@ namespace Cinemachine.PostFX
 #endif
         }
 
-        static void ApplyPostFX(CinemachineBrain brain)
+        void ApplyPostFX(CinemachineBrain brain)
         {
             CameraState state = brain.CurrentCameraState;
             int numBlendables = state.NumCustomBlendables;
-            var volumes = GetDynamicBrainVolumes(brain, numBlendables);
+            var volumes = GetDynamicBrainVolumes(brain, numBlendables, 
+                m_LayerMaskOverrideEnabled, m_LayerMaskOverride);
             for (int i = 0; i < volumes.Count; ++i)
             {
                 volumes[i].weight = 0;
@@ -291,7 +294,8 @@ namespace Cinemachine.PostFX
 
         static string sVolumeOwnerName = "__CMVolumes";
         static  List<Volume> sVolumes = new List<Volume>();
-        static List<Volume> GetDynamicBrainVolumes(CinemachineBrain brain, int minVolumes)
+        static List<Volume> GetDynamicBrainVolumes(CinemachineBrain brain, int minVolumes, 
+            bool layerMaskOverrideEnabled, int layerMaskOverride)
         {
             // Locate the camera's child object that holds our dynamic volumes
             GameObject volumeOwner = null;
@@ -320,9 +324,9 @@ namespace Cinemachine.PostFX
                 }
 
                 // Update the volume's layer so it will be seen
-                if (s_LayerMaskOverrideEnabled)
+                if (layerMaskOverrideEnabled)
                 {
-                    volumeOwner.layer = s_LayerMaskOverride;
+                    volumeOwner.layer = layerMaskOverride;
                 }
                 else
                 {
@@ -352,11 +356,11 @@ namespace Cinemachine.PostFX
         }
 
 #if UNITY_EDITOR
-        [UnityEditor.InitializeOnLoad]
-        class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
+        //[UnityEditor.InitializeOnLoad]
+        //class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
 #endif
         [RuntimeInitializeOnLoadMethod]
-        static void InitializeModule()
+        void InitializeModule()
         {
             // Afetr the brain pushes the state to the camera, hook in to the PostFX
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
