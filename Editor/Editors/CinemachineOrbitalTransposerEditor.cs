@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
+    [CanEditMultipleObjects]
     internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
@@ -70,13 +71,17 @@ namespace Cinemachine.Editor
 
         private void OnEnable()
         {
-            Target.UpdateInputAxisProvider();
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
         }
 
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.FollowTarget == null)
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineOrbitalTransposer).FollowTarget == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox(
                     "Orbital Transposer requires a Follow target.",
                     MessageType.Warning);
