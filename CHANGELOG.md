@@ -32,6 +32,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine3rdPersonFollow was not handling collision by default.
 - Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
+- GameView guides are drawn only if appropriate inspector subsection is expanded.
+- FreeLook rigs are now organized in tabs in the inspector.
+- New sample scene: **Boss cam** sample scene demonstrates a camera setup to follow the player and to look at the player and the boss. The scene provides  examples of custom extensions.
+- New Sample scene: **2D zoom**, showing how to zoom an orthographic camera with mouse scroll.
+- New Sample scene: **2D fighters**, showing how to add/remove targets gradually to/from a TargetGroup based on some conditions (here, it is the y coord of the players).
+- Bugfix: CinemachineCollider's displacement damping was being calculated in world space instead of camera space.
+- Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour.
 
 
 ## [2.7.2] - 2021-02-15

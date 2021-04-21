@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTransposer))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
@@ -61,7 +62,10 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.FollowTarget == null)
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineTransposer).FollowTarget == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox(
                     "Transposer requires a Follow Target.  Change Body to Do Nothing if you don't want a Follow target.",
                     MessageType.Warning);
