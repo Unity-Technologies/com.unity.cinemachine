@@ -4,6 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(Cinemachine3rdPersonFollow))]
+    [CanEditMultipleObjects]
     internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
     {
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(Cinemachine3rdPersonFollow))]

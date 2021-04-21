@@ -22,8 +22,7 @@ namespace Cinemachine.PostFX.Editor
 {
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     [CustomEditor(typeof(CinemachineVolumeSettings))]
-    public sealed class CinemachineVolumeSettingsEditor
-        : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
+    public sealed class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
         SerializedProperty m_Profile;
         SerializedProperty m_FocusTracking;
