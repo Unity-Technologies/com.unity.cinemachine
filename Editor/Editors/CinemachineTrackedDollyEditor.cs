@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTrackedDolly))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
@@ -31,10 +32,19 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.m_Path == null)
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineTrackedDolly).m_Path == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox("A Path is required", MessageType.Warning);
-            if (Target.m_AutoDolly.m_Enabled && Target.FollowTarget == null)
+
+            needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineTrackedDolly).m_AutoDolly.m_Enabled 
+                    && (targets[i] as CinemachineTrackedDolly).FollowTarget == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox("AutoDolly requires a Follow Target", MessageType.Warning);
+
             DrawRemainingPropertiesInInspector();
         }
 

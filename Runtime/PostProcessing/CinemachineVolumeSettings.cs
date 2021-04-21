@@ -253,12 +253,13 @@ namespace Cinemachine.PostFX
 #endif
         }
 
-        void ApplyPostFX(CinemachineBrain brain)
+        static void ApplyPostFX(CinemachineBrain brain)
         {
             CameraState state = brain.CurrentCameraState;
             int numBlendables = state.NumCustomBlendables;
-            var volumes = GetDynamicBrainVolumes(brain, numBlendables, 
-                m_LayerMaskOverrideEnabled, m_LayerMaskOverride);
+            var currentVolume = 
+                brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>();
+            var volumes = GetDynamicBrainVolumes(brain, numBlendables, currentVolume);
             for (int i = 0; i < volumes.Count; ++i)
             {
                 volumes[i].weight = 0;
@@ -295,7 +296,7 @@ namespace Cinemachine.PostFX
         static string sVolumeOwnerName = "__CMVolumes";
         static  List<Volume> sVolumes = new List<Volume>();
         static List<Volume> GetDynamicBrainVolumes(CinemachineBrain brain, int minVolumes, 
-            bool layerMaskOverrideEnabled, int layerMaskOverride)
+            CinemachineVolumeSettings cmVolume)
         {
             // Locate the camera's child object that holds our dynamic volumes
             GameObject volumeOwner = null;
@@ -324,9 +325,9 @@ namespace Cinemachine.PostFX
                 }
 
                 // Update the volume's layer so it will be seen
-                if (layerMaskOverrideEnabled)
+                if (cmVolume.m_LayerMaskOverrideEnabled)
                 {
-                    volumeOwner.layer = layerMaskOverride;
+                    volumeOwner.layer = cmVolume.m_LayerMaskOverride;
                 }
                 else
                 {
@@ -356,11 +357,11 @@ namespace Cinemachine.PostFX
         }
 
 #if UNITY_EDITOR
-        //[UnityEditor.InitializeOnLoad]
-        //class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
+        [UnityEditor.InitializeOnLoad]
+        class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
 #endif
         [RuntimeInitializeOnLoadMethod]
-        void InitializeModule()
+        static void InitializeModule()
         {
             // Afetr the brain pushes the state to the camera, hook in to the PostFX
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
