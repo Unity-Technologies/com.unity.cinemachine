@@ -97,7 +97,7 @@ namespace Cinemachine
 
         // State info
         Vector3 m_PreviousFollowTargetPosition;
-        Vector3 m_DampingCorrection;
+        Vector3 m_DampingCorrection; // this is in local rig space
         float m_CamPosCollisionCorrection;
 
         void OnValidate()
@@ -119,7 +119,7 @@ namespace Cinemachine
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
 #if CINEMACHINE_PHYSICS
-            CameraCollisionFilter = 1;
+            CameraCollisionFilter = 0;
             CameraRadius = 0.2f;
             DampingIntoCollision = 0;
             DampingFromCollision = 2f;
@@ -200,7 +200,7 @@ namespace Cinemachine
             var collidedHand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
 
             // Place the camera at the correct distance from the hand
-            Vector3 camPos = hand - (targetForward * CameraDistance);
+            Vector3 camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
             camPos = ResolveCollisions(
                 collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
@@ -241,7 +241,8 @@ namespace Cinemachine
         {
             var shoulderPivotReflected = Vector3.Reflect(ShoulderOffset, Vector3.right);
             var shoulderOffset = Vector3.Lerp(shoulderPivotReflected, ShoulderOffset, CameraSide);
-            shoulderOffset += m_DampingCorrection;
+            shoulderOffset.x += m_DampingCorrection.x;
+            shoulderOffset.y += m_DampingCorrection.y;
             shoulder = root + heading * shoulderOffset;
             hand = shoulder + targetRot * new Vector3(0, VerticalArmLength, 0);   
         }
@@ -251,6 +252,11 @@ namespace Cinemachine
             float cameraRadius, ref float collisionCorrection)
         {
 #if CINEMACHINE_PHYSICS
+            if (CameraCollisionFilter.value == 0)
+            {
+                return tip;
+            }
+            
             var dir = tip - root;
             var len = dir.magnitude;
             dir /= len;

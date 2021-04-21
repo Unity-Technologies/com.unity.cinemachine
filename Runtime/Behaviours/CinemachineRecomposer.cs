@@ -8,6 +8,7 @@ using Cinemachine;
 /// </summary>
 [AddComponentMenu("")] // Hide in menu
 [ExecuteAlways]
+[SaveDuringPlay]
 [HelpURL(Documentation.BaseURL + "manual/CinemachineRecomposer.html")]
 public class CinemachineRecomposer : CinemachineExtension
 {

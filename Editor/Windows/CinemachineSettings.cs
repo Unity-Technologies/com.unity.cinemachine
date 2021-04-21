@@ -294,6 +294,11 @@ namespace Cinemachine.Editor
         }
 
         private static Vector2 sScrollPosition = Vector2.zero;
+        
+        static GUIContent sDraggableText = new GUIContent("Draggable Game Window Guides", "If checked, game window " +
+            "guides are draggable in play mode. If false, game window guides are only for visualization");
+        static GUIContent sGlobalMuteText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards " +
+            "are globally muted.");
 
 #if UNITY_2019_1_OR_NEWER
         [SettingsProvider]
@@ -307,11 +312,6 @@ namespace Cinemachine.Editor
 #else
         [PreferenceItem("Cinemachine")]
 #endif
-        
-        static GUIContent sDraggableText = new GUIContent("Draggable Game Window Guides", "If checked, game window " +
-            "guides are draggable in play mode. If false, game window guides are only for visualization");
-        static GUIContent sGlobalMuteText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards " +
-            "are globally muted.");
         private static void OnGUI()
         {
             if (CinemachineHeader != null)
