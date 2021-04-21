@@ -100,17 +100,17 @@ namespace Cinemachine.PostFX
         public VolumeProfile m_Profile;
 
         /// <summary>
-        /// Global override for the layer used by CinemachineVolumes.
+        /// LayerMask override for the layer used by this vcam's volume settings.
         /// </summary>
         [HideInInspector]
-        [Tooltip("Global override for the layer used by CinemachineVolumes. ")]
+        [Tooltip("LayerMask override for the layer used by this vcam's volume settings.")]
         public LayerMask m_LayerMaskOverride;
 
         /// <summary>
-        /// If true, enables global layer override.
+        /// If true, enables LayerMask override.
         /// </summary>
         [HideInInspector]
-        [Tooltip("If true, enables global layer override. ")]
+        [Tooltip("If true, enables LayerMask override.")]
         public bool m_LayerMaskOverrideEnabled;
 
         class VcamExtraState
