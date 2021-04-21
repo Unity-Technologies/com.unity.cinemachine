@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
 - New sample scene: Boss cam, that demonstrates how to setup a camera that follows the player and looks at the player and the boss. It also shows examples of custom extensions.
 - Bugfix: CinemachineCollider's displacement damping was being calculated in world space instead of camera space.
+- Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour.
 
 
 ## [2.8.0-exp.1] - 2021-03-31
