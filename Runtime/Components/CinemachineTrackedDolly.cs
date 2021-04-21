@@ -308,7 +308,7 @@ namespace Cinemachine
                         return Quaternion.LookRotation(FollowTargetRotation * Vector3.forward, up);
                     break;
             }
-            return Quaternion.LookRotation(transform.rotation * Vector3.forward, up);
+            return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
         }
 
         private Vector3 AngularDamping
