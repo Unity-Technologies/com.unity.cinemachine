@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - GameView guides are drawn only if appropriate inspector subsection is expanded.
 - FreeLook rigs are now organized in tabs in the inspector.
 - New sample scene: **Boss cam** sample scene demonstrates a camera setup to follow the player and to look at the player and the boss. The scene provides  examples of custom extensions.
+- New Sample scene: **2D zoom**, showing how to zoom an orthographic camera with mouse scroll.
+- New Sample scene: **2D fighters**, showing how to add/remove targets gradually to/from a TargetGroup based on some conditions (here, it is the y coord of the players).
 - Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field did not work correctly with Framing Transposer. 
 - Regression fix: 3rdPersonFollow kept player in view when Z damping is high.
 - Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
@@ -38,8 +40,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine3rdPersonFollow handled collisions by default, now it is disabled by default.
 - Bugfix: SaveDuringPlay saved some components that did not have the SaveDuringPlay attribute.
 - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
-- New Sample scene: 2D zoom, simple scene showing how to zoom a orthographic camera with mouse scroll.
-- New Sample scene: 2D fighters, an example showing a game camera in a 2D fighting game. It shows how to add/remove targets gradually to/from a TargetGroup based on some conditions (here, it is the y coord of the players).
 
 
 ## [2.7.2] - 2021-02-15
