@@ -10,8 +10,7 @@ namespace Cinemachine.PostFX.Editor
 {
 #if CINEMACHINE_POST_PROCESSING_V2
     [CustomEditor(typeof(CinemachinePostProcessing))]
-    public sealed class CinemachinePostProcessingEditor
-        : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
+    public sealed class CinemachinePostProcessingEditor : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
     {
         SerializedProperty m_Profile;
         SerializedProperty m_FocusTracking;

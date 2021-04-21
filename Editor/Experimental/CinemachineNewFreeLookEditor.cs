@@ -11,16 +11,13 @@ namespace Cinemachine
     sealed class CinemachineNewFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
     {
-        GUIContent[] mRigNames = new GUIContent[]
-            { new GUIContent("Top Rig"), new GUIContent("Bottom Rig") };
-
-        GUIContent[] mOrbitNames = new GUIContent[]
+        GUIContent[] m_OrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
 
-        GUIContent mAllLensLabel = new GUIContent(
+        GUIContent m_CustomizeLabel = new GUIContent(
             "Customize", "Custom settings for this rig.  If unchecked, main rig settins will be used");
 
-        VcamPipelineStageSubeditorSet mPipelineSet = new VcamPipelineStageSubeditorSet();
+        VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -35,14 +32,67 @@ namespace Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            mPipelineSet.CreateSubeditors(this);
-            Target.UpdateInputAxisProvider();
+            Undo.undoRedoPerformed += ResetTargetOnUndo;
+            m_PipelineSet.Initialize(
+                // GetComponent
+                (stage, result) =>
+                {
+                    int numNullComponents = 0;
+                    foreach (var obj in targets)
+                    {
+                        var vcam = obj as CinemachineNewVirtualCamera;
+                        if (vcam != null)
+                        {
+                            var c = vcam.GetCinemachineComponent(stage);
+                            if (c != null)
+                                result.Add(c);
+                            else
+                                ++numNullComponents;
+                        }
+                    }
+                    return numNullComponents;
+                },
+                // SetComponent
+                (stage, type) => 
+                {
+                    Undo.SetCurrentGroupName("Cinemachine pipeline change");
+                    foreach (var obj in targets)
+                    {
+                        var vcam = obj as CinemachineNewVirtualCamera;
+                        if (vcam != null)
+                        {
+                            Component c = vcam.GetCinemachineComponent(stage);
+                            if (c != null && c.GetType() == type)
+                                continue;
+                            if (c != null)
+                            {
+                                Undo.DestroyObjectImmediate(c);
+                                vcam.InvalidateComponentCache();
+                            }
+                            if (type != null)
+                            {
+                                Undo.AddComponent(vcam.gameObject, type);
+                                vcam.InvalidateComponentCache();
+                            }
+                        }
+                    }
+                });
+
+            m_PipelineSet.SetStageIsLocked(CinemachineCore.Stage.Body);
+
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineNewFreeLook).UpdateInputAxisProvider();
         }
 
         protected override void OnDisable()
         {
-            mPipelineSet.Shutdown();
+            m_PipelineSet.Shutdown();
             base.OnDisable();
+        }
+
+        void ResetTargetOnUndo() 
+        {
+            ResetTarget();
         }
 
         public override void OnInspectorGUI()
@@ -66,7 +116,7 @@ namespace Cinemachine
                 var o = orbits.GetArrayElementAtIndex(i);
                 Rect rect = EditorGUILayout.GetControlRect(true);
                 InspectorUtility.MultiPropertyOnLine(
-                    rect, mOrbitNames[i],
+                    rect, m_OrbitNames[i],
                     new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),
                             o.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
                     null);
@@ -77,32 +127,32 @@ namespace Cinemachine
 
             // Pipeline Stages
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Main Rig", EditorStyles.boldLabel);
-            var components = Target.ComponentCache;
-            for (int i = 0; i < mPipelineSet.m_subeditors.Length; ++i)
+            var selectedRig = Selection.objects.Length == 1 
+                ? GUILayout.Toolbar(s_SelectedRig, s_RigNames) : 0;
+            if (selectedRig != s_SelectedRig)
             {
-                var ed = mPipelineSet.m_subeditors[i];
-                if (ed == null)
-                    continue;
-                if (!ed.HasImplementation)
-                    continue;
-                if ((CinemachineCore.Stage)i == CinemachineCore.Stage.Body)
-                    ed.TypeIsLocked = true;
-                ed.OnInspectorGUI(components[i]); // may destroy component
+                Undo.RecordObject(Target, "selected rig");
+                Target.m_VerticalAxis.Value = selectedRig == 0 ? 1 : (selectedRig == 1 ? 0.5f : 0);
             }
-
-            // Rigs
-            EditorGUILayout.Space();
-            SerializedProperty rigs = FindProperty(x => x.m_Rigs);
-            for (int i = 0; i < 2; ++i)
-            {
-                EditorGUILayout.Separator();
-                DrawRigEditor(i, rigs.GetArrayElementAtIndex(i));
-            }
+            s_SelectedRig = selectedRig;
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            if (selectedRig == 1)
+                m_PipelineSet.OnInspectorGUI(false);
+            else
+                DrawRigEditor(selectedRig == 0 ? 0 : 1);
+            EditorGUILayout.EndVertical();
 
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
+
+        static GUIContent[] s_RigNames = 
+        {
+            new GUIContent("Top Rig"), 
+            new GUIContent("Main Rig"), 
+            new GUIContent("Bottom Rig")
+        };
+        static int s_SelectedRig = 1;
 
         Vector3 mPreviousPosition; // for position dragging
         private void OnSceneGUI()
@@ -117,7 +167,7 @@ namespace Cinemachine
                 Vector3 delta = Target.transform.position - mPreviousPosition;
                 if (!delta.AlmostZero())
                 {
-                    mPipelineSet.OnPositionDragged(delta);
+                    m_PipelineSet.OnPositionDragged(delta);
                     mPreviousPosition = Target.transform.position;
 
                     // Adjust the rigs height and scale
@@ -149,14 +199,14 @@ namespace Cinemachine
             }
         }
 
-        void DrawRigEditor(int rigIndex, SerializedProperty rig)
+        void DrawRigEditor(int rigIndex)
         {
             const float kBoxMargin = 3;
 
+            SerializedProperty rig = FindProperty(x => x.m_Rigs).GetArrayElementAtIndex(rigIndex);
+
             CinemachineNewFreeLook.Rig def = new CinemachineNewFreeLook.Rig(); // for properties
-            EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUIUtility.labelWidth -= kBoxMargin;
-            EditorGUILayout.LabelField(new GUIContent(mRigNames[rigIndex]), EditorStyles.boldLabel);
 
             ++EditorGUI.indentLevel;
             var components = Target.ComponentCache;
@@ -203,7 +253,6 @@ namespace Cinemachine
                 }
             }
             --EditorGUI.indentLevel;
-            EditorGUILayout.EndVertical();
             EditorGUIUtility.labelWidth += kBoxMargin;
         }
 
@@ -223,7 +272,7 @@ namespace Cinemachine
             float labelWidth = EditorGUIUtility.labelWidth;
             bool newValue = EditorGUI.ToggleLeft(
                 new Rect(labelWidth, r.y, r.width - labelWidth, r.height),
-                mAllLensLabel, enabledProperty.boolValue);
+                m_CustomizeLabel, enabledProperty.boolValue);
             if (newValue != enabledProperty.boolValue)
             {
                 enabledProperty.boolValue = newValue;
