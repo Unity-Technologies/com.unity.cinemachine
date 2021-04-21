@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Cinemachine.Examples
 {
-    [ExecuteInEditMode]
+    [RequireComponent(typeof(CinemachineVirtualCamera))]
+    [SaveDuringPlay] // Enable SaveDuringPlay for this class
     public class MouseScrollZoom2D : MonoBehaviour
     {
         [Range(0, 10)]
@@ -13,25 +14,21 @@ namespace Cinemachine.Examples
         [Range(0, 100)]
         public float MaxZoom = 50f;
 
-        void Update()
-        {
-            float zoom = Input.mouseScrollDelta.y;
-            m_VirtualCamera.m_Lens.OrthographicSize += zoom * ZoomMultiplier;
-            m_VirtualCamera.m_Lens.OrthographicSize = 
-                Mathf.Min(MaxZoom, Mathf.Max(MinZoom, m_VirtualCamera.m_Lens.OrthographicSize));
-        }
-
         CinemachineVirtualCamera m_VirtualCamera;
-        float m_OrthographicSizeInInspector;
+        float m_OriginalOrthoSize;
+
         void Awake()
         {
             m_VirtualCamera = GetComponent<CinemachineVirtualCamera>();
-            m_OrthographicSizeInInspector = m_VirtualCamera.m_Lens.OrthographicSize;
+            m_OriginalOrthoSize = m_VirtualCamera.m_Lens.OrthographicSize;
+
 #if UNITY_EDITOR
+            // This code shows how to play nicely with the VirtualCamera's SaveDuringPlay functionality
             SaveDuringPlay.SaveDuringPlay.OnHotSave -= RestoreOriginalOrthographicSize;
             SaveDuringPlay.SaveDuringPlay.OnHotSave += RestoreOriginalOrthographicSize;
 #endif
         }
+
 #if UNITY_EDITOR
         void OnDestroy()
         {
@@ -40,15 +37,19 @@ namespace Cinemachine.Examples
         
         void RestoreOriginalOrthographicSize()
         {
-            m_VirtualCamera.m_Lens.OrthographicSize = m_OrthographicSizeInInspector;
+            m_VirtualCamera.m_Lens.OrthographicSize = m_OriginalOrthoSize;
         }
 #endif
+
         void OnValidate()
         {
-            if (MaxZoom < MinZoom)
-            {
-                MaxZoom = MinZoom;
-            }
+            MaxZoom = Mathf.Max(MinZoom, MaxZoom);
+        }
+
+        void Update()
+        {
+            float zoom = m_VirtualCamera.m_Lens.OrthographicSize + Input.mouseScrollDelta.y * ZoomMultiplier;
+            m_VirtualCamera.m_Lens.OrthographicSize = Mathf.Clamp(zoom, MinZoom, MaxZoom);
         }
     }
 }
