@@ -6,11 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [unreleased]
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, change the targets then set PreviousStateIsValid to false.
-- Bugfix: Reversing a blend in progress respects asymmetric blend times.
+- GameView guides are drawn only if appropriate inspector subsection is expanded.
+- FreeLook rigs are now organized in tabs in the inspector.
+- New sample scene: **Boss cam** sample scene demonstrates a camera setup to follow the player and to look at the player and the boss. The scene provides  examples of custom extensions.
 - Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field did not work correctly with Framing Transposer. 
 - Regression fix: 3rdPersonFollow kept player in view when Z damping is high.
 - Regression fix: Physical camera properties were overwritten by vcams even when "override mode: physical" was not selected.
-- New sample scene: **Boss cam** sample scene demonstrates a camera setup to follow the player and to look at the player and the boss. The scene provides  examples of custom extensions.
+- Bugfix: Reversing a blend in progress respects asymmetric blend times.
+- Bugfix: CinemachineCollider's displacement damping was being calculated in world space instead of camera space.
+- Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour.
 
 
 ## [2.8.0-exp.1] - 2021-03-31

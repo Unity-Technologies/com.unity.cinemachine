@@ -364,6 +364,7 @@ namespace Cinemachine
         {
             base.ForceCameraPosition(pos, rot);
             m_PreviousCameraPosition = pos;
+            m_prevRotation = rot;
         }
         
         /// <summary>
@@ -389,7 +390,8 @@ namespace Cinemachine
             if (fromCam != null && transitionParams.m_InheritPosition
                  && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
-                transform.rotation = fromCam.State.RawOrientation;
+                m_PreviousCameraPosition = fromCam.State.RawPosition;
+                m_prevRotation = fromCam.State.RawOrientation;
                 InheritingPosition = true;
                 return true;
             }
