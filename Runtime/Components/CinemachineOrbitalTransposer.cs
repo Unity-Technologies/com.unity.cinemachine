@@ -421,15 +421,6 @@ namespace Cinemachine
             return pos;
         }
 
-        static string GetFullName(GameObject current)
-        {
-            if (current == null)
-                return "";
-            if (current.transform.parent == null)
-                return "/" + current.name;
-            return GetFullName(current.transform.parent.gameObject) + "/" + current.name;
-        }
-
         // Make sure this is calld only once per frame
         private float GetTargetHeading(float currentHeading, Quaternion targetOrientation)
         {
