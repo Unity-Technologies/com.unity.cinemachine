@@ -186,7 +186,7 @@ namespace Cinemachine
             {
                 // Damping correction is applied to the shoulder offset - stretching the rig
                 m_DampingCorrection += Quaternion.Inverse(heading) * (m_PreviousFollowTargetPosition - targetPos);
-                m_DampingCorrection -= VirtualCamera.DetachedFollowTargetDamp(m_DampingCorrection, Damping, deltaTime);
+                m_DampingCorrection -= Damper.Damp(m_DampingCorrection, Damping, deltaTime);
             }
 
             m_PreviousFollowTargetPosition = targetPos;
@@ -206,7 +206,6 @@ namespace Cinemachine
 
             // Set state
             curState.RawPosition = camPos;
-            curState.RawOrientation = targetRot;
             curState.ReferenceUp = up;
         }
 
