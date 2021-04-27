@@ -95,12 +95,13 @@ namespace Cinemachine
         {
             var aimDistance = AimDistance;
             var player = VirtualCamera.Follow;
-            var playerOrientation = player.transform.rotation;
-            var fwd = playerOrientation * Vector3.forward;
             
             // We don't want to hit targets behind the player
+            var fwd = Vector3.forward;
             if (player != null)
             {
+                var playerOrientation = player.transform.rotation;
+                fwd = playerOrientation * Vector3.forward;
                 var playerPos = Quaternion.Inverse(playerOrientation) * (player.position - camPos);
                 if (playerPos.z > 0)
                 {
@@ -110,8 +111,7 @@ namespace Cinemachine
             }
 
             aimDistance = Mathf.Max(1, aimDistance);
-            bool hasHit = RuntimeUtility.RaycastIgnoreTag(
-                new Ray(camPos, fwd), 
+            bool hasHit = RuntimeUtility.RaycastIgnoreTag(new Ray(camPos, fwd), 
                 out RaycastHit hitInfo, aimDistance, AimCollisionFilter, IgnoreTag);
             return hasHit ? hitInfo.point : camPos + fwd * aimDistance;
         }
