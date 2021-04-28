@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - Bugfix: Framing transposer now handles empty groups
+- Bugfix: BlendListCamera inspector reset did not reset properly.
+
 
 ## [2.6.4] - 2021-03-24
 - Bugfix: 3rdPersonFollow collision resolution failed when the camera radius was large.
