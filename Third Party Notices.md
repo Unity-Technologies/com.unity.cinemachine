@@ -1,7 +1,7 @@
 This package contains third-party software components governed by the license(s) indicated below:
 ---------
 
-# Clipper
+# [Clipper](http://www.angusj.com/delphi/clipper.php)
 
 Copyright © 2010-2014 Angus Johnson
 Boost Software License - Version 1.0 - August 17th, 2003
