@@ -97,8 +97,3 @@ test_trigger:
     - .yamato/package-test.yml#test_{{platform.name}}_{{editor.version}}
     {% endfor %}
     {% endfor %}
-    {% for editor in validation_editors %}
-    {% for platform in validation_platforms %}
-    - .yamato/package-test.yml#validate_{{platform.name}}_{{editor.version}}
-    {% endfor %}
-    {% endfor %}
