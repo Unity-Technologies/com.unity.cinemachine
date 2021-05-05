@@ -2,6 +2,7 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
+using UnityEditor;
 
 namespace Cinemachine
 {
@@ -134,6 +135,10 @@ namespace Cinemachine
         protected override void OnValidate()
         {
             base.OnValidate();
+#if UNITY_EDITOR
+            PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
+            PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
+#endif
 
             // Upgrade after a legacy deserialize
             if (m_LegacyHeadingBias != float.MaxValue)
@@ -479,8 +484,8 @@ namespace Cinemachine
         CameraState m_State = CameraState.Default;          // Current state this frame
 
         /// Serialized in order to support copy/paste
-        [SerializeField][HideInInspector][NoSaveDuringPlay] private CinemachineVirtualCamera[] m_Rigs
-            = new CinemachineVirtualCamera[3];
+        [SerializeField][HideInInspector][NoSaveDuringPlay]
+        private CinemachineVirtualCamera[] m_Rigs = new CinemachineVirtualCamera[3];
 
         void InvalidateRigCache() { mOrbitals = null; }
         CinemachineOrbitalTransposer[] mOrbitals = null;
@@ -584,6 +589,7 @@ namespace Cinemachine
                     }
                 }
             }
+            
             return newRigs;
         }
 
@@ -606,9 +612,6 @@ namespace Cinemachine
                     m_Rigs = CreateRigs(copyFrom);
                 }
             }
-            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
-                if (m_Rigs[i] != null)
-                    CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 #endif
 
             // Early out if we're up to date
@@ -833,5 +836,15 @@ namespace Cinemachine
                 m_CachedTension = m_SplineCurvature;
             }
         }
+        
+#if UNITY_EDITOR
+        private void SetFlagsForHiddenChildren(GameObject gameObject)
+        {
+            // Debug.Log("PrefabInstanceUpdated:"+go.name);
+            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
+                if (m_Rigs[i] != null)
+                    CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
+        }
+#endif
     }
 }
