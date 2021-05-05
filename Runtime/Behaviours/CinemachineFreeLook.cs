@@ -2,7 +2,6 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
-using UnityEditor;
 
 namespace Cinemachine
 {
@@ -136,8 +135,8 @@ namespace Cinemachine
         {
             base.OnValidate();
 #if UNITY_EDITOR
-            PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
-            PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
+            UnityEditor.PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
+            UnityEditor.PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
 #endif
 
             // Upgrade after a legacy deserialize
@@ -840,7 +839,6 @@ namespace Cinemachine
 #if UNITY_EDITOR
         private void SetFlagsForHiddenChildren(GameObject gameObject)
         {
-            // Debug.Log("PrefabInstanceUpdated:"+go.name);
             for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
                 if (m_Rigs[i] != null)
                     CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
