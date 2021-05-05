@@ -184,6 +184,9 @@ namespace Cinemachine
             base.OnEnable();
             InvalidateRigCache();
             UpdateInputAxisProvider();
+#if UNITY_EDITOR
+            SetFlagsForHiddenChildren();
+#endif
         }
 
         /// <summary>
@@ -836,7 +839,7 @@ namespace Cinemachine
         }
         
 #if UNITY_EDITOR
-        private void SetFlagsForHiddenChildren(GameObject gameObject)
+        private void SetFlagsForHiddenChildren(GameObject _ = null)
         {
             for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
                 if (m_Rigs[i] != null)
