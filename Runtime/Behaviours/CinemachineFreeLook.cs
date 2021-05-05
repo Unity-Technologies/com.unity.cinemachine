@@ -588,7 +588,6 @@ namespace Cinemachine
                     }
                 }
             }
-            
             return newRigs;
         }
 
