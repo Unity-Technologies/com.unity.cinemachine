@@ -134,10 +134,6 @@ namespace Cinemachine
         protected override void OnValidate()
         {
             base.OnValidate();
-#if UNITY_EDITOR
-            UnityEditor.PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
-            UnityEditor.PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
-#endif
 
             // Upgrade after a legacy deserialize
             if (m_LegacyHeadingBias != float.MaxValue)
@@ -185,6 +181,8 @@ namespace Cinemachine
             InvalidateRigCache();
             UpdateInputAxisProvider();
 #if UNITY_EDITOR
+            UnityEditor.PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
+            UnityEditor.PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
             SetFlagsForHiddenChildren();
 #endif
         }
