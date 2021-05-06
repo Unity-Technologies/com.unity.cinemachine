@@ -9,7 +9,8 @@ namespace Cinemachine
 #if CINEMACHINE_PHYSICS
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that forces the LookAt
-    /// point to the center of the screen, cancelling noise and other corrections.
+    /// point to the center of the screen, based on the Follow target's orientation,
+    /// cancelling noise and other corrections.
     /// This is useful for third-person style aim cameras that want a dead-accurate
     /// aim at all times, even in the presence of positional or rotational noise.
     /// </summary>
@@ -90,17 +91,18 @@ namespace Cinemachine
             }
         }
 
-        Vector3 GetLookAtPoint(ref CameraState state)
+        Vector3 GetLookAtPoint(Vector3 camPos)
         {
-            var fwd = state.CorrectedOrientation * Vector3.forward;
-            var camPos = state.CorrectedPosition;
             var aimDistance = AimDistance;
-
-            // We don't want to hit targets behind the player
             var player = VirtualCamera.Follow;
+            
+            // We don't want to hit targets behind the player
+            var fwd = Vector3.forward;
             if (player != null)
             {
-                var playerPos = Quaternion.Inverse(state.CorrectedOrientation) * (player.position - camPos);
+                var playerOrientation = player.transform.rotation;
+                fwd = playerOrientation * Vector3.forward;
+                var playerPos = Quaternion.Inverse(playerOrientation) * (player.position - camPos);
                 if (playerPos.z > 0)
                 {
                     camPos += fwd * playerPos.z;
@@ -109,8 +111,7 @@ namespace Cinemachine
             }
 
             aimDistance = Mathf.Max(1, aimDistance);
-            bool hasHit = RuntimeUtility.RaycastIgnoreTag(
-                new Ray(camPos, fwd), 
+            bool hasHit = RuntimeUtility.RaycastIgnoreTag(new Ray(camPos, fwd), 
                 out RaycastHit hitInfo, aimDistance, AimCollisionFilter, IgnoreTag);
             return hasHit ? hitInfo.point : camPos + fwd * aimDistance;
         }
@@ -130,7 +131,7 @@ namespace Cinemachine
             if (stage == CinemachineCore.Stage.Body)
             {
                 // Raycast to establish what we're actually aiming at
-                state.ReferenceLookAt = GetLookAtPoint(ref state);
+                state.ReferenceLookAt = GetLookAtPoint(state.CorrectedPosition);
             }
             if (stage == CinemachineCore.Stage.Finalize)
             {
