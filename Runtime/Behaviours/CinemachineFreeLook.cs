@@ -173,6 +173,15 @@ namespace Cinemachine
 
         bool mIsDestroyed = false;
 
+#if UNITY_EDITOR
+        private void Awake()
+        {
+            UnityEditor.PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
+            UnityEditor.PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
+            SetFlagsForHiddenChildren();
+        }
+#endif
+
         /// <summary>Updates the child rig cache</summary>
         protected override void OnEnable()
         {
@@ -180,11 +189,6 @@ namespace Cinemachine
             base.OnEnable();
             InvalidateRigCache();
             UpdateInputAxisProvider();
-#if UNITY_EDITOR
-            UnityEditor.PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
-            UnityEditor.PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
-            SetFlagsForHiddenChildren();
-#endif
         }
 
         /// <summary>
@@ -610,6 +614,7 @@ namespace Cinemachine
                     DestroyRigs();
                     m_Rigs = CreateRigs(copyFrom);
                 }
+                SetFlagsForHiddenChildren();
             }
 #endif
 
