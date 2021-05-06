@@ -364,6 +364,7 @@ namespace Cinemachine
         {
             base.ForceCameraPosition(pos, rot);
             m_PreviousCameraPosition = pos;
+            m_prevRotation = rot;
         }
         
         /// <summary>
@@ -388,7 +389,8 @@ namespace Cinemachine
         {
             if (fromCam != null && transitionParams.m_InheritPosition)
             {
-                transform.rotation = fromCam.State.RawOrientation;
+                m_PreviousCameraPosition = fromCam.State.RawPosition;
+                m_prevRotation = fromCam.State.RawOrientation;
                 InheritingPosition = true;
                 return true;
             }
@@ -462,7 +464,7 @@ namespace Cinemachine
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = AbstractFollowTargetGroup;
-            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None;
+            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None && !group.IsEmpty;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
 

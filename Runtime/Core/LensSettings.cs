@@ -87,10 +87,10 @@ namespace Cinemachine
 
         /// <summary>
         /// This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, 
-        /// and GateFit are set in the Camera object, or are overidden here.
+        /// and GateFit are set in the Camera object, or are overridden here.
         /// </summary>
         [Tooltip("This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, "
-            + "and GateFit are set in the Camera object, or are overidden here.")]
+            + "and GateFit are set in the Camera object, or are overridden here.")]
         public OverrideModes ModeOverride;
 
         /// <summary>
@@ -270,6 +270,7 @@ namespace Cinemachine
             FarClipPlane = farClip;
             Dutch = dutch;
             m_SensorSize = new Vector2(1, 1);
+            GateFit = Camera.GateFitMode.Horizontal;
 
 #if CINEMACHINE_HDRP
             Iso = 200;
