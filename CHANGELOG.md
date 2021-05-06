@@ -4,6 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+- Bugfix: 3rdPersonFollow works with Aim components now. 
+
 ## [2.8.0-pre.1] - 2021-04-21
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, set PreviousStateIsValid to false after changing the targets.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
