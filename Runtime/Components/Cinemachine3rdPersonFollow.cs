@@ -206,7 +206,7 @@ namespace Cinemachine
 
             // Set state
             curState.RawPosition = camPos;
-            curState.RawOrientation = targetRot;
+            curState.RawOrientation = targetRot; // not necessary, but left in to avoid breaking scenes that depend on this
             curState.ReferenceUp = up;
         }
 

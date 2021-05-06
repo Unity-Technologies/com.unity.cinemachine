@@ -27,7 +27,7 @@ namespace Cinemachine
         /// specified overrides.  Overrides can be specified by calling the appropriate 
         /// GenerateImpulse method in the API.
         /// </summary>
-        [Header("Default Invokation")]
+        [Header("Default Invocation")]
         [Tooltip("The default direction and force of the Impulse Signal in the absense "
             + "of any specified overrides.  Overrides can be specified by calling the appropriate "
                 + "GenerateImpulse method in the API.")]
