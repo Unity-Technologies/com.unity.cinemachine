@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: 3rdPersonFollow keeps player in view when Z damping is high
 - Bugfix: CinemachineCollider's displacement damping was being calculated in world space instead of camera space.
 - Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour.
+- Added ability for vcam to have a negative near clip plane
+- Default PostProcessing profile priority is now configuraable, and defaults to 1000
 
 
 ## [2.6.4] - 2021-03-24

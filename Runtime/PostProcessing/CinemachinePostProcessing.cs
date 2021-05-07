@@ -57,6 +57,13 @@ namespace Cinemachine.PostFX
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePostProcessing.html")]
     public class CinemachinePostProcessing : CinemachineExtension
     {
+        /// <summary>
+        /// This is the priority for the vcam's PostProcessing volumes.  It's set to a high
+        /// number in order to ensure that it overrides other volumes for the active vcam.
+        /// You can change this value if necessary to work with other systems.
+        /// </summary>
+        static public float s_VolumePriority = 1000f;
+
         /// <summary>This is obsolete, please use m_FocusTracking</summary>
         [HideInInspector]
         public bool m_FocusTracksTarget;
@@ -248,7 +255,7 @@ namespace Cinemachine.PostFX
                         firstVolume = v;
                     v.sharedProfile = profile;
                     v.isGlobal = true;
-                    v.priority = float.MaxValue-(numBlendables-i)-1;
+                    v.priority = s_VolumePriority - (numBlendables - i) - 1;
                     v.weight = b.m_Weight;
                     ++numPPblendables;
                 }

@@ -250,7 +250,8 @@ namespace Cinemachine
         /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>
         public void Validate()
         {
-            NearClipPlane = Mathf.Max(NearClipPlane, Orthographic ? 0 : 0.001f);
+            if (!Orthographic)
+                NearClipPlane = Mathf.Max(NearClipPlane, 0.001f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.001f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
 #if CINEMACHINE_HDRP
