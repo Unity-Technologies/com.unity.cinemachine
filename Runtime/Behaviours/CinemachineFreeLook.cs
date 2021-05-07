@@ -159,7 +159,9 @@ namespace Cinemachine
             InvalidateRigCache();
             
 #if UNITY_EDITOR
-            SetFlagsForHiddenChildren();
+            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
+                if (m_Rigs[i] != null)
+                    CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 #endif
         }
 
@@ -609,7 +611,6 @@ namespace Cinemachine
                     DestroyRigs();
                     m_Rigs = CreateRigs(copyFrom);
                 }
-                SetFlagsForHiddenChildren();
             }
 #endif
 
@@ -835,14 +836,5 @@ namespace Cinemachine
                 m_CachedTension = m_SplineCurvature;
             }
         }
-        
-#if UNITY_EDITOR
-        private void SetFlagsForHiddenChildren(GameObject _ = null)
-        {
-            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
-                if (m_Rigs[i] != null)
-                    CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
-        }
-#endif
     }
 }
