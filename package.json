@@ -10,7 +10,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Unity-Technologies/upm-package-cinemachine",
+        "url": "https://github.com/Unity-Technologies/com.unity.cinemachine",
         "revision": "679387cb1fa822190b530bdbb8ea0945f508b5f6"
     },
     "samples": [
