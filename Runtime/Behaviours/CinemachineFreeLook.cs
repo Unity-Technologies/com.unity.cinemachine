@@ -157,6 +157,10 @@ namespace Cinemachine
             m_Lens.Validate();
 
             InvalidateRigCache();
+            
+#if UNITY_EDITOR
+            SetFlagsForHiddenChildren();
+#endif
         }
 
         /// <summary>Get a child rig</summary>
@@ -172,15 +176,6 @@ namespace Cinemachine
         public static string[] RigNames { get { return new string[] { "TopRig", "MiddleRig", "BottomRig" }; } }
 
         bool mIsDestroyed = false;
-
-#if UNITY_EDITOR
-        private void Awake()
-        {
-            UnityEditor.PrefabUtility.prefabInstanceUpdated -= SetFlagsForHiddenChildren;
-            UnityEditor.PrefabUtility.prefabInstanceUpdated += SetFlagsForHiddenChildren;
-            SetFlagsForHiddenChildren();
-        }
-#endif
 
         /// <summary>Updates the child rig cache</summary>
         protected override void OnEnable()
