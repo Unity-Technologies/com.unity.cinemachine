@@ -159,9 +159,23 @@ namespace Cinemachine
                 if (parent != null)
                     fwd = parent.rotation * fwd;
                 var v = Quaternion.FromToRotation(Vector3.forward, fwd).eulerAngles;
-                return new Vector2(v.y, v.x);
+                return new Vector2(MapAngleTo180(v.y), MapAngleTo180(v.x));
             }
             return Vector2.zero;
+        }
+
+        float MapAngleTo180(float angle)
+        {
+            // map angle values from [-360, 360] to [-180, 180] degrees.
+            if (angle > 180f)
+            {
+                angle = -180f + (angle - 180f);
+            }
+            else if (angle < -180f)
+            {
+                angle = 180f + (angle + 180f);
+            }
+            return angle;
         }
 
         /// <summary>
