@@ -164,7 +164,7 @@ namespace Cinemachine
             return Vector2.zero;
         }
 
-        float MapAngleTo180(float angle)
+        static float MapAngleTo180(float angle)
         {
             // map angle values from [-360, 360] to [-180, 180] degrees.
             if (angle > 180f)
