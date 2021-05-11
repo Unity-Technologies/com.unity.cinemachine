@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [unreleased]
 - Bugfix: 3rdPersonFollow works with Aim components now. 
+- Bugfix: Blends between vcams, that are rotated so that their up vector is different from World up, are correct now.
 
 ## [2.8.0-pre.1] - 2021-04-21
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, set PreviousStateIsValid to false after changing the targets.
