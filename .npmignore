@@ -18,5 +18,3 @@ upm-ci~/**
 TestRunnerOptions.json
 .idea/**
 upm-ci.log
-
-ValidationExceptions.json
