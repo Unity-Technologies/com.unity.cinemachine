@@ -201,8 +201,8 @@ namespace Cinemachine
         Quaternion GetHeading(Vector3 targetForward, Vector3 up)
         {
             var planeForward = targetForward.ProjectOntoPlane(up);
-            var heading = UnityVectorExtensions.SignedAngle(Vector3.forward, planeForward, up);
-            return Quaternion.AngleAxis(heading, up);
+            planeForward = Vector3.Cross(up, Vector3.Cross(planeForward, up));
+            return Quaternion.LookRotation(planeForward, up);
         }
 
         void GetRawRigPositions(
