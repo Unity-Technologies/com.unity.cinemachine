@@ -452,7 +452,7 @@ namespace Cinemachine.Editor
                     UseHorizontalFOV = true;
 #endif
                 // It's possible that the lens isn't synched with its camera - fix that here
-                if (ModeOverrideProperty.intValue == (int)LensSettings.OverrideModes.None)
+                if (ModeOverrideProperty.intValue == (int)LensSettings.OverrideModes.InheritFromCamera)
                 {
                     IsOrtho = camera.orthographic;
                     IsPhysical = camera.usePhysicalProperties;
@@ -552,7 +552,7 @@ namespace Cinemachine.Editor
 
                         DrawSensorSizeInInspector(property);
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
-                        if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+                        if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.InheritFromCamera)
                             EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
 
                         --EditorGUI.indentLevel;
@@ -560,7 +560,7 @@ namespace Cinemachine.Editor
 #else
                     DrawSensorSizeInInspector(property);
                     EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
-                    if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+                    if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.InheritFromCamera)
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
 #endif
                 }
@@ -574,7 +574,7 @@ namespace Cinemachine.Editor
 
         void DrawSensorSizeInInspector(SerializedProperty property)
         {
-            if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+            if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.InheritFromCamera)
             {
                 property = property.FindPropertyRelative("m_SensorSize");
                 var rect = EditorGUILayout.GetControlRect(true);

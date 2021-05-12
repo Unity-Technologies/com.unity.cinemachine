@@ -75,7 +75,7 @@ namespace Cinemachine
         {
             /// <summary> Perspective/Ortho, IsPhysical, SensorSize, and GateFit 
             /// will not be changed in Unity Camera.  This is the default setting.</summary>
-            None = 0,
+            InheritFromCamera = 0,
             /// <summary>Orthographic projection mode will be pushed to the Unity Camera</summary>
             Orthographic,
             /// <summary>Perspective projection mode will be pushed to the Unity Camera</summary>
@@ -101,7 +101,7 @@ namespace Cinemachine
         public bool Orthographic 
         { 
             get { return ModeOverride == OverrideModes.Orthographic
-                || ModeOverride == OverrideModes.None && m_OrthoFromCamera; } 
+                || ModeOverride == OverrideModes.InheritFromCamera && m_OrthoFromCamera; } 
 
             /// Obsolete: do not use
             set { m_OrthoFromCamera = value; ModeOverride = value 
@@ -131,7 +131,7 @@ namespace Cinemachine
         public bool IsPhysicalCamera 
         { 
             get { return ModeOverride == OverrideModes.Physical 
-                || ModeOverride == OverrideModes.None && m_PhysicalFromCamera; } 
+                || ModeOverride == OverrideModes.InheritFromCamera && m_PhysicalFromCamera; } 
 
             /// Obsolete: do not use
             set { m_PhysicalFromCamera = value; ModeOverride = value 
@@ -217,7 +217,7 @@ namespace Cinemachine
         {
             m_OrthoFromCamera = false;
             m_PhysicalFromCamera = false;
-            if (camera != null && ModeOverride == OverrideModes.None)
+            if (camera != null && ModeOverride == OverrideModes.InheritFromCamera)
             {
                 m_OrthoFromCamera = camera.orthographic;
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
@@ -241,7 +241,7 @@ namespace Cinemachine
         /// <param name="lens">The LensSettings from which we will take the info</param>
         public void SnapshotCameraReadOnlyProperties(ref LensSettings lens)
         {
-            if (ModeOverride == OverrideModes.None)
+            if (ModeOverride == OverrideModes.InheritFromCamera)
             {
                 m_OrthoFromCamera = lens.Orthographic;
                 m_SensorSize = lens.m_SensorSize;
