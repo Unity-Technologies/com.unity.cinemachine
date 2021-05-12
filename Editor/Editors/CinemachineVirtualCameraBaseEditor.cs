@@ -479,6 +479,10 @@ namespace Cinemachine.Editor
                 return default(T);
         }
         
+        // TODO: KGB - refactor this
+        // - Mode Override should be moved to the top of the foldout as it affects other fields
+        // - Camera native lens mode should be cached so it can be restored after the last override ends.
+        // Right now it is left in an overridden state
         public void DrawLensSettingsInInspector(SerializedProperty property)
         {
             Rect rect = EditorGUILayout.GetControlRect(true);
@@ -502,13 +506,14 @@ namespace Cinemachine.Editor
             else
             {
                 ++EditorGUI.indentLevel;
+                
+                EditorGUILayout.PropertyField(ModeOverrideProperty);
 
                 rect = EditorGUILayout.GetControlRect(true);
                 DrawLensFocusInInspector(rect, property);
 
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.NearClipPlane));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane));
-                EditorGUILayout.PropertyField(ModeOverrideProperty);
 
                 if (IsPhysical)
                 {
