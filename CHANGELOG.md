@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
+- Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
 - Bugfix: 3rdPersonFollow works with Aim components now. 
+- Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
+
 
 ## [2.8.0-pre.1] - 2021-04-21
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, set PreviousStateIsValid to false after changing the targets.
@@ -42,7 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New Sample scene: **2D fighters**, showing how to add/remove targets gradually to/from a TargetGroup based on some conditions (here, it is the y coord of the players).
 - Bugfix: CinemachineCollider's displacement damping was being calculated in world space instead of camera space.
 - Bugfix: TrackedDolly sometimes introduced spurious rotations if Default Up and no Aim behaviour.
-- Bugfix: POV recentering did not recenter correctly, when an axis was limited.
+- Bugfix: 3rdPersonFollow's shoulder now changes smoothly with respect to world-up vector changes.
 
 
 ## [2.7.2] - 2021-02-15
