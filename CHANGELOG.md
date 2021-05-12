@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [unreleased]
 - Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
-
+- Bugfix: 3rdPersonFollow works with Aim components now. 
 
 ## [2.8.0-pre.1] - 2021-04-21
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, set PreviousStateIsValid to false after changing the targets.
