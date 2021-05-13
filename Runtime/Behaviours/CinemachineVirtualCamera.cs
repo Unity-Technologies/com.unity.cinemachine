@@ -88,6 +88,9 @@ namespace Cinemachine
             + "Unity camera when the vcam is active.")]
         public LensSettings m_Lens = LensSettings.Default;
 
+        LensSettings.OverrideModes m_OverrideModeCache = LensSettings.OverrideModes.InheritFromCamera;
+        LensSettings m_LensCache = LensSettings.Default;
+
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
         public TransitionParams m_Transitions;
@@ -171,6 +174,7 @@ namespace Cinemachine
         override protected void OnEnable()
         {
             base.OnEnable();
+
             m_State = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
             InvalidateComponentPipeline();
 
@@ -470,7 +474,18 @@ namespace Cinemachine
             LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            if (m_Lens.ModeOverride == LensSettings.OverrideModes.InheritFromCamera &&
+                m_OverrideModeCache == LensSettings.OverrideModes.InheritFromCamera)
+            {
+                m_LensCache = m_Lens; // save camera lens state
+            }
+            CameraState state = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
+            if (m_Lens.ModeOverride == LensSettings.OverrideModes.InheritFromCamera &&
+                m_OverrideModeCache != LensSettings.OverrideModes.InheritFromCamera)
+            {
+                m_State.Lens = m_Lens = m_LensCache; // restore original camera lens state
+            }
+            m_OverrideModeCache = m_Lens.ModeOverride;
 
             Transform lookAtTarget = LookAt;
             if (lookAtTarget != mCachedLookAtTarget)
