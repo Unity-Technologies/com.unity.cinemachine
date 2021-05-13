@@ -2,6 +2,7 @@
 #define CINEMACHINE_PHYSICS
 #endif
 
+using System;
 using UnityEngine;
 
 namespace Cinemachine
@@ -35,6 +36,13 @@ namespace Cinemachine
         /// <summary>How far to project the object detection ray.</summary>
         [Tooltip("How far to project the object detection ray")]
         public float AimDistance;
+
+        
+        /// <summary>Start of the object detection ray. If unset, then ray is shot from the follow target.
+        /// It is usually a good idea to set this to the tip of your gun.</summary>
+        [Tooltip("Start of the object detection ray. If unset, then ray is shot from the follow target. " +
+            "It is usually a good idea to set this to the tip of your gun.")]
+        public Transform RayStart;
 
         /// <summary>This 2D object will be positioned in the game view over the raycast hit point, 
         /// if any, or will remain in the center of the screen if no hit point is 
@@ -80,11 +88,11 @@ namespace Cinemachine
                 if (AimTargetReticle != null && player != null)
                 {
                     // Adjust for actual player aim target (may be different due to offset)
-                    var playerPos = player.position;
+                    m_rayStart = RayStart != null ? RayStart.position : player.position;
                     var aimTarget = VirtualCamera.State.ReferenceLookAt;
-                    var dir = aimTarget - playerPos;
-                    if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir), 
-                            out RaycastHit hitInfo, dir.magnitude, AimCollisionFilter, IgnoreTag))
+                    m_rayDirection = aimTarget - m_rayStart;
+                    if (RuntimeUtility.RaycastIgnoreTag(new Ray(m_rayStart, m_rayDirection), 
+                            out RaycastHit hitInfo, m_rayDirection.magnitude, AimCollisionFilter, IgnoreTag))
                         aimTarget = hitInfo.point;
                     AimTargetReticle.position = brain.OutputCamera.WorldToScreenPoint(aimTarget);
                 }
@@ -143,6 +151,15 @@ namespace Cinemachine
                 }
             }
         }
+
+        Vector3 m_rayStart, m_rayDirection;
+#if UNITY_EDITOR
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(m_rayStart, m_rayDirection); // draw object detection ray
+        }
+#endif
     }
 #endif
 }
