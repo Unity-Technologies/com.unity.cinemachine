@@ -299,7 +299,7 @@ namespace Cinemachine
                 else
                     state.Lens = stateA.Lens;
             }
-            state.ReferenceUp = Vector3.Slerp(stateA.RawOrientation * Vector3.up, stateB.RawOrientation * Vector3.up, t);
+            state.ReferenceUp = Vector3.Slerp(stateA.ReferenceUp, stateB.ReferenceUp, t);
             state.ShotQuality = Mathf.Lerp(stateA.ShotQuality, stateB.ShotQuality, t);
 
             state.PositionCorrection = ApplyPosBlendHint(
@@ -393,7 +393,9 @@ namespace Cinemachine
                     else
                     {
                         // Put the target in the center
-                        newOrient = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
+                        var blendUp = 
+                            Vector3.Slerp(stateA.RawOrientation * Vector3.up, stateB.RawOrientation * Vector3.up, t);
+                        newOrient = Quaternion.LookRotation(dirTarget, blendUp);
 
                         // Blend the desired offsets from center
                         Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
