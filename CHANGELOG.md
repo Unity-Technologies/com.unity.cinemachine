@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
 - Bugfix: 3rdPersonFollow works with Aim components now. 
 - Bugfix: 3rdPersonFollow's shoulder now changes smoothly with respect to world-up vector changes.
+- Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
 
 
 ## [2.7.4] - 2021-06-07
