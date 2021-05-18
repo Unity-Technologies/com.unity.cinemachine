@@ -157,6 +157,12 @@ namespace Cinemachine
             m_Lens.Validate();
 
             InvalidateRigCache();
+            
+#if UNITY_EDITOR
+            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
+                if (m_Rigs[i] != null)
+                    CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
+#endif
         }
 
         /// <summary>Get a child rig</summary>
@@ -479,8 +485,8 @@ namespace Cinemachine
         CameraState m_State = CameraState.Default;          // Current state this frame
 
         /// Serialized in order to support copy/paste
-        [SerializeField][HideInInspector][NoSaveDuringPlay] private CinemachineVirtualCamera[] m_Rigs
-            = new CinemachineVirtualCamera[3];
+        [SerializeField][HideInInspector][NoSaveDuringPlay]
+        private CinemachineVirtualCamera[] m_Rigs = new CinemachineVirtualCamera[3];
 
         void InvalidateRigCache() { mOrbitals = null; }
         CinemachineOrbitalTransposer[] mOrbitals = null;
@@ -606,9 +612,6 @@ namespace Cinemachine
                     m_Rigs = CreateRigs(copyFrom);
                 }
             }
-            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
-                if (m_Rigs[i] != null)
-                    CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 #endif
 
             // Early out if we're up to date

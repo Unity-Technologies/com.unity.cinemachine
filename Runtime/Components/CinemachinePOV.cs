@@ -159,9 +159,15 @@ namespace Cinemachine
                 if (parent != null)
                     fwd = parent.rotation * fwd;
                 var v = Quaternion.FromToRotation(Vector3.forward, fwd).eulerAngles;
-                return new Vector2(v.y, v.x);
+                return new Vector2(NormalizeAngle(v.y), NormalizeAngle(v.x));
             }
             return Vector2.zero;
+        }
+
+        // Normalize angle value to [-180, 180] degrees.
+        static float NormalizeAngle(float angle)
+        {
+            return ((angle + 180) % 360) - 180; 
         }
 
         /// <summary>
