@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [unreleased]
 - Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
 - Bugfix: 3rdPersonFollow works with Aim components now. 
+- Bugfix: Blends between vcams, that are rotated so that their up vector is different from World up, are correct now.
 - Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
-
 
 ## [2.8.0-pre.1] - 2021-04-21
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, set PreviousStateIsValid to false after changing the targets.
