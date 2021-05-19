@@ -1,6 +1,5 @@
 #if !UNITY_2019_3_OR_NEWER
 #define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
 #endif
 
 using UnityEngine;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
-using UnityEngine.SceneManagement;
 
 namespace Cinemachine
 {
@@ -54,14 +52,16 @@ namespace Cinemachine
         /// target is blocked by an obstacle
         /// </summary>
         [Space]
-        [Tooltip("When enabled, will attempt to resolve situations where the line of sight to the target is blocked by an obstacle")]
+        [Tooltip("When enabled, will attempt to resolve situations where the line of sight "
+            + "to the target is blocked by an obstacle")]
         [FormerlySerializedAs("m_PreserveLineOfSight")]
         public bool m_AvoidObstacles = true;
 
         /// <summary>
         /// The raycast distance to test for when checking if the line of sight to this camera's target is clear.
         /// </summary>
-        [Tooltip("The maximum raycast distance when checking if the line of sight to this camera's target is clear.  If the setting is 0 or less, the current actual distance to target will be used.")]
+        [Tooltip("The maximum raycast distance when checking if the line of sight to this camera's target is clear.  "
+            + "If the setting is 0 or less, the current actual distance to target will be used.")]
         [FormerlySerializedAs("m_LineOfSightFeelerDistance")]
         public float m_DistanceLimit = 0f;
 
@@ -76,7 +76,8 @@ namespace Cinemachine
         /// Increase this value if you are seeing inside obstacles due to a large
         /// FOV on the camera.
         /// </summary>
-        [Tooltip("Camera will try to maintain this distance from any obstacle.  Try to keep this value small.  Increase it if you are seeing inside obstacles due to a large FOV on the camera.")]
+        [Tooltip("Camera will try to maintain this distance from any obstacle.  Try to keep this value small.  "
+            + "Increase it if you are seeing inside obstacles due to a large FOV on the camera.")]
         public float m_CameraRadius = 0.1f;
 
         /// <summary>The way in which the Collider will attempt to preserve sight of the target.</summary>
@@ -101,7 +102,8 @@ namespace Cinemachine
         /// In most environments, 4 is enough.
         /// </summary>
         [Range(1, 10)]
-        [Tooltip("Upper limit on how many obstacle hits to process.  Higher numbers may impact performance.  In most environments, 4 is enough.")]
+        [Tooltip("Upper limit on how many obstacle hits to process.  Higher numbers may impact performance.  "
+            + "In most environments, 4 is enough.")]
         public int m_MaximumEffort = 4;
 
         /// <summary>
@@ -116,7 +118,8 @@ namespace Cinemachine
         /// Higher numbers will move the camera more gradually back to normal.
         /// </summary>
         [Range(0, 10)]
-        [Tooltip("How gradually the camera returns to its normal position after having been corrected.  Higher numbers will move the camera more gradually back to normal.")]
+        [Tooltip("How gradually the camera returns to its normal position after having been corrected.  "
+            + "Higher numbers will move the camera more gradually back to normal.")]
         [FormerlySerializedAs("m_Smoothing")]
         public float m_Damping = 0;
 
@@ -125,13 +128,15 @@ namespace Cinemachine
         /// Higher numbers will move the camera more gradually.
         /// </summary>
         [Range(0, 10)]
-        [Tooltip("How gradually the camera moves to resolve an occlusion.  Higher numbers will move the camera more gradually.")]
+        [Tooltip("How gradually the camera moves to resolve an occlusion.  "
+            + "Higher numbers will move the camera more gradually.")]
         public float m_DampingWhenOccluded = 0;
 
         /// <summary>If greater than zero, a higher score will be given to shots when the target is closer to
         /// this distance.  Set this to zero to disable this feature</summary>
         [Header("Shot Evaluation")]
-        [Tooltip("If greater than zero, a higher score will be given to shots when the target is closer to this distance.  Set this to zero to disable this feature.")]
+        [Tooltip("If greater than zero, a higher score will be given to shots when the target is closer to this distance.  "
+            + "Set this to zero to disable this feature.")]
         public float m_OptimalTargetDistance = 0;
 
         /// <summary>See wheter an object is blocking the camera's view of the target</summary>
@@ -160,7 +165,7 @@ namespace Cinemachine
         /// target obstruction</returns>
         public float GetCameraDisplacementDistance(ICinemachineCamera vcam)
         {
-            return GetExtraState<VcamExtraState>(vcam).colliderDisplacement;
+            return GetExtraState<VcamExtraState>(vcam).m_previousDisplacement.magnitude;
         }
         
         private void OnValidate()
@@ -190,8 +195,6 @@ namespace Cinemachine
         class VcamExtraState
         {
             public Vector3 m_previousDisplacement;
-            public Vector3 m_previousDisplacementCorrection;
-            public float colliderDisplacement;
             public bool targetObscured;
             public float occlusionStartTime;
             public List<Vector3> debugResolutionPath = null;
@@ -274,7 +277,6 @@ namespace Cinemachine
             {
                 extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = false;
-                extra.colliderDisplacement = 0;
                 if (extra.debugResolutionPath != null)
                     extra.debugResolutionPath.RemoveRange(0, extra.debugResolutionPath.Count);
             }
@@ -284,25 +286,29 @@ namespace Cinemachine
             {
                 if (m_AvoidObstacles)
                 {
-                    Vector3 displacement = Vector3.zero;
-                    displacement = PreserveLineOfSight(ref state, ref extra);
-                    extra.m_previousDisplacement = 
-                        Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement;
+                    // Rotate the previous collision correction along with the camera
+                    extra.m_previousDisplacement 
+                        = Quaternion.Euler(state.PositionDampingBypass) * extra.m_previousDisplacement;
+
+                    // Calculate the desired collision correction
+                    Vector3 displacement = PreserveLineOfSight(ref state, ref extra);
                     if (m_MinimumOcclusionTime > Epsilon)
                     {
+                        // If minimum occlusion time set, ignore new occlusions until they've lasted long enough
                         float now = CinemachineCore.CurrentTime;
-                        if (displacement.sqrMagnitude < Epsilon)
-                            extra.occlusionStartTime = 0;
+                        if (displacement.AlmostZero())
+                            extra.occlusionStartTime = 0; // no occlusion
                         else
                         {
                             if (extra.occlusionStartTime <= 0)
-                                extra.occlusionStartTime = now;
+                                extra.occlusionStartTime = now; // occlusion timer starts now
                             if (now - extra.occlusionStartTime < m_MinimumOcclusionTime)
                                 displacement = extra.m_previousDisplacement;
                         }
                     }
 
-                    // Apply distance smoothing
+                    // Apply distance smoothing - this can artificially hold the camera closer
+                    // to the target for a while, to reduce popping in and out on bumpy objects
                     if (m_SmoothingTime > Epsilon)
                     {
                         Vector3 pos = state.CorrectedPosition + displacement;
@@ -318,33 +324,22 @@ namespace Cinemachine
                         }
                     }
 
-                    float damping = m_Damping;
-                    if (displacement.AlmostZero())
-                        extra.ResetDistanceSmoothing(m_SmoothingTime);
-                    else
-                        damping = m_DampingWhenOccluded;
-                    if (damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-                    {
-                        Vector3 delta = displacement - extra.m_previousDisplacement;
-                        delta = Damper.Damp(delta, damping, deltaTime);
-                        displacement = extra.m_previousDisplacement + delta;
-                    }
-                    extra.m_previousDisplacement = displacement;
-                    
+                    // Apply additional correction due to camera radius
                     var cameraPos = state.CorrectedPosition + displacement;
-                    Vector3 correction = RespectCameraRadius(
+                    displacement += RespectCameraRadius(
                         cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
-                    
-                    if (damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+
+                    // Apply damping
+                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
-                        Vector3 delta = correction - extra.m_previousDisplacementCorrection;
-                        delta = Damper.Damp(delta, damping, deltaTime);
-                        correction = extra.m_previousDisplacementCorrection + delta;
+                        displacement = extra.m_previousDisplacement + Damper.Damp(
+                            displacement - extra.m_previousDisplacement, 
+                            displacement.sqrMagnitude > extra.m_previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
+                            deltaTime);
                     }
-                    displacement += correction;
-                    extra.m_previousDisplacementCorrection = correction;
+
+                    extra.m_previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
-                    extra.colliderDisplacement += displacement.magnitude;
                 }
             }
             // Rate the shot after the aim was set
@@ -356,7 +351,7 @@ namespace Cinemachine
                 // GML these values are an initial arbitrary attempt at rating quality
                 if (extra.targetObscured)
                     state.ShotQuality *= 0.2f;
-                if (extra.colliderDisplacement > 0)
+                if (!extra.m_previousDisplacement.AlmostZero())
                     state.ShotQuality *= 0.8f;
 
                 float nearnessBoost = 0;
