@@ -76,7 +76,6 @@ namespace Cinemachine.PostFX.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            DrawRemainingPropertiesInInspector();
 
             var focusMode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
             if (focusMode != CinemachineVolumeSettings.FocusTrackingMode.None)
@@ -84,25 +83,38 @@ namespace Cinemachine.PostFX.Editor
                 bool valid = false;
                 DepthOfField dof;
                 if (Target.m_Profile != null && Target.m_Profile.TryGet(out dof))
-                {
 #if CINEMACHINE_LWRP_7_3_1 && !CINEMACHINE_HDRP
+                {
                     valid = dof.active && dof.focusDistance.overrideState
-                        && dof.mode != DepthOfFieldMode.Off;
-#else
-                    valid = dof.active && dof.focusDistance.overrideState
-                        && dof.focusMode == DepthOfFieldMode.UsePhysicalCamera;
-#endif
+                        && dof.mode.overrideState && dof.mode == DepthOfFieldMode.Bokeh;
                 }
                 if (!valid)
                     EditorGUILayout.HelpBox(
-                        "Focus Tracking requires an active DepthOfField/FocusDistance effect "
-                            + "and FocusMode set to Physical Camera in the profile",
+                        "Focus Tracking requires an active Depth Of Field override in the profile "
+                            + "with Focus Distance activated and Mode activated and set to Bokeh",
                         MessageType.Warning);
+#else
+                {
+                    valid = dof.active && dof.focusDistance.overrideState
+                        && dof.focusMode.overrideState && dof.focusMode == DepthOfFieldMode.UsePhysicalCamera;
+                }
+                if (!valid)
+                    EditorGUILayout.HelpBox(
+                        "Focus Tracking requires an active Depth Of Field override in the profile "
+                            + "with Focus Distance activated and Focus Mode activated and set to Use Physical Camera",
+                        MessageType.Warning);
+#endif
             }
 
+            DrawRemainingPropertiesInInspector();
+
+            EditorGUI.BeginChangeCheck();
             DrawProfileInspectorGUI();
-            Target.InvalidateCachedProfile();
-            serializedObject.ApplyModifiedProperties();
+            if (EditorGUI.EndChangeCheck())
+            {
+                Target.InvalidateCachedProfile();
+                serializedObject.ApplyModifiedProperties();
+            }
         }
 
         void DrawProfileInspectorGUI()
@@ -177,7 +189,9 @@ namespace Cinemachine.PostFX.Editor
                     m_ComponentList.Clear(); // Asset wasn't null before, do some cleanup
 
                 EditorGUILayout.HelpBox(
-                    "Assign an existing Volume Profile by choosing an asset, or create a new one by clicking the \"New\" button.\nNew assets are automatically put in a folder next to your scene file. If your scene hasn't been saved yet they will be created at the root of the Assets folder.",
+                    "Assign an existing Volume Profile by choosing an asset, or create a new one by clicking the \"New\" button.\n"
+                    + "New assets are automatically put in a folder next to your scene file. If your scene hasn't "
+                    + "been saved yet they will be created at the root of the Assets folder.",
                     MessageType.Info);
             }
             else
