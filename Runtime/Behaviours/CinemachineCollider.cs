@@ -272,17 +272,12 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            VcamExtraState extra = null;
             if (stage == CinemachineCore.Stage.Body)
             {
-                extra = GetExtraState<VcamExtraState>(vcam);
+                var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = false;
                 extra.debugResolutionPath?.RemoveRange(0, extra.debugResolutionPath.Count);
-            }
-
-            // Move the body before the Aim is calculated
-            if (stage == CinemachineCore.Stage.Body)
-            {
+            
                 if (m_AvoidObstacles)
                 {
                     // Rotate the previous collision correction along with the camera
@@ -344,7 +339,7 @@ namespace Cinemachine
             // Rate the shot after the aim was set
             if (stage == CinemachineCore.Stage.Aim)
             {
-                extra = GetExtraState<VcamExtraState>(vcam);
+                var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);
 
                 // GML these values are an initial arbitrary attempt at rating quality
