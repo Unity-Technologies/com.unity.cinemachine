@@ -261,7 +261,7 @@ namespace Cinemachine
             return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
         }
         
-        /// <summary>
+          /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
         /// <param name="vcam">The virtual camera being processed</param>
@@ -272,110 +272,107 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            switch (stage)
+            VcamExtraState extra = null;
+            if (stage == CinemachineCore.Stage.Body)
             {
-                case CinemachineCore.Stage.Body:
+                extra = GetExtraState<VcamExtraState>(vcam);
+                extra.targetObscured = false;
+                extra.debugResolutionPath?.RemoveRange(0, extra.debugResolutionPath.Count);
+            }
+
+            // Move the body before the Aim is calculated
+            if (stage == CinemachineCore.Stage.Body)
+            {
+                if (m_AvoidObstacles)
                 {
-                    var extra = GetExtraState<VcamExtraState>(vcam);
-                    extra.targetObscured = false;
-                    extra.debugResolutionPath?.RemoveRange(0, extra.debugResolutionPath.Count);
+                    // Rotate the previous collision correction along with the camera
+                    extra.previousDisplacement 
+                        = Quaternion.Euler(state.PositionDampingBypass) * extra.previousDisplacement;
 
-                    if (m_AvoidObstacles)
+                    // Calculate the desired collision correction
+                    Vector3 displacement = PreserveLineOfSight(ref state, ref extra);
+                    if (m_MinimumOcclusionTime > Epsilon)
                     {
-                        // Rotate the previous collision correction along with the camera
-                        extra.previousDisplacement 
-                            = Quaternion.Euler(state.PositionDampingBypass) * extra.previousDisplacement;
-
-                        // Calculate the desired collision correction
-                        Vector3 displacement = PreserveLineOfSight(ref state, ref extra);
-                        if (m_MinimumOcclusionTime > Epsilon)
-                        {
-                            // If minimum occlusion time set, ignore new occlusions until they've lasted long enough
-                            float now = CinemachineCore.CurrentTime;
-                            if (displacement.AlmostZero())
-                                extra.occlusionStartTime = 0; // no occlusion
-                            else
-                            {
-                                if (extra.occlusionStartTime <= 0)
-                                    extra.occlusionStartTime = now; // occlusion timer starts now
-                                if (now - extra.occlusionStartTime < m_MinimumOcclusionTime)
-                                    displacement = extra.previousDisplacement;
-                            }
-                        }
-
-                        // Apply distance smoothing - this can artificially hold the camera closer
-                        // to the target for a while, to reduce popping in and out on bumpy objects
-                        if (m_SmoothingTime > Epsilon)
-                        {
-                            Vector3 pos = state.CorrectedPosition + displacement;
-                            Vector3 dir = pos - state.ReferenceLookAt;
-                            float distance = dir.magnitude;
-                            if (distance > Epsilon)
-                            {
-                                dir /= distance;
-                                if (!displacement.AlmostZero())
-                                    extra.UpdateDistanceSmoothing(distance);
-                                distance = extra.ApplyDistanceSmoothing(distance, m_SmoothingTime);
-                                displacement += (state.ReferenceLookAt + dir * distance) - pos;
-                            }
-                        }
-
-                        // Apply additional correction due to camera radius
-                        var cameraPos = state.CorrectedPosition + displacement;
-                        displacement += RespectCameraRadius(
-                            cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
-
-                        // Apply damping
-                        if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-                        {
-                            displacement = extra.previousDisplacement + Damper.Damp(
-                                displacement - extra.previousDisplacement, 
-                                displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
-                                deltaTime);
-                        }
-
-                        extra.previousDisplacement = displacement;
-                        state.PositionCorrection += displacement;
-                    }
-
-                    break;
-                }
-
-                // Rate the shot after the aim was set
-                case CinemachineCore.Stage.Aim:
-                {
-                    var extra = GetExtraState<VcamExtraState>(vcam);
-                    extra.targetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);
-
-                    // GML these values are an initial arbitrary attempt at rating quality
-                    if (extra.targetObscured)
-                        state.ShotQuality *= 0.2f;
-                    if (!extra.previousDisplacement.AlmostZero())
-                        state.ShotQuality *= 0.8f;
-
-                    float nearnessBoost = 0;
-                    const float kMaxNearBoost = 0.2f;
-                    if (m_OptimalTargetDistance > 0 && state.HasLookAt)
-                    {
-                        float distance = Vector3.Magnitude(state.ReferenceLookAt - state.FinalPosition);
-                        if (distance <= m_OptimalTargetDistance)
-                        {
-                            float threshold = m_OptimalTargetDistance / 2;
-                            if (distance >= threshold)
-                                nearnessBoost = kMaxNearBoost * (distance - threshold)
-                                    / (m_OptimalTargetDistance - threshold);
-                        }
+                        // If minimum occlusion time set, ignore new occlusions until they've lasted long enough
+                        float now = CinemachineCore.CurrentTime;
+                        if (displacement.AlmostZero())
+                            extra.occlusionStartTime = 0; // no occlusion
                         else
                         {
-                            distance -= m_OptimalTargetDistance;
-                            float threshold = m_OptimalTargetDistance * 3;
-                            if (distance < threshold)
-                                nearnessBoost = kMaxNearBoost * (1f - (distance / threshold));
+                            if (extra.occlusionStartTime <= 0)
+                                extra.occlusionStartTime = now; // occlusion timer starts now
+                            if (now - extra.occlusionStartTime < m_MinimumOcclusionTime)
+                                displacement = extra.previousDisplacement;
                         }
-                        state.ShotQuality *= (1f + nearnessBoost);
                     }
 
-                    break;
+                    // Apply distance smoothing - this can artificially hold the camera closer
+                    // to the target for a while, to reduce popping in and out on bumpy objects
+                    if (m_SmoothingTime > Epsilon)
+                    {
+                        Vector3 pos = state.CorrectedPosition + displacement;
+                        Vector3 dir = pos - state.ReferenceLookAt;
+                        float distance = dir.magnitude;
+                        if (distance > Epsilon)
+                        {
+                            dir /= distance;
+                            if (!displacement.AlmostZero())
+                                extra.UpdateDistanceSmoothing(distance);
+                            distance = extra.ApplyDistanceSmoothing(distance, m_SmoothingTime);
+                            displacement += (state.ReferenceLookAt + dir * distance) - pos;
+                        }
+                    }
+
+                    // Apply additional correction due to camera radius
+                    var cameraPos = state.CorrectedPosition + displacement;
+                    displacement += RespectCameraRadius(
+                        cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
+
+                    // Apply damping
+                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                    {
+                        displacement = extra.previousDisplacement + Damper.Damp(
+                            displacement - extra.previousDisplacement, 
+                            displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
+                            deltaTime);
+                    }
+
+                    extra.previousDisplacement = displacement;
+                    state.PositionCorrection += displacement;
+                }
+            }
+            // Rate the shot after the aim was set
+            if (stage == CinemachineCore.Stage.Aim)
+            {
+                extra = GetExtraState<VcamExtraState>(vcam);
+                extra.targetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);
+
+                // GML these values are an initial arbitrary attempt at rating quality
+                if (extra.targetObscured)
+                    state.ShotQuality *= 0.2f;
+                if (!extra.previousDisplacement.AlmostZero())
+                    state.ShotQuality *= 0.8f;
+
+                float nearnessBoost = 0;
+                const float kMaxNearBoost = 0.2f;
+                if (m_OptimalTargetDistance > 0 && state.HasLookAt)
+                {
+                    float distance = Vector3.Magnitude(state.ReferenceLookAt - state.FinalPosition);
+                    if (distance <= m_OptimalTargetDistance)
+                    {
+                        float threshold = m_OptimalTargetDistance / 2;
+                        if (distance >= threshold)
+                            nearnessBoost = kMaxNearBoost * (distance - threshold)
+                                / (m_OptimalTargetDistance - threshold);
+                    }
+                    else
+                    {
+                        distance -= m_OptimalTargetDistance;
+                        float threshold = m_OptimalTargetDistance * 3;
+                        if (distance < threshold)
+                            nearnessBoost = kMaxNearBoost * (1f - (distance / threshold));
+                    }
+                    state.ShotQuality *= (1f + nearnessBoost);
                 }
             }
         }
