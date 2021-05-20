@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Blends between vcams, that are rotated so that their up vector is different from World up, are correct now.
 - Bugfix: 3rdPersonFollow's shoulder now changes smoothly with respect to world-up vector changes.
 - Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
+- Bugfix: CinemachineVolumeSettings inspector was making the game view flicker.
+- Bugfix: CinemachineVolumeSettings inspector displayed a misleading warning message with URP when focus tracking was enabled.
+
 
 
 ## [2.7.4] - 2021-06-07
