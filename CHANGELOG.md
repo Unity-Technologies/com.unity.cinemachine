@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
 - Bugfix: CinemachineVolumeSettings inspector was making the game view flicker.
 - Bugfix: CinemachineVolumeSettings inspector displayed a misleading warning message with URP when focus tracking was enabled.
+- Bugfix: Blend bug with blending and quick switches.
 
 
 ## [2.8.0-pre.1] - 2021-04-21
