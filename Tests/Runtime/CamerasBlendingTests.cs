@@ -87,6 +87,39 @@ public class CamerasBlendingTests
         yield return new WaitForSeconds(BlendingTime * 0.2f);
 
         Assert.IsTrue(!brain.IsBlending);
+
+        // Start blending
+        targetVCam.Priority = 3;
+        yield return null;
+
+        // Wait for 90% of blending duration
+        yield return new WaitForSeconds(BlendingTime * 0.9f);
+        
+        // Blend back to source
+        targetVCam.Priority = 1;
+        yield return null;
+        yield return new WaitForSeconds(BlendingTime * 0.1f);
+        
+        // Quickly blend to target again
+        targetVCam.Priority = 3;
+        yield return null;
+        
+        // We went 90%, then got 10% back, it means we are 20% away from the target - wait only 10% worth
+        yield return new WaitForSeconds(BlendingTime * 0.1f);
+
+        // Blend back to source
+        targetVCam.Priority = 1;
+        yield return null;
+        yield return new WaitForSeconds(BlendingTime * 0.1f);
+        
+        // Quickly blend to target again
+        targetVCam.Priority = 3;
+        yield return null;
+        
+        // We went 90%, then got 10% back, it means we are 20% away from the target
+        yield return new WaitForSeconds(BlendingTime * 0.2f);
+
+        Assert.IsTrue(!brain.IsBlending);
     }
     
     [UnityTest]
