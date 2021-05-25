@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow works with Aim components now. 
 - Bugfix: Blends between vcams, that are rotated so that their up vector is different from World up, are correct now.
 - Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
+- Bugfix: Collider sometimes bounced a little when the camera radius was large.
 - Bugfix: CinemachineVolumeSettings inspector was making the game view flicker.
 - Bugfix: CinemachineVolumeSettings inspector displayed a misleading warning message with URP when focus tracking was enabled.
 - Bugfix: Rapidly toggling active cameras before the blends were finished did not use the correct blend time.
