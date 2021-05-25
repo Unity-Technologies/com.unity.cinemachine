@@ -679,8 +679,9 @@ namespace Cinemachine
                         {
                             // Special case: if backing out of a blend-in-progress
                             // with the same blend in reverse, adjust the blend time
-                            if (frame.blend.CamA == activeCamera
-                                && frame.blend.CamB == outGoingCamera
+                            if ((frame.blend.CamA == activeCamera 
+                                    || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
+                                && frame.blend.CamB == outGoingCamera 
                                 && frame.blend.Duration <= blendDef.BlendTime)
                             {
                                 blendDef.m_Time = 
