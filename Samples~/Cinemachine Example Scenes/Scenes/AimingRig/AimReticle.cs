@@ -35,25 +35,19 @@ public class AimReticle : MonoBehaviour
         BlendTime = 0.05f;
     }
     
-    Vector2 m_ScreenCenterPoint;
-    void Start()
-    {
-        m_ScreenCenterPoint = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f);
-    }
-
     float m_BlendVelocity;
     float m_CurrentRadius;
     void Update()
     {
+        var screenCenterPoint = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
         var hitPoint = (Vector2) AimTargetReticle.position;
-        var distanceFromCenter = (m_ScreenCenterPoint - hitPoint).magnitude;
-        m_CurrentRadius = Mathf.SmoothDamp(m_CurrentRadius, distanceFromCenter, ref m_BlendVelocity, BlendTime);
+        var distanceFromCenter = (screenCenterPoint - hitPoint).magnitude;
+        m_CurrentRadius = Mathf.SmoothDamp(m_CurrentRadius, distanceFromCenter * 2f, ref m_BlendVelocity, BlendTime);
         m_CurrentRadius = Mathf.Min(MaxRadius, m_CurrentRadius);
 
-        Left.rectTransform.position = m_ScreenCenterPoint + (Vector2.left * m_CurrentRadius);
-        Right.rectTransform.position = m_ScreenCenterPoint + (Vector2.right * m_CurrentRadius);
-        Top.rectTransform.position = m_ScreenCenterPoint + (Vector2.up * m_CurrentRadius);
-        Bottom.rectTransform.position = m_ScreenCenterPoint + (Vector2.down * m_CurrentRadius);
+        Left.rectTransform.position = screenCenterPoint + (Vector2.left * m_CurrentRadius);
+        Right.rectTransform.position = screenCenterPoint + (Vector2.right * m_CurrentRadius);
+        Top.rectTransform.position = screenCenterPoint + (Vector2.up * m_CurrentRadius);
+        Bottom.rectTransform.position = screenCenterPoint + (Vector2.down * m_CurrentRadius);
     }
-    
 }
