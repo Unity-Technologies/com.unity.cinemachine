@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Reticle control for when the aiming is inaccurate. Inaccuracy is shown by pulling apart the ain reticle.
+/// Reticle control for when the aiming is inaccurate. Inaccuracy is shown by pulling apart the aim reticle.
 /// </summary>
 public class AimReticle : MonoBehaviour
 {
@@ -40,8 +40,12 @@ public class AimReticle : MonoBehaviour
     void Update()
     {
         var screenCenterPoint = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-        var hitPoint = (Vector2) AimTargetReticle.position;
-        var distanceFromCenter = (screenCenterPoint - hitPoint).magnitude;
+        float distanceFromCenter = 0;
+        if (AimTargetReticle != null)
+        {
+            var hitPoint = (Vector2) AimTargetReticle.position;
+            distanceFromCenter = (screenCenterPoint - hitPoint).magnitude;
+        }
         m_CurrentRadius = Mathf.SmoothDamp(m_CurrentRadius, distanceFromCenter * 2f, ref m_BlendVelocity, BlendTime);
         m_CurrentRadius = Mathf.Min(MaxRadius, m_CurrentRadius);
 
