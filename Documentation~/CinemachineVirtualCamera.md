@@ -35,8 +35,8 @@ At any time, each Virtual Camera may be in one of these states:
 | | _Orthographic Size_ | When using an orthographic camera, defines the half-height of the camera view, in world coordinates. Available when the Unity camera with the Cinemachine Brain component uses a Projection of Orthographic. |
 | | _Near Clip Plane_ | The closest point relative to the camera where drawing occurs. |
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. |
-| | _Mode Override_ | Controls whether the Perspective/Orth, SensorSize, and GateFit are set in the Camera object, or are overidden in the virtual camera component. |
-| __Dutch__ || Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the Virtual Camera; there is no counterpart property in the Unity camera. |
+| | _Dutch_ | Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the Virtual Camera; there is no counterpart property in the Unity camera. |
+| | _Mode Override_ | Normally, Perspective/Orthographic and Physical Camera are defned in the Camera component.  This setting makes it possible for a virtual camera to redefine these settings, thus changing the Camera mode.  Note: a mode override will remain after the virtual camera is deactivated.  If you set an override mode in any virtual camera, it is recommended to set an override mode in all virtual cameras. |
 | __Blend Hint__ || Provides hints for blending positions to and from the virtual camera. |
 | __Inherit Position__ || When enabled, whenever this virtual camera goes live, forces the initial position to be the same as the current position of the Unity Camera, if possible. |
 | __Extensions__ || Components that add extra behaviors to the Virtual Camera.  |
