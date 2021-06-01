@@ -909,17 +909,5 @@ namespace Cinemachine
             if (CinemachineCore.CameraUpdatedEvent != null)
                 CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
-
-        // GML no commit
-        public void PerformanceTest()
-        {
-            const int iterations = 1000000;
-            var timeStart = Time.realtimeSinceStartup;
-            for (int i = 0; i < iterations; ++i)
-                ManualUpdate();
-            var timeEnd = Time.realtimeSinceStartup;
-            Debug.Log($"Time {timeEnd - timeStart} for { iterations} iterations");
-        }
-
     }
 }
