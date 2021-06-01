@@ -342,11 +342,6 @@ namespace Cinemachine.Editor
             "Actual size of the image sensor (in mm), used to "
             + "convert between focal length and field of vue.");
         static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
-        static readonly GUIContent OverrideHelpText = new GUIContent(
-            "Overriding the lens mode will change the lens "
-            + "mode of the Camera when this virtual camera is activated.  The change will remain after the "
-            + "virtual camera is deactivated.  If you set an override mode in any virtual camera, it is recommended "
-            + "to set an override mode in all virtual cameras.");
 
         bool IsOrtho;
         bool IsPhysical;
@@ -517,7 +512,11 @@ namespace Cinemachine.Editor
                 if (s_AdvancedExpanded)
                 {
                     ++EditorGUI.indentLevel;
-                    EditorGUILayout.HelpBox(OverrideHelpText);
+                    EditorGUILayout.HelpBox("Overriding the lens mode will change the lens "
+                        + "mode of the Camera when this virtual camera is activated.  The change will "
+                        + "remain after the virtual camera is deactivated.\n\n"
+                        + "If you set an override mode in any virtual camera, it is recommended "
+                        + "to set an override mode in all virtual cameras.", MessageType.Info);
                     EditorGUILayout.PropertyField(ModeOverrideProperty);
                     --EditorGUI.indentLevel;
                 }
