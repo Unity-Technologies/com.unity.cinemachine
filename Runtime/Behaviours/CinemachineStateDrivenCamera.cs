@@ -332,7 +332,12 @@ namespace Cinemachine
         public CinemachineVirtualCameraBase[] ChildCameras { get { UpdateListOfChildren(); return m_ChildCameras; }}
 
         /// <summary>Is there a blend in progress?</summary>
-        public bool IsBlending { get { return mActiveBlend != null; } }
+        public bool IsBlending => mActiveBlend != null;
+
+        /// <summary>
+        /// Get the current active blend in progress.  Will return null if no blend is in progress.
+        /// </summary>
+        public CinemachineBlend ActiveBlend => mActiveBlend;
 
         /// <summary>API for the inspector editor.  Animation module does not have hashes
         /// for state parents, so we have to invent them in order to implement nested state
