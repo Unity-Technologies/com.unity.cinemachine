@@ -399,11 +399,18 @@ namespace Cinemachine.Editor
         static readonly GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
             "Actual size of the image sensor (in mm), used to "
             + "convert between focal length and field of vue.");
+        static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
+        static readonly GUIContent OverrideHelpText = new GUIContent(
+            "Overriding the lens mode will change the lens "
+            + "mode of the Camera when this virtual camera is activated.  The change will remain after the "
+            + "virtual camera is deactivated.  If you set an override mode in any virtual camera, it is recommended "
+            + "to set an override mode in all virtual cameras.");
 
         bool IsOrtho;
         bool IsPhysical;
         Vector2 SensorSize;
         bool UseHorizontalFOV;
+        static bool s_AdvancedExpanded;
         SerializedProperty ModeOverrideProperty;
 
     #if CINEMACHINE_HDRP
@@ -508,7 +515,6 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.NearClipPlane));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane));
-                EditorGUILayout.PropertyField(ModeOverrideProperty);
 
                 if (IsPhysical)
                 {
@@ -565,6 +571,14 @@ namespace Cinemachine.Editor
 #endif
                 }
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch));
+                s_AdvancedExpanded = EditorGUILayout.Foldout(s_AdvancedExpanded, AdvancedLabel);
+                if (s_AdvancedExpanded)
+                {
+                    ++EditorGUI.indentLevel;
+                    EditorGUILayout.HelpBox(OverrideHelpText);
+                    EditorGUILayout.PropertyField(ModeOverrideProperty);
+                    --EditorGUI.indentLevel;
+                }
                 --EditorGUI.indentLevel;
             }
             property.serializedObject.ApplyModifiedProperties();

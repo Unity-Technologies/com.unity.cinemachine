@@ -221,11 +221,17 @@ namespace Cinemachine
             {
                 m_OrthoFromCamera = camera.orthographic;
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
+                m_SensorSize = camera.sensorSize;
+                GateFit = camera.gateFit;
             }
             if (IsPhysicalCamera)
             {
-                if (camera != null)
+                // If uninitialized, do an initial pull from the camera
+                if (camera != null && m_SensorSize == Vector2.zero)
+                {
                     m_SensorSize = camera.sensorSize;
+                    GateFit = camera.gateFit;
+                }
             }
             else
             {
