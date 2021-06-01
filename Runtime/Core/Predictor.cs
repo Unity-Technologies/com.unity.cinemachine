@@ -15,7 +15,7 @@ namespace Cinemachine.Utility
         /// <summary>
         /// How much to smooth the predicted result.  Must be >= 0, roughly coresponds to smoothing time.
         /// </summary>
-        public float Smoothing { get; set; }
+        public float Smoothing;
 
         /// <summary>
         /// Have any positions been logged for smoothing?

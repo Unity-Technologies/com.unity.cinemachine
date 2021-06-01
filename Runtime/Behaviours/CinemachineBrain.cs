@@ -345,7 +345,7 @@ namespace Cinemachine
                 // since the last physics frame must be updated now
                 if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 {
-                    CinemachineCore.Instance.CurrentUpdateFilter = CinemachineCore.UpdateFilter.Fixed;
+                    CinemachineCore.Instance.m_CurrentUpdateFilter = CinemachineCore.UpdateFilter.Fixed;
                     if (SoloCamera == null)
                         mCurrentLiveCameras.UpdateCameraState(
                             DefaultWorldUp, GetEffectiveDeltaTime(true));
@@ -409,7 +409,7 @@ namespace Cinemachine
         private void UpdateVirtualCameras(CinemachineCore.UpdateFilter updateFilter, float deltaTime)
         {
             // We always update all active virtual cameras
-            CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
+            CinemachineCore.Instance.m_CurrentUpdateFilter = updateFilter;
             Camera camera = OutputCamera;
             CinemachineCore.Instance.UpdateAllActiveVirtualCameras(
                 camera == null ? -1 : camera.cullingMask, DefaultWorldUp, deltaTime);
@@ -428,7 +428,7 @@ namespace Cinemachine
                 else if (m_UpdateMethod == UpdateMethod.FixedUpdate)
                     updateFilter = CinemachineCore.UpdateFilter.Fixed;
             }
-            CinemachineCore.Instance.CurrentUpdateFilter = updateFilter;
+            CinemachineCore.Instance.m_CurrentUpdateFilter = updateFilter;
         }
 
         /// <summary>
@@ -606,7 +606,12 @@ namespace Cinemachine
         private void ProcessActiveCamera(float deltaTime)
         {
             var activeCamera = ActiveVirtualCamera;
-            if (activeCamera == null)
+            if (SoloCamera != null)
+            {
+                var state = SoloCamera.State;
+                PushStateToUnityCamera(ref state);
+            }
+            else if (activeCamera == null)
             {
                 // No active virtal camera.  We create a state representing its position
                 // and call the callback, but we don't actively set the transform or lens
@@ -615,7 +620,7 @@ namespace Cinemachine
                 state.RawOrientation = transform.rotation;
                 state.Lens = LensSettings.FromCamera(m_OutputCamera);
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
-                PushStateToUnityCamera(SoloCamera != null ? SoloCamera.State : state);
+                PushStateToUnityCamera(ref state);
             }
             else
             {
@@ -643,8 +648,8 @@ namespace Cinemachine
                     activeCamera.UpdateCameraState(DefaultWorldUp, deltaTime);
                 }
                 // Apply the vcam state to the Unity camera
-                PushStateToUnityCamera(
-                    SoloCamera != null ? SoloCamera.State : mCurrentLiveCameras.State);
+                var state = mCurrentLiveCameras.State;
+                PushStateToUnityCamera(ref state);
             }
             mActiveCameraPreviousFrame = activeCamera;
             mActiveCameraPreviousFrameGameObject 
@@ -855,7 +860,7 @@ namespace Cinemachine
         }
 
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
-        private void PushStateToUnityCamera(in CameraState state)
+        private void PushStateToUnityCamera(ref CameraState state)
         {
             CurrentCameraState = state;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
@@ -904,5 +909,17 @@ namespace Cinemachine
             if (CinemachineCore.CameraUpdatedEvent != null)
                 CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
+
+        // GML no commit
+        public void PerformanceTest()
+        {
+            const int iterations = 1000000;
+            var timeStart = Time.realtimeSinceStartup;
+            for (int i = 0; i < iterations; ++i)
+                ManualUpdate();
+            var timeEnd = Time.realtimeSinceStartup;
+            Debug.Log($"Time {timeEnd - timeStart} for { iterations} iterations");
+        }
+
     }
 }

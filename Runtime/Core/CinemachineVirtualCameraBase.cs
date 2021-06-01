@@ -69,7 +69,8 @@ namespace Cinemachine
         /// 0 is no attachment, and virtual camera will behave as if no Follow 
         /// targets are set.
         /// </summary>
-        public float FollowTargetAttachment { get; set; }
+        [NonSerialized]
+        public float FollowTargetAttachment;
 
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
@@ -78,7 +79,8 @@ namespace Cinemachine
         /// 0 is no attachment, and virtual camera will behave as if no LookAt
         /// targets are set.
         /// </summary>
-        public float LookAtTargetAttachment { get; set; }
+        [NonSerialized]
+        public float LookAtTargetAttachment;
 
         /// <summary>
         /// How often to update a virtual camera when it is in Standby mode

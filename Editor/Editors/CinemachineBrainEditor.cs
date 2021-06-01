@@ -48,6 +48,12 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
+            // GML no commit
+            var r = EditorGUILayout.GetControlRect(true);
+            if (GUI.Button(r, "Test"))
+                Target.PerformanceTest();
+
+
             // Show the active camera and blend
             GUI.enabled = false;
             ICinemachineCamera vcam = Target.ActiveVirtualCamera;
