@@ -873,29 +873,28 @@ namespace Cinemachine
                     cam.fieldOfView = state.Lens.FieldOfView;
                     cam.lensShift = state.Lens.LensShift;
                     cam.orthographic = state.Lens.Orthographic;
-                    cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
-                    if (state.Lens.IsPhysicalCamera && state.Lens.ModeOverride == LensSettings.OverrideModes.Physical)
+                    bool isPhysical = state.Lens.ModeOverride == LensSettings.OverrideModes.None 
+                        ? cam.usePhysicalProperties : state.Lens.IsPhysicalCamera;
+                    cam.usePhysicalProperties = isPhysical;
+                    if (isPhysical && state.Lens.IsPhysicalCamera)
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
 #if CINEMACHINE_HDRP
-                        if (state.Lens.IsPhysicalCamera)
-                        {
     #if UNITY_2019_2_OR_NEWER
-                            cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
+                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
     #else
-                            var hda = cam.GetComponent<HDAdditionalCameraData>();
+                        var hda = cam.GetComponent<HDAdditionalCameraData>();
     #endif
-                            if (hda != null)
-                            {
-                                hda.physicalParameters.iso = state.Lens.Iso;
-                                hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
-                                hda.physicalParameters.aperture = state.Lens.Aperture;
-                                hda.physicalParameters.bladeCount = state.Lens.BladeCount;
-                                hda.physicalParameters.curvature = state.Lens.Curvature;
-                                hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
-                                hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
-                            }
+                        if (hda != null)
+                        {
+                            hda.physicalParameters.iso = state.Lens.Iso;
+                            hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
+                            hda.physicalParameters.aperture = state.Lens.Aperture;
+                            hda.physicalParameters.bladeCount = state.Lens.BladeCount;
+                            hda.physicalParameters.curvature = state.Lens.Curvature;
+                            hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
+                            hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
                         }
 #endif
                     }

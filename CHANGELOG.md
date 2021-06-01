@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineVolumeSettings inspector displayed a misleading warning message with URP when focus tracking was enabled.
 - Bugfix: Rapidly toggling active cameras before the blends were finished did not use the correct blend time.
 - AimingRig sample scene updated with a better reactive crosshair design.
+- Bugfix: Lens mode override was not working correctly in all cases
 
 
 ## [2.8.0-pre.1] - 2021-04-21
