@@ -262,10 +262,9 @@ namespace Cinemachine
         public bool IsBlending => mActiveBlend != null;
 
         /// <summary>
-        /// What's the status of the blending [0, 1].
-        /// 0 means, it has not started. 1 means, it has finished.
+        /// Get the current active blend in progress.  Will return null if no blend is in progress.
         /// </summary>
-        public float BlendProgress => IsBlending ? mActiveBlend.BlendWeight : 0;
+        public CinemachineBlend ActiveBlend => mActiveBlend;
 
         CameraState m_State = CameraState.Default;
 
