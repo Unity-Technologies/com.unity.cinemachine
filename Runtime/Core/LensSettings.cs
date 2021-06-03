@@ -80,7 +80,7 @@ namespace Cinemachine
             Orthographic,
             /// <summary>Perspective projection mode will be pushed to the Unity Camera</summary>
             Perspective,
-            /// <summary>A physically-modeled Prspective projection type will be pushed 
+            /// <summary>A physically-modeled Perspective projection type will be pushed 
             /// to the Unity Camera</summary>
             Physical
         }
