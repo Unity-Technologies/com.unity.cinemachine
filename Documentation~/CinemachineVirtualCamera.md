@@ -36,7 +36,7 @@ At any time, each Virtual Camera may be in one of these states:
 | | _Near Clip Plane_ | The closest point relative to the camera where drawing occurs. |
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. |
 | | _Dutch_ | Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the Virtual Camera; there is no counterpart property in the Unity camera. |
-|  __Mode Override__ || Allows you to select a different camera mode to apply to the [Unity camera](https://docs.unity3d.com/Manual/class-Camera.html) component when Cinemachine activates this Virtual Camera. <br>__Important:__ All the changes applied to the Camera component through this setting will remain after the Virtual Camera deactivation. If you set a mode override in any Virtual Camera, you should set one in all Virtual Cameras. |
+|  __Mode Override__ || Allows you to select a different camera mode to apply to the [Unity camera](https://docs.unity3d.com/Manual/class-Camera.html) component when Cinemachine activates this Virtual Camera. <br />__Important:__ All the changes applied to the Camera component through this setting will remain after the Virtual Camera deactivation. If you set a mode override in any Virtual Camera, you should set one in all Virtual Cameras. |
 | | _None_ | Leaves the __Projection__ and __Physical Camera__ properties unchanged in the Camera. |
 | | _Orthographic_ | Sets the __Projection__ property to __Orthographic__. |
 | | _Perspective_ | Sets the __Projection__ property to __Perspective__ and *disables* the __Physical Camera__ feature and properties. |
