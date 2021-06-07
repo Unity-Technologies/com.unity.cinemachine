@@ -512,11 +512,10 @@ namespace Cinemachine.Editor
                 if (s_AdvancedExpanded)
                 {
                     ++EditorGUI.indentLevel;
-                    EditorGUILayout.HelpBox("Overriding the lens mode will change the lens "
-                        + "mode of the Camera when this virtual camera is activated.  The change will "
-                        + "remain after the virtual camera is deactivated.\n\n"
-                        + "If you set an override mode in any virtual camera, it is recommended "
-                        + "to set an override mode in all virtual cameras.", MessageType.Info);
+                    EditorGUILayout.HelpBox("Setting a mode override here implies changes to the Camera component when "
+                        + "Cinemachine activates this Virtual Camera, and the changes will remain after the Virtual "
+                        + "Camera deactivation. If you set a mode override in any Virtual Camera, you should set "
+                        + "one in all Virtual Cameras.", MessageType.Info);
                     EditorGUILayout.PropertyField(ModeOverrideProperty);
                     --EditorGUI.indentLevel;
                 }
