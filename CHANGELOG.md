@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Rapidly toggling active cameras before the blends were finished did not use the correct blend time.
 - AimingRig sample scene updated with a better reactive crosshair design.
 - Added API accessor for Active Blend in Clearshot and StateDrivenCamera. 
-- Bugfix: Lens mode override was not working correctly in all cases
+- Bugfix: Lens mode override was not working correctly in all cases.
+- Bugfix: Virtual Cameras were not updating in Edit mode when Brain's BlendUpdateMode was FixedUpdate.
 
 
 ## [2.8.0-pre.1] - 2021-04-21

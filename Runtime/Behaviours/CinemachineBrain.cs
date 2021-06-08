@@ -334,7 +334,7 @@ namespace Cinemachine
         public void ManualUpdate()
         {
             float deltaTime = GetEffectiveDeltaTime(false);
-            if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
+            if (!Application.isPlaying || m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 UpdateFrame0(deltaTime);
 
             ComputeCurrentBlend(ref mCurrentLiveCameras, 0);
@@ -364,7 +364,7 @@ namespace Cinemachine
             }
 
             // Choose the active vcam and apply it to the Unity camera
-            if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
+            if (!Application.isPlaying || m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 ProcessActiveCamera(deltaTime);
         }
 
