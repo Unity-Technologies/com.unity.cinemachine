@@ -395,13 +395,13 @@ namespace Cinemachine
         }
 
         /// <summary>Set this to ignore time scaling so impulses can progress while the game is paused</summary>
-        public bool IgnoreTimeScale { get; set; }
+        public bool IgnoreTimeScale;
 
         /// <summary>
         /// This is the Impulse system's current time.  
         /// Takes into accoount whether impulse is ignoring time scale.
         /// </summary>
-        public float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : CinemachineCore.CurrentTime; } }
+        public float CurrentTime => IgnoreTimeScale ? Time.realtimeSinceStartup : CinemachineCore.CurrentTime;
 
         /// <summary>Get a new ImpulseEvent</summary>
         /// <returns>A newly-created impulse event.  May be recycled from expired events</returns>

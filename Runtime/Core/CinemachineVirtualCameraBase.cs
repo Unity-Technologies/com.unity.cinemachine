@@ -69,7 +69,8 @@ namespace Cinemachine
         /// 0 is no attachment, and virtual camera will behave as if no Follow 
         /// targets are set.
         /// </summary>
-        public float FollowTargetAttachment { get; set; }
+        [NonSerialized]
+        public float FollowTargetAttachment;
 
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
@@ -78,7 +79,8 @@ namespace Cinemachine
         /// 0 is no attachment, and virtual camera will behave as if no LookAt
         /// targets are set.
         /// </summary>
-        public float LookAtTargetAttachment { get; set; }
+        [NonSerialized]
+        public float LookAtTargetAttachment;
 
         /// <summary>
         /// How often to update a virtual camera when it is in Standby mode
@@ -345,14 +347,17 @@ namespace Cinemachine
 
         /// <summary>Get the name of the Virtual Camera.  Base implementation
         /// returns the owner GameObject's name.</summary>
-        public string Name { get { return name; } }
+        public string Name => name;
 
         /// <summary>Gets a brief debug description of this virtual camera, for use when displayiong debug info</summary>
-        public virtual string Description { get { return ""; }}
+        public virtual string Description => "";
 
         /// <summary>Get the Priority of the virtual camera.  This determines its placement
         /// in the CinemachineCore's queue of eligible shots.</summary>
-        public int Priority { get { return m_Priority; } set { m_Priority = value; } }
+        public int Priority { 
+            get => m_Priority;
+            set => m_Priority = value;
+        }
 
         /// <summary>Hint for blending to and from this virtual camera</summary>
         public enum BlendHint
@@ -400,7 +405,7 @@ namespace Cinemachine
         }
 
         /// <summary>Returns false if the object has been deleted</summary>
-        public bool IsValid { get { return !(this == null); } }
+        public bool IsValid => !(this == null);
 
         /// <summary>The CameraState object holds all of the information
         /// necessary to position the Unity camera.  It is the output of this class.</summary>
