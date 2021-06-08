@@ -41,7 +41,7 @@ namespace Cinemachine
         public TransitionParams m_Transitions;
 
         /// <summary>API for the editor, to make the dragging of position handles behave better.</summary>
-        public bool UserIsDragging { get; set; }
+        public bool UserIsDragging;
 
         /// <summary>Updates the child rig cache</summary>
         protected override void OnEnable()
