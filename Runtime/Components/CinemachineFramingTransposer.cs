@@ -392,13 +392,13 @@ namespace Cinemachine
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
                 m_prevRotation = fromCam.State.RawOrientation;
-                InheritingPosition = true;
+                m_InheritingPosition = true;
                 return true;
             }
             return false;
         }
 
-        bool InheritingPosition { get; set; }
+        bool m_InheritingPosition;
 
         // Convert from screen coords to normalized orthographic distance coords
         private Rect ScreenToOrtho(Rect rScreen, float orthoSize, float aspect)
@@ -450,7 +450,7 @@ namespace Cinemachine
                 m_PreviousCameraPosition = curState.RawPosition;
                 m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
                 m_prevRotation = curState.RawOrientation;
-                if (!InheritingPosition && m_CenterOnActivate)
+                if (!m_InheritingPosition && m_CenterOnActivate)
                 {
                     m_PreviousCameraPosition = FollowTargetPosition
                         + (curState.RawOrientation * Vector3.back) * m_CameraDistance;
@@ -458,7 +458,7 @@ namespace Cinemachine
             }
             if (!IsValid)
             {
-                InheritingPosition = false;
+                m_InheritingPosition = false;
                 return;
             }
 
@@ -555,7 +555,7 @@ namespace Cinemachine
             {
                 // No damping or hard bounds, just snap to central bounds, skipping the soft zone
                 Rect rect = softGuideOrtho;
-                if (m_CenterOnActivate && !InheritingPosition)
+                if (m_CenterOnActivate && !m_InheritingPosition)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
                 cameraOffset += OrthoOffsetToScreenBounds(targetPos, rect);
             }
@@ -615,7 +615,7 @@ namespace Cinemachine
                     curState.Lens = lens;
                 }
             }
-            InheritingPosition = false;
+            m_InheritingPosition = false;
         }
 
         float GetTargetHeight(Vector2 boundsSize)

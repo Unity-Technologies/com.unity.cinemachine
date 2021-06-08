@@ -55,7 +55,7 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
             }
-            if (Target.HideOffsetInInspector)
+            if (Target.m_HideOffsetInInspector)
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
         }
 
@@ -89,7 +89,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
         static void DrawTransposerGizmos(CinemachineTransposer target, GizmoType selectionType)
         {
-            if (target.IsValid  & !target.HideOffsetInInspector)
+            if (target.IsValid  & !target.m_HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)

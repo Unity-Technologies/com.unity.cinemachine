@@ -36,7 +36,7 @@ namespace Cinemachine.Utility
             if (!mClients.Contains(client))
                 mClients.Add(client);
 
-            Vector2 pos = new Vector2(0, 0);
+            var pos = Vector2.zero;
             Vector2 size = style.CalcSize(new GUIContent(text));
             if (mClients != null)
             {
