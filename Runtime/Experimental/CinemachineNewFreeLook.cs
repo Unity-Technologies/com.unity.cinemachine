@@ -264,7 +264,7 @@ namespace Cinemachine
             var orbital = gameObject.AddComponent<CinemachineOrbitalTransposer>();
             gameObject.AddComponent<CinemachineComposer>();
 #endif
-            orbital.HideOffsetInInspector = true;
+            orbital.m_HideOffsetInInspector = true;
             orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
 
             InvalidateComponentCache();
@@ -437,7 +437,7 @@ namespace Cinemachine
             var transposer = Transposer;
             if (transposer != null)
             {
-                transposer.HideOffsetInInspector = true;
+                transposer.m_HideOffsetInInspector = true;
                 transposer.m_FollowOffset = new Vector3(
                     0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
             }
@@ -511,8 +511,8 @@ namespace Cinemachine
             Rig.ComposerSettings composerSaved = new Rig.ComposerSettings();
             Rig.PerlinNoiseSettings noiseSaved = new Rig.PerlinNoiseSettings();
 
-            public int OtherRig { get; set; }
-            public float BlendAmount { get; set; }
+            public int OtherRig;
+            public float BlendAmount;
             CinemachineNewFreeLook mFreeLook;
 
             public ComponentBlender(CinemachineNewFreeLook freeLook) { mFreeLook = freeLook; }

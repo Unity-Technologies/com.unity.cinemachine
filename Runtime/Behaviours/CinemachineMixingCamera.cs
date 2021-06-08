@@ -126,7 +126,7 @@ namespace Cinemachine
 
         /// <summary>Get the current "best" child virtual camera, which is nominally
         /// the one with the greatest weight.</summary>
-        private ICinemachineCamera LiveChild { set; get; }
+        private ICinemachineCamera LiveChild { get; set; }
 
         /// <summary>The blended CameraState</summary>
         public override CameraState State { get { return m_State; } }

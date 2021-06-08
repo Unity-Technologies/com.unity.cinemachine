@@ -6,7 +6,7 @@ namespace Cinemachine
 {
     internal class TargetPositionCache
     {
-        public static bool UseCache { get; set; }
+        public static bool UseCache;
         public const float CacheStepSize = 1 / 60.0f;
         public enum Mode { Disabled, Record, Playback }
        
@@ -38,11 +38,11 @@ namespace Cinemachine
         public static bool CurrentPlaybackTimeValid => UseCache && m_CacheMode == Mode.Playback && HasCurrentTime;
         public static bool IsEmpty => CacheTimeRange.IsEmpty;
 
-        public static float CurrentTime { get; set; }
+        public static float CurrentTime;
 
         // These are used during recording to manage camera cuts
-        public static int CurrentFrame { get; set; }
-        public static bool IsCameraCut { get; set; }
+        public static int CurrentFrame;
+        public static bool IsCameraCut;
 
         class CacheCurve
         {
