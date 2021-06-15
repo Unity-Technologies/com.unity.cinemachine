@@ -46,6 +46,27 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
+
+            if (Target.m_BoundingShape2D == null)
+                EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
+            else if (Target.m_BoundingShape2D.GetType() != typeof(PolygonCollider2D)
+                && Target.m_BoundingShape2D.GetType() != typeof(CompositeCollider2D))
+            {
+                EditorGUILayout.HelpBox(
+                    "Must be a PolygonCollider2D or CompositeCollider2D.",
+                    MessageType.Warning);
+            }
+            else if (Target.m_BoundingShape2D.GetType() == typeof(CompositeCollider2D))
+            {
+                CompositeCollider2D poly = Target.m_BoundingShape2D as CompositeCollider2D;
+                if (poly.geometryType != CompositeCollider2D.GeometryType.Polygons)
+                {
+                    EditorGUILayout.HelpBox(
+                        "CompositeCollider2D geometry type must be Polygons",
+                        MessageType.Warning);
+                }
+            }
+
 #if false
             // Debugging info
             if (Target.GetGizmoPaths(out var originalPath, ref s_currentPathCache, out var pathLocalToWorld))
