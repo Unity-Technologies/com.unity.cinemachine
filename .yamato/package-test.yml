@@ -89,7 +89,7 @@ test_trigger:
   triggers:
     branches:
       only:
-      - "master"
+      - "/^(master)|(release[/]\\d+[.]\\d+)$/"
     pull_requests:
       - targets:
           only:
