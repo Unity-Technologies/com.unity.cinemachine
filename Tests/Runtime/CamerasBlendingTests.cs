@@ -60,7 +60,7 @@ public class CamerasBlendingTests
         targetVCam.Priority = 3;
         yield return null;
 
-        yield return new WaitForSeconds(BlendingTime);
+        yield return new WaitForSeconds(BlendingTime + 0.1f);
         Assert.IsTrue(!brain.IsBlending);
     }
     
@@ -84,7 +84,7 @@ public class CamerasBlendingTests
         yield return null;
         
         // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime * 0.2f);
+        yield return new WaitForSeconds(BlendingTime * 0.21f);
 
         Assert.IsTrue(!brain.IsBlending);
 
@@ -117,7 +117,7 @@ public class CamerasBlendingTests
         yield return null;
         
         // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime * 0.2f);
+        yield return new WaitForSeconds(BlendingTime * 0.21f);
 
         Assert.IsTrue(!brain.IsBlending);
     }
@@ -142,7 +142,7 @@ public class CamerasBlendingTests
         yield return null;
         
         // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime);
+        yield return new WaitForSeconds(BlendingTime + 0.01f);
 
         Assert.IsTrue(!brain.IsBlending);
     }
