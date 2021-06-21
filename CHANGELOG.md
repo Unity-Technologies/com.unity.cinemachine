@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - AimingRig sample scene updated with a better reactive crosshair design.
 - Added API accessor for Active Blend in Clearshot and StateDrivenCamera. 
 - Bugfix: Lens mode override was not working correctly in all cases.
+- Bugfix: Virtual Cameras were not updating in Edit mode when Brain's BlendUpdateMode was FixedUpdate.
 - Collider2D inspector: added warning when collider is of the wrong type.
 
 
