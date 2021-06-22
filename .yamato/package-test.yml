@@ -89,3 +89,5 @@ test_trigger:
     - .yamato/package-test.yml#test_{{platform.name}}_{{editor.version}}
     {% endfor %}
     {% endfor %}
+    - .yamato/package-coverage.yml#code_coverage_win
+
