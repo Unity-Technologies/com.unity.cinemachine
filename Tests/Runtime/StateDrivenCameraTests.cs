@@ -61,22 +61,20 @@ public class StateDrivenCameraTests
     [UnityTest]
     public IEnumerator Test_StateDrivenCamera_Follows_State()
     {
-        yield return new WaitForEndOfFrame();
+        yield return null; // wait one frame
 
         Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
 
         m_Animator.SetTrigger("DoTransitionToState2");
 
-        yield return new WaitForEndOfFrame();
+        yield return null; // wait one frame
 
         Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam2.Name));
 
         m_Animator.SetTrigger(("DoTransitionToState1"));
 
-        yield return new WaitForEndOfFrame();
+        yield return null; // wait one frame
         
         Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
-
-        yield return null;
     }
 }
