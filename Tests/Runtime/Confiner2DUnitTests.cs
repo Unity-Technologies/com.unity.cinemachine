@@ -8,6 +8,18 @@ using UnityEngine.TestTools;
 
 public class Confiner2DUnitTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        CinemachineCore.UniformDeltaTimeOverride = 0.1f;
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        CinemachineCore.UniformDeltaTimeOverride = 1f;
+    }
+    
     [UnityTest]
     public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_PolygonCollider2D()
     {

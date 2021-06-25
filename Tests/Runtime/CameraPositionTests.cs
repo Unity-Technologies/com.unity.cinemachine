@@ -20,6 +20,8 @@ public class CameraPositionTests
         vcam = vcamHolder.AddComponent<CinemachineVirtualCamera>();
         vcam.Priority = 100;
         followObject = new GameObject("Follow Object");
+
+        CinemachineCore.UniformDeltaTimeOverride = 0.1f;
     }
 
     [TearDown]
@@ -27,6 +29,8 @@ public class CameraPositionTests
     {
         Object.Destroy(cam.gameObject);
         Object.Destroy(vcam.gameObject);
+
+        CinemachineCore.UniformDeltaTimeOverride = -1f;
     }
 
 
