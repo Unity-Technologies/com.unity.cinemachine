@@ -29,7 +29,6 @@ public class CameraPositionTests
         Object.Destroy(vcam.gameObject);
     }
 
-
     [UnityTest]
     public IEnumerator DoNothing()
     {

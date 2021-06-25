@@ -1,12 +1,15 @@
 {
-    "name": "com.unity.cinemachine.Tests",
+    "name": "Cinemachine.Editor.Tests",
     "references": [
-        "Cinemachine"
+        "Cinemachine",
+        "com.unity.cinemachine.editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
