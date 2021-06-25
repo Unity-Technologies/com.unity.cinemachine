@@ -41,6 +41,8 @@ public class CamerasBlendingTests
         targetVCam = targetVCamHolder.AddComponent<CinemachineVirtualCamera>();
         targetVCam.Priority = 1;
         targetVCam.Follow = followObject.transform;
+
+        CinemachineCore.UniformDeltaTimeOverride = 0.1f;
     }
 
     [TearDown]
@@ -50,6 +52,8 @@ public class CamerasBlendingTests
         Object.Destroy(sourceVCam.gameObject);
         Object.Destroy(targetVCam.gameObject);
         Object.Destroy(followObject);
+
+        CinemachineCore.UniformDeltaTimeOverride = -1f;
     }
 
 
@@ -60,7 +64,7 @@ public class CamerasBlendingTests
         targetVCam.Priority = 3;
         yield return null;
 
-        yield return new WaitForSeconds(BlendingTime + 0.1f);
+        yield return new WaitForSeconds(BlendingTime + 0.01f);
         Assert.IsTrue(!brain.IsBlending);
     }
     
