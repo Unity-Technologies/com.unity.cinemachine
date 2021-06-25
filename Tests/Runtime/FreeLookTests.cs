@@ -107,7 +107,7 @@ public class FreeLookTests
     [UnityTest, TestCaseSource(nameof(FreeLookTestCases))]
     public IEnumerator TestAxisStateChangeMovesCamera(float axisX, float axisY, Vector3 expectedPosition)
     {
-        // apply a constant force
+        // apply a constant "force"
         m_AxisProvider.SetAxisValues(axisX, axisY);
 
         // wait two frames (constant deltaTime forced in SetUp)
