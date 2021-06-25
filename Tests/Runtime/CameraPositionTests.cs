@@ -33,7 +33,6 @@ public class CameraPositionTests
         CinemachineCore.UniformDeltaTimeOverride = -1f;
     }
 
-
     [UnityTest]
     public IEnumerator DoNothing()
     {
