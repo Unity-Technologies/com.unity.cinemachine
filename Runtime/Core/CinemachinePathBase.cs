@@ -294,7 +294,7 @@ namespace Cinemachine
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <param name="pos">The value to convert from, in native units</param>
         /// <param name="units">The units to convert to</param>
-        /// <returns>Tha path position, in the requested units</returns>
+        /// <returns>The path position, in the requested units</returns>
         public float FromPathNativeUnits(float pos, PositionUnits units)
         {
             if (units == PositionUnits.PathUnits)
