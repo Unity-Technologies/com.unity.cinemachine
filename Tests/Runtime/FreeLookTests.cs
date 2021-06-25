@@ -94,13 +94,13 @@ public class FreeLookTests
             yield return new TestCaseData(-10f, 0.5f, new Vector3(-2.598455f, 2.766761f, -1.500219f)).SetName("Left X Center Y").Returns(null);
             yield return new TestCaseData(-10f, 0.75f, new Vector3(-2.58138f, 2.899473f, -1.49036f)).SetName("Left X Top Y").Returns(null);
 
-            yield return new TestCaseData(0f, 0.4f, new Vector3(0f, 2.713465f, -3.00477f)).SetName("Center X Bottom Y").Returns(null);
+            yield return new TestCaseData(0f, 0.25f, new Vector3(0f, 2.633411f, -3.007236f)).SetName("Center X Bottom Y").Returns(null);
             yield return new TestCaseData(0f, 0.5f, new Vector3(0f, 2.766761f, -3.000437f)).SetName("Center X Center Y").Returns(null);
-            yield return new TestCaseData(0f, 0.6f, new Vector3(0f, 2.819954f, -2.994039f)).SetName("Center X Top Y").Returns(null);
+            yield return new TestCaseData(0f, 0.75f, new Vector3(0f, 2.899473f, -2.980721f)).SetName("Center X Top Y").Returns(null);
 
-            yield return new TestCaseData(10f, 0.4f, new Vector3(2.602207f, 2.713465f, -1.502385f)).SetName("Right X Bottom Y").Returns(null);
+            yield return new TestCaseData(10f, 0.25f, new Vector3(2.604343f, 2.633411f, -1.503618f)).SetName("Right X Bottom Y").Returns(null);
             yield return new TestCaseData(10f, 0.5f, new Vector3(2.598455f, 2.766761f, -1.500219f)).SetName("Right X Center Y").Returns(null);
-            yield return new TestCaseData(10f, 0.6f, new Vector3(2.592913f, 2.819954f, -1.497019f)).SetName("Right X Top Y").Returns(null);
+            yield return new TestCaseData(10f, 0.75f, new Vector3(2.58138f, 2.899473f, -1.49036f)).SetName("Right X Top Y").Returns(null);
         }
     }
 
