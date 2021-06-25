@@ -2,18 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine.TestTools;
-
+using UnityEngine.TestTools.Utils;
 using Cinemachine;
-using UnityEditor.VersionControl;
-using Object = System.Object;
 
 [TestFixture]
 public class FreeLookTests
 {
-    private const float Epsilon = 0.001f;
+    private static readonly Vector3EqualityComparer s_Comparer = new Vector3EqualityComparer(0.000001f);    
 
     private List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
     private GameObject CreateGameObject(string name, params System.Type[] components)
@@ -76,6 +72,8 @@ public class FreeLookTests
         m_FreeLook.m_YAxis.SetInputAxisProvider(1, m_AxisProvider);
         m_FreeLook.Follow = body;
         m_FreeLook.LookAt = head;
+        
+        CinemachineCore.UniformDeltaTimeOverride = 0.1f;
     }
 
     [TearDown]
@@ -85,36 +83,39 @@ public class FreeLookTests
             UnityEngine.Object.Destroy(go);
 
         m_GameObjectsToDestroy.Clear();
+        CinemachineCore.UniformDeltaTimeOverride = -1f;
     }
     
     private static IEnumerable FreeLookTestCases
     {
         get
         {
-            yield return new TestCaseData(-45f, 0.0f, new Vector3(2.5f, 2.5f, -1.6f)).SetName("Left X Bottom Y").Returns(null);
-            yield return new TestCaseData(-45f, 0.5f, new Vector3(-1.4f, 4.0f, 2.0f)).SetName("Left X Center Y").Returns(null);
-            yield return new TestCaseData(-45f, 1.0f, new Vector3(-0.9f, 4.5f, 1.5f)).SetName("Left X Top Y").Returns(null);
+            yield return new TestCaseData(-10f, 0.25f, new Vector3(-2.604343f, 2.633411f, -1.503618f)).SetName("Left X Bottom Y").Returns(null);
+            yield return new TestCaseData(-10f, 0.5f, new Vector3(-2.598455f, 2.766761f, -1.500219f)).SetName("Left X Center Y").Returns(null);
+            yield return new TestCaseData(-10f, 0.75f, new Vector3(-2.58138f, 2.899473f, -1.49036f)).SetName("Left X Top Y").Returns(null);
 
-            yield return new TestCaseData(0f, 0f, new Vector3(1.3f, 4.5f, -1.2f)).SetName("Center X Bottom Y").Returns(null);
-            yield return new TestCaseData(0f, 0.5f, new Vector3(0f, 2.5f, -3.0f)).SetName("Center X Center Y").Returns(null);
-            yield return new TestCaseData(0f, 1.0f, new Vector3(0f, 4.5f, -1.8f)).SetName("Center X Top Y").Returns(null);
+            yield return new TestCaseData(0f, 0.4f, new Vector3(0f, 2.713465f, -3.00477f)).SetName("Center X Bottom Y").Returns(null);
+            yield return new TestCaseData(0f, 0.5f, new Vector3(0f, 2.766761f, -3.000437f)).SetName("Center X Center Y").Returns(null);
+            yield return new TestCaseData(0f, 0.6f, new Vector3(0f, 2.819954f, -2.994039f)).SetName("Center X Top Y").Returns(null);
 
-            yield return new TestCaseData(45f, 0f, new Vector3(0f, 4.5f, -1.8f)).SetName("Right X Bottom Y").Returns(null);
-            yield return new TestCaseData(45f, 0.5f, new Vector3(-2.5f, 2.5f, -1.7f)).SetName("Right X Center Y").Returns(null);
-            yield return new TestCaseData(45f, 1.0f, new Vector3(-1.3f, 4.5f, -1.1f)).SetName("Right X Top Y").Returns(null);
+            yield return new TestCaseData(10f, 0.4f, new Vector3(2.602207f, 2.713465f, -1.502385f)).SetName("Right X Bottom Y").Returns(null);
+            yield return new TestCaseData(10f, 0.5f, new Vector3(2.598455f, 2.766761f, -1.500219f)).SetName("Right X Center Y").Returns(null);
+            yield return new TestCaseData(10f, 0.6f, new Vector3(2.592913f, 2.819954f, -1.497019f)).SetName("Right X Top Y").Returns(null);
         }
     }
 
     [UnityTest, TestCaseSource(nameof(FreeLookTestCases))]
     public IEnumerator TestAxisStateChangeMovesCamera(float axisX, float axisY, Vector3 expectedPosition)
     {
+        // apply a constant force
         m_AxisProvider.SetAxisValues(axisX, axisY);
 
-        yield return new WaitForSeconds(1.0f);
+        // wait two frames (constant deltaTime forced in SetUp)
+        yield return null;
+        yield return null;
 
-        Assert.That(m_FreeLook.transform.position, Is.EqualTo(expectedPosition).Within(Epsilon));
-        // Assert.That(m_FreeLook.transform.position.x, Is.EqualTo(expectedPosition.x).Within(Epsilon));
-        // Assert.That(m_FreeLook.transform.position.y, Is.EqualTo(expectedPosition.y).Within(Epsilon));
-        // Assert.That(m_FreeLook.transform.position.z, Is.EqualTo(expectedPosition.z).Within(Epsilon));
+        // check the resulting position of the freelook
+        Assert.That(m_FreeLook.transform.position, Is.EqualTo(expectedPosition).Using(s_Comparer),
+            $"Actual was: ({m_FreeLook.transform.position.x}f, {m_FreeLook.transform.position.y}f, {m_FreeLook.transform.position.z}f)");
     }
 }
