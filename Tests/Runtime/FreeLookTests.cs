@@ -13,8 +13,6 @@ namespace Tests.Runtime
     [TestFixture]
     public class FreeLookTests : CinemachineFixtureBase
     {
-        private static readonly Vector3EqualityComparer s_Comparer = new Vector3EqualityComparer(0.000001f);
-
         class TestAxisProvider : AxisState.IInputAxisProvider
         {
             private float x, y;
@@ -95,7 +93,7 @@ namespace Tests.Runtime
             yield return null;
 
             // check the resulting position of the freelook
-            Assert.That(m_FreeLook.transform.position, Is.EqualTo(expectedPosition).Using(s_Comparer),
+            Assert.That(m_FreeLook.transform.position, Is.EqualTo(expectedPosition).Using(Vector3EqualityComparer.Instance),
                 $"Actual was: ({m_FreeLook.transform.position.x}f, {m_FreeLook.transform.position.y}f, {m_FreeLook.transform.position.z}f)");
         }
     }
