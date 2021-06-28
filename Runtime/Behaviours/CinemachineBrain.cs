@@ -486,6 +486,7 @@ namespace Cinemachine
 
         /// <summary>
         /// Get the current blend in progress.  Returns null if none.
+        /// It is also possible to set the current blend, but this is not a recommended usage.
         /// </summary>
         public CinemachineBlend ActiveBlend
         {
@@ -496,6 +497,13 @@ namespace Cinemachine
                 if (mCurrentLiveCameras.CamA == null || mCurrentLiveCameras.IsComplete)
                     return null;
                 return mCurrentLiveCameras;
+            }
+            set
+            {
+                if (value == null)
+                    mFrameStack[0].blend.Duration = 0;
+                else
+                    mFrameStack[0].blend = value;
             }
         }
 

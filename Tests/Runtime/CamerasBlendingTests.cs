@@ -151,4 +151,56 @@ public class CamerasBlendingTests
         Assert.IsTrue(!brain.IsBlending);
     }
     
+    [UnityTest]
+    public IEnumerator SetActiveBlend()
+    {
+        // Start blending
+        targetVCam.Priority = 3;
+
+        // Wait 5 frames
+        yield return null;
+        yield return null;
+        yield return null;
+        yield return null;
+        yield return null;
+
+        var blend = brain.ActiveBlend;
+        float percentComplete = blend.TimeInBlend / blend.Duration;
+
+        // Freeze the blend
+        blend.TimeInBlend -= CinemachineCore.UniformDeltaTimeOverride;
+        brain.ActiveBlend = blend;
+
+        // Wait a frame and check that TimeInBlend is the same
+        yield return null;
+        blend = brain.ActiveBlend;
+        Assert.That(percentComplete == blend.TimeInBlend / blend.Duration);
+
+        // Force the blend to complete
+        blend.Duration = 0;
+        brain.ActiveBlend = blend;
+
+        // Wait a frame and check that blend is finished
+        yield return null;
+        Assert.That(brain.ActiveBlend == null);
+
+        // Blend back to source
+        targetVCam.Priority = 1;
+
+        // Wait 5 frames
+        yield return null;
+        yield return null;
+        yield return null;
+        yield return null;
+        yield return null;
+        blend = brain.ActiveBlend;
+        Assert.That(percentComplete == blend.TimeInBlend / blend.Duration);
+
+        // Kill the blend
+        brain.ActiveBlend = null;
+
+        // Wait a frame and check that blend is finished
+        yield return null;
+        Assert.That(brain.ActiveBlend == null);
+    }
 }
