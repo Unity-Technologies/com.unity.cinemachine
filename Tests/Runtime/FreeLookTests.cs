@@ -5,117 +5,98 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils;
 using Cinemachine;
+using UnityEngine.SceneManagement;
+using Object = System.Object;
 
-[TestFixture]
-public class FreeLookTests
+namespace Tests.Runtime
 {
-    private static readonly Vector3EqualityComparer s_Comparer = new Vector3EqualityComparer(0.000001f);    
-
-    private List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
-    private GameObject CreateGameObject(string name, params System.Type[] components)
+    [TestFixture]
+    public class FreeLookTests : CinemachineFixtureBase
     {
-        var go = new GameObject();
-        m_GameObjectsToDestroy.Add(go);
-        go.name = name;
-        
-        foreach(var c in components)
-            if (c.IsSubclassOf(typeof(Component)))
-                go.AddComponent(c);
-        
-        return go;
-    }
+        private static readonly Vector3EqualityComparer s_Comparer = new Vector3EqualityComparer(0.000001f);
 
-    class TestAxisProvider : AxisState.IInputAxisProvider
-    {
-        private float x, y;
-
-        public TestAxisProvider()
+        class TestAxisProvider : AxisState.IInputAxisProvider
         {
-            x = 0f;
-            y = 0f;
+            private float x, y;
+
+            public TestAxisProvider()
+            {
+                x = 0f;
+                y = 0f;
+            }
+
+            public void SetAxisValues(float x, float y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+
+            public float GetAxisValue(int axis)
+            {
+                return axis == 0 ? x : y;
+            }
         }
-        
-        public void SetAxisValues(float x, float y)
+
+        private CinemachineFreeLook m_FreeLook;
+        private TestAxisProvider m_AxisProvider;
+
+        [SetUp]
+        public override void SetUp()
         {
-            this.x = x;
-            this.y = y;
+            CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
+
+            // create a "character"
+            var character = CreateGameObject("Character").GetComponent<Transform>();
+            character.position.Set(0f, 0f, 0f);
+            var body = CreateGameObject("Body").GetComponent<Transform>();
+            body.position.Set(0f, 0f, 0f);
+            body.parent = character;
+            var head = CreateGameObject("Head").GetComponent<Transform>();
+            head.position.Set(0f, 1f, 0f);
+            head.parent = body;
+
+            // Create a free-look camera 
+            m_FreeLook = CreateGameObject("CinemachineFreeLook", typeof(CinemachineFreeLook)).GetComponent<CinemachineFreeLook>();
+            m_AxisProvider = new TestAxisProvider();
+            m_FreeLook.m_XAxis.SetInputAxisProvider(0, m_AxisProvider);
+            m_FreeLook.m_YAxis.SetInputAxisProvider(1, m_AxisProvider);
+            m_FreeLook.Follow = body;
+            m_FreeLook.LookAt = head;
+
+            base.SetUp();
         }
-        
-        public float GetAxisValue(int axis)
+
+        private static IEnumerable FreeLookTestCases
         {
-            return axis == 0 ? x : y;
+            get
+            {
+                yield return new TestCaseData(-10f, 0.25f, new Vector3(-2.604343f, 2.633411f, -1.503618f)).SetName("Left X Bottom Y").Returns(null);
+                yield return new TestCaseData(-10f, 0.5f, new Vector3(-2.598455f, 2.766761f, -1.500219f)).SetName("Left X Center Y").Returns(null);
+                yield return new TestCaseData(-10f, 0.75f, new Vector3(-2.58138f, 2.899473f, -1.49036f)).SetName("Left X Top Y").Returns(null);
+
+                yield return new TestCaseData(0f, 0.25f, new Vector3(0f, 2.633411f, -3.007236f)).SetName("Center X Bottom Y").Returns(null);
+                yield return new TestCaseData(0f, 0.5f, new Vector3(0f, 2.766761f, -3.000437f)).SetName("Center X Center Y").Returns(null);
+                yield return new TestCaseData(0f, 0.75f, new Vector3(0f, 2.899473f, -2.980721f)).SetName("Center X Top Y").Returns(null);
+
+                yield return new TestCaseData(10f, 0.25f, new Vector3(2.604343f, 2.633411f, -1.503618f)).SetName("Right X Bottom Y").Returns(null);
+                yield return new TestCaseData(10f, 0.5f, new Vector3(2.598455f, 2.766761f, -1.500219f)).SetName("Right X Center Y").Returns(null);
+                yield return new TestCaseData(10f, 0.75f, new Vector3(2.58138f, 2.899473f, -1.49036f)).SetName("Right X Top Y").Returns(null);
+            }
         }
-    }
 
-    private CinemachineFreeLook m_FreeLook;
-    private TestAxisProvider m_AxisProvider;
-    
-    [SetUp]
-    public void SetUp()
-    {
-        CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
-
-        // create a "character"
-        var character = CreateGameObject("Character").GetComponent<Transform>();
-        character.position.Set(0f, 0f, 0f);
-        var body = CreateGameObject("Body").GetComponent<Transform>();
-        body.position.Set(0f, 0f, 0f);
-        body.parent = character;
-        var head = CreateGameObject("Head").GetComponent<Transform>();
-        head.position.Set(0f, 1f, 0f);
-        head.parent = body;
-        
-        // Create a free-look camera 
-        m_FreeLook = CreateGameObject("CinemachineFreeLook", typeof(CinemachineFreeLook)).GetComponent<CinemachineFreeLook>();
-        m_AxisProvider = new TestAxisProvider();
-        m_FreeLook.m_XAxis.SetInputAxisProvider(0, m_AxisProvider);
-        m_FreeLook.m_YAxis.SetInputAxisProvider(1, m_AxisProvider);
-        m_FreeLook.Follow = body;
-        m_FreeLook.LookAt = head;
-        
-        CinemachineCore.UniformDeltaTimeOverride = 0.1f;
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        foreach (var go in m_GameObjectsToDestroy)
-            UnityEngine.Object.Destroy(go);
-
-        m_GameObjectsToDestroy.Clear();
-        CinemachineCore.UniformDeltaTimeOverride = -1f;
-    }
-    
-    private static IEnumerable FreeLookTestCases
-    {
-        get
+        [UnityTest, TestCaseSource(nameof(FreeLookTestCases))]
+        public IEnumerator TestAxisStateChangeMovesCamera(float axisX, float axisY, Vector3 expectedPosition)
         {
-            yield return new TestCaseData(-10f, 0.25f, new Vector3(-2.604343f, 2.633411f, -1.503618f)).SetName("Left X Bottom Y").Returns(null);
-            yield return new TestCaseData(-10f, 0.5f, new Vector3(-2.598455f, 2.766761f, -1.500219f)).SetName("Left X Center Y").Returns(null);
-            yield return new TestCaseData(-10f, 0.75f, new Vector3(-2.58138f, 2.899473f, -1.49036f)).SetName("Left X Top Y").Returns(null);
+            // apply a constant "force"
+            m_AxisProvider.SetAxisValues(axisX, axisY);
 
-            yield return new TestCaseData(0f, 0.25f, new Vector3(0f, 2.633411f, -3.007236f)).SetName("Center X Bottom Y").Returns(null);
-            yield return new TestCaseData(0f, 0.5f, new Vector3(0f, 2.766761f, -3.000437f)).SetName("Center X Center Y").Returns(null);
-            yield return new TestCaseData(0f, 0.75f, new Vector3(0f, 2.899473f, -2.980721f)).SetName("Center X Top Y").Returns(null);
+            // wait two frames (constant deltaTime forced in SetUp)
+            yield return null;
+            yield return null;
 
-            yield return new TestCaseData(10f, 0.25f, new Vector3(2.604343f, 2.633411f, -1.503618f)).SetName("Right X Bottom Y").Returns(null);
-            yield return new TestCaseData(10f, 0.5f, new Vector3(2.598455f, 2.766761f, -1.500219f)).SetName("Right X Center Y").Returns(null);
-            yield return new TestCaseData(10f, 0.75f, new Vector3(2.58138f, 2.899473f, -1.49036f)).SetName("Right X Top Y").Returns(null);
+            // check the resulting position of the freelook
+            Assert.That(m_FreeLook.transform.position, Is.EqualTo(expectedPosition).Using(s_Comparer),
+                $"Actual was: ({m_FreeLook.transform.position.x}f, {m_FreeLook.transform.position.y}f, {m_FreeLook.transform.position.z}f)");
         }
-    }
-
-    [UnityTest, TestCaseSource(nameof(FreeLookTestCases))]
-    public IEnumerator TestAxisStateChangeMovesCamera(float axisX, float axisY, Vector3 expectedPosition)
-    {
-        // apply a constant "force"
-        m_AxisProvider.SetAxisValues(axisX, axisY);
-
-        // wait two frames (constant deltaTime forced in SetUp)
-        yield return null;
-        yield return null;
-
-        // check the resulting position of the freelook
-        Assert.That(m_FreeLook.transform.position, Is.EqualTo(expectedPosition).Using(s_Comparer),
-            $"Actual was: ({m_FreeLook.transform.position.x}f, {m_FreeLook.transform.position.y}f, {m_FreeLook.transform.position.z}f)");
     }
 }
