@@ -1,243 +1,123 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Runtime.Serialization.Json;
+using UnityEngine;
 using NUnit.Framework;
 using Cinemachine.Utility;
-using Assert = UnityEngine.Assertions.Assert;
+using UnityEditor;
+using UnityEngine.TestTools.Utils;
 
-public class UnityVectorExtensionTests
+//using Assert = UnityEngine.Assertions.Assert;
+
+namespace Tests.Editor
 {
-    [Test]
-	public void FindIntersectionTests()
+    public class UnityVectorExtensionTests
     {
+        public enum IntersectionResult
         {
-            var l1_p1 = new Vector2(0, 1);
-            var l1_p2 = new Vector2(0, -1);
-            var l2_p1 = new Vector2(-1, 0);
-            var l2_p2 = new Vector2(1, 0);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 2);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, Vector2.zero));
+            Zero,
+            Infinity,
+            l1_p1,
+            l1_p2,
+            l2_p1,
+            l2_p2
         }
+        
+        private static object[] IntersectionTestCases =
         {
-            var l1_p1 = new Vector2(0, 1);
-            var l1_p2 = new Vector2(0, 0);
-            var l2_p1 = new Vector2(-1, 0);
-            var l2_p2 = new Vector2(1, 0);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 2);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, Vector2.zero));
-        }
+            // l1_p1, l1_p2, l2_p1, l2_p2, expectedIntersectionType, expectedIntersectionResult
+            new object[] {new Vector2(0, 1), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(1, 0), 2, IntersectionResult.Zero},
+            new object[] {new Vector2(0, 1), new Vector2(0, 0), new Vector2(-1, 0), new Vector2(1, 0), 2, IntersectionResult.Zero},
+            new object[] {new Vector2(0, 2), new Vector2(0, 1), new Vector2(-1, 0), new Vector2(1, 0), 1, IntersectionResult.Zero},
+            new object[] {new Vector2(0, 2), new Vector2(0, 1), new Vector2(1, 2), new Vector2(1, 1), 0, IntersectionResult.Infinity},
+            new object[] {new Vector2(1, 2), new Vector2(1, 1), new Vector2(1, -2), new Vector2(1, -1), 3, IntersectionResult.Infinity},
+            new object[] {new Vector2(1, 2), new Vector2(1, -2), new Vector2(1, 3), new Vector2(1, 1), 4, IntersectionResult.Infinity},
+            new object[] {new Vector2(1, 2), new Vector2(1, -2), new Vector2(1, 2), new Vector2(1, -2), 4, IntersectionResult.Infinity},
+            new object[] {new Vector2(1, 2), new Vector2(1, -2), new Vector2(1, -2), new Vector2(1, 2), 4, IntersectionResult.Infinity},
+            new object[] {new Vector2(0, 1), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 0), 4, IntersectionResult.Infinity},
+            new object[] {new Vector2(0, 0), new Vector2(2, 0), new Vector2(0, 1), new Vector2(1, 0), 2, IntersectionResult.l2_p2},
+            new object[] {new Vector2(0, 0), new Vector2(2, 0), new Vector2(1, 0), new Vector2(0, 1), 2, IntersectionResult.l2_p1},
+            // Parallel segments touching at one point
+            new object[] {new Vector2(0, 3), new Vector2(0, 5), new Vector2(0, 5), new Vector2(0, 9), 4, IntersectionResult.l2_p1},
+            new object[] {new Vector2(0, 5), new Vector2(0, 3), new Vector2(0, 5), new Vector2(0, 9), 4, IntersectionResult.l2_p1},
+            new object[] {new Vector2(0, 3), new Vector2(0, 5), new Vector2(0, 9), new Vector2(0, 5), 4, IntersectionResult.l2_p2},
+            new object[] {new Vector2(0, 5), new Vector2(0, 3), new Vector2(0, 9), new Vector2(0, 5), 4, IntersectionResult.l2_p2}
+        };
+        
+        [Test, TestCaseSource(nameof(IntersectionTestCases))]
+        public void FindIntersectionTest(Vector2 l1_p1, Vector2 l1_p2, Vector2 l2_p1, Vector2 l2_p2, 
+            int expectedIntersectionType, IntersectionResult expectedIntersectionResult)
         {
-            var l1_p1 = new Vector2(0, 2);
-            var l1_p2 = new Vector2(0, 1);
-            var l2_p1 = new Vector2(-1, 0);
-            var l2_p2 = new Vector2(1, 0);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
+            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2,
                 out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 1);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, Vector2.zero));
-        }
-        {
-            var l1_p1 = new Vector2(0, 2);
-            var l1_p2 = new Vector2(0, 1);
-            var l2_p1 = new Vector2(1, 2);
-            var l2_p2 = new Vector2(1, 1);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 0);
-            Assert.IsTrue(float.IsInfinity(intersection.x) && float.IsInfinity(intersection.y));
-        }
-        {
-            var l1_p1 = new Vector2(1, 2);
-            var l1_p2 = new Vector2(1, 1);
-            var l2_p1 = new Vector2(1, -2);
-            var l2_p2 = new Vector2(1, -1);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 3);
-            Assert.IsTrue(float.IsInfinity(intersection.x) && float.IsInfinity(intersection.y));
-        }
-        {
-            var l1_p1 = new Vector2(1, 2);
-            var l1_p2 = new Vector2(1, -2);
-            var l2_p1 = new Vector2(1, 3);
-            var l2_p2 = new Vector2(1, 1);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(float.IsInfinity(intersection.x) && float.IsInfinity(intersection.y));
-        }
-        {
-            var l1_p1 = new Vector2(1, 2);
-            var l1_p2 = new Vector2(1, -2);
-            var l2_p1 = new Vector2(1, 2);
-            var l2_p2 = new Vector2(1, -2);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(float.IsInfinity(intersection.x) && float.IsInfinity(intersection.y));
-        }
-        {
-            var l1_p1 = new Vector2(1, 2);
-            var l1_p2 = new Vector2(1, -2);
-            var l2_p1 = new Vector2(1, -2);
-            var l2_p2 = new Vector2(1, 2);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(float.IsInfinity(intersection.x) && float.IsInfinity(intersection.y));
-        }
-        {
-            var l1_p1 = new Vector2(0, 1);
-            var l1_p2 = new Vector2(0, 1);
-            var l2_p1 = new Vector2(1, 0);
-            var l2_p2 = new Vector2(1, 0);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(float.IsInfinity(intersection.x) && float.IsInfinity(intersection.y));
-        }
-        {
-            var l1_p1 = new Vector2(0, 0);
-            var l1_p2 = new Vector2(2, 0);
-            var l2_p1 = new Vector2(0, 1);
-            var l2_p2 = new Vector2(1, 0);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 2);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, l2_p2));
-        }
-        {
-            var l1_p1 = new Vector2(0, 0);
-            var l1_p2 = new Vector2(2, 0);
-            var l2_p1 = new Vector2(1, 0);
-            var l2_p2 = new Vector2(0, 1);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 2);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, l2_p1));
+            Assert.That(intersectionType, Is.EqualTo(expectedIntersectionType));
+            switch (expectedIntersectionResult)
+            {
+                case IntersectionResult.Zero:
+                    Assert.That(intersection, Is.EqualTo(Vector2.zero).Using(Vector2EqualityComparer.Instance));
+                    break;
+                case IntersectionResult.Infinity:
+                    Assert.That(float.IsInfinity(intersection.x), Is.True);
+                    Assert.That(float.IsInfinity(intersection.y), Is.True);
+                    break;
+                case IntersectionResult.l1_p1:
+                    Assert.That(intersection, Is.EqualTo(l1_p1).Using(Vector2EqualityComparer.Instance));
+                    break;
+                case IntersectionResult.l1_p2:
+                    Assert.That(intersection, Is.EqualTo(l1_p2).Using(Vector2EqualityComparer.Instance));
+                    break;
+                case IntersectionResult.l2_p1:
+                    Assert.That(intersection, Is.EqualTo(l2_p1).Using(Vector2EqualityComparer.Instance));
+                    break;
+                case IntersectionResult.l2_p2:
+                    Assert.That(intersection, Is.EqualTo(l2_p2).Using(Vector2EqualityComparer.Instance));
+                    break;
+            }
         }
 
-        // Parallel segments touching at one point
+        private static object[] AngleTestCases =
         {
-            var l1_p1 = new Vector2(0, 3);
-            var l1_p2 = new Vector2(0, 5);
-            var l2_p1 = new Vector2(0, 5);
-            var l2_p2 = new Vector2(0, 9);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, l2_p1));
-        }
-        {
-            var l1_p1 = new Vector2(0, 5);
-            var l1_p2 = new Vector2(0, 3);
-            var l2_p1 = new Vector2(0, 5);
-            var l2_p2 = new Vector2(0, 9);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, l2_p1));
-        }
-        {
-            var l1_p1 = new Vector2(0, 3);
-            var l1_p2 = new Vector2(0, 5);
-            var l2_p1 = new Vector2(0, 9);
-            var l2_p2 = new Vector2(0, 5);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, l2_p2));
-        }
-        {
-            var l1_p1 = new Vector2(0, 5);
-            var l1_p2 = new Vector2(0, 3);
-            var l2_p1 = new Vector2(0, 9);
-            var l2_p2 = new Vector2(0, 5);
-            int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2, 
-                out Vector2 intersection);
-            Assert.IsTrue(intersectionType == 4);
-            Assert.IsTrue(AreApproximatelyEqual(intersection, l2_p2));
-        }
-    }
+            new object[] {Vector2.left, 90f, true},
+            new object[] {Vector2.right, 90f, true},
+            new object[] {new Vector2(-0.0001f, 1f), 0.00572958f, false},
+            new object[] {new Vector2(0.0001f, 1f), 0.00572958f, false}
+        };
 
-    static bool AreApproximatelyEqual(Vector2 v1, Vector2 v2)
-    {
-        return Mathf.Abs(v2.x - v1.x) < 1e-5f && Mathf.Abs(v2.y - v1.y) < 1e-5f;
-    }
+        [Test, TestCaseSource(nameof(AngleTestCases))]
+        public void TestAngle(Vector2 v2, float expectedAngle, bool compareWithBuiltIn)
+        {
+            Vector3 v1 = Vector3.up;
+            float angle = UnityVectorExtensions.Angle(v1, v2);
+            Assert.That(angle, Is.EqualTo(expectedAngle).Within(UnityVectorExtensions.Epsilon));
+            if (compareWithBuiltIn)
+            {
+                float angle2 = Vector2.Angle(v1, v2);
+                Assert.That(angle2, Is.EqualTo(angle).Within(UnityVectorExtensions.Epsilon));
+            }
+        }
 
-    [Test]
-    public void TestAngle()
-    {
+        private static object[] SignedAngleTestCases =
+        {
+            new object[] {Vector2.left, 90f, true},
+            new object[] {Vector2.right, -90f, true},
+            new object[] {new Vector2(-0.0001f, 1f), 0.00572958f, false},
+            new object[] {new Vector2(0.0001f, 1f), -0.00572958f, false}
+        };
+
+        [Test, TestCaseSource(nameof(SignedAngleTestCases))]
+        public void TestSignedAngle(Vector2 v2, float expectedAngle, bool compareWithBuiltIn)
         {
             Vector3 v1 = Vector3.up;
-            Vector2 v2 = Vector3.left;
-            float angle = UnityVectorExtensions.Angle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, 90f);
-            float angle2 = Vector2.Angle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, angle2);
-        }
-        {
-            Vector3 v1 = Vector3.up;
-            Vector2 v2 = Vector3.right;
-            float angle = UnityVectorExtensions.Angle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, 90f);
-            float angle2 = Vector2.Angle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, angle2);
-        }
-        {
-            Vector3 v1 = Vector3.up;
-            Vector2 v2 = new Vector3(-0.0001f, 1, 0);
-            float angle = UnityVectorExtensions.Angle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, 0.00572958f);
-        }
-        {
-            Vector3 v1 = Vector3.up;
-            Vector2 v2 = new Vector3(0.0001f, 1, 0);
-            float angle = UnityVectorExtensions.Angle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, 0.00572958f);
-        }
-    }
-    
-    [Test]
-    public void TestSignedAngle()
-    {
-        {
-            Vector3 v1 = Vector3.up;
-            Vector2 v2 = Vector3.left;
             float angle = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.forward);
-            Assert.AreApproximatelyEqual(angle, 90f);
-            float angle2 = Vector2.SignedAngle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, angle2);
+            Assert.That(angle, Is.EqualTo(expectedAngle).Within(UnityVectorExtensions.Epsilon));
+            
+            if (compareWithBuiltIn)
+            {
+                float angle2 = Vector2.SignedAngle(v1, v2);
+                Assert.That(angle2, Is.EqualTo(angle).Within(UnityVectorExtensions.Epsilon));
+            }
+
             float angle3 = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.back);
-            Assert.AreApproximatelyEqual(angle, -angle3);
-        }
-        {
-            Vector3 v1 = Vector3.up;
-            Vector2 v2 = Vector3.right;
-            float angle = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.forward);
-            Assert.AreApproximatelyEqual(angle, -90f);
-            float angle2 = Vector2.SignedAngle(v1, v2);
-            Assert.AreApproximatelyEqual(angle, angle2);
-            float angle3 = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.back);
-            Assert.AreApproximatelyEqual(angle, -angle3);
-        }
-        {
-            Vector3 v1 = Vector3.up;
-            Vector2 v2 = new Vector3(-0.0001f, 1, 0);
-            float angle = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.forward);
-            Assert.AreApproximatelyEqual(angle, 0.00572958f);
-            float angle3 = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.back);
-            Assert.AreApproximatelyEqual(angle, -angle3);
-        }
-        {
-            Vector3 v1 = Vector3.up;
-            Vector2 v2 = new Vector3(0.0001f, 1, 0);
-            float angle = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.forward);
-            Assert.AreApproximatelyEqual(angle, -0.00572958f);
-            float angle3 = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.back);
-            Assert.AreApproximatelyEqual(angle, -angle3);
+            Assert.That(angle3, Is.EqualTo(-angle).Within(UnityVectorExtensions.Epsilon));
         }
     }
 }
