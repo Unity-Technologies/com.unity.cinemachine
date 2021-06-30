@@ -4,4 +4,5 @@ node_modules.meta
 node_modules
 npm-debug.log
 npm-debug.log.meta
+.DS_Store
 .idea
