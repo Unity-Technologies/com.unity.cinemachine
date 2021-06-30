@@ -341,11 +341,13 @@ namespace Cinemachine.Editor
         static readonly GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
             "Actual size of the image sensor (in mm), used to "
             + "convert between focal length and field of vue.");
+        static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
 
         bool IsOrtho;
         bool IsPhysical;
         Vector2 SensorSize;
         bool UseHorizontalFOV;
+        static bool s_AdvancedExpanded;
         SerializedProperty ModeOverrideProperty;
 
     #if CINEMACHINE_HDRP
@@ -450,7 +452,6 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.NearClipPlane));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane));
-                EditorGUILayout.PropertyField(ModeOverrideProperty);
 
                 if (IsPhysical)
                 {
@@ -507,6 +508,17 @@ namespace Cinemachine.Editor
 #endif
                 }
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch));
+                s_AdvancedExpanded = EditorGUILayout.Foldout(s_AdvancedExpanded, AdvancedLabel);
+                if (s_AdvancedExpanded)
+                {
+                    ++EditorGUI.indentLevel;
+                    EditorGUILayout.HelpBox("Setting a mode override here implies changes to the Camera component when "
+                        + "Cinemachine activates this Virtual Camera, and the changes will remain after the Virtual "
+                        + "Camera deactivation. If you set a mode override in any Virtual Camera, you should set "
+                        + "one in all Virtual Cameras.", MessageType.Info);
+                    EditorGUILayout.PropertyField(ModeOverrideProperty);
+                    --EditorGUI.indentLevel;
+                }
                 --EditorGUI.indentLevel;
             }
             property.serializedObject.ApplyModifiedProperties();

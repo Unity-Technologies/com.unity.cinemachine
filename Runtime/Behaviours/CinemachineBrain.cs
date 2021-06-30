@@ -334,7 +334,7 @@ namespace Cinemachine
         public void ManualUpdate()
         {
             float deltaTime = GetEffectiveDeltaTime(false);
-            if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
+            if (!Application.isPlaying || m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 UpdateFrame0(deltaTime);
 
             ComputeCurrentBlend(ref mCurrentLiveCameras, 0);
@@ -364,7 +364,7 @@ namespace Cinemachine
             }
 
             // Choose the active vcam and apply it to the Unity camera
-            if (m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
+            if (!Application.isPlaying || m_BlendUpdateMethod != BrainUpdateMethod.FixedUpdate)
                 ProcessActiveCamera(deltaTime);
         }
 
@@ -659,8 +659,9 @@ namespace Cinemachine
                         {
                             // Special case: if backing out of a blend-in-progress
                             // with the same blend in reverse, adjust the blend time
-                            if (frame.blend.CamA == activeCamera
-                                && frame.blend.CamB == outGoingCamera
+                            if ((frame.blend.CamA == activeCamera 
+                                    || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
+                                && frame.blend.CamB == outGoingCamera 
                                 && frame.blend.Duration <= blendDef.BlendTime)
                             {
                                 blendDef.m_Time = 
@@ -852,29 +853,28 @@ namespace Cinemachine
                     cam.fieldOfView = state.Lens.FieldOfView;
                     cam.lensShift = state.Lens.LensShift;
                     cam.orthographic = state.Lens.Orthographic;
-                    cam.usePhysicalProperties = state.Lens.IsPhysicalCamera;
-                    if (state.Lens.IsPhysicalCamera && state.Lens.ModeOverride == LensSettings.OverrideModes.Physical)
+                    bool isPhysical = state.Lens.ModeOverride == LensSettings.OverrideModes.None 
+                        ? cam.usePhysicalProperties : state.Lens.IsPhysicalCamera;
+                    cam.usePhysicalProperties = isPhysical;
+                    if (isPhysical && state.Lens.IsPhysicalCamera)
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
 #if CINEMACHINE_HDRP
-                        if (state.Lens.IsPhysicalCamera)
-                        {
     #if UNITY_2019_2_OR_NEWER
-                            cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
+                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
     #else
-                            var hda = cam.GetComponent<HDAdditionalCameraData>();
+                        var hda = cam.GetComponent<HDAdditionalCameraData>();
     #endif
-                            if (hda != null)
-                            {
-                                hda.physicalParameters.iso = state.Lens.Iso;
-                                hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
-                                hda.physicalParameters.aperture = state.Lens.Aperture;
-                                hda.physicalParameters.bladeCount = state.Lens.BladeCount;
-                                hda.physicalParameters.curvature = state.Lens.Curvature;
-                                hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
-                                hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
-                            }
+                        if (hda != null)
+                        {
+                            hda.physicalParameters.iso = state.Lens.Iso;
+                            hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
+                            hda.physicalParameters.aperture = state.Lens.Aperture;
+                            hda.physicalParameters.bladeCount = state.Lens.BladeCount;
+                            hda.physicalParameters.curvature = state.Lens.Curvature;
+                            hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
+                            hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
                         }
 #endif
                     }

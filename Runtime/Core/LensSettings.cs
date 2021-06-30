@@ -73,24 +73,26 @@ namespace Cinemachine
         /// </summary>
         public enum OverrideModes
         {
-            /// <summary> Perspective/Ortho, IsPhysical, SensorSize, and GateFit 
+            /// <summary> Perspective/Ortho, IsPhysical 
             /// will not be changed in Unity Camera.  This is the default setting.</summary>
             None = 0,
             /// <summary>Orthographic projection mode will be pushed to the Unity Camera</summary>
             Orthographic,
             /// <summary>Perspective projection mode will be pushed to the Unity Camera</summary>
             Perspective,
-            /// <summary>A physically-modeled Prsoective projection type will be pushed 
+            /// <summary>A physically-modeled Perspective projection type will be pushed 
             /// to the Unity Camera</summary>
             Physical
         }
 
         /// <summary>
-        /// This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, 
-        /// and GateFit are set in the Camera object, or are overridden here.
+        /// Allows you to select a different camera mode to apply to the Camera component
+        /// when Cinemachine activates this Virtual Camera.  The changes applied to the Camera
+        /// component through this setting will remain after the Virtual Camera deactivation.
         /// </summary>
-        [Tooltip("This setting controls whether the Perspective/Ortho, IsPhysical, SensorSize, "
-            + "and GateFit are set in the Camera object, or are overridden here.")]
+        [Tooltip("Allows you to select a different camera mode to apply to the Camera component "
+            + "when Cinemachine activates this Virtual Camera.  The changes applied to the Camera "
+            + "component through this setting will remain after the Virtual Camera deactivation.")]
         public OverrideModes ModeOverride;
 
         /// <summary>
@@ -221,11 +223,17 @@ namespace Cinemachine
             {
                 m_OrthoFromCamera = camera.orthographic;
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
+                m_SensorSize = camera.sensorSize;
+                GateFit = camera.gateFit;
             }
             if (IsPhysicalCamera)
             {
-                if (camera != null)
+                // If uninitialized, do an initial pull from the camera
+                if (camera != null && m_SensorSize == Vector2.zero)
+                {
                     m_SensorSize = camera.sensorSize;
+                    GateFit = camera.gateFit;
+                }
             }
             else
             {

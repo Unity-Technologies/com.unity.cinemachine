@@ -3,6 +3,7 @@ test_editors:
   - version: 2019.4
   - version: 2020.3
   - version: 2021.1
+  - version: 2021.2
   - version: trunk
 test_platforms:
   - name: win
@@ -27,6 +28,7 @@ validation_editors:
   - version: 2019.4
   - version: 2020.3
   - version: 2021.1
+  - version: 2021.2
   - version: trunk
 validation_platforms:
   - name: ubuntu
@@ -61,6 +63,6 @@ publish:
     {% endfor %}
     {% for editor in validation_editors %}
     {% for platform in validation_platforms %}
-    - .yamato/package-test.yml#validate_{{ platform.name }}_{{ editor.version }}
+    - .yamato/package-test.yml#validate_{{platform.name}}_{{editor.version}}
     {% endfor %}
     {% endfor %}
