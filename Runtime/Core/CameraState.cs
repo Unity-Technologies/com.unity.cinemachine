@@ -371,6 +371,8 @@ namespace Cinemachine
                     if (angle > UnityVectorExtensions.Epsilon)
                         dirTarget = state.ReferenceLookAt - state.CorrectedPosition;
                 }
+                
+                
                 if (dirTarget.AlmostZero() 
                     || ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.IgnoreLookAtTarget) != 0)
                 {
@@ -392,15 +394,17 @@ namespace Cinemachine
                     else
                     {
                         // Put the target in the center
-                        newOrient = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
+                        var blendUp = Vector3.Slerp(
+                            stateA.RawOrientation * Vector3.up, stateB.RawOrientation * Vector3.up, t);
+                        newOrient = Quaternion.LookRotation(dirTarget, blendUp);
 
                         // Blend the desired offsets from center
                         Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
-                                stateA.ReferenceLookAt - stateA.CorrectedPosition, stateA.ReferenceUp);
+                                stateA.ReferenceLookAt - stateA.CorrectedPosition, blendUp);
                         Vector2 deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
-                                stateB.ReferenceLookAt - stateB.CorrectedPosition, stateB.ReferenceUp);
+                                stateB.ReferenceLookAt - stateB.CorrectedPosition, blendUp);
                         newOrient = newOrient.ApplyCameraRotation(
-                                Vector2.Lerp(deltaA, deltaB, adjustedT), state.ReferenceUp);
+                                Vector2.Lerp(deltaA, deltaB, adjustedT), blendUp);
                     }
                 }
             }

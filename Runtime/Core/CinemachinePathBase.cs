@@ -266,13 +266,12 @@ namespace Cinemachine
             return Mathf.Clamp(distance, 0, length);
         }
 
-        /// <summary>Get the path position (in native path units) corresponding to the psovided
-        /// value, in the units indicated.
+        /// <summary>Get the path position to native path units.
         /// If the distance cache is not valid, then calling this will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <param name="pos">The value to convert from</param>
         /// <param name="units">The units in which pos is expressed</param>
-        /// <returns>The length of the path in native units, when sampled at this rate</returns>
+        /// <returns>The path position, in native units</returns>
         public float ToNativePathUnits(float pos, PositionUnits units)
         {
             if (units == PositionUnits.PathUnits)
@@ -290,12 +289,12 @@ namespace Cinemachine
             return MinPos + Mathf.Lerp(m_DistanceToPos[i], m_DistanceToPos[i+1], t);
         }
 
-        /// <summary>Get the path position (in path units) corresponding to this distance along the path.
+        /// <summary>Convert a path position from native path units to the desired units.
         /// If the distance cache is not valid, then calling this will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
         /// <param name="pos">The value to convert from, in native units</param>
-        /// <param name="units">The units to convert toexpressed</param>
-        /// <returns>The length of the path in distance units, when sampled at this rate</returns>
+        /// <param name="units">The units to convert to</param>
+        /// <returns>The path position, in the requested units</returns>
         public float FromPathNativeUnits(float pos, PositionUnits units)
         {
             if (units == PositionUnits.PathUnits)
