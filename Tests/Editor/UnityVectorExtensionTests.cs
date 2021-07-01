@@ -6,8 +6,6 @@ using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine.TestTools.Utils;
 
-//using Assert = UnityEngine.Assertions.Assert;
-
 namespace Tests.Editor
 {
     public class UnityVectorExtensionTests
