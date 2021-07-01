@@ -3,204 +3,189 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
+using Tests.Runtime;
 
-[TestFixture]   
-public class CamerasBlendingTests
+namespace Tests.Runtime
 {
-    private Camera cam;
-    private CinemachineVirtualCamera sourceVCam;
-    private CinemachineVirtualCamera targetVCam;
-    private CinemachineBrain brain;
-    private GameObject followObject;
-
-    private const float BlendingTime = 1;
-
-    [SetUp]
-    public void Setup()
+    [TestFixture]
+    public class CamerasBlendingTests : CinemachineFixtureBase
     {
-        // Camera
-        var cameraHolder = new GameObject("MainCamera");
-        cam = cameraHolder.AddComponent<Camera>();
-        brain = cameraHolder.AddComponent<CinemachineBrain>();
+        private const float BlendingTime = 1;
 
-        // Blending
-        brain.m_DefaultBlend = new CinemachineBlendDefinition(
-            CinemachineBlendDefinition.Style.Linear, 
-            BlendingTime);
-        
-        followObject = new GameObject("Follow Object");
-        
-        // Source vcam
-        var sourceVCamHolder = new GameObject("Source CM Vcam");
-        sourceVCam = sourceVCamHolder.AddComponent<CinemachineVirtualCamera>();
-        sourceVCam.Priority = 2;
-        sourceVCam.Follow = followObject.transform;
+        private CinemachineBrain brain;
+        private CinemachineVirtualCamera targetVCam;
 
-        // target vcam
-        var targetVCamHolder = new GameObject("Target CM Vcam");
-        targetVCam = targetVCamHolder.AddComponent<CinemachineVirtualCamera>();
-        targetVCam.Priority = 1;
-        targetVCam.Follow = followObject.transform;
+        [SetUp]
+        public override void SetUp()
+        {
+            // Camera
+            var cameraHolder = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            brain = cameraHolder.GetComponent<CinemachineBrain>();
 
-        CinemachineCore.UniformDeltaTimeOverride = 0.1f;
-    }
+            // Blending
+            brain.m_DefaultBlend = new CinemachineBlendDefinition(
+                CinemachineBlendDefinition.Style.Linear,
+                BlendingTime);
 
-    [TearDown]
-    public void Teardown()
-    {
-        Object.Destroy(cam.gameObject);
-        Object.Destroy(sourceVCam.gameObject);
-        Object.Destroy(targetVCam.gameObject);
-        Object.Destroy(followObject);
+            var followObject = CreateGameObject("Follow Object");
 
-        CinemachineCore.UniformDeltaTimeOverride = -1f;
-    }
+            // Source vcam
+            var sourceVCam = CreateGameObject("Source CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            sourceVCam.Priority = 2;
+            sourceVCam.Follow = followObject.transform;
 
+            // target vcam
+            targetVCam = CreateGameObject("Target CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            targetVCam.Priority = 1;
+            targetVCam.Follow = followObject.transform;
 
-    [UnityTest]
-    public IEnumerator BlendingBetweenCameras()
-    {
-        
-        targetVCam.Priority = 3;
-        yield return null;
+            base.SetUp();
+        }
 
-        yield return new WaitForSeconds(BlendingTime + 0.01f);
-        Assert.IsTrue(!brain.IsBlending);
-    }
-    
-    [UnityTest]
-    public IEnumerator InterruptedBlendingBetweenCameras()
-    {
-        // Start blending
-        targetVCam.Priority = 3;
-        yield return null;
+        [UnityTest]
+        public IEnumerator BlendingBetweenCameras()
+        {
+            targetVCam.Priority = 3;
+            yield return null;
 
-        // Wait for 90% of blending duration
-        yield return new WaitForSeconds(BlendingTime * 0.9f);
-        
-        // Blend back to source
-        targetVCam.Priority = 1;
-        yield return null;
-        yield return new WaitForSeconds(BlendingTime * 0.1f);
-        
-        // Quickly blend to target again
-        targetVCam.Priority = 3;
-        yield return null;
-        
-        // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime * 0.21f);
+            yield return new WaitForSeconds(BlendingTime + 0.01f);
+            Assert.That(brain.IsBlending, Is.False);
+        }
 
-        Assert.IsTrue(!brain.IsBlending);
+        [UnityTest]
+        public IEnumerator InterruptedBlendingBetweenCameras()
+        {
+            // Start blending
+            targetVCam.Priority = 3;
+            yield return null;
 
-        // Start blending
-        targetVCam.Priority = 3;
-        yield return null;
+            // Wait for 90% of blending duration
+            yield return new WaitForSeconds(BlendingTime * 0.9f);
 
-        // Wait for 90% of blending duration
-        yield return new WaitForSeconds(BlendingTime * 0.9f);
-        
-        // Blend back to source
-        targetVCam.Priority = 1;
-        yield return null;
-        yield return new WaitForSeconds(BlendingTime * 0.1f);
-        
-        // Quickly blend to target again
-        targetVCam.Priority = 3;
-        yield return null;
-        
-        // We went 90%, then got 10% back, it means we are 20% away from the target - wait only 10% worth
-        yield return new WaitForSeconds(BlendingTime * 0.1f);
+            // Blend back to source
+            targetVCam.Priority = 1;
+            yield return null;
+            yield return new WaitForSeconds(BlendingTime * 0.1f);
 
-        // Blend back to source
-        targetVCam.Priority = 1;
-        yield return null;
-        yield return new WaitForSeconds(BlendingTime * 0.1f);
-        
-        // Quickly blend to target again
-        targetVCam.Priority = 3;
-        yield return null;
-        
-        // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime * 0.21f);
+            // Quickly blend to target again
+            targetVCam.Priority = 3;
+            yield return null;
 
-        Assert.IsTrue(!brain.IsBlending);
-    }
-    
-    [UnityTest]
-    public IEnumerator DoesInterruptedBlendingBetweenCamerasTakesDoubleTime()
-    {
-        // Start blending
-        targetVCam.Priority = 3;
-        yield return null;
+            // We went 90%, then got 10% back, it means we are 20% away from the target
+            yield return new WaitForSeconds(BlendingTime * 0.21f);
 
-        // Wait for 90% of blending duration
-        yield return new WaitForSeconds(BlendingTime * 0.9f);
-        
-        // Blend back to source
-        targetVCam.Priority = 1;
-        yield return null;
-        yield return new WaitForSeconds(BlendingTime * 0.1f);
-        
-        // Quickly blend to target again
-        targetVCam.Priority = 3;
-        yield return null;
-        
-        // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime + 0.01f);
+            Assert.That(brain.IsBlending, Is.False);
 
-        Assert.IsTrue(!brain.IsBlending);
-    }
-    
-    [UnityTest]
-    public IEnumerator SetActiveBlend()
-    {
-        // Start blending
-        targetVCam.Priority = 3;
+            // Start blending
+            targetVCam.Priority = 3;
+            yield return null;
 
-        // Wait 5 frames
-        yield return null;
-        yield return null;
-        yield return null;
-        yield return null;
-        yield return null;
+            // Wait for 90% of blending duration
+            yield return new WaitForSeconds(BlendingTime * 0.9f);
 
-        var blend = brain.ActiveBlend;
-        float percentComplete = blend.TimeInBlend / blend.Duration;
+            // Blend back to source
+            targetVCam.Priority = 1;
+            yield return null;
+            yield return new WaitForSeconds(BlendingTime * 0.1f);
 
-        // Freeze the blend
-        blend.TimeInBlend -= CinemachineCore.UniformDeltaTimeOverride;
-        brain.ActiveBlend = blend;
+            // Quickly blend to target again
+            targetVCam.Priority = 3;
+            yield return null;
 
-        // Wait a frame and check that TimeInBlend is the same
-        yield return null;
-        blend = brain.ActiveBlend;
-        Assert.That(percentComplete == blend.TimeInBlend / blend.Duration);
+            // We went 90%, then got 10% back, it means we are 20% away from the target - wait only 10% worth
+            yield return new WaitForSeconds(BlendingTime * 0.1f);
 
-        // Force the blend to complete
-        blend.Duration = 0;
-        brain.ActiveBlend = blend;
+            // Blend back to source
+            targetVCam.Priority = 1;
+            yield return null;
+            yield return new WaitForSeconds(BlendingTime * 0.1f);
 
-        // Wait a frame and check that blend is finished
-        yield return null;
-        Assert.That(brain.ActiveBlend == null);
+            // Quickly blend to target again
+            targetVCam.Priority = 3;
+            yield return null;
 
-        // Blend back to source
-        targetVCam.Priority = 1;
+            // We went 90%, then got 10% back, it means we are 20% away from the target
+            yield return new WaitForSeconds(BlendingTime * 0.21f);
 
-        // Wait 5 frames
-        yield return null;
-        yield return null;
-        yield return null;
-        yield return null;
-        yield return null;
-        blend = brain.ActiveBlend;
-        Assert.That(percentComplete == blend.TimeInBlend / blend.Duration);
+            Assert.That(brain.IsBlending, Is.False);
+        }
 
-        // Kill the blend
-        brain.ActiveBlend = null;
+        [UnityTest]
+        public IEnumerator DoesInterruptedBlendingBetweenCamerasTakesDoubleTime()
+        {
+            // Start blending
+            targetVCam.Priority = 3;
+            yield return null;
 
-        // Wait a frame and check that blend is finished
-        yield return null;
-        Assert.That(brain.ActiveBlend == null);
+            // Wait for 90% of blending duration
+            yield return new WaitForSeconds(BlendingTime * 0.9f);
+
+            // Blend back to source
+            targetVCam.Priority = 1;
+            yield return null;
+            yield return new WaitForSeconds(BlendingTime * 0.1f);
+
+            // Quickly blend to target again
+            targetVCam.Priority = 3;
+            yield return null;
+
+            // We went 90%, then got 10% back, it means we are 20% away from the target
+            yield return new WaitForSeconds(BlendingTime + 0.01f);
+
+            Assert.That(brain.IsBlending, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator SetActiveBlend()
+        {
+            // Start blending
+            targetVCam.Priority = 3;
+
+            // Wait 5 frames
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+
+            var blend = brain.ActiveBlend;
+            float percentComplete = blend.TimeInBlend / blend.Duration;
+
+            // Freeze the blend
+            blend.TimeInBlend -= CinemachineCore.UniformDeltaTimeOverride;
+            brain.ActiveBlend = blend;
+
+            // Wait a frame and check that TimeInBlend is the same
+            yield return null;
+            blend = brain.ActiveBlend;
+            Assert.That(percentComplete == blend.TimeInBlend / blend.Duration);
+
+            // Force the blend to complete
+            blend.Duration = 0;
+            brain.ActiveBlend = blend;
+
+            // Wait a frame and check that blend is finished
+            yield return null;
+            Assert.That(brain.ActiveBlend == null);
+
+            // Blend back to source
+            targetVCam.Priority = 1;
+
+            // Wait 5 frames
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+            blend = brain.ActiveBlend;
+            Assert.That(percentComplete == blend.TimeInBlend / blend.Duration);
+
+            // Kill the blend
+            brain.ActiveBlend = null;
+
+            // Wait a frame and check that blend is finished
+            yield return null;
+            Assert.That(brain.ActiveBlend == null);
+        }
     }
 }
