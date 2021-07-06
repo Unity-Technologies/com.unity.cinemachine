@@ -47,7 +47,7 @@ namespace Tests.Runtime
             _vcam2.Priority = 10;
 
             // a "wall" composed of a single quad that partially obscures vcam1, but not vcam2
-            var wall = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            var wall = CreatePrimitive(PrimitiveType.Quad);
             wall.transform.SetPositionAndRotation(new Vector3(0, 0, 4), Quaternion.Euler(0, 180, 0));
             wall.transform.localScale = new Vector3(2, 2, 2);
 
