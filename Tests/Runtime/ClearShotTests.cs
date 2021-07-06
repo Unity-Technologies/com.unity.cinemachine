@@ -71,6 +71,7 @@ namespace Tests.Runtime
         {
             _character.transform.position = characterPosition;
             yield return null;
+            yield return null;
 
             Assert.That(_clearShot.LiveChild.Name, Is.EqualTo(expectedVcamName));
         }
