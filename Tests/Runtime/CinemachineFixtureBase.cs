@@ -7,12 +7,12 @@ namespace Tests.Runtime
 {
     public class CinemachineFixtureBase
     {
-        private readonly List<GameObject> _gameObjectsToDestroy = new List<GameObject>();
+        private readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
         
         internal GameObject CreateGameObject(string name, params System.Type[] components)
         {
             var go = new GameObject();
-            _gameObjectsToDestroy.Add(go);
+            m_GameObjectsToDestroy.Add(go);
             go.name = name;
         
             foreach(var c in components)
@@ -25,7 +25,7 @@ namespace Tests.Runtime
         internal GameObject CreatePrimitive(PrimitiveType type)
         {
             var go = GameObject.CreatePrimitive(type);
-            _gameObjectsToDestroy.Add(go);
+            m_GameObjectsToDestroy.Add(go);
 
             return go;
         }
@@ -40,10 +40,10 @@ namespace Tests.Runtime
         [TearDown]
         public virtual void TearDown()
         {
-            foreach (var go in _gameObjectsToDestroy)
+            foreach (var go in m_GameObjectsToDestroy)
                 Object.Destroy(go);
 
-            _gameObjectsToDestroy.Clear();
+            m_GameObjectsToDestroy.Clear();
             
             CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
