@@ -2,6 +2,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using Cinemachine;
+using NUnit.Framework.Interfaces;
 using UnityEngine.TestTools;
 
 namespace Tests.Runtime
@@ -70,6 +71,9 @@ namespace Tests.Runtime
         public IEnumerator TestClearShotSwitchesCameras(Vector3 characterPosition, string expectedVcamName)
         {
             m_Character.transform.position = characterPosition;
+
+            // need to wait 3 frames, otherwise the assert occasionally fails
+            yield return null;
             yield return null;
             yield return null;
 
