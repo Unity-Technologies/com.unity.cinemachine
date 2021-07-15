@@ -9,16 +9,16 @@ namespace Tests.Runtime
 {
     public class CameraPositionTests : CinemachineFixtureBase
     {
-        private CinemachineVirtualCamera vcam;
-        private GameObject followObject;
+        private CinemachineVirtualCamera m_Vcam;
+        private GameObject m_FollowObject;
 
         [SetUp]
         public override void SetUp()
         {
             CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
-            vcam = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-            vcam.Priority = 100;
-            followObject = CreateGameObject("Follow Object");
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            m_Vcam.Priority = 100;
+            m_FollowObject = CreateGameObject("Follow Object");
             
             base.SetUp();
         }
@@ -26,84 +26,84 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator DoNothing()
         {
-            vcam.Follow = followObject.transform;
-            Vector3 oldPos = vcam.transform.position;
-            followObject.transform.position += new Vector3(2, 2, 2);
+            m_Vcam.Follow = m_FollowObject.transform;
+            Vector3 oldPos = m_Vcam.transform.position;
+            m_FollowObject.transform.position += new Vector3(2, 2, 2);
             yield return null;
-            Assert.That(vcam.State.FinalPosition, Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
         }
 
         [UnityTest]
         public IEnumerator ThirdPerson()
         {
-            vcam.AddCinemachineComponent<Cinemachine3rdPersonFollow>();
-            vcam.Follow = followObject.transform;
-            followObject.transform.position += new Vector3(10, 0, 0);
+            m_Vcam.AddCinemachineComponent<Cinemachine3rdPersonFollow>();
+            m_Vcam.Follow = m_FollowObject.transform;
+            m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(vcam.State.FinalPosition, Is.EqualTo(followObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
         }
 
         [UnityTest]
         public IEnumerator FramingTransposer()
         {
-            CinemachineFramingTransposer component = vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            CinemachineFramingTransposer component = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
             component.m_XDamping = 0;
             component.m_YDamping = 0;
             component.m_ZDamping = 0;
             component.m_CameraDistance = 1f;
-            vcam.Follow = followObject.transform;
-            followObject.transform.position += new Vector3(10, 0, 0);
+            m_Vcam.Follow = m_FollowObject.transform;
+            m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(vcam.State.FinalPosition, Is.EqualTo(new Vector3(10, 0, -component.m_CameraDistance)).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(new Vector3(10, 0, -component.m_CameraDistance)).Using(Vector3EqualityComparer.Instance));
         }
 
         [UnityTest]
         public IEnumerator HardLockToTarget()
         {
-            vcam.AddCinemachineComponent<CinemachineHardLockToTarget>();
-            vcam.Follow = followObject.transform;
-            followObject.transform.position += new Vector3(10, 0, 0);
+            m_Vcam.AddCinemachineComponent<CinemachineHardLockToTarget>();
+            m_Vcam.Follow = m_FollowObject.transform;
+            m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(vcam.State.FinalPosition, Is.EqualTo(followObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
         }
 
         [UnityTest]
         public IEnumerator OrbTransposer()
         {
-            CinemachineOrbitalTransposer component = vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
+            CinemachineOrbitalTransposer component = m_Vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
             component.m_XDamping = 0;
             component.m_YDamping = 0;
             component.m_ZDamping = 0;
             component.m_FollowOffset = new Vector3(0, 0, 0);
-            vcam.Follow = followObject.transform;
-            followObject.transform.position += new Vector3(10, 0, 0);
+            m_Vcam.Follow = m_FollowObject.transform;
+            m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(vcam.State.FinalPosition, Is.EqualTo(followObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
         }
 
         [UnityTest]
         public IEnumerator TrackedDolly()
         {
-            vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
-            vcam.Follow = followObject.transform;
-            Vector3 oldPos = vcam.transform.position;
-            followObject.transform.position += new Vector3(2, 2, 2);
+            m_Vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
+            m_Vcam.Follow = m_FollowObject.transform;
+            Vector3 oldPos = m_Vcam.transform.position;
+            m_FollowObject.transform.position += new Vector3(2, 2, 2);
             yield return null;
-            Assert.That(vcam.State.FinalPosition, Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
         }
 
         [UnityTest]
         public IEnumerator Transposer()
         {
-            CinemachineTransposer component = vcam.AddCinemachineComponent<CinemachineTransposer>();
+            CinemachineTransposer component = m_Vcam.AddCinemachineComponent<CinemachineTransposer>();
             component.m_XDamping = 0;
             component.m_YDamping = 0;
             component.m_ZDamping = 0;
             component.m_FollowOffset = new Vector3(0, 0, 0);
-            vcam.Follow = followObject.transform;
-            followObject.transform.position += new Vector3(10, 0, 0);
+            m_Vcam.Follow = m_FollowObject.transform;
+            m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(vcam.State.FinalPosition, Is.EqualTo(followObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
         }
     }
 }

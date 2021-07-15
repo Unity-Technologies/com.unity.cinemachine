@@ -13,9 +13,9 @@ namespace Tests.Runtime
     [TestFixture]
     public class StateDrivenCameraTests : CinemachineFixtureBase
     {
-        private CinemachineStateDrivenCamera stateDrivenCamera;
-        private Animator animator;
-        private CinemachineVirtualCamera vcam1, vcam2;
+        private CinemachineStateDrivenCamera m_StateDrivenCamera;
+        private Animator m_Animator;
+        private CinemachineVirtualCamera m_Vcam1, m_Vcam2;
 
         [SetUp]
         public override void SetUp()
@@ -43,10 +43,10 @@ namespace Tests.Runtime
                 new CinemachineStateDrivenCamera.Instruction() {m_FullHash = controller.layers[0].stateMachine.states[1].GetHashCode(), m_VirtualCamera = vcam2}
             };
 
-            this.stateDrivenCamera = stateDrivenCamera;
-            animator = character.GetComponent<Animator>();
-            this.vcam1 = vcam1;
-            this.vcam2 = vcam2;
+            this.m_StateDrivenCamera = stateDrivenCamera;
+            m_Animator = character.GetComponent<Animator>();
+            this.m_Vcam1 = vcam1;
+            this.m_Vcam2 = vcam2;
 
             base.SetUp();
         }
@@ -56,19 +56,19 @@ namespace Tests.Runtime
         {
             yield return null; // wait one frame
 
-            Assert.That(stateDrivenCamera.LiveChild.Name, Is.EqualTo(vcam1.Name));
+            Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
 
-            animator.SetTrigger("DoTransitionToState2");
-
-            yield return null; // wait one frame
-
-            Assert.That(stateDrivenCamera.LiveChild.Name, Is.EqualTo(vcam2.Name));
-
-            animator.SetTrigger(("DoTransitionToState1"));
+            m_Animator.SetTrigger("DoTransitionToState2");
 
             yield return null; // wait one frame
 
-            Assert.That(stateDrivenCamera.LiveChild.Name, Is.EqualTo(vcam1.Name));
+            Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam2.Name));
+
+            m_Animator.SetTrigger(("DoTransitionToState1"));
+
+            yield return null; // wait one frame
+
+            Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Tests.Runtime
 {
     public class CinemachineFixtureBase
     {
-        private List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
+        private readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
         
         internal GameObject CreateGameObject(string name, params System.Type[] components)
         {
@@ -19,6 +19,14 @@ namespace Tests.Runtime
                 if (c.IsSubclassOf(typeof(Component)))
                     go.AddComponent(c);
         
+            return go;
+        }
+        
+        internal GameObject CreatePrimitive(PrimitiveType type)
+        {
+            var go = GameObject.CreatePrimitive(type);
+            m_GameObjectsToDestroy.Add(go);
+
             return go;
         }
 
@@ -33,7 +41,7 @@ namespace Tests.Runtime
         public virtual void TearDown()
         {
             foreach (var go in m_GameObjectsToDestroy)
-                UnityEngine.Object.Destroy(go);
+                Object.Destroy(go);
 
             m_GameObjectsToDestroy.Clear();
             

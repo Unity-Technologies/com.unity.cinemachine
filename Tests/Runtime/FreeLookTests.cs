@@ -15,23 +15,23 @@ namespace Tests.Runtime
     {
         class TestAxisProvider : AxisState.IInputAxisProvider
         {
-            private float x, y;
+            private float m_X, m_Y;
 
             public TestAxisProvider()
             {
-                x = 0f;
-                y = 0f;
+                m_X = 0f;
+                m_Y = 0f;
             }
 
             public void SetAxisValues(float x, float y)
             {
-                this.x = x;
-                this.y = y;
+                this.m_X = x;
+                this.m_Y = y;
             }
 
             public float GetAxisValue(int axis)
             {
-                return axis == 0 ? x : y;
+                return axis == 0 ? m_X : m_Y;
             }
         }
 

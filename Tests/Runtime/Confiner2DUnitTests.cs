@@ -11,22 +11,22 @@ namespace Tests.Runtime
 {
     public class Confiner2DUnitTests : CinemachineFixtureBase
     {
-        private Camera cam;
-        private CinemachineVirtualCamera vcam;
-        private CinemachineConfiner2D confiner2D;
+        private Camera m_Cam;
+        private CinemachineVirtualCamera m_Vcam;
+        private CinemachineConfiner2D m_Confiner2D;
 
         [SetUp]
         public override void SetUp()
         {
-            cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
+            m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
             var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera), typeof(CinemachineConfiner2D));
-            vcam = vcamHolder.GetComponent<CinemachineVirtualCamera>();
-            confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
-            vcam.Priority = 100;
-            cam.orthographic = true;
-            vcam.AddExtension(confiner2D);
+            m_Vcam = vcamHolder.GetComponent<CinemachineVirtualCamera>();
+            m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
+            m_Vcam.Priority = 100;
+            m_Cam.orthographic = true;
+            m_Vcam.AddExtension(m_Confiner2D);
 
-            vcam.m_Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
+            m_Vcam.m_Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
 
             base.SetUp();
         }
@@ -34,7 +34,7 @@ namespace Tests.Runtime
         [TearDown]
         public override void TearDown()
         {
-            vcam.m_Lens.OrthographicSize = 1;
+            m_Vcam.m_Lens.OrthographicSize = 1;
             
             base.TearDown();
         }
@@ -52,34 +52,34 @@ namespace Tests.Runtime
         public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_PolygonCollider2D(Vector2[] testPoints)
         {
             var polygonCollider2D = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D)).GetComponent<PolygonCollider2D>();
-            confiner2D.m_BoundingShape2D = polygonCollider2D;
-            confiner2D.m_Damping = 0;
-            confiner2D.m_MaxWindowSize = 0;
+            m_Confiner2D.m_BoundingShape2D = polygonCollider2D;
+            m_Confiner2D.m_Damping = 0;
+            m_Confiner2D.m_MaxWindowSize = 0;
 
             // clockwise
             polygonCollider2D.points = testPoints;
             
-            confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateCache();
 
-            vcam.transform.position = Vector3.zero;
+            m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(vcam.State.CorrectedPosition, Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.CorrectedPosition, Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
 
-            vcam.transform.position = Vector2.left * 2f;
+            m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
-            vcam.transform.position = Vector2.up * 2f;
+            m_Vcam.transform.position = Vector2.up * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
-            vcam.transform.position = Vector2.right * 2f;
+            m_Vcam.transform.position = Vector2.right * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
-            vcam.transform.position = Vector2.down * 2f;
+            m_Vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
 
         [UnityTest, TestCaseSource(nameof(ColliderTestCases))]
@@ -97,33 +97,33 @@ namespace Tests.Runtime
             polyHolder.transform.parent = compositeHolder.transform;
             var polygonCollider2D = polyHolder.GetComponent<PolygonCollider2D>();
             polygonCollider2D.usedByComposite = true;
-            confiner2D.m_BoundingShape2D = compositeCollider2D;
-            confiner2D.m_Damping = 0;
-            confiner2D.m_MaxWindowSize = 0;
+            m_Confiner2D.m_BoundingShape2D = compositeCollider2D;
+            m_Confiner2D.m_Damping = 0;
+            m_Confiner2D.m_MaxWindowSize = 0;
             
             // clockwise
             polygonCollider2D.points = testPoints;
-            confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateCache();
 
-            vcam.transform.position = Vector3.zero;
+            m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(vcam.State.CorrectedPosition, Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.CorrectedPosition, Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
 
-            vcam.transform.position = Vector2.left * 2f;
+            m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
-            vcam.transform.position = Vector2.up * 2f;
+            m_Vcam.transform.position = Vector2.up * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
-            vcam.transform.position = Vector2.right * 2f;
+            m_Vcam.transform.position = Vector2.right * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
-            vcam.transform.position = Vector2.down * 2f;
+            m_Vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
-            Assert.That((vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
     }
 }
