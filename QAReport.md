@@ -1,6 +1,6 @@
-**Cinemachine 2.7.5-pre.1 QA Report**
+**Cinemachine 2.7.5 QA Report**
 
-Cinemachine 2.7.5-pre.1 release is a bugfix release with the following: 
+Cinemachine 2.7.5 release is a bugfix release with the following: 
 
 - Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
 - Bugfix: 3rdPersonFollow works with Aim components now.
