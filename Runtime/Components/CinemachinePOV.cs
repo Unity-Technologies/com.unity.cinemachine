@@ -135,7 +135,7 @@ namespace Cinemachine
             if (parent != null)
                 rot = parent.rotation * rot;
             else
-                rot = rot * Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp);
+                rot = Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp) * rot;
             curState.RawOrientation = rot;
         }
 
