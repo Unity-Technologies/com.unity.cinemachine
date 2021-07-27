@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Collider2D inspector: added warning when collider is of the wrong type.
 - Added ability to directly set the active blend in CinemachineBrain.
 - Bugfix: POV did not properly handle overridden up.
+- Regression fix: removed GC allocs in UpdateTargetCache.
 
 
 
