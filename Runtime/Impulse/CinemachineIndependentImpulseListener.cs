@@ -44,6 +44,18 @@ namespace Cinemachine
         [Tooltip("Enable this to process all impulse signals in camera space")]
         public bool m_UseLocalSpace;
 
+        /// <summary>
+        /// This controls the secondary reaction of the listener to the incoming impulse.  
+        /// The impulse might be for example a sharp shock, and the secondary reaction could
+        /// be a vibration whose amplitude and duration is controlled by the size of the 
+        /// original impulse.  This allows different listeners to respond in different ways 
+        /// to the same impulse signal.
+        /// </summary>
+        [Tooltip("This controls the secondary reaction of the listener to the incoming impulse.  "
+            + "The impulse might be for example a sharp shock, and the secondary reaction could "
+            + "be a vibration whose amplitude and duration is controlled by the size of the "
+            + "original impulse.  This allows different listeners to respond in different ways "
+            + "to the same impulse signal.")]
         public CinemachineImpulseListener.ImpulseReaction m_ReactionSettings;
 
         private void Reset()
