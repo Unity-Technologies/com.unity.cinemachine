@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.6.11] - 2021-10-05
 - Bugfix: POV did not properly handle overridden up.
+- Regression fix: removed GC allocs in UpdateTargetCache.
 
 ## [2.6.10] - 2021-08-19
 - Bugfix: Compilation error when using HDRP or LWRP
