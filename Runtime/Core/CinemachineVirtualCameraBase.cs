@@ -779,24 +779,29 @@ namespace Cinemachine
         {
             var target = ResolveFollow(Follow);
             FollowTargetChanged = target != m_CachedFollowTarget;
-            m_CachedFollowTarget = target;
-            m_CachedFollowTargetVcam = null;
-            m_CachedFollowTargetGroup = null;
-            if (m_CachedFollowTarget != null)
+            if (target != m_CachedFollowTarget)
             {
-                m_CachedFollowTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
-                m_CachedFollowTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
+                m_CachedFollowTarget = target;
+                m_CachedFollowTargetVcam = null;
+                m_CachedFollowTargetGroup = null;
+                if (m_CachedFollowTarget != null)
+                {
+                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedFollowTargetVcam);
+                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedFollowTargetGroup);
+                }
             }
-
             target = ResolveLookAt(LookAt);
             LookAtTargetChanged = target != m_CachedLookAtTarget;
-            m_CachedLookAtTarget = target;
-            m_CachedLookAtTargetVcam = null;
-            m_CachedLookAtTargetGroup = null;
-            if (target != null)
+            if (target != m_CachedLookAtTarget)
             {
-                m_CachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
-                m_CachedLookAtTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
+                m_CachedLookAtTarget = target;
+                m_CachedLookAtTargetVcam = null;
+                m_CachedLookAtTargetGroup = null;
+                if (target != null)
+                {
+                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedLookAtTargetVcam);
+                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedLookAtTargetGroup);
+                }
             }
         }
 
