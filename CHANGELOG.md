@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Virtual Cameras were not updating in Edit mode when Brain's BlendUpdateMode was FixedUpdate.
 - Bugfix: Lens mode override was not working correctly in all cases.
 - Collider2D inspector: added warning when collider is of the wrong type.
+- Added ability to directly set the active blend in CinemachineBrain.
+- Bugfix: POV did not properly handle overridden up.
 
 
 ## [2.8.0-pre.1] - 2021-04-21
