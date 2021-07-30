@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Tests.Runtime
 {
+#if CINEMACHINE_PHYSICS
     [TestFixture]
     public class ClearShotTests : CinemachineFixtureBase
     {
@@ -20,7 +21,7 @@ namespace Tests.Runtime
         {
             // a basic "character" to use as a lookat
             m_Character = CreateGameObject("Character");
-            m_Character.transform.position = new Vector3(100, 0, 1);
+            m_Character.transform.position = new Vector3(10, 0, 1);
 
             // main camera
             CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
@@ -72,12 +73,10 @@ namespace Tests.Runtime
         {
             m_Character.transform.position = characterPosition;
 
-            // need to wait 3 frames, otherwise the assert occasionally fails
-            yield return null;
-            yield return null;
-            yield return null;
+            yield return new WaitForSeconds(0.5f);
 
             Assert.That(m_ClearShot.LiveChild.Name, Is.EqualTo(expectedVcamName));
         }
     }
+#endif
 }

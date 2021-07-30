@@ -50,6 +50,13 @@ namespace Cinemachine
         [Tooltip("Enable this to process all impulse signals in camera space")]
         public bool m_UseCameraSpace;
 
+        /// <summary>
+        /// This controls the secondary reaction of the listener to the incoming impulse.  
+        /// The impulse might be for example a sharp shock, and the secondary reaction could
+        /// be a vibration whose amplitude and duration is controlled by the size of the 
+        /// original impulse.  This allows different listeners to respond in different ways 
+        /// to the same impulse signal.
+        /// </summary>
         [Serializable]
         public struct ImpulseReaction
         {
@@ -98,6 +105,14 @@ namespace Cinemachine
                         UnityEngine.Random.Range(-1000f, 1000f));
             }
 
+            /// <summary>
+            /// Get the rection effect for a given impulse at a given time.
+            /// </summary>
+            /// <param name="deltaTime">Current time interval</param>
+            /// <param name="impulsePos">The input impulse signal at this time</param>
+            /// <param name="pos">output reaction position delta</param>
+            /// <param name="rot">output reaction rotation delta</param>
+            /// <returns>True if thewre is a reaction effect, false otherwise</returns>
             public bool GetReaction(
                 float deltaTime, Vector3 impulsePos, 
                 out Vector3 pos, out Quaternion rot)
@@ -143,6 +158,18 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// This controls the secondary reaction of the listener to the incoming impulse.  
+        /// The impulse might be for example a sharp shock, and the secondary reaction could
+        /// be a vibration whose amplitude and duration is controlled by the size of the 
+        /// original impulse.  This allows different listeners to respond in different ways 
+        /// to the same impulse signal.
+        /// </summary>
+        [Tooltip("This controls the secondary reaction of the listener to the incoming impulse.  "
+            + "The impulse might be for example a sharp shock, and the secondary reaction could "
+            + "be a vibration whose amplitude and duration is controlled by the size of the "
+            + "original impulse.  This allows different listeners to respond in different ways "
+            + "to the same impulse signal.")]
         public ImpulseReaction m_ReactionSettings;
 
         private void Reset()
