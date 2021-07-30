@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added ability to directly set the active blend in CinemachineBrain.
 - Bugfix: POV did not properly handle overridden up.
 - Regression fix: removed GC allocs in UpdateTargetCache.
+- Added ability to directly set the active blend in CinemachineBrain.
+- Bugfix: POV did not properly handle overridden up.
+- Regression fix: removed GC allocs in UpdateTargetCache.
+- Bugfix: async scene load/unload could cause jitter.
 
 
 
