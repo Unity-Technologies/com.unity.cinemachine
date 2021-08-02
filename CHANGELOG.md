@@ -4,10 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.7] - 2021-07-30
-- Fixed failing test
-
-## [2.6.6] - 2021-07-27
+## [2.6.8] - 2021-08-02
 - Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
 - Bugfix: 3rdPersonFollow works with Aim components now. 
 - Bugfix: Blends between vcams, that are rotated so that their up vector is different from World up, are correct now.
@@ -21,7 +18,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Virtual Cameras were not updating in Edit mode when Brain's BlendUpdateMode was FixedUpdate.
 - Bugfix: Lens mode override was not working correctly in all cases.
 - Bugfix: Virtual Cameras were not updating in Edit mode when Brain's BlendUpdateMode was FixedUpdate.
-
 
 
 ## [2.6.5] - 2021-05-21
