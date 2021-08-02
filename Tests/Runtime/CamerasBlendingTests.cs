@@ -65,6 +65,7 @@ public class CamerasBlendingTests
     }
     
     [UnityTest]
+    [Platform(Exclude="MacOsX")] 
     public IEnumerator InterruptedBlendingBetweenCameras()
     {
         // Start blending
