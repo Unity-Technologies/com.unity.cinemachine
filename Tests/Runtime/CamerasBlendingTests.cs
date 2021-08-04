@@ -41,6 +41,8 @@ public class CamerasBlendingTests
         targetVCam = targetVCamHolder.AddComponent<CinemachineVirtualCamera>();
         targetVCam.Priority = 1;
         targetVCam.Follow = followObject.transform;
+        
+        CinemachineCore.UniformDeltaTimeOverride = 0.1f;
     }
 
     [TearDown]
@@ -50,6 +52,8 @@ public class CamerasBlendingTests
         Object.Destroy(sourceVCam.gameObject);
         Object.Destroy(targetVCam.gameObject);
         Object.Destroy(followObject);
+        
+        CinemachineCore.UniformDeltaTimeOverride = -1f;
     }
 
 
@@ -65,7 +69,6 @@ public class CamerasBlendingTests
     }
     
     [UnityTest]
-    [Platform(Exclude="MacOsX")] 
     public IEnumerator InterruptedBlendingBetweenCameras()
     {
         // Start blending
@@ -85,7 +88,7 @@ public class CamerasBlendingTests
         yield return null;
         
         // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime * 0.25f);
+        yield return new WaitForSeconds(BlendingTime * 0.21f);
 
         Assert.IsTrue(!brain.IsBlending);
 
@@ -118,7 +121,7 @@ public class CamerasBlendingTests
         yield return null;
         
         // We went 90%, then got 10% back, it means we are 20% away from the target
-        yield return new WaitForSeconds(BlendingTime * 0.25f);
+        yield return new WaitForSeconds(BlendingTime * 0.21f);
 
         Assert.IsTrue(!brain.IsBlending);
     }
