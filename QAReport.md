@@ -1,31 +1,24 @@
-**Cinemachine 2.8.0-exp.1 Testing Report**
+**Cinemachine 2.8.0 Testing Report**
 
-The following additions were verified and tested in Unity 2021.1.1f1:
+The following were verified and tested in Unity 2021.2.0b3:
 
-- Tested new simplified modes for the Cinemachine impulse generation in the context of the Impulse sample scene. Verified the secondary reaction settings to the Impulse Listener.
-- Verified Storyboard render modes support for ScreenSpaceOverlay and ScreenSpaceCamera.
-- Verified Damping Into Collision and Damping From Collision properties to Cinemachine 3rdPersonFollow to control how gradually the camera moves to correct for occlusions. Tested using AimingRig sample scene from Cinemachine package.
-- Verified that VCam can now have a negative near clip plane when VCam set to Orthographic.
-- Verified option to make game-view guides visible but not clickable in Cinemachine preference.
-- Verified that when Input System package is installed, there is a button in virtual camera inspectors to auto-generate CinemachineInputProvider component if missing.
-- Verified that default CinemachinePostProcessing profile priority is now configurable and defaults to 1000.
-- Verified that Cinemachine3rdPersonFollow can operate without the physics module, and without collision resolution.
+- Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
+- Bugfix: 3rdPersonFollow works with Aim components now.
+- Bugfix: Blends between vcams, that are rotated so that their up vector is different from World up, are correct now.
+- Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
+- Bugfix: Collider sometimes bounced a little when the camera radius was large.
+- Bugfix: CinemachineVolumeSettings inspector was making the game view flicker.
+- Bugfix: CinemachineVolumeSettings inspector displayed a misleading warning message with URP when focus tracking was enabled.
+- Bugfix: Rapidly toggling active cameras before the blends were finished did not use the correct blend time.
+- AimingRig sample scene updated with a better reactive crosshair design.
+- Added API accessor for Active Blend in Clearshot and StateDrivenCamera.
+- Bugfix: Virtual Cameras were not updating in Edit mode when Brain's BlendUpdateMode was FixedUpdate.
+- Bugfix: Lens mode override was not working correctly in all cases.
+- Collider2D inspector: added warning when collider is of the wrong type.
 
-- The following Bugfix were verified in Unity 2021.1.1f1:
-  - Bugfix: 3rdPersonFollow collision resolution was failing when the camera radius was large.
-  - Bugfix: 3rdPersonFollow damping was being done in world space instead of camera space.
-  - Bugfix: 3rdPersonFollow was stuttering when Z damping was high.
-  - Regression fix: CinemachineInputProvider had stopped providing input.
-  - Bugfix: Lens aspect and sensorSize were not getting updated if lens OverrideMode != None.
-  - Bugfix: Changing targets on a live vcam was misbehaving.
-  - Bugfix: Framing transposer now handles empty groups.
-  - Bugfix: Interrupting a transition with InheritPosition enabled was broken.
-  - Bugfix: Cinemachine3rdPersonFollow was not handling collision by default.
-  - Bugfix: SaveDuringPlay saves only components that have the SaveDuringPlay attribute.
-  - Regression fix: Entries in the custom blends editor in CM Brain inspector were not selectable.
-  
-  
-- Regression testing was done mainly using the Cinemachine Sample Scenes.
+
+
+Regression testing was done mainly using the Cinemachine Sample Scenes.
 
 
 
