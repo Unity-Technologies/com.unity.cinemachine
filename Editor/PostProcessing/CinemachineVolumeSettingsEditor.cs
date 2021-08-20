@@ -4,7 +4,7 @@
     using UnityEngine.Rendering;
     using UnityEditor.Rendering;
     using System.Collections.Generic;
-    #if CINEMACHINE_HDRP_7_3_1
+    #if CINEMACHINE_HDRP_7_0_0
         using UnityEngine.Rendering.HighDefinition;
     #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
@@ -84,8 +84,8 @@ namespace Cinemachine.PostFX.Editor
                 bool valid = false;
                 DepthOfField dof;
                 if (Target.m_Profile != null && Target.m_Profile.TryGet(out dof))
-                {
 #if CINEMACHINE_LWRP_7_0_0 && !CINEMACHINE_HDRP
+                {
                     valid = dof.active && dof.focusDistance.overrideState
                         && dof.mode.overrideState && dof.mode == DepthOfFieldMode.Bokeh;
                 }
