@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
 
-[TestFixture]   
+[TestFixture]
+[Ignore("Instability in blending tests")]
 public class CamerasBlendingTests
 {
     private Camera cam;
