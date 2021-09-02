@@ -97,7 +97,9 @@ namespace Cinemachine
         [Tooltip("Automatic recentering to at-rest position")]
         public Recentering m_Recentering;
 
-        private float mCurrentSpeed;
+        private float m_CurrentSpeed;
+        private float m_LastUpdateTime;
+        private int m_LastUpdateFrame;
 
         /// <summary>Constructor with specific values</summary>
         /// <param name="minValue"></param>
@@ -131,9 +133,11 @@ namespace Cinemachine
             m_InputAxisValue = 0;
             m_InvertInput = invert;
 
-            mCurrentSpeed = 0f;
+            m_CurrentSpeed = 0f;
             m_InputAxisProvider = null;
             m_InputAxisIndex = 0;
+            m_LastUpdateTime = 0;
+            m_LastUpdateFrame = 0;
         }
 
         /// <summary>Call from OnValidate: Make sure the fields are sensible</summary>
@@ -154,7 +158,9 @@ namespace Cinemachine
         public void Reset()
         {
             m_InputAxisValue = 0;
-            mCurrentSpeed = 0;
+            m_CurrentSpeed = 0;
+            m_LastUpdateTime = 0;
+            m_LastUpdateFrame = 0;
         }
 
         /// <summary>
@@ -199,6 +205,16 @@ namespace Cinemachine
         /// <b>false</b> otherwise</returns>
         public bool Update(float deltaTime)
         {
+            // Update only once per frame
+            if (Time.frameCount == m_LastUpdateFrame)
+                return false;
+            m_LastUpdateFrame = Time.frameCount;
+
+            // Cheating: we want the render frame time, not the fixed frame time
+            if (deltaTime >= 0 && m_LastUpdateTime != 0)
+                deltaTime = Time.time - m_LastUpdateTime;
+            m_LastUpdateTime = Time.time;
+
             if (m_InputAxisProvider != null)
                 m_InputAxisValue = m_InputAxisProvider.GetAxisValue(m_InputAxisIndex);
             else if (!string.IsNullOrEmpty(m_InputAxisName))
@@ -217,13 +233,13 @@ namespace Cinemachine
             // Direct mode update: maxSpeed interpreted as multiplier
             input *= m_MaxSpeed;
             if (deltaTime < Epsilon)
-                mCurrentSpeed = 0;
+                m_CurrentSpeed = 0;
             else
             {
                 float speed = input / deltaTime;
-                float dampTime = Mathf.Abs(speed) < Mathf.Abs(mCurrentSpeed) ? m_DecelTime : m_AccelTime;
-                speed = mCurrentSpeed + Damper.Damp(speed - mCurrentSpeed, dampTime, deltaTime);
-                mCurrentSpeed = speed;
+                float dampTime = Mathf.Abs(speed) < Mathf.Abs(m_CurrentSpeed) ? m_DecelTime : m_AccelTime;
+                speed = m_CurrentSpeed + Damper.Damp(speed - m_CurrentSpeed, dampTime, deltaTime);
+                m_CurrentSpeed = speed;
 
                 // Decelerate to the end points of the range if not wrapping
                 float range = m_MaxValue - m_MinValue;
@@ -258,32 +274,32 @@ namespace Cinemachine
             {
                 float targetSpeed = input * m_MaxSpeed;
                 if (Mathf.Abs(targetSpeed) < Epsilon
-                    || (Mathf.Sign(mCurrentSpeed) == Mathf.Sign(targetSpeed)
-                        && Mathf.Abs(targetSpeed) <  Mathf.Abs(mCurrentSpeed)))
+                    || (Mathf.Sign(m_CurrentSpeed) == Mathf.Sign(targetSpeed)
+                        && Mathf.Abs(targetSpeed) <  Mathf.Abs(m_CurrentSpeed)))
                 {
                     // Need to decelerate
-                    float a = Mathf.Abs(targetSpeed - mCurrentSpeed) / Mathf.Max(Epsilon, m_DecelTime);
-                    float delta = Mathf.Min(a * deltaTime, Mathf.Abs(mCurrentSpeed));
-                    mCurrentSpeed -= Mathf.Sign(mCurrentSpeed) * delta;
+                    float a = Mathf.Abs(targetSpeed - m_CurrentSpeed) / Mathf.Max(Epsilon, m_DecelTime);
+                    float delta = Mathf.Min(a * deltaTime, Mathf.Abs(m_CurrentSpeed));
+                    m_CurrentSpeed -= Mathf.Sign(m_CurrentSpeed) * delta;
                 }
                 else
                 {
                     // Accelerate to the target speed
-                    float a = Mathf.Abs(targetSpeed - mCurrentSpeed) / Mathf.Max(Epsilon, m_AccelTime);
-                    mCurrentSpeed += Mathf.Sign(targetSpeed) * a * deltaTime;
-                    if (Mathf.Sign(mCurrentSpeed) == Mathf.Sign(targetSpeed)
-                        && Mathf.Abs(mCurrentSpeed) > Mathf.Abs(targetSpeed))
+                    float a = Mathf.Abs(targetSpeed - m_CurrentSpeed) / Mathf.Max(Epsilon, m_AccelTime);
+                    m_CurrentSpeed += Mathf.Sign(targetSpeed) * a * deltaTime;
+                    if (Mathf.Sign(m_CurrentSpeed) == Mathf.Sign(targetSpeed)
+                        && Mathf.Abs(m_CurrentSpeed) > Mathf.Abs(targetSpeed))
                     {
-                        mCurrentSpeed = targetSpeed;
+                        m_CurrentSpeed = targetSpeed;
                     }
                 }
             }
 
             // Clamp our max speeds so we don't go crazy
             float maxSpeed = GetMaxSpeed();
-            mCurrentSpeed = Mathf.Clamp(mCurrentSpeed, -maxSpeed, maxSpeed);
+            m_CurrentSpeed = Mathf.Clamp(m_CurrentSpeed, -maxSpeed, maxSpeed);
 
-            Value += mCurrentSpeed * deltaTime;
+            Value += m_CurrentSpeed * deltaTime;
             bool isOutOfRange = (Value > m_MaxValue) || (Value < m_MinValue);
             if (isOutOfRange)
             {
@@ -297,7 +313,7 @@ namespace Cinemachine
                 else
                 {
                     Value = Mathf.Clamp(Value, m_MinValue, m_MaxValue);
-                    mCurrentSpeed = 0f;
+                    m_CurrentSpeed = 0f;
                 }
             }
             return Mathf.Abs(input) > Epsilon;
@@ -311,12 +327,12 @@ namespace Cinemachine
             if (!m_Wrap && range > 0)
             {
                 float threshold = range / 10f;
-                if (mCurrentSpeed > 0 && (m_MaxValue - Value) < threshold)
+                if (m_CurrentSpeed > 0 && (m_MaxValue - Value) < threshold)
                 {
                     float t = (m_MaxValue - Value) / threshold;
                     return Mathf.Lerp(0, m_MaxSpeed, t);
                 }
-                else if (mCurrentSpeed < 0 && (Value - m_MinValue) < threshold)
+                else if (m_CurrentSpeed < 0 && (Value - m_MinValue) < threshold)
                 {
                     float t = (Value - m_MinValue) / threshold;
                     return Mathf.Lerp(0, m_MaxSpeed, t);
