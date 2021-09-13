@@ -506,7 +506,7 @@ namespace Cinemachine
             {
                 if (SoloCamera != null)
                     return null;
-                if (mCurrentLiveCameras.CamA == null || mCurrentLiveCameras.IsComplete)
+                if (mCurrentLiveCameras.CamA == null || mCurrentLiveCameras.Equals(null) || mCurrentLiveCameras.IsComplete)
                     return null;
                 return mCurrentLiveCameras;
             }
