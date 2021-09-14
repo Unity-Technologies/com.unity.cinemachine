@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: POV did not properly handle overridden up.
 - Regression fix: removed GC allocs in UpdateTargetCache.
 - Bugfix: async scene load/unload could cause jitter.
+- Bugfix: Blends were sometimes incorrect when src or dst camera is looking along world up axis.
 
 
 ## [2.8.0] - 2021-07-13
