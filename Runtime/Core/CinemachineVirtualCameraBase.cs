@@ -539,6 +539,17 @@ namespace Cinemachine
             }
         }
 
+#if UNITY_EDITOR
+        [UnityEditor.Callbacks.DidReloadScripts]
+        static void OnScriptReload()
+        {
+            var vcams = Resources.FindObjectsOfTypeAll(
+                typeof(CinemachineVirtualCameraBase)) as CinemachineVirtualCameraBase[];
+            foreach (var vcam in vcams)
+                vcam.LookAtTargetChanged = vcam.FollowTargetChanged = true;
+        }
+#endif
+
         /// <summary>
         /// Locate the first component that implements AxisState.IInputAxisProvider.
         /// </summary>
@@ -778,8 +789,8 @@ namespace Cinemachine
         protected void UpdateTargetCache()
         {
             var target = ResolveFollow(Follow);
-            FollowTargetChanged = target != m_CachedFollowTarget;
-            if (target != m_CachedFollowTarget)
+            FollowTargetChanged |= target != m_CachedFollowTarget;
+            if (FollowTargetChanged)
             {
                 m_CachedFollowTarget = target;
                 m_CachedFollowTargetVcam = null;
@@ -791,8 +802,8 @@ namespace Cinemachine
                 }
             }
             target = ResolveLookAt(LookAt);
-            LookAtTargetChanged = target != m_CachedLookAtTarget;
-            if (target != m_CachedLookAtTarget)
+            LookAtTargetChanged |= target != m_CachedLookAtTarget;
+            if (LookAtTargetChanged)
             {
                 m_CachedLookAtTarget = target;
                 m_CachedLookAtTargetVcam = null;
