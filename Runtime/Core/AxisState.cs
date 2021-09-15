@@ -211,7 +211,7 @@ namespace Cinemachine
             m_LastUpdateFrame = Time.frameCount;
 
             // Cheating: we want the render frame time, not the fixed frame time
-            if (deltaTime >= 0 && m_LastUpdateTime != 0)
+            if (deltaTime >= 0 && m_LastUpdateTime != 0 && CinemachineCore.UniformDeltaTimeOverride < 0)
                 deltaTime = Time.time - m_LastUpdateTime;
             m_LastUpdateTime = Time.time;
 
