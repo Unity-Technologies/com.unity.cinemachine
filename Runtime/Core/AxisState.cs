@@ -226,7 +226,6 @@ namespace Cinemachine
                 // TODO: CinemachineCore.UniformDeltaTimeOverride is set?
             }
             
-
             if (m_InputAxisProvider != null)
                 m_InputAxisValue = m_InputAxisProvider.GetAxisValue(m_InputAxisIndex);
             else if (!string.IsNullOrEmpty(m_InputAxisName))
