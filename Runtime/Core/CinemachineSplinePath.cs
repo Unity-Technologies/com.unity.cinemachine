@@ -55,14 +55,14 @@ namespace Cinemachine
         /// times between points</summary>
         public override int DistanceCacheSampleStepsPerSegment { get { return m_Resolution; } }
 
-        private void OnValidate() { InvalidateDistanceCache(); }
+        void OnValidate() { InvalidateDistanceCache(); }
 
         void Awake()
         {
             m_Spline.changed += InvalidateDistanceCache;
         }
 
-        private void Reset()
+        void Reset()
         {
             m_Spline = new Spline();
             m_Appearance = new Appearance();
@@ -80,20 +80,20 @@ namespace Cinemachine
         float GetBoundingIndices(float pos, out int indexA, out int indexB)
         {
             pos = StandardizePos(pos);
-            int numWaypoints = Spline.KnotCount;
-            if (numWaypoints < 2)
+            var waypointCount = Spline.KnotCount;
+            if (waypointCount < 2)
                 indexA = indexB = 0;
             else
             {
                 indexA = Mathf.FloorToInt(pos);
-                if (indexA >= numWaypoints)
+                if (indexA >= waypointCount)
                 {
                     // Only true if looped
                     pos -= MaxPos;
                     indexA = 0;
                 }
                 indexB = indexA + 1;
-                if (indexB == numWaypoints)
+                if (indexB == waypointCount)
                 {
                     if (Looped)
                         indexB = 0;
@@ -112,11 +112,10 @@ namespace Cinemachine
         /// <returns>World-space position of the point along at path at pos</returns>
         public override Vector3 EvaluatePosition(float pos)
         {
-            Vector3 result = Vector3.zero;
+            var result = Vector3.zero;
             if (Spline.KnotCount > 0)
             {
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
                     result = CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), 0);
                 else
@@ -132,11 +131,10 @@ namespace Cinemachine
         /// Length of the vector represents the tangent strength</returns>
         public override Vector3 EvaluateTangent(float pos)
         {
-            Vector3 result = transform.rotation * Vector3.forward;
+            var result = transform.rotation * Vector3.forward;
             if (Spline.KnotCount > 1)
             {
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
                     result = CurveUtility.EvaluateTangent(Spline.GetCurve(indexA), 0);
                 else

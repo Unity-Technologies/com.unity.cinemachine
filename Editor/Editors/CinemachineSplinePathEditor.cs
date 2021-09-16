@@ -1,6 +1,4 @@
 ﻿using UnityEditor;
-using UnityEditor.Splines;
-using UnityEditor.EditorTools;
 
 namespace Cinemachine.Editor
 {
