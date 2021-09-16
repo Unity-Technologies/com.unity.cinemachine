@@ -413,7 +413,7 @@ namespace Cinemachine.Editor
                     Gizmos.DrawLine(p0, p1);
                     Gizmos.DrawLine(lastPos - lastW, p - w);
                     Gizmos.DrawLine(lastPos + lastW, p + w);
-#if true
+#if false
                     // Show the normals, for debugging
                     Gizmos.color = Color.red;
                     Vector3 y = (q * Vector3.up) * halfWidth;
