@@ -238,7 +238,7 @@ namespace Cinemachine
             out Vector3 shoulder, out Vector3 hand)
         {
             var shoulderOffset = ShoulderOffset;
-            shoulderOffset.x = Mathf.Lerp(-ShoulderOffset.x, ShoulderOffset.x, CameraSide);
+            shoulderOffset.x = Mathf.Lerp(-shoulderOffset.x, shoulderOffset.x, CameraSide);
             shoulderOffset.x += m_DampingCorrection.x;
             shoulderOffset.y += m_DampingCorrection.y;
             shoulder = root + heading * shoulderOffset;
