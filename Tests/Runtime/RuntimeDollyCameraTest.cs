@@ -28,13 +28,6 @@ public class RuntimeDollyCameraTest
         dolly.m_ZDamping = 0;
     }
 
-    [TearDown]
-    public void Teardown()
-    {
-        Object.Destroy(path.gameObject);
-        Object.Destroy(vcam.gameObject);
-    }
-
     [UnityTest]
     public IEnumerator LinearInterpolationTestDistance()
     {

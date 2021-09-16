@@ -121,7 +121,7 @@ namespace Cinemachine
                     result = CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), 0);
                 // result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, 0);
                 else
-                    CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), pos - indexA);
+                    result = CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), pos - indexA);
                 // result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, pos - indexA);
             }
             
