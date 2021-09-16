@@ -119,10 +119,8 @@ namespace Cinemachine
                 pos = GetBoundingIndices(pos, out indexA, out indexB);
                 if (indexA == indexB)
                     result = CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), 0);
-                // result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, 0);
                 else
                     result = CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), pos - indexA);
-                // result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, pos - indexA);
             }
             
             return transform.TransformPoint(result);
@@ -141,23 +139,24 @@ namespace Cinemachine
                 pos = GetBoundingIndices(pos, out indexA, out indexB);
                 if (indexA == indexB)
                     result = CurveUtility.EvaluateTangent(Spline.GetCurve(indexA), 0);
-                // result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, 0);
                 else
                     result = CurveUtility.EvaluateTangent(Spline.GetCurve(indexA), pos - indexA);
-                // result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, pos - indexA);
             }
             
             return transform.TransformDirection(result);
         }
 
-        /// <summary>Get the orientation the curve at a point along the path.</summary>
+        // <summary>Get the orientation of the curve at a point along the path.</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
-        /// <returns>World-space orientation of the path, as defined by tangent, up, and roll.</returns>
+        /// <returns>World-space orientation of the path tangent.</returns>
         public override Quaternion EvaluateOrientation(float pos)
         {
-            Quaternion transformRot = transform.rotation;
-            Quaternion result = transformRot;
-            return result;
+            if (Spline.KnotCount > 1)
+            {
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
+                return transform.rotation * Quaternion.Slerp(Spline[indexA].Rotation, Spline[indexB].Rotation, pos - indexA);
+            }
+            return Spline.KnotCount == 1 ? transform.rotation * Spline[0].Rotation : Quaternion.identity;
         }
 
     }
