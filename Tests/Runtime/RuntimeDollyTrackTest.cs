@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -17,12 +18,9 @@ public class RuntimeDollyTrackTest
     {
         DollyCart = new GameObject().AddComponent<CinemachineDollyCart>();
         path = new GameObject().AddComponent<CinemachineSplinePath>();
-        var array = new NativeArray<float3>(4, Allocator.Temp);
-        array[0] = new float3(7, 1, -6);
-        array[1] = new float3(13, 1, -6);
-        array[2] = new float3(13, 1, 1);
-        array[3] = new float3(7, 1, 1);
-        Spline.CreateLinear(path.Spline, array, true);
+        path.Spline = SplineFactory.CreateLinear(
+            new List<float3> { new float3(7, 1, -6), new float3(13, 1, -6), new float3(13, 1, 1), new float3(7, 1, 1) }, 
+            true);
         DollyCart.m_Path = path;
         DollyCart.m_UpdateMethod = CinemachineDollyCart.UpdateMethod.Update;
     }
