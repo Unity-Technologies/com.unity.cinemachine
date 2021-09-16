@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using Cinemachine.Utility;
 
+
 namespace Cinemachine
 {
     /// <summary>Defines a world-space path, consisting of an array of waypoints,

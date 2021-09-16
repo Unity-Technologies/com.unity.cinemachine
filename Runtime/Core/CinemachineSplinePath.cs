@@ -118,9 +118,11 @@ namespace Cinemachine
                 int indexA, indexB;
                 pos = GetBoundingIndices(pos, out indexA, out indexB);
                 if (indexA == indexB)
-                    result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, 0);
+                    result = CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), 0);
+                // result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, 0);
                 else
-                    result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, pos - indexA);
+                    CurveUtility.EvaluatePosition(Spline.GetCurve(indexA), pos - indexA);
+                // result = SplineUtility.EvaluateSegmentPosition(Spline, indexA, pos - indexA);
             }
             
             return transform.TransformPoint(result);
@@ -138,9 +140,11 @@ namespace Cinemachine
                 int indexA, indexB;
                 pos = GetBoundingIndices(pos, out indexA, out indexB);
                 if (indexA == indexB)
-                    result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, 0);
+                    result = CurveUtility.EvaluateTangent(Spline.GetCurve(indexA), 0);
+                // result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, 0);
                 else
-                    result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, pos - indexA);
+                    result = CurveUtility.EvaluateTangent(Spline.GetCurve(indexA), pos - indexA);
+                // result = SplineUtility.EvaluateSegmentTangent(Spline, indexA, pos - indexA);
             }
             
             return transform.TransformDirection(result);
