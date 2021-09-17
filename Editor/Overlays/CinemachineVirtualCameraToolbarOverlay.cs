@@ -8,29 +8,52 @@ using UnityEditor.Overlays;
 using UnityEngine.UIElements;
 using UnityEditor;
 
-// Use [EditorToolbarElement(Identifier, EditorWindowType)] to register toolbar elements for use in ToolbarOverlay implementation.
 [EditorToolbarElement(id, typeof(SceneView))]
-class DropdownExample : EditorToolbarDropdown
+class FoVTool : EditorToolbarToggle
 {
-    public const string id = "ExampleToolbar/Dropdown";
-
-    static string dropChoice = null;
-
-    public DropdownExample()
+    public const string id = "FoVTool/Toggle";
+    public FoVTool()
     {
-        text = "Axis";
-        clicked += ShowDropdown;
+        icon = EditorGUIUtility.IconContent("d_BillboardAsset Icon").image as Texture2D;
+        this.RegisterValueChangedCallback(Test);
     }
 
-    void ShowDropdown()
+    void Test(ChangeEvent<bool> evt)
     {
-        var menu = new GenericMenu();
-        menu.AddItem(new GUIContent("X"), dropChoice == "X", () => { text = "X"; dropChoice = "X"; });
-        menu.AddItem(new GUIContent("Y"), dropChoice == "Y", () => { text = "Y"; dropChoice = "Y"; });
-        menu.AddItem(new GUIContent("Z"), dropChoice == "Z", () => { text = "Z"; dropChoice = "Z"; });
-        menu.ShowAsContext();
+        if (evt.newValue)
+        {
+            Debug.Log("FoVTool ON");
+        }
+        else 
+        {
+            Debug.Log("FoVTool OFF");
+        }
     }
 }
+
+[EditorToolbarElement(id, typeof(SceneView))]
+class FarNearClipTool : EditorToolbarToggle
+{
+    public const string id = "FarNearClipTool/Toggle";
+    public FarNearClipTool()
+    {
+        icon = EditorGUIUtility.IconContent("d_BillboardRenderer Icon").image as Texture2D;
+        this.RegisterValueChangedCallback(Test);
+    }
+
+    void Test(ChangeEvent<bool> evt)
+    {
+        if (evt.newValue)
+        {
+            Debug.Log("FarNearClipTool ON");
+        }
+        else 
+        {
+            Debug.Log("FarNearClipTool OFF");
+        }
+    }
+}
+
 [EditorToolbarElement(id, typeof(SceneView))]
 class FollowOffsetTool : EditorToolbarToggle
 {
@@ -55,51 +78,25 @@ class FollowOffsetTool : EditorToolbarToggle
 }
 
 [EditorToolbarElement(id, typeof(SceneView))]
-class DropdownToggleExample : EditorToolbarDropdownToggle, IAccessContainerWindow
+class TrackedObjectOffsetTool : EditorToolbarToggle
 {
-    public const string id = "ExampleToolbar/DropdownToggle";
-
-    // This property is specified by IAccessContainerWindow and is used to access the Overlay's EditorWindow.
-    public EditorWindow containerWindow { get; set; }
-    static int colorIndex = 0;
-    static readonly Color[] colors = new Color[] { Color.red, Color.green, Color.cyan };
-    public DropdownToggleExample()
+    public const string id = "TrackedObjectOffsetTool/Toggle";
+    public TrackedObjectOffsetTool()
     {
-        text = "Color Bar";
-        tooltip = "Display a color rectangle in the top left of the Scene view. Toggle on or off, and open the dropdown" +
-                  "to change the color.";
-
-        // When the dropdown is opened, ShowColorMenu is invoked and we can create a popup menu.
-        dropdownClicked += ShowColorMenu;
-        
-        // Subscribe to the Scene view OnGUI callback so that we can draw our color swatch.
-        SceneView.duringSceneGui += DrawColorSwatch;
+        icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
+        this.RegisterValueChangedCallback(Test);
     }
 
-    void DrawColorSwatch(SceneView view)
+    void Test(ChangeEvent<bool> evt)
     {
-        // Test that this callback is for the Scene View that we're interested in, and also check if the toggle is on
-        // or off (value).
-        if (view != containerWindow || !value)
+        if (evt.newValue)
         {
-            return;
+            Debug.Log("TrackedObjectOffsetTool ON");
         }
-
-        Handles.BeginGUI();
-        GUI.color = colors[colorIndex];
-        GUI.DrawTexture(new Rect(8, 8, 120, 24), Texture2D.whiteTexture);
-        GUI.color = Color.white;
-        Handles.EndGUI();
-    }
-
-    // When the dropdown button is clicked, this method will create a popup menu at the mouse cursor position.
-    void ShowColorMenu()
-    {
-        var menu = new GenericMenu();
-        menu.AddItem(new GUIContent("Red"), colorIndex == 0, () => colorIndex = 0);
-        menu.AddItem(new GUIContent("Green"), colorIndex == 1, () => colorIndex = 1);
-        menu.AddItem(new GUIContent("Blue"), colorIndex == 2, () => colorIndex = 2);
-        menu.ShowAsContext();
+        else 
+        {
+            Debug.Log("TrackedObjectOffsetTool OFF");
+        }
     }
 }
 
@@ -141,37 +138,22 @@ class CreateCube : EditorToolbarButton//, IAccessContainerWindow
 }
 
 // All Overlays must be tagged with the OverlayAttribute
-[Overlay(typeof(SceneView), "ElementToolbars Example")]
+[Overlay(typeof(SceneView), "Cm Vcam Tools")]
 // IconAttribute provides a way to define an icon for when an Overlay is in collapsed form. If not provided, the name initials are used.
 [Icon("Assets/unity.png")]
 
 // Toolbar Overlays must inherit `ToolbarOverlay` and implement a parameter-less constructor. The contents of a toolbar are populated with string IDs, which are passed to the base constructor. IDs are defined by EditorToolbarElementAttribute.
-public class EditorToolbarExample : ToolbarOverlay
+public class CinemachineVirtualCameraToolbar : ToolbarOverlay
 {
     // ToolbarOverlay implements a parameterless constructor, passing the EditorToolbarElementAttribute ID. 
     // This is the only code required to implement a toolbar Overlay. Unlike panel overlays, the contents are defined
     // as standalone pieces that will be collected to form a strip of elements.
 
-    EditorToolbarExample() : base(
-        CreateCube.id,
+    CinemachineVirtualCameraToolbar() : base(
+        FoVTool.id,
+        FarNearClipTool.id,
         FollowOffsetTool.id,
-        DropdownExample.id,
-        DropdownToggleExample.id
+        TrackedObjectOffsetTool.id
         )
     { }
 }
-
-/*
-public class EditorToolbarExample : Overlay
-{
-    public override VisualElement CreatePanelContent()
-    {
-        var root = new VisualElement() { name = "My Tool Root" };
-        root.Add(new CreateCube());
-        root.Add(new FollowOffsetTool());
-        root.Add(new DropdownExample());
-        root.Add(new DropdownToggleExample());
-        return root;
-    }
-}
-*/
