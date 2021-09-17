@@ -211,20 +211,11 @@ namespace Cinemachine
             m_LastUpdateFrame = Time.frameCount;
 
             // Cheating: we want the render frame time, not the fixed frame time
-            if (CinemachineCore.UniformDeltaTimeOverride < 0)
-            {
-                if (deltaTime >= 0 && m_LastUpdateTime != 0)
-                    deltaTime = Time.time - m_LastUpdateTime;
-                m_LastUpdateTime = Time.time;
-            }
-            else
-            {
-                // CinemachineCore.UpdateVirtualCamera can change deltaTime to catch up,
-                // but that should not happen when CinemachineCore.UniformDeltaTimeOverride is set.
+            if (CinemachineCore.UniformDeltaTimeOverride >= 0)
                 deltaTime = CinemachineCore.UniformDeltaTimeOverride; 
-                // TODO: deltaTime should not be adjusted in CinemachineCore.UpdateVirtualCamera when
-                // TODO: CinemachineCore.UniformDeltaTimeOverride is set?
-            }
+            else if (deltaTime >= 0 && m_LastUpdateTime != 0)
+                deltaTime = Time.time - m_LastUpdateTime;
+            m_LastUpdateTime = Time.time;
             
             if (m_InputAxisProvider != null)
                 m_InputAxisValue = m_InputAxisProvider.GetAxisValue(m_InputAxisIndex);
