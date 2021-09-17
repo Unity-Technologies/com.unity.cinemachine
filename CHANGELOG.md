@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: removed GC allocs in UpdateTargetCache.
 - Bugfix: async scene load/unload could cause jitter.
 - Bugfix: async scene load/unload could cause jitter.
+- Bugfix: Input system should be read only once per render frame.
 - Bugfix: Blends were sometimes incorrect when src or dst camera is looking along world up axis.
 
 
