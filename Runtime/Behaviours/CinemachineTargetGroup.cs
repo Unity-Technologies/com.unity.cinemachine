@@ -142,14 +142,7 @@ namespace Cinemachine
 
         /// <summary>The bounding sphere of the group, computed using the
         /// targets positions and radii</summary>
-        public BoundingSphere Sphere
-        {
-            get
-            {
-                Bounds b = BoundingBox;
-                return new BoundingSphere(b.center, ((b.max - b.min) / 2).magnitude);
-            }
-        }
+        public BoundingSphere Sphere { get => m_BoundingSphere; }
 
         /// <summary>Return true if there are no members with weight > 0</summary>
         public bool IsEmpty
@@ -224,7 +217,7 @@ namespace Cinemachine
         {
             if (index < 0 || index >= m_Targets.Length)
                 return Sphere;
-            return WeightedMemberBounds(m_Targets[index], mAveragePos, mMaxWeight);
+            return WeightedMemberBounds(m_Targets[index], m_AveragePos, m_MaxWeight);
         }
 
         /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
@@ -233,7 +226,7 @@ namespace Cinemachine
         public Bounds GetViewSpaceBoundingBox(Matrix4x4 observer)
         {
             Matrix4x4 inverseView = observer.inverse;
-            Bounds b = new Bounds(inverseView.MultiplyPoint3x4(mAveragePos), Vector3.zero);
+            Bounds b = new Bounds(inverseView.MultiplyPoint3x4(m_AveragePos), Vector3.zero);
             for (int i = 0; i < m_Targets.Length; ++i)
             {
                 BoundingSphere s = GetWeightedBoundsForMember(i);
@@ -260,8 +253,9 @@ namespace Cinemachine
             return new BoundingSphere(Vector3.Lerp(avgPos, pos, w), t.radius * w);
         }
 
-        private float mMaxWeight;
-        private Vector3 mAveragePos;
+        private float m_MaxWeight;
+        private Vector3 m_AveragePos;
+        private BoundingSphere m_BoundingSphere;
 
         /// <summary>
         /// Update the group's transform right now, depending on the transforms of the members.
@@ -269,16 +263,17 @@ namespace Cinemachine
         /// </summary>
         public void DoUpdate()
         {
-            mAveragePos = CalculateAveragePosition(out mMaxWeight);
-            BoundingBox = CalculateBoundingBox(mAveragePos, mMaxWeight);
+            m_AveragePos = CalculateAveragePosition(out m_MaxWeight);
+            BoundingBox = CalculateBoundingBox(m_AveragePos, m_MaxWeight);
+            m_BoundingSphere = CalculateBoundingSphere(m_MaxWeight);
 
             switch (m_PositionMode)
             {
                 case PositionMode.GroupCenter:
-                    transform.position = BoundingBox.center;
+                    transform.position = Sphere.position;
                     break;
                 case PositionMode.GroupAverage:
-                    transform.position = mAveragePos;
+                    transform.position = m_AveragePos;
                     break;
             }
 
@@ -292,9 +287,41 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// Use Ritter's algorithm for calculating an approximate bounding sphere
+        /// </summary>
+        /// <param name="maxWeight">The maximum weight of members in the group</param>
+        /// <returns>An approximate bounding sphere.  Will be slightly large.</returns>
+        BoundingSphere CalculateBoundingSphere(float maxWeight)
+        {
+            var sphere = new BoundingSphere { position = transform.position };
+            bool gotOne = false;
+
+            for (int i = 0; i < m_Targets.Length; ++i)
+            {
+                if (m_Targets[i].target == null || m_Targets[i].weight < UnityVectorExtensions.Epsilon)
+                    continue;
+                BoundingSphere s = WeightedMemberBounds(m_Targets[i], m_AveragePos, maxWeight);
+                if (!gotOne)
+                {
+                    gotOne = true;
+                    sphere = s;
+                    continue;
+                }
+                var distance = (s.position - sphere.position).magnitude + s.radius;
+                if (distance > sphere.radius)
+                {
+                    // Point is outside current sphere: update
+                    sphere.radius = (sphere.radius + distance) * 0.5f;
+                    sphere.position = (sphere.radius * sphere.position + (distance - sphere.radius) * s.position) / distance;
+                }
+            }
+            return sphere;
+        }
+
         Vector3 CalculateAveragePosition(out float maxWeight)
         {
-            Vector3 pos = Vector3.zero;
+            var pos = Vector3.zero;
             float weight = 0;
             maxWeight = 0;
             for (int i = 0; i < m_Targets.Length; ++i)
@@ -316,7 +343,7 @@ namespace Cinemachine
 
         Quaternion CalculateAverageOrientation()
         {
-            if (mMaxWeight <= UnityVectorExtensions.Epsilon)
+            if (m_MaxWeight <= UnityVectorExtensions.Epsilon)
             {
                 return transform.rotation;
             }
@@ -327,7 +354,7 @@ namespace Cinemachine
             {
                 if (m_Targets[i].target != null)
                 {
-                    float scaledWeight = m_Targets[i].weight / mMaxWeight;
+                    var scaledWeight = m_Targets[i].weight / m_MaxWeight;
                     var rot = TargetPositionCache.GetTargetRotation(m_Targets[i].target);
                     r *= Quaternion.Slerp(Quaternion.identity, rot, scaledWeight);
                     weightedAverage += scaledWeight;
@@ -345,7 +372,7 @@ namespace Cinemachine
                 {
                     if (m_Targets[i].target != null)
                     {
-                        BoundingSphere s = WeightedMemberBounds(m_Targets[i], mAveragePos, maxWeight);
+                        var s = WeightedMemberBounds(m_Targets[i], m_AveragePos, maxWeight);
                         b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
                     }
                 }
