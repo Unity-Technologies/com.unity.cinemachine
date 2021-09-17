@@ -182,7 +182,6 @@ namespace Cinemachine
                 LastBoundsMatrix = Matrix4x4.TRS(cameraPos, Quaternion.LookRotation(fwd, up), Vector3.one);
                 LastBounds = b;
                 groupCenter = cameraPos + fwd * b.center.z;
-                fwd = (groupCenter - cameraPos).normalized;
             }
 
             // Adjust bounds for framing size, and get target height
@@ -286,16 +285,17 @@ namespace Cinemachine
         static Bounds GetScreenSpaceGroupBoundingBox(
             ICinemachineTargetGroup group, Matrix4x4 observer, out Vector3 newFwd)
         {
-            Vector2 minAngles, maxAngles, zRange;
-            group.GetViewSpaceAngularBounds(observer, out minAngles, out maxAngles, out zRange);
-            Vector2 shift = (minAngles + maxAngles) / 2;
+            group.GetViewSpaceAngularBounds(observer, out var minAngles, out var maxAngles, out var zRange);
+            var shift = (minAngles + maxAngles) / 2;
 
-            newFwd = Quaternion.identity.ApplyCameraRotation(shift, Vector3.up) * Vector3.forward;
+            newFwd = Quaternion.identity.ApplyCameraRotation(new Vector2(-shift.x, shift.y), Vector3.up) * Vector3.forward;
             newFwd = observer.MultiplyVector(newFwd);
 
-            float d = zRange.y + zRange.x;
-            Vector2 angles = (maxAngles - shift);
-            angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f)) * Mathf.Deg2Rad;
+            // For width and height (in camera space) of the bounding box, we use the values at the center of the box.
+            // This is an arbitrary choice.  The gizmo drawer will take this into account when displaying
+            // the frustum bounds of the group
+            var d = zRange.y + zRange.x;
+            var angles = Vector2.Min(maxAngles - shift, new Vector2(89.5f, 89.5f)) * Mathf.Deg2Rad;
             return new Bounds(
                 new Vector3(0, 0, d/2),
                 new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
