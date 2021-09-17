@@ -294,23 +294,24 @@ namespace Cinemachine.Utility
         /// the up param</summary>
         /// <param name="qA">First direction</param>
         /// <param name="qB">Second direction</param>
-        /// <param name="t">Interpolation amoun t</param>
+        /// <param name="t">Interpolation amount</param>
         /// <param name="up">Defines the up direction.  Must have a length of 1.</param>
         /// <returns>Interpolated quaternion</returns>
         public static Quaternion SlerpWithReferenceUp(
             Quaternion qA, Quaternion qB, float t, Vector3 up)
         {
-            Vector3 dirA = (qA * Vector3.forward).ProjectOntoPlane(up);
-            Vector3 dirB = (qB * Vector3.forward).ProjectOntoPlane(up);
+            var dirA = (qA * Vector3.forward).ProjectOntoPlane(up);
+            var dirB = (qB * Vector3.forward).ProjectOntoPlane(up);
             if (dirA.AlmostZero() || dirB.AlmostZero())
                 return Quaternion.Slerp(qA, qB, t);
 
             // Work on the plane, in eulers
-            Quaternion qBase = Quaternion.LookRotation(dirA, up);
-            Quaternion qA1 = Quaternion.Inverse(qBase) * qA;
-            Quaternion qB1 = Quaternion.Inverse(qBase) * qB;
-            Vector3 eA = qA1.eulerAngles;
-            Vector3 eB = qB1.eulerAngles;
+            var qBase = Quaternion.LookRotation(dirA, up);
+            var qBaseInv = Quaternion.Inverse(qBase);
+            Quaternion qA1 = qBaseInv * qA;
+            Quaternion qB1 = qBaseInv * qB;
+            var eA = qA1.eulerAngles;
+            var eB = qB1.eulerAngles;
             return qBase * Quaternion.Euler(
                 Mathf.LerpAngle(eA.x, eB.x, t),
                 Mathf.LerpAngle(eA.y, eB.y, t),
