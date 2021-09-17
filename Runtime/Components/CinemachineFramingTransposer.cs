@@ -658,19 +658,21 @@ namespace Cinemachine
         static Bounds GetScreenSpaceGroupBoundingBox(
             ICinemachineTargetGroup group, ref Vector3 pos, Quaternion orientation)
         {
-            Matrix4x4 observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
-            Vector2 minAngles, maxAngles, zRange;
-            group.GetViewSpaceAngularBounds(observer, out minAngles, out maxAngles, out zRange);
+            var observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
+            group.GetViewSpaceAngularBounds(observer, out var minAngles, out var maxAngles, out var zRange);
+            var shift = (minAngles + maxAngles) / 2;
 
-            Quaternion q = Quaternion.identity.ApplyCameraRotation((minAngles + maxAngles) / 2, Vector3.up);
-            Vector3 localPosAdustment = q * new Vector3(0, 0, (zRange.y + zRange.x)/2);
-            localPosAdustment.z = 0;
-            pos = observer.MultiplyPoint3x4(localPosAdustment);
+            var q = Quaternion.identity.ApplyCameraRotation(new Vector2(-shift.x, shift.y), Vector3.up);
+            pos = q * new Vector3(0, 0, (zRange.y + zRange.x)/2);
+            pos.z = 0;
+            pos = observer.MultiplyPoint3x4(pos);
             observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
             group.GetViewSpaceAngularBounds(observer, out minAngles, out maxAngles, out zRange);
 
-            float zSize = zRange.y - zRange.x;
-            float z = zRange.x + (zSize / 2);
+            // For width and height (in camera space) of the bounding box, we use the values at the center of the box.
+            // This is an arbitrary choice.  The gizmo drawer will take this into account when displaying
+            // the frustum bounds of the group
+            var d = zRange.y + zRange.x;
             Vector2 angles = new Vector2(89.5f, 89.5f);
             if (zRange.x > 0)
             {
@@ -678,8 +680,9 @@ namespace Cinemachine
                 angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f));
             }
             angles *= Mathf.Deg2Rad;
-            return new Bounds(new Vector3(0, 0, z),
-                new Vector3(Mathf.Tan(angles.y) * z * 2, Mathf.Tan(angles.x) * z * 2, zSize));
+            return new Bounds(
+                new Vector3(0, 0, d/2),
+                new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
         }
     }
 }
