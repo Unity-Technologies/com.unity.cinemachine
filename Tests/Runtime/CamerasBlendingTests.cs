@@ -72,7 +72,7 @@ namespace Tests.Runtime
             yield return null;
 
             // We went 90%, then got 10% back, it means we are 20% away from the target
-            yield return new WaitForSeconds(BlendingTime * 0.21f);
+            yield return new WaitForSeconds(BlendingTime * 0.25f);
 
             Assert.That(m_Brain.IsBlending, Is.False);
 
@@ -105,7 +105,7 @@ namespace Tests.Runtime
             yield return null;
 
             // We went 90%, then got 10% back, it means we are 20% away from the target
-            yield return new WaitForSeconds(BlendingTime * 0.21f);
+            yield return new WaitForSeconds(BlendingTime * 0.25f);
 
             Assert.That(m_Brain.IsBlending, Is.False);
         }

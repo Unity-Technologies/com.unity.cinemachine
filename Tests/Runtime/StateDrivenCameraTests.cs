@@ -10,6 +10,7 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
+#if CINEMACHINE_UNITY_ANIMATION
     [TestFixture]
     public class StateDrivenCameraTests : CinemachineFixtureBase
     {
@@ -71,4 +72,5 @@ namespace Tests.Runtime
             Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
         }
     }
+#endif
 }

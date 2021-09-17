@@ -9,6 +9,7 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
+#if CINEMACHINE_PHYSICS_2D
     public class Confiner2DUnitTests : CinemachineFixtureBase
     {
         private Camera m_Cam;
@@ -126,4 +127,5 @@ namespace Tests.Runtime
             Assert.That((m_Vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
     }
+#endif
 }
