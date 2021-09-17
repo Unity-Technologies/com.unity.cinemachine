@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Lens mode override was not working correctly in all cases.
 - Collider2D inspector: added warning when collider is of the wrong type.
 - Added ability to directly set the active blend in CinemachineBrain.
+- Bugfix: OnTargetObjectWarped() did not work properly for 3rdPersonFollow.
 - Bugfix: POV did not properly handle overridden up.
 - Regression fix: removed GC allocs in UpdateTargetCache.
 - Added ability to directly set the active blend in CinemachineBrain.
