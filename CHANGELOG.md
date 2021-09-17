@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: removed GC allocs in UpdateTargetCache.
 - Bugfix: async scene load/unload could cause jitter.
 - Bugfix: Blends were sometimes incorrect when src or dst camera is looking along world up axis.
+- Bugfix: OnTargetObjectWarped() did not work properly for 3rdPersonFollow.
 
 
 ## [2.6.10] - 2021-08-19
