@@ -86,25 +86,57 @@ namespace Cinemachine.Editor
             }
         }
 
+        // [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
+        // static void DrawTransposerGizmos(CinemachineTransposer target, GizmoType selectionType)
+        // {
+        //     if (target.IsValid  & !target.m_HideOffsetInInspector)
+        //     {
+        //         Color originalGizmoColour = Gizmos.color;
+        //         Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+        //             ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
+        //             : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+        //
+        //         Vector3 up = Vector3.up;
+        //         CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
+        //         if (brain != null)
+        //             up = brain.DefaultWorldUp;
+        //         Vector3 targetPos = target.FollowTargetPosition;
+        //         Vector3 desiredPos = target.GetTargetCameraPosition(up);
+        //         Gizmos.DrawLine(targetPos, desiredPos);
+        //         //Gizmos.DrawWireSphere(desiredPos, HandleUtility.GetHandleSize(desiredPos) / 20);
+        //         Gizmos.color = originalGizmoColour;
+        //     }
+        // }
+
+        static bool s_HandleIsBeingDragged;
+        static GUIStyle labelStyle = new GUIStyle();
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
-        static void DrawTransposerGizmos(CinemachineTransposer target, GizmoType selectionType)
+        static void DrawTransposerToolHandles(CinemachineTransposer target, GizmoType selectionType)
         {
             if (target.IsValid  & !target.m_HideOffsetInInspector)
             {
-                Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
-                    ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                    : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                if (true/*CinemachineVirtualCameraToolbar.FollowOffset*/)
+                {
+                    var up = Vector3.up;
+                    var brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
+                    if (brain != null)
+                        up = brain.DefaultWorldUp;
+                    var followTargetPosition = target.FollowTargetPosition;
+                    var cameraPosition = target.GetTargetCameraPosition(up);
+                    
+                    var originalColor = Handles.color;
+                    
+                    Handles.color = labelStyle.normal.textColor = s_HandleIsBeingDragged 
+                        ? CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor 
+                        : CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor;
 
-                Vector3 up = Vector3.up;
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
-                if (brain != null)
-                    up = brain.DefaultWorldUp;
-                Vector3 targetPos = target.FollowTargetPosition;
-                Vector3 desiredPos = target.GetTargetCameraPosition(up);
-                Gizmos.DrawLine(targetPos, desiredPos);
-                //Gizmos.DrawWireSphere(desiredPos, HandleUtility.GetHandleSize(desiredPos) / 20);
-                Gizmos.color = originalGizmoColour;
+                    s_HandleIsBeingDragged = Tools.current == Tool.Move && Tools.handlePosition != cameraPosition;
+                    
+                    Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                    Handles.Label(cameraPosition, "Follow offset " + target.m_FollowOffset.ToString("F1"), labelStyle);
+                    
+                    Handles.color = originalColor;
+                }
             }
         }
     }
