@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -627,6 +628,34 @@ namespace Cinemachine
             if (base.RequiresUserInput())
                 return true;
             return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
+        }
+        
+        public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTools sceneTool)
+        {
+            switch (sceneTool)
+            {
+                case Utility.CinemachineSceneTools.FoV:
+                    return true;
+                case Utility.CinemachineSceneTools.FarNearClip:
+                    return true;
+            }
+            return base.CanBeControllerBySceneTool(sceneTool);
+        }
+        
+        
+        public override void ProcessSceneToolEvent(Utility.CinemachineSceneTools sceneTool, Vector3 delta)
+        {
+            switch (sceneTool)
+            {
+                case Utility.CinemachineSceneTools.FoV:
+                    m_Lens.FieldOfView += delta.x;
+                    return;
+                case Utility.CinemachineSceneTools.FarNearClip:
+                    m_Lens.FarClipPlane += delta.x;
+                    m_Lens.NearClipPlane += delta.y;
+                    return;
+            }
+            base.ProcessSceneToolEvent(sceneTool, delta);
         }
     }
 }

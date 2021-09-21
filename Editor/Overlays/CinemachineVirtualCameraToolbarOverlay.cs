@@ -67,6 +67,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
+            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarHandleDrawer.FollowOffsetToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -91,6 +92,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
+            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarHandleDrawer.TrackedObjectOffsetToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -162,6 +164,6 @@ namespace Cinemachine.Editor
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
                 TrackedObjectOffsetTool.id
-            ) { }
+            ) {}
     }
 }

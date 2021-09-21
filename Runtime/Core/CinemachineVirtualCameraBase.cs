@@ -524,6 +524,13 @@ namespace Cinemachine
             return mExtensions != null && mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
         }
 
+        public virtual bool CanBeControllerBySceneTool(CinemachineSceneTools sceneTool)
+        {
+            return false;
+        }
+
+        public virtual void ProcessSceneToolEvent(CinemachineSceneTools sceneTool, Vector3 delta) {}
+
         /// <summary>
         /// Called on inactive object when being artificially activated by timeline.
         /// This is necessary because Awake() isn't called on inactive gameObjects.
