@@ -121,10 +121,14 @@ namespace Cinemachine.Editor
                 Target.m_UserIsDragging = false;
             }
 
-            m_ToolbarHandleDrawer.DrawHandles(Target);
+            DrawHandlesForSceneTools(Target);
         }
-        // TODO: KGB move this to a better place
-        CinemachineVirtualCameraToolbarHandleDrawer m_ToolbarHandleDrawer = new CinemachineVirtualCameraToolbarHandleDrawer();
+
+        public override void DrawHandlesForSceneTools(CinemachineVirtualCamera target)
+        {
+            Debug.Log("DrawHandlesForSceneTools - CinemachineVirtualCameraEditor");
+            // TODO: KGB FOV and FAR NEAR CLIP
+        }
 
         public override void OnInspectorGUI()
         {

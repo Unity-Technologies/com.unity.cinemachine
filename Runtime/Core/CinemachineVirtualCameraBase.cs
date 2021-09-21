@@ -521,15 +521,17 @@ namespace Cinemachine
         /// </summary>
         internal virtual bool RequiresUserInput()
         {
+            UnityEngine.Debug.Log("RequiresUserInput - CinemachineVirtualCameraBase");
             return mExtensions != null && mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
         }
 
-        public virtual bool CanBeControllerBySceneTool(CinemachineSceneTools sceneTool)
+        public virtual bool CanBeControllerBySceneTool(CinemachineSceneTool sceneTool)
         {
+            UnityEngine.Debug.Log("CanBeControllerBySceneTool - CinemachineVirtualCameraBase");
             return false;
         }
 
-        public virtual void ProcessSceneToolEvent(CinemachineSceneTools sceneTool, Vector3 delta) {}
+        public virtual void ProcessSceneToolEvent(CinemachineSceneTool sceneTool, Vector3 delta) {}
 
         /// <summary>
         /// Called on inactive object when being artificially activated by timeline.

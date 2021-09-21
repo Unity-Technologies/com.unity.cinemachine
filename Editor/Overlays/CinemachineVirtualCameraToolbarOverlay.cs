@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
-            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarHandleDrawer.FollowOffsetToolSelection);
+            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarUtility.FollowOffsetToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -92,7 +92,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
-            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarHandleDrawer.TrackedObjectOffsetToolSelection);
+            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarUtility.TrackedObjectOffsetToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -165,5 +165,27 @@ namespace Cinemachine.Editor
                 FollowOffsetTool.id,
                 TrackedObjectOffsetTool.id
             ) {}
+    }
+
+
+    // TODO: KGB move this to where the enum
+    public static class CinemachineVirtualCameraToolbarUtility
+    {
+        public static bool FoVToolIsOn, FarNearClipToolIsOn, FollowOffsetToolIsOn, TrackedObjectOffsetToolIsOn;
+
+        static CinemachineVirtualCameraToolbarUtility()
+        {
+            FoVToolIsOn = FarNearClipToolIsOn = FollowOffsetToolIsOn = TrackedObjectOffsetToolIsOn = false;
+        }
+        
+        public static void TrackedObjectOffsetToolSelection(ChangeEvent<bool> evt)
+        {
+            TrackedObjectOffsetToolIsOn = evt.newValue;
+        }
+        
+        public static void FollowOffsetToolSelection(ChangeEvent<bool> evt)
+        {
+            FollowOffsetToolIsOn = evt.newValue;
+        }
     }
 }

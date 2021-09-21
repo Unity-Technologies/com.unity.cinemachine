@@ -86,27 +86,57 @@ namespace Cinemachine.Editor
             }
         }
 
-        // TODO: KGB cleanup
-        // [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
-        // static void DrawTransposerGizmos(CinemachineTransposer target, GizmoType selectionType)
-        // {
-        //     if (target.IsValid  & !target.m_HideOffsetInInspector)
-        //     {
-        //         Color originalGizmoColour = Gizmos.color;
-        //         Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
-        //             ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-        //             : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
-        //
-        //         Vector3 up = Vector3.up;
-        //         CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
-        //         if (brain != null)
-        //             up = brain.DefaultWorldUp;
-        //         Vector3 targetPos = target.FollowTargetPosition;
-        //         Vector3 desiredPos = target.GetTargetCameraPosition(up);
-        //         Gizmos.DrawLine(targetPos, desiredPos);
-        //         //Gizmos.DrawWireSphere(desiredPos, HandleUtility.GetHandleSize(desiredPos) / 20);
-        //         Gizmos.color = originalGizmoColour;
-        //     }
-        // }
+        bool m_HandleIsBeingDragged;
+        public override void DrawHandlesForSceneTools(CinemachineVirtualCamera vcam)
+        {
+            if (vcam == null)
+            {
+                return;
+            }
+            
+            var transposer = vcam.GetCinemachineComponent<CinemachineTransposer>();
+            if (transposer == null || !transposer.IsValid)
+            {
+                return;
+            }
+
+            if (CinemachineVirtualCameraToolbarUtility.FollowOffsetToolIsOn)
+            {
+                var up = Vector3.up;
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(transposer.VirtualCamera);
+                if (brain != null)
+                    up = brain.DefaultWorldUp;
+                var followTargetPosition = transposer.FollowTargetPosition;
+                var cameraPosition = transposer.GetTargetCameraPosition(up);
+
+                var originalColor = Handles.color;
+                var labelStyle = new GUIStyle();
+                Handles.color = labelStyle.normal.textColor = m_HandleIsBeingDragged
+                    ? CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor
+                    : CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor;
+
+
+                EditorGUI.BeginChangeCheck();
+                var newPos = Handles.PositionHandle(cameraPosition, Quaternion.identity);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    m_HandleIsBeingDragged = true;
+                    transposer.m_FollowOffset = newPos;
+                    InspectorUtility.RepaintGameView();
+
+                    Undo.RecordObject(transposer, "Change Follow Offset Position using handle in scene view.");
+                }
+                else
+                {
+                    m_HandleIsBeingDragged = false;
+                }
+
+
+                Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                Handles.Label(cameraPosition, "Follow offset " + transposer.m_FollowOffset.ToString("F1"), labelStyle);
+
+                Handles.color = originalColor;
+            }
+        }
     }
 }

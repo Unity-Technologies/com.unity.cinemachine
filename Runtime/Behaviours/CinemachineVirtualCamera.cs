@@ -625,32 +625,33 @@ namespace Cinemachine
         /// </summary>
         internal override bool RequiresUserInput()
         {
+            UnityEngine.Debug.Log("RequiresUserInput - CinemachineVirtualCamera");
             if (base.RequiresUserInput())
                 return true;
             return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
         }
         
-        public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTools sceneTool)
+        public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool)
         {
+            UnityEngine.Debug.Log("CanBeControllerBySceneTool - CinemachineVirtualCamera");
             switch (sceneTool)
             {
-                case Utility.CinemachineSceneTools.FoV:
+                case Utility.CinemachineSceneTool.FoV:
                     return true;
-                case Utility.CinemachineSceneTools.FarNearClip:
+                case Utility.CinemachineSceneTool.FarNearClip:
                     return true;
             }
             return base.CanBeControllerBySceneTool(sceneTool);
         }
-        
-        
-        public override void ProcessSceneToolEvent(Utility.CinemachineSceneTools sceneTool, Vector3 delta)
+
+        public override void ProcessSceneToolEvent(Utility.CinemachineSceneTool sceneTool, Vector3 delta)
         {
             switch (sceneTool)
             {
-                case Utility.CinemachineSceneTools.FoV:
+                case Utility.CinemachineSceneTool.FoV:
                     m_Lens.FieldOfView += delta.x;
                     return;
-                case Utility.CinemachineSceneTools.FarNearClip:
+                case Utility.CinemachineSceneTool.FarNearClip:
                     m_Lens.FarClipPlane += delta.x;
                     m_Lens.NearClipPlane += delta.y;
                     return;

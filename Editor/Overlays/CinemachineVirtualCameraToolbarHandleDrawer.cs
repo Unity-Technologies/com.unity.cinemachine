@@ -1,15 +1,17 @@
+using System;
+using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
-    public class CinemachineVirtualCameraToolbarHandleDrawer
+    public static class CinemachineVirtualCameraToolbarHandleDrawer
     {
-        GUIStyle m_LabelStyle;
-        bool m_HandleIsBeingDragged;
+        static GUIStyle m_LabelStyle;
+        static bool m_HandleIsBeingDragged;
         static bool FoVToolIsOn, FarNearClipToolIsOn, FollowOffsetToolIsOn, TrackedObjectOffsetToolIsOn;
-        public CinemachineVirtualCameraToolbarHandleDrawer()
+        static CinemachineVirtualCameraToolbarHandleDrawer()
         {
             m_LabelStyle = new GUIStyle();
             FoVToolIsOn = FarNearClipToolIsOn = FollowOffsetToolIsOn = TrackedObjectOffsetToolIsOn = false;
@@ -29,22 +31,32 @@ namespace Cinemachine.Editor
         /// Draws handles for vcam.
         /// </summary>
         /// <param name="target"></param>
-        /// <returns>True, if any handle has been drawn.</returns>
-        public bool DrawHandles(CinemachineVirtualCamera target)
+        public static void DrawSceneTools(CinemachineVirtualCamera target)
         {
-            // TODO: KGB add -> || no tool is selected in the toolbar
-            if (Tools.current == Tool.Move)
+            foreach(CinemachineSceneTool sceneTool in Enum.GetValues(typeof(CinemachineSceneTool)))
             {
-                return false;
+                if (target.CanBeControllerBySceneTool(sceneTool))
+                {
+                    DrawSceneTool(sceneTool, target);
+                }
             }
+            
+            // if (Tools.current == Tool.Move)
+            // {
+            // }
 
-            DrawTransposerToolHandles(target.GetCinemachineComponent<CinemachineTransposer>());
-            DrawFramingTransposerToolHandles(target.GetCinemachineComponent<CinemachineFramingTransposer>());
-
-            return false;
+            // target.CanBeControllerBySceneTool(Cinemachine.Utility.CinemachineSceneTool.FollowOffset);
+            //
+            // DrawTransposerToolHandles(target.GetCinemachineComponent<CinemachineTransposer>());
+            // DrawFramingTransposerToolHandles(target.GetCinemachineComponent<CinemachineFramingTransposer>());
         }
 
-        void DrawTransposerToolHandles(CinemachineTransposer target)
+        static void DrawSceneTool(CinemachineSceneTool tool, CinemachineVirtualCamera vcam)
+        {
+            
+        }
+
+        static void DrawTransposerToolHandles(CinemachineTransposer target)
         {
             if (target == null || !target.IsValid)
             {
@@ -89,8 +101,8 @@ namespace Cinemachine.Editor
                 Handles.color = originalColor;
             }
         }
-        
-        void DrawFramingTransposerToolHandles(CinemachineFramingTransposer target)
+
+        static void DrawFramingTransposerToolHandles(CinemachineFramingTransposer target)
         {
             
             

@@ -1,8 +1,7 @@
 namespace Cinemachine.Utility
 {
-    public enum CinemachineSceneTools
+    public enum CinemachineSceneTool
     {
-        None,
         FoV,
         FarNearClip,
         FollowOffset,
