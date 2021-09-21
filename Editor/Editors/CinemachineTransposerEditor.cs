@@ -86,6 +86,7 @@ namespace Cinemachine.Editor
             }
         }
 
+        // TODO: KGB cleanup
         // [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
         // static void DrawTransposerGizmos(CinemachineTransposer target, GizmoType selectionType)
         // {
@@ -107,37 +108,5 @@ namespace Cinemachine.Editor
         //         Gizmos.color = originalGizmoColour;
         //     }
         // }
-
-        static bool s_HandleIsBeingDragged;
-        static GUIStyle labelStyle = new GUIStyle();
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
-        static void DrawTransposerToolHandles(CinemachineTransposer target, GizmoType selectionType)
-        {
-            if (target.IsValid  & !target.m_HideOffsetInInspector)
-            {
-                if (true/*CinemachineVirtualCameraToolbar.FollowOffset*/)
-                {
-                    var up = Vector3.up;
-                    var brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
-                    if (brain != null)
-                        up = brain.DefaultWorldUp;
-                    var followTargetPosition = target.FollowTargetPosition;
-                    var cameraPosition = target.GetTargetCameraPosition(up);
-                    
-                    var originalColor = Handles.color;
-                    
-                    Handles.color = labelStyle.normal.textColor = s_HandleIsBeingDragged 
-                        ? CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor 
-                        : CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor;
-
-                    s_HandleIsBeingDragged = Tools.current == Tool.Move && Tools.handlePosition != cameraPosition;
-                    
-                    Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
-                    Handles.Label(cameraPosition, "Follow offset " + target.m_FollowOffset.ToString("F1"), labelStyle);
-                    
-                    Handles.color = originalColor;
-                }
-            }
-        }
     }
 }

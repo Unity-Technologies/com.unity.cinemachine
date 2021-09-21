@@ -120,7 +120,65 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
                 Target.m_UserIsDragging = false;
             }
+
+            DrawTransposerToolHandles(Target.GetCinemachineComponent<CinemachineTransposer>(), GizmoType.Active);
         }
+        
+        
+        static bool s_HandleIsBeingDragged;
+        static GUIStyle labelStyle = new GUIStyle();
+        // [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
+        void DrawTransposerToolHandles(CinemachineTransposer target, GizmoType selectionType)
+        {
+            if (target == null)
+            {
+                return;
+            }
+            //if (target.IsValid  & !target.m_HideOffsetInInspector)
+            {
+                if (true /*CinemachineVirtualCameraToolbar.FollowOffset*/)
+                {
+                    var up = Vector3.up;
+                    var brain = CinemachineCore.Instance.FindPotentialTargetBrain(target.VirtualCamera);
+                    if (brain != null)
+                        up = brain.DefaultWorldUp;
+                    var followTargetPosition = target.FollowTargetPosition;
+                    var cameraPosition = target.GetTargetCameraPosition(up);
+
+                    var originalColor = Handles.color;
+
+                    Handles.color = labelStyle.normal.textColor = s_HandleIsBeingDragged
+                        ? CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor
+                        : CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor;
+
+                    // TODO: if Tools.current != Tool.Move, then we need to draw our own if FollowOffset tool is selected.
+
+                    if (Tools.current != Tool.Move)
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        var newPos = Handles.PositionHandle(cameraPosition, Quaternion.identity);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            s_HandleIsBeingDragged = true;
+                            target.m_FollowOffset = newPos;
+                            InspectorUtility.RepaintGameView();
+                            
+                            Undo.RecordObject(target, "Change Follow Offset Position using handle in scene view.");
+                        }
+                        else
+                        {
+                            s_HandleIsBeingDragged = false;
+                        }
+                    }
+
+                    Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                    Handles.Label(cameraPosition, "Follow offset " + target.m_FollowOffset.ToString("F1"), labelStyle);
+                  
+                    Handles.color = originalColor;
+                }
+            }
+        }
+
 
         public override void OnInspectorGUI()
         {
