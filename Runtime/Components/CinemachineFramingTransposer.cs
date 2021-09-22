@@ -693,7 +693,7 @@ namespace Cinemachine
                 return doRepaint;
             }
 
-            if (CinemachineSceneToolUtility.FollowOffsetToolIsOn)
+            if (CinemachineSceneToolUtility.TrackedObjectOffsetToolIsOn)
             {
                 var followTargetPosition = FollowTargetPosition;
                 var trackedObject = followTargetPosition + m_TrackedObjectOffset;
