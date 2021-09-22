@@ -1,7 +1,9 @@
 {
     "name": "Cinemachine.Tests",
     "references": [
-        "Cinemachine"
+        "Cinemachine",
+        "Unity.Splines",
+        "Unity.Mathematics"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

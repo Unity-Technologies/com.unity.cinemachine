@@ -15,7 +15,7 @@
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.RenderPipelines.Universal.Editor",
         "Unity.Splines",
-        "Unity.Splines.Editor"
+        "Unity.Splines.Editor",
         "Unity.InputSystem"
     ],
     "includePlatforms": [
