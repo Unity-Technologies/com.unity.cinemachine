@@ -524,14 +524,6 @@ namespace Cinemachine
             return mExtensions != null && mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
         }
 
-        public virtual bool CanBeControllerBySceneTool(CinemachineSceneTool sceneTool)
-        {
-            UnityEngine.Debug.Log("CanBeControllerBySceneTool - CinemachineVirtualCameraBase");
-            return false;
-        }
-
-        public virtual void ProcessSceneToolEvent(CinemachineSceneTool sceneTool, Vector3 delta) {}
-
         /// <summary>
         /// Called on inactive object when being artificially activated by timeline.
         /// This is necessary because Awake() isn't called on inactive gameObjects.
@@ -829,9 +821,7 @@ namespace Cinemachine
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
 
-        public virtual bool DrawSceneTools(UnityEngine.Color activeColor, UnityEngine.Color defaultColor)
-        {
-            return false;
-        }
+        public virtual bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool) => false;
+        public virtual bool DrawSceneTools(Color activeColor, Color defaultColor) => false;
     }
 }

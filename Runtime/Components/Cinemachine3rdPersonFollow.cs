@@ -2,6 +2,7 @@
 #define CINEMACHINE_PHYSICS
 #endif
 
+using System;
 using UnityEngine;
 using Cinemachine.Utility;
 
@@ -200,7 +201,7 @@ namespace Cinemachine
             var collidedHand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
 
             // Place the camera at the correct distance from the hand
-            Vector3 camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
+            var camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
             camPos = ResolveCollisions(
                 collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
 
@@ -287,52 +288,81 @@ namespace Cinemachine
 #endif
         }
         
-        // bool m_HandleIsBeingDragged;
-        // public override bool DrawSceneTools(Color activeColor, Color defaultColor)
-        // {
-        //     var doRepaint = base.DrawSceneTools(activeColor, defaultColor);
-        //     if (!IsValid)
-        //     {
-        //         return doRepaint;
-        //     }
-        //
-        //     if (CinemachineSceneToolUtility.FollowOffsetToolIsOn)
-        //     {
-        //         var up = Vector3.up;
-        //         var brain = CinemachineCore.Instance.FindPotentialTargetBrain(VirtualCamera);
-        //         if (brain != null)
-        //             up = brain.DefaultWorldUp;
-        //         var followTargetPosition = FollowTargetPosition;
-        //         var cameraPosition =
-        //
-        //         var originalColor = UnityEditor.Handles.color;
-        //         var labelStyle = new GUIStyle();
-        //         UnityEditor.Handles.color = 
-        //             labelStyle.normal.textColor = m_HandleIsBeingDragged ? activeColor : defaultColor;
-        //         
-        //         UnityEditor.EditorGUI.BeginChangeCheck();
-        //         var newPos = UnityEditor.Handles.PositionHandle(cameraPosition, Quaternion.identity);
-        //         if (UnityEditor.EditorGUI.EndChangeCheck())
-        //         {
-        //             m_HandleIsBeingDragged = true;
-        //             m_FollowOffset = newPos;
-        //             
-        //             doRepaint = true;
-        //             UnityEditor.Undo.RecordObject(this, "Change Follow Offset Position using handle in scene view.");
-        //         }
-        //         else
-        //         {
-        //             m_HandleIsBeingDragged = false;
-        //         }
-        //
-        //
-        //         UnityEditor.Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
-        //         UnityEditor.Handles.Label(cameraPosition, "Follow offset " + m_FollowOffset.ToString("F1"), labelStyle);
-        //
-        //         UnityEditor.Handles.color = originalColor;
-        //     }
-        //
-        //     return doRepaint;
-        // }
+        public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool)
+        {
+            switch (sceneTool)
+            {
+                case Utility.CinemachineSceneTool.FollowOffset:
+                    return true;
+                default:
+                    return base.CanBeControllerBySceneTool(sceneTool);
+            }
+        }
+        
+        bool m_HandleIsBeingDragged;
+        public override bool DrawSceneTools(Color activeColor, Color defaultColor)
+        {
+            var doRepaint = base.DrawSceneTools(activeColor, defaultColor);
+            if (!IsValid)
+            {
+                return doRepaint;
+            }
+        
+            if (CinemachineSceneToolUtility.FollowOffsetToolIsOn)
+            {
+                var up = Vector3.up;
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(VirtualCamera);
+                if (brain != null)
+                    up = brain.DefaultWorldUp;
+                var followTargetPosition = FollowTargetPosition;
+                var targetForward = FollowTargetRotation * Vector3.forward;
+                var shoulderOffset = ShoulderOffset;
+                var shoulderOffsetPosition = followTargetPosition + shoulderOffset;
+                var verticalArmLength = VerticalArmLength;
+                var verticalArmLengthPosition = shoulderOffsetPosition + up * verticalArmLength;
+                var cameraDistance = CameraDistance;
+                var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
+        
+                var originalColor = UnityEditor.Handles.color;
+                
+                UnityEditor.EditorGUI.BeginChangeCheck();
+                var newShoulderOffsetPosition = 
+                    UnityEditor.Handles.PositionHandle(shoulderOffsetPosition, Quaternion.identity);
+                
+                UnityEditor.Handles.color = m_HandleIsBeingDragged ? activeColor : Color.cyan;
+                var newVerticalArmLengthPosition = UnityEditor.Handles.Slider(verticalArmLengthPosition, up);
+                UnityEditor.Handles.color = m_HandleIsBeingDragged ? activeColor : Color.blue;
+                var newCameraPosition = UnityEditor.Handles.Slider(cameraPosition, targetForward);
+
+                var labelStyle = new GUIStyle();
+                UnityEditor.Handles.color = 
+                    labelStyle.normal.textColor = m_HandleIsBeingDragged ? activeColor : defaultColor;
+                if (UnityEditor.EditorGUI.EndChangeCheck())
+                {
+                    m_HandleIsBeingDragged = true;
+                    ShoulderOffset += newShoulderOffsetPosition - shoulderOffsetPosition;
+                    VerticalArmLength += (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
+                    
+                    var projection = Vector3.Project(newCameraPosition - cameraPosition, targetForward);
+                    var isNegative = Math.Abs(Vector3.Dot(projection, targetForward) - projection.magnitude * targetForward.magnitude) < 0.1f;
+                    CameraDistance += (isNegative ? -1f : 1f) * projection.magnitude;
+                    
+                    doRepaint = true;
+                    UnityEditor.Undo.RecordObject(this, "Changed 3rdPersonFollow using handle in scene view.");
+                }
+                else
+                {
+                    m_HandleIsBeingDragged = false;
+                }
+        
+        
+                // UnityEditor.Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                // UnityEditor.Handles.Label(cameraPosition, "Follow offset " + m_FollowOffset.ToString("F1"), labelStyle);
+        
+                UnityEditor.Handles.color = originalColor;
+            }
+        
+            return doRepaint;
+        }
     }
 }

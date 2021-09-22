@@ -684,6 +684,17 @@ namespace Cinemachine
                 new Vector3(Mathf.Tan(angles.y) * z * 2, Mathf.Tan(angles.x) * z * 2, zSize));
         }
         
+        public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool)
+        {
+            switch (sceneTool)
+            {
+                case Utility.CinemachineSceneTool.TrackedObjectOffset:
+                    return true;
+                default:
+                    return base.CanBeControllerBySceneTool(sceneTool);
+            }
+        }
+        
         bool m_HandleIsBeingDragged;
         public override bool DrawSceneTools(Color activeColor, Color defaultColor)
         {
@@ -708,7 +719,7 @@ namespace Cinemachine
                 if (UnityEditor.EditorGUI.EndChangeCheck())
                 {
                     m_HandleIsBeingDragged = true;
-                    m_TrackedObjectOffset += (newPos - trackedObject);
+                    m_TrackedObjectOffset += newPos - trackedObject;
                     
                     doRepaint = true;
                     UnityEditor.Undo.RecordObject(this, "Change Follow Offset Position using handle in scene view.");

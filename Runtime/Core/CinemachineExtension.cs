@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
@@ -171,10 +172,8 @@ namespace Cinemachine
         }
 
         private Dictionary<ICinemachineCamera, System.Object> mExtraState;
-        
-        public virtual bool DrawSceneTools(UnityEngine.Color activeColor, UnityEngine.Color defaultColor)
-        {
-            return false;
-        }
+
+        public virtual bool CanBeControllerBySceneTool(CinemachineSceneTool sceneTool) => false;
+        public virtual bool DrawSceneTools(Color activeColor, Color defaultColor) => false;
     }
 }

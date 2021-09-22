@@ -632,30 +632,15 @@ namespace Cinemachine
         
         public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool)
         {
-            UnityEngine.Debug.Log("CanBeControllerBySceneTool - CinemachineVirtualCamera");
             switch (sceneTool)
             {
                 case Utility.CinemachineSceneTool.FoV:
                     return true;
                 case Utility.CinemachineSceneTool.FarNearClip:
                     return true;
+                default:
+                    return base.CanBeControllerBySceneTool(sceneTool);
             }
-            return base.CanBeControllerBySceneTool(sceneTool);
-        }
-
-        public override void ProcessSceneToolEvent(Utility.CinemachineSceneTool sceneTool, Vector3 delta)
-        {
-            switch (sceneTool)
-            {
-                case Utility.CinemachineSceneTool.FoV:
-                    m_Lens.FieldOfView += delta.x;
-                    return;
-                case Utility.CinemachineSceneTool.FarNearClip:
-                    m_Lens.FarClipPlane += delta.x;
-                    m_Lens.NearClipPlane += delta.y;
-                    return;
-            }
-            base.ProcessSceneToolEvent(sceneTool, delta);
         }
 
         bool m_HandleIsBeingDragged;
