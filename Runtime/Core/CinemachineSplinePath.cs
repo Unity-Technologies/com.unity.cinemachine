@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Splines;
 using System.Collections.Generic;
+using Unity.Mathematics;
 
 namespace Cinemachine
 {
@@ -65,6 +66,8 @@ namespace Cinemachine
         void Reset()
         {
             m_Spline = new Spline();
+            m_Spline.AddKnot(new BezierKnot { Position = new float3(0, 0, -5), Rotation = quaternion.identity });
+            m_Spline.AddKnot(new BezierKnot { Position = new float3(0, 0, 5), Rotation = quaternion.identity });
             m_Appearance = new Appearance();
             InvalidateDistanceCache();
         }

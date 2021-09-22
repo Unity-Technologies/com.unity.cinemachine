@@ -142,16 +142,16 @@ namespace Cinemachine.Editor
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
-            GameObject go = InspectorUtility.CreateGameObject(
+            var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineSplinePath), "DollyTrack"),
                     typeof(CinemachineSplinePath));
             SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
+            var path = go.GetComponent<CinemachineSplinePath>();
 
-            CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
+            var vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
             SetParentToMenuContextObject(vcam.gameObject, command);
             vcam.GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = path;
@@ -161,14 +161,14 @@ namespace Cinemachine.Editor
         static void CreateDollyTrackWithCart(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
-            GameObject go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
-                    typeof(CinemachineSmoothPath));
+            var go = InspectorUtility.CreateGameObject(
+                    GenerateUniqueObjectName(typeof(CinemachineSplinePath), "DollyTrack"),
+                    typeof(CinemachineSplinePath));
             SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
+            var path = go.GetComponent<CinemachineSplinePath>();
 
             go = InspectorUtility.CreateGameObject(
                 GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"),
@@ -184,7 +184,7 @@ namespace Cinemachine.Editor
         static void CreateTargetGroupCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
-            CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
+            var vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineGroupComposer), typeof(CinemachineTransposer));
             var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineTargetGroup), "TargetGroup"),
