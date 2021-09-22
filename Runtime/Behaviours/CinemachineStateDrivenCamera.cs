@@ -1,3 +1,7 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_UNITY_ANIMATION
+#endif
+
 using Cinemachine.Utility;
 using System;
 using System.Collections.Generic;
@@ -5,6 +9,7 @@ using UnityEngine;
 
 namespace Cinemachine
 {
+#if CINEMACHINE_UNITY_ANIMATION
     /// <summary>
     /// This is a virtual camera "manager" that owns and manages a collection
     /// of child Virtual Cameras.  These child vcams are mapped to individual states in
@@ -143,7 +148,7 @@ namespace Cinemachine
 
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the State Driven Camera were active.</summary>
-        public ICinemachineCamera LiveChild { set; get; }
+        public ICinemachineCamera LiveChild { get; set; }
 
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
@@ -208,11 +213,11 @@ namespace Cinemachine
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
-            TransitioningFrom = fromCam;
+            m_TransitioningFrom  = fromCam;
             InternalUpdateCameraState(worldUp, deltaTime);
         }
 
-        ICinemachineCamera TransitioningFrom { get; set; }
+        ICinemachineCamera m_TransitioningFrom;
 
         /// <summary>Internal use only.  Do not call this method.
         /// Called by CinemachineCore at designated update time
@@ -271,11 +276,11 @@ namespace Cinemachine
             }
             else if (LiveChild != null)
             {
-                if (TransitioningFrom != null)
-                    LiveChild.OnTransitionFromCamera(TransitioningFrom, worldUp, deltaTime);
+                if (m_TransitioningFrom  != null)
+                    LiveChild.OnTransitionFromCamera(m_TransitioningFrom , worldUp, deltaTime);
                 m_State =  LiveChild.State;
             }
-            TransitioningFrom = null;
+            m_TransitioningFrom  = null;
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
         }
@@ -327,7 +332,12 @@ namespace Cinemachine
         public CinemachineVirtualCameraBase[] ChildCameras { get { UpdateListOfChildren(); return m_ChildCameras; }}
 
         /// <summary>Is there a blend in progress?</summary>
-        public bool IsBlending { get { return mActiveBlend != null; } }
+        public bool IsBlending => mActiveBlend != null;
+
+        /// <summary>
+        /// Get the current active blend in progress.  Will return null if no blend is in progress.
+        /// </summary>
+        public CinemachineBlend ActiveBlend => mActiveBlend;
 
         /// <summary>API for the inspector editor.  Animation module does not have hashes
         /// for state parents, so we have to invent them in order to implement nested state
@@ -552,4 +562,5 @@ namespace Cinemachine
             return blend;
         }
     }
+#endif
 }

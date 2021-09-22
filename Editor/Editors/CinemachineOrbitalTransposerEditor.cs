@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
+    [CanEditMultipleObjects]
     internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
@@ -20,7 +21,7 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_XAxis));
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
             }
-            if (Target.HideOffsetInInspector)
+            if (Target.m_HideOffsetInInspector)
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
 
             switch (Target.m_BindingMode)
@@ -70,13 +71,17 @@ namespace Cinemachine.Editor
 
         private void OnEnable()
         {
-            Target.UpdateInputAxisProvider();
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
         }
 
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.FollowTarget == null)
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineOrbitalTransposer).FollowTarget == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox(
                     "Orbital Transposer requires a Follow target.",
                     MessageType.Warning);
@@ -104,7 +109,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]
         static void DrawTransposerGizmos(CinemachineOrbitalTransposer target, GizmoType selectionType)
         {
-            if (target.IsValid && !target.HideOffsetInInspector)
+            if (target.IsValid && !target.m_HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)

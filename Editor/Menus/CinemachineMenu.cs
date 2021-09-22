@@ -1,6 +1,6 @@
 #if !UNITY_2019_3_OR_NEWER
 #define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
+#define CINEMACHINE_UNITY_ANIMATION
 #endif
 
 using UnityEngine;
@@ -36,37 +36,49 @@ namespace Cinemachine.Editor
         const string m_CinemachineGameObjectRootMenu = "GameObject/Cinemachine/";
         const int m_MenuPriority = 11; // right after Camera
         
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_MenuPriority)]
-        public static CinemachineVirtualCamera CreateVirtualCamera()
+        static void SetParentToMenuContextObject(GameObject child, MenuCommand command)
         {
-            return InternalCreateVirtualCamera(
-                "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTransposer));
+            var go = command.context as GameObject;
+            if (go != null)
+                Undo.SetTransformParent(child.transform, go.transform, "set parent");
+            Selection.activeObject = child;
+        }
+
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_MenuPriority)]
+        static void CreateVirtualCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
+            var go = InternalCreateVirtualCamera(
+                "CM vcam", false, typeof(CinemachineComposer), typeof(CinemachineTransposer)).gameObject;
+            SetParentToMenuContextObject(go, command);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_MenuPriority)]
-        static void CreateFreeLookCamera()
+        static void CreateFreeLookCamera(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
             CreateCameraBrainIfAbsent();
             var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineFreeLook), "CM FreeLook"),
                     typeof(CinemachineFreeLook));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
-            Selection.activeGameObject = go;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_MenuPriority)]
-        static void CreateBlendListCamera()
+        static void CreateBlendListCamera(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Blend List Camera");
             CreateCameraBrainIfAbsent();
             var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineBlendListCamera), "CM BlendListCamera"),
                     typeof(CinemachineBlendListCamera));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create Blend List camera");
             var vcam = go.GetComponent<CinemachineBlendListCamera>();
-            Selection.activeGameObject = go;
 
             // Give it a couple of children
             var child1 = CreateDefaultVirtualCamera();
@@ -83,35 +95,39 @@ namespace Cinemachine.Editor
             vcam.m_Instructions[1].m_Blend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
             vcam.m_Instructions[1].m_Blend.m_Time = 2f;
         }
-
+        
+#if CINEMACHINE_UNITY_ANIMATION
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_MenuPriority)]
-        static void CreateStateDivenCamera()
+        static void CreateStateDivenCamera(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("State-Driven Camera");
             CreateCameraBrainIfAbsent();
             var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineStateDrivenCamera), "CM StateDrivenCamera"),
                     typeof(CinemachineStateDrivenCamera));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create state driven camera");
-            Selection.activeGameObject = go;
 
             // Give it a child
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create state driven camera");
         }
+#endif
 
 #if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_MenuPriority)]
-        static void CreateClearShotVirtualCamera()
+        static void CreateClearShotVirtualCamera(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("ClearShot Camera");
             CreateCameraBrainIfAbsent();
             var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineClearShot), "CM ClearShot"),
                     typeof(CinemachineClearShot));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create ClearShot camera");
-            Selection.activeGameObject = go;
 
             // Give it a child
             var child = CreateDefaultVirtualCamera();
@@ -123,53 +139,57 @@ namespace Cinemachine.Editor
 #endif
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_MenuPriority)]
-        static void CreateDollyCameraWithPath()
+        static void CreateDollyCameraWithPath(MenuCommand command)
         {
-            var vcam = InternalCreateVirtualCamera(
-                    "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
-            var go = InspectorUtility.CreateGameObject(
+            CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
+            GameObject go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineSplinePath), "DollyTrack"),
                     typeof(CinemachineSplinePath));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            var path = go.GetComponent<CinemachineSplinePath>();
-            var dolly = vcam.GetCinemachineComponent<CinemachineTrackedDolly>();
-            Undo.RecordObject(dolly, "create track");
-            dolly.m_Path = path;
+            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
+
+            CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
+                    "CM vcam", true, typeof(CinemachineComposer), typeof(CinemachineTrackedDolly));
+            SetParentToMenuContextObject(vcam.gameObject, command);
+            vcam.GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = path;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_MenuPriority)]
-        static void CreateDollyTrackWithCart()
+        static void CreateDollyTrackWithCart(MenuCommand command)
         {
-            var go = InspectorUtility.CreateGameObject(
-                    GenerateUniqueObjectName(typeof(CinemachineSplinePath), "DollyTrack"),
-                    typeof(CinemachineSplinePath));
+            CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
+            GameObject go = InspectorUtility.CreateGameObject(
+                    GenerateUniqueObjectName(typeof(CinemachineSmoothPath), "DollyTrack"),
+                    typeof(CinemachineSmoothPath));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create track");
-            var path = go.GetComponent<CinemachineSplinePath>();
-            Selection.activeGameObject = go;
+            CinemachineSmoothPath path = go.GetComponent<CinemachineSmoothPath>();
 
             go = InspectorUtility.CreateGameObject(
                 GenerateUniqueObjectName(typeof(CinemachineDollyCart), "DollyCart"),
                 typeof(CinemachineDollyCart));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create cart");
-            var cart = go.GetComponent<CinemachineDollyCart>();
-            Undo.RecordObject(cart, "create track");
-            cart.m_Path = path;
+            go.GetComponent<CinemachineDollyCart>().m_Path = path;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_MenuPriority)]
-        static void CreateTargetGroupCamera()
+        static void CreateTargetGroupCamera(MenuCommand command)
         {
-            var vcam = InternalCreateVirtualCamera(
+            CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
+            CinemachineVirtualCamera vcam = InternalCreateVirtualCamera(
                     "CM vcam", true, typeof(CinemachineGroupComposer), typeof(CinemachineTransposer));
             var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineTargetGroup), "TargetGroup"),
                     typeof(CinemachineTargetGroup));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create target group");
@@ -178,16 +198,17 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_MenuPriority)]
-        static void CreateMixingCamera()
+        static void CreateMixingCamera(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Mixing Camera");
             CreateCameraBrainIfAbsent();
             var go = InspectorUtility.CreateGameObject(
                     GenerateUniqueObjectName(typeof(CinemachineMixingCamera), "CM MixingCamera"),
                     typeof(CinemachineMixingCamera));
+            SetParentToMenuContextObject(go, command);
             if (SceneView.lastActiveSceneView != null)
                 go.transform.position = SceneView.lastActiveSceneView.pivot;
             Undo.RegisterCreatedObjectUndo(go, "create MixingCamera camera");
-            Selection.activeGameObject = go;
 
             // Give it a couple of children
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create MixedCamera child");
@@ -195,14 +216,17 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_MenuPriority)]
-        static void Create2DCamera()
+        static void Create2DCamera(MenuCommand command)
         {
-            InternalCreateVirtualCamera("CM vcam", true, typeof(CinemachineFramingTransposer));
+            CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
+            var go = InternalCreateVirtualCamera(
+                "CM vcam", true, typeof(CinemachineFramingTransposer)).gameObject;
+            SetParentToMenuContextObject(go, command);
         }
 
 #if !UNITY_2019_1_OR_NEWER
         [MenuItem("Cinemachine/Import Post Processing V2 Adapter Asset Package")]
-        private static void ImportPostProcessingV2Package()
+        static void ImportPostProcessingV2Package()
         {
             var message = "In Cinemachine 2.4.0 and up, the PostProcessing adapter is built-in, and "
                 + "can be auto-enabled by Unity 2019 and up.\n\n"
@@ -217,7 +241,7 @@ namespace Cinemachine.Editor
         }
 
         [MenuItem("Cinemachine/Import CinemachineExamples Asset Package")]
-        private static void ImportExamplePackage()
+        static void ImportExamplePackage()
         {
             string pkgFile = ScriptableObjectUtility.CinemachineInstallPath
                 + "/Extras~/CinemachineExamples.unitypackage";

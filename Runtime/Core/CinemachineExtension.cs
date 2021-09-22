@@ -135,6 +135,9 @@ namespace Cinemachine
         /// </summary>
         /// <returns>Highest damping setting in this extension</returns>
         public virtual float GetMaxDampTime() { return 0; }
+        
+        /// <summary>Extensions that require user input should implement this and return true.</summary>
+        public virtual bool RequiresUserInput => false;
 
         /// <summary>Because extensions can be placed on manager cams and will in that
         /// case be called for all the vcam children, vcam-specific state information

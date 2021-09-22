@@ -1,5 +1,0 @@
-{
-    "displayName": "Scrub Bubble support for Nested Timelines (experimental)",
-    "interactiveImport": "false",
-    "description": "Experimental feature.  Adds a Timeline extension to support Scrubb Bubble for nested timelines.  This extension will become unnecessary when Timeline adds native support for the missing API"
-}

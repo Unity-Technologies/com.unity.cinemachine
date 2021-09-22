@@ -22,24 +22,25 @@ namespace Cinemachine
         /// <summary>
         /// Camera Lens Settings.
         /// </summary>
-        public LensSettings Lens { get; set; }
+        public LensSettings Lens;
 
         /// <summary>
         /// Which way is up.  World space unit vector.  Must have a length of 1.
         /// </summary>
-        public Vector3 ReferenceUp { get; set; }
+        public Vector3 ReferenceUp;
 
         /// <summary>
         /// The world space focus point of the camera.  What the camera wants to look at.
         /// There is a special constant define to represent "nothing".  Be careful to 
         /// check for that (or check the HasLookAt property).
         /// </summary>
-        public Vector3 ReferenceLookAt { get; set; }
+        public Vector3 ReferenceLookAt;
 
         /// <summary>
         /// Returns true if this state has a valid ReferenceLookAt value.
         /// </summary>
-        public bool HasLookAt { get { return ReferenceLookAt == ReferenceLookAt; } } // will be false if NaN
+        #pragma warning disable 1718 // comparison made to same variable
+        public bool HasLookAt => ReferenceLookAt == ReferenceLookAt; // will be false if NaN
 
         /// <summary>
         /// This constant represents "no point in space" or "no direction".
@@ -49,53 +50,53 @@ namespace Cinemachine
         /// <summary>
         /// Raw (un-corrected) world space position of this camera
         /// </summary>
-        public Vector3 RawPosition { get; set; }
+        public Vector3 RawPosition;
 
         /// <summary>
         /// Raw (un-corrected) world space orientation of this camera
         /// </summary>
-        public Quaternion RawOrientation { get; set; }
+        public Quaternion RawOrientation;
 
         /// <summary>This is a way for the Body component to bypass aim damping,
         /// useful for when the body needs to rotate its point of view, but does not
         /// want interference from the aim damping.  The value is the camera
         /// rotation, in Euler degrees.</summary>
-        public Vector3 PositionDampingBypass { get; set; }
+        public Vector3 PositionDampingBypass;
 
         /// <summary>
         /// Subjective estimation of how "good" the shot is.
         /// Larger values mean better quality.  Default is 1.
         /// </summary>
-        public float ShotQuality { get; set; }
+        public float ShotQuality;
 
         /// <summary>
         /// Position correction.  This will be added to the raw position.
         /// This value doesn't get fed back into the system when calculating the next frame.
         /// Can be noise, or smoothing, or both, or something else.
         /// </summary>
-        public Vector3 PositionCorrection { get; set; }
+        public Vector3 PositionCorrection;
 
         /// <summary>
         /// Orientation correction.  This will be added to the raw orientation.
         /// This value doesn't get fed back into the system when calculating the next frame.
         /// Can be noise, or smoothing, or both, or something else.
         /// </summary>
-        public Quaternion OrientationCorrection { get; set; }
+        public Quaternion OrientationCorrection;
 
         /// <summary>
         /// Position with correction applied.
         /// </summary>
-        public Vector3 CorrectedPosition { get { return RawPosition + PositionCorrection; } }
+        public Vector3 CorrectedPosition => RawPosition + PositionCorrection;
 
         /// <summary>
         /// Orientation with correction applied.
         /// </summary>
-        public Quaternion CorrectedOrientation { get { return RawOrientation * OrientationCorrection; } }
+        public Quaternion CorrectedOrientation => RawOrientation * OrientationCorrection;
 
         /// <summary>
         /// Position with correction applied.  This is what the final camera gets.
         /// </summary>
-        public Vector3 FinalPosition { get { return RawPosition + PositionCorrection; } }
+        public Vector3 FinalPosition => RawPosition + PositionCorrection;
 
         /// <summary>
         /// Orientation with correction and dutch applied.  This is what the final camera gets.
@@ -140,7 +141,7 @@ namespace Cinemachine
         /// These hints can be or'ed toether to influence how blending is done, and how state
         /// is applied to the camera
         /// </summary>
-        public BlendHintValue BlendHint { get; set; }
+        public BlendHintValue BlendHint;
 
         /// <summary>
         /// State with default values
@@ -370,6 +371,7 @@ namespace Cinemachine
                     if (angle > UnityVectorExtensions.Epsilon)
                         dirTarget = state.ReferenceLookAt - state.CorrectedPosition;
                 }
+                
                 if (dirTarget.AlmostZero() 
                     || ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.IgnoreLookAtTarget) != 0)
                 {
@@ -379,27 +381,28 @@ namespace Cinemachine
                 }
                 else
                 {
+                    var blendUp = Vector3.Slerp(
+                        stateA.RawOrientation * Vector3.up, stateB.RawOrientation * Vector3.up, t);
+
                     // Rotate while preserving our lookAt target
-                    dirTarget = dirTarget.normalized;
-                    if ((dirTarget - state.ReferenceUp).AlmostZero()
-                        || (dirTarget + state.ReferenceUp).AlmostZero())
+                    if (Vector3.Cross(dirTarget, blendUp).AlmostZero())
                     {
                         // Looking up or down at the pole
                         newOrient = UnityQuaternionExtensions.SlerpWithReferenceUp(
-                                stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
+                                stateA.RawOrientation, stateB.RawOrientation, t, blendUp);
                     }
                     else
                     {
                         // Put the target in the center
-                        newOrient = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
+                        newOrient = Quaternion.LookRotation(dirTarget, blendUp);
 
                         // Blend the desired offsets from center
                         Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
-                                stateA.ReferenceLookAt - stateA.CorrectedPosition, stateA.ReferenceUp);
+                                stateA.ReferenceLookAt - stateA.CorrectedPosition, blendUp);
                         Vector2 deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
-                                stateB.ReferenceLookAt - stateB.CorrectedPosition, stateB.ReferenceUp);
+                                stateB.ReferenceLookAt - stateB.CorrectedPosition, blendUp);
                         newOrient = newOrient.ApplyCameraRotation(
-                                Vector2.Lerp(deltaA, deltaB, adjustedT), state.ReferenceUp);
+                                Vector2.Lerp(deltaA, deltaB, adjustedT), blendUp);
                     }
                 }
             }
@@ -472,7 +475,6 @@ namespace Cinemachine
             Vector3 posB, Vector3 pivotB,
             float t)
         {
-            #pragma warning disable 1718 // comparison made to same variable
             if (pivotA == pivotA && pivotB == pivotB) // check for NaN
             {
                 if ((BlendHint & BlendHintValue.CylindricalPositionBlend) != 0)

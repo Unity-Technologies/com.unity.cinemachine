@@ -14,23 +14,18 @@ By default, an Impulse Source affects every [Impulse Listener](CinemachineImpuls
 
 The properties in the Cinemachine Collision Impulse Source Inspector window are divided into the following sections.
 
-- [Impulse Channel](#ImpulseChannel) (A)
-- [Signal Shape](#SignalShape) (B)
-- [Time Envelope](#TimeEnvelope) (C)
-- [Spatial Range](#SpatialRange) (D)
-- [Trigger Object Filter](#TriggerObject) (E)
-- [How to Generate The Impulse](#GenerateImpulse) (F)
+- [Impulse Channel](#ImpulseChannel) 
+- [Signal Shape](#SignalShape) 
+- [Time Envelope](#TimeEnvelope)
+- [Spatial Range](#SpatialRange)
+- [Trigger Object Filter](#TriggerObject)
+- [How to Generate The Impulse](#GenerateImpulse)
 
-
-![](images/InspectorCollisionImpulseSource.png)
-
-
-<a name="ImpulseChannel"></a>
 ### Impulse Channel
 
 Impulse Listeners filter impulses based on channels to control which Impulse Sources they react to. Channels work like Camera Layers, but are distinct from them. These properties control the channels that the Collision Impulse Source broadcasts impulse signals on. For details, see documentation on [Filtering](CinemachineImpulseFiltering.md).
 
-![](images/InspectorImpulseSourceChannel.png)
+
 
 | **Property:**       | **Function:**                                                |
 | ------------------- | ------------------------------------------------------------ |
@@ -42,14 +37,13 @@ Impulse Listeners filter impulses based on channels to control which Impulse Sou
 
 These properties control the basic characteristics of the raw signal when it is emitted by the Collision Impulse Source.
 
-![](images/InspectorImpulseSourceSignal.png)
+
 
 | **Property:**  | **Function:**                                                |
 | -------------- | ------------------------------------------------------------ |
 | **Raw Signal** | The raw signal form. <br /><br />Drag a signal Asset onto the signal name to connect the signal to the Collision Impulse Source.<br /><br />Click the “gear” icon for additional signal options, including options for creating new signals.<br /><br />See [Raw Vibration Signals](CinemachineImpulseRawSignal.md) for details.|
 |**Amplitude Gain** | Set a value by which to multiply the amplitude of **Raw Signal**. This controls the strength of the vibrations. This is set to 1 by default.<br /><br />Use values greater than 1 to amplify the signal, 1 for the original signal, values less than 1 and greater than 0 to attenuate the signal, and 0 to mute the signal. |
 |**Frequency Gain**|Set a value by which to multiply the frequency of **Raw Signal**. This controls the speed of the vibrations. This is set to 1 by default.<br /><br />Use values greater than one to increase the frequency, 1 for the original signal, values less than 1 and greater than 0 to reduce the frequency of the signal. A frequency of 0 holds a single noise value indefinitely, as though time were frozen.|
-|**Randomize**|Enable this to randomize the **Raw Signal’s** start time.<br /><br />This property is available when the **Raw Signal** is a noise profile Asset. See [Raw Vibration Signals](CinemachineImpulseRawSignal.md) for details.|
 |**Repeat Mode**|Specify whether to loop the **Raw Signal** over the duration of the time envelope, or stretch it to fit the time envelope.<br /><br />This property is available when the **Raw Signal** is a fixed signal. See [Raw Vibration Signals](CinemachineImpulseRawSignal.md) for details.|
 
 
@@ -58,7 +52,7 @@ These properties control the basic characteristics of the raw signal when it is 
 
 These properties control the duration of the impulse and the intensity of the **Raw Signal** over that duration.
 
-![](images/InspectorImpulseTimeEnvelope.png)
+
 
 | Property:             | Function:                                                    |
 | --------------------- | ------------------------------------------------------------ |
@@ -73,7 +67,7 @@ These properties control the duration of the impulse and the intensity of the **
 
 These properties define a zone in the Scene. The impulses from this Impulse Source only affect Impulse Listeners in this zone.
 
-![](images/InspectorImpulseSourceSpatialRange.png)
+
 
 | Property:|| Function:|
 |--|--|--|
@@ -93,7 +87,7 @@ These properties define a zone in the Scene. The impulses from this Impulse Sour
 
 These properties filter the GameObjects that trigger an impulse when they collide or enter the trigger zone. GameObjects in layers specified by the **Layer Mask** trigger impulses unless you tag them with the **Ignore Tag** value. For details, see documentation on [Filtering](CinemachineImpulseFiltering.md).
 
-![](images/InspectorImpulseSourceTriggerObject.png)
+
 
 | Property:      | Function:                                                    |
 | -------------- | ------------------------------------------------------------ |
@@ -106,7 +100,7 @@ These properties filter the GameObjects that trigger an impulse when they collid
 
 An impulse is triggered at a location by an impact mass moving at an impact velocity. Unity dynamically calculates the mass and velocity of the Rigidbody or Rigidbody 2D component that triggers the impulse. The **How To Generate The Impulse** properties control how the mass and velocity of the Rigidbody affect the strength and direction of the signal. 
 
-![](images/InspectorImpulseSourceHowToGenerate.png)
+
 
 | Property:                   | Function:                                                    |
 | --------------------------- | ------------------------------------------------------------ |

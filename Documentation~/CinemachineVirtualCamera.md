@@ -24,6 +24,7 @@ At any time, each Virtual Camera may be in one of these states:
 | __Priority__ || The importance of this Virtual Camera for choosing the next shot. A higher value indicates a higher priority. Cinemachine Brain chooses the next live Virtual Camera from all Virtual Cameras that are activated and have the same or higher priority as the current live Virtual Camera. This property has no effect when using a Virtual Camera with Timeline. |
 | __Follow__ || The target GameObject that the Virtual Camera moves with. The [Body properties](CinemachineVirtualCameraBody.html) use this target to update the position of the Unity camera. Keep this property empty to make the Unity camera use the position of the Virtual Camera’ transform. For example, you might choose to animate the Virtual Camera in Timeline. |
 | __Look At__ || The target GameObject to aim the Unity camera at. The [Aim properties](CinemachineVirtualCameraAim.html) use this target to update the rotation of the Unity camera. Keep this property empty to make the Unity camera use the orientation of the Virtual Camera. |
+| __Standby Update__ || Controls how often the virtual camera is updated when the virtual camera is not live. |
 | __Position Blending__ || Style for blending positions to and from this Virtual Camera. |
 | | _Linear_ | Standard linear position blend. |
 | | _Spherical_ | Spherical blend about the Look At position, if there is a Look At target. |
@@ -34,7 +35,14 @@ At any time, each Virtual Camera may be in one of these states:
 | | _Orthographic Size_ | When using an orthographic camera, defines the half-height of the camera view, in world coordinates. Available when the Unity camera with the Cinemachine Brain component uses a Projection of Orthographic. |
 | | _Near Clip Plane_ | The closest point relative to the camera where drawing occurs. |
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. |
-| __Dutch__ || Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the Virtual Camera; there is no counterpart property in the Unity camera. |
+| | _Dutch_ | Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the Virtual Camera; there is no counterpart property in the Unity camera. |
+|  __Mode Override__ || Allows you to select a different camera mode to apply to the [Unity camera](https://docs.unity3d.com/Manual/class-Camera.html) component when Cinemachine activates this Virtual Camera. <br />__Important:__ All the changes applied to the Camera component through this setting will remain after the Virtual Camera deactivation. If you set a mode override in any Virtual Camera, you should set one in all Virtual Cameras. |
+| | _None_ | Leaves the __Projection__ and __Physical Camera__ properties unchanged in the Camera. |
+| | _Orthographic_ | Sets the __Projection__ property to __Orthographic__. |
+| | _Perspective_ | Sets the __Projection__ property to __Perspective__ and *disables* the __Physical Camera__ feature and properties. |
+| | _Physical_ | Sets the __Projection__ property to __Perspective__ and *enables* the __Physical Camera__ feature and properties. |
+| __Blend Hint__ || Provides hints for blending positions to and from the virtual camera. |
+| __Inherit Position__ || When enabled, whenever this virtual camera goes live, forces the initial position to be the same as the current position of the Unity Camera, if possible. |
 | __Extensions__ || Components that add extra behaviors to the Virtual Camera.  |
 | | _Add Extension_ | Choose a new [extension](CinemachineVirtualCameraExtensions.html) to add to the Virtual Camera. |
 

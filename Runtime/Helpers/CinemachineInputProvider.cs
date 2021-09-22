@@ -10,6 +10,7 @@ namespace Cinemachine
     /// This is an add-on to override the legacy input system and read input using the
     /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
     /// or FreeLook that requires user input, and drag in the the desired actions.
+    /// If the Input System Package is not installed, then this behaviour does nothing.
     /// </summary>
     [HelpURL(Documentation.BaseURL + "manual/CinemachineAlternativeInput.html")]
     public class CinemachineInputProvider : MonoBehaviour, AxisState.IInputAxisProvider
@@ -41,14 +42,17 @@ namespace Cinemachine
         /// <returns>The current axis value</returns>
         public virtual float GetAxisValue(int axis)
         {
-            var action = ResolveForPlayer(axis, axis == 2 ? ZAxis : XYAxis);
-            if (action != null)
+            if (enabled)
             {
-                switch (axis)
+                var action = ResolveForPlayer(axis, axis == 2 ? ZAxis : XYAxis);
+                if (action != null)
                 {
-                    case 0: return action.ReadValue<Vector2>().x;
-                    case 1: return action.ReadValue<Vector2>().y;
-                    case 2: return action.ReadValue<float>();
+                    switch (axis)
+                    {
+                        case 0: return action.ReadValue<Vector2>().x;
+                        case 1: return action.ReadValue<Vector2>().y;
+                        case 2: return action.ReadValue<float>();
+                    }
                 }
             }
             return 0;
@@ -109,6 +113,7 @@ namespace Cinemachine
     /// This is an add-on to override the legacy input system and read input using the
     /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
     /// or FreeLook that requires user input, and drag in the the desired actions.
+    /// If the Input System Package is not installed, then this behaviour does nothing.
     /// </summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineInputProvider : MonoBehaviour {}

@@ -16,6 +16,7 @@
         "Unity.RenderPipelines.Universal.Editor",
         "Unity.Splines",
         "Unity.Splines.Editor"
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"
@@ -66,6 +67,26 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.3.1",
             "define": "CINEMACHINE_LWRP_7_3_1"
+        },
+        {
+            "name": "com.unity.timeline",
+            "expression": "1.5.0-preview.5",
+            "define": "CINEMACHINE_TIMELINE_1_5_0"
+        },
+        {
+            "name": "com.unity.modules.animation",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_ANIMATION"
+        },
+        {
+            "name": "com.unity.modules.imgui",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_IMGUI"
+        },
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
         }
     ],
     "noEngineReferences": false

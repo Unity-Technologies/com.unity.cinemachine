@@ -27,9 +27,8 @@ everything in between.
 
 ## Example Scenes
 Please have a look at our example scenes. They are shipped with the package and can be imported
-via the Cinemachine menu.
+via Package Manager.
 
 ## Forums
 We have a busy discussion area on the forums.
 https://forum.unity3d.com/forums/cinemachine.136/
-

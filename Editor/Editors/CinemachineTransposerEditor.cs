@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTransposer))]
+    [CanEditMultipleObjects]
     internal sealed class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
@@ -54,14 +55,17 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
             }
-            if (Target.HideOffsetInInspector)
+            if (Target.m_HideOffsetInInspector)
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
         }
 
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (Target.FollowTarget == null)
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as CinemachineTransposer).FollowTarget == null;
+            if (needWarning)
                 EditorGUILayout.HelpBox(
                     "Transposer requires a Follow Target.  Change Body to Do Nothing if you don't want a Follow target.",
                     MessageType.Warning);
@@ -85,7 +89,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineTransposer))]
         static void DrawTransposerGizmos(CinemachineTransposer target, GizmoType selectionType)
         {
-            if (target.IsValid  & !target.HideOffsetInInspector)
+            if (target.IsValid  & !target.m_HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)

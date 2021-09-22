@@ -11,18 +11,18 @@ namespace Cinemachine
     public class CinemachineBlend
     {
         /// <summary>First camera in the blend</summary>
-        public ICinemachineCamera CamA { get; set; }
+        public ICinemachineCamera CamA;
 
         /// <summary>Second camera in the blend</summary>
-        public ICinemachineCamera CamB { get; set; }
+        public ICinemachineCamera CamB;
 
         /// <summary>The curve that describes the way the blend transitions over time
         /// from the first camera to the second.  X-axis is normalized time (0...1) over which
         /// the blend takes place and Y axis is blend weight (0..1)</summary>
-        public AnimationCurve BlendCurve { get; set; }
+        public AnimationCurve BlendCurve;
 
         /// <summary>The current time relative to the start of the blend</summary>
-        public float TimeInBlend { get; set; }
+        public float TimeInBlend;
 
         /// <summary>The current weight of the blend.  This is an evaluation of the
         /// BlendCurve at the current time relative to the start of the blend.
@@ -38,14 +38,14 @@ namespace Cinemachine
         }
 
         /// <summary>Validity test for the blend.  True if either camera is defined.</summary>
-        public bool IsValid { get { return ((CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid)); } }
+        public bool IsValid => ((CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid));
 
         /// <summary>Duration in seconds of the blend.</summary>
-        public float Duration { get; set; }
+        public float Duration;
 
         /// <summary>True if the time relative to the start of the blend is greater
         /// than or equal to the blend duration</summary>
-        public bool IsComplete { get { return TimeInBlend >= Duration || !IsValid; } }
+        public bool IsComplete => TimeInBlend >= Duration || !IsValid;
 
         /// <summary>Text description of the blend, for debugging</summary>
         public string Description

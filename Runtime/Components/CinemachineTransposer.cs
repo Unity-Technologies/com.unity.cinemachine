@@ -143,7 +143,7 @@ namespace Cinemachine
         }
 
         /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
-        public bool HideOffsetInInspector { get; set; }
+        public bool m_HideOffsetInInspector;
 
         /// <summary>Get the target offset, with sanitization</summary>
         public Vector3 EffectiveOffset
@@ -240,8 +240,7 @@ namespace Cinemachine
             if (m_previousTarget != FollowTarget || !prevStateValid)
             {
                 m_previousTarget = FollowTarget;
-                m_targetOrientationOnAssign
-                    = (m_previousTarget == null) ? Quaternion.identity : FollowTargetRotation;
+                m_targetOrientationOnAssign = FollowTargetRotation;
             }
             if (!prevStateValid)
             {
@@ -277,8 +276,12 @@ namespace Cinemachine
                     var relative = (Quaternion.Inverse(m_PreviousReferenceOrientation)
                         * targetOrientation).eulerAngles;
                     for (int i = 0; i < 3; ++i)
-                        if (relative[i] > 180)
+                    {
+                        if (Mathf.Abs(relative[i]) < 0.01f) // correct for precision drift
+                            relative[i] = 0;
+                        else if (relative[i] > 180)
                             relative[i] -= 360;
+                    }
                     relative = VirtualCamera.DetachedFollowTargetDamp(relative, AngularDamping, deltaTime);
                     dampedOrientation = m_PreviousReferenceOrientation * Quaternion.Euler(relative);
                 }

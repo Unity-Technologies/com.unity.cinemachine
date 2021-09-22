@@ -2,7 +2,12 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine.Utility;
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
@@ -54,9 +59,8 @@ namespace Cinemachine.Editor
     /// Handles drawing the header and the basic properties.
     /// </summary>
     /// <typeparam name="T">The type of CinemachineVirtualCameraBase being edited</typeparam>
-    public class CinemachineVirtualCameraBaseEditor<T>
-        : BaseEditor<T> where T : CinemachineVirtualCameraBase
-    {
+    public class CinemachineVirtualCameraBaseEditor<T> : BaseEditor<T> where T : CinemachineVirtualCameraBase
+    {    
         /// <summary>A collection of GUIContent for use in the inspector</summary>
         public static class Styles
         {
@@ -143,9 +147,61 @@ namespace Cinemachine.Editor
             {
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+                DrawInputProviderButtonInInspector();
+#endif
+                ExcludeProperty("Header");
             }
-            ExcludeProperty("Header");
         }
+        
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+        static GUIContent s_InputProviderAddLabel = new GUIContent("Add Input Provider", 
+            "Adds CinemachineInputProvider component to this vcam, "
+            + "if it does not have one, enabling the vcam to read input from Input Actions. "
+            + "By default, a simple mouse XY input action is added.");
+
+        static InputActionReference s_InputActionReference = null;
+
+        void DrawInputProviderButtonInInspector()
+        {
+            bool needsButton = false;
+            for (int i = 0; !needsButton && i < targets.Length; ++i)
+            {
+                var vcam = targets[i] as CinemachineVirtualCameraBase;
+                if (vcam.RequiresUserInput() && vcam.GetComponent<AxisState.IInputAxisProvider>() == null)
+                    needsButton = true;
+            }
+            if (!needsButton)
+                return;
+
+            EditorGUILayout.Space();
+            EditorGUILayout.HelpBox(
+                "The InputSystem package is installed, but it is not used to control this vcam.", 
+                MessageType.Info);
+            var rect = EditorGUILayout.GetControlRect(true);
+            rect.x += EditorGUIUtility.labelWidth; 
+            rect.width -= EditorGUIUtility.labelWidth;
+            if (GUI.Button(rect, s_InputProviderAddLabel))
+            {
+                if (s_InputActionReference == null)
+                {
+                    s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                        FirstOrDefault(x => x.name == "Player/Look");
+                }
+                Undo.SetCurrentGroupName("Add CinemachineInputProvider");
+                for (int i = 0; i < targets.Length; ++i)
+                {
+                    var vcam = targets[i] as CinemachineVirtualCameraBase;
+                    if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
+                        continue;
+                    var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
+                    inputProvider.XYAxis = s_InputActionReference;
+                }
+            }
+            EditorGUILayout.Space();
+        }
+#endif
 
         /// <summary>
         /// Draw the LookAt and Follow targets in the inspector
@@ -308,6 +364,8 @@ namespace Cinemachine.Editor
         /// <param name="property">The SerializedProperty for the field of type LensSettings field</param>
         protected void DrawLensSettingsInInspector(SerializedProperty property)
         {
+            if (IsPropertyExcluded(property.name))
+                return;
             if (m_LensSettingsInspectorHelper == null)
                 m_LensSettingsInspectorHelper = new LensSettingsInspectorHelper();
 
@@ -341,11 +399,13 @@ namespace Cinemachine.Editor
         static readonly GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
             "Actual size of the image sensor (in mm), used to "
             + "convert between focal length and field of vue.");
+        static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
 
         bool IsOrtho;
         bool IsPhysical;
         Vector2 SensorSize;
         bool UseHorizontalFOV;
+        static bool s_AdvancedExpanded;
         SerializedProperty ModeOverrideProperty;
 
     #if CINEMACHINE_HDRP
@@ -450,7 +510,6 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.NearClipPlane));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane));
-                EditorGUILayout.PropertyField(ModeOverrideProperty);
 
                 if (IsPhysical)
                 {
@@ -507,6 +566,17 @@ namespace Cinemachine.Editor
 #endif
                 }
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch));
+                s_AdvancedExpanded = EditorGUILayout.Foldout(s_AdvancedExpanded, AdvancedLabel);
+                if (s_AdvancedExpanded)
+                {
+                    ++EditorGUI.indentLevel;
+                    EditorGUILayout.HelpBox("Setting a mode override here implies changes to the Camera component when "
+                        + "Cinemachine activates this Virtual Camera, and the changes will remain after the Virtual "
+                        + "Camera deactivation. If you set a mode override in any Virtual Camera, you should set "
+                        + "one in all Virtual Cameras.", MessageType.Info);
+                    EditorGUILayout.PropertyField(ModeOverrideProperty);
+                    --EditorGUI.indentLevel;
+                }
                 --EditorGUI.indentLevel;
             }
             property.serializedObject.ApplyModifiedProperties();

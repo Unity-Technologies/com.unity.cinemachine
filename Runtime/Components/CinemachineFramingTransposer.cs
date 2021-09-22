@@ -364,6 +364,7 @@ namespace Cinemachine
         {
             base.ForceCameraPosition(pos, rot);
             m_PreviousCameraPosition = pos;
+            m_prevRotation = rot;
         }
         
         /// <summary>
@@ -386,16 +387,18 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            if (fromCam != null && transitionParams.m_InheritPosition)
+            if (fromCam != null && transitionParams.m_InheritPosition
+                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
-                transform.rotation = fromCam.State.RawOrientation;
-                InheritingPosition = true;
+                m_PreviousCameraPosition = fromCam.State.RawPosition;
+                m_prevRotation = fromCam.State.RawOrientation;
+                m_InheritingPosition = true;
                 return true;
             }
             return false;
         }
 
-        bool InheritingPosition { get; set; }
+        bool m_InheritingPosition;
 
         // Convert from screen coords to normalized orthographic distance coords
         private Rect ScreenToOrtho(Rect rScreen, float orthoSize, float aspect)
@@ -440,13 +443,14 @@ namespace Cinemachine
             LensSettings lens = curState.Lens;
             Vector3 followTargetPosition = FollowTargetPosition + (FollowTargetRotation * m_TrackedObjectOffset);
             bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
+            if (!previousStateIsValid || VirtualCamera.FollowTargetChanged)
+                m_Predictor.Reset();
             if (!previousStateIsValid)
             {
-                m_Predictor.Reset();
                 m_PreviousCameraPosition = curState.RawPosition;
                 m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
                 m_prevRotation = curState.RawOrientation;
-                if (!InheritingPosition && m_CenterOnActivate)
+                if (!m_InheritingPosition && m_CenterOnActivate)
                 {
                     m_PreviousCameraPosition = FollowTargetPosition
                         + (curState.RawOrientation * Vector3.back) * m_CameraDistance;
@@ -454,7 +458,7 @@ namespace Cinemachine
             }
             if (!IsValid)
             {
-                InheritingPosition = false;
+                m_InheritingPosition = false;
                 return;
             }
 
@@ -462,7 +466,7 @@ namespace Cinemachine
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = AbstractFollowTargetGroup;
-            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None;
+            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None && !group.IsEmpty;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
 
@@ -518,7 +522,7 @@ namespace Cinemachine
 
             // Optionally allow undamped camera orientation change
             Quaternion localToWorld = curState.RawOrientation;
-            if (previousStateIsValid && m_TargetMovementOnly && m_prevRotation != localToWorld)
+            if (previousStateIsValid && m_TargetMovementOnly)
             {
                 var q = localToWorld * Quaternion.Inverse(m_prevRotation);
                 m_PreviousCameraPosition = TrackedPoint + q * (m_PreviousCameraPosition - TrackedPoint);
@@ -551,7 +555,7 @@ namespace Cinemachine
             {
                 // No damping or hard bounds, just snap to central bounds, skipping the soft zone
                 Rect rect = softGuideOrtho;
-                if (m_CenterOnActivate && !InheritingPosition)
+                if (m_CenterOnActivate && !m_InheritingPosition)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
                 cameraOffset += OrthoOffsetToScreenBounds(targetPos, rect);
             }
@@ -611,7 +615,7 @@ namespace Cinemachine
                     curState.Lens = lens;
                 }
             }
-            InheritingPosition = false;
+            m_InheritingPosition = false;
         }
 
         float GetTargetHeight(Vector2 boundsSize)
@@ -656,19 +660,21 @@ namespace Cinemachine
         static Bounds GetScreenSpaceGroupBoundingBox(
             ICinemachineTargetGroup group, ref Vector3 pos, Quaternion orientation)
         {
-            Matrix4x4 observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
-            Vector2 minAngles, maxAngles, zRange;
-            group.GetViewSpaceAngularBounds(observer, out minAngles, out maxAngles, out zRange);
+            var observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
+            group.GetViewSpaceAngularBounds(observer, out var minAngles, out var maxAngles, out var zRange);
+            var shift = (minAngles + maxAngles) / 2;
 
-            Quaternion q = Quaternion.identity.ApplyCameraRotation((minAngles + maxAngles) / 2, Vector3.up);
-            Vector3 localPosAdustment = q * new Vector3(0, 0, (zRange.y + zRange.x)/2);
-            localPosAdustment.z = 0;
-            pos = observer.MultiplyPoint3x4(localPosAdustment);
+            var q = Quaternion.identity.ApplyCameraRotation(new Vector2(-shift.x, shift.y), Vector3.up);
+            pos = q * new Vector3(0, 0, (zRange.y + zRange.x)/2);
+            pos.z = 0;
+            pos = observer.MultiplyPoint3x4(pos);
             observer = Matrix4x4.TRS(pos, orientation, Vector3.one);
             group.GetViewSpaceAngularBounds(observer, out minAngles, out maxAngles, out zRange);
 
-            float zSize = zRange.y - zRange.x;
-            float z = zRange.x + (zSize / 2);
+            // For width and height (in camera space) of the bounding box, we use the values at the center of the box.
+            // This is an arbitrary choice.  The gizmo drawer will take this into account when displaying
+            // the frustum bounds of the group
+            var d = zRange.y + zRange.x;
             Vector2 angles = new Vector2(89.5f, 89.5f);
             if (zRange.x > 0)
             {
@@ -676,8 +682,9 @@ namespace Cinemachine
                 angles = Vector2.Min(angles, new Vector2(89.5f, 89.5f));
             }
             angles *= Mathf.Deg2Rad;
-            return new Bounds(new Vector3(0, 0, z),
-                new Vector3(Mathf.Tan(angles.y) * z * 2, Mathf.Tan(angles.x) * z * 2, zSize));
+            return new Bounds(
+                new Vector3(0, 0, d/2),
+                new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
         }
     }
 }

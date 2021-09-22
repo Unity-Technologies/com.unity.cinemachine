@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Cinemachine.Utility
@@ -7,6 +8,27 @@ namespace Cinemachine.Utility
     {
         /// <summary>A useful Epsilon</summary>
         public const float Epsilon = 0.0001f;
+
+        /// <summary>
+        /// Checks if the Vector2 contains NaN for x or y.
+        /// </summary>
+        /// <param name="v">Vector2 to check for NaN</param>
+        /// <returns>True, if any components of the vector are NaN</returns>
+        public static bool IsNaN(this Vector2 v)
+        {
+            return float.IsNaN(v.x) || float.IsNaN(v.y);
+        }
+        
+        /// <summary>
+        /// Checks if the Vector2 contains NaN for x or y.
+        /// </summary>
+        /// <param name="v">Vector2 to check for NaN</param>
+        /// <returns>True, if any components of the vector are NaN</returns>
+        public static bool IsNaN(this Vector3 v)
+        {
+            return float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z);
+        }
+        
 
         /// <summary>
         /// Get the closest point on a line segment.
@@ -51,15 +73,139 @@ namespace Cinemachine.Utility
         {
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
+        
+        /// <summary>
+        /// Normalized the vector onto the unit square instead of the unit circle
+        /// </summary>
+        /// <param name="v">The vector to normalize</param>
+        /// <returns>The normalized vector, or the zero vector if its magnitude 
+        /// was too small to normalize</returns>
+        public static Vector2 SquareNormalize(this Vector2 v)
+        {
+            var d = Mathf.Max(Mathf.Abs(v.x), Mathf.Abs(v.y));
+            return d < Epsilon ? Vector2.zero : v / d;
+        }
+
+        /// <summary>
+        /// Calculates the intersection point defined by line_1 [p1, p2], and line_2 [q1, q2].
+        /// </summary>
+        /// <param name="p1">line_1 is defined by (p1, p2)</param>
+        /// <param name="p2">line_1 is defined by (p1, p2)</param>
+        /// <param name="q1">line_2 is defined by (q1, q2)</param>
+        /// <param name="q2">line_2 is defined by (q1, q2)</param>
+        /// <param name="intersection">If lines intersect at a single point, 
+        /// then this will hold the intersection point. 
+        /// Otherwise, it will be Vector2.positiveInfinity.</param>
+        /// <returns>
+        ///     0 = no intersection, 
+        ///     1 = lines intersect, 
+        ///     2 = segments intersect, 
+        ///     3 = lines are colinear, segments do not touch, 
+        ///     4 = lines are colinear, segments touch (at one or at multiple points)
+        /// </returns>
+        public static int FindIntersection(
+            in Vector2 p1, in Vector2 p2, in Vector2 q1, in Vector2 q2, 
+            out Vector2 intersection)
+        {
+            var p = p2 - p1;
+            var q = q2 - q1;
+            var pq = q1 - p1;
+            var pXq = p.Cross(q);
+            if (Mathf.Abs(pXq) < 0.00001f)
+            {
+                // The lines are parallel (or close enough to it)
+                intersection = Vector2.positiveInfinity;
+                if (Mathf.Abs(pq.Cross(p)) < 0.00001f)
+                {
+                    // The lines are colinear.  Do the segments touch?
+                    var dotPQ = Vector2.Dot(q, p);
+
+                    if (dotPQ > 0 && (p1 - q2).sqrMagnitude < 0.001f)
+                    {
+                        // q points to start of p
+                        intersection = q2;
+                        return 4;
+                    }
+                    if (dotPQ < 0 && (p2 - q2).sqrMagnitude < 0.001f)
+                    {
+                        // p and q point at the same point
+                        intersection = p2;
+                        return 4;
+                    }
+
+                    var dot = Vector2.Dot(pq, p);
+                    if (0 <= dot && dot <= Vector2.Dot(p, p))
+                    {
+                        if (dot < 0.0001f)
+                        {
+                            if (dotPQ <= 0 && (p1 - q1).sqrMagnitude < 0.001f)
+                                intersection = p1; // p and q start at the same point and point away
+                        }
+                        else if (dotPQ > 0 && (p2 - q1).sqrMagnitude < 0.001f)
+                            intersection = p2; // p points at start of q
+
+                        return 4;   // colinear segments touch
+                    }
+
+                    dot = Vector2.Dot(p1 - q1, q);
+                    if (0 <= dot && dot <= Vector2.Dot(q, q))
+                        return 4;   // colinear segments overlap
+
+                    return 3;   // colinear segments don't touch
+                }
+                return 0; // the lines are parallel and not colinear
+            }
+
+            var t = pq.Cross(q) / pXq;
+            intersection = p1 + t * p;
+
+            var u = pq.Cross(p) / pXq;
+            if (0 <= t && t <= 1 && 0 <= u && u <= 1)
+                return 2;   // segments touch
+
+            return 1;   // segments don't touch but lines intersect
+        }
+
+        private static float Cross(this Vector2 v1, Vector2 v2) { return (v1.x * v2.y) - (v1.y * v2.x); }
+        
+        /// <summary>
+        /// Component-wise absolute value
+        /// </summary>
+        /// <param name="v">Input vector</param>
+        /// <returns>Component-wise absolute value of the input vector</returns>
+        public static Vector2 Abs(this Vector2 v)
+        {
+            return new Vector2(Mathf.Abs(v.x), Mathf.Abs(v.y));
+        }
 
         /// <summary>
         /// Component-wise absolute value
         /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
+        /// <param name="v">Input vector</param>
+        /// <returns>Component-wise absolute value of the input vector</returns>
         public static Vector3 Abs(this Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+        }
+
+        /// <summary>
+        /// Checks whether the vector components are the same value.
+        /// </summary>
+        /// <param name="v">Vector to check</param>
+        /// <returns>True, if the vector elements are the same. False, otherwise.</returns>
+        public static bool IsUniform(this Vector2 v)
+        {
+            return Math.Abs(v.x - v.y) < Epsilon;
+        }
+        
+        /// <summary>
+        /// Checks whether the vector components are the same value.
+        /// </summary>
+        /// <param name="v">Vector to check</param>
+        /// <returns>True, if the vector elements are the same. False, otherwise.</returns>
+        public static bool IsUniform(this Vector3 v)
+        {
+            return Math.Abs(v.x - v.y) < Epsilon && Math.Abs(v.x - v.z) < Epsilon;
         }
 
         /// <summary>Is the vector within Epsilon of zero length?</summary>
@@ -148,23 +294,24 @@ namespace Cinemachine.Utility
         /// the up param</summary>
         /// <param name="qA">First direction</param>
         /// <param name="qB">Second direction</param>
-        /// <param name="t">Interpolation amoun t</param>
+        /// <param name="t">Interpolation amount</param>
         /// <param name="up">Defines the up direction.  Must have a length of 1.</param>
         /// <returns>Interpolated quaternion</returns>
         public static Quaternion SlerpWithReferenceUp(
             Quaternion qA, Quaternion qB, float t, Vector3 up)
         {
-            Vector3 dirA = (qA * Vector3.forward).ProjectOntoPlane(up);
-            Vector3 dirB = (qB * Vector3.forward).ProjectOntoPlane(up);
+            var dirA = (qA * Vector3.forward).ProjectOntoPlane(up);
+            var dirB = (qB * Vector3.forward).ProjectOntoPlane(up);
             if (dirA.AlmostZero() || dirB.AlmostZero())
                 return Quaternion.Slerp(qA, qB, t);
 
             // Work on the plane, in eulers
-            Quaternion qBase = Quaternion.LookRotation(dirA, up);
-            Quaternion qA1 = Quaternion.Inverse(qBase) * qA;
-            Quaternion qB1 = Quaternion.Inverse(qBase) * qB;
-            Vector3 eA = qA1.eulerAngles;
-            Vector3 eB = qB1.eulerAngles;
+            var qBase = Quaternion.LookRotation(dirA, up);
+            var qBaseInv = Quaternion.Inverse(qBase);
+            Quaternion qA1 = qBaseInv * qA;
+            Quaternion qB1 = qBaseInv * qB;
+            var eA = qA1.eulerAngles;
+            var eB = qB1.eulerAngles;
             return qBase * Quaternion.Euler(
                 Mathf.LerpAngle(eA.x, eB.x, t),
                 Mathf.LerpAngle(eA.y, eB.y, t),

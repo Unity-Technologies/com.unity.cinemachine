@@ -1,3 +1,7 @@
+#if !UNITY_2019_3_OR_NEWER
+#define CINEMACHINE_UNITY_IMGUI
+#endif
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +13,7 @@ namespace Cinemachine.Utility
     {
         static HashSet<Object> mClients;
 
+#if CINEMACHINE_UNITY_IMGUI
         /// <summary>Release a screen rectangle previously obtained through GetScreenPos()</summary>
         /// <param name="client">The client caller.  Used as a handle.</param>
         public static void ReleaseScreenPos(Object client)
@@ -16,7 +21,7 @@ namespace Cinemachine.Utility
             if (mClients != null && mClients.Contains(client))
                 mClients.Remove(client);
         }
-
+        
         /// <summary>Reserve an on-screen rectangle for debugging output.</summary>
         /// <param name="client">The client caller.  This is used as a handle.</param>
         /// <param name="text">Sample text, for determining rectangle size</param>
@@ -31,7 +36,7 @@ namespace Cinemachine.Utility
             if (!mClients.Contains(client))
                 mClients.Add(client);
 
-            Vector2 pos = new Vector2(0, 0);
+            var pos = Vector2.zero;
             Vector2 size = style.CalcSize(new GUIContent(text));
             if (mClients != null)
             {
@@ -44,6 +49,7 @@ namespace Cinemachine.Utility
             }
             return new Rect(pos, size);
         }
+#endif
 
         /// <summary>
         /// Delegate for OnGUI debugging.  

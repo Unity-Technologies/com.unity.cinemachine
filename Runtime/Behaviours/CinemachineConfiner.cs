@@ -61,7 +61,7 @@ namespace Cinemachine
             + "Higher numbers are more gradual.")]
         [Range(0, 10)]
         public float m_Damping = 0;
-
+        
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the confiner, in the event that the camera has children</param>

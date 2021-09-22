@@ -24,7 +24,7 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | __Look At__ || The target GameObject to aim at. The [Aim properties](CinemachineVirtualCameraAim.html) use this target to update the rotation of the Unity camera. This property is normally the same as the Follow target. |
 | __Common Lens__ || Check to apply a common lens setting to all three child rigs. Uncheck to use separate lens settings for each child rig. |
 | __Lens__ || If Common Lens is checked, these lens settings apply to all three rigs. These properties mirror their counterparts in the property settings for the [Unity camera](https://docs.unity3d.com/Manual/class-Camera.html). |
-| | _Field Of View_ | This is the camera view in vertical degrees. For example, to specify the equivalent of a 50mm lens on a Super 35 sensor, enter a Field of View of 19.6 degrees. This property is available when the Unity camera with the Cinemachine Brain component uses a Projection of Perspective.   |
+| | _Vertical FOV_ | This is the camera view in vertical degrees. For example, to specify the equivalent of a 50mm lens on a Super 35 sensor, enter a Field of View of 19.6 degrees. This property is available when the Unity camera with the Cinemachine Brain component uses a Projection of Perspective.   |
 | | _Orthographic Size_ | When using an orthographic camera, this defines the half-height, in world coordinates, of the camera view. This property is available when the Unity camera with the Cinemachine Brain component uses a Projection of Orthographic. |
 | | _Near Clip Plane_ | The closest point relative to the camera where drawing occurs. |
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. |
@@ -46,13 +46,13 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | | _Wait Time_ | When no user input has been detected on the axis, the camera waits this long in seconds before recentering. |
 | | _Recentering Time_ | Maximum angular speed of recentering. Accelerates into and decelerates out of the centered position. |
 | __Orbits__ || Properties for defining the Top, Middle, and Bottom rigs.  |
-| __Binding Mode__ || The coordinate space to use to interpret the offset from the target. Also sets the up vector. Cinemachine keeps the camera oriented in the up direction while aiming. These modes do incredibly different things, so try them out and one should work well for whatever your requirements are. |
-| | _Lock To Target On Assign_ | The target’s local frame at the moment when the Virtual Camera was activated, or when the target was assigned. |
-| | _Lock To Target With World Up_ | The target’s local frame, with the tilt and roll reset to zero. |
-| | _Lock To Target No Roll_ | The target’s local frame, with the roll reset to zero. |
-| | _Lock To Target_ | The target’s local frame. |
-| | _World Space_ | World space offset. |
-| | _Simple Follow With World Up_ | Relative to the target, using camera-local axes. |
+| __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use to interpret the offset from the target. |
+| | _Lock To Target On Assign_ | Makes the orientation of the virtual camera match the local frame of the Follow target, at the moment when the virtual camera is activated or when the target is assigned. This offset remains constant in world space. The camera does not rotate along with the target. |
+| | _Lock To Target With World Up_ | Makes the virtual camera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |
+| | _Lock To Target No Roll_ | Makes the virtual camera use the local frame of the Follow target, with roll set to 0. |
+| | _Lock To Target_ | Makes the virtual camera use the local frame of the Follow target. When the target rotates, the camera moves with it to maintain the offset and to maintain the same view of the target. |
+| | _World Space_ | The offset is interpreted in world space relative to the origin of the Follow target. The camera will not change position when the target rotates. |
+| | _Simple Follow With World Up_ | Simple follow with world up interprets the offset and damping values in camera-local space. This mode emulates the action a human camera operator would take when instructed to follow a target. The camera attempts to move as little as possible to maintain the same distance from the target; the direction of the camera with regard to the target does not matter. Regardless of the orientation of the target, the camera tries to preserve the same distance and height from it. |
 | __Spline Curvature__ || The tautness of the line that connects the rigs’ orbits. This line determines the final placement on the y axis. |
 | __Height, Radius__ || The radius and height of the Top, Middle, and Bottom rigs relative to the Follow target. |
 

@@ -264,7 +264,7 @@ namespace Cinemachine
             var orbital = gameObject.AddComponent<CinemachineOrbitalTransposer>();
             gameObject.AddComponent<CinemachineComposer>();
 #endif
-            orbital.HideOffsetInInspector = true;
+            orbital.m_HideOffsetInInspector = true;
             orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
 
             InvalidateComponentCache();
@@ -302,7 +302,8 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             m_VerticalAxis.m_Recentering.DoRecentering(ref m_VerticalAxis, -1, 0.5f);
             m_VerticalAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && m_Transitions.m_InheritPosition)
+            if (fromCam != null && m_Transitions.m_InheritPosition
+                 && !CinemachineCore.Instance.IsLiveInBlend(this))
             {
                 // Note: horizontal axis already taken care of by base class
                 var cameraPos = fromCam.State.RawPosition;
@@ -314,7 +315,7 @@ namespace Cinemachine
                     if (orbital != null)
                         cameraPos = orbital.GetTargetCameraPosition(worldUp);
                 }
-                m_VerticalAxis.Value = GetYAxisClosestValue(cameraPos, worldUp);
+                ForceCameraPosition(cameraPos, fromCam.State.FinalOrientation);
             }
         }
 
@@ -375,6 +376,8 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
+            UpdateTargetCache();
+
             FollowTargetAttachment = 1;
             LookAtTargetAttachment = 1;
 
@@ -434,7 +437,7 @@ namespace Cinemachine
             var transposer = Transposer;
             if (transposer != null)
             {
-                transposer.HideOffsetInInspector = true;
+                transposer.m_HideOffsetInInspector = true;
                 transposer.m_FollowOffset = new Vector3(
                     0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
             }
@@ -508,8 +511,8 @@ namespace Cinemachine
             Rig.ComposerSettings composerSaved = new Rig.ComposerSettings();
             Rig.PerlinNoiseSettings noiseSaved = new Rig.PerlinNoiseSettings();
 
-            public int OtherRig { get; set; }
-            public float BlendAmount { get; set; }
+            public int OtherRig;
+            public float BlendAmount;
             CinemachineNewFreeLook mFreeLook;
 
             public ComponentBlender(CinemachineNewFreeLook freeLook) { mFreeLook = freeLook; }

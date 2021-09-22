@@ -238,8 +238,8 @@ namespace Cinemachine
         private void OnEnable()
         {
             // GML todo: do we really need this?
-            PreviousTarget = null;
-            mLastTargetPosition = Vector3.zero;
+            m_PreviousTarget = null;
+            m_LastTargetPosition = Vector3.zero;
 
             UpdateInputAxisProvider();
         }
@@ -258,13 +258,13 @@ namespace Cinemachine
             }
         }
 
-        private Vector3 mLastTargetPosition = Vector3.zero;
+        private Vector3 m_LastTargetPosition = Vector3.zero;
         private HeadingTracker mHeadingTracker;
 #if CINEMACHINE_PHYSICS
-        private Rigidbody mTargetRigidBody = null;
+        private Rigidbody m_TargetRigidBody = null;
 #endif
-        private Transform PreviousTarget { get; set; }
-        private Vector3 mLastCameraPosition;
+        private Transform m_PreviousTarget;
+        private Vector3 m_LastCameraPosition;
 
         /// <summary>This is called to notify the us that a target got warped,
         /// so that we can update its internal state to make the camera
@@ -276,8 +276,8 @@ namespace Cinemachine
             base.OnTargetObjectWarped(target, positionDelta);
             if (target == FollowTarget)
             {
-                mLastTargetPosition += positionDelta;
-                mLastCameraPosition += positionDelta;
+                m_LastTargetPosition += positionDelta;
+                m_LastCameraPosition += positionDelta;
             }
         }
 
@@ -289,7 +289,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
-            mLastCameraPosition = pos;
+            m_LastCameraPosition = pos;
             m_XAxis.Value = GetAxisClosestValue(pos, VirtualCamera.State.ReferenceUp);
         }
         
@@ -308,7 +308,8 @@ namespace Cinemachine
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
                 && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
-                && transitionParams.m_InheritPosition)
+                && transitionParams.m_InheritPosition
+                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 m_XAxis.Value = GetAxisClosestValue(fromCam.State.RawPosition, worldUp);
                 return true;
@@ -340,10 +341,10 @@ namespace Cinemachine
                 Vector3 b = (cameraPos - targetPos).ProjectOntoPlane(up);
                 return Vector3.SignedAngle(a, b, up);
             }
-            return LastHeading; // Can't calculate, stay conservative
+            return m_LastHeading; // Can't calculate, stay conservative
         }
 
-        float LastHeading { get; set; }
+        float m_LastHeading;
 
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
@@ -353,17 +354,17 @@ namespace Cinemachine
             InitPrevFrameStateInfo(ref curState, deltaTime);
 
             // Update the heading
-            if (FollowTarget != PreviousTarget)
+            if (FollowTarget != m_PreviousTarget)
             {
-                PreviousTarget = FollowTarget;
+                m_PreviousTarget = FollowTarget;
 #if CINEMACHINE_PHYSICS
-                mTargetRigidBody = (PreviousTarget == null) ? null : PreviousTarget.GetComponent<Rigidbody>();
+                m_TargetRigidBody = (m_PreviousTarget == null) ? null : m_PreviousTarget.GetComponent<Rigidbody>();
 #endif
-                mLastTargetPosition = (PreviousTarget == null) ? Vector3.zero : PreviousTarget.position;
+                m_LastTargetPosition = (m_PreviousTarget == null) ? Vector3.zero : m_PreviousTarget.position;
                 mHeadingTracker = null;
             }
-            LastHeading = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
-            float heading = LastHeading;
+            m_LastHeading = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
+            float heading = m_LastHeading;
             if (IsValid)
             {
                 // Calculate the heading
@@ -393,14 +394,14 @@ namespace Cinemachine
                     var lookAt = targetPosition;
                     if (LookAtTarget != null)
                         lookAt = LookAtTargetPosition;
-                    var dir0 = mLastCameraPosition - lookAt;
+                    var dir0 = m_LastCameraPosition - lookAt;
                     var dir1 = curState.RawPosition - lookAt;
                     if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
                         curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                             dir0, dir1, curState.ReferenceUp).eulerAngles;
                 }
-                mLastTargetPosition = targetPosition;
-                mLastCameraPosition = curState.RawPosition;
+                m_LastTargetPosition = targetPosition;
+                m_LastCameraPosition = curState.RawPosition;
             }
         }
 
@@ -411,24 +412,18 @@ namespace Cinemachine
         {
             if (!IsValid)
                 return Vector3.zero;
-            float heading = LastHeading;
+            float heading = m_LastHeading;
             if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 heading += m_Heading.m_Bias;
             Quaternion orient = Quaternion.AngleAxis(heading, Vector3.up);
             orient = GetReferenceOrientation(worldUp) * orient;
             var pos = orient * EffectiveOffset;
-            pos += mLastTargetPosition;
+            pos += m_LastTargetPosition;
             return pos;
         }
 
-        static string GetFullName(GameObject current)
-        {
-            if (current == null)
-                return "";
-            if (current.transform.parent == null)
-                return "/" + current.name;
-            return GetFullName(current.transform.parent.gameObject) + "/" + current.name;
-        }
+        /// <summary>OrbitalTransposer is controlled by input.</summary>
+        public override bool RequiresUserInput => true;
 
         // Make sure this is calld only once per frame
         private float GetTargetHeading(float currentHeading, Quaternion targetOrientation)
@@ -440,7 +435,7 @@ namespace Cinemachine
 
             var headingDef = m_Heading.m_Definition;
 #if CINEMACHINE_PHYSICS
-            if (headingDef == Heading.HeadingDefinition.Velocity && mTargetRigidBody == null)
+            if (headingDef == Heading.HeadingDefinition.Velocity && m_TargetRigidBody == null)
                 headingDef = Heading.HeadingDefinition.PositionDelta;
 #endif
 
@@ -449,11 +444,11 @@ namespace Cinemachine
             {
                 case Heading.HeadingDefinition.Velocity:
 #if CINEMACHINE_PHYSICS
-                    velocity = mTargetRigidBody.velocity;
+                    velocity = m_TargetRigidBody.velocity;
                     break;
 #endif
                 case Heading.HeadingDefinition.PositionDelta:
-                    velocity = FollowTargetPosition - mLastTargetPosition;
+                    velocity = FollowTargetPosition - m_LastTargetPosition;
                     break;
                 case Heading.HeadingDefinition.TargetForward:
                     velocity = FollowTargetRotation * Vector3.forward;

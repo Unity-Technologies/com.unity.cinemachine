@@ -7,7 +7,7 @@ namespace Cinemachine
 {
     /// <summary>
     /// Property applied to CinemachineImpulseManager.EnvelopeDefinition.
-    /// Used for custom drawing in the inspector.
+    /// Used for custom drawing in the inspector.  This attribute is obsolete and not used.
     /// </summary>
     public sealed class CinemachineImpulseEnvelopePropertyAttribute : PropertyAttribute {}
 
@@ -36,6 +36,13 @@ namespace Cinemachine
                     sInstance = new CinemachineImpulseManager();
                 return sInstance;
             }
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        static void InitializeModule()
+        {
+            if (sInstance != null)
+                sInstance.Clear();
         }
 
         const float Epsilon = UnityVectorExtensions.Epsilon;
@@ -158,29 +165,34 @@ namespace Cinemachine
             }
         }
 
+        internal static float EvaluateDissipationScale(float spread, float normalizedDistance)
+        {
+            const float kMin = -0.8f;
+            const float kMax = 0.8f;
+            var b = kMin + (kMax - kMin) * (1f - spread);
+            b = (1f - b) * 0.5f;
+            var t = Mathf.Clamp01(normalizedDistance) / ((((1f/Mathf.Clamp01(b)) - 2f) * (1f - normalizedDistance)) + 1f);
+            return 1 - SplineHelpers.Bezier1(t, 0, 0, 1, 1);
+        }
+
         /// <summary>Describes an event that generates an impulse signal on one or more channels.
         /// The event has a location in space, a start time, a duration, and a signal.  The signal
         /// will dissipate as the distance from the event location increases.</summary>
         public class ImpulseEvent
         {
             /// <summary>Start time of the event.</summary>
-            [Tooltip("Start time of the event.")]
             public float m_StartTime;
 
             /// <summary>Time-envelope of the signal.</summary>
-            [Tooltip("Time-envelope of the signal.")]
             public EnvelopeDefinition m_Envelope;
 
             /// <summary>Raw signal source.  The ouput of this will be scaled to fit in the envelope.</summary>
-            [Tooltip("Raw signal source.  The ouput of this will be scaled to fit in the envelope.")]
             public ISignalSource6D m_SignalSource;
 
             /// <summary>Worldspace origin of the signal.</summary>
-            [Tooltip("Worldspace origin of the signal.")]
             public Vector3 m_Position;
 
             /// <summary>Radius around the signal origin that has full signal value.  Distance dissipation begins after this distance.</summary>
-            [Tooltip("Radius around the signal origin that has full signal value.  Distance dissipation begins after this distance.")]
             public float m_Radius;
 
             /// <summary>How the signal behaves as the listener moves away from the origin.</summary>
@@ -192,11 +204,9 @@ namespace Cinemachine
                 RotateTowardSource
             }
             /// <summary>How the signal direction behaves as the listener moves away from the source.</summary>
-            [Tooltip("How the signal direction behaves as the listener moves away from the source.")]
             public DirectionMode m_DirectionMode = DirectionMode.Fixed;
 
             /// <summary>Channels on which this event will broadcast its signal.</summary>
-            [Tooltip("Channels on which this event will broadcast its signal.")]
             public int m_Channel;
 
             /// <summary>How the signal dissipates with distance.</summary>
@@ -211,21 +221,21 @@ namespace Cinemachine
             }
 
             /// <summary>How the signal dissipates with distance.</summary>
-            [Tooltip("How the signal dissipates with distance.")]
             public DissipationMode m_DissipationMode;
 
             /// <summary>Distance over which the dissipation occurs.  Must be >= 0.</summary>
-            [Tooltip("Distance over which the dissipation occurs.  Must be >= 0.")]
             public float m_DissipationDistance;
+
+            /// <summary>
+            /// How the effect fades with distance. 0 = no dissipation, 1 = rapid dissipation, -1 = off (legacy mode)
+            /// </summary>
+            public float m_CustomDissipation;
 
             /// <summary>
             /// The speed (m/s) at which the impulse propagates through space.  High speeds 
             /// allow listeners to react instantaneously, while slower speeds allow listeres in the 
             /// scene to react as if to a wave spreading from the source.  
             /// </summary>
-            [Tooltip("The speed (m/s) at which the impulse propagates through space.  High speeds "
-                + "allow listeners to react instantaneously, while slower speeds allow listeres in the "
-                + "scene to react as if to a wave spreading from the source.")]
             public float m_PropagationSpeed;
 
             /// <summary>Returns true if the event is no longer generating a signal because its time has expired</summary>
@@ -261,6 +271,8 @@ namespace Cinemachine
                 distance -= radius;
                 if (distance >= m_DissipationDistance)
                     return 0;
+                if (m_CustomDissipation >= 0)
+                    return EvaluateDissipationScale(m_CustomDissipation, distance / m_DissipationDistance);
                 switch (m_DissipationMode)
                 {
                     default:
@@ -324,6 +336,7 @@ namespace Cinemachine
                 m_Radius = 0;
                 m_DissipationDistance = 100;
                 m_DissipationMode = DissipationMode.ExponentialDecay;
+                m_CustomDissipation = -1;
             }
 
             /// <summary>Don't create them yourself.  Use CinemachineImpulseManager.NewImpulseEvent().</summary>
@@ -382,13 +395,13 @@ namespace Cinemachine
         }
 
         /// <summary>Set this to ignore time scaling so impulses can progress while the game is paused</summary>
-        public bool IgnoreTimeScale { get; set; }
+        public bool IgnoreTimeScale;
 
         /// <summary>
         /// This is the Impulse system's current time.  
         /// Takes into accoount whether impulse is ignoring time scale.
         /// </summary>
-        public float CurrentTime { get { return IgnoreTimeScale ? Time.realtimeSinceStartup : CinemachineCore.CurrentTime; } }
+        public float CurrentTime => IgnoreTimeScale ? Time.realtimeSinceStartup : CinemachineCore.CurrentTime;
 
         /// <summary>Get a new ImpulseEvent</summary>
         /// <returns>A newly-created impulse event.  May be recycled from expired events</returns>
@@ -396,7 +409,7 @@ namespace Cinemachine
         {
             ImpulseEvent e;
             if (m_ExpiredEvents == null || m_ExpiredEvents.Count == 0)
-                return new ImpulseEvent();
+                return new ImpulseEvent() { m_CustomDissipation = -1 };
             e = m_ExpiredEvents[m_ExpiredEvents.Count-1];
             m_ExpiredEvents.RemoveAt(m_ExpiredEvents.Count-1);
             return e;

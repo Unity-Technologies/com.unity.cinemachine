@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -148,13 +149,15 @@ namespace Cinemachine
         /// <param name="deltaTime">Effective deltaTime</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
+            UpdateTargetCache();
+
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
             ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
-            if (!UserIsDragging)
+            if (!m_UserIsDragging)
             {
                 if (Follow != null)
                     transform.position = State.RawPosition;
@@ -391,7 +394,7 @@ namespace Cinemachine
         }
 
         /// <summary>API for the editor, to make the dragging of position handles behave better.</summary>
-        public bool UserIsDragging { get; set; }
+        internal bool m_UserIsDragging;
 
         CameraState m_State = CameraState.Default; // Current state this frame
 
@@ -593,13 +596,10 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 
-            if (m_Transitions.m_InheritPosition && fromCam != null)
-            {
-                transform.position = fromCam.State.FinalPosition;
-                //transform.rotation = fromCam.State.RawOrientation;
-                PreviousStateIsValid = false;
-                forceUpdate = true;
-            }
+            if (m_Transitions.m_InheritPosition && fromCam != null
+                 && !CinemachineCore.Instance.IsLiveInBlend(this))
+                ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
+
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             if (m_ComponentPipeline != null)
             {
@@ -617,6 +617,16 @@ namespace Cinemachine
                 UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
                 m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
+        }
+        
+        /// <summary>
+        /// Returns true, when the vcam has an extension or components that require input.
+        /// </summary>
+        internal override bool RequiresUserInput()
+        {
+            if (base.RequiresUserInput())
+                return true;
+            return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
         }
     }
 }

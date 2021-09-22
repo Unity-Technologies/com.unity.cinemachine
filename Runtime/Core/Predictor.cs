@@ -10,13 +10,12 @@ namespace Cinemachine.Utility
         Vector3 m_Velocity;
         Vector3 m_SmoothDampVelocity;
         Vector3 m_Pos;
-        float m_SqrSpeed;
         bool m_HavePos;
 
         /// <summary>
         /// How much to smooth the predicted result.  Must be >= 0, roughly coresponds to smoothing time.
         /// </summary>
-        public float Smoothing { get; set; }
+        public float Smoothing;
 
         /// <summary>
         /// Have any positions been logged for smoothing?
@@ -36,7 +35,7 @@ namespace Cinemachine.Utility
         { 
             m_HavePos = false; 
             m_SmoothDampVelocity = Vector3.zero; 
-            m_SqrSpeed = 0;
+            m_Velocity = Vector3.zero;
         }
 
         /// <summary>Add a new target position to the history buffer</summary>
@@ -50,12 +49,10 @@ namespace Cinemachine.Utility
             if (m_HavePos && deltaTime > UnityVectorExtensions.Epsilon)
             {
                 var vel = (pos - m_Pos) / deltaTime;
-                var sqrSpeed = vel.sqrMagnitude;
-                bool slowing = sqrSpeed < m_SqrSpeed;
+                bool slowing = vel.sqrMagnitude < m_Velocity.sqrMagnitude;
                 m_Velocity = Vector3.SmoothDamp(
                     m_Velocity, vel, ref m_SmoothDampVelocity, Smoothing / (slowing ? 30 : 10), 
                     float.PositiveInfinity, deltaTime);
-                m_SqrSpeed = m_Velocity.sqrMagnitude;
             }
             m_Pos = pos;
             m_HavePos = true;

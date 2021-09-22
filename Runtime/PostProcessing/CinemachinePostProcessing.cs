@@ -20,6 +20,7 @@ namespace Cinemachine.PostFX
     /// applying them to the current Post-Processing profile, provided that profile has a
     /// DepthOfField effect that is enabled.
     /// </summary>
+    [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
     public class CinemachinePostProcessing : CinemachineExtension 
     {
@@ -52,6 +53,13 @@ namespace Cinemachine.PostFX
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePostProcessing.html")]
     public class CinemachinePostProcessing : CinemachineExtension
     {
+        /// <summary>
+        /// This is the priority for the vcam's PostProcessing volumes.  It's set to a high
+        /// number in order to ensure that it overrides other volumes for the active vcam.
+        /// You can change this value if necessary to work with other systems.
+        /// </summary>
+        static public float s_VolumePriority = 1000f;
+
         /// <summary>This is obsolete, please use m_FocusTracking</summary>
         [HideInInspector]
         public bool m_FocusTracksTarget;
@@ -162,8 +170,7 @@ namespace Cinemachine.PostFX
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             // Set the focus after the camera has been fully positioned.
-            // GML todo: what about collider?
-            if (stage == CinemachineCore.Stage.Aim)
+            if (stage == CinemachineCore.Stage.Finalize)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 if (!IsValid)
@@ -244,7 +251,7 @@ namespace Cinemachine.PostFX
                         firstVolume = v;
                     v.sharedProfile = profile;
                     v.isGlobal = true;
-                    v.priority = float.MaxValue-(numBlendables-i)-1;
+                    v.priority = s_VolumePriority - (numBlendables - i) - 1;
                     v.weight = b.m_Weight;
                     ++numPPblendables;
                 }
@@ -313,30 +320,25 @@ namespace Cinemachine.PostFX
 
             if (found)
             {
-                if (layer) // note: this is not the same check as (layer == null)
-                {
-                    // layer is a deleted object
-                    brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
-                    mBrainToLayer.Remove(brain);
-                    layer = null;
-                }
+                // layer is a deleted object
+                brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+                mBrainToLayer.Remove(brain);
+                layer = null;
             }
-            else
-            {
-                // Brain is not in our lookup - add it
+            // Brain is not in our lookup - add it
 #if UNITY_2019_2_OR_NEWER
-                brain.TryGetComponent(out layer);
+            brain.TryGetComponent(out layer);
 #else
-                layer = brain.GetComponent<PostProcessLayer>();
+            layer = brain.GetComponent<PostProcessLayer>();
 #endif
-                if (layer != null)
-                    brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
+            if (layer != null)
+                brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
 #if UNITY_EDITOR
-                // Never add null in edit mode in case user adds a layer dynamically
-                if (Application.isPlaying || layer != null)  
+            // Never add null in edit mode in case user adds a layer dynamically
+            if (Application.isPlaying || layer != null)  
 #endif
-                    mBrainToLayer[brain] = layer;
-            }
+                mBrainToLayer[brain] = layer;
+
             return layer;
         }
 

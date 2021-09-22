@@ -14,13 +14,13 @@ __Orbital Transposer__ optionally re-centers the camera automatically.  When __R
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
-| __Binding Mode__ || The coordinate space to use when interpreting the offset of the Virtual Camera from the Follow target. |
-| | _Lock To Target On Assign_ | The target’s local frame at the moment when the Virtual Camera was activated, or when the target was assigned. |
-| | _Lock To Target With World Up_ | The target’s local frame, with the tilt and roll reset to zero. |
-| | _Lock To Target No Roll_ | The target’s local frame, with the roll reset to zero. |
-| | _Lock To Target_ | The target’s local frame. |
-| | _World Space_ | World space offset. |
-| | _Simple Follow With World Up_ | Relative to the target, using camera-local axes. |
+| __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use to interpret the offset from the target. |
+| | _Lock To Target On Assign_ | Makes the orientation of the virtual camera match the local frame of the Follow target, at the moment when the virtual camera is activated or when the target is assigned. This offset remains constant in world space. The camera does not rotate along with the target. |
+| | _Lock To Target With World Up_ | Makes the virtual camera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |
+| | _Lock To Target No Roll_ | Makes the virtual camera use the local frame of the Follow target, with roll set to 0. |
+| | _Lock To Target_ | Makes the virtual camera use the local frame of the Follow target. When the target rotates, the camera moves with it to maintain the offset and to maintain the same view of the target. |
+| | _World Space_ | The offset is interpreted in world space relative to the origin of the Follow target. The camera will not change position when the target rotates. |
+| | _Simple Follow With World Up_ | Simple follow with world up interprets the offset and damping values in camera-local space. This mode emulates the action a human camera operator would take when instructed to follow a target. The camera attempts to move as little as possible to maintain the same distance from the target; the direction of the camera with regard to the target does not matter. Regardless of the orientation of the target, the camera tries to preserve the same distance and height from it. |
 | __Follow Offset__ || The position offset to attempt to maintain from the Follow target. |
 | __X Damping__ || How responsively the camera tries to maintain the offset in the x-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. Using different settings per axis can yield a wide range of camera behaviors. Not available when Binding Mode is Simple Follow With World Up. |
 | __Y Damping__ || How responsively the camera tries to maintain the offset in the y-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.   |
