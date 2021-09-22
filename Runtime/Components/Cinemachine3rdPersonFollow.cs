@@ -354,10 +354,13 @@ namespace Cinemachine
                 {
                     m_HandleIsBeingDragged = false;
                 }
-        
-        
-                // UnityEditor.Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
-                // UnityEditor.Handles.Label(cameraPosition, "Follow offset " + m_FollowOffset.ToString("F1"), labelStyle);
+                
+                UnityEditor.Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
+                UnityEditor.Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
+                UnityEditor.Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f); 
+                UnityEditor.Handles.Label(shoulderOffsetPosition, "Should Offset " + shoulderOffset.ToString("F1") + "", labelStyle);
+                UnityEditor.Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + verticalArmLength.ToString("F1") + ")", labelStyle);
+                UnityEditor.Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")", labelStyle);
         
                 UnityEditor.Handles.color = originalColor;
             }
