@@ -166,6 +166,23 @@ namespace Cinemachine.Editor
                 TrackedObjectOffsetTool.id
             ) {}
     }
+    
+    
+    // [EditorToolbarElement("TEST")]
+    // class CinemachineVirtualCameraToolbar2 : VisualElement
+    // {
+    //     public CinemachineVirtualCameraToolbar2()
+    //     {
+    //         name = "TEST";
+    //
+    //         Add(new FoVTool());
+    //         Add(new FarNearClipTool());
+    //         Add(new FollowOffsetTool());
+    //         Add(new TrackedObjectOffsetTool());
+    //
+    //         EditorToolbarUtility.SetupChildrenAsButtonStrip(this);
+    //     }
+    // }
 
 
     // TODO: KGB move this to where the enum

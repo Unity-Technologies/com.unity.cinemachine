@@ -120,14 +120,19 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
                 Target.m_UserIsDragging = false;
             }
-
-            DrawHandlesForSceneTools(Target);
         }
-
-        public override void DrawHandlesForSceneTools(CinemachineVirtualCamera target)
+        
+        public void DrawHandlesForSceneTools(CinemachineVirtualCamera target)
         {
             Debug.Log("DrawHandlesForSceneTools - CinemachineVirtualCameraEditor");
-            // TODO: KGB FOV and FAR NEAR CLIP
+
+            var all = Target.GetComponents<ISceneToolInteractable>();
+            foreach (var st in all)
+            {
+                st.DrawSceneTools();
+            }
+
+            // TODO: KGB FOV and FAR NEAR CLIP?
         }
 
         public override void OnInspectorGUI()

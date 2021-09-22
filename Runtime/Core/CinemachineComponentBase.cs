@@ -6,7 +6,7 @@ namespace Cinemachine
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
-    public abstract class CinemachineComponentBase : MonoBehaviour
+    public abstract class CinemachineComponentBase : MonoBehaviour, Utility.ISceneToolInteractable
     {
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
@@ -188,5 +188,9 @@ namespace Cinemachine
 
         /// <summary>Components that require user input should implement this and return true.</summary>
         public virtual bool RequiresUserInput => false;
+
+        public virtual void DrawSceneTools()
+        {
+        }
     }
 }

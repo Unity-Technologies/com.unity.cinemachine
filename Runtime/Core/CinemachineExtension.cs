@@ -9,7 +9,7 @@ namespace Cinemachine
     /// to the vcam, modifying its generated state
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
-    public abstract class CinemachineExtension : MonoBehaviour
+    public abstract class CinemachineExtension : MonoBehaviour, Utility.ISceneToolInteractable
     {
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
@@ -171,5 +171,8 @@ namespace Cinemachine
         }
 
         private Dictionary<ICinemachineCamera, System.Object> mExtraState;
+        public virtual void DrawSceneTools()
+        {
+        }
     }
 }

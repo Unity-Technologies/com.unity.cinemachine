@@ -28,7 +28,7 @@ namespace Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
+    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera, Utility.ISceneToolInteractable
     {
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
@@ -521,7 +521,6 @@ namespace Cinemachine
         /// </summary>
         internal virtual bool RequiresUserInput()
         {
-            UnityEngine.Debug.Log("RequiresUserInput - CinemachineVirtualCameraBase");
             return mExtensions != null && mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
         }
 
@@ -829,5 +828,9 @@ namespace Cinemachine
         /// <summary>Get LookAt target as CinemachineVirtualCameraBase, 
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
+
+        public virtual void DrawSceneTools()
+        {
+        }
     }
 }

@@ -625,7 +625,6 @@ namespace Cinemachine
         /// </summary>
         internal override bool RequiresUserInput()
         {
-            UnityEngine.Debug.Log("RequiresUserInput - CinemachineVirtualCamera");
             if (base.RequiresUserInput())
                 return true;
             return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
@@ -657,6 +656,15 @@ namespace Cinemachine
                     return;
             }
             base.ProcessSceneToolEvent(sceneTool, delta);
+        }
+        
+        public override void DrawSceneTools()
+        {
+            base.DrawSceneTools();
+            
+            // TODO: FOV and NEARFARCLIP
+            // m_Lens.FieldOfView
+            // m_Lens.NearClipPlane, m_Lens.FarClipPlane
         }
     }
 }

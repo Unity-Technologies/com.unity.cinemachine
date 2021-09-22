@@ -133,11 +133,5 @@ namespace Cinemachine.Editor
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
         }
-        
-        
-        public virtual void DrawHandlesForSceneTools(CinemachineVirtualCamera target)
-        {
-            UnityEngine.Debug.Log("DrawHandlesForSceneTools - BaseEditor");
-        }
     }
 }

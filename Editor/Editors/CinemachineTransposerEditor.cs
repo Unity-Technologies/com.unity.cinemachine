@@ -87,14 +87,9 @@ namespace Cinemachine.Editor
         }
 
         bool m_HandleIsBeingDragged;
-        public override void DrawHandlesForSceneTools(CinemachineVirtualCamera vcam)
+        private void DrawHandlesForSceneTools(CinemachineTransposer transposer)
         {
-            if (vcam == null)
-            {
-                return;
-            }
-            
-            var transposer = vcam.GetCinemachineComponent<CinemachineTransposer>();
+            Debug.Log("TransposerEditor - DrawHandlesForSceneTools");
             if (transposer == null || !transposer.IsValid)
             {
                 return;
@@ -121,7 +116,9 @@ namespace Cinemachine.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     m_HandleIsBeingDragged = true;
-                    transposer.m_FollowOffset = newPos;
+                    var delta = newPos - transposer.m_FollowOffset;
+                    //transposer.m_FollowOffset = newPos;
+                    //transposer.ProcessSceneToolEvent();
                     InspectorUtility.RepaintGameView();
 
                     Undo.RecordObject(transposer, "Change Follow Offset Position using handle in scene view.");
