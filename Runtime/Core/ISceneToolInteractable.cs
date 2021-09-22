@@ -19,6 +19,6 @@ namespace Cinemachine.Utility
         /// <summary>
         /// Draws scene tools in the editor window and processes them
         /// </summary>
-        public void DrawSceneTools();
+        public bool DrawSceneTools(UnityEngine.Color activeColor, UnityEngine.Color defaultColor);
     }
 }

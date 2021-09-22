@@ -171,8 +171,10 @@ namespace Cinemachine
         }
 
         private Dictionary<ICinemachineCamera, System.Object> mExtraState;
-        public virtual void DrawSceneTools()
+        
+        public virtual bool DrawSceneTools(UnityEngine.Color activeColor, UnityEngine.Color defaultColor)
         {
+            return false;
         }
     }
 }

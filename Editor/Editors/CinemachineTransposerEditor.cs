@@ -85,55 +85,5 @@ namespace Cinemachine.Editor
                 Target.m_FollowOffset = Target.EffectiveOffset;
             }
         }
-
-        bool m_HandleIsBeingDragged;
-        private void DrawHandlesForSceneTools(CinemachineTransposer transposer)
-        {
-            Debug.Log("TransposerEditor - DrawHandlesForSceneTools");
-            if (transposer == null || !transposer.IsValid)
-            {
-                return;
-            }
-
-            if (CinemachineVirtualCameraToolbarUtility.FollowOffsetToolIsOn)
-            {
-                var up = Vector3.up;
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(transposer.VirtualCamera);
-                if (brain != null)
-                    up = brain.DefaultWorldUp;
-                var followTargetPosition = transposer.FollowTargetPosition;
-                var cameraPosition = transposer.GetTargetCameraPosition(up);
-
-                var originalColor = Handles.color;
-                var labelStyle = new GUIStyle();
-                Handles.color = labelStyle.normal.textColor = m_HandleIsBeingDragged
-                    ? CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor
-                    : CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor;
-
-
-                EditorGUI.BeginChangeCheck();
-                var newPos = Handles.PositionHandle(cameraPosition, Quaternion.identity);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    m_HandleIsBeingDragged = true;
-                    var delta = newPos - transposer.m_FollowOffset;
-                    //transposer.m_FollowOffset = newPos;
-                    //transposer.ProcessSceneToolEvent();
-                    InspectorUtility.RepaintGameView();
-
-                    Undo.RecordObject(transposer, "Change Follow Offset Position using handle in scene view.");
-                }
-                else
-                {
-                    m_HandleIsBeingDragged = false;
-                }
-
-
-                Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
-                Handles.Label(cameraPosition, "Follow offset " + transposer.m_FollowOffset.ToString("F1"), labelStyle);
-
-                Handles.color = originalColor;
-            }
-        }
     }
 }

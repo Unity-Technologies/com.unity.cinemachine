@@ -120,19 +120,25 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
                 Target.m_UserIsDragging = false;
             }
-        }
-        
-        public void DrawHandlesForSceneTools(CinemachineVirtualCamera target)
-        {
-            Debug.Log("DrawHandlesForSceneTools - CinemachineVirtualCameraEditor");
 
-            var all = Target.GetComponents<ISceneToolInteractable>();
+            DrawHandlesForSceneTools(Target);
+        }
+
+        void DrawHandlesForSceneTools(CinemachineVirtualCamera target)
+        {
+            var all = Target.GetComponentsInChildren<ISceneToolInteractable>();
+            var repaint = false;
             foreach (var st in all)
             {
-                st.DrawSceneTools();
+                repaint |= st.DrawSceneTools(
+                    CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
+                    CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
             }
 
-            // TODO: KGB FOV and FAR NEAR CLIP?
+            if (repaint)
+            {
+                InspectorUtility.RepaintGameView();
+            }
         }
 
         public override void OnInspectorGUI()

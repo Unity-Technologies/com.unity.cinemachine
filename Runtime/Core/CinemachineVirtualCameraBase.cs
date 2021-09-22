@@ -829,8 +829,9 @@ namespace Cinemachine
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
 
-        public virtual void DrawSceneTools()
+        public virtual bool DrawSceneTools(UnityEngine.Color activeColor, UnityEngine.Color defaultColor)
         {
+            return false;
         }
     }
 }

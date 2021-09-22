@@ -460,5 +460,54 @@ namespace Cinemachine
             return m_PreviousReferenceOrientation.Normalized();
 #endif
         }
+        
+        
+        bool m_HandleIsBeingDragged;
+        public override bool DrawSceneTools(Color activeColor, Color defaultColor)
+        {
+            var doRepaint = base.DrawSceneTools(activeColor, defaultColor);
+            if (!IsValid)
+            {
+                return doRepaint;
+            }
+
+            if (CinemachineSceneToolUtility.FollowOffsetToolIsOn)
+            {
+                var up = Vector3.up;
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(VirtualCamera);
+                if (brain != null)
+                    up = brain.DefaultWorldUp;
+                var followTargetPosition = FollowTargetPosition;
+                var cameraPosition = GetTargetCameraPosition(up);
+
+                var originalColor = UnityEditor.Handles.color;
+                var labelStyle = new GUIStyle();
+                UnityEditor.Handles.color = 
+                    labelStyle.normal.textColor = m_HandleIsBeingDragged ? activeColor : defaultColor;
+                
+                UnityEditor.EditorGUI.BeginChangeCheck();
+                var newPos = UnityEditor.Handles.PositionHandle(cameraPosition, Quaternion.identity);
+                if (UnityEditor.EditorGUI.EndChangeCheck())
+                {
+                    m_HandleIsBeingDragged = true;
+                    m_FollowOffset = newPos;
+                    
+                    doRepaint = true;
+                    UnityEditor.Undo.RecordObject(this, "Change Follow Offset Position using handle in scene view.");
+                }
+                else
+                {
+                    m_HandleIsBeingDragged = false;
+                }
+
+
+                UnityEditor.Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                UnityEditor.Handles.Label(cameraPosition, "Follow offset " + m_FollowOffset.ToString("F1"), labelStyle);
+
+                UnityEditor.Handles.color = originalColor;
+            }
+
+            return doRepaint;
+        }
     }
 }

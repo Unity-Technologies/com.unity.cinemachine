@@ -19,6 +19,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("d_BillboardAsset Icon").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
+            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.FOVToolSelectionToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -43,6 +44,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("d_BillboardRenderer Icon").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
+            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.FarNearClipSelectionToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -67,7 +69,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
-            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarUtility.FollowOffsetToolSelection);
+            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.FollowOffsetToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -92,7 +94,7 @@ namespace Cinemachine.Editor
         {
             icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
             this.RegisterValueChangedCallback(Test);
-            this.RegisterValueChangedCallback(CinemachineVirtualCameraToolbarUtility.TrackedObjectOffsetToolSelection);
+            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.TrackedObjectOffsetToolSelection);
         }
 
         void Test(ChangeEvent<bool> evt)
@@ -183,26 +185,4 @@ namespace Cinemachine.Editor
     //         EditorToolbarUtility.SetupChildrenAsButtonStrip(this);
     //     }
     // }
-
-
-    // TODO: KGB move this to where the enum
-    public static class CinemachineVirtualCameraToolbarUtility
-    {
-        public static bool FoVToolIsOn, FarNearClipToolIsOn, FollowOffsetToolIsOn, TrackedObjectOffsetToolIsOn;
-
-        static CinemachineVirtualCameraToolbarUtility()
-        {
-            FoVToolIsOn = FarNearClipToolIsOn = FollowOffsetToolIsOn = TrackedObjectOffsetToolIsOn = false;
-        }
-        
-        public static void TrackedObjectOffsetToolSelection(ChangeEvent<bool> evt)
-        {
-            TrackedObjectOffsetToolIsOn = evt.newValue;
-        }
-        
-        public static void FollowOffsetToolSelection(ChangeEvent<bool> evt)
-        {
-            FollowOffsetToolIsOn = evt.newValue;
-        }
-    }
 }

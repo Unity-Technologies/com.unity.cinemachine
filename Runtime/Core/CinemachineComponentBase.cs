@@ -189,8 +189,9 @@ namespace Cinemachine
         /// <summary>Components that require user input should implement this and return true.</summary>
         public virtual bool RequiresUserInput => false;
 
-        public virtual void DrawSceneTools()
+        public virtual bool DrawSceneTools(Color activeColor, Color defaultColor)
         {
+            return false;
         }
     }
 }
