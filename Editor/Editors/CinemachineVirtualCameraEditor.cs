@@ -133,11 +133,9 @@ namespace Cinemachine.Editor
                 return;
             }
 
+            var handleIsUsed = GUIUtility.hotControl > 0;
             var originalColor = Handles.color;
             var labelStyle = new GUIStyle();
-            var handleIsUsed = GUIUtility.hotControl > 0;
-            Handles.color = 
-                labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
             if (CinemachineSceneToolUtility.FoVToolIsOn)
             {
                 var cameraPosition = T.State.FinalPosition;
@@ -151,11 +149,16 @@ namespace Cinemachine.Editor
                 {
                     T.m_Lens.FieldOfView = fieldOfView;
                     Undo.RecordObject(this, "Changed FOV using handle in scene view.");
+                    InspectorUtility.RepaintGameView();
                 }
-                
-                Handles.Label(cameraPosition + 
-                    cameraForward * HandleUtility.GetHandleSize(cameraPosition), 
-                    "FOV (" + T.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+
+                if (handleIsUsed)
+                {
+                    labelStyle.normal.textColor = activeColor;
+                    Handles.Label(cameraPosition + 
+                        cameraForward * HandleUtility.GetHandleSize(cameraPosition), 
+                        "FOV (" + T.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+                }
             }
 
             if (CinemachineSceneToolUtility.FarNearClipToolIsOn)
@@ -163,30 +166,37 @@ namespace Cinemachine.Editor
                 var cameraPosition = T.State.FinalPosition;
                 var cameraRotation = T.State.FinalOrientation;
                 var cameraForward = cameraRotation * Vector3.forward;
-                var nearClipPos = cameraPosition;
-                var nearClipSize = HandleUtility.GetHandleSize(nearClipPos);
-                var farClipPos = cameraPosition + cameraForward * nearClipSize * 2f;
-                var farClipSize = HandleUtility.GetHandleSize(farClipPos);
+                var nearClipPos = cameraPosition + cameraForward * T.m_Lens.NearClipPlane;
+                var farClipPos = cameraPosition + cameraForward * T.m_Lens.FarClipPlane;
                 
                 EditorGUI.BeginChangeCheck();
-                var nearClipPlane = Handles.ScaleSlider(T.m_Lens.NearClipPlane, 
-                    nearClipPos, cameraForward, 
-                    cameraRotation, nearClipSize, 0.1f);
-                var farClipPlane = Handles.ScaleSlider(T.m_Lens.FarClipPlane, 
-                    farClipPos, cameraForward, 
-                    cameraRotation, farClipSize, 0.1f);
+                var newNearClipPos = Handles.Slider(nearClipPos, cameraForward);
+                var newFarClipPos = Handles.Slider(farClipPos, cameraForward);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    T.m_Lens.NearClipPlane = nearClipPlane;
-                    T.m_Lens.FarClipPlane = farClipPlane;
-                    
+                    { // near clip
+                        var diffNearClip = newNearClipPos - nearClipPos;
+                        var sameDirection = Vector3.Dot(diffNearClip.normalized, cameraForward) > 0;
+                        T.m_Lens.NearClipPlane += (sameDirection ? 1f : -1f) * diffNearClip.magnitude;
+                    }
+                    { // far clip
+                        var diffFarClip = newFarClipPos - farClipPos;
+                        var sameDirection = Vector3.Dot(diffFarClip.normalized, cameraForward) > 0;
+                        T.m_Lens.FarClipPlane += (sameDirection ? 1f : -1f) * diffFarClip.magnitude;
+                    }
+
                     Undo.RecordObject(this, "Changed clip plane using handle in scene view.");
+                    InspectorUtility.RepaintGameView();
                 }
-                
-                Handles.Label(nearClipPos, 
-                    "Near Clip Plane (" + T.m_Lens.NearClipPlane.ToString("F1") + ")", labelStyle);
-                Handles.Label(farClipPos, 
-                    "Far Clip Plane (" + T.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
+
+                if (handleIsUsed)
+                {
+                    labelStyle.normal.textColor = activeColor;
+                    Handles.Label(nearClipPos,
+                        "Near Clip Plane (" + T.m_Lens.NearClipPlane.ToString("F1") + ")", labelStyle);
+                    Handles.Label(farClipPos,
+                        "Far Clip Plane (" + T.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
+                }
             }
             Handles.color = originalColor;
         }

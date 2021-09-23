@@ -43,16 +43,11 @@ namespace Cinemachine.Editor
         
             if (Utility.CinemachineSceneToolUtility.FollowOffsetToolIsOn)
             {
-                var up = Vector3.up;
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(T.VirtualCamera);
-                if (brain != null)
-                    up = brain.DefaultWorldUp;
-                var followTargetPosition = T.FollowTargetPosition;
+                var up = T.FollowTargetRotation * Vector3.up;
+                //var followTargetPosition = T.FollowTargetPosition;
+                T.GetRigPositions(out var followTargetPosition, 
+                    out var shoulderOffsetPosition, out var verticalArmLengthPosition);
                 var targetForward = T.FollowTargetRotation * Vector3.forward;
-                var shoulderOffset = T.ShoulderOffset;
-                var shoulderOffsetPosition = followTargetPosition + shoulderOffset;
-                var verticalArmLength = T.VerticalArmLength;
-                var verticalArmLengthPosition = shoulderOffsetPosition + up * verticalArmLength;
                 var cameraDistance = T.CameraDistance;
                 var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
         
@@ -62,35 +57,37 @@ namespace Cinemachine.Editor
                 var newShoulderOffsetPosition = 
                     Handles.PositionHandle(shoulderOffsetPosition, Quaternion.identity);
                 
-                var handleIsUsed = GUIUtility.hotControl > 0;
-                Handles.color = handleIsUsed ? activeColor : Color.cyan;
+                Handles.color = Color.cyan;
                 var newVerticalArmLengthPosition = Handles.Slider(verticalArmLengthPosition, up);
-                Handles.color = handleIsUsed ? activeColor : Color.blue;
+                Handles.color = Color.blue;
                 var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
 
                 if (EditorGUI.EndChangeCheck())
                 {
                     T.ShoulderOffset += newShoulderOffsetPosition - shoulderOffsetPosition;
                     T.VerticalArmLength += (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
-                    
-                    var projection = Vector3.Project(newCameraPosition - cameraPosition, targetForward);
-                    var isNegative = Mathf.Abs(Vector3.Dot(projection, targetForward) - projection.magnitude * targetForward.magnitude) < 0.1f;
-                    T.CameraDistance += (isNegative ? -1f : 1f) * projection.magnitude;
+
+                    var diffCameraPos = newCameraPosition - cameraPosition;
+                    var sameDirection = Vector3.Dot(diffCameraPos.normalized, targetForward) > 0;
+                    T.CameraDistance += (sameDirection ? -1f : 1f) * diffCameraPos.magnitude;
                     
                     Undo.RecordObject(this, "Changed 3rdPersonFollow offsets using handle in Scene View.");
                     InspectorUtility.RepaintGameView();
                 }
+
+                var handleIsUsed = GUIUtility.hotControl > 0;
+                if (handleIsUsed)
+                {
+                    var labelStyle = new GUIStyle();
+                    Handles.color = labelStyle.normal.textColor = activeColor;
+                    Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
+                    Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
+                    Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f); 
+                    Handles.Label(shoulderOffsetPosition, "Should Offset " + T.ShoulderOffset.ToString("F1"), labelStyle);
+                    Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + T.VerticalArmLength.ToString("F1") + ")", labelStyle);
+                    Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")", labelStyle);
+                }
                 
-                var labelStyle = new GUIStyle();
-                Handles.color = 
-                    labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
-                Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
-                Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
-                Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f); 
-                Handles.Label(shoulderOffsetPosition, "Should Offset " + shoulderOffset.ToString("F1"), labelStyle);
-                Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + verticalArmLength.ToString("F1") + ")", labelStyle);
-                Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")", labelStyle);
-        
                 Handles.color = originalColor;
             }
         }

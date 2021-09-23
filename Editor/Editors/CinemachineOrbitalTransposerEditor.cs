@@ -172,15 +172,16 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var originalColor = Handles.color;
-                var labelStyle = new GUIStyle();
                 var handleIsUsed = GUIUtility.hotControl > 0;
-                Handles.color = 
-                    labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
-                Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
-                Handles.Label(cameraPosition, "Follow offset " + T.m_FollowOffset.ToString("F1"), labelStyle);
-
-                Handles.color = originalColor;
+                if (handleIsUsed)
+                {
+                    var originalColor = Handles.color;
+                    var labelStyle = new GUIStyle();
+                    Handles.color = labelStyle.normal.textColor = activeColor;
+                    Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                    Handles.Label(cameraPosition, "Follow offset " + T.m_FollowOffset.ToString("F1"), labelStyle);
+                    Handles.color = originalColor;
+                }
             }
         }
     }

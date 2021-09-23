@@ -234,15 +234,16 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var originalColor = Handles.color;
-                var labelStyle = new GUIStyle();
                 var handleIsUsed = GUIUtility.hotControl > 0;
-                Handles.color = 
-                    labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
-                Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
-                Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
-
-                Handles.color = originalColor;
+                if (handleIsUsed)
+                {
+                    var originalColor = Handles.color;
+                    var labelStyle = new GUIStyle();
+                    Handles.color = labelStyle.normal.textColor = activeColor;
+                    Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
+                    Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
+                    Handles.color = originalColor;
+                }
             }
         }
     }
