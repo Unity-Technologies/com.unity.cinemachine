@@ -33,10 +33,9 @@ namespace Cinemachine.Editor
             }
         }
 
-        public override void OnSceneGUI()
+        internal override void OnSceneGUI()
         {
-            base.OnSceneGUI();
-            Debug.Log("Hurray OnSceneGUI in Cinemachine3rdPersonFollowEditor");
+            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
         }
     }
 }

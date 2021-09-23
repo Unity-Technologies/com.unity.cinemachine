@@ -85,5 +85,10 @@ namespace Cinemachine.Editor
                 Target.m_FollowOffset = Target.EffectiveOffset;
             }
         }
+        
+        internal override void OnSceneGUI()
+        {
+            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
+        }
     }
 }

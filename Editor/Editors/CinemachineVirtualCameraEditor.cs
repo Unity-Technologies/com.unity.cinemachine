@@ -98,8 +98,9 @@ namespace Cinemachine.Editor
             base.OnDisable();
         }
 
-        private void OnSceneGUI()
+        internal override void OnSceneGUI()
         {
+            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
             if (!Target.m_UserIsDragging)
                 m_PreviousPosition = Target.transform.position;
             if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
@@ -122,8 +123,7 @@ namespace Cinemachine.Editor
             }
 
             DrawHandlesForSceneTools(Target);
-            m_PipelineSet.OnSceneGUI();
-            // TODO: call OnSceneGUI of all editors here - see: OnInspectorGUI() -> m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
+            m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
         void DrawHandlesForSceneTools(CinemachineVirtualCamera target)

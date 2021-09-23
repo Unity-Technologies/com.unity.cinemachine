@@ -93,10 +93,8 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
-        public virtual void OnSceneGUI()
+        internal virtual void OnSceneGUI()
         {
-            Debug.Log("OnSceneGUI in " + Target.GetType());
-            // throw new NotImplementedException();
         }
 
         List<string> mExcluded = new List<string>();

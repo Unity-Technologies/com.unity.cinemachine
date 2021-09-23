@@ -101,6 +101,11 @@ namespace Cinemachine.Editor
                 }
             }
         }
+        
+        internal override void OnSceneGUI()
+        {
+            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
+        }
 
 #if false
         // debugging only
