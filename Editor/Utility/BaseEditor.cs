@@ -93,6 +93,9 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
+        /// <summary>
+        /// Draw inside the scene view here. Base implementation calls DrawSceneTools.
+        /// </summary>
         protected virtual void OnSceneGUI()
         {
             DrawSceneTools(
@@ -100,6 +103,12 @@ namespace Cinemachine.Editor
                 CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
         }
 
+        /// <summary>
+        /// Implement your scene handles for your components, extensions here.
+        /// TODO: talk about implementing ISceneToolInteractable?
+        /// </summary>
+        /// <param name="activeColor">Color of the handles when used by the user</param>
+        /// <param name="defaultColor">Default color of handles</param>
         protected virtual void DrawSceneTools(Color activeColor, Color defaultColor) {}
 
         List<string> mExcluded = new List<string>();
