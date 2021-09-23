@@ -213,7 +213,6 @@ namespace Cinemachine.Editor
         
         internal override void OnSceneGUI()
         {
-            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
             DrawSceneTools(
                 CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
                 CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);

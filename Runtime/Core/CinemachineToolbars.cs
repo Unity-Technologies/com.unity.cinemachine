@@ -8,7 +8,6 @@ namespace Cinemachine.Utility
         TrackedObjectOffset,
     };
     
-    // TODO: KGB move this to where the enum
     public static class CinemachineSceneToolUtility
     {
         public static bool FoVToolIsOn { get; private set; }

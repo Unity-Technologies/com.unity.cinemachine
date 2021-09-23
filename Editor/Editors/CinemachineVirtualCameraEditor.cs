@@ -100,7 +100,6 @@ namespace Cinemachine.Editor
 
         internal override void OnSceneGUI()
         {
-            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
             if (!Target.m_UserIsDragging)
                 m_PreviousPosition = Target.transform.position;
             if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
@@ -122,25 +121,7 @@ namespace Cinemachine.Editor
                 Target.m_UserIsDragging = false;
             }
 
-            DrawHandlesForSceneTools(Target);
             m_PipelineSet.OnSceneGUI(); // call hidden editors
-        }
-
-        void DrawHandlesForSceneTools(CinemachineVirtualCamera target)
-        {
-            var all = Target.GetComponentsInChildren<ISceneToolInteractable>();
-            var repaint = false;
-            foreach (var st in all)
-            {
-                repaint |= st.DrawSceneTools(
-                    CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
-                    CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
-            }
-
-            if (repaint)
-            {
-                InspectorUtility.RepaintGameView();
-            }
         }
 
         public override void OnInspectorGUI()
