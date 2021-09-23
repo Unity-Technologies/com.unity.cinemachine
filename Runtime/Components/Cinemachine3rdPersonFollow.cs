@@ -210,7 +210,7 @@ namespace Cinemachine
             curState.RawOrientation = targetRot; // not necessary, but left in to avoid breaking scenes that depend on this
             curState.ReferenceUp = up;
         }
-
+        
         /// <summary>
         /// Internal use only.  Public for the inspector gizmo
         /// </summary>

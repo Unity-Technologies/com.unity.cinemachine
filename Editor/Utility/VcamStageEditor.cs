@@ -184,6 +184,38 @@ namespace Cinemachine.Editor
             DrawComponentInspector();
         }
 
+        public void OnSceneGUI()
+        {
+            if (m_ComponentEditor == null) return;
+            
+            var type = m_ComponentEditor.GetType();
+            Debug.Log("OnSceneGUI - Converting " + type);
+
+            Debug.Log(type);
+            var editor = m_ComponentEditor as BaseEditor<CinemachineComponentBase>;
+            if (editor != null)
+            {
+                Debug.Log("Conversion successful Editor -> BaseEditor<CinemachineComponentBase>");
+                editor.OnSceneGUI();
+            }
+            var editor2 = m_ComponentEditor as BaseEditor<Cinemachine3rdPersonFollow>;
+            if (editor2 != null)
+            {
+                Debug.Log("Conversion successful Editor -> BaseEditor<Cinemachine3rdPersonFollow>");
+                editor2.OnSceneGUI();
+            }
+            var editor3 = m_ComponentEditor as Cinemachine3rdPersonFollowEditor;
+            if (editor3 != null)
+            {
+                Debug.Log("Conversion successful Editor -> Cinemachine3rdPersonFollowEditor");
+                editor3.OnSceneGUI();
+            }
+            
+            Debug.Log("--- Dynamic cast ---");
+            dynamic changedObj = Convert.ChangeType(m_ComponentEditor, type);
+            changedObj.OnSceneGUI();
+        }
+
         private int GetPopupIndexForComponent(CinemachineComponentBase c)
         {
             if (c != null)
@@ -253,6 +285,7 @@ namespace Cinemachine.Editor
 
         public void OnPositionDragged(Vector3 delta)
         {
+            // TODO: KGB look at this part instead of casting
             if (m_ComponentEditor != null)
             {
                 MethodInfo mi = m_ComponentEditor.GetType().GetMethod("OnVcamPositionDragged"
@@ -338,6 +371,18 @@ namespace Cinemachine.Editor
                 if (!ed.HasImplementation)
                     continue;
                 ed.OnInspectorGUI(); // may destroy component
+            }
+        }
+
+        public void OnSceneGUI()
+        {
+            for (int i = 0; i < m_subeditors.Length; ++i)
+            {
+                var ed = m_subeditors[i];
+                if (ed == null)
+                    continue;
+                
+                ed.OnSceneGUI();
             }
         }
 

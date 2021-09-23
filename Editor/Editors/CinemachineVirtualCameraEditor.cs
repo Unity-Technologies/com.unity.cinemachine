@@ -122,6 +122,7 @@ namespace Cinemachine.Editor
             }
 
             DrawHandlesForSceneTools(Target);
+            m_PipelineSet.OnSceneGUI();
             // TODO: call OnSceneGUI of all editors here - see: OnInspectorGUI() -> m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
         }
 

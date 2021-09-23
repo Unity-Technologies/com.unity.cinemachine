@@ -32,6 +32,12 @@ namespace Cinemachine.Editor
                 Gizmos.color = originalGizmoColour;
             }
         }
+
+        public override void OnSceneGUI()
+        {
+            base.OnSceneGUI();
+            Debug.Log("Hurray OnSceneGUI in Cinemachine3rdPersonFollowEditor");
+        }
     }
 }
 
