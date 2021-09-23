@@ -117,7 +117,7 @@ namespace Cinemachine.Editor
                 {
                     T.m_FollowOffset += newPos - cameraPosition;
                     
-                    Undo.RecordObject(this, "Change Follow Offset Position using handle in scene view.");
+                    Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
                     InspectorUtility.RepaintGameView();
                 }
 
