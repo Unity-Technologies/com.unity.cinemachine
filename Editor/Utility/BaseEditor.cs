@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using System.Linq.Expressions;
+using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -90,6 +91,12 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
             DrawRemainingPropertiesInInspector();
+        }
+
+        public virtual void OnSceneGUI()
+        {
+            Debug.Log("OnSceneGUI in " + Target.GetType());
+            // throw new NotImplementedException();
         }
 
         List<string> mExcluded = new List<string>();
