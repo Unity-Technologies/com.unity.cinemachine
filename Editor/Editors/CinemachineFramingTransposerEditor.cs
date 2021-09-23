@@ -211,14 +211,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        internal override void OnSceneGUI()
-        {
-            DrawSceneTools(
-                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
-                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
-        }
-        
-        void DrawSceneTools(Color activeColor, Color defaultColor)
+        protected override void DrawSceneTools(Color activeColor, Color defaultColor)
         {
             var T = Target;
             if (!T.IsValid)
@@ -226,7 +219,7 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (Utility.CinemachineSceneToolUtility.TrackedObjectOffsetToolIsOn)
+            if (CinemachineSceneToolUtility.TrackedObjectOffsetToolIsOn)
             {
                 var followTargetPosition = T.FollowTargetPosition;
                 var trackedObjectPosition = followTargetPosition + T.m_TrackedObjectOffset;

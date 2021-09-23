@@ -145,14 +145,7 @@ namespace Cinemachine.Editor
             Gizmos.matrix = prevMatrix;
         }
         
-        internal override void OnSceneGUI()
-        {
-            DrawSceneTools(
-                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
-                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
-        }
-        
-        void DrawSceneTools(Color activeColor, Color defaultColor)
+        protected override void DrawSceneTools(Color activeColor, Color defaultColor)
         {
             var T = Target;
             if (!T.IsValid && Tools.current != Tool.Move)

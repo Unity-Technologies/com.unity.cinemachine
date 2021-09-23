@@ -93,9 +93,14 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
-        internal virtual void OnSceneGUI()
+        protected virtual void OnSceneGUI()
         {
+            DrawSceneTools(
+                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
+                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
         }
+
+        protected virtual void DrawSceneTools(Color activeColor, Color defaultColor) {}
 
         List<string> mExcluded = new List<string>();
 

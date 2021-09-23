@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
             base.OnDisable();
         }
 
-        internal override void OnSceneGUI()
+        protected override void OnSceneGUI()
         {
             if (!Target.m_UserIsDragging)
                 m_PreviousPosition = Target.transform.position;
@@ -121,21 +121,18 @@ namespace Cinemachine.Editor
                 Target.m_UserIsDragging = false;
             }
 
-            DrawSceneTools(
-                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
-                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
+            base.OnSceneGUI();
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
-        private void DrawSceneTools(Color activeColor, Color defaultColor)
+        protected override void DrawSceneTools(Color activeColor, Color defaultColor)
         {
             var T = Target;
             if (!T.IsValid)
             {
                 return;
             }
-            
-            
+
             var originalColor = Handles.color;
             var labelStyle = new GUIStyle();
             var handleIsUsed = GUIUtility.hotControl > 0;
