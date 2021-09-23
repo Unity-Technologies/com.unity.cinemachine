@@ -169,11 +169,6 @@ namespace Cinemachine.Editor
 
             Gizmos.matrix = oldMatrix;
         }
-
-        internal override void OnSceneGUI()
-        {
-            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
-        }
     }
 #endif
 }

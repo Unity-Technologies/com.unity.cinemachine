@@ -89,6 +89,48 @@ namespace Cinemachine.Editor
         internal override void OnSceneGUI()
         {
             Debug.Log(Target.GetType() + "Editor OnSceneGUI");
+            DrawSceneTools(
+                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
+                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
+        }
+        
+        void DrawSceneTools(Color activeColor, Color defaultColor)
+        {
+            var T = Target;
+            if (!T.IsValid && Tools.current != Tool.Move)
+            {
+                return;
+            }
+
+            if (Utility.CinemachineSceneToolUtility.FollowOffsetToolIsOn)
+            {
+                var up = Vector3.up;
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(T.VirtualCamera);
+                if (brain != null)
+                    up = brain.DefaultWorldUp;
+                var followTargetPosition = T.FollowTargetPosition;
+                var cameraPosition = T.GetTargetCameraPosition(up);
+
+                EditorGUI.BeginChangeCheck();
+                var newPos = Handles.PositionHandle(cameraPosition, Quaternion.identity);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    T.m_FollowOffset += newPos - cameraPosition;
+                    
+                    Undo.RecordObject(this, "Change Follow Offset Position using handle in scene view.");
+                    InspectorUtility.RepaintGameView();
+                }
+
+                var originalColor = Handles.color;
+                var labelStyle = new GUIStyle();
+                var handleIsUsed = GUIUtility.hotControl > 0;
+                Handles.color = 
+                    labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
+                Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                Handles.Label(cameraPosition, "Follow offset " + T.m_FollowOffset.ToString("F1"), labelStyle);
+
+                Handles.color = originalColor;
+            }
         }
     }
 }
