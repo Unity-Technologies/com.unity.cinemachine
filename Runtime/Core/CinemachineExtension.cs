@@ -174,6 +174,5 @@ namespace Cinemachine
         private Dictionary<ICinemachineCamera, System.Object> mExtraState;
 
         public virtual bool CanBeControllerBySceneTool(CinemachineSceneTool sceneTool) => false;
-        public virtual bool DrawSceneTools(Color activeColor, Color defaultColor) => false;
     }
 }

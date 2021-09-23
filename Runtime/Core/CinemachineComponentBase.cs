@@ -190,6 +190,5 @@ namespace Cinemachine
         public virtual bool RequiresUserInput => false;
 
         public virtual bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool) => false;
-        public virtual bool DrawSceneTools(Color activeColor, Color defaultColor) => false;
     }
 }

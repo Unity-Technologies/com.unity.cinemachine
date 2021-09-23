@@ -121,7 +121,77 @@ namespace Cinemachine.Editor
                 Target.m_UserIsDragging = false;
             }
 
+            DrawSceneTools(
+                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
+                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
             m_PipelineSet.OnSceneGUI(); // call hidden editors
+        }
+
+        private void DrawSceneTools(Color activeColor, Color defaultColor)
+        {
+            var T = Target;
+            if (!T.IsValid)
+            {
+                return;
+            }
+            
+            
+            var originalColor = Handles.color;
+            var labelStyle = new GUIStyle();
+            var handleIsUsed = GUIUtility.hotControl > 0;
+            Handles.color = 
+                labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
+            if (CinemachineSceneToolUtility.FoVToolIsOn)
+            {
+                var cameraPosition = T.State.FinalPosition;
+                var cameraRotation = T.State.FinalOrientation;
+                var cameraForward = cameraRotation * Vector3.forward;
+                
+                EditorGUI.BeginChangeCheck();
+                var fieldOfView = Handles.ScaleSlider(T.m_Lens.FieldOfView, cameraPosition, cameraForward, 
+                    cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    T.m_Lens.FieldOfView = fieldOfView;
+                    Undo.RecordObject(this, "Changed FOV using handle in scene view.");
+                }
+                
+                Handles.Label(cameraPosition + 
+                    cameraForward * HandleUtility.GetHandleSize(cameraPosition), 
+                    "FOV (" + T.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+            }
+
+            if (CinemachineSceneToolUtility.FarNearClipToolIsOn)
+            {
+                var cameraPosition = T.State.FinalPosition;
+                var cameraRotation = T.State.FinalOrientation;
+                var cameraForward = cameraRotation * Vector3.forward;
+                var nearClipPos = cameraPosition;
+                var nearClipSize = HandleUtility.GetHandleSize(nearClipPos);
+                var farClipPos = cameraPosition + cameraForward * nearClipSize * 2f;
+                var farClipSize = HandleUtility.GetHandleSize(farClipPos);
+                
+                EditorGUI.BeginChangeCheck();
+                var nearClipPlane = Handles.ScaleSlider(T.m_Lens.NearClipPlane, 
+                    nearClipPos, cameraForward, 
+                    cameraRotation, nearClipSize, 0.1f);
+                var farClipPlane = Handles.ScaleSlider(T.m_Lens.FarClipPlane, 
+                    farClipPos, cameraForward, 
+                    cameraRotation, farClipSize, 0.1f);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    T.m_Lens.NearClipPlane = nearClipPlane;
+                    T.m_Lens.FarClipPlane = farClipPlane;
+                    
+                    Undo.RecordObject(this, "Changed clip plane using handle in scene view.");
+                }
+                
+                Handles.Label(nearClipPos, 
+                    "Near Clip Plane (" + T.m_Lens.NearClipPlane.ToString("F1") + ")", labelStyle);
+                Handles.Label(farClipPos, 
+                    "Far Clip Plane (" + T.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
+            }
+            Handles.color = originalColor;
         }
 
         public override void OnInspectorGUI()
@@ -225,10 +295,10 @@ namespace Cinemachine.Editor
                                         }
                                     }
                                 }
-                                catch (System.Exception) {} // Just skip uncooperative types
+                                catch (Exception) {} // Just skip uncooperative types
                             }
                         }
-                        catch (System.Exception) {} // Just skip uncooperative assemblies
+                        catch (Exception) {} // Just skip uncooperative assemblies
                     }
                 }
             }

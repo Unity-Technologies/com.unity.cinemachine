@@ -822,6 +822,5 @@ namespace Cinemachine
         public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
 
         public virtual bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool) => false;
-        public virtual bool DrawSceneTools(Color activeColor, Color defaultColor) => false;
     }
 }
