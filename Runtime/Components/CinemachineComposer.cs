@@ -528,48 +528,5 @@ namespace Cinemachine
             }
         }
         
-        bool m_HandleIsBeingDragged;
-        public override bool DrawSceneTools(Color activeColor, Color defaultColor)
-        {
-            var doRepaint = base.DrawSceneTools(activeColor, defaultColor);
-            if (!IsValid)
-            {
-                return doRepaint;
-            }
-
-            if (CinemachineSceneToolUtility.TrackedObjectOffsetToolIsOn)
-            {
-                var followTargetPosition = FollowTargetPosition;
-                var trackedObject = followTargetPosition + m_TrackedObjectOffset;
-
-                var originalColor = UnityEditor.Handles.color;
-                var labelStyle = new GUIStyle();
-                UnityEditor.Handles.color = 
-                    labelStyle.normal.textColor = m_HandleIsBeingDragged ? activeColor : defaultColor;
-                
-                UnityEditor.EditorGUI.BeginChangeCheck();
-                var newPos = UnityEditor.Handles.PositionHandle(trackedObject, Quaternion.identity);
-                if (UnityEditor.EditorGUI.EndChangeCheck())
-                {
-                    m_HandleIsBeingDragged = true;
-                    m_TrackedObjectOffset += newPos - trackedObject;
-                    
-                    doRepaint = true;
-                    UnityEditor.Undo.RecordObject(this, "Change Follow Offset Position using handle in scene view.");
-                }
-                else
-                {
-                    m_HandleIsBeingDragged = false;
-                }
-
-
-                UnityEditor.Handles.DrawDottedLine(followTargetPosition, trackedObject, 5f);
-                UnityEditor.Handles.Label(followTargetPosition, "Tracked Object Offset " + m_TrackedObjectOffset.ToString("F1"), labelStyle);
-
-                UnityEditor.Handles.color = originalColor;
-            }
-
-            return doRepaint;
-        }
     }
 }
