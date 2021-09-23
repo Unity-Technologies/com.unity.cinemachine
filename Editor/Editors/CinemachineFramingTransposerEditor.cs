@@ -210,5 +210,48 @@ namespace Cinemachine.Editor
                 Gizmos.matrix = m;
             }
         }
+        
+        internal override void OnSceneGUI()
+        {
+            Debug.Log(Target.GetType() + "Editor OnSceneGUI");
+            DrawSceneTools(
+                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
+                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
+        }
+        
+        void DrawSceneTools(Color activeColor, Color defaultColor)
+        {
+            var T = Target;
+            if (!T.IsValid)
+            {
+                return;
+            }
+
+            if (Utility.CinemachineSceneToolUtility.TrackedObjectOffsetToolIsOn)
+            {
+                var followTargetPosition = T.FollowTargetPosition;
+                var trackedObjectPosition = followTargetPosition + T.m_TrackedObjectOffset;
+
+                EditorGUI.BeginChangeCheck();
+                var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
+                    
+                    Undo.RecordObject(this, "Change Tracked Object Offset using handle in Scene View.");
+                    InspectorUtility.RepaintGameView();
+                }
+
+                var originalColor = Handles.color;
+                var labelStyle = new GUIStyle();
+                var handleIsUsed = GUIUtility.hotControl > 0;
+                Handles.color = 
+                    labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
+                Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
+                Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
+
+                Handles.color = originalColor;
+            }
+        }
     }
 }

@@ -113,7 +113,7 @@ namespace Cinemachine.Editor
         void DrawSceneTools(Color activeColor, Color defaultColor)
         {
             var T = Target;
-            if (!T.IsValid && Tools.current != Tool.Move)
+            if (!T.IsValid)
             {
                 return;
             }
@@ -122,15 +122,15 @@ namespace Cinemachine.Editor
             {
                 var lookAtTargetPosition = T.LookAtTargetPosition;
                 var trackedObjectOffset = T.m_TrackedObjectOffset;
-                var handlePosition = lookAtTargetPosition + trackedObjectOffset;
+                var trackedObjectPosition = lookAtTargetPosition + trackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
-                var newPos = Handles.PositionHandle(handlePosition, Quaternion.identity);
+                var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    T.m_TrackedObjectOffset += newPos - handlePosition;
+                    T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
                     
-                    Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
+                    Undo.RecordObject(this, "Change Tracked Object Offset using handle in Scene View.");
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -139,8 +139,8 @@ namespace Cinemachine.Editor
                 var handleIsUsed = GUIUtility.hotControl > 0;
                 Handles.color = 
                     labelStyle.normal.textColor = handleIsUsed ? activeColor : defaultColor;
-                Handles.DrawDottedLine(lookAtTargetPosition, handlePosition, 5f);
-                Handles.Label(handlePosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
+                Handles.DrawDottedLine(lookAtTargetPosition, trackedObjectPosition, 5f);
+                Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
 
                 Handles.color = originalColor;
             }
