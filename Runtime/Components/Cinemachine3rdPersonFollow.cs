@@ -229,7 +229,7 @@ namespace Cinemachine
             hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
         }
 
-        Quaternion GetHeading(Vector3 targetForward, Vector3 up)
+        internal Quaternion GetHeading(Vector3 targetForward, Vector3 up)
         {
             var planeForward = targetForward.ProjectOntoPlane(up);
             planeForward = Vector3.Cross(up, Vector3.Cross(planeForward, up));

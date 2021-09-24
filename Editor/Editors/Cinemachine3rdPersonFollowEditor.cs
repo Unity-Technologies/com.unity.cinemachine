@@ -49,15 +49,16 @@ namespace Cinemachine.Editor
                 T.GetRigPositions(out var followTargetPosition, 
                     out var shoulderOffsetPosition, out var verticalArmLengthPosition);
                 var targetForward = T.FollowTargetRotation * Vector3.forward;
+                var heading = T.GetHeading(targetForward, T.VirtualCamera.State.ReferenceUp);
                 var cameraDistance = T.CameraDistance;
                 var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
         
                 var originalColor = Handles.color;
                 
                 EditorGUI.BeginChangeCheck();
-                var newShoulderOffsetPosition = 
-                    Handles.PositionHandle(shoulderOffsetPosition, Quaternion.identity);
+                var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
                 
+                //TODO: Set up Undos for each handle separately
                 Handles.color = Color.cyan;
                 var newVerticalArmLengthPosition = Handles.Slider(verticalArmLengthPosition, up);
                 Handles.color = Handles.zAxisColor; // TODO: KGB set this to the correct axis color, lerp inbetween?
@@ -65,7 +66,7 @@ namespace Cinemachine.Editor
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    T.ShoulderOffset += newShoulderOffsetPosition - shoulderOffsetPosition;
+                    T.ShoulderOffset += Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
                     T.VerticalArmLength += (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
 
                     var diffCameraPos = newCameraPosition - cameraPosition;
