@@ -9,25 +9,16 @@ namespace Cinemachine.Editor
 {
     abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
     {
-        CinemachineSceneTool m_MyTool = CinemachineSceneTool.None;
-        
         protected void RegisterWithCinemachine(CinemachineSceneTool tool)
         {
             m_MyTool = tool;
             this.RegisterValueChangedCallback(Register);
             CinemachineSceneToolUtility.SetToolHandler(m_MyTool, SetValue);
         }
-        
-        void Register(ChangeEvent<bool> v)
-        {
-            Debug.Log(m_MyTool + ":" + v.previousValue + "->" + v.newValue);
-            CinemachineSceneToolUtility.SetTool(v.newValue, m_MyTool);
-        }
-        
-        void SetValue(bool v)
-        {
-            value = v;
-        }
+
+        CinemachineSceneTool m_MyTool;
+        void Register(ChangeEvent<bool> v) => CinemachineSceneToolUtility.SetTool(v.newValue, m_MyTool);
+        void SetValue(bool v) => value = v;
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]
@@ -83,7 +74,7 @@ namespace Cinemachine.Editor
     [Overlay(typeof(SceneView), "Cinemachine")]
 
 // IconAttribute provides a way to define an icon for when an Overlay is in collapsed form. If not provided, the name initials are used.
-    [Icon("Packages/Cinemachine/Gizmos/cm_logo.png")]
+    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
 
 // Toolbar Overlays must inherit `ToolbarOverlay` and implement a parameter-less constructor. The contents of a toolbar are populated with string IDs, which are passed to the base constructor. IDs are defined by EditorToolbarElementAttribute.
     public class CinemachineVirtualCameraToolbar : ToolbarOverlay
