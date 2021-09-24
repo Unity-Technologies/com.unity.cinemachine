@@ -103,12 +103,13 @@ namespace Cinemachine.Editor
                     up = brain.DefaultWorldUp;
                 var followTargetPosition = T.FollowTargetPosition;
                 var cameraPosition = T.GetTargetCameraPosition(up);
+                var cameraRotation = T.GetReferenceOrientation(up);
 
                 EditorGUI.BeginChangeCheck();
-                var newPos = Handles.PositionHandle(cameraPosition, Quaternion.identity);
+                var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    T.m_FollowOffset += newPos - cameraPosition;
+                    T.m_FollowOffset += Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);
                     
                     Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
                     InspectorUtility.RepaintGameView();
