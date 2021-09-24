@@ -7,75 +7,74 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
+    abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
+    {
+        CinemachineSceneTool m_MyTool = CinemachineSceneTool.None;
+        
+        protected void RegisterWithCinemachine(CinemachineSceneTool tool)
+        {
+            m_MyTool = tool;
+            this.RegisterValueChangedCallback(Register);
+            CinemachineSceneToolUtility.SetToolHandler(m_MyTool, SetValue);
+        }
+        
+        void Register(ChangeEvent<bool> v)
+        {
+            Debug.Log(m_MyTool + ":" + v.previousValue + "->" + v.newValue);
+            CinemachineSceneToolUtility.SetTool(v.newValue, m_MyTool);
+        }
+        
+        void SetValue(bool v)
+        {
+            value = v;
+        }
+    }
+    
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FoVTool : EditorToolbarToggle
+    class FoVTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FoVTool/Toggle";
 
         public FoVTool()
         {
             icon = EditorGUIUtility.IconContent("d_BillboardAsset Icon").image as Texture2D;
-            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.FovToolSelectionToolSelection);
-            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.FoV, SetValue);
-        }
-
-        void SetValue(bool v)
-        {
-            value = v;
+            RegisterWithCinemachine(CinemachineSceneTool.FoV);
         }
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FarNearClipTool : EditorToolbarToggle
+    class FarNearClipTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FarNearClipTool/Toggle";
 
         public FarNearClipTool()
         {
             icon = EditorGUIUtility.IconContent("d_BillboardRenderer Icon").image as Texture2D;
-            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.FarNearClipSelectionToolSelection);
-            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.FarNearClip, SetValue);
-        }
-
-        void SetValue(bool v)
-        {
-            value = v;
+            RegisterWithCinemachine(CinemachineSceneTool.FarNearClip);
         }
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FollowOffsetTool : EditorToolbarToggle
+    class FollowOffsetTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FollowOffsetTool/Toggle";
 
         public FollowOffsetTool()
         {
             icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
-            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.FollowOffsetToolSelection);
-            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.FollowOffset, SetValue);
-        }
-
-        void SetValue(bool v)
-        {
-            value = v;
+            RegisterWithCinemachine(CinemachineSceneTool.FollowOffset);
         }
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class TrackedObjectOffsetTool : EditorToolbarToggle
+    class TrackedObjectOffsetTool : CinemachineEditorToolbarToggle
     {
         public const string id = "TrackedObjectOffsetTool/Toggle";
 
         public TrackedObjectOffsetTool()
         {
             icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
-            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.TrackedObjectOffsetToolSelection);
-            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.TrackedObjectOffset, SetValue);
-        }
-
-        void SetValue(bool v)
-        {
-            value = v;
+            RegisterWithCinemachine(CinemachineSceneTool.TrackedObjectOffset);
         }
     }
 

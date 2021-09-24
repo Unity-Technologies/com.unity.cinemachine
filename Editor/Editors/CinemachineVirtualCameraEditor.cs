@@ -137,7 +137,7 @@ namespace Cinemachine.Editor
             var originalColor = Handles.color;
             var labelStyle = new GUIStyle();
             Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : defaultColor;
-            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FoV))
+            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FoV))
             {
                 var cameraPosition = T.State.FinalPosition;
                 var cameraRotation = T.State.FinalOrientation;
@@ -161,7 +161,7 @@ namespace Cinemachine.Editor
                 }
             }
 
-            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FarNearClip))
+            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FarNearClip))
             {
                 var cameraPosition = T.State.FinalPosition;
                 var cameraRotation = T.State.FinalOrientation;

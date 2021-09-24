@@ -154,7 +154,7 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
+            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
                 var up = Vector3.up;
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(T.VirtualCamera);

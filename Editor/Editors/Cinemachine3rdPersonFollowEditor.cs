@@ -42,7 +42,7 @@ namespace Cinemachine.Editor
                 return;
             }
         
-            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
+            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
                 var up = T.FollowTargetRotation * Vector3.up;
                 //var followTargetPosition = T.FollowTargetPosition;
