@@ -87,7 +87,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        protected override void DrawSceneTools(Color activeColor, Color defaultColor)
+        protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
             var T = Target;
             if (!T.IsValid && Tools.current != Tool.Move)
@@ -95,7 +95,7 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (Utility.CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
+            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
             {
                 var up = Vector3.up;
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(T.VirtualCamera);
@@ -115,16 +115,15 @@ namespace Cinemachine.Editor
                 }
 
                 var handleIsUsed = GUIUtility.hotControl > 0;
+                var originalColor = Handles.color;
+                var labelStyle = new GUIStyle();
+                Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 if (handleIsUsed)
                 {
-                    var originalColor = Handles.color;
-                    var labelStyle = new GUIStyle();
-                    Handles.color = labelStyle.normal.textColor = activeColor;
-                    Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
                     Handles.Label(cameraPosition, "Follow offset " + T.m_FollowOffset.ToString("F1"), labelStyle);
-                    Handles.color = originalColor;
                 }
-                
+                Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                Handles.color = originalColor;
             }
         }
     }

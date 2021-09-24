@@ -99,17 +99,17 @@ namespace Cinemachine.Editor
         protected virtual void OnSceneGUI()
         {
             DrawSceneTools(
-                CinemachineSettings.CinemachineCoreSettings.k_cmToolsSelectedColor,
-                CinemachineSettings.CinemachineCoreSettings.k_cmToolsColor);
+                CinemachineSettings.CinemachineCoreSettings.k_cmToolsGuideLinesColor,
+                CinemachineSettings.CinemachineCoreSettings.k_cmToolsDefaultColor);
         }
 
         /// <summary>
         /// Implement your scene handles for your components, extensions here.
         /// TODO: talk about implementing ISceneToolInteractable?
         /// </summary>
-        /// <param name="activeColor">Color of the handles when used by the user</param>
+        /// <param name="guideLinesColor">Color of the handles when used by the user</param>
         /// <param name="defaultColor">Default color of handles</param>
-        protected virtual void DrawSceneTools(Color activeColor, Color defaultColor) {}
+        protected virtual void DrawSceneTools(Color guideLinesColor, Color defaultColor) {}
 
         List<string> mExcluded = new List<string>();
 

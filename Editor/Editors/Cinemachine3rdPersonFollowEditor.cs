@@ -34,7 +34,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        protected override void DrawSceneTools(Color activeColor, Color defaultColor)
+        protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
             var T = Target;
             if (!T.IsValid)
@@ -42,7 +42,7 @@ namespace Cinemachine.Editor
                 return;
             }
         
-            if (Utility.CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
+            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
             {
                 var up = T.FollowTargetRotation * Vector3.up;
                 //var followTargetPosition = T.FollowTargetPosition;
@@ -77,17 +77,17 @@ namespace Cinemachine.Editor
                 }
 
                 var handleIsUsed = GUIUtility.hotControl > 0;
+                var labelStyle = new GUIStyle();
+                Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 if (handleIsUsed)
                 {
-                    var labelStyle = new GUIStyle();
-                    Handles.color = labelStyle.normal.textColor = activeColor;
-                    Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
-                    Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
-                    Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f); 
                     Handles.Label(shoulderOffsetPosition, "Should Offset " + T.ShoulderOffset.ToString("F1"), labelStyle);
                     Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + T.VerticalArmLength.ToString("F1") + ")", labelStyle);
                     Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")", labelStyle);
                 }
+                Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
+                Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
+                Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f); 
                 
                 Handles.color = originalColor;
             }

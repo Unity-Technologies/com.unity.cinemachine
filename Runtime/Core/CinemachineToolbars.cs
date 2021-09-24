@@ -1,4 +1,5 @@
 using System;
+using Codice.CM.WorkspaceServer;
 using UnityEditor;
 
 namespace Cinemachine.Utility
@@ -11,6 +12,11 @@ namespace Cinemachine.Utility
         TrackedObjectOffset,
     };
     
+    /// <summary>
+    /// Hack class that manages Cinemachine Tools. It knows which tool is active,
+    /// and ensures that no tools is active at the same time.
+    /// The tools register themselves here for control. 
+    /// </summary>
     static class CinemachineSceneToolUtility
     {
         public static bool IsToolOn(CinemachineSceneTool tool)
@@ -32,10 +38,19 @@ namespace Cinemachine.Utility
         
         public delegate void ToolValueSet(bool v);
 
+        // TODO: instead an array of delegates. array index is enum index.
+        // TODO: SetTools -> replace with SetToolActive(SceneTool) -> use enum array.
         public static ToolValueSet FoVToolHandler;
         public static ToolValueSet FarNearClipToolHandler;
         public static ToolValueSet FollowOffsetToolHandler;
         public static ToolValueSet TrackedObjectOffsetToolHandler;
+
+        public static ToolValueSet[] toolHandlers;
+
+        // public static SetHandler(CinemachineSceneTool tool, ToolValueSet handler)
+        // {
+        //     
+        // }
         
         public static void FovToolSelectionToolSelection(UnityEngine.UIElements.ChangeEvent<bool> evt)
         {
@@ -89,6 +104,7 @@ namespace Cinemachine.Utility
         static CinemachineSceneToolUtility()
         {
             s_FoVTool = s_FarNearClipTool = s_FollowOffsetTool = s_TrackedObjectOffsetTool = false;
+            toolHandlers = new ToolValueSet[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
             EditorApplication.update += CheckUnityTools;
         }
         
