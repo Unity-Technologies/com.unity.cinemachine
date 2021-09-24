@@ -539,6 +539,17 @@ namespace Cinemachine
             }
         }
 
+#if UNITY_EDITOR
+        [UnityEditor.Callbacks.DidReloadScripts]
+        static void OnScriptReload()
+        {
+            var vcams = Resources.FindObjectsOfTypeAll(
+                typeof(CinemachineVirtualCameraBase)) as CinemachineVirtualCameraBase[];
+            foreach (var vcam in vcams)
+                vcam.LookAtTargetChanged = vcam.FollowTargetChanged = true;
+        }
+#endif
+
         /// <summary>
         /// Locate the first component that implements AxisState.IInputAxisProvider.
         /// </summary>
@@ -778,25 +789,30 @@ namespace Cinemachine
         protected void UpdateTargetCache()
         {
             var target = ResolveFollow(Follow);
-            FollowTargetChanged = target != m_CachedFollowTarget;
-            m_CachedFollowTarget = target;
-            m_CachedFollowTargetVcam = null;
-            m_CachedFollowTargetGroup = null;
-            if (m_CachedFollowTarget != null)
+            FollowTargetChanged |= target != m_CachedFollowTarget;
+            if (FollowTargetChanged)
             {
-                m_CachedFollowTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
-                m_CachedFollowTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
+                m_CachedFollowTarget = target;
+                m_CachedFollowTargetVcam = null;
+                m_CachedFollowTargetGroup = null;
+                if (m_CachedFollowTarget != null)
+                {
+                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedFollowTargetVcam);
+                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedFollowTargetGroup);
+                }
             }
-
             target = ResolveLookAt(LookAt);
-            LookAtTargetChanged = target != m_CachedLookAtTarget;
-            m_CachedLookAtTarget = target;
-            m_CachedLookAtTargetVcam = null;
-            m_CachedLookAtTargetGroup = null;
-            if (target != null)
+            LookAtTargetChanged |= target != m_CachedLookAtTarget;
+            if (LookAtTargetChanged)
             {
-                m_CachedLookAtTargetVcam = target.GetComponent<CinemachineVirtualCameraBase>();
-                m_CachedLookAtTargetGroup = target.GetComponent<ICinemachineTargetGroup>();
+                m_CachedLookAtTarget = target;
+                m_CachedLookAtTargetVcam = null;
+                m_CachedLookAtTargetGroup = null;
+                if (target != null)
+                {
+                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedLookAtTargetVcam);
+                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedLookAtTargetGroup);
+                }
             }
         }
 

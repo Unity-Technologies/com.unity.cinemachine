@@ -24,7 +24,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20170927;
 
         /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.8.0";
+        public static readonly string kVersionString = "2.8.1";
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
@@ -526,7 +526,7 @@ namespace Cinemachine
 
         /// <summary>Call this to notify all virtual camewras that may be tracking a target
         /// that the target's position has suddenly warped to somewhere else, so that
-        /// so that the virtual cameras can update their internal state to make the camera
+        /// the virtual cameras can update their internal state to make the camera
         /// warp seamlessy along with the target.
         /// 
         /// All virtual cameras are iterated so this call will work no matter how many 

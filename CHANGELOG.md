@@ -4,6 +4,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.8.1] - 2021-09-24
+- Bugfix: OnTargetObjectWarped() did not work properly for 3rdPersonFollow.
+- Bugfix: POV did not properly handle overridden up.
+- Regression fix: removed GC allocs in UpdateTargetCache.
+- Bugfix: async scene load/unload could cause jitter.
+- Bugfix: Input system should be read only once per render frame.
+- Bugfix: Blends were sometimes incorrect when src or dst camera is looking along world up axis.
+- Bugfix: Improve accuracy of Group Framing.
+
+
 ## [2.8.0] - 2021-07-13
 - Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
 - Bugfix: 3rdPersonFollow works with Aim components now. 
