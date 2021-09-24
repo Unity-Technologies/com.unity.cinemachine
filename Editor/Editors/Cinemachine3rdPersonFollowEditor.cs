@@ -60,7 +60,7 @@ namespace Cinemachine.Editor
                 
                 Handles.color = Color.cyan;
                 var newVerticalArmLengthPosition = Handles.Slider(verticalArmLengthPosition, up);
-                Handles.color = Color.blue;
+                Handles.color = Handles.zAxisColor; // TODO: KGB set this to the correct axis color, lerp inbetween?
                 var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
 
                 if (EditorGUI.EndChangeCheck())

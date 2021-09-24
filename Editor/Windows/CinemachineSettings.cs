@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
             
             // TODO: KGB find better place, expose in Settings for users?
             public static Color k_vcamToolsColor = Color.white;
-            public static Color k_vcamActiveToolColor = Color.yellow;
+            public static Color k_vcamActiveToolColor = Handles.selectedColor;
 
             public static Color BoundaryObjectGizmoColour
             {
