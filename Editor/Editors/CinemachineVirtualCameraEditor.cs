@@ -170,8 +170,10 @@ namespace Cinemachine.Editor
                 var farClipPos = cameraPosition + cameraForward * T.m_Lens.FarClipPlane;
                 
                 EditorGUI.BeginChangeCheck();
-                var newNearClipPos = Handles.Slider(nearClipPos, cameraForward);
-                var newFarClipPos = Handles.Slider(farClipPos, cameraForward);
+                var newNearClipPos = Handles.Slider(nearClipPos, cameraForward, 
+                    HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
+                var newFarClipPos = Handles.Slider(farClipPos, cameraForward, 
+                    HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
                 if (EditorGUI.EndChangeCheck())
                 {
                     { // near clip

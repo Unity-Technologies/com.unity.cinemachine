@@ -99,8 +99,8 @@ namespace Cinemachine.Editor
         protected virtual void OnSceneGUI()
         {
             DrawSceneTools(
-                CinemachineSettings.CinemachineCoreSettings.k_vcamActiveToolColor,
-                CinemachineSettings.CinemachineCoreSettings.k_vcamToolsColor);
+                CinemachineSettings.CinemachineCoreSettings.k_cmToolsSelectedColor,
+                CinemachineSettings.CinemachineCoreSettings.k_cmToolsColor);
         }
 
         /// <summary>

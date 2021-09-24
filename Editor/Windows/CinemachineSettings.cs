@@ -83,8 +83,8 @@ namespace Cinemachine.Editor
             public static readonly Color kDefaultBoundaryObjectColour = Color.yellow;
             
             // TODO: KGB find better place, expose in Settings for users?
-            public static Color k_vcamToolsColor = Color.white;
-            public static Color k_vcamActiveToolColor = Handles.selectedColor;
+            public static Color k_cmToolsColor = Color.white;
+            public static Color k_cmToolsSelectedColor = Handles.selectedColor;
 
             public static Color BoundaryObjectGizmoColour
             {
