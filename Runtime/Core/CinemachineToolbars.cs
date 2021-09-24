@@ -1,11 +1,11 @@
 using System;
-using Codice.CM.WorkspaceServer;
 using UnityEditor;
 
 namespace Cinemachine.Utility
 {
     public enum CinemachineSceneTool
     {
+        None,
         FoV,
         FarNearClip,
         FollowOffset,
@@ -18,101 +18,77 @@ namespace Cinemachine.Utility
     /// The tools register themselves here for control. 
     /// </summary>
     static class CinemachineSceneToolUtility
-    {
+    {   
+        static CinemachineSceneTool s_ActiveTool;
         public static bool IsToolOn(CinemachineSceneTool tool)
         {
-            switch (tool)
-            {
-                case CinemachineSceneTool.FoV:
-                    return s_FoVTool;
-                case CinemachineSceneTool.FarNearClip:
-                    return s_FarNearClipTool;
-                case CinemachineSceneTool.FollowOffset:
-                    return s_FollowOffsetTool;
-                case CinemachineSceneTool.TrackedObjectOffset:
-                    return s_TrackedObjectOffsetTool;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(tool), tool, null);
-            }
+            return s_ActiveTool == tool;
         }
-        
+
         public delegate void ToolValueSet(bool v);
 
-        // TODO: instead an array of delegates. array index is enum index.
-        // TODO: SetTools -> replace with SetToolActive(SceneTool) -> use enum array.
-        public static ToolValueSet FoVToolHandler;
-        public static ToolValueSet FarNearClipToolHandler;
-        public static ToolValueSet FollowOffsetToolHandler;
-        public static ToolValueSet TrackedObjectOffsetToolHandler;
 
-        public static ToolValueSet[] toolHandlers;
+        static ToolValueSet[] s_ToolSetHandlers;
+        public static void SetHandler(CinemachineSceneTool tool, ToolValueSet handler)
+        {
+            s_ToolSetHandlers[(int)tool] = handler;
+        }
 
-        // public static SetHandler(CinemachineSceneTool tool, ToolValueSet handler)
-        // {
-        //     
-        // }
+        public static void ToolValueChanged(UnityEngine.UIElements.ChangeEvent<bool> evt, CinemachineSceneTool tool)
+        {
+            // TODO: generic tool change
+        }
         
         public static void FovToolSelectionToolSelection(UnityEngine.UIElements.ChangeEvent<bool> evt)
         {
-            s_FoVTool = evt.newValue;
-            if (s_FoVTool)
-                SetTools(true, false, false, false);
+            if (evt.newValue)
+                SetActiveTool(CinemachineSceneTool.FoV);
         }
 
         public static void FarNearClipSelectionToolSelection(UnityEngine.UIElements.ChangeEvent<bool> evt)
         {
-            s_FarNearClipTool = evt.newValue;
-            if (s_FarNearClipTool)
-                SetTools(false, true, false, false);
+            if (evt.newValue)
+                SetActiveTool(CinemachineSceneTool.FarNearClip);
         }
         
         public static void FollowOffsetToolSelection(UnityEngine.UIElements.ChangeEvent<bool> evt)
         {
-            s_FollowOffsetTool = evt.newValue;
-            if (s_FollowOffsetTool)
-                SetTools(false, false, true, false);
+            if (evt.newValue)
+                SetActiveTool(CinemachineSceneTool.FollowOffset);
         }
         public static void TrackedObjectOffsetToolSelection(UnityEngine.UIElements.ChangeEvent<bool> evt)
         {
-            s_TrackedObjectOffsetTool = evt.newValue;
-            if (s_TrackedObjectOffsetTool)
-                SetTools(false, false, false, true);
+            if (evt.newValue)
+                SetActiveTool(CinemachineSceneTool.TrackedObjectOffset);
         }
 
-        static void SetTools(bool fov, bool farNearClip, bool followOffset, bool trackedObjectOffset)
+        static void SetActiveTool(CinemachineSceneTool activeTool)
         {
-            if (fov || farNearClip || followOffset || trackedObjectOffset)
+            s_ActiveTool = activeTool;
+            var activeToolIndex = (int)activeTool;
+            for (var i = 1; i < s_ToolSetHandlers.Length; ++i) // start from 1, because 0 is CinemachineSceneTool.None
             {
-                Tools.current = Tool.View; // cinemachine tools are exclusive with unity tools
+                if (s_ToolSetHandlers[i] != null)
+                    s_ToolSetHandlers[i].Invoke(i == activeToolIndex);
             }
-            
-            s_FoVTool = fov;
-            s_FarNearClipTool = farNearClip;
-            s_FollowOffsetTool = followOffset;
-            s_TrackedObjectOffsetTool = trackedObjectOffset;
-
-            FoVToolHandler(fov);
-            FarNearClipToolHandler(farNearClip);
-            FollowOffsetToolHandler(followOffset);
-            TrackedObjectOffsetToolHandler(trackedObjectOffset);
+            if (activeTool != CinemachineSceneTool.None)
+            {
+                Tools.current = Tool.None; // cinemachine tools are exclusive with unity tools
+            }
         }
 
-        static bool s_FoVTool;
-        static bool s_FarNearClipTool;
-        static bool s_FollowOffsetTool;
-        static bool s_TrackedObjectOffsetTool;
         static CinemachineSceneToolUtility()
         {
-            s_FoVTool = s_FarNearClipTool = s_FollowOffsetTool = s_TrackedObjectOffsetTool = false;
-            toolHandlers = new ToolValueSet[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
+            s_ToolSetHandlers = new ToolValueSet[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
             EditorApplication.update += CheckUnityTools;
         }
         
         static void CheckUnityTools()
         {
-            if (Tools.current != Tool.View)
+            // If a Unity tool is selected, our tools should be deselected
+            if (Tools.current != Tool.None)
             {
-                SetTools(false, false, false, false);
+                SetActiveTool(CinemachineSceneTool.None);
             }
         }
     }

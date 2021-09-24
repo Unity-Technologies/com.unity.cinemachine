@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+using Cinemachine.Utility;
 using UnityEngine;
-using UnityEditor.EditorTools;
 using UnityEditor.Toolbars;
 using UnityEditor.Overlays;
 using UnityEngine.UIElements;
@@ -18,26 +15,13 @@ namespace Cinemachine.Editor
         public FoVTool()
         {
             icon = EditorGUIUtility.IconContent("d_BillboardAsset Icon").image as Texture2D;
-            this.RegisterValueChangedCallback(DebugLogValue);
-            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.FovToolSelectionToolSelection);
-            Utility.CinemachineSceneToolUtility.FoVToolHandler = SetValue;
+            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.FovToolSelectionToolSelection);
+            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.FoV, SetValue);
         }
 
         void SetValue(bool v)
         {
             value = v;
-        }
-
-        void DebugLogValue(ChangeEvent<bool> evt)
-        {
-            if (evt.newValue)
-            {
-                Debug.Log("FoVTool ON");
-            }
-            else
-            {
-                Debug.Log("FoVTool OFF");
-            }
         }
     }
 
@@ -49,26 +33,13 @@ namespace Cinemachine.Editor
         public FarNearClipTool()
         {
             icon = EditorGUIUtility.IconContent("d_BillboardRenderer Icon").image as Texture2D;
-            this.RegisterValueChangedCallback(DebugLogValue);
-            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.FarNearClipSelectionToolSelection);
-            Utility.CinemachineSceneToolUtility.FarNearClipToolHandler = SetValue;
+            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.FarNearClipSelectionToolSelection);
+            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.FarNearClip, SetValue);
         }
 
         void SetValue(bool v)
         {
             value = v;
-        }
-        
-        void DebugLogValue(ChangeEvent<bool> evt)
-        {
-            if (evt.newValue)
-            {
-                Debug.Log("FarNearClipTool ON");
-            }
-            else
-            {
-                Debug.Log("FarNearClipTool OFF");
-            }
         }
     }
 
@@ -80,25 +51,13 @@ namespace Cinemachine.Editor
         public FollowOffsetTool()
         {
             icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
-            this.RegisterValueChangedCallback(DebugLogValue);
-            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.FollowOffsetToolSelection);
-            Utility.CinemachineSceneToolUtility.FollowOffsetToolHandler = SetValue;
+            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.FollowOffsetToolSelection);
+            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.FollowOffset, SetValue);
         }
 
         void SetValue(bool v)
         {
             value = v;
-        }
-        void DebugLogValue(ChangeEvent<bool> evt)
-        {
-            if (evt.newValue)
-            {
-                Debug.Log("FollowOffsetTool ON");
-            }
-            else
-            {
-                Debug.Log("FollowOffsetTool OFF");
-            }
         }
     }
 
@@ -110,26 +69,13 @@ namespace Cinemachine.Editor
         public TrackedObjectOffsetTool()
         {
             icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
-            this.RegisterValueChangedCallback(DebugLogValue);
-            this.RegisterValueChangedCallback(Utility.CinemachineSceneToolUtility.TrackedObjectOffsetToolSelection);
-            Utility.CinemachineSceneToolUtility.TrackedObjectOffsetToolHandler = SetValue;
+            this.RegisterValueChangedCallback(CinemachineSceneToolUtility.TrackedObjectOffsetToolSelection);
+            CinemachineSceneToolUtility.SetHandler(CinemachineSceneTool.TrackedObjectOffset, SetValue);
         }
 
         void SetValue(bool v)
         {
             value = v;
-        }
-
-        void DebugLogValue(ChangeEvent<bool> evt)
-        {
-            if (evt.newValue)
-            {
-                Debug.Log("TrackedObjectOffsetTool ON");
-            }
-            else
-            {
-                Debug.Log("TrackedObjectOffsetTool OFF");
-            }
         }
     }
 
