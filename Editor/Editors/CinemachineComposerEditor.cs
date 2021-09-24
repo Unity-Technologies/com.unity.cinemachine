@@ -110,7 +110,7 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (CinemachineSceneToolUtility.TrackedObjectOffsetToolIsOn)
+            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.TrackedObjectOffset))
             {
                 var lookAtTargetPosition = T.LookAtTargetPosition;
                 var trackedObjectOffset = T.m_TrackedObjectOffset;

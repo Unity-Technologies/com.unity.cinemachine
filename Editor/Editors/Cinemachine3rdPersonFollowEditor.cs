@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using UnityEngine;
 using UnityEditor;
 
@@ -41,7 +42,7 @@ namespace Cinemachine.Editor
                 return;
             }
         
-            if (Utility.CinemachineSceneToolUtility.FollowOffsetToolIsOn)
+            if (Utility.CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
             {
                 var up = T.FollowTargetRotation * Vector3.up;
                 //var followTargetPosition = T.FollowTargetPosition;

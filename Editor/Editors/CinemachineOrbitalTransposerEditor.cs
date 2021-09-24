@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
@@ -153,7 +154,7 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (Utility.CinemachineSceneToolUtility.FollowOffsetToolIsOn)
+            if (Utility.CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FollowOffset))
             {
                 var up = Vector3.up;
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(T.VirtualCamera);

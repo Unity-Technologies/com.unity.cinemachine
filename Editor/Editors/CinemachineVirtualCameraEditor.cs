@@ -136,7 +136,7 @@ namespace Cinemachine.Editor
             var handleIsUsed = GUIUtility.hotControl > 0;
             var originalColor = Handles.color;
             var labelStyle = new GUIStyle();
-            if (CinemachineSceneToolUtility.FoVToolIsOn)
+            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FoV))
             {
                 var cameraPosition = T.State.FinalPosition;
                 var cameraRotation = T.State.FinalOrientation;
@@ -161,7 +161,7 @@ namespace Cinemachine.Editor
                 }
             }
 
-            if (CinemachineSceneToolUtility.FarNearClipToolIsOn)
+            if (CinemachineSceneToolUtility.IsToolOn(CinemachineSceneTool.FarNearClip))
             {
                 var cameraPosition = T.State.FinalPosition;
                 var cameraRotation = T.State.FinalOrientation;
