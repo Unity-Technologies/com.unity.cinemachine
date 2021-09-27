@@ -287,16 +287,5 @@ namespace Cinemachine
             return tip;
 #endif
         }
-        
-        public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool)
-        {
-            switch (sceneTool)
-            {
-                case Utility.CinemachineSceneTool.FollowOffset:
-                    return true;
-                default:
-                    return base.CanBeControllerBySceneTool(sceneTool);
-            }
-        }
     }
 }

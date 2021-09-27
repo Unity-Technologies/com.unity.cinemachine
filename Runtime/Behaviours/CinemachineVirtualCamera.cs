@@ -629,18 +629,5 @@ namespace Cinemachine
                 return true;
             return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
         }
-        
-        public override bool CanBeControllerBySceneTool(Utility.CinemachineSceneTool sceneTool)
-        {
-            switch (sceneTool)
-            {
-                case Utility.CinemachineSceneTool.FoV:
-                    return true;
-                case Utility.CinemachineSceneTool.FarNearClip:
-                    return true;
-                default:
-                    return base.CanBeControllerBySceneTool(sceneTool);
-            }
-        }
     }
 }

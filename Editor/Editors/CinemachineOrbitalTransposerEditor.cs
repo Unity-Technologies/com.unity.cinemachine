@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -168,8 +169,14 @@ namespace Cinemachine.Editor
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    T.m_FollowOffset += Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);
-                    
+                    // calculate delta and discard imprecision, then update offset
+                    var delta = Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);
+                    delta = new Vector3(
+                        Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
+                        Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
+                        Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
+                    T.m_FollowOffset += delta;
+                    T.m_FollowOffset = T.EffectiveOffset; // sanitize offset
                     Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
                     InspectorUtility.RepaintGameView();
                 }

@@ -516,17 +516,5 @@ namespace Cinemachine
             }
             return false;
         }
-        
-        public override bool CanBeControllerBySceneTool(CinemachineSceneTool sceneTool)
-        {
-            switch (sceneTool)
-            {
-                case CinemachineSceneTool.TrackedObjectOffset:
-                    return true;
-                default:
-                    return base.CanBeControllerBySceneTool(sceneTool);
-            }
-        }
-        
     }
 }

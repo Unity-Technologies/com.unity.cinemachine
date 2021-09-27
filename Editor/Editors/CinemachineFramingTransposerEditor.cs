@@ -246,6 +246,23 @@ namespace Cinemachine.Editor
                 Handles.DrawLine(followTargetPosition, T.VcamState.FinalPosition);
                 Handles.color = originalColor;
             }
+            else if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
+            {
+                var cameraPosition = T.VcamState.FinalPosition;
+                var targetForward = T.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
+                EditorGUI.BeginChangeCheck();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    var diffCameraPos = newCameraPosition - cameraPosition;
+                    var sameDirection = Vector3.Dot(diffCameraPos.normalized, targetForward) > 0;
+                    T.m_CameraDistance += (sameDirection ? -1f : 1f) * diffCameraPos.magnitude;
+                    
+                    Undo.RecordObject(this, "Changed FramingTransposer distance using handle in Scene View.");
+                    InspectorUtility.RepaintGameView();
+                }
+
+            }
         }
     }
 }

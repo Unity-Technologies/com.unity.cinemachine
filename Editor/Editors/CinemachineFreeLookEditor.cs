@@ -92,7 +92,23 @@ namespace Cinemachine
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
-
+        
+        protected override void OnSceneGUI()
+        {
+            base.OnSceneGUI();
+            if (m_rigEditor != null && 
+                CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
+            // TODO: KGB - orbital transposer should not be called
+            {
+                var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI"
+                    , System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (mi != null && m_rigEditor.target != null)
+                {
+                    mi.Invoke(m_rigEditor, null);
+                }
+            }
+        }
+        
         static GUIContent[] s_RigNames = 
         {
             new GUIContent("Top Rig"), 

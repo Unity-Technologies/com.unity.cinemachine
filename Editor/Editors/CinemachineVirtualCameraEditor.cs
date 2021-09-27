@@ -160,8 +160,7 @@ namespace Cinemachine.Editor
                         "FOV (" + T.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
                 }
             }
-
-            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FarNearClip))
+            else if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FarNearClip))
             {
                 var cameraPosition = T.State.FinalPosition;
                 var cameraRotation = T.State.FinalOrientation;

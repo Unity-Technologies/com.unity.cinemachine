@@ -44,11 +44,11 @@ namespace Cinemachine.Editor
         
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
-                var up = T.FollowTargetRotation * Vector3.up;
-                //var followTargetPosition = T.FollowTargetPosition;
+                var followTargetRotation= T.FollowTargetRotation;
+                var up = followTargetRotation * Vector3.up;
                 T.GetRigPositions(out var followTargetPosition, 
                     out var shoulderOffsetPosition, out var verticalArmLengthPosition);
-                var targetForward = T.FollowTargetRotation * Vector3.forward;
+                var targetForward = followTargetRotation * Vector3.forward;
                 var heading = T.GetHeading(targetForward, T.VirtualCamera.State.ReferenceUp);
                 var cameraDistance = T.CameraDistance;
                 var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
@@ -66,7 +66,13 @@ namespace Cinemachine.Editor
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    T.ShoulderOffset += Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
+                    // calculate delta and discard imprecision, then update offset
+                    var delta = Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
+                    delta = new Vector3(
+                        Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
+                        Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
+                        Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
+                    T.ShoulderOffset += delta;
                     T.VerticalArmLength += (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
 
                     var diffCameraPos = newCameraPosition - cameraPosition;

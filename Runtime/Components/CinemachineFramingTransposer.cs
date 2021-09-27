@@ -683,16 +683,5 @@ namespace Cinemachine
             return new Bounds(new Vector3(0, 0, z),
                 new Vector3(Mathf.Tan(angles.y) * z * 2, Mathf.Tan(angles.x) * z * 2, zSize));
         }
-        
-        public override bool CanBeControllerBySceneTool(CinemachineSceneTool sceneTool)
-        {
-            switch (sceneTool)
-            {
-                case CinemachineSceneTool.TrackedObjectOffset:
-                    return true;
-                default:
-                    return base.CanBeControllerBySceneTool(sceneTool);
-            }
-        }
     }
 }
