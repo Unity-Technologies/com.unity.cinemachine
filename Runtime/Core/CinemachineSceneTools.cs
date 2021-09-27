@@ -25,14 +25,29 @@ namespace Cinemachine.Utility
             return s_ActiveTool == tool;
         }
 
-        public delegate void ToolValueSet(bool v);
-        static ToolValueSet[] s_ToolSetHandlers;
-        public static void SetToolHandler(CinemachineSceneTool tool, ToolValueSet handler)
+        public delegate void ToolHandler(bool v);
+        static ToolHandler[] s_ToolValueSetters;
+
+        internal static void SetToolValueSetter(CinemachineSceneTool tool, ToolHandler setter)
         {
-            s_ToolSetHandlers[(int)tool] = handler;
+            s_ToolValueSetters[(int)tool] = setter;
         }
 
-        public static void SetTool(bool active, CinemachineSceneTool tool)
+        static ToolHandler[] s_ToolEnableSetters;
+
+        internal static void SetToolEnableSetter(CinemachineSceneTool tool, ToolHandler setter)
+        {
+            s_ToolEnableSetters[(int)tool] = setter;
+        }
+
+        static ToolHandler s_ToolbarEnableSetter;
+
+        internal static void SetToolbarEnableSetter(ToolHandler setter)
+        {
+            s_ToolbarEnableSetter = setter;
+        }
+
+        internal static void SetTool(bool active, CinemachineSceneTool tool)
         {
             if (active)
             {
@@ -48,10 +63,10 @@ namespace Cinemachine.Utility
         static void EnsureToolsAreExclusive()
         {
             var activeToolIndex = (int)s_ActiveTool;
-            for (var i = 1; i < s_ToolSetHandlers.Length; ++i) // start from 1, because 0 is CinemachineSceneTool.None
+            for (var i = 1; i < s_ToolValueSetters.Length; ++i) // start from 1, because 0 is CinemachineSceneTool.None
             {
-                if (s_ToolSetHandlers[i] != null)
-                    s_ToolSetHandlers[i].Invoke(i == activeToolIndex);
+                if (s_ToolValueSetters[i] != null)
+                    s_ToolValueSetters[i].Invoke(i == activeToolIndex);
             }
             if (s_ActiveTool != CinemachineSceneTool.None)
             {
@@ -61,7 +76,8 @@ namespace Cinemachine.Utility
 
         static CinemachineSceneToolUtility()
         {
-            s_ToolSetHandlers = new ToolValueSet[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
+            s_ToolValueSetters = new ToolHandler[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
+            s_ToolEnableSetters = new ToolHandler[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
             EditorApplication.update += EnsureUnityToolsAreExclusiveWithCinemachineTools;
         }
         
@@ -71,6 +87,25 @@ namespace Cinemachine.Utility
             {
                 SetTool(true, CinemachineSceneTool.None);
             }
+
+            var vcamIsSelected = false;
+            foreach (var go in Selection.gameObjects)
+            {
+                var vcams = go.GetComponents<CinemachineVirtualCameraBase>();
+                if (vcams.Length > 0)
+                {
+                    vcamIsSelected = true;
+                    break;
+                }
+            }
+            
+            s_ToolbarEnableSetter?.Invoke(vcamIsSelected);
+
+            // TODO: Hide tools that are irrelevant for the current selection
+            // foreach (var enabler in s_ToolEnableSetters)
+            // {
+            //     enabler?.Invoke(vcamIsSelected);
+            // }
         }
     }
 }

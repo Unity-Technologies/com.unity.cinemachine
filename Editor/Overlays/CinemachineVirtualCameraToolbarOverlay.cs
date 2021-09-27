@@ -11,13 +11,14 @@ namespace Cinemachine.Editor
     {
         protected void RegisterWithCinemachine(CinemachineSceneTool tool)
         {
-            m_MyTool = tool;
+            m_Tool = tool;
             this.RegisterValueChangedCallback(Register);
-            CinemachineSceneToolUtility.SetToolHandler(m_MyTool, SetValue);
+            CinemachineSceneToolUtility.SetToolValueSetter(m_Tool, SetValue);
+            CinemachineSceneToolUtility.SetToolEnableSetter(m_Tool, SetEnabled);
         }
 
-        CinemachineSceneTool m_MyTool;
-        void Register(ChangeEvent<bool> v) => CinemachineSceneToolUtility.SetTool(v.newValue, m_MyTool);
+        CinemachineSceneTool m_Tool;
+        void Register(ChangeEvent<bool> v) => CinemachineSceneToolUtility.SetTool(v.newValue, m_Tool);
         void SetValue(bool v) => value = v;
     }
     
@@ -28,7 +29,10 @@ namespace Cinemachine.Editor
 
         public FoVTool()
         {
-            icon = EditorGUIUtility.IconContent("d_BillboardAsset Icon").image as Texture2D;
+            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
+                + "/Editor/EditorResources/FOV.png");
+            tooltip = "Field of View Tool";
+            //icon = EditorGUIUtility.IconContent("d_BillboardAsset Icon").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.FoV);
         }
     }
@@ -40,7 +44,10 @@ namespace Cinemachine.Editor
 
         public FarNearClipTool()
         {
-            icon = EditorGUIUtility.IconContent("d_BillboardRenderer Icon").image as Texture2D;
+            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
+                + "/Editor/EditorResources/FarNearClip.png");
+            tooltip = "Far/Near Clip Tool";
+            //icon = EditorGUIUtility.IconContent("d_BillboardRenderer Icon").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.FarNearClip);
         }
     }
@@ -52,7 +59,10 @@ namespace Cinemachine.Editor
 
         public FollowOffsetTool()
         {
-            icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
+            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
+                + "/Editor/EditorResources/FollowOffset.png");
+            tooltip = "Follow Offset Tool";
+            // icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.FollowOffset);
         }
     }
@@ -64,7 +74,10 @@ namespace Cinemachine.Editor
 
         public TrackedObjectOffsetTool()
         {
-            icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
+            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
+                + "/Editor/EditorResources/TrackedObjectOffset.png");
+            tooltip = "Tracked Object Offset Tool";
+            //icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.TrackedObjectOffset);
         }
     }
@@ -89,6 +102,14 @@ namespace Cinemachine.Editor
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
                 TrackedObjectOffsetTool.id
-            ) {}
+            )
+        {
+            CinemachineSceneToolUtility.SetToolbarEnableSetter(SetDisplayed);
+        }
+
+        void SetDisplayed(bool active)
+        {
+            displayed = active;
+        }
     }
 }
