@@ -13,9 +13,9 @@ namespace Cinemachine.Utility
     };
     
     /// <summary>
-    /// Hack class that manages Cinemachine Tools. It knows which tool is active,
+    /// Static class that manages Cinemachine Tools. It knows which tool is active,
     /// and ensures that no tools is active at the same time.
-    /// The tools register themselves here for control. 
+    /// The tools and editors requiring tools register/unregister themselves here for control. 
     /// </summary>
     static class CinemachineSceneToolUtility
     {   
