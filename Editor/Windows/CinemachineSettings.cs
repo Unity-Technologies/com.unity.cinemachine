@@ -81,7 +81,6 @@ namespace Cinemachine.Editor
             
             private static readonly string kCoreBoundaryObjectGizmoColorKey = "CNMCN_Core_BoundaryObject_Gizmo_Colour";
             public static readonly Color kDefaultBoundaryObjectColour = Color.yellow;
-
             public static Color BoundaryObjectGizmoColour
             {
                 get
