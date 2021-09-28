@@ -102,10 +102,13 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Implement your scene handles for your components, extensions here.
+        /// Implement your scene handles for your components and extensions here.
+        ///
+        /// Don't forget to register/unregister your components and extensions in their
+        /// editor's OnEnable and OnDisable functions with CinemachineSceneToolUtility.RegisterTool/UnregisterTool. 
         /// </summary>
-        /// <param name="guideLinesColor">Color of the handles when used by the user</param>
-        /// <param name="defaultColor">Default color of handles</param>
+        /// <param name="guideLinesColor">Color of guidelines</param>
+        /// <param name="defaultColor">Color of handles, when user is not using them</param>
         protected virtual void DrawSceneTools(Color guideLinesColor, Color defaultColor) {}
 
         List<string> mExcluded = new List<string>();

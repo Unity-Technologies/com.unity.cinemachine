@@ -79,18 +79,19 @@ namespace Cinemachine.Editor
         }
     }
 
+    /// <summary>
+    /// To display a CinemachineEditorToolbarToggle in the Cinemachine Toolbar, add it's ID to the constructor.
+    /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine")]
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
     public class CinemachineVirtualCameraToolbar : ToolbarOverlay
     {
-        CinemachineVirtualCameraToolbar()
-            : base(
-                FoVTool.id,
-                FarNearClipTool.id,
-                FollowOffsetTool.id,
-                TrackedObjectOffsetTool.id
-            )
-        {
-        }
+        CinemachineVirtualCameraToolbar() : base(
+            FoVTool.id, 
+            FarNearClipTool.id, 
+            FollowOffsetTool.id, 
+            TrackedObjectOffsetTool.id
+            ) 
+        {}
     }
 }

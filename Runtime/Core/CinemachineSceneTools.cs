@@ -19,21 +19,37 @@ namespace Cinemachine.Utility
     /// </summary>
     static class CinemachineSceneToolUtility
     {   
-        static CinemachineSceneTool s_ActiveTool;
+        /// <summary>
+        /// Checks whether tool is the currently active tool.
+        /// </summary>
+        /// <param name="tool">Tool to check.</param>
+        /// <returns>True, when the tool is the active tool. False, otherwise.</returns>
         public static bool IsToolActive(CinemachineSceneTool tool)
         {
             return s_ActiveTool == tool;
         }
+        static CinemachineSceneTool s_ActiveTool;
 
-        static bool[] s_RequiredTools;
+        /// <summary>
+        /// Register your CinemachineSceneTool from the editor script's OnEnable function.
+        /// This way CinemachineTools will know which tools to display.
+        /// </summary>
+        /// <param name="tool">Tool to register</param>
         public static void RegisterTool(CinemachineSceneTool tool)
         {
             s_RequiredTools[(int)tool] = true;
         }
+        
+        /// <summary>
+        /// Unregister your CinemachineSceneTool from the editor script's OnDisable function.
+        /// This way CinemachineTools will know which tools to display.
+        /// </summary>
+        /// <param name="tool">Tool to register</param>
         public static void UnregisterTool(CinemachineSceneTool tool)
         {
             s_RequiredTools[(int)tool] = false;
         }
+        static bool[] s_RequiredTools;
 
         public delegate void ToolHandler(bool v);
         static ToolHandler[] s_ToolToggleSetters;
