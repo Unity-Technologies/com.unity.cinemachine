@@ -135,8 +135,7 @@ namespace Cinemachine.Editor
 
             var handleIsUsed = GUIUtility.hotControl > 0;
             var originalColor = Handles.color;
-            var labelStyle = new GUIStyle();
-            Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : defaultColor;
+            Handles.color = handleIsUsed ? Handles.selectedColor : defaultColor;
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FoV))
             {
                 var cameraPosition = T.State.FinalPosition;
@@ -152,9 +151,10 @@ namespace Cinemachine.Editor
                     T.m_Lens.FieldOfView = fieldOfView;
                     InspectorUtility.RepaintGameView();
                 }
-
+                
                 if (handleIsUsed)
                 {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition + 
                         cameraForward * HandleUtility.GetHandleSize(cameraPosition), 
                         "FOV (" + T.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
@@ -191,6 +191,7 @@ namespace Cinemachine.Editor
 
                 if (handleIsUsed)
                 {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(nearClipPos,
                         "Near Clip Plane (" + T.m_Lens.NearClipPlane.ToString("F1") + ")", labelStyle);
                     Handles.Label(farClipPos,

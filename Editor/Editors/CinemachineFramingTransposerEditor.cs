@@ -224,7 +224,7 @@ namespace Cinemachine.Editor
             {
                 return;
             }
-
+            var originalColor = Handles.color;
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
             {
                 var followTargetPosition = T.FollowTargetPosition;
@@ -240,34 +240,38 @@ namespace Cinemachine.Editor
                 }
 
                 var handleIsUsed = GUIUtility.hotControl > 0;
-                var originalColor = Handles.color;
-                var labelStyle = new GUIStyle();
-                Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 if (handleIsUsed)
                 {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
+                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
-                Handles.DrawLine(followTargetPosition, T.VcamState.FinalPosition);
-                Handles.color = originalColor;
+                Handles.DrawLine(trackedObjectPosition, T.VcamState.FinalPosition);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
-                var cameraPosition = T.VcamState.FinalPosition;
+                var cameraPosition = T.VcamState.RawPosition;
                 var targetForward = T.VirtualCamera.State.FinalOrientation * Vector3.forward;
-                var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
                 EditorGUI.BeginChangeCheck();
+                var newHandlePosition = Handles.Slider(cameraPosition, targetForward);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    var diffCameraPos = newCameraPosition - cameraPosition;
-                    var sameDirection = Vector3.Dot(diffCameraPos.normalized, targetForward) > 0;
-                    T.m_CameraDistance += (sameDirection ? -1f : 1f) * diffCameraPos.magnitude;
-                    
                     Undo.RecordObject(this, "Changed FramingTransposer distance using handle in Scene View.");
+                    var diffHandlePosition = newHandlePosition - cameraPosition;
+                    var sameDirection = Vector3.Dot(diffHandlePosition.normalized, targetForward) > 0;
+                    T.m_CameraDistance -= (sameDirection ? 1f : -1f) * diffHandlePosition.magnitude;
                     InspectorUtility.RepaintGameView();
                 }
-
+                
+                var handleIsUsed = GUIUtility.hotControl > 0;
+                if (handleIsUsed)
+                {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
+                    Handles.Label(cameraPosition, "Camera Distance (" + T.m_CameraDistance.ToString("F1") + ")", labelStyle);
+                }
             }
+            Handles.color = originalColor;
         }
     }
 }

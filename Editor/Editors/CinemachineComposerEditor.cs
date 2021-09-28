@@ -130,15 +130,15 @@ namespace Cinemachine.Editor
                 }
 
                 var handleIsUsed = GUIUtility.hotControl > 0;
-                var originalColor = Handles.color;
-                var labelStyle = new GUIStyle();
-                Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 if (handleIsUsed)
                 {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
+                var originalColor = Handles.color;
+                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 Handles.DrawDottedLine(lookAtTargetPosition, trackedObjectPosition, 5f);
-                Handles.DrawLine(lookAtTargetPosition, T.VcamState.FinalPosition);
+                Handles.DrawLine(trackedObjectPosition, T.VcamState.FinalPosition);
                 Handles.color = originalColor;
             }
         }

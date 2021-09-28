@@ -62,21 +62,17 @@ namespace Cinemachine.Editor
                 var heading = T.GetHeading(targetForward, T.VirtualCamera.State.ReferenceUp);
                 var cameraDistance = T.CameraDistance;
                 var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
-        
+
                 var originalColor = Handles.color;
-                
                 EditorGUI.BeginChangeCheck();
                 var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
-                
                 Handles.color = Color.cyan;
                 var newVerticalArmLengthPosition = Handles.Slider(verticalArmLengthPosition, up);
                 Handles.color = Handles.zAxisColor; // TODO: KGB set this to the correct axis color, lerp inbetween?
                 var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
-
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(this, "Changed 3rdPersonFollow offsets using handle in Scene View.");
-                    
                     // calculate delta and discard imprecision, then update offset
                     var delta = Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
                     delta = new Vector3(
@@ -89,24 +85,23 @@ namespace Cinemachine.Editor
 
                     var diffCameraPos = newCameraPosition - cameraPosition;
                     var sameDirection = Vector3.Dot(diffCameraPos.normalized, targetForward) > 0;
-                    T.CameraDistance += (sameDirection ? -1f : 1f) * diffCameraPos.magnitude;
+                    T.CameraDistance -= (sameDirection ? 1f : -1f) * diffCameraPos.magnitude;
                     
                     InspectorUtility.RepaintGameView();
                 }
 
                 var handleIsUsed = GUIUtility.hotControl > 0;
-                var labelStyle = new GUIStyle();
-                Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 if (handleIsUsed)
                 {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(shoulderOffsetPosition, "Should Offset " + T.ShoulderOffset.ToString("F1"), labelStyle);
                     Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + T.VerticalArmLength.ToString("F1") + ")", labelStyle);
                     Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")", labelStyle);
                 }
+                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
                 Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
-                Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f); 
-                
+                Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
             }
         }

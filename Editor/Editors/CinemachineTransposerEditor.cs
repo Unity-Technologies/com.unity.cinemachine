@@ -134,13 +134,13 @@ namespace Cinemachine.Editor
                 }
 
                 var handleIsUsed = GUIUtility.hotControl > 0;
-                var originalColor = Handles.color;
-                var labelStyle = new GUIStyle();
-                Handles.color = labelStyle.normal.textColor = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 if (handleIsUsed)
                 {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition, "Follow offset " + T.m_FollowOffset.ToString("F1"), labelStyle);
                 }
+                var originalColor = Handles.color;
+                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
             }
