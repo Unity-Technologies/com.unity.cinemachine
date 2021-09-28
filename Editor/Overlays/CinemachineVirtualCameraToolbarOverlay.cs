@@ -25,10 +25,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(IsDisplayed);
         }
 
-        bool IsDisplayed()
-        {
-            return displayed;
-        }
+        bool IsDisplayed() => displayed;
     }
     
     abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
