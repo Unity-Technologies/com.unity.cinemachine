@@ -13,8 +13,8 @@ namespace Cinemachine.Editor
         {
             m_Tool = tool;
             this.RegisterValueChangedCallback(Register);
-            CinemachineSceneToolUtility.SetToolToggleHandler(m_Tool, SetToggle);
-            CinemachineSceneToolUtility.SetToolIsDisplayedHandler(m_Tool, Display);
+            CinemachineSceneToolUtility.RegisterToolToggleHandler(m_Tool, SetToggle);
+            CinemachineSceneToolUtility.RegisterToolIsDisplayedHandler(m_Tool, Display);
         }
 
         CinemachineSceneTool m_Tool;
@@ -86,12 +86,20 @@ namespace Cinemachine.Editor
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
     public class CinemachineVirtualCameraToolbar : ToolbarOverlay
     {
-        CinemachineVirtualCameraToolbar() : base(
-            FoVTool.id, 
-            FarNearClipTool.id, 
-            FollowOffsetTool.id, 
-            TrackedObjectOffsetTool.id
-            ) 
-        {}
+        CinemachineVirtualCameraToolbar()
+            : base(
+                FoVTool.id,
+                FarNearClipTool.id,
+                FollowOffsetTool.id,
+                TrackedObjectOffsetTool.id
+            )
+        {
+            CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(IsDisplayed);
+        }
+
+        bool IsDisplayed()
+        {
+            return displayed;
+        }
     }
 }

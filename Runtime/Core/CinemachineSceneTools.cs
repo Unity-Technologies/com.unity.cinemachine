@@ -53,15 +53,22 @@ namespace Cinemachine.Utility
 
         public delegate void ToolHandler(bool v);
         static ToolHandler[] s_ToolToggleSetters;
-        internal static void SetToolToggleHandler(CinemachineSceneTool tool, ToolHandler setter)
+        internal static void RegisterToolToggleHandler(CinemachineSceneTool tool, ToolHandler handler)
         {
-            s_ToolToggleSetters[(int)tool] = setter;
+            s_ToolToggleSetters[(int)tool] = handler;
         }
         
         static ToolHandler[] s_ToolIsDisplayedSetters;
-        internal static void SetToolIsDisplayedHandler(CinemachineSceneTool tool, ToolHandler setter)
+        internal static void RegisterToolIsDisplayedHandler(CinemachineSceneTool tool, ToolHandler handler)
         {
-            s_ToolIsDisplayedSetters[(int)tool] = setter;
+            s_ToolIsDisplayedSetters[(int)tool] = handler;
+        }
+
+        public delegate bool ToolbarHandler();
+        static ToolbarHandler s_ToolBarIsDisplayed;
+        internal static void RegisterToolbarIsDisplayedHandler(ToolbarHandler handler)
+        {
+            s_ToolBarIsDisplayed = handler;
         }
 
         internal static void SetTool(bool active, CinemachineSceneTool tool)
@@ -96,23 +103,24 @@ namespace Cinemachine.Utility
             s_ToolToggleSetters = new ToolHandler[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
             s_ToolIsDisplayedSetters = new ToolHandler[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
             s_RequiredTools = new bool[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
-            EditorApplication.update += EnsureUnityToolsAreExclusiveWithCinemachineTools;
-            EditorApplication.update += OnlyShowRelevantCinemachineTools;
-        }
+            EditorApplication.update += () =>
+            {
+                var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
+                // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
+                if (Tools.current != Tool.None || cmToolbarIsHidden)
+                {
+                    SetTool(true, CinemachineSceneTool.None);
+                }
 
-        static void EnsureUnityToolsAreExclusiveWithCinemachineTools()
-        {
-            if (Tools.current != Tool.None)
-            {
-                SetTool(true, CinemachineSceneTool.None);
-            }
-        }
-        
-        static void OnlyShowRelevantCinemachineTools() {
-            for (var i = 1; i < s_ToolIsDisplayedSetters.Length; i++) // start from 1, because 0 is CinemachineSceneTool.None
-            {
-                s_ToolIsDisplayedSetters[i].Invoke(s_RequiredTools[i]);
-            }
+                if (!cmToolbarIsHidden)
+                {
+                    // only display cm tools that are relevant for the current selection
+                    for (var i = 1; i < s_ToolIsDisplayedSetters.Length; ++i) // start from 1, because 0 is CinemachineSceneTool.None
+                    {
+                        s_ToolIsDisplayedSetters[i].Invoke(s_RequiredTools[i]);
+                    }
+                }
+            };
         }
     }
 }
