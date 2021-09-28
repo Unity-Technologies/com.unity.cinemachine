@@ -98,9 +98,7 @@ namespace Cinemachine.Editor
         /// </summary>
         protected virtual void OnSceneGUI()
         {
-            DrawSceneTools(
-                CinemachineSettings.CinemachineCoreSettings.k_cmToolsGuideLinesColor,
-                CinemachineSettings.CinemachineCoreSettings.k_cmToolsDefaultColor);
+            DrawSceneTools(CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour, Handles.preselectionColor);
         }
 
         /// <summary>
