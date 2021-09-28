@@ -105,12 +105,6 @@ namespace Cinemachine.Editor
                 TrackedObjectOffsetTool.id
             )
         {
-            CinemachineSceneToolUtility.SetToolbarEnableSetter(SetDisplayed);
-        }
-
-        void SetDisplayed(bool active)
-        {
-            displayed = active;
         }
     }
 }

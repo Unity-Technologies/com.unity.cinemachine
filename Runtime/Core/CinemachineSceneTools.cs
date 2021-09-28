@@ -48,19 +48,12 @@ namespace Cinemachine.Utility
             s_ToolIsDisplayedSetters[(int)tool] = setter;
         }
 
-        static bool s_ToolbarHidden = false;
-        static ToolHandler s_ToolbarEnableSetter;
-        internal static void SetToolbarEnableSetter(ToolHandler setter)
-        {
-            s_ToolbarEnableSetter = setter;
-        }
-
         internal static void SetTool(bool active, CinemachineSceneTool tool)
         {
             if (active)
             {
                 s_ActiveTool = tool;
-                EnsureToolsAreExclusive();
+                EnsureCinemachineToolsAreExclusiveWithUnityTools();
             }
             else
             {
@@ -68,7 +61,7 @@ namespace Cinemachine.Utility
             }
         }
 
-        static void EnsureToolsAreExclusive()
+        static void EnsureCinemachineToolsAreExclusiveWithUnityTools()
         {
             var activeToolIndex = (int)s_ActiveTool;
             for (var i = 1; i < s_ToolToggleSetters.Length; ++i) // start from 1, because 0 is CinemachineSceneTool.None
@@ -100,29 +93,6 @@ namespace Cinemachine.Utility
         }
         
         static void OnlyShowRelevantCinemachineTools() {
-            // var hideToolbar = true;
-            // foreach (var go in Selection.gameObjects)
-            // {
-            //     var vcam = go.GetComponent<CinemachineVirtualCameraBase>();
-            //     if (vcam != null)
-            //     {
-            //         hideToolbar = false;
-            //         break;
-            //     }
-            // }
-            //
-            // s_ToolbarEnableSetter?.Invoke(!hideToolbar);
-            // if (hideToolbar && !s_ToolbarHidden)
-            // {
-            //     s_ToolbarHidden = true;
-            // }
-            // else if (!hideToolbar && s_ToolbarHidden)
-            // {
-            //     s_ToolbarHidden = false;
-            //     SetTool(true, s_ActiveTool);
-            // }
-            
-            // TODO: Hide tools that are irrelevant for the current selection
             for (var i = 1; i < s_ToolIsDisplayedSetters.Length; i++) // start from 1, because 0 is CinemachineSceneTool.None
             {
                 s_ToolIsDisplayedSetters[i].Invoke(s_RequiredTools[i]);
