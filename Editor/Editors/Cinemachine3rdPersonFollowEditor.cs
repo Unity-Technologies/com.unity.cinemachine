@@ -34,6 +34,16 @@ namespace Cinemachine.Editor
             }
         }
         
+        protected virtual void OnEnable()
+        {
+            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+        }
+
+        protected virtual void OnDisable()
+        {
+            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
+        }
+
         protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
             var T = Target;
@@ -58,7 +68,6 @@ namespace Cinemachine.Editor
                 EditorGUI.BeginChangeCheck();
                 var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
                 
-                //TODO: Set up Undos for each handle separately
                 Handles.color = Color.cyan;
                 var newVerticalArmLengthPosition = Handles.Slider(verticalArmLengthPosition, up);
                 Handles.color = Handles.zAxisColor; // TODO: KGB set this to the correct axis color, lerp inbetween?
@@ -66,6 +75,8 @@ namespace Cinemachine.Editor
 
                 if (EditorGUI.EndChangeCheck())
                 {
+                    Undo.RecordObject(this, "Changed 3rdPersonFollow offsets using handle in Scene View.");
+                    
                     // calculate delta and discard imprecision, then update offset
                     var delta = Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
                     delta = new Vector3(
@@ -73,13 +84,13 @@ namespace Cinemachine.Editor
                         Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
                     T.ShoulderOffset += delta;
+                    
                     T.VerticalArmLength += (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
 
                     var diffCameraPos = newCameraPosition - cameraPosition;
                     var sameDirection = Vector3.Dot(diffCameraPos.normalized, targetForward) > 0;
                     T.CameraDistance += (sameDirection ? -1f : 1f) * diffCameraPos.magnitude;
                     
-                    Undo.RecordObject(this, "Changed 3rdPersonFollow offsets using handle in Scene View.");
                     InspectorUtility.RepaintGameView();
                 }
 

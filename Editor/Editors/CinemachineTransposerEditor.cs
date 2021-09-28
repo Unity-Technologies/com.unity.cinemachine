@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTransposer))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
+    internal class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -86,6 +86,16 @@ namespace Cinemachine.Editor
                 Target.m_FollowOffset = Target.EffectiveOffset;
             }
         }
+
+        protected virtual void OnEnable()
+        {
+            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+        }
+
+        protected virtual void OnDisable()
+        {
+            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
+        }
         
         protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
@@ -109,6 +119,8 @@ namespace Cinemachine.Editor
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
+                    Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
+                    
                     // calculate delta and discard imprecision, then update offset
                     var delta = Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);
                     delta = new Vector3(
@@ -117,7 +129,7 @@ namespace Cinemachine.Editor
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
                     T.m_FollowOffset += delta;
                     T.m_FollowOffset = T.EffectiveOffset; // sanitize offset
-                    Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
+                    
                     InspectorUtility.RepaintGameView();
                 }
 

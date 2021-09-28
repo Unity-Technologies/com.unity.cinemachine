@@ -71,10 +71,18 @@ namespace Cinemachine.Editor
             }
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             for (int i = 0; i < targets.Length; ++i)
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
+            
+            // TODO: KGB dont register when part of a freelook - see todo in freelook editor too
+            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+        }
+
+        protected virtual void OnDisable()
+        {
+            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
         }
 
         public override void OnInspectorGUI()
@@ -169,6 +177,8 @@ namespace Cinemachine.Editor
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
+                    Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
+                    
                     // calculate delta and discard imprecision, then update offset
                     var delta = Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);
                     delta = new Vector3(
@@ -177,7 +187,7 @@ namespace Cinemachine.Editor
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
                     T.m_FollowOffset += delta;
                     T.m_FollowOffset = T.EffectiveOffset; // sanitize offset
-                    Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
+                    
                     InspectorUtility.RepaintGameView();
                 }
 

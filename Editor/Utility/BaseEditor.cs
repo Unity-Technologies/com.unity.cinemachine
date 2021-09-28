@@ -105,7 +105,6 @@ namespace Cinemachine.Editor
 
         /// <summary>
         /// Implement your scene handles for your components, extensions here.
-        /// TODO: talk about implementing ISceneToolInteractable?
         /// </summary>
         /// <param name="guideLinesColor">Color of the handles when used by the user</param>
         /// <param name="defaultColor">Default color of handles</param>

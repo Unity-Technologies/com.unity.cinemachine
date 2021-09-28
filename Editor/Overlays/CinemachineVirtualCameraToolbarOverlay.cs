@@ -13,13 +13,14 @@ namespace Cinemachine.Editor
         {
             m_Tool = tool;
             this.RegisterValueChangedCallback(Register);
-            CinemachineSceneToolUtility.SetToolValueSetter(m_Tool, SetValue);
-            CinemachineSceneToolUtility.SetToolEnableSetter(m_Tool, SetEnabled);
+            CinemachineSceneToolUtility.SetToolToggleHandler(m_Tool, SetToggle);
+            CinemachineSceneToolUtility.SetToolIsDisplayedHandler(m_Tool, Display);
         }
 
         CinemachineSceneTool m_Tool;
         void Register(ChangeEvent<bool> v) => CinemachineSceneToolUtility.SetTool(v.newValue, m_Tool);
-        void SetValue(bool v) => value = v;
+        void SetToggle(bool isOn) => value = isOn;
+        void Display(bool display) => style.display = display ? DisplayStyle.Flex : DisplayStyle.None;
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]

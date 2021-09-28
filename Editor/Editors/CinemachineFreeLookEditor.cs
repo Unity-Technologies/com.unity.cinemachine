@@ -30,6 +30,8 @@ namespace Cinemachine
         {
             base.OnEnable();
             Target.UpdateInputAxisProvider();
+            
+            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.TrackedObjectOffset);
         }
         
         protected override void OnDisable()
@@ -39,6 +41,8 @@ namespace Cinemachine
             // Must destroy child editors or we get exceptions
             if (m_rigEditor != null)
                 UnityEngine.Object.DestroyImmediate(m_rigEditor);
+            
+            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.TrackedObjectOffset);
         }
 
         public override void OnInspectorGUI()
@@ -98,7 +102,7 @@ namespace Cinemachine
             base.OnSceneGUI();
             if (m_rigEditor != null && 
                 CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
-            // TODO: KGB - orbital transposer should not be called
+            // TODO: KGB - orbital transposer of freelook should not be called
             {
                 var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI"
                     , System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);

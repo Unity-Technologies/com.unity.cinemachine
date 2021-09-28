@@ -93,6 +93,9 @@ namespace Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
+            
+            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.TrackedObjectOffset);
         }
 
         protected virtual void OnDisable()
@@ -101,6 +104,9 @@ namespace Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
+
+            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
+            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.TrackedObjectOffset);
         }
 
         public override void OnInspectorGUI()
@@ -228,9 +234,8 @@ namespace Cinemachine.Editor
                 var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
-                    
                     Undo.RecordObject(this, "Change Tracked Object Offset using handle in Scene View.");
+                    T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
                     InspectorUtility.RepaintGameView();
                 }
 
