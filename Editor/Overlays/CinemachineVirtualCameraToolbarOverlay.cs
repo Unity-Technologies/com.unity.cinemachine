@@ -33,7 +33,6 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/FOV.png");
             tooltip = "Field of View Tool";
-            //icon = EditorGUIUtility.IconContent("d_BillboardAsset Icon").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.FoV);
         }
     }
@@ -48,7 +47,6 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/FarNearClip.png");
             tooltip = "Far/Near Clip Tool";
-            //icon = EditorGUIUtility.IconContent("d_BillboardRenderer Icon").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.FarNearClip);
         }
     }
@@ -63,7 +61,6 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/FollowOffset.png");
             tooltip = "Follow Offset Tool";
-            // icon = EditorGUIUtility.IconContent("MoveTool@2x").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.FollowOffset);
         }
     }
@@ -78,25 +75,14 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/TrackedObjectOffset.png");
             tooltip = "Tracked Object Offset Tool";
-            //icon = EditorGUIUtility.IconContent("d_Toolbar Plus@2x").image as Texture2D;
             RegisterWithCinemachine(CinemachineSceneTool.TrackedObjectOffset);
         }
     }
 
-
-// All Overlays must be tagged with the OverlayAttribute
     [Overlay(typeof(SceneView), "Cinemachine")]
-
-// IconAttribute provides a way to define an icon for when an Overlay is in collapsed form. If not provided, the name initials are used.
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
-
-// Toolbar Overlays must inherit `ToolbarOverlay` and implement a parameter-less constructor. The contents of a toolbar are populated with string IDs, which are passed to the base constructor. IDs are defined by EditorToolbarElementAttribute.
     public class CinemachineVirtualCameraToolbar : ToolbarOverlay
     {
-        // ToolbarOverlay implements a parameterless constructor, passing the EditorToolbarElementAttribute ID. 
-        // This is the only code required to implement a toolbar Overlay. Unlike panel overlays, the contents are defined
-        // as standalone pieces that will be collected to form a strip of elements.
-
         CinemachineVirtualCameraToolbar()
             : base(
                 FoVTool.id,

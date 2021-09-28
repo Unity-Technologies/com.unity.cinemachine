@@ -75,9 +75,12 @@ namespace Cinemachine.Editor
         {
             for (int i = 0; i < targets.Length; ++i)
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
-            
-            // TODO: KGB dont register when part of a freelook - see todo in freelook editor too
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+
+            // Only register follow offset control when not part of a freelook
+            if (Target.transform.parent?.parent?.GetComponent<CinemachineFreeLook>() == null)
+            {
+                CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+            }
         }
 
         protected virtual void OnDisable()

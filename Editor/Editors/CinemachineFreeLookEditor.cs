@@ -100,9 +100,7 @@ namespace Cinemachine
         protected override void OnSceneGUI()
         {
             base.OnSceneGUI();
-            if (m_rigEditor != null && 
-                CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
-            // TODO: KGB - orbital transposer of freelook should not be called
+            if (m_rigEditor != null)
             {
                 var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI"
                     , System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
