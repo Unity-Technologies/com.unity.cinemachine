@@ -1,7 +1,7 @@
 using System;
 using UnityEditor;
 
-namespace Cinemachine.Utility
+namespace Cinemachine.Editor
 {
     public enum CinemachineSceneTool
     {

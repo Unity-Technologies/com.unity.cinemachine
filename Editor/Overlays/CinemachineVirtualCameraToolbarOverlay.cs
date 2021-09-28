@@ -1,4 +1,4 @@
-using Cinemachine.Utility;
+#if UNITY_2021_2_OR_NEWER
 using UnityEngine;
 using UnityEditor.Toolbars;
 using UnityEditor.Overlays;
@@ -100,3 +100,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif
