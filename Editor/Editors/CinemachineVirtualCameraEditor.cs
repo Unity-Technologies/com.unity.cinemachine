@@ -147,7 +147,7 @@ namespace Cinemachine.Editor
                     cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(this, "Changed FOV using handle in scene view.");
+                    Undo.RecordObject(T, "Changed FOV using handle in scene view.");
                     T.m_Lens.FieldOfView = fieldOfView;
                     InspectorUtility.RepaintGameView();
                 }
@@ -175,7 +175,7 @@ namespace Cinemachine.Editor
                     HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(this, "Changed clip plane using handle in scene view.");
+                    Undo.RecordObject(T, "Changed clip plane using handle in scene view.");
                     { // near clip
                         var diffNearClip = newNearClipPos - nearClipPos;
                         var sameDirection = Vector3.Dot(diffNearClip.normalized, cameraForward) > 0;

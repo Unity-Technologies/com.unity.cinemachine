@@ -234,7 +234,7 @@ namespace Cinemachine.Editor
                 var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(this, "Change Tracked Object Offset using handle in Scene View.");
+                    Undo.RecordObject(T, "Change Tracked Object Offset using handle in Scene View.");
                     T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
                     InspectorUtility.RepaintGameView();
                 }
@@ -257,7 +257,7 @@ namespace Cinemachine.Editor
                 var newHandlePosition = Handles.Slider(cameraPosition, targetForward);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(this, "Changed FramingTransposer distance using handle in Scene View.");
+                    Undo.RecordObject(T, "Changed FramingTransposer distance using handle in Scene View.");
                     var diffHandlePosition = newHandlePosition - cameraPosition;
                     var sameDirection = Vector3.Dot(diffHandlePosition.normalized, targetForward) > 0;
                     T.m_CameraDistance -= (sameDirection ? 1f : -1f) * diffHandlePosition.magnitude;

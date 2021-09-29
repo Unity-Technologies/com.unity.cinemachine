@@ -119,7 +119,7 @@ namespace Cinemachine.Editor
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(this, "Change Follow Offset Position using handle in Scene View.");
+                    Undo.RecordObject(T, "Change Follow Offset Position using handle in Scene View.");
                     
                     // calculate delta and discard imprecision, then update offset
                     var delta = Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);

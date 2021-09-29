@@ -72,7 +72,7 @@ namespace Cinemachine.Editor
                 var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(this, "Changed 3rdPersonFollow offsets using handle in Scene View.");
+                    Undo.RecordObject(T, "Changed 3rdPersonFollow offsets using handle in Scene View.");
                     // calculate delta and discard imprecision, then update offset
                     var delta = Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
                     delta = new Vector3(

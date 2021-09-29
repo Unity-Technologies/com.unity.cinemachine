@@ -124,7 +124,7 @@ namespace Cinemachine.Editor
                 var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(this, "Change Tracked Object Offset using handle in Scene View.");
+                    Undo.RecordObject(T, "Change Tracked Object Offset using handle in Scene View.");
                     T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
                     InspectorUtility.RepaintGameView();
                 }
