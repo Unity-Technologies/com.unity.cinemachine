@@ -98,6 +98,7 @@ namespace Cinemachine.Editor
             }
         }
 
+#if UNITY_2021_2_OR_NEWER
         static CinemachineSceneToolUtility()
         {
             s_ToolToggleSetters = new ToolHandler[Enum.GetNames(typeof(CinemachineSceneTool)).Length];
@@ -122,5 +123,6 @@ namespace Cinemachine.Editor
                 }
             };
         }
+#endif
     }
 }
