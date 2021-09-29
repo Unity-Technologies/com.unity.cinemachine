@@ -160,12 +160,12 @@ namespace Cinemachine.Editor
         protected override void DrawSceneTools()
         {
             var orbitalTransposer = Target;
-            if (!orbitalTransposer.IsValid && Tools.current != Tool.Move)
+            if (!orbitalTransposer.IsValid || Tools.current != Tool.Move || !Target.m_HideOffsetInInspector)
             {
                 return;
             }
             
-            if (!Target.m_HideOffsetInInspector && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(orbitalTransposer.VirtualCamera);
                 var up = brain != null ? brain.DefaultWorldUp : Vector3.up;

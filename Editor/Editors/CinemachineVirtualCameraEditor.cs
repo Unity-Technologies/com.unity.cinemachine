@@ -134,8 +134,7 @@ namespace Cinemachine.Editor
         protected override void DrawSceneTools()
         {
             var vcam = Target;
-            // dont draw lens controls, because parent camera controls it
-            if (!vcam.IsValid || vcam.ParentCamera != null)
+            if (!vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
             {
                 return;
             }
