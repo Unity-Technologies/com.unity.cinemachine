@@ -22,10 +22,8 @@ namespace Cinemachine.Editor
                 TrackedObjectOffsetTool.id
             )
         {
-            CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(IsDisplayed);
+            CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
         }
-
-        bool IsDisplayed() => displayed;
     }
     
     abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle

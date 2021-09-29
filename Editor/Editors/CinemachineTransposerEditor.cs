@@ -107,11 +107,8 @@ namespace Cinemachine.Editor
 
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
-                var up = Vector3.up;
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(transposer.VirtualCamera);
-                if (brain != null)
-                    up = brain.DefaultWorldUp;
-                var followTargetPosition = transposer.FollowTargetPosition;
+                var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
                 var cameraPosition = transposer.GetTargetCameraPosition(up);
                 var cameraRotation = transposer.GetReferenceOrientation(up);
 
@@ -142,7 +139,7 @@ namespace Cinemachine.Editor
                 }
                 var originalColor = Handles.color;
                 Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
-                Handles.DrawDottedLine(followTargetPosition, cameraPosition, 5f);
+                Handles.DrawDottedLine(transposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
             }
         }

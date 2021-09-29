@@ -117,8 +117,7 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
             {
                 var lookAtTargetPosition = composer.LookAtTargetPosition;
-                var trackedObjectOffset = composer.m_TrackedObjectOffset;
-                var trackedObjectPosition = lookAtTargetPosition + trackedObjectOffset;
+                var trackedObjectPosition = lookAtTargetPosition + composer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
                 var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);

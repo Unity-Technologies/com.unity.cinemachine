@@ -97,7 +97,7 @@ namespace Cinemachine.Editor
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(shoulderOffsetPosition, "Should Offset " + 
+                    Handles.Label(shoulderOffsetPosition, "Shoulder Offset " + 
                         thirdPersonFollow.ShoulderOffset.ToString("F1"), labelStyle);
                     Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + 
                         thirdPersonFollow.VerticalArmLength.ToString("F1") + ")", labelStyle);
