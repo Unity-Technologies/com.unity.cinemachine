@@ -161,9 +161,19 @@ namespace Cinemachine.Editor
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition + 
-                        cameraForward * HandleUtility.GetHandleSize(cameraPosition), 
-                        "FOV (" + vcam.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+                    if (vcam.m_Lens.IsPhysicalCamera)
+                    {
+                        Handles.Label(cameraPosition + 
+                            cameraForward * HandleUtility.GetHandleSize(cameraPosition), "Focal Length (" + 
+                            Camera.FieldOfViewToFocalLength(vcam.m_Lens.FieldOfView, vcam.m_Lens.SensorSize.y).
+                                ToString("F1") + ")", labelStyle);
+                    }
+                    else
+                    {
+                        Handles.Label(cameraPosition + 
+                            cameraForward * HandleUtility.GetHandleSize(cameraPosition), "FOV (" + 
+                            vcam.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+                    }
                 }
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))

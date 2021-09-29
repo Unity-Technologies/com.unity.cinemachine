@@ -129,7 +129,7 @@ namespace Cinemachine
                 var cameraPosition = freelook.State.FinalPosition;
                 var cameraRotation = freelook.State.FinalOrientation;
                 var cameraForward = cameraRotation * Vector3.forward;
-                
+
                 EditorGUI.BeginChangeCheck();
                 var fieldOfView = Handles.ScaleSlider(freelook.m_Lens.FieldOfView, cameraPosition, cameraForward, 
                     cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
@@ -143,9 +143,19 @@ namespace Cinemachine
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition + 
-                        cameraForward * HandleUtility.GetHandleSize(cameraPosition), 
-                        "FOV (" + freelook.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+                    if (freelook.m_Lens.IsPhysicalCamera)
+                    {
+                        Handles.Label(cameraPosition + 
+                            cameraForward * HandleUtility.GetHandleSize(cameraPosition), "Focal Length (" + 
+                            Camera.FieldOfViewToFocalLength(freelook.m_Lens.FieldOfView, freelook.m_Lens.SensorSize.y).
+                                ToString("F1") + ")", labelStyle);
+                    }
+                    else
+                    {
+                        Handles.Label(cameraPosition + 
+                            cameraForward * HandleUtility.GetHandleSize(cameraPosition), "FOV (" + 
+                            freelook.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+                    }
                 }
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
