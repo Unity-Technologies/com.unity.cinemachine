@@ -31,15 +31,14 @@ namespace Cinemachine.Editor
         protected void RegisterWithCinemachine(CinemachineSceneTool tool)
         {
             m_Tool = tool;
-            this.RegisterValueChangedCallback(Register);
-            CinemachineSceneToolUtility.RegisterToolToggleHandler(m_Tool, SetToggle);
-            CinemachineSceneToolUtility.RegisterToolIsDisplayedHandler(m_Tool, Display);
+            this.RegisterValueChangedCallback(
+                v => CinemachineSceneToolUtility.SetTool(v.newValue, m_Tool));
+            CinemachineSceneToolUtility.RegisterToolToggleHandler(m_Tool, isOn => value = isOn);
+            CinemachineSceneToolUtility.RegisterToolIsDisplayedHandler(m_Tool, 
+                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
         CinemachineSceneTool m_Tool;
-        void Register(ChangeEvent<bool> v) => CinemachineSceneToolUtility.SetTool(v.newValue, m_Tool);
-        void SetToggle(bool isOn) => value = isOn;
-        void Display(bool display) => style.display = display ? DisplayStyle.Flex : DisplayStyle.None;
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]
