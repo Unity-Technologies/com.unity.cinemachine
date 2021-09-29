@@ -77,7 +77,7 @@ namespace Cinemachine.Editor
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
 
             // Only register follow offset control when not part of a freelook
-            if (Target.transform.parent?.parent?.GetComponent<CinemachineFreeLook>() == null)
+            if (!Target.m_HeadingIsSlave)
             {
                 CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
             }
@@ -165,8 +165,8 @@ namespace Cinemachine.Editor
             {
                 return;
             }
-
-            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
+            
+            if (!Target.m_HeadingIsSlave && CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(orbitalTransposer.VirtualCamera);
                 var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
