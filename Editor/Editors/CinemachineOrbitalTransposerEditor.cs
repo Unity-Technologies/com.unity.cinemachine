@@ -158,7 +158,7 @@ namespace Cinemachine.Editor
             Gizmos.matrix = prevMatrix;
         }
         
-        protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
+        protected override void DrawSceneTools()
         {
             var orbitalTransposer = Target;
             if (!orbitalTransposer.IsValid && Tools.current != Tool.Move)
@@ -201,7 +201,8 @@ namespace Cinemachine.Editor
                     
                 }
                 var originalColor = Handles.color;
-                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
+                Handles.color = handleIsUsed ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
             }

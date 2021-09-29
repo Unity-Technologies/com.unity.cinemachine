@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
         /// </summary>
         protected virtual void OnSceneGUI()
         {
-            DrawSceneTools(CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour, Handles.preselectionColor);
+            DrawSceneTools();
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="guideLinesColor">Color of guidelines</param>
         /// <param name="defaultColor">Color of handles, when user is not using them</param>
-        protected virtual void DrawSceneTools(Color guideLinesColor, Color defaultColor) {}
+        protected virtual void DrawSceneTools() {}
 
         List<string> mExcluded = new List<string>();
 

@@ -44,7 +44,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
         }
 
-        protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
+        protected override void DrawSceneTools()
         {
             var thirdPersonFollow = Target;
             if (!thirdPersonFollow.IsValid)
@@ -104,7 +104,9 @@ namespace Cinemachine.Editor
                     Handles.Label(cameraPosition, "Camera Distance (" + 
                         cameraDistance.ToString("F1") + ")", labelStyle);
                 }
-                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
+
+                Handles.color = handleIsUsed ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
                 Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
                 Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f);

@@ -125,7 +125,7 @@ namespace Cinemachine.Editor
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
-        protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
+        protected override void DrawSceneTools()
         {
             var vcam = Target;
             if (!vcam.IsValid)
@@ -135,7 +135,7 @@ namespace Cinemachine.Editor
 
             var handleIsUsed = GUIUtility.hotControl > 0;
             var originalColor = Handles.color;
-            Handles.color = handleIsUsed ? Handles.selectedColor : defaultColor;
+            Handles.color = handleIsUsed ? Handles.selectedColor : Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FoV))
             {
                 var cameraPosition = vcam.State.FinalPosition;

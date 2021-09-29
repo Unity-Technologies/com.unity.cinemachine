@@ -97,7 +97,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
         }
         
-        protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
+        protected override void DrawSceneTools()
         {
             var transposer = Target;
             if (!transposer.IsValid && Tools.current != Tool.Move)
@@ -138,7 +138,8 @@ namespace Cinemachine.Editor
                         transposer.m_FollowOffset.ToString("F1"), labelStyle);
                 }
                 var originalColor = Handles.color;
-                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
+                Handles.color = handleIsUsed ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(transposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
             }

@@ -217,7 +217,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
+        protected override void DrawSceneTools()
         {
             var framingTransposer = Target;
             if (!framingTransposer.IsValid)
@@ -247,7 +247,8 @@ namespace Cinemachine.Editor
                     Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
                         framingTransposer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
-                Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
+                Handles.color = handleIsUsed ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
             }
