@@ -219,23 +219,24 @@ namespace Cinemachine.Editor
         
         protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
-            var T = Target;
-            if (!T.IsValid)
+            var framingTransposer = Target;
+            if (!framingTransposer.IsValid)
             {
                 return;
             }
             var originalColor = Handles.color;
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
             {
-                var followTargetPosition = T.FollowTargetPosition;
-                var trackedObjectPosition = followTargetPosition + T.m_TrackedObjectOffset;
+                var followTargetPosition = framingTransposer.FollowTargetPosition;
+                var trackedObjectPosition = followTargetPosition + framingTransposer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
                 var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(T, "Change Tracked Object Offset using handle in Scene View.");
-                    T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
+                    Undo.RecordObject(framingTransposer, 
+                        "Change Tracked Object Offset using handle in Scene View.");
+                    framingTransposer.m_TrackedObjectOffset += newPos - trackedObjectPosition;
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -243,24 +244,26 @@ namespace Cinemachine.Editor
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
+                    Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
+                        framingTransposer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
                 Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
-                Handles.DrawLine(trackedObjectPosition, T.VcamState.FinalPosition);
+                Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
-                var cameraPosition = T.VcamState.RawPosition;
-                var targetForward = T.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var cameraPosition = framingTransposer.VcamState.RawPosition;
+                var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 var newHandlePosition = Handles.Slider(cameraPosition, targetForward);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(T, "Changed FramingTransposer distance using handle in Scene View.");
+                    Undo.RecordObject(framingTransposer, 
+                        "Changed FramingTransposer distance using handle in Scene View.");
                     var diffHandlePosition = newHandlePosition - cameraPosition;
                     var sameDirection = Vector3.Dot(diffHandlePosition.normalized, targetForward) > 0;
-                    T.m_CameraDistance -= (sameDirection ? 1f : -1f) * diffHandlePosition.magnitude;
+                    framingTransposer.m_CameraDistance -= (sameDirection ? 1f : -1f) * diffHandlePosition.magnitude;
                     InspectorUtility.RepaintGameView();
                 }
                 
@@ -268,7 +271,8 @@ namespace Cinemachine.Editor
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition, "Camera Distance (" + T.m_CameraDistance.ToString("F1") + ")", labelStyle);
+                    Handles.Label(cameraPosition, "Camera Distance (" + 
+                        framingTransposer.m_CameraDistance.ToString("F1") + ")", labelStyle);
                 }
             }
             Handles.color = originalColor;

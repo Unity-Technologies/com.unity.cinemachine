@@ -108,24 +108,24 @@ namespace Cinemachine.Editor
 
         protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
-            var T = Target;
-            if (!T.IsValid)
+            var composer = Target;
+            if (!composer.IsValid)
             {
                 return;
             }
 
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
             {
-                var lookAtTargetPosition = T.LookAtTargetPosition;
-                var trackedObjectOffset = T.m_TrackedObjectOffset;
+                var lookAtTargetPosition = composer.LookAtTargetPosition;
+                var trackedObjectOffset = composer.m_TrackedObjectOffset;
                 var trackedObjectPosition = lookAtTargetPosition + trackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
                 var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(T, "Change Tracked Object Offset using handle in Scene View.");
-                    T.m_TrackedObjectOffset += newPos - trackedObjectPosition;
+                    Undo.RecordObject(composer, "Change Tracked Object Offset using handle in Scene View.");
+                    composer.m_TrackedObjectOffset += newPos - trackedObjectPosition;
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -133,12 +133,13 @@ namespace Cinemachine.Editor
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(trackedObjectPosition, "Tracked Object Offset " + T.m_TrackedObjectOffset.ToString("F1"), labelStyle);
+                    Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
+                        composer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
                 var originalColor = Handles.color;
                 Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 Handles.DrawDottedLine(lookAtTargetPosition, trackedObjectPosition, 5f);
-                Handles.DrawLine(trackedObjectPosition, T.VcamState.FinalPosition);
+                Handles.DrawLine(trackedObjectPosition, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
             }
         }

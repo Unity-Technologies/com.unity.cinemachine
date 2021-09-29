@@ -46,21 +46,22 @@ namespace Cinemachine.Editor
 
         protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
-            var T = Target;
-            if (!T.IsValid)
+            var thirdPersonFollow = Target;
+            if (!thirdPersonFollow.IsValid)
             {
                 return;
             }
         
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
-                var followTargetRotation= T.FollowTargetRotation;
+                var followTargetRotation= thirdPersonFollow.FollowTargetRotation;
                 var up = followTargetRotation * Vector3.up;
-                T.GetRigPositions(out var followTargetPosition, 
+                thirdPersonFollow.GetRigPositions(out var followTargetPosition, 
                     out var shoulderOffsetPosition, out var verticalArmLengthPosition);
                 var targetForward = followTargetRotation * Vector3.forward;
-                var heading = T.GetHeading(targetForward, T.VirtualCamera.State.ReferenceUp);
-                var cameraDistance = T.CameraDistance;
+                var heading = 
+                    thirdPersonFollow.GetHeading(targetForward, thirdPersonFollow.VirtualCamera.State.ReferenceUp);
+                var cameraDistance = thirdPersonFollow.CameraDistance;
                 var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
 
                 var originalColor = Handles.color;
@@ -72,20 +73,22 @@ namespace Cinemachine.Editor
                 var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(T, "Changed 3rdPersonFollow offsets using handle in Scene View.");
+                    Undo.RecordObject(thirdPersonFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");
                     // calculate delta and discard imprecision, then update offset
-                    var delta = Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
+                    var delta = 
+                        Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
                     delta = new Vector3(
                         Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
                         Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
-                    T.ShoulderOffset += delta;
+                    thirdPersonFollow.ShoulderOffset += delta;
                     
-                    T.VerticalArmLength += (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
+                    thirdPersonFollow.VerticalArmLength += 
+                        (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
 
                     var diffCameraPos = newCameraPosition - cameraPosition;
                     var sameDirection = Vector3.Dot(diffCameraPos.normalized, targetForward) > 0;
-                    T.CameraDistance -= (sameDirection ? 1f : -1f) * diffCameraPos.magnitude;
+                    thirdPersonFollow.CameraDistance -= (sameDirection ? 1f : -1f) * diffCameraPos.magnitude;
                     
                     InspectorUtility.RepaintGameView();
                 }
@@ -94,9 +97,12 @@ namespace Cinemachine.Editor
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(shoulderOffsetPosition, "Should Offset " + T.ShoulderOffset.ToString("F1"), labelStyle);
-                    Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + T.VerticalArmLength.ToString("F1") + ")", labelStyle);
-                    Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")", labelStyle);
+                    Handles.Label(shoulderOffsetPosition, "Should Offset " + 
+                        thirdPersonFollow.ShoulderOffset.ToString("F1"), labelStyle);
+                    Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + 
+                        thirdPersonFollow.VerticalArmLength.ToString("F1") + ")", labelStyle);
+                    Handles.Label(cameraPosition, "Camera Distance (" + 
+                        cameraDistance.ToString("F1") + ")", labelStyle);
                 }
                 Handles.color = handleIsUsed ? Handles.selectedColor : guideLinesColor;
                 Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);

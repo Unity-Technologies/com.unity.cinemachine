@@ -127,8 +127,8 @@ namespace Cinemachine.Editor
 
         protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
-            var T = Target;
-            if (!T.IsValid)
+            var vcam = Target;
+            if (!vcam.IsValid)
             {
                 return;
             }
@@ -138,17 +138,17 @@ namespace Cinemachine.Editor
             Handles.color = handleIsUsed ? Handles.selectedColor : defaultColor;
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FoV))
             {
-                var cameraPosition = T.State.FinalPosition;
-                var cameraRotation = T.State.FinalOrientation;
+                var cameraPosition = vcam.State.FinalPosition;
+                var cameraRotation = vcam.State.FinalOrientation;
                 var cameraForward = cameraRotation * Vector3.forward;
                 
                 EditorGUI.BeginChangeCheck();
-                var fieldOfView = Handles.ScaleSlider(T.m_Lens.FieldOfView, cameraPosition, cameraForward, 
+                var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, cameraPosition, cameraForward, 
                     cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(T, "Changed FOV using handle in scene view.");
-                    T.m_Lens.FieldOfView = fieldOfView;
+                    Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
+                    vcam.m_Lens.FieldOfView = fieldOfView;
                     InspectorUtility.RepaintGameView();
                 }
                 
@@ -157,16 +157,16 @@ namespace Cinemachine.Editor
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition + 
                         cameraForward * HandleUtility.GetHandleSize(cameraPosition), 
-                        "FOV (" + T.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
+                        "FOV (" + vcam.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
                 }
             }
             else if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FarNearClip))
             {
-                var cameraPosition = T.State.FinalPosition;
-                var cameraRotation = T.State.FinalOrientation;
+                var cameraPosition = vcam.State.FinalPosition;
+                var cameraRotation = vcam.State.FinalOrientation;
                 var cameraForward = cameraRotation * Vector3.forward;
-                var nearClipPos = cameraPosition + cameraForward * T.m_Lens.NearClipPlane;
-                var farClipPos = cameraPosition + cameraForward * T.m_Lens.FarClipPlane;
+                var nearClipPos = cameraPosition + cameraForward * vcam.m_Lens.NearClipPlane;
+                var farClipPos = cameraPosition + cameraForward * vcam.m_Lens.FarClipPlane;
                 
                 EditorGUI.BeginChangeCheck();
                 var newNearClipPos = Handles.Slider(nearClipPos, cameraForward, 
@@ -175,16 +175,16 @@ namespace Cinemachine.Editor
                     HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(T, "Changed clip plane using handle in scene view.");
+                    Undo.RecordObject(vcam, "Changed clip plane using handle in scene view.");
                     { // near clip
                         var diffNearClip = newNearClipPos - nearClipPos;
                         var sameDirection = Vector3.Dot(diffNearClip.normalized, cameraForward) > 0;
-                        T.m_Lens.NearClipPlane += (sameDirection ? 1f : -1f) * diffNearClip.magnitude;
+                        vcam.m_Lens.NearClipPlane += (sameDirection ? 1f : -1f) * diffNearClip.magnitude;
                     }
                     { // far clip
                         var diffFarClip = newFarClipPos - farClipPos;
                         var sameDirection = Vector3.Dot(diffFarClip.normalized, cameraForward) > 0;
-                        T.m_Lens.FarClipPlane += (sameDirection ? 1f : -1f) * diffFarClip.magnitude;
+                        vcam.m_Lens.FarClipPlane += (sameDirection ? 1f : -1f) * diffFarClip.magnitude;
                     }
                     InspectorUtility.RepaintGameView();
                 }
@@ -193,9 +193,9 @@ namespace Cinemachine.Editor
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(nearClipPos,
-                        "Near Clip Plane (" + T.m_Lens.NearClipPlane.ToString("F1") + ")", labelStyle);
+                        "Near Clip Plane (" + vcam.m_Lens.NearClipPlane.ToString("F1") + ")", labelStyle);
                     Handles.Label(farClipPos,
-                        "Far Clip Plane (" + T.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
+                        "Far Clip Plane (" + vcam.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
                 }
             }
             Handles.color = originalColor;

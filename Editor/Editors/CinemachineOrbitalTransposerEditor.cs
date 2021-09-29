@@ -160,8 +160,8 @@ namespace Cinemachine.Editor
         
         protected override void DrawSceneTools(Color guideLinesColor, Color defaultColor)
         {
-            var T = Target;
-            if (!T.IsValid && Tools.current != Tool.Move)
+            var orbitalTransposer = Target;
+            if (!orbitalTransposer.IsValid && Tools.current != Tool.Move)
             {
                 return;
             }
@@ -169,18 +169,19 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
             {
                 var up = Vector3.up;
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(T.VirtualCamera);
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(orbitalTransposer.VirtualCamera);
                 if (brain != null)
                     up = brain.DefaultWorldUp;
-                var followTargetPosition = T.FollowTargetPosition;
-                var cameraPosition = T.GetTargetCameraPosition(up);
-                var cameraRotation = T.GetReferenceOrientation(up);
+                var followTargetPosition = orbitalTransposer.FollowTargetPosition;
+                var cameraPosition = orbitalTransposer.GetTargetCameraPosition(up);
+                var cameraRotation = orbitalTransposer.GetReferenceOrientation(up);
 
                 EditorGUI.BeginChangeCheck();
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(T, "Change Follow Offset Position using handle in Scene View.");
+                    Undo.RecordObject(orbitalTransposer, 
+                        "Change Follow Offset Position using handle in Scene View.");
                     
                     // calculate delta and discard imprecision, then update offset
                     var delta = Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);
@@ -188,8 +189,8 @@ namespace Cinemachine.Editor
                         Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
                         Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
-                    T.m_FollowOffset += delta;
-                    T.m_FollowOffset = T.EffectiveOffset; // sanitize offset
+                    orbitalTransposer.m_FollowOffset += delta;
+                    orbitalTransposer.m_FollowOffset = orbitalTransposer.EffectiveOffset; // sanitize offset
                     
                     InspectorUtility.RepaintGameView();
                 }
@@ -198,7 +199,8 @@ namespace Cinemachine.Editor
                 if (handleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition, "Follow offset " + T.m_FollowOffset.ToString("F1"), labelStyle);
+                    Handles.Label(cameraPosition, "Follow offset " + 
+                        orbitalTransposer.m_FollowOffset.ToString("F1"), labelStyle);
                     
                 }
                 var originalColor = Handles.color;
