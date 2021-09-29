@@ -94,8 +94,8 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
             
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.TrackedObjectOffset);
+            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnDisable()
@@ -105,8 +105,8 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
 
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.TrackedObjectOffset);
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         public override void OnInspectorGUI()
@@ -225,7 +225,7 @@ namespace Cinemachine.Editor
                 return;
             }
             var originalColor = Handles.color;
-            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 var followTargetPosition = framingTransposer.FollowTargetPosition;
                 var trackedObjectPosition = followTargetPosition + framingTransposer.m_TrackedObjectOffset;
@@ -252,7 +252,7 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var cameraPosition = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;

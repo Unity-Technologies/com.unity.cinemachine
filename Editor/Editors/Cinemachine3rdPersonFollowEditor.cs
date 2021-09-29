@@ -36,12 +36,12 @@ namespace Cinemachine.Editor
         
         protected virtual void OnEnable()
         {
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
         }
 
         protected virtual void OnDisable()
         {
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
         protected override void DrawSceneTools()
@@ -52,7 +52,7 @@ namespace Cinemachine.Editor
                 return;
             }
         
-            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var followTargetRotation= thirdPersonFollow.FollowTargetRotation;
                 var up = followTargetRotation * Vector3.up;

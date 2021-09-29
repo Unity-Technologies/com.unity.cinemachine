@@ -89,6 +89,9 @@ namespace Cinemachine.Editor
             if (Target != null && Target.m_LockStageInInspector != null)
                foreach (var s in Target.m_LockStageInInspector)
                     m_PipelineSet.SetStageIsLocked(s);
+            
+            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
         }
 
         protected override void OnDisable()
@@ -96,6 +99,9 @@ namespace Cinemachine.Editor
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
             m_PipelineSet.Shutdown();
             base.OnDisable();
+            
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
         }
 
         protected override void OnSceneGUI()
@@ -124,11 +130,12 @@ namespace Cinemachine.Editor
             base.OnSceneGUI();
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
-
+        
         protected override void DrawSceneTools()
         {
             var vcam = Target;
-            if (!vcam.IsValid)
+            // dont draw lens controls, because parent camera controls it
+            if (!vcam.IsValid || vcam.ParentCamera != null)
             {
                 return;
             }
@@ -136,7 +143,7 @@ namespace Cinemachine.Editor
             var handleIsUsed = GUIUtility.hotControl > 0;
             var originalColor = Handles.color;
             Handles.color = handleIsUsed ? Handles.selectedColor : Handles.preselectionColor;
-            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FoV))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 var cameraPosition = vcam.State.FinalPosition;
                 var cameraRotation = vcam.State.FinalOrientation;
@@ -160,7 +167,7 @@ namespace Cinemachine.Editor
                         "FOV (" + vcam.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
                 }
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FarNearClip))
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 var cameraPosition = vcam.State.FinalPosition;
                 var cameraRotation = vcam.State.FinalOrientation;

@@ -28,7 +28,7 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
             
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.TrackedObjectOffset);
+            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnDisable()
@@ -38,7 +38,7 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
             
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.TrackedObjectOffset);
+            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         public override void OnInspectorGUI()
@@ -114,7 +114,7 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.TrackedObjectOffset))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 var lookAtTargetPosition = composer.LookAtTargetPosition;
                 var trackedObjectPosition = lookAtTargetPosition + composer.m_TrackedObjectOffset;

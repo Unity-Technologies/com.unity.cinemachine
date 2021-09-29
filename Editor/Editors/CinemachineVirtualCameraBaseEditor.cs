@@ -113,9 +113,6 @@ namespace Cinemachine.Editor
                 sExtensionTypes = exts.ToArray();
                 sExtensionNames = names.ToArray();
             }
-            
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FoV);
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FarNearClip);
         }
 
         /// <summary>Inspector panel is being disabled.
@@ -127,9 +124,6 @@ namespace Cinemachine.Editor
                 CinemachineBrain.SoloCamera = null;
                 InspectorUtility.RepaintGameView();
             }
-            
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FoV);
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FarNearClip);
         }
 
         /// <summary>Create the contents of the inspector panel.
@@ -142,7 +136,9 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
         }
-
+        
+        
+        
         /// <summary>
         /// Draw the virtual camera header in the inspector.  
         /// This includes Solo button, Live status, and global settings

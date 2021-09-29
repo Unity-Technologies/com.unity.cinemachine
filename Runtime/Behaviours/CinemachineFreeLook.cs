@@ -667,6 +667,7 @@ namespace Cinemachine
                             if (mOrbitals[i] != null)
                             {
                                 mOrbitals[i].m_HeadingIsSlave = true;
+                                mOrbitals[i].m_HideOffsetInInspector = true;
                                 mOrbitals[i].m_XAxis.m_InputAxisName = string.Empty;
                                 mOrbitals[i].HeadingUpdater = UpdateXAxisHeading;
                                 mOrbitals[i].m_RecenterToTargetHeading.m_enabled = false;

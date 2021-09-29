@@ -17,7 +17,6 @@ namespace Cinemachine.Editor
             base.GetExcludedPropertiesInInspector(excluded);
             if (Target.m_HeadingIsSlave)
             {
-                excluded.Add(FieldPath(x => x.m_FollowOffset));
                 excluded.Add(FieldPath(x => x.m_BindingMode));
                 excluded.Add(FieldPath(x => x.m_Heading));
                 excluded.Add(FieldPath(x => x.m_XAxis));
@@ -79,13 +78,13 @@ namespace Cinemachine.Editor
             // Only register follow offset control when not part of a freelook
             if (!Target.m_HeadingIsSlave)
             {
-                CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.FollowOffset);
+                CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             }
         }
 
         protected virtual void OnDisable()
         {
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.FollowOffset);
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
         public override void OnInspectorGUI()
@@ -166,7 +165,7 @@ namespace Cinemachine.Editor
                 return;
             }
             
-            if (!Target.m_HeadingIsSlave && CinemachineSceneToolUtility.IsToolActive(CinemachineSceneTool.FollowOffset))
+            if (!Target.m_HideOffsetInInspector && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(orbitalTransposer.VirtualCamera);
                 var up = brain != null ? brain.DefaultWorldUp : Vector3.up;

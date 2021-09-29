@@ -8,13 +8,14 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// To display a CinemachineEditorToolbarToggle in the Cinemachine Toolbar, add it's ID to the constructor.
+    /// To display a CinemachineEditorToolbarToggle in the Cinemachine Toolbar,
+    /// TODO: extendable when another PR lands. 
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine")]
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
     public class CinemachineVirtualCameraToolbar : ToolbarOverlay
     {
-        CinemachineVirtualCameraToolbar()
+        public CinemachineVirtualCameraToolbar()
             : base(
                 FoVTool.id,
                 FarNearClipTool.id,
@@ -25,24 +26,21 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
         }
     }
-    
-    abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
+
+    public abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
     {
-        protected void RegisterWithCinemachine(CinemachineSceneTool tool)
+        protected CinemachineEditorToolbarToggle()
         {
-            m_Tool = tool;
+            var type = GetType();
             this.RegisterValueChangedCallback(
-                v => CinemachineSceneToolUtility.SetTool(v.newValue, m_Tool));
-            CinemachineSceneToolUtility.RegisterToolToggleHandler(m_Tool, isOn => value = isOn);
-            CinemachineSceneToolUtility.RegisterToolIsDisplayedHandler(m_Tool, 
+                v => CinemachineSceneToolUtility.SetTool(v.newValue, type));
+            CinemachineSceneToolUtility.RegisterToolHandlers(type, isOn => value = isOn, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
         }
-
-        CinemachineSceneTool m_Tool;
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FoVTool : CinemachineEditorToolbarToggle
+    public class FoVTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FoVTool/Toggle";
 
@@ -51,12 +49,11 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/FOV.png");
             tooltip = "Field of View Tool";
-            RegisterWithCinemachine(CinemachineSceneTool.FoV);
         }
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FarNearClipTool : CinemachineEditorToolbarToggle
+    public class FarNearClipTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FarNearClipTool/Toggle";
 
@@ -65,12 +62,11 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/FarNearClip.png");
             tooltip = "Far/Near Clip Tool";
-            RegisterWithCinemachine(CinemachineSceneTool.FarNearClip);
         }
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FollowOffsetTool : CinemachineEditorToolbarToggle
+    public class FollowOffsetTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FollowOffsetTool/Toggle";
 
@@ -79,12 +75,11 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/FollowOffset.png");
             tooltip = "Follow Offset Tool";
-            RegisterWithCinemachine(CinemachineSceneTool.FollowOffset);
         }
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class TrackedObjectOffsetTool : CinemachineEditorToolbarToggle
+    public class TrackedObjectOffsetTool : CinemachineEditorToolbarToggle
     {
         public const string id = "TrackedObjectOffsetTool/Toggle";
 
@@ -93,7 +88,6 @@ namespace Cinemachine.Editor
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                 + "/Editor/EditorResources/TrackedObjectOffset.png");
             tooltip = "Tracked Object Offset Tool";
-            RegisterWithCinemachine(CinemachineSceneTool.TrackedObjectOffset);
         }
     }
 }
