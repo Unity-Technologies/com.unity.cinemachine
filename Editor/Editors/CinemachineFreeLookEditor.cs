@@ -30,8 +30,6 @@ namespace Cinemachine
         {
             base.OnEnable();
             Target.UpdateInputAxisProvider();
-            
-            CinemachineSceneToolUtility.RegisterTool(CinemachineSceneTool.TrackedObjectOffset);
         }
         
         protected override void OnDisable()
@@ -41,8 +39,6 @@ namespace Cinemachine
             // Must destroy child editors or we get exceptions
             if (m_rigEditor != null)
                 UnityEngine.Object.DestroyImmediate(m_rigEditor);
-            
-            CinemachineSceneToolUtility.UnregisterTool(CinemachineSceneTool.TrackedObjectOffset);
         }
 
         public override void OnInspectorGUI()
