@@ -118,7 +118,8 @@ namespace Cinemachine.Editor
             {
                 var lookAtTargetPosition = composer.LookAtTargetPosition;
                 var lookAtTargetRotation = composer.LookAtTargetRotation;
-                var trackedObjectPosition = lookAtTargetPosition + lookAtTargetRotation * composer.m_TrackedObjectOffset;
+                var trackedObjectPosition = 
+                    lookAtTargetPosition + lookAtTargetRotation * composer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
                 var newPos = Handles.PositionHandle(trackedObjectPosition, lookAtTargetRotation);

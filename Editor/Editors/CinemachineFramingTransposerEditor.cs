@@ -228,15 +228,25 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 var followTargetPosition = framingTransposer.FollowTargetPosition;
-                var trackedObjectPosition = followTargetPosition + framingTransposer.m_TrackedObjectOffset;
+                var followTargetRotation = framingTransposer.FollowTargetRotation;
+                var trackedObjectPosition = 
+                    followTargetPosition + followTargetRotation * framingTransposer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
-                var newPos = Handles.PositionHandle(trackedObjectPosition, Quaternion.identity);
+                var newPos = Handles.PositionHandle(trackedObjectPosition, followTargetRotation);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
                         "Change Tracked Object Offset using handle in Scene View.");
-                    framingTransposer.m_TrackedObjectOffset += newPos - trackedObjectPosition;
+                    
+                    // calculate delta and discard imprecision, then update offset
+                    var delta = Quaternion.Inverse(followTargetRotation) * (newPos - trackedObjectPosition);
+                    delta = new Vector3(
+                        Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
+                        Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
+                        Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
+                    framingTransposer.m_TrackedObjectOffset += delta;
+                    
                     InspectorUtility.RepaintGameView();
                 }
 
