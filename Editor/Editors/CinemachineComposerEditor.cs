@@ -122,7 +122,9 @@ namespace Cinemachine.Editor
                     lookAtTargetPosition + lookAtTargetRotation * composer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
+                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newPos = Handles.PositionHandle(trackedObjectPosition, lookAtTargetRotation);
+                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(composer, "Change Tracked Object Offset using handle in Scene View.");
@@ -137,16 +139,18 @@ namespace Cinemachine.Editor
                     
                     InspectorUtility.RepaintGameView();
                 }
-
-                var handleIsUsed = GUIUtility.hotControl > 0;
-                if (handleIsUsed)
+                
+                var trackedObjectOffsetHandleIsUsedOrHovered = 
+                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId || 
+                    tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
+                if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
                         composer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
                 var originalColor = Handles.color;
-                Handles.color = handleIsUsed ? 
+                Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(lookAtTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, composer.VcamState.FinalPosition);

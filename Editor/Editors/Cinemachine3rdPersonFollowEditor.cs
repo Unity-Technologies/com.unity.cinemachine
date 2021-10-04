@@ -66,14 +66,19 @@ namespace Cinemachine.Editor
 
                 var originalColor = Handles.color;
                 EditorGUI.BeginChangeCheck();
+                // shoulder offset handle
                 var soHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
                 var soHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+                
+                // vertical arm length handle
                 Handles.color = Color.cyan;
                 var vaHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newVerticalArmLengthPosition = Handles.Slider(vaHandleId, 
                     verticalArmLengthPosition, followUp, HandleUtility.GetHandleSize(verticalArmLengthPosition), 
                     Handles.ArrowHandleCap, -1);
+                
+                // camera distance handle
                 Handles.color = Color.magenta;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newCameraPosition = Handles.Slider(cdHandleId, cameraPosition, targetForward,

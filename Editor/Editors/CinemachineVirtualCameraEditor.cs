@@ -139,9 +139,8 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            var handleIsUsed = GUIUtility.hotControl > 0;
             var originalColor = Handles.color;
-            Handles.color = handleIsUsed ? Handles.selectedColor : Handles.preselectionColor;
+            Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 var cameraPosition = vcam.State.FinalPosition;
@@ -149,6 +148,7 @@ namespace Cinemachine.Editor
                 var cameraForward = cameraRotation * Vector3.forward;
                 
                 EditorGUI.BeginChangeCheck();
+                var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1;
                 var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, cameraPosition, cameraForward, 
                     cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
                 if (EditorGUI.EndChangeCheck())
@@ -157,8 +157,10 @@ namespace Cinemachine.Editor
                     vcam.m_Lens.FieldOfView = fieldOfView;
                     InspectorUtility.RepaintGameView();
                 }
-                
-                if (handleIsUsed)
+
+                var fovHandleIsUsedOrHovered = 
+                    GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId;
+                if (fovHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     if (vcam.m_Lens.IsPhysicalCamera)
@@ -185,9 +187,11 @@ namespace Cinemachine.Editor
                 var farClipPos = cameraPosition + cameraForward * vcam.m_Lens.FarClipPlane;
                 
                 EditorGUI.BeginChangeCheck();
-                var newNearClipPos = Handles.Slider(nearClipPos, cameraForward, 
+                var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, cameraForward, 
                     HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
-                var newFarClipPos = Handles.Slider(farClipPos, cameraForward, 
+                var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, cameraForward, 
                     HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -205,7 +209,10 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                if (handleIsUsed)
+                var nearClipOrFarClipHandleIsUsedOrHovered =
+                    GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId ||
+                    GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId;
+                if (nearClipOrFarClipHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(nearClipPos,
