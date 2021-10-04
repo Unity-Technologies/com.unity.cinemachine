@@ -96,7 +96,8 @@ namespace Cinemachine.Editor
         {
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
-        
+
+        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
             var transposer = Target;
@@ -132,9 +133,10 @@ namespace Cinemachine.Editor
                     
                     InspectorUtility.RepaintGameView();
                 }
-                
-                var followOffsetHandleIsUsedOrHovered = 
-                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId || 
+
+                var followOffsetHandleIsDragged = 
+                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
+                var followOffsetHandleIsUsedOrHovered = followOffsetHandleIsDragged || 
                     foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
                 if (followOffsetHandleIsUsedOrHovered)
                 {
@@ -147,6 +149,20 @@ namespace Cinemachine.Editor
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(transposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
+                
+                // solo this vcam when dragging
+                if (followOffsetHandleIsDragged)
+                {
+                    // if solo was activated by the user, then it was not the tool who set it to solo.
+                    m_SoloSetByTools = m_SoloSetByTools || 
+                        CinemachineBrain.SoloCamera != (ICinemachineCamera) transposer.VirtualCamera;
+                    CinemachineBrain.SoloCamera = transposer.VirtualCamera;
+                }
+                else if (m_SoloSetByTools && foHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
+                {
+                    CinemachineBrain.SoloCamera = null;
+                    m_SoloSetByTools = false;
+                }
             }
         }
     }

@@ -106,6 +106,7 @@ namespace Cinemachine.Editor
             }
         }
 
+        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
             var composer = Target;
@@ -139,9 +140,10 @@ namespace Cinemachine.Editor
                     
                     InspectorUtility.RepaintGameView();
                 }
-                
-                var trackedObjectOffsetHandleIsUsedOrHovered = 
-                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId || 
+
+                var trackedObjectOffsetHandleIsDragged = 
+                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId;
+                var trackedObjectOffsetHandleIsUsedOrHovered = trackedObjectOffsetHandleIsDragged || 
                     tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
@@ -149,12 +151,29 @@ namespace Cinemachine.Editor
                     Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
                         composer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
+                
                 var originalColor = Handles.color;
                 Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(lookAtTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
+                
+                // solo this vcam when dragging
+                if (trackedObjectOffsetHandleIsDragged)
+                {
+                    // if solo was activated by the user, then it was not the tool who set it to solo.
+                    m_SoloSetByTools = m_SoloSetByTools || 
+                        CinemachineBrain.SoloCamera != (ICinemachineCamera) composer.VirtualCamera;
+                    CinemachineBrain.SoloCamera = composer.VirtualCamera;
+                    InspectorUtility.RepaintGameView();
+                }
+                else if (m_SoloSetByTools && tooHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
+                {
+                    CinemachineBrain.SoloCamera = null;
+                    m_SoloSetByTools = false;
+                    InspectorUtility.RepaintGameView();
+                }
             }
         }
 

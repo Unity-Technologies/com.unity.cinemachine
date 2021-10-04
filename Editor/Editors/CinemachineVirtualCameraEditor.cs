@@ -130,7 +130,8 @@ namespace Cinemachine.Editor
             base.OnSceneGUI();
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
-        
+
+        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
             var vcam = Target;
@@ -158,7 +159,8 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
+                var fovHandleIsDragged = GUIUtility.hotControl == fovHandleId;
+                if (fovHandleIsDragged || HandleUtility.nearestControl == fovHandleId)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     if (vcam.m_Lens.IsPhysicalCamera)
@@ -174,6 +176,22 @@ namespace Cinemachine.Editor
                             cameraForward * HandleUtility.GetHandleSize(cameraPosition), "FOV (" + 
                             vcam.m_Lens.FieldOfView.ToString("F1") + ")", labelStyle);
                     }
+                }
+                
+                // solo this vcam when dragging
+                if (fovHandleIsDragged)
+                {
+                    // if solo was activated by the user, then it was not the tool who set it to solo.
+                    m_SoloSetByTools = m_SoloSetByTools || 
+                        CinemachineBrain.SoloCamera != (ICinemachineCamera) vcam;
+                    CinemachineBrain.SoloCamera = vcam;
+                    InspectorUtility.RepaintGameView();
+                }
+                else if (m_SoloSetByTools)
+                {
+                    CinemachineBrain.SoloCamera = null;
+                    m_SoloSetByTools = false;
+                    InspectorUtility.RepaintGameView();
                 }
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
@@ -207,14 +225,31 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId ||
-                    GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
+                var nearFarClipHandleIsDragged = GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId;
+                if (nearFarClipHandleIsDragged || 
+                    HandleUtility.nearestControl == ncHandleId || HandleUtility.nearestControl == fcHandleId)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(nearClipPos,
                         "Near Clip Plane (" + vcam.m_Lens.NearClipPlane.ToString("F1") + ")", labelStyle);
                     Handles.Label(farClipPos,
                         "Far Clip Plane (" + vcam.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
+                }
+                
+                // solo this vcam when dragging
+                if (nearFarClipHandleIsDragged)
+                {
+                    // if solo was activated by the user, then it was not the tool who set it to solo.
+                    m_SoloSetByTools = m_SoloSetByTools || 
+                        CinemachineBrain.SoloCamera != (ICinemachineCamera) vcam;
+                    CinemachineBrain.SoloCamera = vcam;
+                    InspectorUtility.RepaintGameView();
+                }
+                else if (m_SoloSetByTools)
+                {
+                    CinemachineBrain.SoloCamera = null;
+                    m_SoloSetByTools = false;
+                    InspectorUtility.RepaintGameView();
                 }
             }
             Handles.color = originalColor;

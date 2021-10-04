@@ -44,40 +44,42 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
+        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
-            var thirdPersonFollow = Target;
-            if (!thirdPersonFollow.IsValid)
+            var tpFollow = Target;
+            if (!tpFollow.IsValid)
             {
                 return;
             }
-        
+
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var followTargetRotation= thirdPersonFollow.FollowTargetRotation;
+                var followTargetRotation = tpFollow.FollowTargetRotation;
                 var followUp = followTargetRotation * Vector3.up;
-                thirdPersonFollow.GetRigPositions(out var followTargetPosition, 
+                tpFollow.GetRigPositions(out var followTargetPosition,
                     out var shoulderOffsetPosition, out var verticalArmLengthPosition);
                 var targetForward = followTargetRotation * Vector3.forward;
-                var heading = 
-                    thirdPersonFollow.GetHeading(targetForward, thirdPersonFollow.VirtualCamera.State.ReferenceUp);
-                var cameraDistance = thirdPersonFollow.CameraDistance;
+                var heading =
+                    tpFollow.GetHeading(targetForward, tpFollow.VirtualCamera.State.ReferenceUp);
+                var cameraDistance = tpFollow.CameraDistance;
                 var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
 
                 var originalColor = Handles.color;
                 EditorGUI.BeginChangeCheck();
+
                 // shoulder offset handle
                 var soHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
                 var soHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
-                
+
                 // vertical arm length handle
                 Handles.color = Color.cyan;
                 var vaHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newVerticalArmLengthPosition = Handles.Slider(vaHandleId, 
-                    verticalArmLengthPosition, followUp, HandleUtility.GetHandleSize(verticalArmLengthPosition), 
+                var newVerticalArmLengthPosition = Handles.Slider(vaHandleId,
+                    verticalArmLengthPosition, followUp, HandleUtility.GetHandleSize(verticalArmLengthPosition),
                     Handles.ArrowHandleCap, -1);
-                
+
                 // camera distance handle
                 Handles.color = Color.magenta;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
@@ -85,7 +87,7 @@ namespace Cinemachine.Editor
                     HandleUtility.GetHandleSize(cameraPosition), Handles.ArrowHandleCap, -1);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(thirdPersonFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");
+                    Undo.RecordObject(tpFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");
 
                     // calculate delta and discard imprecision, then update offset
                     var delta =
@@ -94,60 +96,70 @@ namespace Cinemachine.Editor
                         Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
                         Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
-                    thirdPersonFollow.ShoulderOffset += delta;
+                    tpFollow.ShoulderOffset += delta;
 
                     var diffPos = newVerticalArmLengthPosition - verticalArmLengthPosition;
                     var sameDirection = Vector3.Dot(diffPos.normalized, followUp) > 0;
-                    thirdPersonFollow.VerticalArmLength += (sameDirection ? 1f : -1f) * diffPos.magnitude;
-                    
+                    tpFollow.VerticalArmLength += (sameDirection ? 1f : -1f) * diffPos.magnitude;
+
                     diffPos = newCameraPosition - cameraPosition;
                     sameDirection = Vector3.Dot(diffPos.normalized, targetForward) > 0;
-                    thirdPersonFollow.CameraDistance -= (sameDirection ? 1f : -1f) * diffPos.magnitude;
+                    tpFollow.CameraDistance -= (sameDirection ? 1f : -1f) * diffPos.magnitude;
 
                     InspectorUtility.RepaintGameView();
                 }
 
-                var shoulderOffsetHandleIsUsedOrHovered = 
-                    soHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < soHandleMaxId || 
+                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                var shoulderOffsetHandleIsHovered = 
                     soHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < soHandleMaxId;
-                if (shoulderOffsetHandleIsUsedOrHovered)
+                var shoulderOffsetHandleIsDragged = 
+                    soHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < soHandleMaxId;
+                if (shoulderOffsetHandleIsHovered || shoulderOffsetHandleIsDragged)
                 {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(shoulderOffsetPosition, "Shoulder Offset " + 
-                        thirdPersonFollow.ShoulderOffset.ToString("F1"), labelStyle);
+                    Handles.Label(shoulderOffsetPosition, "Shoulder Offset " + tpFollow.ShoulderOffset.ToString("F1"),
+                        new GUIStyle { normal = { textColor = Handles.selectedColor } });
+                    Handles.color = Handles.selectedColor;
                 }
-                
-                var verticalArmHandleIsUsedOrHovered = 
-                    GUIUtility.hotControl == vaHandleId || HandleUtility.nearestControl == vaHandleId;
-                if (verticalArmHandleIsUsedOrHovered)
-                {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + 
-                        thirdPersonFollow.VerticalArmLength.ToString("F1") + ")", labelStyle);
-                }
-                
-                var cameraDistanceHandleIsUsedOrHovered = 
-                    GUIUtility.hotControl == cdHandleId || HandleUtility.nearestControl == cdHandleId;
-                if (cameraDistanceHandleIsUsedOrHovered)
-                {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition, "Camera Distance (" + 
-                        cameraDistance.ToString("F1") + ")", labelStyle);
-                }
-
-                Handles.color = shoulderOffsetHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
-                
-                Handles.color = verticalArmHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+
+                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                var verticalArmHandleIsHovered = HandleUtility.nearestControl == vaHandleId;
+                var verticalArmHandleIsDragged = GUIUtility.hotControl == vaHandleId;
+                if (verticalArmHandleIsHovered || verticalArmHandleIsDragged)
+                {
+                    Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" +
+                        tpFollow.VerticalArmLength.ToString("F1") + ")", 
+                        new GUIStyle { normal = { textColor = Handles.selectedColor } });
+                    Handles.color = Handles.selectedColor;
+                }
                 Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
-                
-                Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+
+                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                var cameraDistanceHandleIsHovered = HandleUtility.nearestControl == cdHandleId;
+                var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
+                if (cameraDistanceHandleIsHovered || cameraDistanceHandleIsDragged)
+                {
+                    Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")",
+                        new GUIStyle { normal = { textColor = Handles.selectedColor } });
+                    Handles.color = Handles.selectedColor;
+                }
                 Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f);
                 
                 Handles.color = originalColor;
+                
+                // solo this vcam when dragging
+                if (shoulderOffsetHandleIsDragged || verticalArmHandleIsDragged || cameraDistanceHandleIsDragged)
+                {
+                    // if solo was activated by the user, then it was not the tool who set it to solo.
+                    m_SoloSetByTools = m_SoloSetByTools || 
+                        CinemachineBrain.SoloCamera != (ICinemachineCamera) tpFollow.VirtualCamera;
+                    CinemachineBrain.SoloCamera = tpFollow.VirtualCamera;
+                }
+                else if (m_SoloSetByTools && soHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
+                {
+                    CinemachineBrain.SoloCamera = null;
+                    m_SoloSetByTools = false;
+                }
             }
         }
     }

@@ -216,7 +216,8 @@ namespace Cinemachine.Editor
                 Gizmos.matrix = m;
             }
         }
-        
+
+        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
             var framingTransposer = Target;
@@ -224,6 +225,7 @@ namespace Cinemachine.Editor
             {
                 return;
             }
+
             var originalColor = Handles.color;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
@@ -252,8 +254,9 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var trackedObjectOffsetHandleIsUsedOrHovered = 
-                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId || 
+                var trackedObjectOffsetHandleIsDragged = 
+                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId;
+                var trackedObjectOffsetHandleIsUsedOrHovered = trackedObjectOffsetHandleIsDragged || 
                     tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
@@ -265,6 +268,22 @@ namespace Cinemachine.Editor
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
+                
+                // solo this vcam when dragging
+                if (trackedObjectOffsetHandleIsDragged)
+                {
+                    // if solo was activated by the user, then it was not the tool who set it to solo.
+                    m_SoloSetByTools = m_SoloSetByTools || 
+                        CinemachineBrain.SoloCamera != (ICinemachineCamera) framingTransposer.VirtualCamera;
+                    CinemachineBrain.SoloCamera = framingTransposer.VirtualCamera;
+                    InspectorUtility.RepaintGameView();
+                }
+                else if (m_SoloSetByTools && tooHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
+                {
+                    CinemachineBrain.SoloCamera = null;
+                    m_SoloSetByTools = false;
+                    InspectorUtility.RepaintGameView();
+                }
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -274,7 +293,7 @@ namespace Cinemachine.Editor
                 Handles.color = Color.magenta;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newHandlePosition = Handles.Slider(cdHandleId, cameraPosition, targetForward,
-                    HandleUtility.GetHandleSize(cameraPosition), Handles.ArrowHandleCap, -1);
+                    HandleUtility.GetHandleSize(cameraPosition), Handles.ArrowHandleCap, 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
@@ -284,14 +303,31 @@ namespace Cinemachine.Editor
                     framingTransposer.m_CameraDistance -= (sameDirection ? 1f : -1f) * diffHandlePosition.magnitude;
                     InspectorUtility.RepaintGameView();
                 }
-                
-                var cameraDistanceHandleIsUsedOrHovered = 
-                    GUIUtility.hotControl == cdHandleId || HandleUtility.nearestControl == cdHandleId;
+
+                var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
+                var cameraDistanceHandleIsUsedOrHovered = cameraDistanceHandleIsDragged || 
+                    HandleUtility.nearestControl == cdHandleId;
                 if (cameraDistanceHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition, "Camera Distance (" + 
                         framingTransposer.m_CameraDistance.ToString("F1") + ")", labelStyle);
+                }
+                
+                // solo this vcam when dragging or hovering
+                if (cameraDistanceHandleIsDragged)
+                {
+                    // if solo was activated by the user, then it was not the tool who set it to solo.
+                    m_SoloSetByTools = m_SoloSetByTools || 
+                        CinemachineBrain.SoloCamera != (ICinemachineCamera) framingTransposer.VirtualCamera;
+                    CinemachineBrain.SoloCamera = framingTransposer.VirtualCamera;
+                    InspectorUtility.RepaintGameView();
+                }
+                else if (m_SoloSetByTools)
+                {
+                    CinemachineBrain.SoloCamera = null;
+                    m_SoloSetByTools = false;
+                    InspectorUtility.RepaintGameView();
                 }
             }
             Handles.color = originalColor;
