@@ -113,7 +113,10 @@ namespace Cinemachine.Editor
                 var cameraRotation = transposer.GetReferenceOrientation(up);
 
                 EditorGUI.BeginChangeCheck();
+                
+                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
+                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(transposer, "Change Follow Offset Position using handle in Scene View.");
@@ -129,16 +132,18 @@ namespace Cinemachine.Editor
                     
                     InspectorUtility.RepaintGameView();
                 }
-
-                var handleIsUsed = GUIUtility.hotControl > 0;
-                if (handleIsUsed)
+                
+                var followOffsetHandleIsUsedOrHovered = 
+                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId || 
+                    foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
+                if (followOffsetHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition, "Follow offset " + 
                         transposer.m_FollowOffset.ToString("F1"), labelStyle);
                 }
                 var originalColor = Handles.color;
-                Handles.color = handleIsUsed ? 
+                Handles.color = followOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(transposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;

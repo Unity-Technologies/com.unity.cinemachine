@@ -131,6 +131,7 @@ namespace Cinemachine
                 var cameraForward = cameraRotation * Vector3.forward;
 
                 EditorGUI.BeginChangeCheck();
+                var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1;
                 var fieldOfView = Handles.ScaleSlider(freelook.m_Lens.FieldOfView, cameraPosition, cameraForward, 
                     cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
                 if (EditorGUI.EndChangeCheck())
@@ -140,7 +141,7 @@ namespace Cinemachine
                     InspectorUtility.RepaintGameView();
                 }
                 
-                if (handleIsUsed)
+                if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     if (freelook.m_Lens.IsPhysicalCamera)
@@ -167,9 +168,11 @@ namespace Cinemachine
                 var farClipPos = cameraPosition + cameraForward * freelook.m_Lens.FarClipPlane;
                 
                 EditorGUI.BeginChangeCheck();
-                var newNearClipPos = Handles.Slider(nearClipPos, cameraForward, 
+                var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, cameraForward, 
                     HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
-                var newFarClipPos = Handles.Slider(farClipPos, cameraForward, 
+                var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, cameraForward, 
                     HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -187,7 +190,8 @@ namespace Cinemachine
                     InspectorUtility.RepaintGameView();
                 }
 
-                if (handleIsUsed)
+                if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId ||
+                    GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(nearClipPos,

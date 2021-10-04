@@ -160,7 +160,7 @@ namespace Cinemachine.Editor
         protected override void DrawSceneTools()
         {
             var orbitalTransposer = Target;
-            if (!orbitalTransposer.IsValid || Tools.current != Tool.Move || !Target.m_HideOffsetInInspector)
+            if (!orbitalTransposer.IsValid || Target.m_HideOffsetInInspector)
             {
                 return;
             }
@@ -173,7 +173,9 @@ namespace Cinemachine.Editor
                 var cameraRotation = orbitalTransposer.GetReferenceOrientation(up);
 
                 EditorGUI.BeginChangeCheck();
+                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
+                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(orbitalTransposer, 
@@ -190,9 +192,10 @@ namespace Cinemachine.Editor
                     
                     InspectorUtility.RepaintGameView();
                 }
-
-                var handleIsUsed = GUIUtility.hotControl > 0;
-                if (handleIsUsed)
+                var followOffsetHandleIsUsedOrHovered = 
+                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId || 
+                    foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
+                if (followOffsetHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition, "Follow offset " + 
@@ -200,7 +203,7 @@ namespace Cinemachine.Editor
                     
                 }
                 var originalColor = Handles.color;
-                Handles.color = handleIsUsed ? 
+                Handles.color = followOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;

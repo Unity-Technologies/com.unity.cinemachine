@@ -233,7 +233,9 @@ namespace Cinemachine.Editor
                     followTargetPosition + followTargetRotation * framingTransposer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
+                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newPos = Handles.PositionHandle(trackedObjectPosition, followTargetRotation);
+                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
@@ -250,14 +252,16 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var handleIsUsed = GUIUtility.hotControl > 0;
-                if (handleIsUsed)
+                var trackedObjectOffsetHandleIsUsedOrHovered = 
+                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId || 
+                    tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
+                if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
                         framingTransposer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
                 }
-                Handles.color = handleIsUsed ? 
+                Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
@@ -267,7 +271,10 @@ namespace Cinemachine.Editor
                 var cameraPosition = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
-                var newHandlePosition = Handles.Slider(cameraPosition, targetForward);
+                Handles.color = Color.magenta;
+                var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newHandlePosition = Handles.Slider(cdHandleId, cameraPosition, targetForward,
+                    HandleUtility.GetHandleSize(cameraPosition), Handles.ArrowHandleCap, -1);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
@@ -278,8 +285,9 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
                 
-                var handleIsUsed = GUIUtility.hotControl > 0;
-                if (handleIsUsed)
+                var cameraDistanceHandleIsUsedOrHovered = 
+                    GUIUtility.hotControl == cdHandleId || HandleUtility.nearestControl == cdHandleId;
+                if (cameraDistanceHandleIsUsedOrHovered)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition, "Camera Distance (" + 

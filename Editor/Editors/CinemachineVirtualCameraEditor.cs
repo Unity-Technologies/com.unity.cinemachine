@@ -158,9 +158,7 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var fovHandleIsUsedOrHovered = 
-                    GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId;
-                if (fovHandleIsUsedOrHovered)
+                if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     if (vcam.m_Lens.IsPhysicalCamera)
@@ -209,10 +207,8 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var nearClipOrFarClipHandleIsUsedOrHovered =
-                    GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId ||
-                    GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId;
-                if (nearClipOrFarClipHandleIsUsedOrHovered)
+                if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId ||
+                    GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(nearClipPos,

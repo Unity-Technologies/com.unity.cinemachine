@@ -82,8 +82,7 @@ namespace Cinemachine.Editor
                 Handles.color = Color.magenta;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newCameraPosition = Handles.Slider(cdHandleId, cameraPosition, targetForward,
-                    HandleUtility.GetHandleSize(cameraPosition), 
-                    Handles.ArrowHandleCap, -1);
+                    HandleUtility.GetHandleSize(cameraPosition), Handles.ArrowHandleCap, -1);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(thirdPersonFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");
