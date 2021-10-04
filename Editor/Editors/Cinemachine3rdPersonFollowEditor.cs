@@ -55,7 +55,7 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var followTargetRotation= thirdPersonFollow.FollowTargetRotation;
-                var up = followTargetRotation * Vector3.up;
+                var followUp = followTargetRotation * Vector3.up;
                 thirdPersonFollow.GetRigPositions(out var followTargetPosition, 
                     out var shoulderOffsetPosition, out var verticalArmLengthPosition);
                 var targetForward = followTargetRotation * Vector3.forward;
@@ -66,50 +66,78 @@ namespace Cinemachine.Editor
 
                 var originalColor = Handles.color;
                 EditorGUI.BeginChangeCheck();
+                var shoulderOffsetHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
+                var shoulderOffsetHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
                 Handles.color = Color.cyan;
-                var newVerticalArmLengthPosition = Handles.Slider(verticalArmLengthPosition, up);
+                var verticalArmHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newVerticalArmLengthPosition = Handles.Slider(verticalArmHandleId, 
+                    verticalArmLengthPosition, followUp, HandleUtility.GetHandleSize(verticalArmLengthPosition), 
+                    Handles.ArrowHandleCap, -1);
                 Handles.color = Color.magenta;
-                var newCameraPosition = Handles.Slider(cameraPosition, targetForward);
+                var cameraDistanceHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newCameraPosition = Handles.Slider(cameraDistanceHandleId, cameraPosition, targetForward,
+                    HandleUtility.GetHandleSize(cameraPosition), 
+                    Handles.ArrowHandleCap, -1);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(thirdPersonFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");
+
                     // calculate delta and discard imprecision, then update offset
-                    var delta = 
+                    var delta =
                         Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
                     delta = new Vector3(
                         Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
                         Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
                     thirdPersonFollow.ShoulderOffset += delta;
-                    
-                    thirdPersonFollow.VerticalArmLength += 
-                        (newVerticalArmLengthPosition - verticalArmLengthPosition).y;
 
-                    var diffCameraPos = newCameraPosition - cameraPosition;
-                    var sameDirection = Vector3.Dot(diffCameraPos.normalized, targetForward) > 0;
-                    thirdPersonFollow.CameraDistance -= (sameDirection ? 1f : -1f) * diffCameraPos.magnitude;
+                    var diffPos = newVerticalArmLengthPosition - verticalArmLengthPosition;
+                    var sameDirection = Vector3.Dot(diffPos.normalized, followUp) > 0;
+                    thirdPersonFollow.VerticalArmLength += (sameDirection ? 1f : -1f) * diffPos.magnitude;
                     
+                    diffPos = newCameraPosition - cameraPosition;
+                    sameDirection = Vector3.Dot(diffPos.normalized, targetForward) > 0;
+                    thirdPersonFollow.CameraDistance -= (sameDirection ? 1f : -1f) * diffPos.magnitude;
+
                     InspectorUtility.RepaintGameView();
                 }
 
-                var handleIsUsed = GUIUtility.hotControl > 0;
-                if (handleIsUsed)
+                var shoulderOffsetHandleIsUsed = shoulderOffsetHandleMinId < GUIUtility.hotControl 
+                    && GUIUtility.hotControl < shoulderOffsetHandleMaxId;
+                var verticalArmHandleIsUsed = GUIUtility.hotControl == verticalArmHandleId;
+                var cameraDistanceHandleIsUsed = GUIUtility.hotControl == cameraDistanceHandleId;
+                if (shoulderOffsetHandleIsUsed)
                 {
                     var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(shoulderOffsetPosition, "Shoulder Offset " + 
                         thirdPersonFollow.ShoulderOffset.ToString("F1"), labelStyle);
+                }
+                else if (verticalArmHandleIsUsed)
+                {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" + 
                         thirdPersonFollow.VerticalArmLength.ToString("F1") + ")", labelStyle);
+                }
+                else if (cameraDistanceHandleIsUsed)
+                {
+                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
                     Handles.Label(cameraPosition, "Camera Distance (" + 
                         cameraDistance.ToString("F1") + ")", labelStyle);
                 }
 
-                Handles.color = handleIsUsed ? 
+                Handles.color = shoulderOffsetHandleIsUsed ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
+                
+                Handles.color = verticalArmHandleIsUsed ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
+                
+                Handles.color = cameraDistanceHandleIsUsed ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f);
+                
                 Handles.color = originalColor;
             }
         }
