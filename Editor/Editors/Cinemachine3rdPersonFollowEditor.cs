@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
-        bool m_SoloSetByTools;
+        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var tpFollow = Target;
@@ -135,7 +135,7 @@ namespace Cinemachine.Editor
                 
                 Handles.color = originalColor;
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(tpFollow.VirtualCamera, ref m_SoloSetByTools,
+                CinemachineSceneToolUtility.SoloVcamOnConditions(tpFollow.VirtualCamera, ref m_SoloSetByMe,
                     shoulderHandleIsDragged || armHandleIsDragged || camDistanceHandleIsDragged, soHandleMaxId != -1);
             }
         }

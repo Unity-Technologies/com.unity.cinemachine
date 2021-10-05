@@ -113,7 +113,7 @@ namespace Cinemachine
             }
         }
 
-        bool m_SoloSetByTools;
+        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var freelook = Target;
@@ -159,7 +159,7 @@ namespace Cinemachine
                     }
                 }
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(freelook, ref m_SoloSetByTools, fovHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(freelook, ref m_SoloSetByMe, fovHandleIsDragged);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
@@ -198,7 +198,7 @@ namespace Cinemachine
                 }
                 
                 CinemachineSceneToolUtility.SoloVcamOnConditions(
-                    freelook, ref m_SoloSetByTools, nearFarClipHandleIsDragged);
+                    freelook, ref m_SoloSetByMe, nearFarClipHandleIsDragged);
             }
             Handles.color = originalColor;
         }

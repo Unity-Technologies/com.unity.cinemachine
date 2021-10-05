@@ -131,7 +131,7 @@ namespace Cinemachine.Editor
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
-        bool m_SoloSetByTools;
+        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var vcam = Target;
@@ -176,7 +176,7 @@ namespace Cinemachine.Editor
                     }
                 }
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(vcam, ref m_SoloSetByTools, fovHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(vcam, ref m_SoloSetByMe, fovHandleIsDragged);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
@@ -214,7 +214,7 @@ namespace Cinemachine.Editor
                 }
 
                 CinemachineSceneToolUtility.SoloVcamOnConditions(
-                    vcam, ref m_SoloSetByTools, nearFarClipHandleIsDragged);
+                    vcam, ref m_SoloSetByMe, nearFarClipHandleIsDragged);
             }
             Handles.color = originalColor;
         }

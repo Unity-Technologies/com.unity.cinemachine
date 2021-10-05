@@ -97,7 +97,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
-        bool m_SoloSetByTools;
+        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var transposer = Target;
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(transposer.FollowTargetPosition, camPos, 5f);
                 Handles.color = originalColor;
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(transposer.VirtualCamera, ref m_SoloSetByTools, 
+                CinemachineSceneToolUtility.SoloVcamOnConditions(transposer.VirtualCamera, ref m_SoloSetByMe, 
                     followOffsetHandleIsDragged, foHandleMaxId != -1);
             }
         }

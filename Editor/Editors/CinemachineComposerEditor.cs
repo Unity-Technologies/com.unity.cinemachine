@@ -106,7 +106,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        bool m_SoloSetByTools;
+        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var composer = Target;
@@ -152,7 +152,7 @@ namespace Cinemachine.Editor
                 Handles.DrawLine(trackedObjectPos, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(composer.VirtualCamera, ref m_SoloSetByTools,
+                CinemachineSceneToolUtility.SoloVcamOnConditions(composer.VirtualCamera, ref m_SoloSetByMe,
                     trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
         }

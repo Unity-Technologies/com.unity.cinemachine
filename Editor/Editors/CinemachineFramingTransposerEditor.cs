@@ -217,7 +217,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        bool m_SoloSetByTools;
+        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var framingTransposer = Target;
@@ -262,7 +262,7 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(followPos, trackedObjectPos, 5f);
                 Handles.DrawLine(trackedObjectPos, framingTransposer.VcamState.FinalPosition);
 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, ref m_SoloSetByTools,
+                CinemachineSceneToolUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, ref m_SoloSetByMe,
                     trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
@@ -293,7 +293,7 @@ namespace Cinemachine.Editor
                 }
                 
                 CinemachineSceneToolUtility.SoloVcamOnConditions(
-                    framingTransposer.VirtualCamera, ref m_SoloSetByTools, cameraDistanceHandleIsDragged);
+                    framingTransposer.VirtualCamera, ref m_SoloSetByMe, cameraDistanceHandleIsDragged);
             }
             Handles.color = originalColor;
         }

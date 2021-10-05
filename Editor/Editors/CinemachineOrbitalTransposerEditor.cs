@@ -157,7 +157,7 @@ namespace Cinemachine.Editor
             Gizmos.matrix = prevMatrix;
         }
 
-        bool m_SoloSetByTools;
+        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var orbitalTransposer = Target;
@@ -204,7 +204,7 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, camPos, 5f);
                 Handles.color = originalColor;
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(orbitalTransposer.VirtualCamera, ref m_SoloSetByTools,
+                CinemachineSceneToolUtility.SoloVcamOnConditions(orbitalTransposer.VirtualCamera, ref m_SoloSetByMe,
                     followOffsetHandleIsDragged, foHandleMaxId != -1);
             }
         }
