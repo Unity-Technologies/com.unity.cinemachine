@@ -115,9 +115,9 @@ namespace Cinemachine.Editor
 
                 EditorGUI.BeginChangeCheck();
                 
-                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
+                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
-                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(transposer, "Change Follow Offset Position using handle in Scene View.");
@@ -150,7 +150,7 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(transposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
                 
-                SceneViewUtility.SoloVcamOnConditions(transposer.VirtualCamera, 
+                CinemachineSceneToolUtility.SoloVcamOnConditions(transposer.VirtualCamera, ref m_SoloSetByTools, 
                     followOffsetHandleIsDragged, foHandleMaxId != -1);
             }
         }

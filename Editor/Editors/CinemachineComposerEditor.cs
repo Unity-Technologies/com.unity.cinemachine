@@ -123,9 +123,9 @@ namespace Cinemachine.Editor
                     lookAtTargetPosition + lookAtTargetRotation * composer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
-                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
+                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newPos = Handles.PositionHandle(trackedObjectPosition, lookAtTargetRotation);
-                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(composer, "Change Tracked Object Offset using handle in Scene View.");
@@ -147,9 +147,8 @@ namespace Cinemachine.Editor
                     tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
-                        composer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
+                    CinemachineSceneToolUtility.DrawLabel(trackedObjectPosition, 
+                        "Tracked Object Offset " + composer.m_TrackedObjectOffset.ToString("F1"));
                 }
                 
                 var originalColor = Handles.color;
@@ -159,7 +158,7 @@ namespace Cinemachine.Editor
                 Handles.DrawLine(trackedObjectPosition, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
                 
-                SceneViewUtility.SoloVcamOnConditions(composer.VirtualCamera, 
+                CinemachineSceneToolUtility.SoloVcamOnConditions(composer.VirtualCamera, ref m_SoloSetByTools,
                     trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
         }

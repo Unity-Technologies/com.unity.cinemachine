@@ -174,9 +174,9 @@ namespace Cinemachine.Editor
                 var cameraRotation = orbitalTransposer.GetReferenceOrientation(up);
 
                 EditorGUI.BeginChangeCheck();
-                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
+                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
-                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(orbitalTransposer, 
@@ -196,22 +196,21 @@ namespace Cinemachine.Editor
 
                 var followOffsetHandleIsDragged = 
                     foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
-                var followOffsetHandleIsUsedOrHovered = 
+                var followOffsetHandleIsDraggedOrHovered = 
                     followOffsetHandleIsDragged || 
                     foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
-                if (followOffsetHandleIsUsedOrHovered)
+                if (followOffsetHandleIsDraggedOrHovered)
                 {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition, "Follow offset " +
-                        orbitalTransposer.m_FollowOffset.ToString("F1"), labelStyle);
+                    CinemachineSceneToolUtility.DrawLabel(cameraPosition, 
+                        "Follow offset " + orbitalTransposer.m_FollowOffset.ToString("F1"));
                 }
                 var originalColor = Handles.color;
-                Handles.color = followOffsetHandleIsUsedOrHovered ? 
+                Handles.color = followOffsetHandleIsDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
                 
-                SceneViewUtility.SoloVcamOnConditions(orbitalTransposer.VirtualCamera, 
+                CinemachineSceneToolUtility.SoloVcamOnConditions(orbitalTransposer.VirtualCamera, ref m_SoloSetByTools,
                     followOffsetHandleIsDragged, foHandleMaxId != -1);
             }
         }

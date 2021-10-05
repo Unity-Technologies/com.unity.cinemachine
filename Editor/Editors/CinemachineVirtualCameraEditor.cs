@@ -131,6 +131,7 @@ namespace Cinemachine.Editor
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
+        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
             var vcam = Target;
@@ -148,7 +149,7 @@ namespace Cinemachine.Editor
                 var cameraForward = cameraRotation * Vector3.forward;
                 
                 EditorGUI.BeginChangeCheck();
-                var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1;
+                var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
                 var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, cameraPosition, cameraForward, 
                     cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
                 if (EditorGUI.EndChangeCheck())
@@ -177,7 +178,7 @@ namespace Cinemachine.Editor
                     }
                 }
                 
-                SceneViewUtility.SoloVcamOnConditions(vcam, fovHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(vcam, ref m_SoloSetByTools, fovHandleIsDragged);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
@@ -221,7 +222,7 @@ namespace Cinemachine.Editor
                         "Far Clip Plane (" + vcam.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
                 }
 
-                SceneViewUtility.SoloVcamOnConditions(vcam, nearFarClipHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(vcam, ref m_SoloSetByTools, nearFarClipHandleIsDragged);
             }
             Handles.color = originalColor;
         }

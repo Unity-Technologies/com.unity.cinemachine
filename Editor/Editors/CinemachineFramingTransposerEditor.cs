@@ -235,9 +235,9 @@ namespace Cinemachine.Editor
                     followTargetPosition + followTargetRotation * framingTransposer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
-                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
+                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newPos = Handles.PositionHandle(trackedObjectPosition, followTargetRotation);
-                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
@@ -269,7 +269,7 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
 
-                SceneViewUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, 
+                CinemachineSceneToolUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, ref m_SoloSetByTools,
                     trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
@@ -296,12 +296,12 @@ namespace Cinemachine.Editor
                     HandleUtility.nearestControl == cdHandleId;
                 if (cameraDistanceHandleIsUsedOrHovered)
                 {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition, "Camera Distance (" + 
-                        framingTransposer.m_CameraDistance.ToString("F1") + ")", labelStyle);
+                    CinemachineSceneToolUtility.DrawLabel(cameraPosition, 
+                        "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
                 }
                 
-                SceneViewUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, cameraDistanceHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, ref m_SoloSetByTools,
+                    cameraDistanceHandleIsDragged);
             }
             Handles.color = originalColor;
         }

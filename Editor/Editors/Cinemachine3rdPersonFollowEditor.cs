@@ -44,6 +44,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
+        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
             var tpFollow = Target;
@@ -68,13 +69,13 @@ namespace Cinemachine.Editor
                 EditorGUI.BeginChangeCheck();
 
                 // shoulder offset handle
-                var soHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
+                var soHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
-                var soHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+                var soHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
 
                 // vertical arm length handle
                 Handles.color = Color.cyan;
-                var vaHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var vaHandleId = GUIUtility.GetControlID(FocusType.Passive); 
                 var newVerticalArmLengthPosition = Handles.Slider(vaHandleId,
                     verticalArmLengthPosition, followUp, HandleUtility.GetHandleSize(verticalArmLengthPosition),
                     Handles.ArrowHandleCap, -1);
@@ -108,45 +109,49 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 var shoulderOffsetHandleIsHovered = 
                     soHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < soHandleMaxId;
                 var shoulderOffsetHandleIsDragged = 
                     soHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < soHandleMaxId;
-                if (shoulderOffsetHandleIsHovered || shoulderOffsetHandleIsDragged)
+                var shoulderOffsetHandleIsDraggedOrHovered = 
+                    shoulderOffsetHandleIsHovered || shoulderOffsetHandleIsDragged;
+                if (shoulderOffsetHandleIsDraggedOrHovered)
                 {
-                    Handles.Label(shoulderOffsetPosition, "Shoulder Offset " + tpFollow.ShoulderOffset.ToString("F1"),
-                        new GUIStyle { normal = { textColor = Handles.selectedColor } });
-                    Handles.color = Handles.selectedColor;
+                    CinemachineSceneToolUtility.DrawLabel(shoulderOffsetPosition, 
+                        "Shoulder Offset " + tpFollow.ShoulderOffset.ToString("F1"));
                 }
+                Handles.color = shoulderOffsetHandleIsDraggedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
 
-                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 var verticalArmHandleIsHovered = HandleUtility.nearestControl == vaHandleId;
                 var verticalArmHandleIsDragged = GUIUtility.hotControl == vaHandleId;
-                if (verticalArmHandleIsHovered || verticalArmHandleIsDragged)
+                var verticalArmHandleIsDraggedOrHovered = verticalArmHandleIsHovered || verticalArmHandleIsDragged;
+                if (verticalArmHandleIsDraggedOrHovered)
                 {
-                    Handles.Label(verticalArmLengthPosition, "Vertical Arm Length (" +
-                        tpFollow.VerticalArmLength.ToString("F1") + ")", 
-                        new GUIStyle { normal = { textColor = Handles.selectedColor } });
-                    Handles.color = Handles.selectedColor;
+                    CinemachineSceneToolUtility.DrawLabel(verticalArmLengthPosition, 
+                        "Vertical Arm Length (" + tpFollow.VerticalArmLength.ToString("F1") + ")");
                 }
+                Handles.color = verticalArmHandleIsDraggedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
 
-                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 var cameraDistanceHandleIsHovered = HandleUtility.nearestControl == cdHandleId;
                 var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
+                var cameraDistanceHandleIsDraggedOrHovered = 
+                    cameraDistanceHandleIsHovered || cameraDistanceHandleIsDragged;
                 if (cameraDistanceHandleIsHovered || cameraDistanceHandleIsDragged)
                 {
-                    Handles.Label(cameraPosition, "Camera Distance (" + cameraDistance.ToString("F1") + ")",
-                        new GUIStyle { normal = { textColor = Handles.selectedColor } });
-                    Handles.color = Handles.selectedColor;
+                    CinemachineSceneToolUtility.DrawLabel(cameraPosition, 
+                        "Camera Distance (" + cameraDistance.ToString("F1") + ")");
                 }
+                Handles.color = cameraDistanceHandleIsDraggedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f);
                 
                 Handles.color = originalColor;
                 
-                SceneViewUtility.SoloVcamOnConditions(tpFollow.VirtualCamera, 
+                CinemachineSceneToolUtility.SoloVcamOnConditions(tpFollow.VirtualCamera, ref m_SoloSetByTools,
                     shoulderOffsetHandleIsDragged || verticalArmHandleIsDragged || cameraDistanceHandleIsDragged,
                     soHandleMaxId != -1);
             }
