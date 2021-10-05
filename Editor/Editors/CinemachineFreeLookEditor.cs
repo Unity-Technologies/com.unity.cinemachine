@@ -186,19 +186,19 @@ namespace Cinemachine
                     InspectorUtility.RepaintGameView();
                 }
 
-                var nearFarClipHandleIsDragged = 
-                    GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId;
-                if (nearFarClipHandleIsDragged || 
-                    HandleUtility.nearestControl == ncHandleId || HandleUtility.nearestControl == fcHandleId)
+                if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(nearClipPos, 
+                    CinemachineSceneToolUtility.DrawLabel(nearClipPos,
                         "Near Clip Plane (" + freelook.m_Lens.NearClipPlane.ToString("F1") + ")");
+                }
+                if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
+                {
                     CinemachineSceneToolUtility.DrawLabel(farClipPos, 
                         "Far Clip Plane (" + freelook.m_Lens.FarClipPlane.ToString("F1") + ")");
                 }
-                
-                CinemachineSceneToolUtility.SoloVcamOnConditions(
-                    freelook, ref m_SoloSetByMe, nearFarClipHandleIsDragged);
+
+                CinemachineSceneToolUtility.SoloVcamOnConditions(freelook, ref m_SoloSetByMe, 
+                    GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId);
             }
             Handles.color = originalColor;
         }

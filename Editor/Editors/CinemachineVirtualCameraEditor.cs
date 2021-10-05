@@ -150,12 +150,15 @@ namespace Cinemachine.Editor
                 
                 EditorGUI.BeginChangeCheck();
                 var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-                var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, camPos, camForward, 
+                var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, 
+                    camPos+camForward*HandleUtility.GetHandleSize(camPos), -camForward, 
                     camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
+
                     vcam.m_Lens.FieldOfView = fieldOfView;
+                    
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -203,18 +206,19 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var nearFarClipHandleIsDragged = GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId;
-                if (nearFarClipHandleIsDragged || 
-                    HandleUtility.nearestControl == ncHandleId || HandleUtility.nearestControl == fcHandleId)
+                if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(nearClipPos, 
+                    CinemachineSceneToolUtility.DrawLabel(nearClipPos,
                         "Near Clip Plane (" + vcam.m_Lens.NearClipPlane.ToString("F1") + ")");
+                }
+                if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
+                {
                     CinemachineSceneToolUtility.DrawLabel(farClipPos, 
                         "Far Clip Plane (" + vcam.m_Lens.FarClipPlane.ToString("F1") + ")");
                 }
 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(
-                    vcam, ref m_SoloSetByMe, nearFarClipHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(vcam, ref m_SoloSetByMe, 
+                    GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId);
             }
             Handles.color = originalColor;
         }
