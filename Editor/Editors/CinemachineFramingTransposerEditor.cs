@@ -229,27 +229,21 @@ namespace Cinemachine.Editor
             var originalColor = Handles.color;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                var followTargetPosition = framingTransposer.FollowTargetPosition;
-                var followTargetRotation = framingTransposer.FollowTargetRotation;
-                var trackedObjectPosition = 
-                    followTargetPosition + followTargetRotation * framingTransposer.m_TrackedObjectOffset;
+                var followPos = framingTransposer.FollowTargetPosition;
+                var followRot = framingTransposer.FollowTargetRotation;
+                var trackedObjectPos = followPos + followRot * framingTransposer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
                 var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newPos = Handles.PositionHandle(trackedObjectPosition, followTargetRotation);
+                var newTrackedObjectPos = Handles.PositionHandle(trackedObjectPos, followRot);
                 var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
                         "Change Tracked Object Offset using handle in Scene View.");
                     
-                    // calculate delta and discard imprecision, then update offset
-                    var delta = Quaternion.Inverse(followTargetRotation) * (newPos - trackedObjectPosition);
-                    delta = new Vector3(
-                        Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
-                        Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
-                        Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
-                    framingTransposer.m_TrackedObjectOffset += delta;
+                    framingTransposer.m_TrackedObjectOffset += CinemachineSceneToolUtility.PositionHandleDelta(
+                        followRot, newTrackedObjectPos, trackedObjectPos);
                     
                     InspectorUtility.RepaintGameView();
                 }
@@ -260,33 +254,32 @@ namespace Cinemachine.Editor
                     tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(trackedObjectPosition, "Tracked Object Offset " + 
-                        framingTransposer.m_TrackedObjectOffset.ToString("F1"), labelStyle);
+                    CinemachineSceneToolUtility.DrawLabel(trackedObjectPos, 
+                        "Tracked Object Offset " + framingTransposer.m_TrackedObjectOffset.ToString("F1"));
                 }
                 Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
-                Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
+                Handles.DrawDottedLine(followPos, trackedObjectPos, 5f);
+                Handles.DrawLine(trackedObjectPos, framingTransposer.VcamState.FinalPosition);
 
                 CinemachineSceneToolUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, ref m_SoloSetByTools,
                     trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var cameraPosition = framingTransposer.VcamState.RawPosition;
+                var camPos = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = Color.magenta;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newHandlePosition = Handles.Slider(cdHandleId, cameraPosition, targetForward,
-                    HandleUtility.GetHandleSize(cameraPosition), Handles.ArrowHandleCap, 0.1f);
+                var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
+                    HandleUtility.GetHandleSize(camPos), Handles.ArrowHandleCap, 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
                         "Changed FramingTransposer distance using handle in Scene View.");
                     framingTransposer.m_CameraDistance -= 
-                        CinemachineSceneToolUtility.SliderDelta(newHandlePosition, cameraPosition, targetForward);
+                        CinemachineSceneToolUtility.SliderHandleDelta(newHandlePosition, camPos, targetForward);
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -295,12 +288,12 @@ namespace Cinemachine.Editor
                     HandleUtility.nearestControl == cdHandleId;
                 if (cameraDistanceHandleIsUsedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(cameraPosition, 
+                    CinemachineSceneToolUtility.DrawLabel(camPos, 
                         "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
                 }
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, ref m_SoloSetByTools,
-                    cameraDistanceHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(
+                    framingTransposer.VirtualCamera, ref m_SoloSetByTools, cameraDistanceHandleIsDragged);
             }
             Handles.color = originalColor;
         }

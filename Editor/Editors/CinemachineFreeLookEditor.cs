@@ -127,14 +127,14 @@ namespace Cinemachine
             Handles.color = handleIsUsed ? Handles.selectedColor : Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                var cameraPosition = freelook.State.FinalPosition;
-                var cameraRotation = freelook.State.FinalOrientation;
-                var cameraForward = cameraRotation * Vector3.forward;
+                var camPos = freelook.State.FinalPosition;
+                var camRot = freelook.State.FinalOrientation;
+                var camForward = camRot * Vector3.forward;
 
                 EditorGUI.BeginChangeCheck();
                 var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-                var fieldOfView = Handles.ScaleSlider(freelook.m_Lens.FieldOfView, cameraPosition, cameraForward, 
-                    cameraRotation, HandleUtility.GetHandleSize(cameraPosition), 0.1f);
+                var fieldOfView = Handles.ScaleSlider(freelook.m_Lens.FieldOfView, camPos, camForward, 
+                    camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(freelook, "Changed FOV using handle in scene view.");
@@ -145,7 +145,7 @@ namespace Cinemachine
                 var fovHandleIsDragged = GUIUtility.hotControl == fovHandleId;
                 if (fovHandleIsDragged || HandleUtility.nearestControl == fovHandleId)
                 {
-                    var labelPos = cameraPosition + cameraForward * HandleUtility.GetHandleSize(cameraPosition);
+                    var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
                     if (freelook.m_Lens.IsPhysicalCamera)
                     {
                         CinemachineSceneToolUtility.DrawLabel(labelPos, 
@@ -163,24 +163,26 @@ namespace Cinemachine
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                var cameraPosition = freelook.State.FinalPosition;
-                var cameraRotation = freelook.State.FinalOrientation;
-                var cameraForward = cameraRotation * Vector3.forward;
-                var nearClipPos = cameraPosition + cameraForward * freelook.m_Lens.NearClipPlane;
-                var farClipPos = cameraPosition + cameraForward * freelook.m_Lens.FarClipPlane;
+                var camPos = freelook.State.FinalPosition;
+                var camRot = freelook.State.FinalOrientation;
+                var camForward = camRot * Vector3.forward;
+                var nearClipPos = camPos + camForward * freelook.m_Lens.NearClipPlane;
+                var farClipPos = camPos + camForward * freelook.m_Lens.FarClipPlane;
                 
                 EditorGUI.BeginChangeCheck();
                 var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, cameraForward, 
+                var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
                     HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
                 var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, cameraForward, 
+                var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
                     HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(freelook, "Changed clip plane using handle in scene view.");
-                    freelook.m_Lens.NearClipPlane += CinemachineSceneToolUtility.SliderDelta(newNearClipPos, nearClipPos, cameraForward);
-                    freelook.m_Lens.FarClipPlane += CinemachineSceneToolUtility.SliderDelta(newFarClipPos, farClipPos, cameraForward);
+                    freelook.m_Lens.NearClipPlane += 
+                        CinemachineSceneToolUtility.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
+                    freelook.m_Lens.FarClipPlane += 
+                        CinemachineSceneToolUtility.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -195,7 +197,8 @@ namespace Cinemachine
                         "Far Clip Plane (" + freelook.m_Lens.FarClipPlane.ToString("F1") + ")");
                 }
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(freelook, ref m_SoloSetByTools, nearFarClipHandleIsDragged);
+                CinemachineSceneToolUtility.SoloVcamOnConditions(
+                    freelook, ref m_SoloSetByTools, nearFarClipHandleIsDragged);
             }
             Handles.color = originalColor;
         }

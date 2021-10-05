@@ -110,25 +110,20 @@ namespace Cinemachine.Editor
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(transposer.VirtualCamera);
                 var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
-                var cameraPosition = transposer.GetTargetCameraPosition(up);
-                var cameraRotation = transposer.GetReferenceOrientation(up);
+                var camPos = transposer.GetTargetCameraPosition(up);
+                var camRot = transposer.GetReferenceOrientation(up);
 
                 EditorGUI.BeginChangeCheck();
                 
                 var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newPos = Handles.PositionHandle(cameraPosition, cameraRotation);
+                var newCamPos = Handles.PositionHandle(camPos, camRot);
                 var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(transposer, "Change Follow Offset Position using handle in Scene View.");
                     
-                    // calculate delta and discard imprecision, then update offset
-                    var delta = Quaternion.Inverse(cameraRotation) * (newPos - cameraPosition);
-                    delta = new Vector3(
-                        Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
-                        Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
-                        Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
-                    transposer.m_FollowOffset += delta;
+                    transposer.m_FollowOffset += 
+                        CinemachineSceneToolUtility.PositionHandleDelta(camRot, newCamPos, camPos);
                     transposer.m_FollowOffset = transposer.EffectiveOffset; // sanitize offset
                     
                     InspectorUtility.RepaintGameView();
@@ -140,14 +135,13 @@ namespace Cinemachine.Editor
                     foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
                 if (followOffsetHandleIsUsedOrHovered)
                 {
-                    var labelStyle = new GUIStyle { normal = { textColor = Handles.selectedColor } };
-                    Handles.Label(cameraPosition, "Follow offset " + 
-                        transposer.m_FollowOffset.ToString("F1"), labelStyle);
+                    CinemachineSceneToolUtility.DrawLabel(camPos, "Follow offset " + 
+                        transposer.m_FollowOffset.ToString("F1"));
                 }
                 var originalColor = Handles.color;
                 Handles.color = followOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(transposer.FollowTargetPosition, cameraPosition, 5f);
+                Handles.DrawDottedLine(transposer.FollowTargetPosition, camPos, 5f);
                 Handles.color = originalColor;
                 
                 CinemachineSceneToolUtility.SoloVcamOnConditions(transposer.VirtualCamera, ref m_SoloSetByTools, 

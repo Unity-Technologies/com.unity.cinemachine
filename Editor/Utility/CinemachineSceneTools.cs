@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
 
@@ -130,12 +131,27 @@ namespace Cinemachine.Editor
             Handles.Label(position, text, s_LabelStyle);
         }
         
-        internal static float SliderDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
+        internal static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
         {
             var delta = newPos - oldPos;
             var sameDirection = Vector3.Dot(delta.normalized, forward) > 0;
             return (sameDirection ? 1f : -1f) * delta.magnitude;
         }
+
+        /// <summary>
+        /// Calculate delta and discard imprecision.
+        /// </summary>
+        internal static Vector3 PositionHandleDelta(Quaternion rot, Vector3 newPos, Vector3 oldPos)
+        {
+            var delta =
+                Quaternion.Inverse(rot) * (newPos - oldPos);
+            delta = new Vector3(
+                Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
+                Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
+                Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
+            return delta;
+        }
+        
 
 #if UNITY_2021_2_OR_NEWER
         static CinemachineSceneToolUtility()

@@ -117,27 +117,21 @@ namespace Cinemachine.Editor
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                var lookAtTargetPosition = composer.LookAtTargetPosition;
-                var lookAtTargetRotation = composer.LookAtTargetRotation;
-                var trackedObjectPosition = 
-                    lookAtTargetPosition + lookAtTargetRotation * composer.m_TrackedObjectOffset;
+                var lookAtPos = composer.LookAtTargetPosition;
+                var lookAtRot = composer.LookAtTargetRotation;
+                var trackedObjectPos = lookAtPos + lookAtRot * composer.m_TrackedObjectOffset;
 
                 EditorGUI.BeginChangeCheck();
                 var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newPos = Handles.PositionHandle(trackedObjectPosition, lookAtTargetRotation);
+                var newTrackedObjectPos = Handles.PositionHandle(trackedObjectPos, lookAtRot);
                 var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(composer, "Change Tracked Object Offset using handle in Scene View.");
                     
-                    // calculate delta and discard imprecision, then update offset
-                    var delta = Quaternion.Inverse(lookAtTargetRotation) * (newPos - trackedObjectPosition);
-                    delta = new Vector3(
-                        Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
-                        Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
-                        Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
-                    composer.m_TrackedObjectOffset += delta;
-                    
+                    composer.m_TrackedObjectOffset += CinemachineSceneToolUtility.PositionHandleDelta(
+                        lookAtRot, newTrackedObjectPos, trackedObjectPos);
+
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -147,15 +141,15 @@ namespace Cinemachine.Editor
                     tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(trackedObjectPosition, 
+                    CinemachineSceneToolUtility.DrawLabel(trackedObjectPos, 
                         "Tracked Object Offset " + composer.m_TrackedObjectOffset.ToString("F1"));
                 }
                 
                 var originalColor = Handles.color;
                 Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(lookAtTargetPosition, trackedObjectPosition, 5f);
-                Handles.DrawLine(trackedObjectPosition, composer.VcamState.FinalPosition);
+                Handles.DrawDottedLine(lookAtPos, trackedObjectPos, 5f);
+                Handles.DrawLine(trackedObjectPos, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
                 
                 CinemachineSceneToolUtility.SoloVcamOnConditions(composer.VirtualCamera, ref m_SoloSetByTools,
