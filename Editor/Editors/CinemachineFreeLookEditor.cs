@@ -138,7 +138,10 @@ namespace Cinemachine
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(freelook, "Changed FOV using handle in scene view.");
+                    
                     freelook.m_Lens.FieldOfView = fieldOfView;
+                    freelook.m_Lens.Validate();
+                    
                     InspectorUtility.RepaintGameView();
                 }
                 
@@ -179,10 +182,13 @@ namespace Cinemachine
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(freelook, "Changed clip plane using handle in scene view.");
+                    
                     freelook.m_Lens.NearClipPlane += 
                         CinemachineSceneToolUtility.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
                     freelook.m_Lens.FarClipPlane += 
                         CinemachineSceneToolUtility.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
+                    freelook.m_Lens.Validate();
+                    
                     InspectorUtility.RepaintGameView();
                 }
 

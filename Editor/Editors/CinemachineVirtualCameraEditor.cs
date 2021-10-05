@@ -158,6 +158,7 @@ namespace Cinemachine.Editor
                     Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
 
                     vcam.m_Lens.FieldOfView = fieldOfView;
+                    vcam.m_Lens.Validate();
                     
                     InspectorUtility.RepaintGameView();
                 }
@@ -199,10 +200,13 @@ namespace Cinemachine.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(vcam, "Changed clip plane using handle in scene view.");
+                    
                     vcam.m_Lens.NearClipPlane += 
                         CinemachineSceneToolUtility.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
                     vcam.m_Lens.FarClipPlane += 
                         CinemachineSceneToolUtility.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
+                    vcam.m_Lens.Validate();
+                    
                     InspectorUtility.RepaintGameView();
                 }
 
