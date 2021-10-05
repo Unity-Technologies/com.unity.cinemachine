@@ -141,7 +141,7 @@ namespace Cinemachine
                     freelook.m_Lens.FieldOfView = fieldOfView;
                     InspectorUtility.RepaintGameView();
                 }
-
+                
                 var fovHandleIsDragged = GUIUtility.hotControl == fovHandleId;
                 if (fovHandleIsDragged || HandleUtility.nearestControl == fovHandleId)
                 {
@@ -161,21 +161,7 @@ namespace Cinemachine
                     }
                 }
                 
-                // solo this vcam when dragging
-                if (fovHandleIsDragged)
-                {
-                    // if solo was activated by the user, then it was not the tool who set it to solo.
-                    m_SoloSetByTools = m_SoloSetByTools || 
-                        CinemachineBrain.SoloCamera != (ICinemachineCamera) freelook;
-                    CinemachineBrain.SoloCamera = freelook;
-                    InspectorUtility.RepaintGameView();
-                }
-                else if (m_SoloSetByTools)
-                {
-                    CinemachineBrain.SoloCamera = null;
-                    m_SoloSetByTools = false;
-                    InspectorUtility.RepaintGameView();
-                }
+                SceneViewUtility.SoloVcamOnConditions(freelook, fovHandleIsDragged);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
@@ -220,21 +206,7 @@ namespace Cinemachine
                         "Far Clip Plane (" + freelook.m_Lens.FarClipPlane.ToString("F1") + ")", labelStyle);
                 }
                 
-                // solo this vcam when dragging
-                if (nearFarClipHandleIsDragged)
-                {
-                    // if solo was activated by the user, then it was not the tool who set it to solo.
-                    m_SoloSetByTools = m_SoloSetByTools || 
-                        CinemachineBrain.SoloCamera != (ICinemachineCamera) freelook;
-                    CinemachineBrain.SoloCamera = freelook;
-                    InspectorUtility.RepaintGameView();
-                }
-                else if (m_SoloSetByTools)
-                {
-                    CinemachineBrain.SoloCamera = null;
-                    m_SoloSetByTools = false;
-                    InspectorUtility.RepaintGameView();
-                }
+                SceneViewUtility.SoloVcamOnConditions(freelook, nearFarClipHandleIsDragged);
             }
             Handles.color = originalColor;
         }

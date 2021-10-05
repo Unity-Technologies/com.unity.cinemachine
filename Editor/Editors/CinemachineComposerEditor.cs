@@ -159,21 +159,8 @@ namespace Cinemachine.Editor
                 Handles.DrawLine(trackedObjectPosition, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
                 
-                // solo this vcam when dragging
-                if (trackedObjectOffsetHandleIsDragged)
-                {
-                    // if solo was activated by the user, then it was not the tool who set it to solo.
-                    m_SoloSetByTools = m_SoloSetByTools || 
-                        CinemachineBrain.SoloCamera != (ICinemachineCamera) composer.VirtualCamera;
-                    CinemachineBrain.SoloCamera = composer.VirtualCamera;
-                    InspectorUtility.RepaintGameView();
-                }
-                else if (m_SoloSetByTools && tooHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
-                {
-                    CinemachineBrain.SoloCamera = null;
-                    m_SoloSetByTools = false;
-                    InspectorUtility.RepaintGameView();
-                }
+                SceneViewUtility.SoloVcamOnConditions(composer.VirtualCamera, 
+                    trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
         }
 

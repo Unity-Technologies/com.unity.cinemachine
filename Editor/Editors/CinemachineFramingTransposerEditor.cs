@@ -268,22 +268,9 @@ namespace Cinemachine.Editor
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(followTargetPosition, trackedObjectPosition, 5f);
                 Handles.DrawLine(trackedObjectPosition, framingTransposer.VcamState.FinalPosition);
-                
-                // solo this vcam when dragging
-                if (trackedObjectOffsetHandleIsDragged)
-                {
-                    // if solo was activated by the user, then it was not the tool who set it to solo.
-                    m_SoloSetByTools = m_SoloSetByTools || 
-                        CinemachineBrain.SoloCamera != (ICinemachineCamera) framingTransposer.VirtualCamera;
-                    CinemachineBrain.SoloCamera = framingTransposer.VirtualCamera;
-                    InspectorUtility.RepaintGameView();
-                }
-                else if (m_SoloSetByTools && tooHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
-                {
-                    CinemachineBrain.SoloCamera = null;
-                    m_SoloSetByTools = false;
-                    InspectorUtility.RepaintGameView();
-                }
+
+                SceneViewUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, 
+                    trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -314,21 +301,7 @@ namespace Cinemachine.Editor
                         framingTransposer.m_CameraDistance.ToString("F1") + ")", labelStyle);
                 }
                 
-                // solo this vcam when dragging or hovering
-                if (cameraDistanceHandleIsDragged)
-                {
-                    // if solo was activated by the user, then it was not the tool who set it to solo.
-                    m_SoloSetByTools = m_SoloSetByTools || 
-                        CinemachineBrain.SoloCamera != (ICinemachineCamera) framingTransposer.VirtualCamera;
-                    CinemachineBrain.SoloCamera = framingTransposer.VirtualCamera;
-                    InspectorUtility.RepaintGameView();
-                }
-                else if (m_SoloSetByTools)
-                {
-                    CinemachineBrain.SoloCamera = null;
-                    m_SoloSetByTools = false;
-                    InspectorUtility.RepaintGameView();
-                }
+                SceneViewUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, cameraDistanceHandleIsDragged);
             }
             Handles.color = originalColor;
         }

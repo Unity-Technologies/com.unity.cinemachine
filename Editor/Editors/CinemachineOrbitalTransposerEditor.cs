@@ -211,21 +211,8 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, cameraPosition, 5f);
                 Handles.color = originalColor;
                 
-                // solo this vcam when dragging
-                if (followOffsetHandleIsDragged)
-                {
-                    // if solo was activated by the user, then it was not the tool who set it to solo.
-                    m_SoloSetByTools = m_SoloSetByTools || 
-                        CinemachineBrain.SoloCamera != (ICinemachineCamera) orbitalTransposer.VirtualCamera;
-                    CinemachineBrain.SoloCamera = orbitalTransposer.VirtualCamera;
-                    InspectorUtility.RepaintGameView();
-                }
-                else if (m_SoloSetByTools && foHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
-                {
-                    CinemachineBrain.SoloCamera = null;
-                    m_SoloSetByTools = false;
-                    InspectorUtility.RepaintGameView();
-                }
+                SceneViewUtility.SoloVcamOnConditions(orbitalTransposer.VirtualCamera, 
+                    followOffsetHandleIsDragged, foHandleMaxId != -1);
             }
         }
     }

@@ -13,9 +13,9 @@ namespace Cinemachine.Editor
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine")]
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
-    public class CinemachineVirtualCameraToolbar : ToolbarOverlay
+    public class CinemachineToolbarOverlay : ToolbarOverlay
     {
-        public CinemachineVirtualCameraToolbar()
+        public CinemachineToolbarOverlay()
             : base(
                 FoVTool.id,
                 FarNearClipTool.id,

@@ -44,7 +44,6 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
-        bool m_SoloSetByTools;
         protected override void DrawSceneTools()
         {
             var tpFollow = Target;
@@ -147,19 +146,9 @@ namespace Cinemachine.Editor
                 
                 Handles.color = originalColor;
                 
-                // solo this vcam when dragging
-                if (shoulderOffsetHandleIsDragged || verticalArmHandleIsDragged || cameraDistanceHandleIsDragged)
-                {
-                    // if solo was activated by the user, then it was not the tool who set it to solo.
-                    m_SoloSetByTools = m_SoloSetByTools || 
-                        CinemachineBrain.SoloCamera != (ICinemachineCamera) tpFollow.VirtualCamera;
-                    CinemachineBrain.SoloCamera = tpFollow.VirtualCamera;
-                }
-                else if (m_SoloSetByTools && soHandleMaxId != -1) // TODO-KGB: -1: there was an error in handles -> ignore frame
-                {
-                    CinemachineBrain.SoloCamera = null;
-                    m_SoloSetByTools = false;
-                }
+                SceneViewUtility.SoloVcamOnConditions(tpFollow.VirtualCamera, 
+                    shoulderOffsetHandleIsDragged || verticalArmHandleIsDragged || cameraDistanceHandleIsDragged,
+                    soHandleMaxId != -1);
             }
         }
     }

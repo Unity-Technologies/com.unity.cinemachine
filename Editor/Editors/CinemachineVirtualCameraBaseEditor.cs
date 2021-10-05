@@ -136,9 +136,7 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
         }
-        
-        
-        
+
         /// <summary>
         /// Draw the virtual camera header in the inspector.  
         /// This includes Solo button, Live status, and global settings
