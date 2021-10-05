@@ -1,6 +1,7 @@
 using Cinemachine.Utility;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UI;
 
 namespace Cinemachine.Editor
 {
@@ -58,26 +59,26 @@ namespace Cinemachine.Editor
                 var followTargetRotation = tpFollow.FollowTargetRotation;
                 var followUp = followTargetRotation * Vector3.up;
                 tpFollow.GetRigPositions(out var followTargetPosition,
-                    out var shoulderOffsetPosition, out var verticalArmLengthPosition);
+                    out var shoulderPosition, out var verticalArmPosition);
                 var targetForward = followTargetRotation * Vector3.forward;
                 var heading =
                     tpFollow.GetHeading(targetForward, tpFollow.VirtualCamera.State.ReferenceUp);
                 var cameraDistance = tpFollow.CameraDistance;
-                var cameraPosition = verticalArmLengthPosition - targetForward * cameraDistance;
+                var cameraPosition = verticalArmPosition - targetForward * cameraDistance;
 
                 var originalColor = Handles.color;
                 EditorGUI.BeginChangeCheck();
 
                 // shoulder offset handle
                 var soHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newShoulderOffsetPosition = Handles.PositionHandle(shoulderOffsetPosition, heading);
+                var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
                 var soHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
 
                 // vertical arm length handle
                 Handles.color = Color.cyan;
                 var vaHandleId = GUIUtility.GetControlID(FocusType.Passive); 
-                var newVerticalArmLengthPosition = Handles.Slider(vaHandleId,
-                    verticalArmLengthPosition, followUp, HandleUtility.GetHandleSize(verticalArmLengthPosition),
+                var newVerticalArmPosition = Handles.Slider(vaHandleId,
+                    verticalArmPosition, followUp, HandleUtility.GetHandleSize(verticalArmPosition),
                     Handles.ArrowHandleCap, -1);
 
                 // camera distance handle
@@ -91,20 +92,17 @@ namespace Cinemachine.Editor
 
                     // calculate delta and discard imprecision, then update offset
                     var delta =
-                        Quaternion.Inverse(heading) * (newShoulderOffsetPosition - shoulderOffsetPosition);
+                        Quaternion.Inverse(heading) * (newShoulderPosition - shoulderPosition);
                     delta = new Vector3(
                         Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
                         Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
                         Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
                     tpFollow.ShoulderOffset += delta;
 
-                    var diffPos = newVerticalArmLengthPosition - verticalArmLengthPosition;
-                    var sameDirection = Vector3.Dot(diffPos.normalized, followUp) > 0;
-                    tpFollow.VerticalArmLength += (sameDirection ? 1f : -1f) * diffPos.magnitude;
-
-                    diffPos = newCameraPosition - cameraPosition;
-                    sameDirection = Vector3.Dot(diffPos.normalized, targetForward) > 0;
-                    tpFollow.CameraDistance -= (sameDirection ? 1f : -1f) * diffPos.magnitude;
+                    tpFollow.VerticalArmLength += 
+                        CinemachineSceneToolUtility.SliderDelta(newVerticalArmPosition, verticalArmPosition, followUp);
+                    tpFollow.CameraDistance -= 
+                        CinemachineSceneToolUtility.SliderDelta(newCameraPosition, cameraPosition, targetForward);
 
                     InspectorUtility.RepaintGameView();
                 }
@@ -117,24 +115,24 @@ namespace Cinemachine.Editor
                     shoulderOffsetHandleIsHovered || shoulderOffsetHandleIsDragged;
                 if (shoulderOffsetHandleIsDraggedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(shoulderOffsetPosition, 
+                    CinemachineSceneToolUtility.DrawLabel(shoulderPosition, 
                         "Shoulder Offset " + tpFollow.ShoulderOffset.ToString("F1"));
                 }
                 Handles.color = shoulderOffsetHandleIsDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(followTargetPosition, shoulderOffsetPosition, 5f);
+                Handles.DrawDottedLine(followTargetPosition, shoulderPosition, 5f);
 
                 var verticalArmHandleIsHovered = HandleUtility.nearestControl == vaHandleId;
                 var verticalArmHandleIsDragged = GUIUtility.hotControl == vaHandleId;
                 var verticalArmHandleIsDraggedOrHovered = verticalArmHandleIsHovered || verticalArmHandleIsDragged;
                 if (verticalArmHandleIsDraggedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(verticalArmLengthPosition, 
+                    CinemachineSceneToolUtility.DrawLabel(verticalArmPosition, 
                         "Vertical Arm Length (" + tpFollow.VerticalArmLength.ToString("F1") + ")");
                 }
                 Handles.color = verticalArmHandleIsDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(shoulderOffsetPosition, verticalArmLengthPosition, 5f);
+                Handles.DrawDottedLine(shoulderPosition, verticalArmPosition, 5f);
 
                 var cameraDistanceHandleIsHovered = HandleUtility.nearestControl == cdHandleId;
                 var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
@@ -147,7 +145,7 @@ namespace Cinemachine.Editor
                 }
                 Handles.color = cameraDistanceHandleIsDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(verticalArmLengthPosition, cameraPosition, 5f);
+                Handles.DrawDottedLine(verticalArmPosition, cameraPosition, 5f);
                 
                 Handles.color = originalColor;
                 

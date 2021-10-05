@@ -179,16 +179,9 @@ namespace Cinemachine
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(freelook, "Changed clip plane using handle in scene view.");
-                    freelook.m_Lens.NearClipPlane += ClipPlaneDelta(newNearClipPos, nearClipPos, cameraForward);
-                    freelook.m_Lens.FarClipPlane += ClipPlaneDelta(newFarClipPos, farClipPos, cameraForward);
+                    freelook.m_Lens.NearClipPlane += CinemachineSceneToolUtility.SliderDelta(newNearClipPos, nearClipPos, cameraForward);
+                    freelook.m_Lens.FarClipPlane += CinemachineSceneToolUtility.SliderDelta(newFarClipPos, farClipPos, cameraForward);
                     InspectorUtility.RepaintGameView();
-                    
-                    static float ClipPlaneDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
-                    {
-                        var diffClip = newPos - oldPos;
-                        var sameDirection = Vector3.Dot(diffClip.normalized, forward) > 0;
-                        return (sameDirection ? 1f : -1f) * diffClip.magnitude;
-                    }
                 }
 
                 var nearFarClipHandleIsDragged = 

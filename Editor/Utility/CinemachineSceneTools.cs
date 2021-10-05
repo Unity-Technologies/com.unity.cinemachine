@@ -129,6 +129,13 @@ namespace Cinemachine.Editor
         {
             Handles.Label(position, text, s_LabelStyle);
         }
+        
+        internal static float SliderDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
+        {
+            var delta = newPos - oldPos;
+            var sameDirection = Vector3.Dot(delta.normalized, forward) > 0;
+            return (sameDirection ? 1f : -1f) * delta.magnitude;
+        }
 
 #if UNITY_2021_2_OR_NEWER
         static CinemachineSceneToolUtility()

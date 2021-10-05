@@ -285,9 +285,8 @@ namespace Cinemachine.Editor
                 {
                     Undo.RecordObject(framingTransposer, 
                         "Changed FramingTransposer distance using handle in Scene View.");
-                    var diffHandlePosition = newHandlePosition - cameraPosition;
-                    var sameDirection = Vector3.Dot(diffHandlePosition.normalized, targetForward) > 0;
-                    framingTransposer.m_CameraDistance -= (sameDirection ? 1f : -1f) * diffHandlePosition.magnitude;
+                    framingTransposer.m_CameraDistance -= 
+                        CinemachineSceneToolUtility.SliderDelta(newHandlePosition, cameraPosition, targetForward);
                     InspectorUtility.RepaintGameView();
                 }
 

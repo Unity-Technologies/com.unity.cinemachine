@@ -198,16 +198,8 @@ namespace Cinemachine.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(vcam, "Changed clip plane using handle in scene view.");
-                    { // near clip
-                        var diffNearClip = newNearClipPos - nearClipPos;
-                        var sameDirection = Vector3.Dot(diffNearClip.normalized, cameraForward) > 0;
-                        vcam.m_Lens.NearClipPlane += (sameDirection ? 1f : -1f) * diffNearClip.magnitude;
-                    }
-                    { // far clip
-                        var diffFarClip = newFarClipPos - farClipPos;
-                        var sameDirection = Vector3.Dot(diffFarClip.normalized, cameraForward) > 0;
-                        vcam.m_Lens.FarClipPlane += (sameDirection ? 1f : -1f) * diffFarClip.magnitude;
-                    }
+                    vcam.m_Lens.NearClipPlane += CinemachineSceneToolUtility.SliderDelta(newNearClipPos, nearClipPos, cameraForward);
+                    vcam.m_Lens.FarClipPlane += CinemachineSceneToolUtility.SliderDelta(newFarClipPos, farClipPos, cameraForward);
                     InspectorUtility.RepaintGameView();
                 }
 
