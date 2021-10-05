@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.6.11] - 2021-10-05
+- Bugfix: OnTargetObjectWarped() did not work properly for 3rdPersonFollow.
 - Bugfix: POV did not properly handle overridden up.
 - Regression fix: removed GC allocs in UpdateTargetCache.
 - Bugfix: async scene load/unload could cause jitter.
-- Bugfix: Blends were sometimes incorrect when src or dst camera is looking along world up axis.
-- Bugfix: OnTargetObjectWarped() did not work properly for 3rdPersonFollow.
 - Bugfix: Input system should be read only once per render frame.
+- Bugfix: Blends were sometimes incorrect when src or dst camera is looking along world up axis.
+- Bugfix: Improve accuracy of Group Framing.
 
 
 ## [2.6.10] - 2021-08-19
