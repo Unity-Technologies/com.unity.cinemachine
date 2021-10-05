@@ -16,5 +16,3 @@
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
 
-# special handling for changelog
-CHANGELOG.md merge=union
