@@ -282,9 +282,11 @@ namespace Cinemachine.Editor
                 {
                     Undo.RecordObject(framingTransposer, 
                         "Changed FramingTransposer distance using handle in Scene View.");
+                    
                     framingTransposer.m_CameraDistance -= 
                         CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
                     framingTransposer.OnValidate();
+                    
                     InspectorUtility.RepaintGameView();
                 }
 

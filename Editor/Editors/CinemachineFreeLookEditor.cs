@@ -139,8 +139,7 @@ namespace Cinemachine
                 var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
                 var fieldOfView = Handles.ScaleSlider(
                     freelook.m_Lens.Orthographic ? freelook.m_Lens.OrthographicSize : freelook.m_Lens.FieldOfView, 
-                    camPos, camForward, 
-                    camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+                    camPos, -camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(freelook, "Changed FOV using handle in scene view.");

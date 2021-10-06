@@ -144,8 +144,7 @@ namespace Cinemachine.Editor
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
 
 #if UNITY_2021_2_OR_NEWER
-            // Only register follow offset control when not part of a freelook
-            if (!Target.m_HeadingIsSlave)
+            if (!Target.m_HideOffsetInInspector)
             {
                 CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             }

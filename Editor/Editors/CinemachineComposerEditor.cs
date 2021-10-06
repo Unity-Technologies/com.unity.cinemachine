@@ -158,7 +158,6 @@ namespace Cinemachine.Editor
 
                 if (trackedObjectOffsetHandleIsDragged)
                     CinemachineBrain.SoloCamera = composer.VirtualCamera;
-                
             }
         }
 #endif

@@ -56,8 +56,8 @@ namespace Cinemachine.Editor
             {
                 var followTargetRotation = tpFollow.FollowTargetRotation;
                 var followUp = followTargetRotation * Vector3.up;
-                tpFollow.GetRigPositions(out var followTargetPosition, 
-                    out var shoulderPosition, out var armPosition);
+                tpFollow.GetRigPositions(out var followTargetPosition, out var shoulderPosition, 
+                    out var armPosition);
                 var targetForward = followTargetRotation * Vector3.forward;
                 var heading = tpFollow.GetHeading(targetForward, tpFollow.VirtualCamera.State.ReferenceUp);
                 var camDistance = tpFollow.CameraDistance;
@@ -72,8 +72,8 @@ namespace Cinemachine.Editor
                 
                 Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 // arm handle
-                var vaHandleId = GUIUtility.GetControlID(FocusType.Passive); 
-                var newArmPosition = Handles.Slider(vaHandleId, armPosition, followUp, 
+                var aHandleId = GUIUtility.GetControlID(FocusType.Passive); 
+                var newArmPosition = Handles.Slider(aHandleId, armPosition, followUp, 
                     HandleUtility.GetHandleSize(armPosition) / 10f, Handles.CubeHandleCap, 0.5f);
 
                 // cam distance handle
@@ -96,7 +96,7 @@ namespace Cinemachine.Editor
 
                 var isDragged = HandleOnDragOrHover(soHandleMinId, soHandleMaxId, shoulderPosition, "Shoulder Offset " 
                     + tpFollow.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
-                isDragged |= HandleOnDragOrHover(vaHandleId, vaHandleId, armPosition, "Vertical Arm Length (" 
+                isDragged |= HandleOnDragOrHover(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 
                     + tpFollow.VerticalArmLength.ToString("F1") + ")", shoulderPosition, armPosition);
                 isDragged |= HandleOnDragOrHover(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
                     + camDistance.ToString("F1") + ")", armPosition, camPos);

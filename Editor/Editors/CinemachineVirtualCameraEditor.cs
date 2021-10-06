@@ -158,8 +158,7 @@ namespace Cinemachine.Editor
 
                 var fieldOfView = Handles.ScaleSlider(
                     vcam.m_Lens.Orthographic ? vcam.m_Lens.OrthographicSize : vcam.m_Lens.FieldOfView, 
-                    camPos+camForward*HandleUtility.GetHandleSize(camPos), -camForward, 
-                    camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+                    camPos, -camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
