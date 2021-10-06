@@ -133,8 +133,11 @@ namespace Cinemachine.Editor
             }
         }
 
-        static GUIStyle s_LabelStyle = 
-            new GUIStyle { normal = { textColor = Handles.selectedColor } };
+        static GUIStyle s_LabelStyle = new GUIStyle 
+        { 
+            normal = { textColor = Handles.selectedColor },
+            fontStyle = FontStyle.Bold,
+        };
         internal static void DrawLabel(Vector3 position, string text)
         {
             Handles.Label(position, text, s_LabelStyle);
