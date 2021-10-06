@@ -131,6 +131,7 @@ namespace Cinemachine.Editor
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
+        int m_ScaleSliderHash = "ScaleSliderHash".GetHashCode();  // TODO: KGB workaround until id is exposed
         bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
@@ -149,7 +150,7 @@ namespace Cinemachine.Editor
                 var camForward = camRot * Vector3.forward;
                 
                 EditorGUI.BeginChangeCheck();
-                var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
+                var fovHandleId = GUIUtility.GetControlID(m_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
                 var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, 
                     camPos+camForward*HandleUtility.GetHandleSize(camPos), -camForward, 
                     camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
