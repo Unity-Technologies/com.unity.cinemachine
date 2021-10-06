@@ -158,7 +158,6 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
-        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var orbitalTransposer = Target;
@@ -204,9 +203,9 @@ namespace Cinemachine.Editor
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, camPos, 5f);
                 Handles.color = originalColor;
-                
-                CinemachineSceneToolUtility.SoloVcamOnConditions(orbitalTransposer.VirtualCamera, ref m_SoloSetByMe,
-                    followOffsetHandleIsDragged, foHandleMaxId != -1);
+
+                if (followOffsetHandleIsDragged) 
+                    CinemachineBrain.SoloCamera = orbitalTransposer.VirtualCamera;
             }
         }
 #endif

@@ -137,7 +137,6 @@ namespace Cinemachine.Editor
 
 #if UNITY_2021_2_OR_NEWER
         int m_ScaleSliderHash = "ScaleSliderHash".GetHashCode();  // TODO: KGB workaround until id is exposed
-        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var vcam = Target;
@@ -156,6 +155,7 @@ namespace Cinemachine.Editor
                 
                 EditorGUI.BeginChangeCheck();
                 var fovHandleId = GUIUtility.GetControlID(m_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
+
                 var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, 
                     camPos+camForward*HandleUtility.GetHandleSize(camPos), -camForward, 
                     camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
@@ -169,24 +169,24 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var fovHandleIsDragged = GUIUtility.hotControl == fovHandleId;
-                if (fovHandleIsDragged || HandleUtility.nearestControl == fovHandleId)
+                if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
                     var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
                     if (vcam.m_Lens.IsPhysicalCamera)
                     {
                         CinemachineSceneToolUtility.DrawLabel(labelPos, "Focal Length (" + 
-                            Camera.FieldOfViewToFocalLength(vcam.m_Lens.FieldOfView, vcam.m_Lens.SensorSize.y)
-                                .ToString("F1") + ")");
+                            Camera.FieldOfViewToFocalLength(vcam.m_Lens.FieldOfView, 
+                                vcam.m_Lens.SensorSize.y).ToString("F1") + ")");
                     }
                     else
                     {
-                        CinemachineSceneToolUtility.DrawLabel(labelPos, "FOV (" + vcam.m_Lens.FieldOfView
-                            .ToString("F1") + ")");
+                        CinemachineSceneToolUtility.DrawLabel(labelPos, "FOV (" + 
+                            vcam.m_Lens.FieldOfView.ToString("F1") + ")");
                     }
                 }
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(vcam, ref m_SoloSetByMe, fovHandleIsDragged);
+                if (GUIUtility.hotControl == fovHandleId) 
+                    CinemachineBrain.SoloCamera = vcam;
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
@@ -226,9 +226,9 @@ namespace Cinemachine.Editor
                     CinemachineSceneToolUtility.DrawLabel(farClipPos, 
                         "Far Clip Plane (" + vcam.m_Lens.FarClipPlane.ToString("F1") + ")");
                 }
-
-                CinemachineSceneToolUtility.SoloVcamOnConditions(vcam, ref m_SoloSetByMe, 
-                    GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId);
+                
+                if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
+                    CinemachineBrain.SoloCamera = vcam;
             }
             Handles.color = originalColor;
         }

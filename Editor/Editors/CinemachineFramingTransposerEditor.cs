@@ -222,7 +222,6 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
-        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var framingTransposer = Target;
@@ -267,8 +266,8 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(followPos, trackedObjectPos, 5f);
                 Handles.DrawLine(trackedObjectPos, framingTransposer.VcamState.FinalPosition);
 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(framingTransposer.VirtualCamera, ref m_SoloSetByMe,
-                    trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
+                if (trackedObjectOffsetHandleIsDragged) 
+                    CinemachineBrain.SoloCamera = framingTransposer.VirtualCamera;
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -296,9 +295,9 @@ namespace Cinemachine.Editor
                     CinemachineSceneToolUtility.DrawLabel(camPos, 
                         "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
                 }
-                
-                CinemachineSceneToolUtility.SoloVcamOnConditions(
-                    framingTransposer.VirtualCamera, ref m_SoloSetByMe, cameraDistanceHandleIsDragged);
+
+                if (cameraDistanceHandleIsDragged) 
+                    CinemachineBrain.SoloCamera = framingTransposer.VirtualCamera;
             }
             Handles.color = originalColor;
         }

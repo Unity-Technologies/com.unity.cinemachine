@@ -111,7 +111,6 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
-        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var composer = Target;
@@ -156,9 +155,10 @@ namespace Cinemachine.Editor
                 Handles.DrawDottedLine(lookAtPos, trackedObjectPos, 5f);
                 Handles.DrawLine(trackedObjectPos, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
+
+                if (trackedObjectOffsetHandleIsDragged)
+                    CinemachineBrain.SoloCamera = composer.VirtualCamera;
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(composer.VirtualCamera, ref m_SoloSetByMe,
-                    trackedObjectOffsetHandleIsDragged, tooHandleMaxId != -1);
             }
         }
 #endif

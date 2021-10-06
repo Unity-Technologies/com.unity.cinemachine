@@ -108,32 +108,7 @@ namespace Cinemachine.Editor
                 Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
             }
         }
-        
-        /// <summary>
-        /// Solo the given vcam on conditionToSolo, and unsolos when it is false.
-        /// Extra condition to unsolo is to detect an error from handles, and don't unsolo when error is detected.
-        /// </summary>
-        /// <param name="vcam">Vcam to unsolo</param>
-        /// <<param name="soloSetState">State info if the current component has set the state</param>
-        /// <param name="conditionToSolo"></param>
-        /// <param name="extraConditionToUnsolo">This is only needed until the work around is done.</param>
-        internal static void SoloVcamOnConditions(ICinemachineCamera vcam, ref bool soloSetState, bool conditionToSolo, 
-            bool extraConditionToUnsolo = true)
-        {
-            // solo this vcam when dragging
-            if (conditionToSolo)
-            {
-                // if solo was activated by the user, then it was not the tool who set it to solo.
-                soloSetState |= CinemachineBrain.SoloCamera != vcam;
-                CinemachineBrain.SoloCamera = vcam;
-            }
-            else if (soloSetState && extraConditionToUnsolo)
-            {
-                CinemachineBrain.SoloCamera = null;
-                soloSetState = false;
-            }
-        }
-        
+
         static GUIStyle s_LabelStyle = new GUIStyle 
         { 
             normal = { textColor = Handles.selectedColor },

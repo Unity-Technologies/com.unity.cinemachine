@@ -118,7 +118,6 @@ namespace Cinemachine
         }
 
 #if UNITY_2021_2_OR_NEWER
-        bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
             var freelook = Target;
@@ -150,8 +149,7 @@ namespace Cinemachine
                     InspectorUtility.RepaintGameView();
                 }
                 
-                var fovHandleIsDragged = GUIUtility.hotControl == fovHandleId;
-                if (fovHandleIsDragged || HandleUtility.nearestControl == fovHandleId)
+                if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
                     var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
                     if (freelook.m_Lens.IsPhysicalCamera)
@@ -167,7 +165,8 @@ namespace Cinemachine
                     }
                 }
                 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(freelook, ref m_SoloSetByMe, fovHandleIsDragged);
+                if (GUIUtility.hotControl == fovHandleId) 
+                    CinemachineBrain.SoloCamera = freelook;
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
@@ -208,8 +207,9 @@ namespace Cinemachine
                         "Far Clip Plane (" + freelook.m_Lens.FarClipPlane.ToString("F1") + ")");
                 }
 
-                CinemachineSceneToolUtility.SoloVcamOnConditions(freelook, ref m_SoloSetByMe, 
-                    GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId);
+                
+                if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
+                    CinemachineBrain.SoloCamera = freelook;
             }
             Handles.color = originalColor;
         }
