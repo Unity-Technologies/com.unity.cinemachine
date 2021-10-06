@@ -1,8 +1,6 @@
-using System;
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {

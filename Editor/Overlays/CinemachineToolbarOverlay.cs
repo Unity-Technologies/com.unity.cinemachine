@@ -1,5 +1,4 @@
 #if UNITY_2021_2_OR_NEWER
-using System;
 using UnityEditor;
 using UnityEditor.Overlays;
 using UnityEditor.Toolbars;

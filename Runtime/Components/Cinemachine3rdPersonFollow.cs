@@ -2,7 +2,6 @@
 #define CINEMACHINE_PHYSICS
 #endif
 
-using System;
 using UnityEngine;
 using Cinemachine.Utility;
 

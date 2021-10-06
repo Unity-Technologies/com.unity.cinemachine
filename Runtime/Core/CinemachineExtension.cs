@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
