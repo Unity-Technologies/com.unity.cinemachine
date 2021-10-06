@@ -70,23 +70,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        protected virtual void OnEnable()
-        {
-            for (int i = 0; i < targets.Length; ++i)
-                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
-
-            // Only register follow offset control when not part of a freelook
-            if (!Target.m_HeadingIsSlave)
-            {
-                CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            }
-        }
-
-        protected virtual void OnDisable()
-        {
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        }
-
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -156,6 +139,26 @@ namespace Cinemachine.Editor
             }
             Gizmos.matrix = prevMatrix;
         }
+        
+        protected virtual void OnEnable()
+        {
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
+
+#if UNITY_2021_2_OR_NEWER
+            // Only register follow offset control when not part of a freelook
+            if (!Target.m_HeadingIsSlave)
+            {
+                CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+            }
+#endif
+        }
+
+#if UNITY_2021_2_OR_NEWER
+        protected virtual void OnDisable()
+        {
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+        }
 
         bool m_SoloSetByMe;
         protected override void DrawSceneTools()
@@ -208,5 +211,6 @@ namespace Cinemachine.Editor
                     followOffsetHandleIsDragged, foHandleMaxId != -1);
             }
         }
+#endif
     }
 }

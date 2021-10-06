@@ -31,8 +31,10 @@ namespace Cinemachine
             base.OnEnable();
             Target.UpdateInputAxisProvider();
             
+#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
+#endif
         }
         
         protected override void OnDisable()
@@ -42,9 +44,11 @@ namespace Cinemachine
             // Must destroy child editors or we get exceptions
             if (m_rigEditor != null)
                 UnityEngine.Object.DestroyImmediate(m_rigEditor);
-            
+        
+#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
+#endif
         }
 
         public override void OnInspectorGUI()
@@ -113,6 +117,7 @@ namespace Cinemachine
             }
         }
 
+#if UNITY_2021_2_OR_NEWER
         bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
@@ -208,6 +213,7 @@ namespace Cinemachine
             }
             Handles.color = originalColor;
         }
+#endif
         
         static GUIContent[] s_RigNames = 
         {

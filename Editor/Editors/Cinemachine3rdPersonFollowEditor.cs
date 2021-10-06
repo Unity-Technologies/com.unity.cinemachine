@@ -35,6 +35,7 @@ namespace Cinemachine.Editor
             }
         }
         
+#if UNITY_2021_2_OR_NEWER
         protected virtual void OnEnable()
         {
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -139,6 +140,7 @@ namespace Cinemachine.Editor
                     shoulderHandleIsDragged || armHandleIsDragged || camDistanceHandleIsDragged, soHandleMaxId != -1);
             }
         }
+#endif
     }
 }
 

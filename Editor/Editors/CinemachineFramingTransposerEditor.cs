@@ -94,8 +94,10 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
             
+#if UNITY_2021_2_OR_NEWER           
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
+#endif
         }
 
         protected virtual void OnDisable()
@@ -105,8 +107,10 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
 
+#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
+#endif
         }
 
         public override void OnInspectorGUI()
@@ -217,6 +221,7 @@ namespace Cinemachine.Editor
             }
         }
 
+#if UNITY_2021_2_OR_NEWER
         bool m_SoloSetByMe;
         protected override void DrawSceneTools()
         {
@@ -297,5 +302,6 @@ namespace Cinemachine.Editor
             }
             Handles.color = originalColor;
         }
+#endif
     }
 }

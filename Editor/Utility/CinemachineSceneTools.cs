@@ -1,3 +1,4 @@
+#if UNITY_2021_2_OR_NEWER
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -132,7 +133,7 @@ namespace Cinemachine.Editor
                 soloSetState = false;
             }
         }
-
+        
         static GUIStyle s_LabelStyle = new GUIStyle 
         { 
             normal = { textColor = Handles.selectedColor },
@@ -164,8 +165,6 @@ namespace Cinemachine.Editor
             return delta;
         }
         
-
-#if UNITY_2021_2_OR_NEWER
         static CinemachineSceneToolUtility()
         {
             s_Tools = new SortedDictionary<Type, CinemachineSceneToolDelegates>(Comparer<Type>.Create(
@@ -201,6 +200,6 @@ namespace Cinemachine.Editor
                 }
             };
         }
-#endif
     }
 }
+#endif
