@@ -156,14 +156,22 @@ namespace Cinemachine.Editor
                 EditorGUI.BeginChangeCheck();
                 var fovHandleId = GUIUtility.GetControlID(m_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
 
-                var fieldOfView = Handles.ScaleSlider(vcam.m_Lens.FieldOfView, 
+                var fieldOfView = Handles.ScaleSlider(
+                    vcam.m_Lens.Orthographic ? vcam.m_Lens.OrthographicSize : vcam.m_Lens.FieldOfView, 
                     camPos+camForward*HandleUtility.GetHandleSize(camPos), -camForward, 
                     camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
 
-                    vcam.m_Lens.FieldOfView = fieldOfView;
+                    if (vcam.m_Lens.Orthographic)
+                    {
+                        vcam.m_Lens.OrthographicSize = fieldOfView;
+                    }
+                    else
+                    {
+                        vcam.m_Lens.FieldOfView = fieldOfView;
+                    }
                     vcam.m_Lens.Validate();
                     
                     InspectorUtility.RepaintGameView();
@@ -171,18 +179,9 @@ namespace Cinemachine.Editor
 
                 if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
-                    var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
-                    if (vcam.m_Lens.IsPhysicalCamera)
-                    {
-                        CinemachineSceneToolUtility.DrawLabel(labelPos, "Focal Length (" + 
-                            Camera.FieldOfViewToFocalLength(vcam.m_Lens.FieldOfView, 
-                                vcam.m_Lens.SensorSize.y).ToString("F1") + ")");
-                    }
-                    else
-                    {
-                        CinemachineSceneToolUtility.DrawLabel(labelPos, "FOV (" + 
-                            vcam.m_Lens.FieldOfView.ToString("F1") + ")");
-                    }
+                    CinemachineSceneToolHelpers.DrawLabelForFOV(vcam.m_Lens, 
+                        camPos + camForward * HandleUtility.GetHandleSize(camPos), 
+                        m_LensSettingsInspectorHelper.UseHorizontalFOV);
                 }
                 
                 if (GUIUtility.hotControl == fovHandleId) 
@@ -208,9 +207,9 @@ namespace Cinemachine.Editor
                     Undo.RecordObject(vcam, "Changed clip plane using handle in scene view.");
                     
                     vcam.m_Lens.NearClipPlane += 
-                        CinemachineSceneToolUtility.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
+                        CinemachineSceneToolHelpers.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
                     vcam.m_Lens.FarClipPlane += 
-                        CinemachineSceneToolUtility.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
+                        CinemachineSceneToolHelpers.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
                     vcam.m_Lens.Validate();
                     
                     InspectorUtility.RepaintGameView();
@@ -218,12 +217,12 @@ namespace Cinemachine.Editor
 
                 if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(nearClipPos,
+                    CinemachineSceneToolHelpers.DrawLabel(nearClipPos,
                         "Near Clip Plane (" + vcam.m_Lens.NearClipPlane.ToString("F1") + ")");
                 }
                 if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(farClipPos, 
+                    CinemachineSceneToolHelpers.DrawLabel(farClipPos, 
                         "Far Clip Plane (" + vcam.m_Lens.FarClipPlane.ToString("F1") + ")");
                 }
                 

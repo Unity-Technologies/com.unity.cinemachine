@@ -137,13 +137,22 @@ namespace Cinemachine
 
                 EditorGUI.BeginChangeCheck();
                 var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-                var fieldOfView = Handles.ScaleSlider(freelook.m_Lens.FieldOfView, camPos, camForward, 
+                var fieldOfView = Handles.ScaleSlider(
+                    freelook.m_Lens.Orthographic ? freelook.m_Lens.OrthographicSize : freelook.m_Lens.FieldOfView, 
+                    camPos, camForward, 
                     camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(freelook, "Changed FOV using handle in scene view.");
-                    
-                    freelook.m_Lens.FieldOfView = fieldOfView;
+
+                    if (freelook.m_Lens.Orthographic)
+                    {
+                        freelook.m_Lens.OrthographicSize = fieldOfView;
+                    }
+                    else
+                    {
+                        freelook.m_Lens.FieldOfView = fieldOfView;
+                    }
                     freelook.m_Lens.Validate();
                     
                     InspectorUtility.RepaintGameView();
@@ -151,18 +160,9 @@ namespace Cinemachine
                 
                 if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
-                    var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
-                    if (freelook.m_Lens.IsPhysicalCamera)
-                    {
-                        CinemachineSceneToolUtility.DrawLabel(labelPos, 
-                            "Focal Length (" + Camera.FieldOfViewToFocalLength(freelook.m_Lens.FieldOfView, 
-                                    freelook.m_Lens.SensorSize.y).ToString("F1") + ")");
-                    }
-                    else
-                    {
-                        CinemachineSceneToolUtility.DrawLabel(labelPos, 
-                            "FOV (" + freelook.m_Lens.FieldOfView.ToString("F1") + ")");
-                    }
+                    CinemachineSceneToolHelpers.DrawLabelForFOV(freelook.m_Lens, 
+                        camPos + camForward * HandleUtility.GetHandleSize(camPos), 
+                        m_LensSettingsInspectorHelper.UseHorizontalFOV);
                 }
                 
                 if (GUIUtility.hotControl == fovHandleId) 
@@ -188,9 +188,9 @@ namespace Cinemachine
                     Undo.RecordObject(freelook, "Changed clip plane using handle in scene view.");
                     
                     freelook.m_Lens.NearClipPlane += 
-                        CinemachineSceneToolUtility.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
+                        CinemachineSceneToolHelpers.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
                     freelook.m_Lens.FarClipPlane += 
-                        CinemachineSceneToolUtility.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
+                        CinemachineSceneToolHelpers.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
                     freelook.m_Lens.Validate();
                     
                     InspectorUtility.RepaintGameView();
@@ -198,12 +198,12 @@ namespace Cinemachine
 
                 if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(nearClipPos,
+                    CinemachineSceneToolHelpers.DrawLabel(nearClipPos,
                         "Near Clip Plane (" + freelook.m_Lens.NearClipPlane.ToString("F1") + ")");
                 }
                 if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(farClipPos, 
+                    CinemachineSceneToolHelpers.DrawLabel(farClipPos, 
                         "Far Clip Plane (" + freelook.m_Lens.FarClipPlane.ToString("F1") + ")");
                 }
 

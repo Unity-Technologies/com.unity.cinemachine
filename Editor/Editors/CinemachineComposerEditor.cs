@@ -133,7 +133,7 @@ namespace Cinemachine.Editor
                 {
                     Undo.RecordObject(composer, "Change Tracked Object Offset using handle in Scene View.");
                     
-                    composer.m_TrackedObjectOffset += CinemachineSceneToolUtility.PositionHandleDelta(
+                    composer.m_TrackedObjectOffset += CinemachineSceneToolHelpers.PositionHandleDelta(
                         lookAtRot, newTrackedObjectPos, trackedObjectPos);
 
                     InspectorUtility.RepaintGameView();
@@ -145,7 +145,7 @@ namespace Cinemachine.Editor
                     tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(trackedObjectPos, 
+                    CinemachineSceneToolHelpers.DrawLabel(trackedObjectPos, 
                         "Tracked Object Offset " + composer.m_TrackedObjectOffset.ToString("F1"));
                 }
                 

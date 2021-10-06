@@ -108,37 +108,6 @@ namespace Cinemachine.Editor
                 Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
             }
         }
-
-        static GUIStyle s_LabelStyle = new GUIStyle 
-        { 
-            normal = { textColor = Handles.selectedColor },
-            fontStyle = FontStyle.Bold,
-        };
-        internal static void DrawLabel(Vector3 position, string text)
-        {
-            Handles.Label(position, text, s_LabelStyle);
-        }
-        
-        internal static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
-        {
-            var delta = newPos - oldPos;
-            var sameDirection = Vector3.Dot(delta.normalized, forward) > 0;
-            return (sameDirection ? 1f : -1f) * delta.magnitude;
-        }
-
-        /// <summary>
-        /// Calculate delta and discard imprecision.
-        /// </summary>
-        internal static Vector3 PositionHandleDelta(Quaternion rot, Vector3 newPos, Vector3 oldPos)
-        {
-            var delta =
-                Quaternion.Inverse(rot) * (newPos - oldPos);
-            delta = new Vector3(
-                Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
-                Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
-                Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
-            return delta;
-        }
         
         static CinemachineSceneToolUtility()
         {
@@ -176,5 +145,66 @@ namespace Cinemachine.Editor
             };
         }
     }
+    
+    static class CinemachineSceneToolHelpers
+    {
+        static GUIStyle s_LabelStyle = new GUIStyle 
+        { 
+            normal = { textColor = Handles.selectedColor },
+            fontStyle = FontStyle.Bold,
+        };
+
+        public static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
+        {
+            var delta = newPos - oldPos;
+            var sameDirection = Vector3.Dot(delta.normalized, forward) > 0;
+            return (sameDirection ? 1f : -1f) * delta.magnitude;
+        }
+
+        /// <summary>
+        /// Calculate delta and discard imprecision.
+        /// </summary>
+        public static Vector3 PositionHandleDelta(Quaternion rot, Vector3 newPos, Vector3 oldPos)
+        {
+            var delta =
+                Quaternion.Inverse(rot) * (newPos - oldPos);
+            delta = new Vector3(
+                Mathf.Abs(delta.x) < UnityVectorExtensions.Epsilon ? 0 : delta.x,
+                Mathf.Abs(delta.y) < UnityVectorExtensions.Epsilon ? 0 : delta.y,
+                Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
+            return delta;
+        }
+        
+        public static void DrawLabel(Vector3 position, string text)
+        {
+            Handles.Label(position, text, s_LabelStyle);
+        }
+
+        public static void DrawLabelForFOV(LensSettings lens, Vector3 labelPos, bool useHorizontalFOV)
+        {
+            if (lens.IsPhysicalCamera)
+            {
+                DrawLabel(labelPos, "Focal Length (" + 
+                    Camera.FieldOfViewToFocalLength(lens.FieldOfView, 
+                        lens.SensorSize.y).ToString("F1") + ")");
+            }
+            else if (lens.Orthographic)
+            {
+                DrawLabel(labelPos, "Orthographic Size (" + 
+                    lens.OrthographicSize.ToString("F1") + ")");
+            }
+            else if (useHorizontalFOV)
+            {
+                DrawLabel(labelPos, "Horizontal FOV (" +
+                    Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView,
+                        lens.Aspect).ToString("F1") + ")");
+            }
+            else
+            {
+                DrawLabel(labelPos, "Vertical FOV (" + 
+                    lens.FieldOfView.ToString("F1") + ")");
+            }
+        }
+    } 
 }
 #endif

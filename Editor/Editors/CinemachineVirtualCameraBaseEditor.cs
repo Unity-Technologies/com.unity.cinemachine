@@ -356,7 +356,7 @@ namespace Cinemachine.Editor
                     MessageType.Info);
         }
 
-        LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
+        private protected LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
 
         /// <summary>
         /// Draw the Lens Settings controls in the inspector
@@ -404,7 +404,7 @@ namespace Cinemachine.Editor
         bool IsOrtho;
         bool IsPhysical;
         Vector2 SensorSize;
-        bool UseHorizontalFOV;
+        internal bool UseHorizontalFOV;
         static bool s_AdvancedExpanded;
         SerializedProperty ModeOverrideProperty;
 

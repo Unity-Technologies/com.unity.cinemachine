@@ -122,7 +122,7 @@ namespace Cinemachine.Editor
                     Undo.RecordObject(transposer, "Change Follow Offset Position using handle in Scene View.");
                     
                     transposer.m_FollowOffset += 
-                        CinemachineSceneToolUtility.PositionHandleDelta(camRot, newCamPos, camPos);
+                        CinemachineSceneToolHelpers.PositionHandleDelta(camRot, newCamPos, camPos);
                     transposer.m_FollowOffset = transposer.EffectiveOffset; // sanitize offset
                     
                     InspectorUtility.RepaintGameView();
@@ -134,7 +134,7 @@ namespace Cinemachine.Editor
                     foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
                 if (followOffsetHandleIsUsedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(camPos, "Follow offset " + 
+                    CinemachineSceneToolHelpers.DrawLabel(camPos, "Follow offset " + 
                         transposer.m_FollowOffset.ToString("F1"));
                 }
                 var originalColor = Handles.color;

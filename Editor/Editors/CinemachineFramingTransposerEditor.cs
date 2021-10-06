@@ -246,7 +246,7 @@ namespace Cinemachine.Editor
                     Undo.RecordObject(framingTransposer, 
                         "Change Tracked Object Offset using handle in Scene View.");
                     
-                    framingTransposer.m_TrackedObjectOffset += CinemachineSceneToolUtility.PositionHandleDelta(
+                    framingTransposer.m_TrackedObjectOffset += CinemachineSceneToolHelpers.PositionHandleDelta(
                         followRot, newTrackedObjectPos, trackedObjectPos);
                     
                     InspectorUtility.RepaintGameView();
@@ -258,7 +258,7 @@ namespace Cinemachine.Editor
                     tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(trackedObjectPos, 
+                    CinemachineSceneToolHelpers.DrawLabel(trackedObjectPos, 
                         "Tracked Object Offset " + framingTransposer.m_TrackedObjectOffset.ToString("F1"));
                 }
                 Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
@@ -283,7 +283,7 @@ namespace Cinemachine.Editor
                     Undo.RecordObject(framingTransposer, 
                         "Changed FramingTransposer distance using handle in Scene View.");
                     framingTransposer.m_CameraDistance -= 
-                        CinemachineSceneToolUtility.SliderHandleDelta(newHandlePosition, camPos, targetForward);
+                        CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
                     InspectorUtility.RepaintGameView();
                 }
 
@@ -292,7 +292,7 @@ namespace Cinemachine.Editor
                     HandleUtility.nearestControl == cdHandleId;
                 if (cameraDistanceHandleIsUsedOrHovered)
                 {
-                    CinemachineSceneToolUtility.DrawLabel(camPos, 
+                    CinemachineSceneToolHelpers.DrawLabel(camPos, 
                         "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
                 }
 

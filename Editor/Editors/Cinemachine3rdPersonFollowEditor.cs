@@ -86,11 +86,11 @@ namespace Cinemachine.Editor
                     Undo.RecordObject(tpFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");
 
                     tpFollow.ShoulderOffset += 
-                        CinemachineSceneToolUtility.PositionHandleDelta(heading, newShoulderPosition, shoulderPosition);
+                        CinemachineSceneToolHelpers.PositionHandleDelta(heading, newShoulderPosition, shoulderPosition);
                     tpFollow.VerticalArmLength += 
-                        CinemachineSceneToolUtility.SliderHandleDelta(newArmPosition, armPosition, followUp);
+                        CinemachineSceneToolHelpers.SliderHandleDelta(newArmPosition, armPosition, followUp);
                     tpFollow.CameraDistance -= 
-                        CinemachineSceneToolUtility.SliderHandleDelta(newCamPos, camPos, targetForward);
+                        CinemachineSceneToolHelpers.SliderHandleDelta(newCamPos, camPos, targetForward);
 
                     InspectorUtility.RepaintGameView();
                 }
@@ -123,7 +123,7 @@ namespace Cinemachine.Editor
                     }
 
                     if (handleIsDraggedOrHovered)
-                        CinemachineSceneToolUtility.DrawLabel(labelPos, text);
+                        CinemachineSceneToolHelpers.DrawLabel(labelPos, text);
                     
                     Handles.color = handleIsDraggedOrHovered ? 
                         Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
