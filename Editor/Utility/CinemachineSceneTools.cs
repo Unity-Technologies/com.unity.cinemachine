@@ -180,7 +180,7 @@ namespace Cinemachine.Editor
             Handles.Label(position, text, s_LabelStyle);
         }
 
-        public static void DrawLabelForFOV(LensSettings lens, Vector3 labelPos, bool useHorizontalFOV)
+        public static void DrawLabelForFov(LensSettings lens, Vector3 labelPos, bool useHorizontalFov)
         {
             if (lens.IsPhysicalCamera)
             {
@@ -193,7 +193,7 @@ namespace Cinemachine.Editor
                 DrawLabel(labelPos, "Orthographic Size (" + 
                     lens.OrthographicSize.ToString("F1") + ")");
             }
-            else if (useHorizontalFOV)
+            else if (useHorizontalFov)
             {
                 DrawLabel(labelPos, "Horizontal FOV (" +
                     Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView,

@@ -146,7 +146,7 @@ namespace Cinemachine.Editor
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
                     CinemachineSceneToolHelpers.DrawLabel(trackedObjectPos, 
-                        "Tracked Object Offset " + composer.m_TrackedObjectOffset.ToString("F1"));
+                        "(Aim) Tracked Object Offset " + composer.m_TrackedObjectOffset.ToString("F1"));
                 }
                 
                 var originalColor = Handles.color;

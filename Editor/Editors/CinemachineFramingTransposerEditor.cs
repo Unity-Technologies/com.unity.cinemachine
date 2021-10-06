@@ -259,7 +259,7 @@ namespace Cinemachine.Editor
                 if (trackedObjectOffsetHandleIsUsedOrHovered)
                 {
                     CinemachineSceneToolHelpers.DrawLabel(trackedObjectPos, 
-                        "Tracked Object Offset " + framingTransposer.m_TrackedObjectOffset.ToString("F1"));
+                        "(Body) Tracked Object Offset " + framingTransposer.m_TrackedObjectOffset.ToString("F1"));
                 }
                 Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;

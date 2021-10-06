@@ -179,7 +179,7 @@ namespace Cinemachine.Editor
 
                 if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
-                    CinemachineSceneToolHelpers.DrawLabelForFOV(vcam.m_Lens, 
+                    CinemachineSceneToolHelpers.DrawLabelForFov(vcam.m_Lens, 
                         camPos + camForward * HandleUtility.GetHandleSize(camPos), 
                         m_LensSettingsInspectorHelper.UseHorizontalFOV);
                 }

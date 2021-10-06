@@ -160,7 +160,7 @@ namespace Cinemachine
                 
                 if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
                 {
-                    CinemachineSceneToolHelpers.DrawLabelForFOV(freelook.m_Lens, 
+                    CinemachineSceneToolHelpers.DrawLabelForFov(freelook.m_Lens, 
                         camPos + camForward * HandleUtility.GetHandleSize(camPos), 
                         m_LensSettingsInspectorHelper.UseHorizontalFOV);
                 }
