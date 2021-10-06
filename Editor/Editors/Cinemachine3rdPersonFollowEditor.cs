@@ -96,46 +96,42 @@ namespace Cinemachine.Editor
                     InspectorUtility.RepaintGameView();
                 }
 
-                var shoulderHandleIsDragged = 
-                    soHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < soHandleMaxId;
-                var shoulderHandleIsDraggedOrHovered = shoulderHandleIsDragged ||
-                    (soHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < soHandleMaxId);
-                if (shoulderHandleIsDraggedOrHovered)
-                {
-                    CinemachineSceneToolUtility.DrawLabel(shoulderPosition, 
-                        "Shoulder Offset " + tpFollow.ShoulderOffset.ToString("F1"));
-                }
-                Handles.color = shoulderHandleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(followTargetPosition, shoulderPosition, 5f);
-
-                var armHandleIsDragged = GUIUtility.hotControl == vaHandleId;
-                var armHandleIsDraggedOrHovered = armHandleIsDragged || HandleUtility.nearestControl == vaHandleId;
-                if (armHandleIsDraggedOrHovered)
-                {
-                    CinemachineSceneToolUtility.DrawLabel(armPosition, 
-                        "Vertical Arm Length (" + tpFollow.VerticalArmLength.ToString("F1") + ")");
-                }
-                Handles.color = armHandleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(shoulderPosition, armPosition, 5f);
-
-                var camDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
-                var camDistanceHandleIsDraggedOrHovered = camDistanceHandleIsDragged || 
-                    HandleUtility.nearestControl == cdHandleId;
-                if (camDistanceHandleIsDraggedOrHovered)
-                {
-                    CinemachineSceneToolUtility.DrawLabel(camPos, 
-                        "Camera Distance (" + camDistance.ToString("F1") + ")");
-                }
-                Handles.color = camDistanceHandleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(armPosition, camPos, 5f);
-                
+                var isDragged = HandleOnDragOrHover(soHandleMinId, soHandleMaxId, shoulderPosition, "Shoulder Offset " 
+                    + tpFollow.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
+                isDragged |= HandleOnDragOrHover(vaHandleId, vaHandleId, armPosition, "Vertical Arm Length (" 
+                    + tpFollow.VerticalArmLength.ToString("F1") + ")", shoulderPosition, armPosition);
+                isDragged |= HandleOnDragOrHover(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
+                    + camDistance.ToString("F1") + ")", armPosition, camPos);
                 Handles.color = originalColor;
-                
+
                 CinemachineSceneToolUtility.SoloVcamOnConditions(tpFollow.VirtualCamera, ref m_SoloSetByMe,
-                    shoulderHandleIsDragged || armHandleIsDragged || camDistanceHandleIsDragged, soHandleMaxId != -1);
+                    isDragged, soHandleMaxId != -1);
+
+                static bool HandleOnDragOrHover
+                    (int handleMinId, int handleMaxId, Vector3 labelPos, string text, Vector3 lineStart, Vector3 lineEnd)
+                {
+                    bool handleIsDragged;
+                    bool handleIsDraggedOrHovered;
+                    if (handleMinId == handleMaxId) {
+                        handleIsDragged = GUIUtility.hotControl == handleMinId; 
+                        handleIsDraggedOrHovered = handleIsDragged || HandleUtility.nearestControl == handleMinId;
+                    }
+                    else
+                    {
+                        handleIsDragged = handleMinId < GUIUtility.hotControl && GUIUtility.hotControl < handleMaxId;
+                        handleIsDraggedOrHovered = handleIsDragged ||
+                            (handleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < handleMaxId);
+                    }
+
+                    if (handleIsDraggedOrHovered)
+                        CinemachineSceneToolUtility.DrawLabel(labelPos, text);
+                    
+                    Handles.color = handleIsDraggedOrHovered ? 
+                        Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                    Handles.DrawDottedLine(lineStart, lineEnd, 5f);
+                    
+                    return handleIsDragged;
+                }
             }
         }
 #endif
