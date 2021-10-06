@@ -274,16 +274,17 @@ namespace Cinemachine.Editor
                 var camPos = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
-                Handles.color = Color.magenta;
+                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
-                    HandleUtility.GetHandleSize(camPos), Handles.ArrowHandleCap, 0.1f);
+                    HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(framingTransposer, 
                         "Changed FramingTransposer distance using handle in Scene View.");
                     framingTransposer.m_CameraDistance -= 
                         CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
+                    framingTransposer.OnValidate();
                     InspectorUtility.RepaintGameView();
                 }
 

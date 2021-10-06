@@ -69,18 +69,17 @@ namespace Cinemachine.Editor
                 var soHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
                 var soHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-
+                
+                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 // arm handle
-                Handles.color = Color.cyan;
                 var vaHandleId = GUIUtility.GetControlID(FocusType.Passive); 
                 var newArmPosition = Handles.Slider(vaHandleId, armPosition, followUp, 
-                    HandleUtility.GetHandleSize(armPosition), Handles.ArrowHandleCap, -1);
+                    HandleUtility.GetHandleSize(armPosition) / 10f, Handles.CubeHandleCap, 0.5f);
 
                 // cam distance handle
-                Handles.color = Color.magenta;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newCamPos = Handles.Slider(cdHandleId, camPos, targetForward, 
-                    HandleUtility.GetHandleSize(camPos), Handles.ArrowHandleCap, -1);
+                    HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(tpFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");

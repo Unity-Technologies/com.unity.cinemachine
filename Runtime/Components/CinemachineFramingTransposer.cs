@@ -303,7 +303,7 @@ namespace Cinemachine
             }
         }
 
-        private void OnValidate()
+        internal void OnValidate()
         {
             m_CameraDistance = Mathf.Max(m_CameraDistance, kMinimumCameraDistance);
             m_DeadZoneDepth = Mathf.Max(m_DeadZoneDepth, 0);
