@@ -67,12 +67,21 @@ namespace Cinemachine.Editor
             });
         }
 
-        public delegate bool ToolbarHandler();
+        internal delegate bool ToolbarHandler();
         static ToolbarHandler s_ToolBarIsDisplayed;
         internal static void RegisterToolbarIsDisplayedHandler(ToolbarHandler handler)
         {
             s_ToolBarIsDisplayed = handler;
         }
+
+        static bool s_ToolbarTurnOffByMe;
+        internal delegate bool ToolbarTurnOnOffHandler(bool on);
+        static ToolbarTurnOnOffHandler s_ToolBarDisplay;
+        internal static void RegisterToolbarDisplayHandler(ToolbarTurnOnOffHandler handler)
+        {
+            s_ToolBarDisplay = handler;
+        }
+
 
         internal static void SetTool(bool active, Type tool)
         {
@@ -114,7 +123,7 @@ namespace Cinemachine.Editor
             if (conditionToSolo)
             {
                 // if solo was activated by the user, then it was not the tool who set it to solo.
-                soloSetState = soloSetState || CinemachineBrain.SoloCamera != vcam;
+                soloSetState |= CinemachineBrain.SoloCamera != vcam;
                 CinemachineBrain.SoloCamera = vcam;
             }
             else if (soloSetState && extraConditionToUnsolo)
@@ -162,6 +171,16 @@ namespace Cinemachine.Editor
             
             EditorApplication.update += () =>
             {
+                if (s_RequiredTools.Count <= 0)
+                {
+                    s_ToolbarTurnOffByMe |= s_ToolBarDisplay(false);
+                }
+                else if (s_ToolbarTurnOffByMe)
+                {
+                    s_ToolBarDisplay(true);
+                    s_ToolbarTurnOffByMe = false;
+                }
+                
                 var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
                 // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
                 if (Tools.current != Tool.None || cmToolbarIsHidden)

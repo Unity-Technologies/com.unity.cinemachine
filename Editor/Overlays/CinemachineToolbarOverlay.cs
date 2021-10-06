@@ -1,9 +1,10 @@
 #if UNITY_2021_2_OR_NEWER
-using UnityEngine;
-using UnityEditor.Toolbars;
-using UnityEditor.Overlays;
-using UnityEngine.UIElements;
+using System;
 using UnityEditor;
+using UnityEditor.Overlays;
+using UnityEditor.Toolbars;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -24,6 +25,15 @@ namespace Cinemachine.Editor
             )
         {
             CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
+            CinemachineSceneToolUtility.RegisterToolbarDisplayHandler(v =>
+            {
+                if (displayed == v)
+                {
+                    return false;
+                }
+                displayed = v;
+                return true;
+            });
         }
     }
 
