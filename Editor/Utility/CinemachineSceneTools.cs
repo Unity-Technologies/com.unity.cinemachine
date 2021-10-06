@@ -148,6 +148,8 @@ namespace Cinemachine.Editor
     
     static class CinemachineSceneToolHelpers
     {
+        public static float lineSpacing = 4f;
+        
         static GUIStyle s_LabelStyle = new GUIStyle 
         { 
             normal = { textColor = Handles.selectedColor },

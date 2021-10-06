@@ -140,7 +140,7 @@ namespace Cinemachine.Editor
                 var originalColor = Handles.color;
                 Handles.color = followOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(transposer.FollowTargetPosition, camPos, 5f);
+                Handles.DrawDottedLine(transposer.FollowTargetPosition, camPos, CinemachineSceneToolHelpers.lineSpacing);
                 Handles.color = originalColor;
                 
                 

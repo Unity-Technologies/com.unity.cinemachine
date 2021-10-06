@@ -201,7 +201,8 @@ namespace Cinemachine.Editor
                 var originalColor = Handles.color;
                 Handles.color = followOffsetHandleIsDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, camPos, 5f);
+                Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, camPos, 
+                    CinemachineSceneToolHelpers.lineSpacing);
                 Handles.color = originalColor;
 
                 if (followOffsetHandleIsDragged) 

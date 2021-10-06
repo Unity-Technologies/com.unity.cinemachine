@@ -152,7 +152,7 @@ namespace Cinemachine.Editor
                 var originalColor = Handles.color;
                 Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(lookAtPos, trackedObjectPos, 5f);
+                Handles.DrawDottedLine(lookAtPos, trackedObjectPos, CinemachineSceneToolHelpers.lineSpacing);
                 Handles.DrawLine(trackedObjectPos, composer.VcamState.FinalPosition);
                 Handles.color = originalColor;
 

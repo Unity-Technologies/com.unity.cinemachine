@@ -127,7 +127,7 @@ namespace Cinemachine.Editor
                     
                     Handles.color = handleIsDraggedOrHovered ? 
                         Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                    Handles.DrawDottedLine(lineStart, lineEnd, 5f);
+                    Handles.DrawDottedLine(lineStart, lineEnd, CinemachineSceneToolHelpers.lineSpacing);
                     
                     return handleIsDragged;
                 }
