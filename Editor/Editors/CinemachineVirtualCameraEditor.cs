@@ -149,8 +149,8 @@ namespace Cinemachine.Editor
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                CinemachineSceneToolHelpers.FovToolHandle(
-                    vcam, ref vcam.m_Lens, m_LensSettingsInspectorHelper.UseHorizontalFOV);
+                CinemachineSceneToolHelpers.FovToolHandle(vcam, ref vcam.m_Lens, 
+                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
