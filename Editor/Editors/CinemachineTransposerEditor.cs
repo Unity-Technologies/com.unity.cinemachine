@@ -107,45 +107,7 @@ namespace Cinemachine.Editor
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(transposer.VirtualCamera);
-                var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
-                var camPos = transposer.GetTargetCameraPosition(up);
-                var camRot = transposer.GetReferenceOrientation(up);
-
-                EditorGUI.BeginChangeCheck();
-                
-                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newCamPos = Handles.PositionHandle(camPos, camRot);
-                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(transposer, "Change Follow Offset Position using handle in Scene View.");
-                    
-                    transposer.m_FollowOffset += 
-                        CinemachineSceneToolHelpers.PositionHandleDelta(camRot, newCamPos, camPos);
-                    transposer.m_FollowOffset = transposer.EffectiveOffset; // sanitize offset
-                    
-                    InspectorUtility.RepaintGameView();
-                }
-
-                var followOffsetHandleIsDragged = 
-                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
-                var followOffsetHandleIsUsedOrHovered = followOffsetHandleIsDragged || 
-                    foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
-                if (followOffsetHandleIsUsedOrHovered)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(camPos, "Follow offset " + 
-                        transposer.m_FollowOffset.ToString("F1"));
-                }
-                var originalColor = Handles.color;
-                Handles.color = followOffsetHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(transposer.FollowTargetPosition, camPos, CinemachineSceneToolHelpers.lineSpacing);
-                Handles.color = originalColor;
-                
-                
-                if (followOffsetHandleIsDragged) 
-                    CinemachineBrain.SoloCamera = transposer.VirtualCamera;
+                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(transposer);
             }
         }
 #endif

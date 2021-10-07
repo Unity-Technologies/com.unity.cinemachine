@@ -182,31 +182,194 @@ namespace Cinemachine.Editor
             Handles.Label(position, text, s_LabelStyle);
         }
 
-        public static void DrawLabelForFov(LensSettings lens, Vector3 labelPos, bool useHorizontalFov)
+        static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
+        public static void FovToolHandle(
+            CinemachineVirtualCameraBase vcam, LensSettings lens, bool isLensHorizontal)
         {
-            if (lens.IsPhysicalCamera)
+            var camPos = vcam.State.FinalPosition;
+            var camRot = vcam.State.FinalOrientation;
+            var camForward = camRot * Vector3.forward;
+                
+            EditorGUI.BeginChangeCheck();
+            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
+
+            var fieldOfView = Handles.ScaleSlider(
+                lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView, 
+                camPos, -camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+            if (EditorGUI.EndChangeCheck())
             {
-                DrawLabel(labelPos, "Focal Length (" + 
-                    Camera.FieldOfViewToFocalLength(lens.FieldOfView, 
-                        lens.SensorSize.y).ToString("F1") + ")");
+                Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
+
+                if (lens.Orthographic)
+                {
+                    lens.OrthographicSize = fieldOfView;
+                }
+                else
+                {
+                    lens.FieldOfView = fieldOfView;
+                }
+                lens.Validate();
+                    
+                InspectorUtility.RepaintGameView();
             }
-            else if (lens.Orthographic)
+
+            if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
             {
-                DrawLabel(labelPos, "Orthographic Size (" + 
-                    lens.OrthographicSize.ToString("F1") + ")");
+                var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
+                if (lens.IsPhysicalCamera)
+                {
+                    DrawLabel(labelPos, "Focal Length (" + 
+                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, 
+                            lens.SensorSize.y).ToString("F1") + ")");
+                }
+                else if (lens.Orthographic)
+                {
+                    DrawLabel(labelPos, "Orthographic Size (" + 
+                        lens.OrthographicSize.ToString("F1") + ")");
+                }
+                else if (isLensHorizontal)
+                {
+                    DrawLabel(labelPos, "Horizontal FOV (" +
+                        Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView,
+                            lens.Aspect).ToString("F1") + ")");
+                }
+                else
+                {
+                    DrawLabel(labelPos, "Vertical FOV (" + 
+                        lens.FieldOfView.ToString("F1") + ")");
+                }
             }
-            else if (useHorizontalFov)
-            {
-                DrawLabel(labelPos, "Horizontal FOV (" +
-                    Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView,
-                        lens.Aspect).ToString("F1") + ")");
-            }
-            else
-            {
-                DrawLabel(labelPos, "Vertical FOV (" + 
-                    lens.FieldOfView.ToString("F1") + ")");
-            }
+                
+            if (GUIUtility.hotControl == fovHandleId) 
+                CinemachineBrain.SoloCamera = vcam;
         }
+
+        public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, LensSettings lens)
+        {
+            var camPos = vcam.State.FinalPosition;
+            var camRot = vcam.State.FinalOrientation;
+            var camForward = camRot * Vector3.forward;
+            var nearClipPos = camPos + camForward * lens.NearClipPlane;
+            var farClipPos = camPos + camForward * lens.FarClipPlane;
+            
+            EditorGUI.BeginChangeCheck();
+            var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
+            var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
+                HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
+            var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
+            var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
+                HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(vcam, "Changed clip plane using handle in scene view.");
+                
+                lens.NearClipPlane += 
+                    SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
+                lens.FarClipPlane += 
+                    SliderHandleDelta(newFarClipPos, farClipPos, camForward);
+                lens.Validate();
+                
+                InspectorUtility.RepaintGameView();
+            }
+
+            if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
+            {
+                DrawLabel(nearClipPos,
+                    "Near Clip Plane (" + lens.NearClipPlane.ToString("F1") + ")");
+            }
+            if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
+            {
+                DrawLabel(farClipPos, 
+                    "Far Clip Plane (" + lens.FarClipPlane.ToString("F1") + ")");
+            }
+
+            
+            if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
+                CinemachineBrain.SoloCamera = vcam;
+        }
+
+        public static void TrackedObjectOffsetTool(
+            CinemachineComponentBase cmComponent, ref Vector3 trackedObjectOffset, string tag)
+        {
+            var lookAtPos = cmComponent.LookAtTargetPosition;
+                var lookAtRot = cmComponent.LookAtTargetRotation;
+                var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset;
+
+                EditorGUI.BeginChangeCheck();
+                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                var newTrackedObjectPos = Handles.PositionHandle(trackedObjectPos, lookAtRot);
+                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(cmComponent, "Change Tracked Object Offset using handle in Scene View.");
+                    
+                    trackedObjectOffset += PositionHandleDelta(lookAtRot, newTrackedObjectPos, trackedObjectPos);
+
+                    InspectorUtility.RepaintGameView();
+                }
+
+                var trackedObjectOffsetHandleIsDragged = 
+                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId;
+                var trackedObjectOffsetHandleIsUsedOrHovered = trackedObjectOffsetHandleIsDragged || 
+                    tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
+                if (trackedObjectOffsetHandleIsUsedOrHovered)
+                {
+                    DrawLabel(trackedObjectPos, 
+                        "(" + tag + ") Tracked Object Offset " + trackedObjectOffset.ToString("F1"));
+                }
+                
+                var originalColor = Handles.color;
+                Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                Handles.DrawDottedLine(lookAtPos, trackedObjectPos, lineSpacing);
+                Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
+                Handles.color = originalColor;
+
+                if (trackedObjectOffsetHandleIsDragged)
+                    CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+        }
+
+        public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
+        {
+            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
+                var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
+                var camPos = cmComponent.GetTargetCameraPosition(up);
+                var camRot = cmComponent.GetReferenceOrientation(up);
+
+                EditorGUI.BeginChangeCheck();
+                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                var newPos = Handles.PositionHandle(camPos, camRot);
+                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(cmComponent, 
+                        "Change Follow Offset Position using handle in Scene View.");
+                    
+                    cmComponent.m_FollowOffset += PositionHandleDelta(camRot, newPos, camPos);
+                    cmComponent.m_FollowOffset = cmComponent.EffectiveOffset; // sanitize offset
+                    
+                    InspectorUtility.RepaintGameView();
+                }
+
+                var followOffsetHandleIsDragged = 
+                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
+                var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
+                    foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
+                if (followOffsetHandleIsDraggedOrHovered)
+                {
+                    DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
+                }
+                var originalColor = Handles.color;
+                Handles.color = followOffsetHandleIsDraggedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, lineSpacing);
+                Handles.color = originalColor;
+
+                if (followOffsetHandleIsDragged) 
+                    CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+        }
+        
+        
     } 
 }
 #endif

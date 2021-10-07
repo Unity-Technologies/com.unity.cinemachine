@@ -233,41 +233,8 @@ namespace Cinemachine.Editor
             var originalColor = Handles.color;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                var followPos = framingTransposer.FollowTargetPosition;
-                var followRot = framingTransposer.FollowTargetRotation;
-                var trackedObjectPos = followPos + followRot * framingTransposer.m_TrackedObjectOffset;
-
-                EditorGUI.BeginChangeCheck();
-                var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newTrackedObjectPos = Handles.PositionHandle(trackedObjectPos, followRot);
-                var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(framingTransposer, 
-                        "Change Tracked Object Offset using handle in Scene View.");
-                    
-                    framingTransposer.m_TrackedObjectOffset += CinemachineSceneToolHelpers.PositionHandleDelta(
-                        followRot, newTrackedObjectPos, trackedObjectPos);
-                    
-                    InspectorUtility.RepaintGameView();
-                }
-
-                var trackedObjectOffsetHandleIsDragged = 
-                    tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId;
-                var trackedObjectOffsetHandleIsUsedOrHovered = trackedObjectOffsetHandleIsDragged || 
-                    tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
-                if (trackedObjectOffsetHandleIsUsedOrHovered)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(trackedObjectPos, 
-                        "(Body) Tracked Object Offset " + framingTransposer.m_TrackedObjectOffset.ToString("F1"));
-                }
-                Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(followPos, trackedObjectPos, CinemachineSceneToolHelpers.lineSpacing);
-                Handles.DrawLine(trackedObjectPos, framingTransposer.VcamState.FinalPosition);
-
-                if (trackedObjectOffsetHandleIsDragged) 
-                    CinemachineBrain.SoloCamera = framingTransposer.VirtualCamera;
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
+                    framingTransposer, ref framingTransposer.m_TrackedObjectOffset, "Body");
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {

@@ -108,8 +108,8 @@ namespace Cinemachine
             base.OnSceneGUI();
             if (m_rigEditor != null)
             {
-                var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI"
-                    , System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI", 
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 if (mi != null && m_rigEditor.target != null)
                 {
                     mi.Invoke(m_rigEditor, null);
@@ -131,84 +131,12 @@ namespace Cinemachine
             Handles.color = handleIsUsed ? Handles.selectedColor : Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                var camPos = freelook.State.FinalPosition;
-                var camRot = freelook.State.FinalOrientation;
-                var camForward = camRot * Vector3.forward;
-
-                EditorGUI.BeginChangeCheck();
-                var fovHandleId = GUIUtility.GetControlID(FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-                var fieldOfView = Handles.ScaleSlider(
-                    freelook.m_Lens.Orthographic ? freelook.m_Lens.OrthographicSize : freelook.m_Lens.FieldOfView, 
-                    camPos, -camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(freelook, "Changed FOV using handle in scene view.");
-
-                    if (freelook.m_Lens.Orthographic)
-                    {
-                        freelook.m_Lens.OrthographicSize = fieldOfView;
-                    }
-                    else
-                    {
-                        freelook.m_Lens.FieldOfView = fieldOfView;
-                    }
-                    freelook.m_Lens.Validate();
-                    
-                    InspectorUtility.RepaintGameView();
-                }
-                
-                if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
-                {
-                    CinemachineSceneToolHelpers.DrawLabelForFov(freelook.m_Lens, 
-                        camPos + camForward * HandleUtility.GetHandleSize(camPos), 
-                        m_LensSettingsInspectorHelper.UseHorizontalFOV);
-                }
-                
-                if (GUIUtility.hotControl == fovHandleId) 
-                    CinemachineBrain.SoloCamera = freelook;
+                CinemachineSceneToolHelpers.FovToolHandle(
+                    freelook, freelook.m_Lens, m_LensSettingsInspectorHelper.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                var camPos = freelook.State.FinalPosition;
-                var camRot = freelook.State.FinalOrientation;
-                var camForward = camRot * Vector3.forward;
-                var nearClipPos = camPos + camForward * freelook.m_Lens.NearClipPlane;
-                var farClipPos = camPos + camForward * freelook.m_Lens.FarClipPlane;
-                
-                EditorGUI.BeginChangeCheck();
-                var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
-                    HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
-                var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
-                    HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(freelook, "Changed clip plane using handle in scene view.");
-                    
-                    freelook.m_Lens.NearClipPlane += 
-                        CinemachineSceneToolHelpers.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
-                    freelook.m_Lens.FarClipPlane += 
-                        CinemachineSceneToolHelpers.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
-                    freelook.m_Lens.Validate();
-                    
-                    InspectorUtility.RepaintGameView();
-                }
-
-                if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(nearClipPos,
-                        "Near Clip Plane (" + freelook.m_Lens.NearClipPlane.ToString("F1") + ")");
-                }
-                if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(farClipPos, 
-                        "Far Clip Plane (" + freelook.m_Lens.FarClipPlane.ToString("F1") + ")");
-                }
-
-                
-                if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
-                    CinemachineBrain.SoloCamera = freelook;
+                CinemachineSceneToolHelpers.NearFarClipHandle(freelook, freelook.m_Lens);
             }
             Handles.color = originalColor;
         }

@@ -149,84 +149,12 @@ namespace Cinemachine.Editor
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                var camPos = vcam.State.FinalPosition;
-                var camRot = vcam.State.FinalOrientation;
-                var camForward = camRot * Vector3.forward;
-                
-                EditorGUI.BeginChangeCheck();
-                var fovHandleId = GUIUtility.GetControlID(m_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-
-                var fieldOfView = Handles.ScaleSlider(
-                    vcam.m_Lens.Orthographic ? vcam.m_Lens.OrthographicSize : vcam.m_Lens.FieldOfView, 
-                    camPos, -camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
-
-                    if (vcam.m_Lens.Orthographic)
-                    {
-                        vcam.m_Lens.OrthographicSize = fieldOfView;
-                    }
-                    else
-                    {
-                        vcam.m_Lens.FieldOfView = fieldOfView;
-                    }
-                    vcam.m_Lens.Validate();
-                    
-                    InspectorUtility.RepaintGameView();
-                }
-
-                if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
-                {
-                    CinemachineSceneToolHelpers.DrawLabelForFov(vcam.m_Lens, 
-                        camPos + camForward * HandleUtility.GetHandleSize(camPos), 
-                        m_LensSettingsInspectorHelper.UseHorizontalFOV);
-                }
-                
-                if (GUIUtility.hotControl == fovHandleId) 
-                    CinemachineBrain.SoloCamera = vcam;
+                CinemachineSceneToolHelpers.FovToolHandle(
+                    vcam, vcam.m_Lens, m_LensSettingsInspectorHelper.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                var camPos = vcam.State.FinalPosition;
-                var camRot = vcam.State.FinalOrientation;
-                var camForward = camRot * Vector3.forward;
-                var nearClipPos = camPos + camForward * vcam.m_Lens.NearClipPlane;
-                var farClipPos = camPos + camForward * vcam.m_Lens.FarClipPlane;
-                
-                EditorGUI.BeginChangeCheck();
-                var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
-                    HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
-                var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
-                    HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(vcam, "Changed clip plane using handle in scene view.");
-                    
-                    vcam.m_Lens.NearClipPlane += 
-                        CinemachineSceneToolHelpers.SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
-                    vcam.m_Lens.FarClipPlane += 
-                        CinemachineSceneToolHelpers.SliderHandleDelta(newFarClipPos, farClipPos, camForward);
-                    vcam.m_Lens.Validate();
-                    
-                    InspectorUtility.RepaintGameView();
-                }
-
-                if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(nearClipPos,
-                        "Near Clip Plane (" + vcam.m_Lens.NearClipPlane.ToString("F1") + ")");
-                }
-                if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(farClipPos, 
-                        "Far Clip Plane (" + vcam.m_Lens.FarClipPlane.ToString("F1") + ")");
-                }
-                
-                if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
-                    CinemachineBrain.SoloCamera = vcam;
+                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, vcam.m_Lens);
             }
             Handles.color = originalColor;
         }

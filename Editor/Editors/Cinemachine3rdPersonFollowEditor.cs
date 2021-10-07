@@ -46,90 +46,94 @@ namespace Cinemachine.Editor
 
         protected override void DrawSceneTools()
         {
-            var tpFollow = Target;
-            if (!tpFollow.IsValid)
+            var thirdPerson = Target;
+            if (!thirdPerson.IsValid)
             {
                 return;
             }
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var followTargetRotation = tpFollow.FollowTargetRotation;
-                var followUp = followTargetRotation * Vector3.up;
-                tpFollow.GetRigPositions(out var followTargetPosition, out var shoulderPosition, 
-                    out var armPosition);
-                var targetForward = followTargetRotation * Vector3.forward;
-                var heading = tpFollow.GetHeading(targetForward, tpFollow.VirtualCamera.State.ReferenceUp);
-                var camDistance = tpFollow.CameraDistance;
-                var camPos = armPosition - targetForward * camDistance;
-
                 var originalColor = Handles.color;
+                
+                thirdPerson.GetRigPositions(out var followTargetPosition, out var shoulderPosition, 
+                    out var armPosition);
+                var followTargetRotation = thirdPerson.FollowTargetRotation;
+                var targetForward = followTargetRotation * Vector3.forward;
+
                 EditorGUI.BeginChangeCheck();
                 // shoulder handle
-                var soHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                var heading = 
+                    thirdPerson.GetHeading(targetForward, thirdPerson.VirtualCamera.State.ReferenceUp);
+                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
-                var soHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 
                 Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 // arm handle
+                var followUp = followTargetRotation * Vector3.up;
                 var aHandleId = GUIUtility.GetControlID(FocusType.Passive); 
                 var newArmPosition = Handles.Slider(aHandleId, armPosition, followUp, 
                     HandleUtility.GetHandleSize(armPosition) / 10f, Handles.CubeHandleCap, 0.5f);
 
                 // cam distance handle
+                var camDistance = thirdPerson.CameraDistance;
+                var camPos = armPosition - targetForward * camDistance;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newCamPos = Handles.Slider(cdHandleId, camPos, targetForward, 
                     HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(tpFollow, "Changed 3rdPersonFollow offsets using handle in Scene View.");
+                    Undo.RecordObject(thirdPerson, "Changed 3rdPersonFollow offsets using handle in Scene View.");
 
-                    tpFollow.ShoulderOffset += 
+                    thirdPerson.ShoulderOffset += 
                         CinemachineSceneToolHelpers.PositionHandleDelta(heading, newShoulderPosition, shoulderPosition);
-                    tpFollow.VerticalArmLength += 
+                    thirdPerson.VerticalArmLength += 
                         CinemachineSceneToolHelpers.SliderHandleDelta(newArmPosition, armPosition, followUp);
-                    tpFollow.CameraDistance -= 
+                    thirdPerson.CameraDistance -= 
                         CinemachineSceneToolHelpers.SliderHandleDelta(newCamPos, camPos, targetForward);
 
                     InspectorUtility.RepaintGameView();
                 }
 
-                var isDragged = HandleOnDragOrHover(soHandleMinId, soHandleMaxId, shoulderPosition, "Shoulder Offset " 
-                    + tpFollow.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
-                isDragged |= HandleOnDragOrHover(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 
-                    + tpFollow.VerticalArmLength.ToString("F1") + ")", shoulderPosition, armPosition);
-                isDragged |= HandleOnDragOrHover(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
+                var isDragged = IsHandleDragged(sHandleMinId, sHandleMaxId, shoulderPosition, "Shoulder Offset " 
+                    + thirdPerson.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
+                isDragged |= IsHandleDragged(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 
+                    + thirdPerson.VerticalArmLength.ToString("F1") + ")", shoulderPosition, armPosition);
+                isDragged |= IsHandleDragged(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
                     + camDistance.ToString("F1") + ")", armPosition, camPos);
-                Handles.color = originalColor;
 
                 if (isDragged) 
-                    CinemachineBrain.SoloCamera = tpFollow.VirtualCamera;
+                    CinemachineBrain.SoloCamera = thirdPerson.VirtualCamera;
 
-                static bool HandleOnDragOrHover
-                    (int handleMinId, int handleMaxId, Vector3 labelPos, string text, Vector3 lineStart, Vector3 lineEnd)
-                {
-                    bool handleIsDragged;
-                    bool handleIsDraggedOrHovered;
-                    if (handleMinId == handleMaxId) {
-                        handleIsDragged = GUIUtility.hotControl == handleMinId; 
-                        handleIsDraggedOrHovered = handleIsDragged || HandleUtility.nearestControl == handleMinId;
-                    }
-                    else
-                    {
-                        handleIsDragged = handleMinId < GUIUtility.hotControl && GUIUtility.hotControl < handleMaxId;
-                        handleIsDraggedOrHovered = handleIsDragged ||
-                            (handleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < handleMaxId);
-                    }
-
-                    if (handleIsDraggedOrHovered)
-                        CinemachineSceneToolHelpers.DrawLabel(labelPos, text);
-                    
-                    Handles.color = handleIsDraggedOrHovered ? 
-                        Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                    Handles.DrawDottedLine(lineStart, lineEnd, CinemachineSceneToolHelpers.lineSpacing);
-                    
-                    return handleIsDragged;
+                Handles.color = originalColor;
+            }
+            
+            // local function that draws label and guide lines, and returns true if a handle has been dragged
+            static bool IsHandleDragged
+                (int handleMinId, int handleMaxId, Vector3 labelPos, string text, Vector3 lineStart, Vector3 lineEnd)
+            {
+                bool handleIsDragged;
+                bool handleIsDraggedOrHovered;
+                if (handleMinId == handleMaxId) {
+                    handleIsDragged = GUIUtility.hotControl == handleMinId; 
+                    handleIsDraggedOrHovered = handleIsDragged || HandleUtility.nearestControl == handleMinId;
                 }
+                else
+                {
+                    handleIsDragged = handleMinId < GUIUtility.hotControl && GUIUtility.hotControl < handleMaxId;
+                    handleIsDraggedOrHovered = handleIsDragged ||
+                        (handleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < handleMaxId);
+                }
+
+                if (handleIsDraggedOrHovered)
+                    CinemachineSceneToolHelpers.DrawLabel(labelPos, text);
+                    
+                Handles.color = handleIsDraggedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                Handles.DrawDottedLine(lineStart, lineEnd, CinemachineSceneToolHelpers.lineSpacing);
+                    
+                return handleIsDragged;
             }
         }
 #endif

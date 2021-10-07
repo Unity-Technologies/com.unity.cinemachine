@@ -167,45 +167,7 @@ namespace Cinemachine.Editor
             
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(orbitalTransposer.VirtualCamera);
-                var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
-                var camPos = orbitalTransposer.GetTargetCameraPosition(up);
-                var camRot = orbitalTransposer.GetReferenceOrientation(up);
-
-                EditorGUI.BeginChangeCheck();
-                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newPos = Handles.PositionHandle(camPos, camRot);
-                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(orbitalTransposer, 
-                        "Change Follow Offset Position using handle in Scene View.");
-                    
-                    orbitalTransposer.m_FollowOffset += 
-                        CinemachineSceneToolHelpers.PositionHandleDelta(camRot, newPos, camPos);
-                    orbitalTransposer.m_FollowOffset = orbitalTransposer.EffectiveOffset; // sanitize offset
-                    
-                    InspectorUtility.RepaintGameView();
-                }
-
-                var followOffsetHandleIsDragged = 
-                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
-                var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
-                    foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
-                if (followOffsetHandleIsDraggedOrHovered)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(camPos, 
-                        "Follow offset " + orbitalTransposer.m_FollowOffset.ToString("F1"));
-                }
-                var originalColor = Handles.color;
-                Handles.color = followOffsetHandleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(orbitalTransposer.FollowTargetPosition, camPos, 
-                    CinemachineSceneToolHelpers.lineSpacing);
-                Handles.color = originalColor;
-
-                if (followOffsetHandleIsDragged) 
-                    CinemachineBrain.SoloCamera = orbitalTransposer.VirtualCamera;
+                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer);
             }
         }
 #endif
