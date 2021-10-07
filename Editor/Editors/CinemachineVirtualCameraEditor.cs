@@ -150,11 +150,11 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(
-                    vcam, vcam.m_Lens, m_LensSettingsInspectorHelper.UseHorizontalFOV);
+                    vcam, ref vcam.m_Lens, m_LensSettingsInspectorHelper.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, vcam.m_Lens);
+                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, ref vcam.m_Lens);
             }
             Handles.color = originalColor;
         }

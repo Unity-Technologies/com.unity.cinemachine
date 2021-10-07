@@ -184,7 +184,7 @@ namespace Cinemachine.Editor
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         public static void FovToolHandle(
-            CinemachineVirtualCameraBase vcam, LensSettings lens, bool isLensHorizontal)
+            CinemachineVirtualCameraBase vcam, ref LensSettings lens, bool isLensHorizontal)
         {
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
@@ -244,7 +244,7 @@ namespace Cinemachine.Editor
                 CinemachineBrain.SoloCamera = vcam;
         }
 
-        public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, LensSettings lens)
+        public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens)
         {
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;

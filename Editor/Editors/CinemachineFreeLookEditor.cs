@@ -132,11 +132,11 @@ namespace Cinemachine
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(
-                    freelook, freelook.m_Lens, m_LensSettingsInspectorHelper.UseHorizontalFOV);
+                    freelook, ref freelook.m_Lens, m_LensSettingsInspectorHelper.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(freelook, freelook.m_Lens);
+                CinemachineSceneToolHelpers.NearFarClipHandle(freelook, ref freelook.m_Lens);
             }
             Handles.color = originalColor;
         }
