@@ -62,6 +62,11 @@ namespace Cinemachine
         [Range(0, 10)]
         public float m_Damping = 0;
         
+        /// <summary>
+        /// The amount with which the confiner displaces the vcam.
+        /// </summary>
+        public Vector3 m_Displacement { get; private set; }
+        
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the confiner, in the event that the camera has children</param>
@@ -139,21 +144,20 @@ namespace Cinemachine
             if (IsValid && stage == CinemachineCore.Stage.Body)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                Vector3 displacement;
                 if (m_ConfineScreenEdges && state.Lens.Orthographic)
-                    displacement = ConfineScreenEdges(vcam, ref state);
+                    m_Displacement = ConfineScreenEdges(vcam, ref state);
                 else
-                    displacement = ConfinePoint(state.CorrectedPosition);
+                    m_Displacement = ConfinePoint(state.CorrectedPosition);
 
                 if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
-                    Vector3 delta = displacement - extra.m_previousDisplacement;
+                    Vector3 delta = m_Displacement - extra.m_previousDisplacement;
                     delta = Damper.Damp(delta, m_Damping, deltaTime);
-                    displacement = extra.m_previousDisplacement + delta;
+                    m_Displacement = extra.m_previousDisplacement + delta;
                 }
-                extra.m_previousDisplacement = displacement;
-                state.PositionCorrection += displacement;
-                extra.confinerDisplacement = displacement.magnitude;
+                extra.m_previousDisplacement = m_Displacement;
+                state.PositionCorrection += m_Displacement;
+                extra.confinerDisplacement = m_Displacement.magnitude;
             }
         }
 

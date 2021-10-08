@@ -89,7 +89,12 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
-        private float m_MaxComputationTimePerFrameInSeconds = 1f / 120f;
+        const float k_MaxComputationTimePerFrameInSeconds = 1f / 120f;
+
+        /// <summary>
+        /// The amount with which the confiner displaces the vcam.
+        /// </summary>
+        public Vector3 m_Displacement { get; private set; }
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
@@ -105,7 +110,7 @@ namespace Cinemachine
             return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, out _);
         }
 
-        private const float k_cornerAngleTreshold = 10f;
+        const float k_CornerAngleTreshold = 10f;
         
         /// <summary>
         /// Callback to do the camera confining
@@ -152,8 +157,8 @@ namespace Cinemachine
 
                 // Remember the desired displacement for next frame
                 var prev = extra.m_PreviousDisplacement;
-                var displacement = newCameraPos - oldCameraPos;
-                extra.m_PreviousDisplacement = displacement;
+                m_Displacement = newCameraPos - oldCameraPos;
+                extra.m_PreviousDisplacement = m_Displacement;
 
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
                     extra.m_DampedDisplacement = Vector3.zero;
@@ -161,13 +166,13 @@ namespace Cinemachine
                 {
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
-                    if (prev.sqrMagnitude > 0.01f && Vector2.Angle(prev, displacement) > k_cornerAngleTreshold)
-                        extra.m_DampedDisplacement += displacement - prev;
+                    if (prev.sqrMagnitude > 0.01f && Vector2.Angle(prev, m_Displacement) > k_CornerAngleTreshold)
+                        extra.m_DampedDisplacement += m_Displacement - prev;
 
                     extra.m_DampedDisplacement -= Damper.Damp(extra.m_DampedDisplacement, m_Damping, deltaTime);
-                    displacement -= extra.m_DampedDisplacement;
+                    m_Displacement -= extra.m_DampedDisplacement;
                 }
-                state.PositionCorrection += displacement;
+                state.PositionCorrection += m_Displacement;
             }
         }
 
@@ -178,7 +183,7 @@ namespace Cinemachine
         /// <param name="state">CameraState for checking if Orthographic or Perspective</param>
         /// <param name="vcam">vcam, to check its position</param>
         /// <returns>Frustum height of the camera</returns>
-        private float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
+        float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
         {
             float frustumHeight;
             if (state.Lens.Orthographic)
@@ -194,21 +199,21 @@ namespace Cinemachine
 
             return Mathf.Abs(frustumHeight);
         }
-        
-        private class VcamExtraState
+
+        class VcamExtraState
         {
             public Vector3 m_PreviousDisplacement;
             public Vector3 m_DampedDisplacement;
             public ConfinerOven.BakedSolution m_BakedSolution;
             public CinemachineVirtualCameraBase m_vcam;
         };
-        
-        private ShapeCache m_shapeCache; 
+
+        ShapeCache m_shapeCache; 
 
         /// <summary>
         /// ShapeCache: contains all states that dependent only on the settings in the confiner.
         /// </summary>
-        private struct ShapeCache
+        struct ShapeCache
         {
             public ConfinerOven m_confinerOven;
             public List<List<Vector2>> m_OriginalPath;  // in baked space, not including offset
@@ -217,12 +222,12 @@ namespace Cinemachine
             public Matrix4x4 m_DeltaWorldToBaked; 
             public Matrix4x4 m_DeltaBakedToWorld;
 
-            private float m_aspectRatio;
-            private float m_maxWindowSize;
+            float m_aspectRatio;
+            float m_maxWindowSize;
             internal float m_maxComputationTimePerFrameInSeconds;
 
-            private Matrix4x4 m_bakedToWorld; // defines baked space
-            private Collider2D m_boundingShape2D;
+            Matrix4x4 m_bakedToWorld; // defines baked space
+            Collider2D m_boundingShape2D;
 
             /// <summary>
             /// Invalidates shapeCache
@@ -325,8 +330,8 @@ namespace Cinemachine
 
                 return true;
             }
-            
-            private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
+
+            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
             {
                 return boundingShape2D != null && m_boundingShape2D != null && 
                        m_boundingShape2D == boundingShape2D && // same boundingShape?
@@ -336,7 +341,7 @@ namespace Cinemachine
                        Mathf.Abs(m_maxWindowSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
 
-            private void CalculateDeltaTransformationMatrix()
+            void CalculateDeltaTransformationMatrix()
             {
                 // Account for current collider offset (in local space) and 
                 // incorporate the worldspace delta that the confiner has moved since baking
@@ -383,13 +388,13 @@ namespace Cinemachine
         }
     #endif
 
-        private void OnValidate()
+        void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
-            m_shapeCache.m_maxComputationTimePerFrameInSeconds = m_MaxComputationTimePerFrameInSeconds;
+            m_shapeCache.m_maxComputationTimePerFrameInSeconds = k_MaxComputationTimePerFrameInSeconds;
         }
 
-        private void Reset()
+        void Reset()
         {
             m_Damping = 0.5f;
             m_MaxWindowSize = -1;
