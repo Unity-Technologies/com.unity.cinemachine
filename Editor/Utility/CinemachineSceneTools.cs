@@ -221,7 +221,7 @@ namespace Cinemachine.Editor
 
             if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
             {
-                var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
+                var labelPos = camPos - camForward * HandleUtility.GetHandleSize(camPos);
                 if (lens.IsPhysicalCamera)
                 {
                     DrawLabel(labelPos, "Focal Length (" + 
