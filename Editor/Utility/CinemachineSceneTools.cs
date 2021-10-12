@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 namespace Cinemachine.Editor
 {
@@ -149,12 +150,17 @@ namespace Cinemachine.Editor
     static class CinemachineSceneToolHelpers
     {
         public static float lineSpacing = 4f;
-        
+
         static GUIStyle s_LabelStyle = new GUIStyle 
         { 
-            normal = { textColor = Handles.selectedColor },
+            normal =
+            {
+                background = Texture2D.grayTexture,
+                textColor = Handles.selectedColor
+            },
             fontStyle = FontStyle.Bold,
         };
+        
 
         public static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
         {
@@ -179,7 +185,7 @@ namespace Cinemachine.Editor
         
         public static void DrawLabel(Vector3 position, string text)
         {
-            Handles.Label(position, text, s_LabelStyle);
+            Handles.Label(position - Vector3.one, text, s_LabelStyle);
         }
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
