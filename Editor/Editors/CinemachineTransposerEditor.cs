@@ -100,7 +100,7 @@ namespace Cinemachine.Editor
         protected override void DrawSceneTools()
         {
             var transposer = Target;
-            if (!transposer.IsValid && Tools.current != Tool.Move)
+            if (!transposer.IsValid)
             {
                 return;
             }

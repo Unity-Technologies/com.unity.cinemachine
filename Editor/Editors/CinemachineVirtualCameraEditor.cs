@@ -110,27 +110,6 @@ namespace Cinemachine.Editor
 
         protected override void OnSceneGUI()
         {
-            if (!Target.m_UserIsDragging)
-                m_PreviousPosition = Target.transform.position;
-            if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
-                && Event.current.type == EventType.MouseDrag)
-            {
-                // User might be dragging our position handle
-                Target.m_UserIsDragging = true;
-                Vector3 delta = Target.transform.position - m_PreviousPosition;
-                if (!delta.AlmostZero())
-                {
-                    m_PipelineSet.OnPositionDragged(delta);
-                    m_PreviousPosition = Target.transform.position;
-                }
-            }
-            else if (GUIUtility.hotControl == 0 && Target.m_UserIsDragging)
-            {
-                // We're not dragging anything now, but we were
-                InspectorUtility.RepaintGameView();
-                Target.m_UserIsDragging = false;
-            }
-
             base.OnSceneGUI();
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
