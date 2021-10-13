@@ -44,9 +44,7 @@ namespace Cinemachine
             + "May be null, in which case no on-screen indicator will appear")]
         public RectTransform AimTargetReticle;
 
-        /// <summary>
-        /// World space position of where the player would hit.
-        /// </summary>
+        /// <summary>World space position of where the player would hit.</summary>
         public Vector3 AimTarget { get; private set; }
 
         private void OnValidate()
