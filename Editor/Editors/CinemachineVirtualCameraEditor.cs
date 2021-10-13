@@ -33,7 +33,7 @@ namespace Cinemachine.Editor
         static void AdoptSceneViewCameraSettings(MenuCommand command)
         {
             var vcam = command.context as CinemachineVirtualCamera;
-            CinemachineMenu.SetVcamFromSceneView(vcam);
+            CinemachineMenu.CopySceneViewLook(vcam);
         }
         
         protected override void OnEnable()
@@ -154,7 +154,7 @@ namespace Cinemachine.Editor
                     (CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom) =>
                     {
                         // Create a new pipeline
-                        GameObject go =  InspectorUtility.CreateGameObject(name);
+                        GameObject go =  ObjectFactory.CreateGameObject(name);
                         Undo.RegisterCreatedObjectUndo(go, "created pipeline");
                         bool partOfPrefab = PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject);
                         if (!partOfPrefab)

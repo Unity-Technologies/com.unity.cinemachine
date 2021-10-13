@@ -53,7 +53,7 @@ using Cinemachine;
 
         static public CinemachineVirtualCameraBase CreateStaticVcamFromSceneView()
         {
-            CinemachineVirtualCameraBase vcam = CinemachineMenu.CreateStaticVirtualCamera();
+            CinemachineVirtualCameraBase vcam = CinemachineMenu.CreateCinemachineGameObject<CinemachineVirtualCamera>("Virtual Camera", null, false);
             vcam.m_StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
 
 #if false 

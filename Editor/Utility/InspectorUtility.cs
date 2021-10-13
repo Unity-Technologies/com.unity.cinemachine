@@ -143,18 +143,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        // Temporarily here
-        /// <summary>
-        /// Create a game object.  Uses ObjectFactory if the Unity version is sufficient.
-        /// </summary>
-        /// <param name="name">Name to give the object</param>
-        /// <param name="types">Optional components to add</param>
-        /// <returns></returns>
-        public static GameObject CreateGameObject(string name, params Type[] types)
-        {
-            return ObjectFactory.CreateGameObject(name, types);
-        }
-
         /// <summary>
         /// Force a repaint of the Game View
         /// </summary>
