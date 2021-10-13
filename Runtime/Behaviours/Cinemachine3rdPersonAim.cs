@@ -44,6 +44,11 @@ namespace Cinemachine
             + "May be null, in which case no on-screen indicator will appear")]
         public RectTransform AimTargetReticle;
 
+        /// <summary>
+        /// World space position of where the player would hit.
+        /// </summary>
+        public Vector3 AimTarget { get; private set; }
+
         private void OnValidate()
         {
             AimDistance = Mathf.Max(1, AimDistance);
@@ -81,12 +86,13 @@ namespace Cinemachine
                 {
                     // Adjust for actual player aim target (may be different due to offset)
                     var playerPos = player.position;
-                    var aimTarget = VirtualCamera.State.ReferenceLookAt;
-                    var dir = aimTarget - playerPos;
+                    AimTarget = VirtualCamera.State.ReferenceLookAt;
+                    var dir = AimTarget - playerPos;
                     if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir), 
                             out RaycastHit hitInfo, dir.magnitude, AimCollisionFilter, IgnoreTag))
-                        aimTarget = hitInfo.point;
-                    AimTargetReticle.position = brain.OutputCamera.WorldToScreenPoint(aimTarget);
+                        AimTarget = hitInfo.point;
+                    
+                    AimTargetReticle.position = brain.OutputCamera.WorldToScreenPoint(AimTarget);
                 }
             }
         }
