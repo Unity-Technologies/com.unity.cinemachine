@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
         // Assets Menu.
 
         [MenuItem(m_CinemachineAssetsRootMenu + "BlenderSettings")]
-        static void CreateBlenderSettingAsset()
+        private static void CreateBlenderSettingAsset()
         {
             ScriptableObjectUtility.Create<CinemachineBlenderSettings>();
         }
@@ -47,7 +47,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]
         private static void CreateBlendListCamera(MenuCommand command)
         {
-            var blendListCamera  = CreateCinemachineGameObject<CinemachineBlendListCamera>("Blend List Camera", command.context as GameObject);
+            var blendListCamera = CreateCinemachineGameObject<CinemachineBlendListCamera>("Blend List Camera", command.context as GameObject);
 
             // We give the camera a couple of children as an example of setup.
             CinemachineVirtualCamera childVirtualCamera1 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
@@ -62,7 +62,7 @@ namespace Cinemachine.Editor
             blendListCamera.m_Instructions[1].m_Blend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
             blendListCamera.m_Instructions[1].m_Blend.m_Time = 2f;
         }
-        
+
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_GameObjectMenuPriority)]
         private static void CreateStateDivenCamera(MenuCommand command)
         {
