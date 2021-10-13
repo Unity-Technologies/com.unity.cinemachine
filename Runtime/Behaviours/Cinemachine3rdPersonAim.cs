@@ -73,23 +73,30 @@ namespace Cinemachine
             return false; 
         }
 
+        void AdjustAimTarget()
+        {
+            var player = VirtualCamera.Follow;
+            if (player != null)
+            {
+                // Adjust for actual player aim target (may be different due to offset)
+                var playerPos = player.position;
+                AimTarget = VirtualCamera.State.ReferenceLookAt;
+                var dir = AimTarget - playerPos;
+                if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir), 
+                    out RaycastHit hitInfo, dir.magnitude, AimCollisionFilter, IgnoreTag))
+                    AimTarget = hitInfo.point;
+            }
+        }
+
         void DrawReticle(CinemachineBrain brain)
         {
             if (!brain.IsLive(VirtualCamera) || brain.OutputCamera == null)
                 CinemachineCore.CameraUpdatedEvent.RemoveListener(DrawReticle);
             else
             {
-                var player = VirtualCamera.Follow;
-                if (AimTargetReticle != null && player != null)
+                AdjustAimTarget();
+                if (AimTargetReticle != null)
                 {
-                    // Adjust for actual player aim target (may be different due to offset)
-                    var playerPos = player.position;
-                    AimTarget = VirtualCamera.State.ReferenceLookAt;
-                    var dir = AimTarget - playerPos;
-                    if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir), 
-                            out RaycastHit hitInfo, dir.magnitude, AimCollisionFilter, IgnoreTag))
-                        AimTarget = hitInfo.point;
-                    
                     AimTargetReticle.position = brain.OutputCamera.WorldToScreenPoint(AimTarget);
                 }
             }
