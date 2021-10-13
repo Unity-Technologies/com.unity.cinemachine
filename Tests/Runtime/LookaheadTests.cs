@@ -9,7 +9,7 @@ namespace Tests.Runtime
     [TestFixture]
     public class LookaheadTests : CinemachineFixtureBase
     {
-        CinemachineVirtualCamera m_SourceVCam;
+        CinemachineVirtualCamera m_VCam;
         CinemachineComposer m_Composer;
         CinemachineFramingTransposer m_FramingTransposer;
         Transform m_Target;
@@ -22,12 +22,11 @@ namespace Tests.Runtime
             m_Target = CreateGameObject("Target Object").transform;
 
             // Source vcam
-            m_SourceVCam = CreateGameObject("Source CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-            m_SourceVCam.Priority = 2;
-            m_SourceVCam.Follow = m_Target;
-            m_SourceVCam.LookAt = m_Target;
-            m_FramingTransposer = m_SourceVCam.AddCinemachineComponent<CinemachineFramingTransposer>();
-            m_Composer = m_SourceVCam.AddCinemachineComponent<CinemachineComposer>();
+            m_VCam = CreateGameObject("Source CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            m_VCam.Follow = m_Target;
+            m_VCam.LookAt = m_Target;
+            m_FramingTransposer = m_VCam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            m_Composer = m_VCam.AddCinemachineComponent<CinemachineComposer>();
             m_FramingTransposer.m_LookaheadSmoothing = m_Composer.m_LookaheadSmoothing = 0.3f;
             m_FramingTransposer.m_LookaheadTime = m_Composer.m_LookaheadTime = 10;
 
@@ -37,42 +36,40 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator TargetsChanged()
         {
-            yield return null;
-            Assert.That(m_SourceVCam.FollowTargetChanged, Is.False);
-            Assert.That(m_SourceVCam.LookAtTargetChanged, Is.False);
+            Assert.That(m_VCam.FollowTargetChanged, Is.False);
+            Assert.That(m_VCam.LookAtTargetChanged, Is.False);
 
             yield return null;
-            Assert.That(m_SourceVCam.FollowTargetChanged, Is.False);
-            Assert.That(m_SourceVCam.LookAtTargetChanged, Is.False);
+            Assert.That(m_VCam.FollowTargetChanged, Is.False);
+            Assert.That(m_VCam.LookAtTargetChanged, Is.False);
             
             var newTarget = CreateGameObject("Target Object 2").transform;
-            m_SourceVCam.LookAt = newTarget;
+            m_VCam.LookAt = newTarget;
 
-            yield return null; // wait until next frame
+            yield return null;
             
-            Assert.That(m_SourceVCam.FollowTargetChanged, Is.False);
-            Assert.That(m_SourceVCam.LookAtTargetChanged, Is.True);
+            Assert.That(m_VCam.FollowTargetChanged, Is.False);
+            Assert.That(m_VCam.LookAtTargetChanged, Is.True);
 
-            m_SourceVCam.Follow = newTarget;
+            m_VCam.Follow = newTarget;
 
-            yield return null; // wait until next frame
+            yield return null;
             
-            Assert.That(m_SourceVCam.FollowTargetChanged, Is.True);
-            Assert.That(m_SourceVCam.LookAtTargetChanged, Is.False);
+            Assert.That(m_VCam.FollowTargetChanged, Is.True);
+            Assert.That(m_VCam.LookAtTargetChanged, Is.False);
 
-            m_SourceVCam.Follow = m_Target;
-            m_SourceVCam.LookAt = m_Target;
+            m_VCam.Follow = m_Target;
+            m_VCam.LookAt = m_Target;
 
-            yield return null; // wait until next frame
+            yield return null;
             
-            Assert.That(m_SourceVCam.FollowTargetChanged, Is.True);
-            Assert.That(m_SourceVCam.LookAtTargetChanged, Is.True);
+            Assert.That(m_VCam.FollowTargetChanged, Is.True);
+            Assert.That(m_VCam.LookAtTargetChanged, Is.True);
         }
 
         [UnityTest]
         public IEnumerator LookaheadDelta()
         {
-            yield return null;
             var delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.m_LookaheadTime);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
             
