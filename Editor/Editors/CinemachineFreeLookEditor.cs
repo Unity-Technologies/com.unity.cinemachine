@@ -167,6 +167,7 @@ namespace Cinemachine
                     }
                 }
 
+                // TODO: when rig selection becomes an option in freelook, then this won't be needed!
                 var dirs = new[] { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
                 for (var i = 0; i < freelook.m_Orbits.Length; ++i)
                 {
