@@ -340,41 +340,41 @@ namespace Cinemachine.Editor
         public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
         {
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
-                var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
-                var camPos = cmComponent.GetTargetCameraPosition(up);
-                var camRot = cmComponent.GetReferenceOrientation(up);
+            var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
+            var camPos = cmComponent.GetTargetCameraPosition(up);
+            var camRot = cmComponent.GetReferenceOrientation(up);
 
-                EditorGUI.BeginChangeCheck();
-                var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                var newPos = Handles.PositionHandle(camPos, camRot);
-                var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RecordObject(cmComponent, 
-                        "Change Follow Offset Position using handle in Scene View.");
-                    
-                    cmComponent.m_FollowOffset += PositionHandleDelta(camRot, newPos, camPos);
-                    cmComponent.m_FollowOffset = cmComponent.EffectiveOffset; // sanitize offset
-                    
-                    InspectorUtility.RepaintGameView();
-                }
+            EditorGUI.BeginChangeCheck();
+            var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            var newPos = Handles.PositionHandle(camPos, camRot);
+            var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(cmComponent, 
+                    "Change Follow Offset Position using handle in Scene View.");
+                
+                cmComponent.m_FollowOffset += PositionHandleDelta(camRot, newPos, camPos);
+                cmComponent.m_FollowOffset = cmComponent.EffectiveOffset; // sanitize offset
+                
+                InspectorUtility.RepaintGameView();
+            }
 
-                var followOffsetHandleIsDragged = 
-                    foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
-                var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
-                    foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
-                if (followOffsetHandleIsDraggedOrHovered)
-                {
-                    DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
-                }
-                var originalColor = Handles.color;
-                Handles.color = followOffsetHandleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, dottedLineSpacing);
-                Handles.color = originalColor;
+            var followOffsetHandleIsDragged = 
+                foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
+            var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
+                foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
+            if (followOffsetHandleIsDraggedOrHovered)
+            {
+                DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
+            }
+            var originalColor = Handles.color;
+            Handles.color = followOffsetHandleIsDraggedOrHovered ? 
+                Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+            Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, dottedLineSpacing);
+            Handles.color = originalColor;
 
-                if (followOffsetHandleIsDragged) 
-                    CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+            if (followOffsetHandleIsDragged) 
+                CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
         }
         
         

@@ -2,7 +2,11 @@
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
+using System.Numerics;
 using Cinemachine.Utility;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Cinemachine
 {
@@ -34,6 +38,7 @@ namespace Cinemachine
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
 #endif
         }
         
@@ -48,6 +53,7 @@ namespace Cinemachine
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
 #endif
         }
 
@@ -137,6 +143,53 @@ namespace Cinemachine
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(freelook, ref freelook.m_Lens);
+            }
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            {
+                var followPos = freelook.Follow.position;
+                for (var i = 0; i < freelook.m_Orbits.Length; ++i)
+                {
+                    EditorGUI.BeginChangeCheck();
+                
+                    var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                    var heightHandlePos = followPos + Vector3.up * freelook.m_Orbits[i].m_Height;
+                    var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
+                        HandleUtility.GetHandleSize(heightHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(freelook, "Changed freelook rig orbit height using handle in scene view.");
+                
+                        freelook.m_Orbits[i].m_Height += CinemachineSceneToolHelpers.SliderHandleDelta(
+                            newHeightHandlePos, heightHandlePos, Vector3.up);
+
+                        InspectorUtility.RepaintGameView();
+                    }
+                }
+
+                var dirs = new[] { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
+                for (var i = 0; i < freelook.m_Orbits.Length; ++i)
+                {
+                    for (int d = 0; d < 4; ++d)
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                        var radiusHandlePos = followPos + Vector3.up * freelook.m_Orbits[i].m_Height 
+                            + dirs[d] * freelook.m_Orbits[i].m_Radius;
+                        var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, dirs[d],
+                            HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            Undo.RecordObject(freelook, "Changed freelook rig orbit radius using handle in scene view.");
+                
+                            freelook.m_Orbits[i].m_Radius += CinemachineSceneToolHelpers.SliderHandleDelta(
+                                newRadiusHandlePos, radiusHandlePos, dirs[d]);
+
+                            InspectorUtility.RepaintGameView();
+                        }
+                    }
+                }
             }
             Handles.color = originalColor;
         }
