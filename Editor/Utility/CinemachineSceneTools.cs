@@ -149,7 +149,8 @@ namespace Cinemachine.Editor
     
     static class CinemachineSceneToolHelpers
     {
-        public static float lineSpacing = 4f;
+        public static float dottedLineSpacing = 4f;
+        public static float lineThickness = 4f;
 
         static GUIStyle s_LabelStyle = new GUIStyle 
         { 
@@ -185,7 +186,8 @@ namespace Cinemachine.Editor
         
         public static void DrawLabel(Vector3 position, string text)
         {
-            Handles.Label(position - Vector3.one, text, s_LabelStyle);
+            var labelOffset = HandleUtility.GetHandleSize(position) / 10f;
+            Handles.Label(position + new Vector3(0, -labelOffset, 0), text, s_LabelStyle);
         }
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
@@ -327,7 +329,7 @@ namespace Cinemachine.Editor
                 var originalColor = Handles.color;
                 Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(lookAtPos, trackedObjectPos, lineSpacing);
+                Handles.DrawDottedLine(lookAtPos, trackedObjectPos, dottedLineSpacing);
                 Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
                 Handles.color = originalColor;
 
@@ -368,7 +370,7 @@ namespace Cinemachine.Editor
                 var originalColor = Handles.color;
                 Handles.color = followOffsetHandleIsDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, lineSpacing);
+                Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, dottedLineSpacing);
                 Handles.color = originalColor;
 
                 if (followOffsetHandleIsDragged) 
