@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine")]
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
-    public class CinemachineToolbarOverlay : ToolbarOverlay
+    class CinemachineToolbarOverlay : ToolbarOverlay
     {
         public CinemachineToolbarOverlay()
             : base(
@@ -36,7 +36,7 @@ namespace Cinemachine.Editor
         }
     }
 
-    public abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
+    abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
     {
         protected CinemachineEditorToolbarToggle()
         {
@@ -49,7 +49,7 @@ namespace Cinemachine.Editor
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]
-    public class FoVTool : CinemachineEditorToolbarToggle
+    class FoVTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FoVTool/Toggle";
 
@@ -62,7 +62,7 @@ namespace Cinemachine.Editor
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    public class FarNearClipTool : CinemachineEditorToolbarToggle
+    class FarNearClipTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FarNearClipTool/Toggle";
 
@@ -75,7 +75,7 @@ namespace Cinemachine.Editor
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    public class FollowOffsetTool : CinemachineEditorToolbarToggle
+    class FollowOffsetTool : CinemachineEditorToolbarToggle
     {
         public const string id = "FollowOffsetTool/Toggle";
 
@@ -88,7 +88,7 @@ namespace Cinemachine.Editor
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    public class TrackedObjectOffsetTool : CinemachineEditorToolbarToggle
+    class TrackedObjectOffsetTool : CinemachineEditorToolbarToggle
     {
         public const string id = "TrackedObjectOffsetTool/Toggle";
 

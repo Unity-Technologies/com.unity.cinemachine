@@ -234,7 +234,7 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    framingTransposer, ref framingTransposer.m_TrackedObjectOffset, "Body");
+                    framingTransposer, ref framingTransposer.m_TrackedObjectOffset);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
