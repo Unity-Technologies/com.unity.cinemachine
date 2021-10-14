@@ -63,8 +63,8 @@ namespace Cinemachine.Editor
 
                 EditorGUI.BeginChangeCheck();
                 // shoulder handle
-                var heading = 
-                    thirdPerson.GetHeading(targetForward, thirdPerson.VirtualCamera.State.ReferenceUp);
+                var heading = Cinemachine3rdPersonFollow.GetHeading(
+                    targetForward, thirdPerson.VirtualCamera.State.ReferenceUp);
                 var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
                 var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed

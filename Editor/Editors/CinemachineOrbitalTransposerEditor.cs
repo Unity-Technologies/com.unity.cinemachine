@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
 
 #if UNITY_2021_2_OR_NEWER
-            if (!Target.m_HideOffsetInInspector)
+            if (!Target.HideOffsetInInspector)
             {
                 CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             }
@@ -160,7 +160,7 @@ namespace Cinemachine.Editor
         protected override void DrawSceneTools()
         {
             var orbitalTransposer = Target;
-            if (!orbitalTransposer.IsValid || Target.m_HideOffsetInInspector)
+            if (!orbitalTransposer.IsValid || Target.HideOffsetInInspector)
             {
                 return;
             }
