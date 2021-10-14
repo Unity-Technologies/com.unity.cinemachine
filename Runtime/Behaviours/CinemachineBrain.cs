@@ -26,6 +26,48 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
+    /// This interface is specifically for Timeline.  Do not use it.
+    /// </summary>
+    public interface IBrainOverrideStack
+    {
+        /// <summary>
+        /// Override the current camera and current blend.  This setting will trump
+        /// any in-game logic that sets virtual camera priorities and Enabled states.
+        /// This is the main API for the timeline.
+        /// </summary>
+        /// <param name="overrideId">Id to represent a specific client.  An internal
+        /// stack is maintained, with the most recent non-empty override taking precenence.
+        /// This id must be > 0.  If you pass -1, a new id will be created, and returned.
+        /// Use that id for subsequent calls.  Don't forget to
+        /// call ReleaseCameraOverride after all overriding is finished, to
+        /// free the OverideStack resources.</param>
+        /// <param name="camA"> The camera to set, corresponding to weight=0</param>
+        /// <param name="camB"> The camera to set, corresponding to weight=1</param>
+        /// <param name="weightB">The blend weight.  0=camA, 1=camB</param>
+        /// <param name="deltaTime">override for deltaTime.  Should be Time.FixedDelta for
+        /// time-based calculations to be included, -1 otherwise</param>
+        /// <returns>The oiverride ID.  Don't forget to call ReleaseCameraOverride
+        /// after all overriding is finished, to free the OverideStack resources.</returns>
+        public int SetCameraOverride(
+            int overrideId,
+            ICinemachineCamera camA, ICinemachineCamera camB,
+            float weightB, float deltaTime);
+
+        /// <summary>
+        /// See SetCameraOverride.
+        /// </summary>
+        /// <param name="overrideId">The ID to released.  This is the value that
+        /// was returned by SetCameraOverride</param>
+        public void ReleaseCameraOverride(int overrideId);
+
+        /// <summary>
+        /// Get the current definition of Up.  May be different from Vector3.up.
+        /// </summary>
+        public Vector3 DefaultWorldUp { get; }
+    }
+
+
+    /// <summary>
     /// CinemachineBrain is the link between the Unity Camera and the Cinemachine Virtual
     /// Cameras in the scene.  It monitors the priority stack to choose the current
     /// Virtual Camera, and blend with another if necessary.  Finally and most importantly,
@@ -45,7 +87,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/CinemachineBrain")]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
-    public class CinemachineBrain : MonoBehaviour
+    public class CinemachineBrain : MonoBehaviour, IBrainOverrideStack
     {
         /// <summary>
         /// When enabled, the current camera and blend will be indicated in the 
