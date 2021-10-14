@@ -55,7 +55,7 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
             }
-            if (Target.m_HideOffsetInInspector)
+            if (Target.HideOffsetInInspector)
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
         }
 

@@ -114,5 +114,15 @@ namespace Cinemachine.Editor
                     elemProp.FindPropertyRelative(() => def.weight).floatValue = 1;
                 };
         }
+
+#if false // enable for debugging
+        [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineTargetGroup))]
+        private static void DrawGroupComposerGizmos(CinemachineTargetGroup target, GizmoType selectionType)
+        {
+                Gizmos.color = Color.yellow;
+                var sphere = target.Sphere;
+                Gizmos.DrawWireSphere(sphere.position, sphere.radius);
+        }
+#endif
     }
 }
