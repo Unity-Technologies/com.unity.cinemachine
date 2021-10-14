@@ -264,19 +264,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        public void OnPositionDragged(Vector3 delta)
-        {
-            if (m_ComponentEditor != null)
-            {
-                MethodInfo mi = m_ComponentEditor.GetType().GetMethod("OnVcamPositionDragged"
-                    , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                if (mi != null && m_ComponentEditor.target != null)
-                {
-                    mi.Invoke(m_ComponentEditor, new object[] { delta } );
-                }
-            }
-        }
-
         // Returns the number of null components in this stage
         public delegate int GetComponentDelegate(
             CinemachineCore.Stage stage, List<CinemachineComponentBase> result);
@@ -364,14 +351,6 @@ namespace Cinemachine.Editor
                 
                 ed.OnSceneGUI();
             }
-        }
-
-        // Pass the dragged event down to the CM component editors
-        public void OnPositionDragged(Vector3 delta)
-        {
-            foreach (var e in m_subeditors)
-                if (e != null)
-                    e.OnPositionDragged(delta);
         }
     }
 }
