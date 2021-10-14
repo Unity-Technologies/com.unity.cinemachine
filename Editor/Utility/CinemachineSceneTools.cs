@@ -100,9 +100,9 @@ namespace Cinemachine.Editor
 
         static void EnsureCinemachineToolsAreExclusiveWithUnityTools()
         {
-            foreach (var (key, value) in s_Tools)
+            foreach (var t in s_Tools)
             {
-                value.ToggleSetter(key == s_ActiveTool);
+                t.Value.ToggleSetter(t.Key == s_ActiveTool);
             }
             if (s_ActiveTool != null)
             {
@@ -137,10 +137,10 @@ namespace Cinemachine.Editor
 
                 if (!cmToolbarIsHidden)
                 {
-                    // only display cm tools that are relevant for the current selection
-                    foreach (var (key, value) in s_Tools)
+                    // only display cm tools that are relevant for the current selection Type, CinemachineSceneToolDelegates
+                    foreach (var t in s_Tools)
                     {
-                        value.IsDisplayedSetter(s_RequiredTools.Contains(key));
+                        t.Value.IsDisplayedSetter(s_RequiredTools.Contains(t.Key));
                     }
                 }
             };
