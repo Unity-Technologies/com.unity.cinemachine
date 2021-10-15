@@ -225,7 +225,7 @@ namespace Cinemachine.Editor
         public void DrawSceneTools()
         {
             var framingTransposer = Target;
-            if (!framingTransposer.IsValid)
+            if (framingTransposer == null || !framingTransposer.IsValid)
             {
                 return;
             }

@@ -126,7 +126,7 @@ namespace Cinemachine.Editor
         public void DrawSceneTools()
         {
             var vcam = Target;
-            if (!vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
+            if (vcam == null || !vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
             {
                 return;
             }

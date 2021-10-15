@@ -160,7 +160,8 @@ namespace Cinemachine.Editor
         public void DrawSceneTools()
         {
             var orbitalTransposer = Target;
-            if (!orbitalTransposer.IsValid || Target.m_HideOffsetInInspector)
+            if (orbitalTransposer == null || !orbitalTransposer.IsValid || 
+                orbitalTransposer.m_HideOffsetInInspector)
             {
                 return;
             }

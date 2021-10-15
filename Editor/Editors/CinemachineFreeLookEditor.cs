@@ -129,7 +129,7 @@ namespace Cinemachine
         public void DrawSceneTools()
         {
             var freelook = Target;
-            if (!freelook.IsValid)
+            if (freelook == null || !freelook.IsValid)
             {
                 return;
             }

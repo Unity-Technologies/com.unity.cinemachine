@@ -47,7 +47,7 @@ namespace Cinemachine.Editor
         public void DrawSceneTools()
         {
             var thirdPerson = Target;
-            if (!thirdPerson.IsValid)
+            if (thirdPerson == null || !thirdPerson.IsValid)
             {
                 return;
             }

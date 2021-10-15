@@ -114,7 +114,7 @@ namespace Cinemachine.Editor
         public void DrawSceneTools()
         {
             var composer = Target;
-            if (!composer.IsValid)
+            if (composer == null || !composer.IsValid)
             {
                 return;
             }

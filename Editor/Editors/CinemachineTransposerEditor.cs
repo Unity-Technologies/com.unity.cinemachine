@@ -100,7 +100,7 @@ namespace Cinemachine.Editor
         public void DrawSceneTools()
         {
             var transposer = Target;
-            if (!transposer.IsValid)
+            if (transposer == null || !transposer.IsValid)
             {
                 return;
             }
