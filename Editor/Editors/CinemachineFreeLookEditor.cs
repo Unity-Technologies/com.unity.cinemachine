@@ -146,7 +146,8 @@ namespace Cinemachine
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(freelook, ref freelook.m_Lens);
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            else if (freelook.Follow != null && 
+                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var followPos = freelook.Follow.position;
                 for (var i = 0; i < freelook.m_Orbits.Length; ++i)

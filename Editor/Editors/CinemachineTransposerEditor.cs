@@ -105,7 +105,8 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            if (transposer.FollowTarget != null && 
+                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TransposerFollowOffsetTool(transposer);
             }

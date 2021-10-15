@@ -119,7 +119,8 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
+            if (composer.LookAtTarget != null && 
+                CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
                     composer, ref composer.m_TrackedObjectOffset);

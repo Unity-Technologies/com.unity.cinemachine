@@ -16,15 +16,15 @@ namespace Cinemachine.Editor
     static class CinemachineSceneToolUtility
     {
         /// <summary>
-        /// Checks whether tool is the currently active tool.
+        /// Checks whether tool is the currently active exclusive tool.
         /// </summary>
         /// <param name="tool">Tool to check.</param>
-        /// <returns>True, when the tool is the active tool. False, otherwise.</returns>
+        /// <returns>True, when the tool is the active exclusive tool. False, otherwise.</returns>
         public static bool IsToolActive(Type tool)
         {
-            return s_ActiveTool == tool;
+            return s_ActiveExclusiveTool == tool;
         }
-        static Type s_ActiveTool;
+        static Type s_ActiveExclusiveTool;
 
         /// <summary>
         /// Register your Type from the editor script's OnEnable function.
@@ -125,12 +125,12 @@ namespace Cinemachine.Editor
         {
             if (active)
             {
-                s_ActiveTool = tool;
+                s_ActiveExclusiveTool = tool;
                 EnsureCinemachineToolsAreExclusiveWithUnityTools();
             }
             else
             {
-                s_ActiveTool = s_ActiveTool == tool ? null : s_ActiveTool;
+                s_ActiveExclusiveTool = s_ActiveExclusiveTool == tool ? null : s_ActiveExclusiveTool;
             }
         }
 
@@ -138,9 +138,9 @@ namespace Cinemachine.Editor
         {
             foreach (var (key, value) in s_ExclusiveTools)
             {
-                value.ToggleSetter(key == s_ActiveTool);
+                value.ToggleSetter(key == s_ActiveExclusiveTool);
             }
-            if (s_ActiveTool != null)
+            if (s_ActiveExclusiveTool != null)
             {
                 Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
             }
@@ -168,7 +168,7 @@ namespace Cinemachine.Editor
                 
                 var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
                 // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
-                if (s_ActiveTool != null && (Tools.current != Tool.None || cmToolbarIsHidden))
+                if (s_ActiveExclusiveTool != null && (Tools.current != Tool.None || cmToolbarIsHidden))
                 {
                     SetTool(true, null);
                 }

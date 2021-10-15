@@ -52,7 +52,8 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            if (thirdPerson.FollowTarget != null && 
+                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var originalColor = Handles.color;
                 
@@ -103,8 +104,8 @@ namespace Cinemachine.Editor
                 isDragged |= IsHandleDragged(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
                     + camDistance.ToString("F1") + ")", armPosition, camPos);
 
-                if (isDragged) 
-                    CinemachineBrain.SoloCamera = thirdPerson.VirtualCamera;
+                // if (isDragged) 
+                //     CinemachineBrain.SoloCamera = thirdPerson.VirtualCamera;
 
                 Handles.color = originalColor;
             }
