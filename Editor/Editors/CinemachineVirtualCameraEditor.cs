@@ -93,6 +93,7 @@ namespace Cinemachine.Editor
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
+            m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
 #endif
         }
@@ -117,7 +118,7 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
-        int m_ScaleSliderHash = "ScaleSliderHash".GetHashCode();  // TODO: KGB workaround until id is exposed
+        float m_Fov; // needed for reversing the scale slider
         protected override void DrawSceneTools()
         {
             var vcam = Target;
@@ -131,7 +132,8 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(vcam, ref vcam.m_Lens, 
-                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV);
+                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV,
+                    ref m_Fov);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {

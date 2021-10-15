@@ -239,7 +239,7 @@ namespace Cinemachine.Editor
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         public static void FovToolHandle(
-            CinemachineVirtualCameraBase vcam, ref LensSettings lens, bool isLensHorizontal)
+            CinemachineVirtualCameraBase vcam, ref LensSettings lens, bool isLensHorizontal, ref float fov)
         {
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
@@ -248,25 +248,26 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
 
-            var fieldOfView = Handles.ScaleSlider(
-                lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView, 
-                camPos, -camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+            var newFov = Handles.ScaleSlider(
+                fov, 
+                camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
 
                 if (lens.Orthographic)
                 {
-                    lens.OrthographicSize = fieldOfView;
+                    lens.OrthographicSize += (fov - newFov);
                 }
                 else
                 {
-                    lens.FieldOfView = fieldOfView;
+                    lens.FieldOfView += (fov - newFov);
                 }
                 lens.Validate();
                     
                 InspectorUtility.RepaintGameView();
             }
+            fov = newFov;
 
             if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
             {

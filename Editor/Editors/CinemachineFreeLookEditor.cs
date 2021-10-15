@@ -126,6 +126,7 @@ namespace Cinemachine
         }
 
 #if UNITY_2021_2_OR_NEWER
+        float m_Fov; // needed for reversing the scale slider
         protected override void DrawSceneTools()
         {
             var freelook = Target;
@@ -140,7 +141,8 @@ namespace Cinemachine
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, 
-                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV);
+                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV, 
+                    ref m_Fov);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
