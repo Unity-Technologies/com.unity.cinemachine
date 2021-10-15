@@ -53,8 +53,24 @@ namespace Cinemachine.Editor
             public ToolHandler ToggleSetter;
             public ToolHandler IsDisplayedSetter;
         }
-        static SortedDictionary<Type, CinemachineSceneToolDelegates> s_Tools;
+        static SortedDictionary<Type, CinemachineSceneToolDelegates> s_ExclusiveTools; // tools that can't be active at the same time
+        static SortedDictionary<Type, CinemachineSceneToolDelegates> s_Tools; // tools without restrictions
+        
 
+        internal static void RegisterExclusiveToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
+        {
+            if (s_ExclusiveTools.ContainsKey(tool))
+            {
+                s_ExclusiveTools.Remove(tool);
+            }
+            
+            s_ExclusiveTools.Add(tool, new CinemachineSceneToolDelegates
+            {
+                ToggleSetter = toggleSetter,
+                IsDisplayedSetter = isDisplayedSetter,
+            });
+        }
+        
         internal static void RegisterToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
         {
             if (s_Tools.ContainsKey(tool))
@@ -68,7 +84,7 @@ namespace Cinemachine.Editor
                 IsDisplayedSetter = isDisplayedSetter,
             });
         }
-
+        
         internal delegate bool ToolbarHandler();
         static ToolbarHandler s_ToolBarIsDisplayed;
         internal static void RegisterToolbarIsDisplayedHandler(ToolbarHandler handler)
@@ -84,6 +100,26 @@ namespace Cinemachine.Editor
             s_ToolBarDisplay = handler;
         }
 
+        internal static void SetSolo(bool active)
+        {
+            if (active)
+            {
+                foreach (var o in Selection.gameObjects)
+                {
+                    var vcam = o.GetComponent<ICinemachineCamera>();
+                    if (vcam != null)
+                    {
+                        CinemachineBrain.SoloCamera = vcam;
+                        InspectorUtility.RepaintGameView();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                CinemachineBrain.SoloCamera = null;
+            }
+        }
 
         internal static void SetTool(bool active, Type tool)
         {
@@ -100,7 +136,7 @@ namespace Cinemachine.Editor
 
         static void EnsureCinemachineToolsAreExclusiveWithUnityTools()
         {
-            foreach (var (key, value) in s_Tools)
+            foreach (var (key, value) in s_ExclusiveTools)
             {
                 value.ToggleSetter(key == s_ActiveTool);
             }
@@ -112,6 +148,8 @@ namespace Cinemachine.Editor
         
         static CinemachineSceneToolUtility()
         {
+            s_ExclusiveTools = new SortedDictionary<Type, CinemachineSceneToolDelegates>(Comparer<Type>.Create(
+                (x, y) => x.ToString().CompareTo(y.ToString())));
             s_Tools = new SortedDictionary<Type, CinemachineSceneToolDelegates>(Comparer<Type>.Create(
                 (x, y) => x.ToString().CompareTo(y.ToString())));
             s_RequiredTools = new HashSet<Type>();
@@ -130,7 +168,7 @@ namespace Cinemachine.Editor
                 
                 var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
                 // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
-                if (Tools.current != Tool.None || cmToolbarIsHidden)
+                if (s_ActiveTool != null && (Tools.current != Tool.None || cmToolbarIsHidden))
                 {
                     SetTool(true, null);
                 }
@@ -138,23 +176,22 @@ namespace Cinemachine.Editor
                 if (!cmToolbarIsHidden)
                 {
                     // only display cm tools that are relevant for the current selection
+                    foreach (var (key, value) in s_ExclusiveTools)
+                    {
+                        value.IsDisplayedSetter(s_RequiredTools.Contains(key));
+                    }
                     foreach (var (key, value) in s_Tools)
                     {
                         value.IsDisplayedSetter(s_RequiredTools.Contains(key));
                     }
                 }
-
-                // make the Solo button work with toggle
-                if (CinemachineBrain.SoloCamera == null)
-                {
-                    SetTool(false, typeof(SoloVcamTool));
+                
+                if (s_Tools.ContainsKey(s_SoloVcamToolType)) {
+                    s_Tools[s_SoloVcamToolType].ToggleSetter(CinemachineBrain.SoloCamera != null);
                 }
-                // if (s_ActiveTool != typeof(SoloVcamTool))
-                // {
-                //     CinemachineBrain.SoloCamera = null;
-                // }
             };
         }
+        static Type s_SoloVcamToolType = typeof(SoloVcamTool);
     }
     
     static class CinemachineSceneToolHelpers
@@ -386,14 +423,6 @@ namespace Cinemachine.Editor
             if (followOffsetHandleIsDragged) 
                 CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
         }
-
-        public static void SoloVcamHandle(CinemachineVirtualCameraBase vcam)
-        {
-            CinemachineBrain.SoloCamera = vcam;
-            InspectorUtility.RepaintGameView();
-        }
-        
-        
     } 
 }
 #endif

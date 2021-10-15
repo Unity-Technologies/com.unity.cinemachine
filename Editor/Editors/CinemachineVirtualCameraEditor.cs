@@ -137,10 +137,6 @@ namespace Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(vcam, ref vcam.m_Lens);
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(SoloVcamTool)))
-            {
-                CinemachineSceneToolHelpers.SoloVcamHandle(vcam);
-            }
             
             Handles.color = originalColor;
         }

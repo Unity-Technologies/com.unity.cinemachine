@@ -44,7 +44,7 @@ namespace Cinemachine.Editor
             var type = GetType();
             this.RegisterValueChangedCallback(
                 v => CinemachineSceneToolUtility.SetTool(v.newValue, type));
-            CinemachineSceneToolUtility.RegisterToolHandlers(type, isOn => value = isOn, 
+            CinemachineSceneToolUtility.RegisterExclusiveToolHandlers(type, isOn => value = isOn, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
         }
     }
@@ -102,12 +102,17 @@ namespace Cinemachine.Editor
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]
-    class SoloVcamTool : CinemachineEditorToolbarToggle
+    class SoloVcamTool : EditorToolbarToggle
     {
         public const string id = "SoloVcamTool/Toggle";
 
         public SoloVcamTool()
         {
+            this.RegisterValueChangedCallback(
+                v => CinemachineSceneToolUtility.SetSolo(v.newValue));
+            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => value = isOn, 
+                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
+            
             onIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
             offIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleoff@2x").image as Texture2D;
             tooltip = "Solo Vcam Tool";

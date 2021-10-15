@@ -194,10 +194,6 @@ namespace Cinemachine
                     }
                 }
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(SoloVcamTool)))
-            {
-                CinemachineSceneToolHelpers.SoloVcamHandle(freelook);
-            }
             Handles.color = originalColor;
         }
 #endif
