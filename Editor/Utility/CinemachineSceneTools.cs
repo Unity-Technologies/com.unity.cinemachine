@@ -295,8 +295,8 @@ namespace Cinemachine.Editor
                 }
             }
                 
-            if (GUIUtility.hotControl == fovHandleId) 
-                CinemachineBrain.SoloCamera = vcam;
+            // if (GUIUtility.hotControl == fovHandleId) 
+            //     CinemachineBrain.SoloCamera = vcam;
         }
 
         public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens)
@@ -339,8 +339,8 @@ namespace Cinemachine.Editor
             }
 
             
-            if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
-                CinemachineBrain.SoloCamera = vcam;
+            // if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
+            //     CinemachineBrain.SoloCamera = vcam;
         }
 
         public static void TrackedObjectOffsetTool(
@@ -380,8 +380,8 @@ namespace Cinemachine.Editor
             Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
             Handles.color = originalColor;
 
-            if (trackedObjectOffsetHandleIsDragged)
-                CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+            // if (trackedObjectOffsetHandleIsDragged)
+            //     CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
         }
 
         public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
@@ -420,8 +420,8 @@ namespace Cinemachine.Editor
             Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, dottedLineSpacing);
             Handles.color = originalColor;
 
-            if (followOffsetHandleIsDragged) 
-                CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+            // if (followOffsetHandleIsDragged) 
+            //     CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
         }
     } 
 }

@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// To display a CinemachineEditorToolbarToggle in the Cinemachine Toolbar,
+    /// To display a CinemachineExclusiveEditorToolbarToggle in the Cinemachine Toolbar,
     /// TODO: extendable when another PR lands. 
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine")]
@@ -37,9 +37,14 @@ namespace Cinemachine.Editor
         }
     }
 
-    abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
+    /// <summary>
+    /// Creates a toggle tool on the Cinemachine toolbar that is exclusive with other
+    /// CinemachineExclusiveEditorToolbarToggles. Meaning, that maximum one
+    /// CinemachineExclusiveEditorToolbarToggle can be active at any time.
+    /// </summary>
+    abstract class CinemachineExclusiveEditorToolbarToggle : EditorToolbarToggle
     {
-        protected CinemachineEditorToolbarToggle()
+        protected CinemachineExclusiveEditorToolbarToggle()
         {
             var type = GetType();
             this.RegisterValueChangedCallback(
@@ -50,7 +55,7 @@ namespace Cinemachine.Editor
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FoVTool : CinemachineEditorToolbarToggle
+    class FoVTool : CinemachineExclusiveEditorToolbarToggle
     {
         public const string id = "FoVTool/Toggle";
 
@@ -63,7 +68,7 @@ namespace Cinemachine.Editor
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FarNearClipTool : CinemachineEditorToolbarToggle
+    class FarNearClipTool : CinemachineExclusiveEditorToolbarToggle
     {
         public const string id = "FarNearClipTool/Toggle";
 
@@ -76,7 +81,7 @@ namespace Cinemachine.Editor
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FollowOffsetTool : CinemachineEditorToolbarToggle
+    class FollowOffsetTool : CinemachineExclusiveEditorToolbarToggle
     {
         public const string id = "FollowOffsetTool/Toggle";
 
@@ -89,7 +94,7 @@ namespace Cinemachine.Editor
     }
 
     [EditorToolbarElement(id, typeof(SceneView))]
-    class TrackedObjectOffsetTool : CinemachineEditorToolbarToggle
+    class TrackedObjectOffsetTool : CinemachineExclusiveEditorToolbarToggle
     {
         public const string id = "TrackedObjectOffsetTool/Toggle";
 
@@ -101,8 +106,20 @@ namespace Cinemachine.Editor
         }
     }
     
+    /// <summary>
+    /// Creates a toggle tool on the Cinemachine toolbar.
+    /// </summary>
+    abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
+    {
+        protected CinemachineEditorToolbarToggle()
+        {
+            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => value = isOn, 
+                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
+        }
+    }
+    
     [EditorToolbarElement(id, typeof(SceneView))]
-    class SoloVcamTool : EditorToolbarToggle
+    class SoloVcamTool : CinemachineEditorToolbarToggle
     {
         public const string id = "SoloVcamTool/Toggle";
 
@@ -110,8 +127,6 @@ namespace Cinemachine.Editor
         {
             this.RegisterValueChangedCallback(
                 v => CinemachineSceneToolUtility.SetSolo(v.newValue));
-            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => value = isOn, 
-                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
             
             onIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
             offIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleoff@2x").image as Texture2D;
