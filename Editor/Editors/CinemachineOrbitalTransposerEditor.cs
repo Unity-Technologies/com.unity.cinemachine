@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
+    internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>, ISceneToolAware
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -157,7 +157,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
-        protected override void DrawSceneTools()
+        public void DrawSceneTools()
         {
             var orbitalTransposer = Target;
             if (!orbitalTransposer.IsValid || Target.m_HideOffsetInInspector)

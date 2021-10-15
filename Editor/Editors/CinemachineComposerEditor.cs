@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineComposerEditor : BaseEditor<CinemachineComposer>
+    internal class CinemachineComposerEditor : BaseEditor<CinemachineComposer>, ISceneToolAware
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
@@ -111,7 +111,7 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
-        protected override void DrawSceneTools()
+        public void DrawSceneTools()
         {
             var composer = Target;
             if (!composer.IsValid)

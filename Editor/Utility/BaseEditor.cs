@@ -92,22 +92,6 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
-        /// <summary>
-        /// Draw inside the scene view here. Base implementation calls DrawSceneTools.
-        /// </summary>
-        protected virtual void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-
-        /// <summary>
-        /// Implement your scene handles for your components and extensions here.
-        ///
-        /// Don't forget to register/unregister your components and extensions in their
-        /// editor's OnEnable and OnDisable functions with CinemachineSceneToolUtility.RegisterTool/UnregisterTool. 
-        /// </summary>
-        protected virtual void DrawSceneTools() {}
-
         List<string> mExcluded = new List<string>();
 
         /// <summary>

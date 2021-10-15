@@ -277,7 +277,7 @@ namespace Cinemachine.Editor
             mWaypointList.index = indexA + 1; // select it
         }
 
-        protected override void OnSceneGUI()
+        void OnSceneGUI()
         {
             if (mWaypointList == null)
                 SetupWaypointList();

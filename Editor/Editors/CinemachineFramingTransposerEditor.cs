@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineFramingTransposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>
+    internal class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>, ISceneToolAware
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
@@ -222,7 +222,7 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
-        protected override void DrawSceneTools()
+        public void DrawSceneTools()
         {
             var framingTransposer = Target;
             if (!framingTransposer.IsValid)

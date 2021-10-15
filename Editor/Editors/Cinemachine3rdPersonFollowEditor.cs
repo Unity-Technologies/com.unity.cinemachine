@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(Cinemachine3rdPersonFollow))]
     [CanEditMultipleObjects]
-    internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
+    internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>, ISceneToolAware
     {
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(Cinemachine3rdPersonFollow))]
         static void Draw3rdPersonGizmos(Cinemachine3rdPersonFollow target, GizmoType selectionType)
@@ -44,7 +44,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
-        protected override void DrawSceneTools()
+        public void DrawSceneTools()
         {
             var thirdPerson = Target;
             if (!thirdPerson.IsValid)

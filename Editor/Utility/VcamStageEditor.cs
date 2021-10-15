@@ -3,7 +3,6 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
-using System.Reflection;
 
 namespace Cinemachine.Editor
 {
@@ -186,14 +185,9 @@ namespace Cinemachine.Editor
 
         public void OnSceneGUI()
         {
-            if (m_ComponentEditor != null)
+            if (m_ComponentEditor != null && m_ComponentEditor is ISceneToolAware sceneToolAware)
             {
-                var mi = m_ComponentEditor.GetType().GetMethod("OnSceneGUI"
-                    , BindingFlags.NonPublic | BindingFlags.Instance);
-                if (mi != null && m_ComponentEditor.target != null)
-                {
-                    mi.Invoke(m_ComponentEditor, null);
-                }
+                sceneToolAware.DrawSceneToolsOnSceneGUI();
             }
         }
 

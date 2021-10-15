@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineVirtualCamera))]
     [CanEditMultipleObjects]
     internal class CinemachineVirtualCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
+        : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>, ISceneToolAware
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
         Vector3 m_PreviousPosition;
@@ -110,15 +110,20 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        protected override void OnSceneGUI()
+        void OnSceneGUI()
         {
-            base.OnSceneGUI();
+            DrawSceneToolsOnSceneGUI();
+        }
+
+        public void DrawSceneToolsOnSceneGUI()
+        {
+            DrawSceneTools();
             m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
 #if UNITY_2021_2_OR_NEWER
         float m_Fov; // needed for reversing the scale slider
-        protected override void DrawSceneTools()
+        public void DrawSceneTools()
         {
             var vcam = Target;
             if (!vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))

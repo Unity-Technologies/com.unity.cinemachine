@@ -2,7 +2,6 @@
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
-using System.Numerics;
 using Cinemachine.Utility;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
@@ -13,7 +12,7 @@ namespace Cinemachine
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
+        : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>, ISceneToolAware
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -111,44 +110,43 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
         
-        protected override void OnSceneGUI()
+        void OnSceneGUI()
         {
-            base.OnSceneGUI();
-            if (m_rigEditor != null)
+            DrawSceneToolsOnSceneGUI();
+        }
+
+        public void DrawSceneToolsOnSceneGUI()
+        {
+            DrawSceneTools();
+            if (m_rigEditor != null && m_rigEditor is ISceneToolAware sceneToolAware)
             {
-                var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (mi != null && m_rigEditor.target != null)
-                {
-                    mi.Invoke(m_rigEditor, null);
-                }
+                sceneToolAware.DrawSceneToolsOnSceneGUI();
             }
         }
 
 #if UNITY_2021_2_OR_NEWER
         float m_Fov; // needed for reversing the scale slider
-        protected override void DrawSceneTools()
+        public void DrawSceneTools()
         {
             var freelook = Target;
-            if (!freelook.IsValid || !freelook.m_CommonLens)
+            if (!freelook.IsValid)
             {
                 return;
             }
 
-            if (GUIUtility.hotControl == 0)
-            {
-                m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
-            }
-            
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
+            if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
+                if (GUIUtility.hotControl == 0)
+                {
+                    m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
+                }
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, 
                     m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV, 
                     ref m_Fov);
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+            else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(freelook, ref freelook.m_Lens);
             }
