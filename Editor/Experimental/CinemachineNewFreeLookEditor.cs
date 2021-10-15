@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Cinemachine
 {
