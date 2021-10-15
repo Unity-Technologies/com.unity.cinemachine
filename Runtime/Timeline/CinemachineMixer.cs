@@ -186,13 +186,8 @@ using System.Collections.Generic;
         {
             base.ProcessFrame(playable, info, playerData);
 
-            // Get the brain that this track controls.
-            // Older versions of timeline sent the gameObject by mistake.
-            GameObject go = playerData as GameObject;
-            if (go == null)
-                m_BrainOverrideStack = (CinemachineBrain)playerData;
-            else
-                m_BrainOverrideStack = go.GetComponent<CinemachineBrain>();
+            // Get the object that this track controls
+            m_BrainOverrideStack = playerData as IBrainOverrideStack;
             if (m_BrainOverrideStack == null)
                 return;
 
