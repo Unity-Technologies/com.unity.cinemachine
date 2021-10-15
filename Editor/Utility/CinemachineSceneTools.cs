@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 
 namespace Cinemachine.Editor
 {
@@ -33,7 +32,14 @@ namespace Cinemachine.Editor
         /// <param name="tool">Tool to register</param>
         public static void RegisterTool(Type tool)
         {
-            s_RequiredTools.Add(tool);
+            if (s_RequiredTools.ContainsKey(tool))
+            {
+                s_RequiredTools[tool]++;
+            }
+            else
+            {
+                s_RequiredTools.Add(tool, 1);
+            }
         }
         
         /// <summary>
@@ -43,9 +49,16 @@ namespace Cinemachine.Editor
         /// <param name="tool">Tool to register</param>
         public static void UnregisterTool(Type tool)
         {
-            s_RequiredTools.Remove(tool);
+            if (s_RequiredTools.ContainsKey(tool))
+            {
+                s_RequiredTools[tool]--;
+                if (s_RequiredTools[tool] <= 0)
+                {
+                    s_RequiredTools.Remove(tool);
+                }
+            }
         }
-        static HashSet<Type> s_RequiredTools;
+        static SortedDictionary<Type, int> s_RequiredTools;
 
         public delegate void ToolHandler(bool v);
         struct CinemachineSceneToolDelegates
@@ -152,8 +165,9 @@ namespace Cinemachine.Editor
                 (x, y) => x.ToString().CompareTo(y.ToString())));
             s_Tools = new SortedDictionary<Type, CinemachineSceneToolDelegates>(Comparer<Type>.Create(
                 (x, y) => x.ToString().CompareTo(y.ToString())));
-            s_RequiredTools = new HashSet<Type>();
-            
+            s_RequiredTools = new SortedDictionary<Type, int>(Comparer<Type>.Create(
+                (x, y) => x.ToString().CompareTo(y.ToString())));
+
             EditorApplication.update += () =>
             {
                 if (s_RequiredTools.Count <= 0)
@@ -178,11 +192,11 @@ namespace Cinemachine.Editor
                     // only display cm tools that are relevant for the current selection
                     foreach (var (key, value) in s_ExclusiveTools)
                     {
-                        value.IsDisplayedSetter(s_RequiredTools.Contains(key));
+                        value.IsDisplayedSetter(s_RequiredTools.ContainsKey(key));
                     }
                     foreach (var (key, value) in s_Tools)
                     {
-                        value.IsDisplayedSetter(s_RequiredTools.Contains(key));
+                        value.IsDisplayedSetter(s_RequiredTools.ContainsKey(key));
                     }
                 }
                 
