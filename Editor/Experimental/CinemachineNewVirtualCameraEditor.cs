@@ -2,14 +2,14 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
-using Cinemachine.Utility;
+using System.Linq;
 
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineNewVirtualCamera))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineNewVirtualCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
+        : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>, ISceneToolAware
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 
@@ -61,6 +61,12 @@ namespace Cinemachine
                         }
                     }
                 });
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
+#endif
         }
 
         protected override void OnDisable()
@@ -68,6 +74,12 @@ namespace Cinemachine
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
             m_PipelineSet.Shutdown();
             base.OnDisable();
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
+#endif
         }
 
         void ResetTargetOnUndo() 
@@ -88,31 +100,47 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-        Vector3 m_PreviousPosition; // for position dragging
-        private void OnSceneGUI()
+        void OnSceneGUI()
         {
-            if (!Target.UserIsDragging)
-                m_PreviousPosition = Target.transform.position;
-            if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
-                && Event.current.type == EventType.MouseDrag)
-            {
-                // User might be dragging our position handle
-                Target.UserIsDragging = true;
-                Vector3 delta = Target.transform.position - m_PreviousPosition;
-                if (!delta.AlmostZero())
-                {
-                    m_PipelineSet.OnPositionDragged(delta);
-                    m_PreviousPosition = Target.transform.position;
-                }
-            }
-            else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
-            {
-                // We're not dragging anything now, but we were
-                InspectorUtility.RepaintGameView();
-                Target.UserIsDragging = false;
-            }
+            DrawSceneToolsOnSceneGUI();
+        }
+        
+        public void DrawSceneToolsOnSceneGUI()
+        {
+            DrawSceneTools();
+            m_PipelineSet.OnSceneGUI(); // call hidden editors
         }
 
+#if UNITY_2021_2_OR_NEWER
+        float m_Fov; // needed for reversing the scale slider
+        public void DrawSceneTools()
+        {
+            var vcam = Target;
+            if (vcam == null || !vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
+            {
+                return;
+            }
+
+            if (GUIUtility.hotControl == 0)
+            {
+                m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
+            }
+
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
+            {
+                CinemachineSceneToolHelpers.FovToolHandle(vcam, ref vcam.m_Lens, 
+                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV,
+                    ref m_Fov);
+            }
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+            {
+                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, ref vcam.m_Lens);
+            }
+            Handles.color = originalColor;
+        }
+#endif
     }
 }
 #endif

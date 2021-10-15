@@ -3,13 +3,13 @@ using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
+using System.Runtime.CompilerServices;
 
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineNewFreeLook))]
     sealed class CinemachineNewFreeLookEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
+        : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>, ISceneToolAware
     {
         GUIContent[] m_OrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
@@ -82,12 +82,26 @@ namespace Cinemachine
 
             for (int i = 0; i < targets.Length; ++i)
                 (targets[i] as CinemachineNewFreeLook).UpdateInputAxisProvider();
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+#endif
         }
 
         protected override void OnDisable()
         {
             m_PipelineSet.Shutdown();
             base.OnDisable();
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+#endif
         }
 
         void ResetTargetOnUndo() 
@@ -154,50 +168,95 @@ namespace Cinemachine
         };
         static int s_SelectedRig = 1;
 
-        Vector3 mPreviousPosition; // for position dragging
-        private void OnSceneGUI()
+        void OnSceneGUI()
         {
-            if (!Target.UserIsDragging)
-                mPreviousPosition = Target.transform.position;
-            if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
-                && Event.current.type == EventType.MouseDrag)
+            // TODO: newFreelook does not have rigeditor, its different check how it works 
+            // if (m_rigEditor != null && m_rigEditor is ISceneToolAware sceneToolAware)
+            // {
+            //     sceneToolAware.DrawSceneToolsOnSceneGUI();
+            // }
+            ((ISceneToolAware)this).DrawSceneToolsOnSceneGUI(); // call default implementation
+        }
+
+#if UNITY_2021_2_OR_NEWER
+        float m_Fov; // needed for reversing the scale slider
+        public void DrawSceneTools()
+        {
+            var newFreelook = Target;
+            if (newFreelook == null || !newFreelook.IsValid)
             {
-                // User might be dragging our position handle
-                Target.UserIsDragging = true;
-                Vector3 delta = Target.transform.position - mPreviousPosition;
-                if (!delta.AlmostZero())
+                return;
+            }
+
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
+            {
+                if (GUIUtility.hotControl == 0)
                 {
-                    m_PipelineSet.OnPositionDragged(delta);
-                    mPreviousPosition = Target.transform.position;
+                    m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
+                }
+                
+                CinemachineSceneToolHelpers.FovToolHandle(newFreelook, ref newFreelook.m_Lens, 
+                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV, 
+                    ref m_Fov);
+            }
+            else if (/*newFreelook.m_CommonLens && */CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+            {
+                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook, ref newFreelook.m_Lens);
+            }
+            else if (newFreelook.Follow != null && 
+                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            {
+                var followPos = newFreelook.Follow.position;
+                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
+                {
+                    EditorGUI.BeginChangeCheck();
+                
+                    var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                    var heightHandlePos = followPos + Vector3.up * newFreelook.m_Orbits[i].m_Height;
+                    var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
+                        HandleUtility.GetHandleSize(heightHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
 
-                    // Adjust the rigs height and scale
-                    Transform follow = Target.Follow;
-                    if (follow != null)
+                    if (EditorGUI.EndChangeCheck())
                     {
-                        Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
-                        Vector3 up = Target.State.ReferenceUp;
-                        float heightDelta = Vector3.Dot(up, delta);
+                        Undo.RecordObject(newFreelook, "Changed freelook rig orbit height using handle in scene view.");
+                
+                        newFreelook.m_Orbits[i].m_Height += CinemachineSceneToolHelpers.SliderHandleDelta(
+                            newHeightHandlePos, heightHandlePos, Vector3.up);
 
-                        Vector3 fwd = (Target.State.FinalPosition - follow.position).normalized;
-                        float oldRadius = Target.GetLocalPositionForCameraFromInput(
-                            Target.m_VerticalAxis.Value).magnitude;
-                        float newRadius = Mathf.Max(0.01f, oldRadius + Vector3.Dot(fwd, delta));
-                        for (int i = 0; i < 3; ++i)
+                        InspectorUtility.RepaintGameView();
+                    }
+                }
+
+                // TODO: when rig selection becomes an option in freelook, then this won't be needed!
+                var dirs = new[] { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
+                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
+                {
+                    for (int d = 0; d < 4; ++d)
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                        var radiusHandlePos = followPos + Vector3.up * newFreelook.m_Orbits[i].m_Height 
+                            + dirs[d] * newFreelook.m_Orbits[i].m_Radius;
+                        var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, dirs[d],
+                            HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    
+                        if (EditorGUI.EndChangeCheck())
                         {
-                            Target.m_Orbits[i].m_Height += heightDelta;
-                            if (oldRadius > 0.001f)
-                                Target.m_Orbits[i].m_Radius *= newRadius / oldRadius;
+                            Undo.RecordObject(newFreelook, "Changed freelook rig orbit radius using handle in scene view.");
+                
+                            newFreelook.m_Orbits[i].m_Radius += CinemachineSceneToolHelpers.SliderHandleDelta(
+                                newRadiusHandlePos, radiusHandlePos, dirs[d]);
+
+                            InspectorUtility.RepaintGameView();
                         }
                     }
                 }
             }
-            else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
-            {
-                // We're not dragging anything now, but we were
-                InspectorUtility.RepaintGameView();
-                Target.UserIsDragging = false;
-            }
+            Handles.color = originalColor;
         }
+#endif
 
         void DrawRigEditor(int rigIndex)
         {
