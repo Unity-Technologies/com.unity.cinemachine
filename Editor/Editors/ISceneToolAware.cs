@@ -7,7 +7,6 @@ namespace Cinemachine.Editor
         /// Default implementation calls DrawSceneTools.
         /// </summary>
         void DrawSceneToolsOnSceneGUI() => DrawSceneTools();
-        // TODO: probably this can be removed
         
         /// <summary>
         /// Implement your scene handles for your components and extensions here.

@@ -169,14 +169,25 @@ namespace Cinemachine
 
         void OnSceneGUI()
         {
-            // TODO: newFreelook does not have rigeditor, its different check how it works 
-            // if (m_rigEditor != null && m_rigEditor is ISceneToolAware sceneToolAware)
+            DrawSceneToolsOnSceneGUI();
+        }
+
+        public void DrawSceneToolsOnSceneGUI()
+        {
+            DrawSceneTools();
+            
+            // TODO: NewFreelook tracked object offset is not working. Probably not called.
+            // TODO: Need to propagate onscenegui
+            // TODO: Probably need to call rig's editors somehow
+            // TODO: also look at s_SelectedRig
+            // if (m_PipelineSet is ISceneToolAware sceneToolAware)
             // {
             //     sceneToolAware.DrawSceneToolsOnSceneGUI();
             // }
-            ((ISceneToolAware)this).DrawSceneToolsOnSceneGUI(); // call default implementation
+            // Target.m_Rigs[s_SelectedRig].m_Body // <-- draw for each from this info
         }
-
+        
+        
 #if UNITY_2021_2_OR_NEWER
         float m_Fov; // needed for reversing the scale slider
         public void DrawSceneTools()
