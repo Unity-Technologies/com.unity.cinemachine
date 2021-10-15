@@ -99,5 +99,17 @@ namespace Cinemachine.Editor
             tooltip = "Tracked Object Offset Tool";
         }
     }
+    
+    [EditorToolbarElement(id, typeof(SceneView))]
+    class SoloVcamTool : CinemachineEditorToolbarToggle
+    {
+        public const string id = "SoloVcamTool/Toggle";
+
+        public SoloVcamTool()
+        {
+            icon = icon = EditorGUIUtility.IconContent("Animation.Record").image as Texture2D;
+            tooltip = "Solo Vcam Tool";
+        }
+    }
 }
 #endif
