@@ -143,6 +143,16 @@ namespace Cinemachine.Editor
                         value.IsDisplayedSetter(s_RequiredTools.Contains(key));
                     }
                 }
+
+                // make the Solo button work with toggle
+                if (CinemachineBrain.SoloCamera == null)
+                {
+                    SetTool(false, typeof(SoloVcamTool));
+                }
+                // if (s_ActiveTool != typeof(SoloVcamTool))
+                // {
+                //     CinemachineBrain.SoloCamera = null;
+                // }
             };
         }
     }
@@ -375,6 +385,12 @@ namespace Cinemachine.Editor
 
             if (followOffsetHandleIsDragged) 
                 CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+        }
+
+        public static void SoloVcamHandle(CinemachineVirtualCameraBase vcam)
+        {
+            CinemachineBrain.SoloCamera = vcam;
+            InspectorUtility.RepaintGameView();
         }
         
         

@@ -17,6 +17,7 @@ namespace Cinemachine.Editor
     {
         public CinemachineToolbarOverlay()
             : base(
+                SoloVcamTool.id,
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
@@ -107,7 +108,8 @@ namespace Cinemachine.Editor
 
         public SoloVcamTool()
         {
-            icon = icon = EditorGUIUtility.IconContent("Animation.Record").image as Texture2D;
+            onIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
+            offIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleoff@2x").image as Texture2D;
             tooltip = "Solo Vcam Tool";
         }
     }

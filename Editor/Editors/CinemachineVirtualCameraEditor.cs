@@ -141,6 +141,7 @@ namespace Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.SoloVcamHandle(vcam);
             }
+            
             Handles.color = originalColor;
         }
 #endif
