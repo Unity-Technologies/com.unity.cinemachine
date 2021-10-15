@@ -18,7 +18,7 @@ using System.Collections.Generic;
         static public MasterDirectorDelegate GetMasterPlayableDirector;
 
         // The brain that this track controls
-        private IBrainOverrideStack m_BrainOverrideStack;
+        private ICameraOverrideStack m_BrainOverrideStack;
         private int m_BrainOverrideId = -1;
         private bool m_PreviewPlay;
 

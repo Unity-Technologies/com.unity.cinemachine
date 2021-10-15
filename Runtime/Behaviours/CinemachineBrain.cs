@@ -28,7 +28,7 @@ namespace Cinemachine
     /// <summary>
     /// This interface is specifically for Timeline.  Do not use it.
     /// </summary>
-    public interface IBrainOverrideStack
+    public interface ICameraOverrideStack
     {
         /// <summary>
         /// Override the current camera and current blend.  This setting will trump
@@ -54,7 +54,8 @@ namespace Cinemachine
             float weightB, float deltaTime);
 
         /// <summary>
-        /// See SetCameraOverride.
+        /// See SetCameraOverride.  Call ReleaseCameraOverride after all overriding is finished, to
+        /// free the OverideStack resources.
         /// </summary>
         /// <param name="overrideId">The ID to released.  This is the value that
         /// was returned by SetCameraOverride</param>
@@ -87,7 +88,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/CinemachineBrain")]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
-    public class CinemachineBrain : MonoBehaviour, IBrainOverrideStack
+    public class CinemachineBrain : MonoBehaviour, ICameraOverrideStack
     {
         /// <summary>
         /// When enabled, the current camera and blend will be indicated in the 
