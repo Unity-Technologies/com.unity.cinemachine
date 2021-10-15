@@ -93,7 +93,6 @@ namespace Cinemachine.Editor
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
-            m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
 #endif
         }
@@ -127,6 +126,11 @@ namespace Cinemachine.Editor
                 return;
             }
 
+            if (GUIUtility.hotControl == 0)
+            {
+                m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
+            }
+
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
@@ -139,7 +143,6 @@ namespace Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(vcam, ref vcam.m_Lens);
             }
-            
             Handles.color = originalColor;
         }
 #endif

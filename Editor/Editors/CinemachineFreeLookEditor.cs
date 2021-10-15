@@ -135,9 +135,13 @@ namespace Cinemachine
                 return;
             }
 
-            var handleIsUsed = GUIUtility.hotControl > 0;
+            if (GUIUtility.hotControl == 0)
+            {
+                m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
+            }
+            
             var originalColor = Handles.color;
-            Handles.color = handleIsUsed ? Handles.selectedColor : Handles.preselectionColor;
+            Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, 
