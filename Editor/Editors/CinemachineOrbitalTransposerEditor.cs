@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_XAxis));
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
             }
-            if (Target.m_HideOffsetInInspector)
+            if (Target.HideOffsetInInspector)
                 excluded.Add(FieldPath(x => x.m_FollowOffset));
 
             switch (Target.m_BindingMode)
@@ -102,7 +102,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]
         static void DrawTransposerGizmos(CinemachineOrbitalTransposer target, GizmoType selectionType)
         {
-            if (target.IsValid && !target.m_HideOffsetInInspector)
+            if (target.IsValid && !target.HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
 
 #if UNITY_2021_2_OR_NEWER
-            if (!Target.m_HideOffsetInInspector)
+            if (!Target.HideOffsetInInspector)
             {
                 CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             }
@@ -160,8 +160,7 @@ namespace Cinemachine.Editor
         public void DrawSceneTools()
         {
             var orbitalTransposer = Target;
-            if (orbitalTransposer == null || !orbitalTransposer.IsValid || 
-                orbitalTransposer.m_HideOffsetInInspector)
+            if (orbitalTransposer == null || !orbitalTransposer.IsValid || orbitalTransposer.m_HeadingIsSlave)
             {
                 return;
             }
