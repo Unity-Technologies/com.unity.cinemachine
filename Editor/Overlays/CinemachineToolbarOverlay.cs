@@ -133,5 +133,22 @@ namespace Cinemachine.Editor
             tooltip = "Solo Vcam Tool";
         }
     }
+    
+    //
+    // [EditorToolbarElement(id, typeof(SceneView))]
+    // class FreelookOrbitSelection : EditorToolbarDropdown
+    // {
+    //     public const string id = "SoloVcamTool/Toggle";
+    //
+    //     public FreelookOrbitSelection()
+    //     {
+    //         this.RegisterValueChangedCallback(
+    //             v => CinemachineSceneToolUtility.SetSolo(v.newValue));
+    //         
+    //         onIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
+    //         offIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleoff@2x").image as Texture2D;
+    //         tooltip = "Solo Vcam Tool";
+    //     }
+    // }
 }
 #endif
