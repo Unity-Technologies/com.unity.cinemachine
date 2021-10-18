@@ -46,7 +46,7 @@ namespace Cinemachine
         /// <param name="weightB">The blend weight.  0=camA, 1=camB.</param>
         /// <param name="deltaTime">Override for deltaTime.  Should be Time.FixedDelta for
         /// time-based calculations to be included, -1 otherwise.</param>
-        /// <returns>The overriden ID.  Don't forget to call ReleaseCameraOverride
+        /// <returns>The override ID.  Don't forget to call ReleaseCameraOverride
         /// after all overriding is finished, to free the OverideStack resources.</returns>
         public int SetCameraOverride(
             int overrideId,
