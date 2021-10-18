@@ -18,9 +18,9 @@ using System.Collections.Generic;
         static public MasterDirectorDelegate GetMasterPlayableDirector;
 
         // The brain that this track controls
-        private CinemachineBrain mBrain;
-        private int mBrainOverrideId = -1;
-        private bool mPreviewPlay;
+        private ICameraOverrideStack m_BrainOverrideStack;
+        private int m_BrainOverrideId = -1;
+        private bool m_PreviewPlay;
 
 #if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
         class ScrubbingCacheHelper
@@ -147,9 +147,9 @@ using System.Collections.Generic;
         
         public override void OnPlayableDestroy(Playable playable)
         {
-            if (mBrain != null)
-                mBrain.ReleaseCameraOverride(mBrainOverrideId); // clean up
-            mBrainOverrideId = -1;
+            if (m_BrainOverrideStack != null)
+                m_BrainOverrideStack.ReleaseCameraOverride(m_BrainOverrideId); // clean up
+            m_BrainOverrideId = -1;
 #if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
             m_ScrubbingCacheHelper = null;
 #endif
@@ -157,7 +157,7 @@ using System.Collections.Generic;
 
         public override void PrepareFrame(Playable playable, FrameData info)
         {
-            mPreviewPlay = false;
+            m_PreviewPlay = false;
 #if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
             var cacheMode = TargetPositionCache.Mode.Disabled;
             if (!Application.isPlaying)
@@ -166,11 +166,11 @@ using System.Collections.Generic;
                 {
                     var d = GetMasterPlayableDirector();
                     if (d != null && d.playableGraph.IsValid())
-                        mPreviewPlay = GetMasterPlayableDirector().playableGraph.IsPlaying();
+                        m_PreviewPlay = GetMasterPlayableDirector().playableGraph.IsPlaying();
                 }
                 if (TargetPositionCache.UseCache)
                 {
-                    cacheMode = mPreviewPlay ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback;
+                    cacheMode = m_PreviewPlay ? TargetPositionCache.Mode.Record : TargetPositionCache.Mode.Playback;
                     if (m_ScrubbingCacheHelper == null)
                     {
                         m_ScrubbingCacheHelper = new ScrubbingCacheHelper();
@@ -186,14 +186,9 @@ using System.Collections.Generic;
         {
             base.ProcessFrame(playable, info, playerData);
 
-            // Get the brain that this track controls.
-            // Older versions of timeline sent the gameObject by mistake.
-            GameObject go = playerData as GameObject;
-            if (go == null)
-                mBrain = (CinemachineBrain)playerData;
-            else
-                mBrain = go.GetComponent<CinemachineBrain>();
-            if (mBrain == null)
+            // Get the object that this track controls
+            m_BrainOverrideStack = playerData as ICameraOverrideStack;
+            if (m_BrainOverrideStack == null)
                 return;
 
             // Find which clips are active.  We can process a maximum of 2.
@@ -259,8 +254,8 @@ using System.Collections.Generic;
             }
 
             // Override the Cinemachine brain with our results
-            mBrainOverrideId = mBrain.SetCameraOverride(
-                mBrainOverrideId, camA, camB, weightB, GetDeltaTime(info.deltaTime));
+            m_BrainOverrideId = m_BrainOverrideStack.SetCameraOverride(
+                m_BrainOverrideId, camA, camB, weightB, GetDeltaTime(info.deltaTime));
 
 #if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
             if (m_ScrubbingCacheHelper != null && TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
@@ -273,18 +268,18 @@ using System.Collections.Generic;
                 if (clipIndexA >= 0)
                     m_ScrubbingCacheHelper.ScrubToHere(
                         (float)GetMasterPlayableDirector().time, clipIndexA, false, 
-                        (float)playable.GetInput(clipIndexA).GetTime(), mBrain.DefaultWorldUp);
+                        (float)playable.GetInput(clipIndexA).GetTime(), m_BrainOverrideStack.DefaultWorldUp);
                 if (clipIndexB >= 0)
                     m_ScrubbingCacheHelper.ScrubToHere(
                         (float)GetMasterPlayableDirector().time, clipIndexB, isNewB && weightB > 0.99f, 
-                        (float)playable.GetInput(clipIndexB).GetTime(), mBrain.DefaultWorldUp);
+                        (float)playable.GetInput(clipIndexB).GetTime(), m_BrainOverrideStack.DefaultWorldUp);
             }
 #endif
         }
 
         float GetDeltaTime(float deltaTime)
         {
-            if (mPreviewPlay || Application.isPlaying)
+            if (m_PreviewPlay || Application.isPlaying)
                 return deltaTime;
 
             // We're scrubbing or paused
