@@ -187,7 +187,7 @@ using System.Collections.Generic;
             base.ProcessFrame(playable, info, playerData);
 
             // Get the object that this track controls
-            m_BrainOverrideStack = playerData as IBrainOverrideStack;
+            m_BrainOverrideStack = playerData as ICameraOverrideStack;
             if (m_BrainOverrideStack == null)
                 return;
 

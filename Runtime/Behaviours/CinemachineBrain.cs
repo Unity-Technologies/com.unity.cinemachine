@@ -41,12 +41,12 @@ namespace Cinemachine
         /// Use that id for subsequent calls.  Don't forget to
         /// call ReleaseCameraOverride after all overriding is finished, to
         /// free the OverideStack resources.</param>
-        /// <param name="camA"> The camera to set, corresponding to weight=0</param>
-        /// <param name="camB"> The camera to set, corresponding to weight=1</param>
-        /// <param name="weightB">The blend weight.  0=camA, 1=camB</param>
-        /// <param name="deltaTime">override for deltaTime.  Should be Time.FixedDelta for
-        /// time-based calculations to be included, -1 otherwise</param>
-        /// <returns>The oiverride ID.  Don't forget to call ReleaseCameraOverride
+        /// <param name="camA">The camera to set, corresponding to weight=0.</param>
+        /// <param name="camB">The camera to set, corresponding to weight=1.</param>
+        /// <param name="weightB">The blend weight.  0=camA, 1=camB.</param>
+        /// <param name="deltaTime">Override for deltaTime.  Should be Time.FixedDelta for
+        /// time-based calculations to be included, -1 otherwise.</param>
+        /// <returns>The overriden ID.  Don't forget to call ReleaseCameraOverride
         /// after all overriding is finished, to free the OverideStack resources.</returns>
         public int SetCameraOverride(
             int overrideId,
@@ -54,8 +54,8 @@ namespace Cinemachine
             float weightB, float deltaTime);
 
         /// <summary>
-        /// See SetCameraOverride.  Call ReleaseCameraOverride after all overriding is finished, to
-        /// free the OverideStack resources.
+        /// See SetCameraOverride.  Call ReleaseCameraOverride after all overriding
+        /// is finished, to free the OverrideStack resources.
         /// </summary>
         /// <param name="overrideId">The ID to released.  This is the value that
         /// was returned by SetCameraOverride</param>
