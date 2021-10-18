@@ -17,7 +17,6 @@ namespace Cinemachine.Editor
     {
         public CinemachineToolbarOverlay()
             : base(
-                SoloVcamTool.id,
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
