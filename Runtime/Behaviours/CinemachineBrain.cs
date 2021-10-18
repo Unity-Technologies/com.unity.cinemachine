@@ -48,7 +48,7 @@ namespace Cinemachine
         /// time-based calculations to be included, -1 otherwise.</param>
         /// <returns>The overriden ID.  Don't forget to call ReleaseCameraOverride
         /// after all overriding is finished, to free the OverideStack resources.</returns>
-        public int SetCameraOverride(
+        int SetCameraOverride(
             int overrideId,
             ICinemachineCamera camA, ICinemachineCamera camB,
             float weightB, float deltaTime);
@@ -59,12 +59,12 @@ namespace Cinemachine
         /// </summary>
         /// <param name="overrideId">The ID to released.  This is the value that
         /// was returned by SetCameraOverride</param>
-        public void ReleaseCameraOverride(int overrideId);
+        void ReleaseCameraOverride(int overrideId);
 
         /// <summary>
         /// Get the current definition of Up.  May be different from Vector3.up.
         /// </summary>
-        public Vector3 DefaultWorldUp { get; }
+        Vector3 DefaultWorldUp { get; }
     }
 
 
