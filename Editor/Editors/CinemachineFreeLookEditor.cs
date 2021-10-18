@@ -150,8 +150,7 @@ namespace Cinemachine
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(freelook, ref freelook.m_Lens);
             }
-            else if (freelook.Follow != null && 
-                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var followPos = freelook.Follow.position;
                 for (var i = 0; i < freelook.m_Orbits.Length; ++i)
@@ -209,7 +208,7 @@ namespace Cinemachine
             new GUIContent("Middle Rig"), 
             new GUIContent("Bottom Rig")
         };
-        static int s_SelectedRig = 1;
+        internal static int s_SelectedRig = 1;
 
         UnityEditor.Editor m_rigEditor;
         CinemachineVirtualCameraBase m_EditedRig = null;

@@ -1,5 +1,6 @@
 #if UNITY_2021_2_OR_NEWER
 using UnityEditor;
+using UnityEditor.EditorTools;
 using UnityEditor.Overlays;
 using UnityEditor.Toolbars;
 using UnityEngine;
@@ -20,7 +21,8 @@ namespace Cinemachine.Editor
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
-                TrackedObjectOffsetTool.id
+                TrackedObjectOffsetTool.id,
+                FreelookRigSelection.id
             )
         {
             CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
@@ -133,21 +135,38 @@ namespace Cinemachine.Editor
         }
     }
     
-    //
-    // [EditorToolbarElement(id, typeof(SceneView))]
-    // class FreelookOrbitSelection : EditorToolbarDropdown
-    // {
-    //     public const string id = "SoloVcamTool/Toggle";
-    //
-    //     public FreelookOrbitSelection()
-    //     {
-    //         this.RegisterValueChangedCallback(
-    //             v => CinemachineSceneToolUtility.SetSolo(v.newValue));
-    //         
-    //         onIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
-    //         offIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleoff@2x").image as Texture2D;
-    //         tooltip = "Solo Vcam Tool";
-    //     }
-    // }
+    
+    [EditorToolbarElement(id, typeof(SceneView))]
+    class FreelookRigSelection : EditorToolbarDropdown
+    {
+        public const string id = "FreelookRigSelection/Dropdown";
+
+        public FreelookRigSelection()
+        {
+            tooltip = "Freelook Rig Selection";
+            icon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
+            clicked += FreelookRigSelectionMenu;
+        }
+
+        ~FreelookRigSelection()
+        {
+            clicked -= FreelookRigSelectionMenu;
+        }
+        
+        void FreelookRigSelectionMenu()
+        {
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Top Rig"), false, () => SetSelectedRig(0));
+            menu.AddItem(new GUIContent("Middle Rig"), false, () => SetSelectedRig(1));
+            menu.AddItem(new GUIContent("Bottom Rig"), false, () => SetSelectedRig(2));
+            menu.DropDown(worldBound);
+
+            static void SetSelectedRig(int rigIndex)
+            {
+                CinemachineFreeLookEditor.s_SelectedRig = rigIndex;
+                InspectorUtility.RepaintGameView();
+            }
+        }
+    }
 }
 #endif

@@ -486,7 +486,7 @@ namespace Cinemachine
 
         /// Serialized in order to support copy/paste
         [SerializeField][HideInInspector][NoSaveDuringPlay]
-        private CinemachineVirtualCamera[] m_Rigs = new CinemachineVirtualCamera[3];
+        internal CinemachineVirtualCamera[] m_Rigs = new CinemachineVirtualCamera[3];
 
         void InvalidateRigCache() { mOrbitals = null; }
         CinemachineOrbitalTransposer[] mOrbitals = null;
