@@ -143,6 +143,19 @@ namespace Cinemachine.Editor
             }
         }
 
+        // Temporarily here
+        /// <summary>
+        /// Creates a new GameObject.
+        /// </summary>
+        /// <param name="name">Name to give the object.</param>
+        /// <param name="types">Optional components to add.</param>
+        /// <returns>The GameObject that was created.</returns>
+        [Obsolete("Use ObjectFactory.CreateGameObject(string name, params Type[] types) instead.")]
+        public static GameObject CreateGameObject(string name, params Type[] types)
+        {
+            return ObjectFactory.CreateGameObject(name, types);
+        }
+
         /// <summary>
         /// Force a repaint of the Game View
         /// </summary>
