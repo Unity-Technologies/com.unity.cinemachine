@@ -155,6 +155,7 @@ namespace Cinemachine
                 var followPos = freelook.Follow.position;
                 for (var i = 0; i < freelook.m_Orbits.Length; ++i)
                 {
+                    Handles.color = Handles.preselectionColor;
                     EditorGUI.BeginChangeCheck();
                 
                     var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
@@ -171,31 +172,32 @@ namespace Cinemachine
 
                         InspectorUtility.RepaintGameView();
                     }
-                }
-
-                // TODO: when rig selection becomes an option in freelook, then this won't be needed!
-                var dirs = new[] { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
-                for (var i = 0; i < freelook.m_Orbits.Length; ++i)
-                {
-                    for (int d = 0; d < 4; ++d)
-                    {
-                        EditorGUI.BeginChangeCheck();
-                        var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                        var radiusHandlePos = followPos + Vector3.up * freelook.m_Orbits[i].m_Height 
-                            + dirs[d] * freelook.m_Orbits[i].m_Radius;
-                        var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, dirs[d],
-                            HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
                     
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            Undo.RecordObject(freelook, "Changed freelook rig orbit radius using handle in scene view.");
+                    EditorGUI.BeginChangeCheck();
+                    var radiusHandleOffset = Vector3.right;
+                    var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                    var radiusHandlePos = followPos + Vector3.up * freelook.m_Orbits[i].m_Height 
+                        + radiusHandleOffset * freelook.m_Orbits[i].m_Radius;
+                    var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
+                        HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(freelook, "Changed freelook rig orbit radius using handle in scene view.");
                 
-                            freelook.m_Orbits[i].m_Radius += CinemachineSceneToolHelpers.SliderHandleDelta(
-                                newRadiusHandlePos, radiusHandlePos, dirs[d]);
+                        freelook.m_Orbits[i].m_Radius += CinemachineSceneToolHelpers.SliderHandleDelta(
+                            newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
 
-                            InspectorUtility.RepaintGameView();
-                        }
+                        InspectorUtility.RepaintGameView();
                     }
+                    
+                    Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                    if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId ||
+                        GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
+                    {
+                        Handles.color = Handles.selectedColor;
+                    }
+                    Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, freelook.m_Orbits[i].m_Radius);
                 }
             }
             Handles.color = originalColor;
