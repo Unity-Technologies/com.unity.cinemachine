@@ -69,29 +69,39 @@ namespace Cinemachine.Editor
         static SortedDictionary<Type, CinemachineSceneToolDelegates> s_ExclusiveTools; // tools that can't be active at the same time
         static SortedDictionary<Type, CinemachineSceneToolDelegates> s_Tools; // tools without restrictions
         
-
+        /// <summary>
+        /// Use for registering tool handlers for tools that are exclusive with each other,
+        /// meaning they cannot be active at the same time.
+        /// </summary>
+        /// <param name="tool">The tool to register.</param>
+        /// <param name="toggleSetter">The tool's toggle value setter.</param>
+        /// <param name="isDisplayedSetter">The tool's isDisplayed setter.</param>
         internal static void RegisterExclusiveToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
         {
-            if (s_ExclusiveTools.ContainsKey(tool))
-            {
-                s_ExclusiveTools.Remove(tool);
-            }
-            
-            s_ExclusiveTools.Add(tool, new CinemachineSceneToolDelegates
-            {
-                ToggleSetter = toggleSetter,
-                IsDisplayedSetter = isDisplayedSetter,
-            });
+            RegisterToolHandlers(ref s_ExclusiveTools, tool, toggleSetter, isDisplayedSetter);
         }
         
+        /// <summary>
+        /// Use for registering tool handlers for tools that can be active anytime
+        /// without taking other tools into consideration.
+        /// </summary>
+        /// <param name="tool">The tool to register.</param>
+        /// <param name="toggleSetter">The tool's toggle value setter.</param>
+        /// <param name="isDisplayedSetter">The tool's isDisplayed setter.</param>
         internal static void RegisterToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
         {
-            if (s_Tools.ContainsKey(tool))
+            RegisterToolHandlers(ref s_Tools, tool, toggleSetter, isDisplayedSetter);
+        }
+
+        static void RegisterToolHandlers(ref SortedDictionary<Type, CinemachineSceneToolDelegates> tools,
+            Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
+        {
+            if (tools.ContainsKey(tool))
             {
-                s_Tools.Remove(tool);
+                tools.Remove(tool);
             }
             
-            s_Tools.Add(tool, new CinemachineSceneToolDelegates
+            tools.Add(tool, new CinemachineSceneToolDelegates
             {
                 ToggleSetter = toggleSetter,
                 IsDisplayedSetter = isDisplayedSetter,
