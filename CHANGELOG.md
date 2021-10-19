@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.8.2] - 2021-10-19
 - Regression fix: Lookahead works again.
-- Regression fix: hide "Hide Offset In Inspector" from inspector (transposer, orbital transposer)
+- Regression fix: Remove "Hide Offset In Inspector" from inspector (transposer, orbital transposer)
 
 
 ## [2.8.1] - 2021-09-24
