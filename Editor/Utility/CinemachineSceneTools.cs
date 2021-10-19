@@ -231,6 +231,7 @@ namespace Cinemachine.Editor
                 textColor = Handles.selectedColor
             },
             fontStyle = FontStyle.Bold,
+            padding = new RectOffset(5, 0, 5, 0)
         };
         
 
@@ -257,7 +258,7 @@ namespace Cinemachine.Editor
 
         public static void DrawLabel(Vector3 position, string text)
         {
-            var labelOffset = HandleUtility.GetHandleSize(position) / 10f;
+            var labelOffset = HandleUtility.GetHandleSize(position) / 5f;
             Handles.Label(position + new Vector3(0, -labelOffset, 0), text, s_LabelStyle);
         }
 
