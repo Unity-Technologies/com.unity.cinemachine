@@ -144,16 +144,21 @@ namespace Cinemachine.Editor
         public FreelookRigSelection()
         {
             tooltip = "Freelook Rig Selection";
-            //icon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
             clicked += FreelookRigSelectionMenu;
             CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
             text = "Freelook";
+            EditorApplication.update += ShadowSelectedRigName;
         }
 
         ~FreelookRigSelection()
         {
             clicked -= FreelookRigSelectionMenu;
+        }
+
+        void ShadowSelectedRigName()
+        {
+            text = CinemachineFreeLookEditor.s_RigNames[CinemachineFreeLookEditor.s_SelectedRig].text;
         }
         
         void FreelookRigSelectionMenu()
@@ -164,7 +169,6 @@ namespace Cinemachine.Editor
                 var rigIndex = i; // vital to capture the index here for the lambda below
                 menu.AddItem(CinemachineFreeLookEditor.s_RigNames[i], false, () =>
                 {
-                    text = CinemachineFreeLookEditor.s_RigNames[rigIndex].text;
                     CinemachineFreeLookEditor.s_SelectedRig = rigIndex;
                     InspectorUtility.RepaintGameView();
                 });
