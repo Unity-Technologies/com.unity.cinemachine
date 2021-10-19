@@ -160,6 +160,7 @@ namespace Cinemachine.Editor
             }
         }
 
+        bool m_SoloSetByTools;
         public void DrawSceneTools()
         {
             var orbitalTransposer = Target;
@@ -171,7 +172,7 @@ namespace Cinemachine.Editor
             if (orbitalTransposer.FollowTarget != null && 
                 CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer);
+                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer, ref m_SoloSetByTools);
             }
         }
 #endif

@@ -126,6 +126,7 @@ namespace Cinemachine
 
 #if UNITY_2021_2_OR_NEWER
         float m_Fov; // needed for reversing the scale slider
+        bool m_SoloSetByTools;
         public void DrawSceneTools()
         {
             var freelook = Target;
@@ -144,11 +145,11 @@ namespace Cinemachine
                 }
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, 
                     m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV, 
-                    ref m_Fov);
+                    ref m_Fov, ref m_SoloSetByTools);
             }
             else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(freelook, ref freelook.m_Lens);
+                CinemachineSceneToolHelpers.NearFarClipHandle(freelook, ref freelook.m_Lens, ref m_SoloSetByTools);
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -198,6 +199,10 @@ namespace Cinemachine
                         Handles.color = Handles.selectedColor;
                     }
                     Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, freelook.m_Orbits[i].m_Radius);
+                    
+                    CinemachineSceneToolHelpers.SoloOnDrag(
+                        GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId,
+                        freelook, Mathf.Min(heightHandleId, radiusHandleId), ref m_SoloSetByTools);
                 }
             }
             Handles.color = originalColor;

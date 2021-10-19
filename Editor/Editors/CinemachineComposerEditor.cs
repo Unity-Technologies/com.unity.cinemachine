@@ -111,6 +111,7 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
+        bool m_SoloSetByTools;
         public void DrawSceneTools()
         {
             var composer = Target;
@@ -123,7 +124,7 @@ namespace Cinemachine.Editor
                 CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    composer, ref composer.m_TrackedObjectOffset);
+                    composer, ref composer.m_TrackedObjectOffset, ref m_SoloSetByTools);
             }
         }
 #endif

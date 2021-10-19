@@ -244,7 +244,7 @@ namespace Cinemachine.Editor
                 Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
             return delta;
         }
-        
+
         public static void DrawLabel(Vector3 position, string text)
         {
             var labelOffset = HandleUtility.GetHandleSize(position) / 10f;
@@ -252,8 +252,8 @@ namespace Cinemachine.Editor
         }
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
-        public static void FovToolHandle(
-            CinemachineVirtualCameraBase vcam, ref LensSettings lens, bool isLensHorizontal, ref float fov)
+        public static void FovToolHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens, 
+            bool isLensHorizontal, ref float fov, ref bool soloSetByTools)
         {
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
@@ -312,9 +312,11 @@ namespace Cinemachine.Editor
                 
             // if (GUIUtility.hotControl == fovHandleId) 
             //     CinemachineBrain.SoloCamera = vcam;
+            SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId, ref soloSetByTools);
         }
 
-        public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens)
+        public static void NearFarClipHandle(
+            CinemachineVirtualCameraBase vcam, ref LensSettings lens, ref bool soloSetByTools)
         {
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
@@ -352,14 +354,13 @@ namespace Cinemachine.Editor
                 DrawLabel(farClipPos, 
                     "Far Clip Plane (" + lens.FarClipPlane.ToString("F1") + ")");
             }
-
             
-            // if (GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId) 
-            //     CinemachineBrain.SoloCamera = vcam;
+            SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId,
+                vcam, Mathf.Min(ncHandleId, fcHandleId), ref soloSetByTools);
         }
 
         public static void TrackedObjectOffsetTool(
-            CinemachineComponentBase cmComponent, ref Vector3 trackedObjectOffset)
+            CinemachineComponentBase cmComponent, ref Vector3 trackedObjectOffset, ref bool soloSetByTools)
         {
             var lookAtPos = cmComponent.LookAtTargetPosition;
             var lookAtRot = cmComponent.LookAtTargetRotation;
@@ -395,11 +396,11 @@ namespace Cinemachine.Editor
             Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
             Handles.color = originalColor;
 
-            // if (trackedObjectOffsetHandleIsDragged)
-            //     CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+            SoloOnDrag(
+                trackedObjectOffsetHandleIsDragged, cmComponent.VirtualCamera, tooHandleMaxId, ref soloSetByTools);
         }
 
-        public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
+        public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent, ref bool soloSetByTools)
         {
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
             var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
@@ -435,8 +436,23 @@ namespace Cinemachine.Editor
             Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, dottedLineSpacing);
             Handles.color = originalColor;
 
-            // if (followOffsetHandleIsDragged) 
-            //     CinemachineBrain.SoloCamera = cmComponent.VirtualCamera;
+            SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId, ref soloSetByTools);
+        }
+        
+        public static void SoloOnDrag(
+            bool isDragged, CinemachineVirtualCameraBase vcam, int handleMaxId, ref bool soloSetByTools)
+        {
+            if (isDragged)
+            {
+                // if solo was activated by the user, then it was not the tool who set it to solo.
+                soloSetByTools |= CinemachineBrain.SoloCamera != (ICinemachineCamera) vcam;
+                CinemachineBrain.SoloCamera = vcam;
+            }
+            else if (soloSetByTools && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
+            {
+                CinemachineBrain.SoloCamera = null;
+                soloSetByTools = false;
+            }
         }
     } 
 }

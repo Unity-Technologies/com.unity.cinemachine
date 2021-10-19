@@ -97,6 +97,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
+        bool m_SoloSetByTools;
         public void DrawSceneTools()
         {
             var transposer = Target;
@@ -108,7 +109,7 @@ namespace Cinemachine.Editor
             if (transposer.FollowTarget != null && 
                 CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(transposer);
+                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(transposer, ref m_SoloSetByTools);
             }
         }
 #endif
