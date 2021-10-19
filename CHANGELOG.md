@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Input system should be read only once per render frame.
 - Bugfix: Blends were sometimes incorrect when src or dst camera is looking along world up axis.
 - Bugfix: Improve accuracy of Group Framing.
-- Disabled unstable tests
 
 
 ## [2.6.10] - 2021-08-19
