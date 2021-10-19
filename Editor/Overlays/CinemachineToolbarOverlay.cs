@@ -18,11 +18,11 @@ namespace Cinemachine.Editor
     {
         public CinemachineToolbarOverlay()
             : base(
+                FreelookRigSelection.id,
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
-                TrackedObjectOffsetTool.id,
-                FreelookRigSelection.id
+                TrackedObjectOffsetTool.id
             )
         {
             CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
@@ -144,10 +144,11 @@ namespace Cinemachine.Editor
         public FreelookRigSelection()
         {
             tooltip = "Freelook Rig Selection";
-            icon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
+            //icon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
             clicked += FreelookRigSelectionMenu;
             CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
+            text = "Freelook";
         }
 
         ~FreelookRigSelection()
@@ -158,16 +159,17 @@ namespace Cinemachine.Editor
         void FreelookRigSelectionMenu()
         {
             var menu = new GenericMenu();
-            menu.AddItem(new GUIContent("Top Rig"), false, () => SetSelectedRig(0));
-            menu.AddItem(new GUIContent("Middle Rig"), false, () => SetSelectedRig(1));
-            menu.AddItem(new GUIContent("Bottom Rig"), false, () => SetSelectedRig(2));
-            menu.DropDown(worldBound);
-
-            static void SetSelectedRig(int rigIndex)
+            for (var i = 0; i < CinemachineFreeLookEditor.s_RigNames.Length; ++i)
             {
-                CinemachineFreeLookEditor.s_SelectedRig = rigIndex;
-                InspectorUtility.RepaintGameView();
+                var rigIndex = i; // vital to capture the index here for the lambda below
+                menu.AddItem(CinemachineFreeLookEditor.s_RigNames[i], false, () =>
+                {
+                    text = CinemachineFreeLookEditor.s_RigNames[rigIndex].text;
+                    CinemachineFreeLookEditor.s_SelectedRig = rigIndex;
+                    InspectorUtility.RepaintGameView();
+                });
             }
+            menu.DropDown(worldBound);
         }
     }
 }

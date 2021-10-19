@@ -212,8 +212,8 @@ namespace Cinemachine
             Handles.color = originalColor;
         }
 #endif
-        
-        static GUIContent[] s_RigNames = 
+
+        internal static GUIContent[] s_RigNames = 
         {
             new GUIContent("Top Rig"), 
             new GUIContent("Middle Rig"), 
