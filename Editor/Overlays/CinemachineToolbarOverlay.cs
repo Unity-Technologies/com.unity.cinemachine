@@ -10,7 +10,7 @@ namespace Cinemachine.Editor
 {
     /// <summary>
     /// To display a CinemachineExclusiveEditorToolbarToggle in the Cinemachine Toolbar,
-    /// TODO: extendable when another PR lands. 
+    /// TODO: Make this extendable when another PR lands (see: CMCL-501),
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine")]
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
@@ -19,6 +19,7 @@ namespace Cinemachine.Editor
         public CinemachineToolbarOverlay()
             : base(
                 FreelookRigSelection.id,
+                NewFreelookRigSelection.id,
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
@@ -147,13 +148,7 @@ namespace Cinemachine.Editor
             clicked += FreelookRigSelectionMenu;
             CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
-            text = "Freelook";
             EditorApplication.update += ShadowSelectedRigName;
-        }
-
-        ~FreelookRigSelection()
-        {
-            clicked -= FreelookRigSelectionMenu;
         }
 
         void ShadowSelectedRigName()
@@ -176,5 +171,42 @@ namespace Cinemachine.Editor
             menu.DropDown(worldBound);
         }
     }
+   
+    #if CINEMACHINE_EXPERIMENTAL_VCAM
+    [EditorToolbarElement(id, typeof(SceneView))]
+    class NewFreelookRigSelection : EditorToolbarDropdown
+    {
+        public const string id = "NewFreelookRigSelection/Dropdown";
+
+        public NewFreelookRigSelection()
+        {
+            tooltip = "New Freelook Rig Selection";
+            clicked += NewFreelookRigSelectionMenu;
+            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
+                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
+            EditorApplication.update += ShadowSelectedRigName;
+        }
+
+        void ShadowSelectedRigName()
+        {
+            text = CinemachineNewFreeLookEditor.s_RigNames[CinemachineNewFreeLookEditor.s_SelectedRig].text;
+        }
+        
+        void NewFreelookRigSelectionMenu()
+        {
+            var menu = new GenericMenu();
+            for (var i = 0; i < CinemachineNewFreeLookEditor.s_RigNames.Length; ++i)
+            {
+                var rigIndex = i; // vital to capture the index here for the lambda below
+                menu.AddItem(CinemachineNewFreeLookEditor.s_RigNames[i], false, () =>
+                {
+                    CinemachineNewFreeLookEditor.s_SelectedRig = rigIndex;
+                    InspectorUtility.RepaintGameView();
+                });
+            }
+            menu.DropDown(worldBound);
+        }
+    }
+    #endif
 }
 #endif

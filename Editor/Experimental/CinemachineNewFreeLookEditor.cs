@@ -87,7 +87,7 @@ namespace Cinemachine
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(FreelookRigSelection));
+            CinemachineSceneToolUtility.RegisterTool(typeof(NewFreelookRigSelection));
 #endif
         }
 
@@ -101,7 +101,7 @@ namespace Cinemachine
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FreelookRigSelection));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(NewFreelookRigSelection));
 #endif
         }
 
@@ -161,13 +161,13 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-        static GUIContent[] s_RigNames = 
+        internal static GUIContent[] s_RigNames = 
         {
             new GUIContent("Top Rig"), 
             new GUIContent("Main Rig"), 
             new GUIContent("Bottom Rig")
         };
-        static int s_SelectedRig = 1;
+        internal static int s_SelectedRig = 1;
 
         void OnSceneGUI()
         {
@@ -177,16 +177,7 @@ namespace Cinemachine
         public void DrawSceneToolsOnSceneGUI()
         {
             DrawSceneTools();
-            
-            // TODO: NewFreelook tracked object offset is not working. Probably not called.
-            // TODO: Need to propagate onscenegui
-            // TODO: Probably need to call rig's editors somehow
-            // TODO: also look at s_SelectedRig
-            // if (m_PipelineSet is ISceneToolAware sceneToolAware)
-            // {
-            //     sceneToolAware.DrawSceneToolsOnSceneGUI();
-            // }
-            // Target.m_Rigs[s_SelectedRig].m_Body // <-- draw for each from this info
+            m_PipelineSet.OnSceneGUI(); 
         }
         
         
