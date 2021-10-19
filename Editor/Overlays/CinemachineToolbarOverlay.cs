@@ -146,6 +146,8 @@ namespace Cinemachine.Editor
             tooltip = "Freelook Rig Selection";
             icon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
             clicked += FreelookRigSelectionMenu;
+            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
+                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
         ~FreelookRigSelection()

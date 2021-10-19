@@ -87,6 +87,7 @@ namespace Cinemachine
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FreelookRigSelection));
 #endif
         }
 
@@ -100,6 +101,7 @@ namespace Cinemachine
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FreelookRigSelection));
 #endif
         }
 
