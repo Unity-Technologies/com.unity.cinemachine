@@ -19,7 +19,9 @@ namespace Cinemachine.Editor
         public CinemachineToolbarOverlay()
             : base(
                 FreelookRigSelection.id,
+#if CINEMACHINE_EXPERIMENTAL_VCAM
                 NewFreelookRigSelection.id,
+#endif
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
