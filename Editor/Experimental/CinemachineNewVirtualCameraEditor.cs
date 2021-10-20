@@ -100,13 +100,16 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
         {
-            DrawSceneTools();
             m_PipelineSet.OnSceneGUI(); // call hidden editors
+            
+#if UNITY_2021_2_OR_NEWER
+            DrawSceneTools();
+#endif
         }
 
+#if UNITY_2021_2_OR_NEWER
         float m_Fov; // needed for reversing the scale slider
         bool m_SoloSetByTools;
         public void DrawSceneTools()

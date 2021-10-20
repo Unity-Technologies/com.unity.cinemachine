@@ -168,14 +168,17 @@ namespace Cinemachine
             new GUIContent("Bottom Rig")
         };
         internal static int s_SelectedRig = 1;
-
-#if UNITY_2021_2_OR_NEWER
+        
         void OnSceneGUI()
         {
-            DrawSceneTools();
             m_PipelineSet.OnSceneGUI(); 
+            
+#if UNITY_2021_2_OR_NEWER
+            DrawSceneTools();
+#endif
         }
         
+#if UNITY_2021_2_OR_NEWER
         float m_FovReverse; // needed for reversing the scale slider
         bool m_SoloSetByTools;
         public void DrawSceneTools()
