@@ -123,7 +123,7 @@ namespace Cinemachine.Editor
 #if UNITY_2021_2_OR_NEWER
         float m_FovReverse; // needed for reversing the scale slider
         bool m_SoloSetByTools;
-        public void DrawSceneTools()
+        void DrawSceneTools()
         {
             var vcam = Target;
             if (vcam == null || !vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))

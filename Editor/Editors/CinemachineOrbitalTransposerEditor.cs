@@ -166,7 +166,7 @@ namespace Cinemachine.Editor
         }
 
         bool m_SoloSetByTools;
-        public void DrawSceneTools()
+        void DrawSceneTools()
         {
             var orbitalTransposer = Target;
             if (orbitalTransposer == null || !orbitalTransposer.IsValid || orbitalTransposer.HideOffsetInInspector)

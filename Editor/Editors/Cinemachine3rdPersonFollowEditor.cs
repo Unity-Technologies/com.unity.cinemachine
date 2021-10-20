@@ -50,7 +50,7 @@ namespace Cinemachine.Editor
         }
 
         bool m_SoloSetByTools;
-        public void DrawSceneTools()
+        void DrawSceneTools()
         {
             var thirdPerson = Target;
             if (thirdPerson == null || !thirdPerson.IsValid)

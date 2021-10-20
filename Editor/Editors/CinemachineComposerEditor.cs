@@ -117,7 +117,7 @@ namespace Cinemachine.Editor
         }
         
         bool m_SoloSetByTools;
-        public void DrawSceneTools()
+        void DrawSceneTools()
         {
             var composer = Target;
             if (composer == null || !composer.IsValid)

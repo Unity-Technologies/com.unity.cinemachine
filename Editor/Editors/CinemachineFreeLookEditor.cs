@@ -132,7 +132,7 @@ namespace Cinemachine
 #if UNITY_2021_2_OR_NEWER
         float m_FovReverse; // needed for reversing the scale slider
         bool m_SoloSetByTools;
-        public void DrawSceneTools()
+        void DrawSceneTools()
         {
             var freelook = Target;
             if (freelook == null || !freelook.IsValid)

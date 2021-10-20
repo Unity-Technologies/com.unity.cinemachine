@@ -104,7 +104,7 @@ namespace Cinemachine.Editor
         
 
         bool m_SoloSetByTools;
-        public void DrawSceneTools()
+        void DrawSceneTools()
         {
             var transposer = Target;
             if (transposer == null || !transposer.IsValid)
