@@ -111,7 +111,8 @@ namespace Cinemachine
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
-        
+  
+#if UNITY_2021_2_OR_NEWER      
         void OnSceneGUI()
         {
             DrawSceneToolsOnSceneGUI();
@@ -126,7 +127,6 @@ namespace Cinemachine
             }
         }
 
-#if UNITY_2021_2_OR_NEWER
         float m_FovReverse; // needed for reversing the scale slider
         bool m_SoloSetByTools;
         public void DrawSceneTools()

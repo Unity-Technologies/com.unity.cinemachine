@@ -111,6 +111,11 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
+        public void DrawSceneToolsOnSceneGUI()
+        {
+            DrawSceneTools();
+        }
+        
         bool m_SoloSetByTools;
         public void DrawSceneTools()
         {

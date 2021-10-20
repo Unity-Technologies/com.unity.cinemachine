@@ -44,6 +44,11 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
+        public void DrawSceneToolsOnSceneGUI()
+        {
+            DrawSceneTools();
+        }
+
         bool m_SoloSetByTools;
         public void DrawSceneTools()
         {
