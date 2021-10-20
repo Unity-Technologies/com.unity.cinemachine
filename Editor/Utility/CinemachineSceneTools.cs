@@ -465,6 +465,92 @@ namespace Cinemachine.Editor
                 soloSetByTools = false;
             }
         }
+        
+        public static void FreelookOrbitControl(CinemachineFreeLook freelook, ref bool soloSetByTools)
+        {
+            OrbitControl(freelook, 
+                ref freelook.m_Orbits, ref soloSetByTools, ref CinemachineFreeLookEditor.s_SelectedRig);
+        }
+
+#if CINEMACHINE_EXPERIMENTAL_VCAM
+        public static void NewFreelookOrbitControl(CinemachineNewFreeLook newFreeLook, ref bool soloSetByTools)
+        {
+            // convert newFreelook orbits to freelook orbits
+            var tempOrbits = new CinemachineFreeLook.Orbit[newFreeLook.m_Orbits.Length];
+            for (var i = 0; i < newFreeLook.m_Orbits.Length; ++i)
+            {
+                tempOrbits[i].m_Height = newFreeLook.m_Orbits[i].m_Height;
+                tempOrbits[i].m_Radius = newFreeLook.m_Orbits[i].m_Radius;
+            }
+            
+            OrbitControl(newFreeLook, 
+                ref tempOrbits, ref soloSetByTools, ref CinemachineNewFreeLookEditor.s_SelectedRig);
+            
+            // copy freelook orbit values back to new freelook
+            for (var i = 0; i < newFreeLook.m_Orbits.Length; ++i)
+            {
+                newFreeLook.m_Orbits[i].m_Height = tempOrbits[i].m_Height;
+                newFreeLook.m_Orbits[i].m_Radius = tempOrbits[i].m_Radius;
+            }
+        }
+#endif
+        
+        static void OrbitControl(CinemachineVirtualCameraBase vcam, 
+            ref CinemachineFreeLook.Orbit[] orbits, ref bool soloSetByTools, ref int selectedRig)
+        {
+            var followPos = vcam.Follow.position;
+                for (var rigIndex = 0; rigIndex < orbits.Length; ++rigIndex)
+                {
+                    Handles.color = Handles.preselectionColor;
+                    EditorGUI.BeginChangeCheck();
+                
+                    var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                    var heightHandlePos = followPos + Vector3.up * orbits[rigIndex].m_Height;
+                    var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
+                        HandleUtility.GetHandleSize(heightHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(vcam, "Changed freelook rig orbit height using handle in scene view.");
+                
+                        orbits[rigIndex].m_Height += 
+                            SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
+
+                        InspectorUtility.RepaintGameView();
+                    }
+                    
+                    EditorGUI.BeginChangeCheck();
+                    var radiusHandleOffset = Vector3.right;
+                    var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                    var radiusHandlePos = followPos + Vector3.up * orbits[rigIndex].m_Height 
+                        + radiusHandleOffset * orbits[rigIndex].m_Radius;
+                    var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
+                        HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(vcam, "Changed freelook rig orbit radius using handle in scene view.");
+                
+                        orbits[rigIndex].m_Radius += 
+                            SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
+
+                        InspectorUtility.RepaintGameView();
+                    }
+                    
+                    Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                    var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
+                    if (HandleUtility.nearestControl == heightHandleId || 
+                        HandleUtility.nearestControl == radiusHandleId)
+                    {
+                        Handles.color = Handles.selectedColor;
+                    }
+                    Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbits[rigIndex].m_Radius);
+                    
+                    SoloOnDrag(isDragged, vcam, Mathf.Min(heightHandleId, radiusHandleId), ref soloSetByTools);
+
+                    selectedRig = isDragged ? rigIndex : selectedRig; // select rig that is picked by orbit tool
+                }
+        }
     } 
 }
 #endif
