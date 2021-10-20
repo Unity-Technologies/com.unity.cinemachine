@@ -260,9 +260,9 @@ namespace Cinemachine.Editor
             Handles.Label(position + new Vector3(0, -labelOffset, 0), text, s_LabelStyle);
         }
 
-        static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
+        private static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         public static void FovToolHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens, 
-            bool isLensHorizontal, ref float fovAfterLastToolModification, ref bool soloSetByTools)
+            bool isLensHorizontal, ref float fovAfterLastToolModification)
         {
             if (GUIUtility.hotControl == 0)
             {
@@ -323,11 +323,11 @@ namespace Cinemachine.Editor
                 }
             }
                 
-            SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId, ref soloSetByTools);
+            SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId);
         }
 
         public static void NearFarClipHandle(
-            CinemachineVirtualCameraBase vcam, ref LensSettings lens, ref bool soloSetByTools)
+            CinemachineVirtualCameraBase vcam, ref LensSettings lens)
         {
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
@@ -367,11 +367,11 @@ namespace Cinemachine.Editor
             }
             
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId,
-                vcam, Mathf.Min(ncHandleId, fcHandleId), ref soloSetByTools);
+                vcam, Mathf.Min(ncHandleId, fcHandleId));
         }
 
         public static void TrackedObjectOffsetTool(
-            CinemachineComponentBase cmComponent, ref Vector3 trackedObjectOffset, ref bool soloSetByTools)
+            CinemachineComponentBase cmComponent, ref Vector3 trackedObjectOffset)
         {
             var lookAtPos = cmComponent.LookAtTargetPosition;
             var lookAtRot = cmComponent.LookAtTargetRotation;
@@ -407,11 +407,10 @@ namespace Cinemachine.Editor
             Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
             Handles.color = originalColor;
 
-            SoloOnDrag(
-                trackedObjectOffsetHandleIsDragged, cmComponent.VirtualCamera, tooHandleMaxId, ref soloSetByTools);
+            SoloOnDrag(trackedObjectOffsetHandleIsDragged, cmComponent.VirtualCamera, tooHandleMaxId);
         }
 
-        public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent, ref bool soloSetByTools)
+        public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
         {
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
             var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
@@ -447,27 +446,28 @@ namespace Cinemachine.Editor
             Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
             Handles.color = originalColor;
 
-            SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId, ref soloSetByTools);
+            SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
         }
         
-        public static void SoloOnDrag(
-            bool isDragged, CinemachineVirtualCameraBase vcam, int handleMaxId, ref bool soloSetByTools)
+        
+        static bool s_SoloSetByTools;
+        public static void SoloOnDrag(bool isDragged, CinemachineVirtualCameraBase vcam, int handleMaxId)
         {
             if (isDragged)
             {
                 // if solo was activated by the user, then it was not the tool who set it to solo.
-                soloSetByTools |= CinemachineBrain.SoloCamera != (ICinemachineCamera) vcam;
+                s_SoloSetByTools |= CinemachineBrain.SoloCamera != (ICinemachineCamera) vcam;
                 CinemachineBrain.SoloCamera = vcam;
             }
-            else if (soloSetByTools && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
+            else if (s_SoloSetByTools && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
             {
                 CinemachineBrain.SoloCamera = null;
-                soloSetByTools = false;
+                s_SoloSetByTools = false;
             }
         }
         
         public static void OrbitControlHandle(CinemachineVirtualCameraBase vcam, 
-            ref CinemachineFreeLook.Orbit[] orbits, ref bool soloSetByTools, ref int selectedRig)
+            ref CinemachineFreeLook.Orbit[] orbits, ref int selectedRig)
         {
             var followPos = vcam.Follow.position;
                 for (var rigIndex = 0; rigIndex < orbits.Length; ++rigIndex)
@@ -526,7 +526,7 @@ namespace Cinemachine.Editor
 
                     Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbits[rigIndex].m_Radius);
                     
-                    SoloOnDrag(isDragged, vcam, Mathf.Min(heightHandleId, radiusHandleId), ref soloSetByTools);
+                    SoloOnDrag(isDragged, vcam, Mathf.Min(heightHandleId, radiusHandleId));
 
                     selectedRig = isDragged ? rigIndex : selectedRig; // select rig that is picked by orbit tool
                 }

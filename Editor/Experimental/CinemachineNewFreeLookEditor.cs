@@ -178,8 +178,7 @@ namespace Cinemachine
         
 #if UNITY_2021_2_OR_NEWER
         float m_FovAfterLastToolModification; // needed for reversing the scale slider
-        bool m_SoloSetByTools;
-        public void DrawSceneTools()
+        void DrawSceneTools()
         {
             var newFreelook = Target;
             if (newFreelook == null || !newFreelook.IsValid)
@@ -191,12 +190,12 @@ namespace Cinemachine
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                CinemachineSceneToolHelpers.FovToolHandle(newFreelook, ref newFreelook.m_Lens, IsHorizontalFOVUsed(),
-                    ref m_FovAfterLastToolModification, ref m_SoloSetByTools);
+                CinemachineSceneToolHelpers.FovToolHandle(
+                    newFreelook, ref newFreelook.m_Lens, IsHorizontalFOVUsed(), ref m_FovAfterLastToolModification);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook, ref newFreelook.m_Lens, ref m_SoloSetByTools);
+                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook, ref newFreelook.m_Lens);
             }
             else if (newFreelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -209,7 +208,7 @@ namespace Cinemachine
                 }
             
                 CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook, 
-                    ref tempOrbits, ref m_SoloSetByTools, ref s_SelectedRig);
+                    ref tempOrbits, ref s_SelectedRig);
             
                 // copy freelook orbit values back to new freelook
                 for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)

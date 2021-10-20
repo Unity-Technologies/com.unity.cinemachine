@@ -49,7 +49,6 @@ namespace Cinemachine.Editor
             DrawSceneTools();
         }
 
-        bool m_SoloSetByTools;
         void DrawSceneTools()
         {
             var thirdPerson = Target;
@@ -109,8 +108,7 @@ namespace Cinemachine.Editor
                 isDragged |= IsHandleDragged(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
                     + camDistance.ToString("F1") + ")", armPosition, camPos);
 
-                CinemachineSceneToolHelpers.SoloOnDrag(
-                    isDragged, thirdPerson.VirtualCamera, sHandleMaxId, ref m_SoloSetByTools);
+                CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleMaxId);
                 
                 Handles.color = originalColor;
             }

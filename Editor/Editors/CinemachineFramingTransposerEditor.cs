@@ -227,7 +227,6 @@ namespace Cinemachine.Editor
             DrawSceneTools();
         }
         
-        bool m_SoloSetByTools;
         void DrawSceneTools()
         {
             var framingTransposer = Target;
@@ -240,7 +239,7 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    framingTransposer, ref framingTransposer.m_TrackedObjectOffset, ref m_SoloSetByTools);
+                    framingTransposer, ref framingTransposer.m_TrackedObjectOffset);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -273,7 +272,7 @@ namespace Cinemachine.Editor
                 }
 
                 CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
-                    cdHandleId, ref m_SoloSetByTools);
+                    cdHandleId);
             }
             Handles.color = originalColor;
         }
