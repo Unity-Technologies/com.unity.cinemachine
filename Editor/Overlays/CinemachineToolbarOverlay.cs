@@ -174,7 +174,7 @@ namespace Cinemachine.Editor
         }
     }
    
-    #if CINEMACHINE_EXPERIMENTAL_VCAM
+#if CINEMACHINE_EXPERIMENTAL_VCAM
     [EditorToolbarElement(id, typeof(SceneView))]
     class NewFreelookRigSelection : EditorToolbarDropdown
     {
@@ -209,6 +209,6 @@ namespace Cinemachine.Editor
             menu.DropDown(worldBound);
         }
     }
-    #endif
+#endif
 }
 #endif
