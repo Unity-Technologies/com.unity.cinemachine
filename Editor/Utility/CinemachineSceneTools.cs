@@ -255,7 +255,7 @@ namespace Cinemachine.Editor
                 Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
             return delta;
         }
-
+        
         public static void DrawLabel(Vector3 position, string text)
         {
             var labelOffset = HandleUtility.GetHandleSize(position) / 5f;
@@ -539,11 +539,20 @@ namespace Cinemachine.Editor
                     
                     Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                     var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
-                    if (HandleUtility.nearestControl == heightHandleId || 
+                    if (isDragged || HandleUtility.nearestControl == heightHandleId || 
                         HandleUtility.nearestControl == radiusHandleId)
                     {
                         Handles.color = Handles.selectedColor;
                     }
+                    if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
+                    {
+                        DrawLabel(heightHandlePos, "Height: " + orbits[rigIndex].m_Height);
+                    }
+                    if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
+                    {
+                        DrawLabel(radiusHandlePos, "Radius: " + orbits[rigIndex].m_Radius);
+                    }
+
                     Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbits[rigIndex].m_Radius);
                     
                     SoloOnDrag(isDragged, vcam, Mathf.Min(heightHandleId, radiusHandleId), ref soloSetByTools);
