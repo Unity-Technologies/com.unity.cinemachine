@@ -122,7 +122,7 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
-        float m_Fov; // needed for reversing the scale slider
+        float m_FovReverse; // needed for reversing the scale slider
         bool m_SoloSetByTools;
         public void DrawSceneTools()
         {
@@ -134,7 +134,7 @@ namespace Cinemachine.Editor
 
             if (GUIUtility.hotControl == 0)
             {
-                m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
+                m_FovReverse = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
             }
 
             var originalColor = Handles.color;
@@ -143,7 +143,7 @@ namespace Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.FovToolHandle(vcam, ref vcam.m_Lens, 
                     m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV,
-                    ref m_Fov, ref m_SoloSetByTools);
+                    ref m_FovReverse, ref m_SoloSetByTools);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
