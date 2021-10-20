@@ -122,15 +122,15 @@ namespace Cinemachine
                 return;
             }
 
-            if (GUIUtility.hotControl == 0)
-            {
-                m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
-            }
-
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
+                if (GUIUtility.hotControl == 0)
+                {
+                    m_Fov = Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
+                }
+                
                 CinemachineSceneToolHelpers.FovToolHandle(vcam, ref vcam.m_Lens, 
                     m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV,
                     ref m_Fov, ref m_SoloSetByTools);
