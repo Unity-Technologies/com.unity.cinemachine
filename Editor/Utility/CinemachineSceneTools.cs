@@ -470,36 +470,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        public static void FreelookOrbitControl(CinemachineFreeLook freelook, ref bool soloSetByTools)
-        {
-            OrbitControl(freelook, 
-                ref freelook.m_Orbits, ref soloSetByTools, ref CinemachineFreeLookEditor.s_SelectedRig);
-        }
-
-#if CINEMACHINE_EXPERIMENTAL_VCAM
-        public static void NewFreelookOrbitControl(CinemachineNewFreeLook newFreeLook, ref bool soloSetByTools)
-        {
-            // convert newFreelook orbits to freelook orbits
-            var tempOrbits = new CinemachineFreeLook.Orbit[newFreeLook.m_Orbits.Length];
-            for (var i = 0; i < newFreeLook.m_Orbits.Length; ++i)
-            {
-                tempOrbits[i].m_Height = newFreeLook.m_Orbits[i].m_Height;
-                tempOrbits[i].m_Radius = newFreeLook.m_Orbits[i].m_Radius;
-            }
-            
-            OrbitControl(newFreeLook, 
-                ref tempOrbits, ref soloSetByTools, ref CinemachineNewFreeLookEditor.s_SelectedRig);
-            
-            // copy freelook orbit values back to new freelook
-            for (var i = 0; i < newFreeLook.m_Orbits.Length; ++i)
-            {
-                newFreeLook.m_Orbits[i].m_Height = tempOrbits[i].m_Height;
-                newFreeLook.m_Orbits[i].m_Radius = tempOrbits[i].m_Radius;
-            }
-        }
-#endif
-        
-        static void OrbitControl(CinemachineVirtualCameraBase vcam, 
+        public static void OrbitControlHandle(CinemachineVirtualCameraBase vcam, 
             ref CinemachineFreeLook.Orbit[] orbits, ref bool soloSetByTools, ref int selectedRig)
         {
             var followPos = vcam.Follow.position;

@@ -154,18 +154,21 @@ namespace Cinemachine
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.FreelookOrbitControl(freelook, ref m_SoloSetByTools);
+                CinemachineSceneToolHelpers.OrbitControlHandle(freelook, 
+                    ref freelook.m_Orbits, ref m_SoloSetByTools, ref s_SelectedRig);
             }
             Handles.color = originalColor;
         }
 #endif
 
-        internal static GUIContent[] s_RigNames = 
+        static GUIContent[] s_RigNames = 
         {
             new GUIContent("Top Rig"), 
             new GUIContent("Middle Rig"), 
             new GUIContent("Bottom Rig")
         };
+        internal static GUIContent[] RigNames => s_RigNames;
+        
         internal static int s_SelectedRig = 1;
 
         UnityEditor.Editor m_rigEditor;

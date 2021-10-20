@@ -87,7 +87,6 @@ namespace Cinemachine
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(NewFreelookRigSelection));
 #endif
         }
 
@@ -101,7 +100,6 @@ namespace Cinemachine
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(NewFreelookRigSelection));
 #endif
         }
 
@@ -161,13 +159,13 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-        internal static GUIContent[] s_RigNames = 
+        static GUIContent[] s_RigNames = 
         {
             new GUIContent("Top Rig"), 
             new GUIContent("Main Rig"), 
             new GUIContent("Bottom Rig")
         };
-        internal static int s_SelectedRig = 1;
+        static int s_SelectedRig = 1;
         
         void OnSceneGUI()
         {
@@ -197,13 +195,29 @@ namespace Cinemachine
                     m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV, 
                     ref m_FovReverse, ref m_SoloSetByTools);
             }
-            else if (/*newFreelook.m_CommonLens && */CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook, ref newFreelook.m_Lens, ref m_SoloSetByTools);
             }
             else if (newFreelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.NewFreelookOrbitControl(newFreelook, ref m_SoloSetByTools);
+                // convert newFreelook orbits to freelook orbits
+                var tempOrbits = new CinemachineFreeLook.Orbit[newFreelook.m_Orbits.Length];
+                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
+                {
+                    tempOrbits[i].m_Height = newFreelook.m_Orbits[i].m_Height;
+                    tempOrbits[i].m_Radius = newFreelook.m_Orbits[i].m_Radius;
+                }
+            
+                CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook, 
+                    ref tempOrbits, ref m_SoloSetByTools, ref s_SelectedRig);
+            
+                // copy freelook orbit values back to new freelook
+                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
+                {
+                    newFreelook.m_Orbits[i].m_Height = tempOrbits[i].m_Height;
+                    newFreelook.m_Orbits[i].m_Radius = tempOrbits[i].m_Radius;
+                }
             }
             Handles.color = originalColor;
         }
