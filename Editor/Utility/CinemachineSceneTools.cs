@@ -267,6 +267,11 @@ namespace Cinemachine.Editor
         public static void FovToolHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens, 
             bool isLensHorizontal, ref float fov, ref bool soloSetByTools)
         {
+            if (GUIUtility.hotControl == 0)
+            {
+                fov = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
+            }
+            
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
             var camForward = camRot * Vector3.forward;

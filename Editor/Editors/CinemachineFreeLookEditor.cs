@@ -144,11 +144,6 @@ namespace Cinemachine
             Handles.color = Handles.preselectionColor;
             if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                if (GUIUtility.hotControl == 0)
-                {
-                    m_FovReverse = 
-                        Target.m_Lens.Orthographic ? Target.m_Lens.OrthographicSize : Target.m_Lens.FieldOfView;
-                }
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, 
                     m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV, 
                     ref m_FovReverse, ref m_SoloSetByTools);
