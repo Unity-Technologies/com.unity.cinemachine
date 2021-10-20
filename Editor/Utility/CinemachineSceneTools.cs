@@ -265,11 +265,11 @@ namespace Cinemachine.Editor
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         public static void FovToolHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens, 
-            bool isLensHorizontal, ref float fov, ref bool soloSetByTools)
+            bool isLensHorizontal, ref float fovAfterLastToolModification, ref bool soloSetByTools)
         {
             if (GUIUtility.hotControl == 0)
             {
-                fov = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
+                fovAfterLastToolModification = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
             }
             
             var camPos = vcam.State.FinalPosition;
@@ -278,9 +278,8 @@ namespace Cinemachine.Editor
                 
             EditorGUI.BeginChangeCheck();
             var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-
             var newFov = Handles.ScaleSlider(
-                fov, 
+                fovAfterLastToolModification, 
                 camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
             if (EditorGUI.EndChangeCheck())
             {
@@ -288,17 +287,17 @@ namespace Cinemachine.Editor
 
                 if (lens.Orthographic)
                 {
-                    lens.OrthographicSize += (fov - newFov);
+                    lens.OrthographicSize += (fovAfterLastToolModification - newFov);
                 }
                 else
                 {
-                    lens.FieldOfView += (fov - newFov);
+                    lens.FieldOfView += (fovAfterLastToolModification - newFov);
                 }
                 lens.Validate();
                     
                 InspectorUtility.RepaintGameView();
             }
-            fov = newFov;
+            fovAfterLastToolModification = newFov;
 
             if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
             {
