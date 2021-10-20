@@ -237,14 +237,12 @@ namespace Cinemachine.Editor
             }
 
             var originalColor = Handles.color;
-            if (framingTransposer.FollowTarget != null && 
-                CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
                     framingTransposer, ref framingTransposer.m_TrackedObjectOffset, ref m_SoloSetByTools);
             }
-            else if (framingTransposer.FollowTarget != null && 
-                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var camPos = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;

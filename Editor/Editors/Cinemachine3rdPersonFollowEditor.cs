@@ -58,8 +58,7 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (thirdPerson.FollowTarget != null && 
-                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 var originalColor = Handles.color;
                 

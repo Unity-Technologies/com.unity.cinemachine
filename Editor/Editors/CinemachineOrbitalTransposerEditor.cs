@@ -174,8 +174,7 @@ namespace Cinemachine.Editor
                 return;
             }
             
-            if (orbitalTransposer.FollowTarget != null && 
-                CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer, ref m_SoloSetByTools);
             }
