@@ -150,16 +150,18 @@ namespace Cinemachine.Editor
             }
 #endif
         }
-
-#if UNITY_2021_2_OR_NEWER
+        
         protected virtual void OnDisable()
         {
+#if UNITY_2021_2_OR_NEWER
             if (!Target.HideOffsetInInspector)
             {
                 CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             }
+#endif
         }
         
+#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
         {
             DrawSceneTools();
