@@ -144,8 +144,7 @@ namespace Cinemachine
             Handles.color = Handles.preselectionColor;
             if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, 
-                    m_LensSettingsInspectorHelper == null ? false : m_LensSettingsInspectorHelper.UseHorizontalFOV, 
+                CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, IsHorizontalFOVUsed(),
                     ref m_FovAfterLastToolModification, ref m_SoloSetByTools);
             }
             else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))

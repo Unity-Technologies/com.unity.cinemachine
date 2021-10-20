@@ -356,7 +356,9 @@ namespace Cinemachine.Editor
                     MessageType.Info);
         }
 
-        private protected LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
+        LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
+        internal bool IsHorizontalFOVUsed() => 
+            m_LensSettingsInspectorHelper != null && m_LensSettingsInspectorHelper.UseHorizontalFOV;
 
         /// <summary>
         /// Draw the Lens Settings controls in the inspector
