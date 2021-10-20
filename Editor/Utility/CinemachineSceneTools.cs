@@ -159,9 +159,9 @@ namespace Cinemachine.Editor
 
         static void EnsureCinemachineToolsAreExclusiveWithUnityTools()
         {
-            foreach (var (key, value) in s_ExclusiveTools)
+            foreach (var toolHandle in s_ExclusiveTools)
             {
-                value.ToggleSetter(key == s_ActiveExclusiveTool);
+                toolHandle.Value.ToggleSetter(toolHandle.Key == s_ActiveExclusiveTool);
             }
             if (s_ActiveExclusiveTool != null)
             {
@@ -200,13 +200,13 @@ namespace Cinemachine.Editor
                 if (!cmToolbarIsHidden)
                 {
                     // only display cm tools that are relevant for the current selection
-                    foreach (var (key, value) in s_ExclusiveTools)
+                    foreach (var toolHandle in s_ExclusiveTools)
                     {
-                        value.IsDisplayedSetter(s_RequiredTools.ContainsKey(key));
+                        toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
                     }
-                    foreach (var (key, value) in s_Tools)
+                    foreach (var toolHandle in s_Tools)
                     {
-                        value.IsDisplayedSetter(s_RequiredTools.ContainsKey(key));
+                        toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
                     }
                 }
                 
