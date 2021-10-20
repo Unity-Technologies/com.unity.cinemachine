@@ -70,8 +70,8 @@ namespace Cinemachine.Editor
                 var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
                 var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-                
-                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+
+                Handles.color = Handles.preselectionColor;
                 // arm handle
                 var followUp = followTargetRotation * Vector3.up;
                 var aHandleId = GUIUtility.GetControlID(FocusType.Passive); 
