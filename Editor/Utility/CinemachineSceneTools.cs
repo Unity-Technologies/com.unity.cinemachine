@@ -227,8 +227,9 @@ namespace Cinemachine.Editor
         { 
             normal =
             {
-                background = Texture2D.grayTexture,
-                textColor = Handles.selectedColor
+                background = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.
+                    CinemachineRealativeInstallPath + "/Editor/EditorResources/SceneToolsLabelBackground.png"),
+                textColor = Handles.selectedColor,
             },
             fontStyle = FontStyle.Bold,
             padding = new RectOffset(5, 0, 5, 0)
