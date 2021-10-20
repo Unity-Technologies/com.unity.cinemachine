@@ -183,14 +183,24 @@ namespace Cinemachine.Editor
             DrawComponentInspector();
         }
 
+        private Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo> m_OnSceneGUIs =
+            new Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo>();
         public void OnSceneGUI()
         {
-            if (m_ComponentEditor != null && m_ComponentEditor.target != null) {
+            if (m_ComponentEditor == null || m_ComponentEditor.target == null) return;
+            
+            if (m_OnSceneGUIs.ContainsKey(m_ComponentEditor))
+            {
+                m_OnSceneGUIs[m_ComponentEditor].Invoke(m_ComponentEditor, null);
+            }
+            else
+            {
                 var mi = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 if (mi != null)
                 {
                     mi.Invoke(m_ComponentEditor, null);
+                    m_OnSceneGUIs.Add(m_ComponentEditor, mi);
                 }
             }
         }
