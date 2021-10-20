@@ -260,13 +260,14 @@ namespace Cinemachine.Editor
             Handles.Label(position + new Vector3(0, -labelOffset, 0), text, s_LabelStyle);
         }
 
-        private static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
-        public static void FovToolHandle(CinemachineVirtualCameraBase vcam, ref LensSettings lens, 
-            bool isLensHorizontal, ref float fovAfterLastToolModification)
+        static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
+        static float m_fovAfterLastToolModification;
+        public static void FovToolHandle(
+            CinemachineVirtualCameraBase vcam, ref LensSettings lens, bool isLensHorizontal)
         {
             if (GUIUtility.hotControl == 0)
             {
-                fovAfterLastToolModification = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
+                m_fovAfterLastToolModification = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
             }
             
             var camPos = vcam.State.FinalPosition;
@@ -276,7 +277,7 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
             var newFov = Handles.ScaleSlider(
-                fovAfterLastToolModification, 
+                m_fovAfterLastToolModification, 
                 camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
             if (EditorGUI.EndChangeCheck())
             {
@@ -284,17 +285,17 @@ namespace Cinemachine.Editor
 
                 if (lens.Orthographic)
                 {
-                    lens.OrthographicSize += (fovAfterLastToolModification - newFov);
+                    lens.OrthographicSize += (m_fovAfterLastToolModification - newFov);
                 }
                 else
                 {
-                    lens.FieldOfView += (fovAfterLastToolModification - newFov);
+                    lens.FieldOfView += (m_fovAfterLastToolModification - newFov);
                 }
                 lens.Validate();
                     
                 InspectorUtility.RepaintGameView();
             }
-            fovAfterLastToolModification = newFov;
+            m_fovAfterLastToolModification = newFov;
 
             if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
             {

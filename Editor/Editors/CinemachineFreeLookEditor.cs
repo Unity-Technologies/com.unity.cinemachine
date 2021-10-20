@@ -130,7 +130,6 @@ namespace Cinemachine
         }
         
 #if UNITY_2021_2_OR_NEWER
-        float m_FovAfterLastToolModification; // needed for reversing the scale slider
         void DrawSceneTools()
         {
             var freelook = Target;
@@ -143,8 +142,7 @@ namespace Cinemachine
             Handles.color = Handles.preselectionColor;
             if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, IsHorizontalFOVUsed(),
-                    ref m_FovAfterLastToolModification);
+                CinemachineSceneToolHelpers.FovToolHandle(freelook, ref freelook.m_Lens, IsHorizontalFOVUsed());
             }
             else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
