@@ -185,10 +185,10 @@ namespace Cinemachine.Editor
 
         public void OnSceneGUI()
         {
-            if (m_ComponentEditor != null) {
+            if (m_ComponentEditor != null && m_ComponentEditor.target != null) {
                 var mi = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (mi != null && m_ComponentEditor.target != null)
+                if (mi != null)
                 {
                     mi.Invoke(m_ComponentEditor, null);
                 }

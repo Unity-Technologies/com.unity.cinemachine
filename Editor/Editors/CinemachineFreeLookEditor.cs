@@ -114,11 +114,11 @@ namespace Cinemachine
      
         void OnSceneGUI()
         {
-            if (m_rigEditor != null)
+            if (m_rigEditor != null && m_rigEditor.target != null)
             {
                 var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (mi != null && m_rigEditor.target != null)
+                if (mi != null)
                 {
                     mi.Invoke(m_rigEditor, null);
                 }
