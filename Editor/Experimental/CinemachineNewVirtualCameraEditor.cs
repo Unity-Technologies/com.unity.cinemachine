@@ -9,7 +9,7 @@ namespace Cinemachine
     [CustomEditor(typeof(CinemachineNewVirtualCamera))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineNewVirtualCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>, ISceneToolAware
+        : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 
@@ -102,11 +102,6 @@ namespace Cinemachine
 
 #if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
-        {
-            DrawSceneToolsOnSceneGUI();
-        }
-        
-        public void DrawSceneToolsOnSceneGUI()
         {
             DrawSceneTools();
             m_PipelineSet.OnSceneGUI(); // call hidden editors

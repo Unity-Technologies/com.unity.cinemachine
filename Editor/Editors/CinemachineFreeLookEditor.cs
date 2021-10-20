@@ -12,7 +12,7 @@ namespace Cinemachine
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>, ISceneToolAware
+        : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -115,15 +115,15 @@ namespace Cinemachine
 #if UNITY_2021_2_OR_NEWER      
         void OnSceneGUI()
         {
-            DrawSceneToolsOnSceneGUI();
-        }
-
-        public void DrawSceneToolsOnSceneGUI()
-        {
             DrawSceneTools();
-            if (m_rigEditor != null && m_rigEditor is ISceneToolAware sceneToolAware)
+            if (m_rigEditor != null)
             {
-                sceneToolAware.DrawSceneToolsOnSceneGUI();
+                var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (mi != null && m_rigEditor.target != null)
+                {
+                    mi.Invoke(m_rigEditor, null);
+                }
             }
         }
 

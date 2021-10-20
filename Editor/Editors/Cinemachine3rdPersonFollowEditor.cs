@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(Cinemachine3rdPersonFollow))]
     [CanEditMultipleObjects]
-    internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>, ISceneToolAware
+    internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
     {
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(Cinemachine3rdPersonFollow))]
         static void Draw3rdPersonGizmos(Cinemachine3rdPersonFollow target, GizmoType selectionType)
@@ -32,7 +32,7 @@ namespace Cinemachine.Editor
                 Gizmos.color = originalGizmoColour;
             }
         }
-        
+
 #if UNITY_2021_2_OR_NEWER
         protected virtual void OnEnable()
         {
@@ -44,7 +44,7 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
-        public void DrawSceneToolsOnSceneGUI()
+        void OnSceneGUI()
         {
             DrawSceneTools();
         }

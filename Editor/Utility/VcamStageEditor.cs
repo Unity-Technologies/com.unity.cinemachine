@@ -183,15 +183,17 @@ namespace Cinemachine.Editor
             DrawComponentInspector();
         }
 
-#if UNITY_2021_2_OR_NEWER
         public void OnSceneGUI()
         {
-            if (m_ComponentEditor != null && m_ComponentEditor is ISceneToolAware sceneToolAware)
-            {
-                sceneToolAware.DrawSceneToolsOnSceneGUI();
+            if (m_ComponentEditor != null) {
+                var mi = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (mi != null && m_ComponentEditor.target != null)
+                {
+                    mi.Invoke(m_ComponentEditor, null);
+                }
             }
         }
-#endif
 
         private int GetPopupIndexForComponent(CinemachineComponentBase c)
         {
@@ -337,7 +339,6 @@ namespace Cinemachine.Editor
             }
         }
 
-#if UNITY_2021_2_OR_NEWER
         public void OnSceneGUI()
         {
             for (int i = 0; i < m_subeditors.Length; ++i)
@@ -349,6 +350,5 @@ namespace Cinemachine.Editor
                 ed.OnSceneGUI();
             }
         }
-#endif
     }
 }

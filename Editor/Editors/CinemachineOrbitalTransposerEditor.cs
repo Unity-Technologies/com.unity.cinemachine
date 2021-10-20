@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>, ISceneToolAware
+    internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -160,7 +160,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        public void DrawSceneToolsOnSceneGUI()
+        void OnSceneGUI()
         {
             DrawSceneTools();
         }

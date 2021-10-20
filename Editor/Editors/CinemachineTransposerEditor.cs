@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTransposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>, ISceneToolAware
+    internal class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -87,6 +87,11 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2021_2_OR_NEWER
+        void OnSceneGUI()
+        {
+            DrawSceneTools();
+        }
+        
         protected virtual void OnEnable()
         {
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -97,10 +102,6 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
-        public void DrawSceneToolsOnSceneGUI()
-        {
-            DrawSceneTools();
-        }
 
         bool m_SoloSetByTools;
         public void DrawSceneTools()

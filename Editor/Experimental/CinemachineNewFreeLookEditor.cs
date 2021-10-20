@@ -8,7 +8,7 @@ namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineNewFreeLook))]
     sealed class CinemachineNewFreeLookEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>, ISceneToolAware
+        : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
     {
         GUIContent[] m_OrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
@@ -171,11 +171,6 @@ namespace Cinemachine
 
 #if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
-        {
-            DrawSceneToolsOnSceneGUI();
-        }
-
-        public void DrawSceneToolsOnSceneGUI()
         {
             DrawSceneTools();
             m_PipelineSet.OnSceneGUI(); 
