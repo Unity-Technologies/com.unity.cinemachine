@@ -58,7 +58,7 @@ namespace Cinemachine.Editor
                 }
             }
         }
-        static SortedDictionary<Type, int> s_RequiredTools;
+        static Dictionary<Type, int> s_RequiredTools;
 
         public delegate void ToolHandler(bool v);
         struct CinemachineSceneToolDelegates
@@ -66,8 +66,8 @@ namespace Cinemachine.Editor
             public ToolHandler ToggleSetter;
             public ToolHandler IsDisplayedSetter;
         }
-        static SortedDictionary<Type, CinemachineSceneToolDelegates> s_ExclusiveTools; // tools that can't be active at the same time
-        static SortedDictionary<Type, CinemachineSceneToolDelegates> s_Tools; // tools without restrictions
+        static Dictionary<Type, CinemachineSceneToolDelegates> s_ExclusiveTools; // tools that can't be active at the same time
+        static Dictionary<Type, CinemachineSceneToolDelegates> s_Tools; // tools without restrictions
         
         /// <summary>
         /// Use for registering tool handlers for tools that are exclusive with each other,
@@ -93,7 +93,7 @@ namespace Cinemachine.Editor
             RegisterToolHandlers(ref s_Tools, tool, toggleSetter, isDisplayedSetter);
         }
 
-        static void RegisterToolHandlers(ref SortedDictionary<Type, CinemachineSceneToolDelegates> tools,
+        static void RegisterToolHandlers(ref Dictionary<Type, CinemachineSceneToolDelegates> tools,
             Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
         {
             if (tools.ContainsKey(tool))
@@ -171,12 +171,9 @@ namespace Cinemachine.Editor
         
         static CinemachineSceneToolUtility()
         {
-            s_ExclusiveTools = new SortedDictionary<Type, CinemachineSceneToolDelegates>(Comparer<Type>.Create(
-                (x, y) => x.ToString().CompareTo(y.ToString())));
-            s_Tools = new SortedDictionary<Type, CinemachineSceneToolDelegates>(Comparer<Type>.Create(
-                (x, y) => x.ToString().CompareTo(y.ToString())));
-            s_RequiredTools = new SortedDictionary<Type, int>(Comparer<Type>.Create(
-                (x, y) => x.ToString().CompareTo(y.ToString())));
+            s_ExclusiveTools = new Dictionary<Type, CinemachineSceneToolDelegates>();
+            s_Tools = new Dictionary<Type, CinemachineSceneToolDelegates>();
+            s_RequiredTools = new Dictionary<Type, int>();
 
             EditorApplication.update += () =>
             {
