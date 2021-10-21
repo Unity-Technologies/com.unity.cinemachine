@@ -108,6 +108,7 @@ namespace Cinemachine.Editor
         List<CinemachineComponentBase> m_EditedComponents;
         List<CinemachineComponentBase> m_ScratchComponentList;
         UnityEditor.Editor m_ComponentEditor;
+        System.Reflection.MethodInfo m_ComponentEditorOnSceneGUI;
 
         // Call this from OnEnable()
         public VcamStageEditor(CinemachineCore.Stage stage)
@@ -131,6 +132,7 @@ namespace Cinemachine.Editor
             if (m_ComponentEditor != null)
                 UnityEngine.Object.DestroyImmediate(m_ComponentEditor);
             m_ComponentEditor = null;
+            m_ComponentEditorOnSceneGUI = null;
             m_EditedComponents.Clear();
             m_ScratchComponentList.Clear();
         }
@@ -164,6 +166,8 @@ namespace Cinemachine.Editor
                     UnityEngine.Object.DestroyImmediate(m_ComponentEditor);
                 }
                 m_ComponentEditor = null;
+                m_ComponentEditorOnSceneGUI = null;
+
                 m_EditedComponents.Clear();
                 m_EditedComponents.AddRange(m_ScratchComponentList);
                 m_IsMixedType = false;
@@ -173,7 +177,12 @@ namespace Cinemachine.Editor
             if (numNullComponents > 0 && numComponents > 0)
                 m_IsMixedType = true;
             if (numComponents > 0 && m_ComponentEditor == null && !m_IsMixedType)
+            {
                 UnityEditor.Editor.CreateCachedEditor(m_EditedComponents.ToArray(), null, ref m_ComponentEditor);
+                if (m_ComponentEditor != null)
+                    m_ComponentEditorOnSceneGUI = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            }
             m_StageSelection = GetPopupIndexForComponent(numComponents == 0 ? null : m_EditedComponents[0]);
 
             m_StageError = false;
@@ -183,28 +192,11 @@ namespace Cinemachine.Editor
             DrawComponentInspector();
         }
 
-        System.Reflection.MethodInfo m_RigEditorOnSceneGUI;
         public void OnSceneGUI()
         {
-            if (m_ComponentEditor != null && m_ComponentEditor.target != null)
-            {
-                if (m_RigEditorOnSceneGUI == null)
-                {
-                    var mi = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    
-                    if (mi != null)
-                    {
-                        mi.Invoke(m_ComponentEditor, null);
-                        m_RigEditorOnSceneGUI = mi;
-                    }
-                }
-                else
-                {
-                    m_RigEditorOnSceneGUI.Invoke(m_ComponentEditor, null);
-                }
-
-            }
+            // Forward to embedded editors
+            if (m_ComponentEditor != null && m_ComponentEditorOnSceneGUI != null)
+                m_ComponentEditorOnSceneGUI.Invoke(m_ComponentEditor, null);
         }
 
         private int GetPopupIndexForComponent(CinemachineComponentBase c)

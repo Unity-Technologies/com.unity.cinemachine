@@ -112,27 +112,11 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-        System.Reflection.MethodInfo m_RigEditorOnSceneGUI;
         void OnSceneGUI()
         {
-            if (m_rigEditor != null && m_rigEditor.target != null)
-            {
-                if (m_RigEditorOnSceneGUI == null)
-                {
-                    var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI", 
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    
-                    if (mi != null)
-                    {
-                        mi.Invoke(m_rigEditor, null);
-                        m_RigEditorOnSceneGUI = mi;
-                    }
-                }
-                else
-                {
-                    m_RigEditorOnSceneGUI.Invoke(m_rigEditor, null);
-                }
-            }
+            // Forward to embedded rig editor
+            if (m_rigEditor != null && m_RigEditorOnSceneGUI != null)
+                m_RigEditorOnSceneGUI.Invoke(m_rigEditor, null);
 
 #if UNITY_2021_2_OR_NEWER
             DrawSceneTools();
@@ -181,6 +165,7 @@ namespace Cinemachine
         internal static int s_SelectedRig = 1;
 
         UnityEditor.Editor m_rigEditor;
+        System.Reflection.MethodInfo m_RigEditorOnSceneGUI;
         CinemachineVirtualCameraBase m_EditedRig = null;
 
         void UpdateRigEditor()
@@ -189,6 +174,7 @@ namespace Cinemachine
             if (m_EditedRig != rig || m_rigEditor == null)
             {
                 m_EditedRig = rig;
+                m_RigEditorOnSceneGUI = null;
                 if (m_rigEditor != null)
                 {
                     UnityEngine.Object.DestroyImmediate(m_rigEditor);
@@ -199,6 +185,9 @@ namespace Cinemachine
                     Undo.RecordObject(Target, "selected rig");
                     Target.m_YAxis.Value = s_SelectedRig == 0 ? 1 : (s_SelectedRig == 1 ? 0.5f : 0);
                     CreateCachedEditor(rig, null, ref m_rigEditor);
+                    if (m_rigEditor != null)
+                        m_RigEditorOnSceneGUI = m_rigEditor.GetType().GetMethod("OnSceneGUI", 
+                            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 }
             }
         }
