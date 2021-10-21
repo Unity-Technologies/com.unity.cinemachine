@@ -236,8 +236,7 @@ namespace Cinemachine.Editor
         public static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
         {
             var delta = newPos - oldPos;
-            var sameDirection = Vector3.Dot(delta.normalized, forward) > 0;
-            return (sameDirection ? 1f : -1f) * delta.magnitude;
+            return Mathf.Sign(Vector3.Dot(delta, forward)) * delta.magnitude;
         }
 
         /// <summary>
