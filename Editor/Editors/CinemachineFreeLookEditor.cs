@@ -150,8 +150,12 @@ namespace Cinemachine
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.OrbitControlHandle(freelook, 
-                    ref freelook.m_Orbits, ref s_SelectedRig);
+                var so = new SerializedObject(freelook);
+                var orbits = so.FindProperty(() => freelook.m_Orbits);
+                if (CinemachineSceneToolHelpers.OrbitControlHandle(freelook, orbits, ref s_SelectedRig))
+                {
+                    so.ApplyModifiedProperties();
+                }
             }
             Handles.color = originalColor;
         }

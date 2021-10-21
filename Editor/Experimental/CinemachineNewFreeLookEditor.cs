@@ -197,22 +197,11 @@ namespace Cinemachine
             }
             else if (newFreelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                // convert newFreelook orbits to freelook orbits
-                var tempOrbits = new CinemachineFreeLook.Orbit[newFreelook.m_Orbits.Length];
-                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
+                var so = new SerializedObject(newFreelook);
+                var orbits = so.FindProperty(() => newFreelook.m_Orbits);
+                if (CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook, orbits, ref s_SelectedRig))
                 {
-                    tempOrbits[i].m_Height = newFreelook.m_Orbits[i].m_Height;
-                    tempOrbits[i].m_Radius = newFreelook.m_Orbits[i].m_Radius;
-                }
-            
-                CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook, 
-                    ref tempOrbits, ref s_SelectedRig);
-            
-                // copy freelook orbit values back to new freelook
-                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
-                {
-                    newFreelook.m_Orbits[i].m_Height = tempOrbits[i].m_Height;
-                    newFreelook.m_Orbits[i].m_Radius = tempOrbits[i].m_Radius;
+                    so.ApplyModifiedProperties();
                 }
             }
             Handles.color = originalColor;
