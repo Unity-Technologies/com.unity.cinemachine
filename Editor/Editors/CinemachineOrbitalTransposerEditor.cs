@@ -82,23 +82,7 @@ namespace Cinemachine.Editor
                 = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
             DrawRemainingPropertiesInInspector();
         }
-
-        /// Process a position drag from the user.
-        /// Called "magically" by the vcam editor, so don't change the signature.
-        private void OnVcamPositionDragged(Vector3 delta)
-        {
-            if (Target.FollowTarget != null)
-            {
-                Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
-                Quaternion targetOrientation = Target.GetReferenceOrientation(Target.VcamState.ReferenceUp);
-                targetOrientation = targetOrientation * Quaternion.Euler(0, Target.m_Heading.m_Bias, 0);
-                Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-                localOffset.x = 0;
-                Target.m_FollowOffset += localOffset;
-                Target.m_FollowOffset = Target.EffectiveOffset;
-            }
-        }
-
+        
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]
         static void DrawTransposerGizmos(CinemachineOrbitalTransposer target, GizmoType selectionType)
         {

@@ -71,21 +71,6 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }
-
-        /// Process a position drag from the user.
-        /// Called "magically" by the vcam editor, so don't change the signature.
-        public void OnVcamPositionDragged(Vector3 delta)
-        {
-            if (Target.FollowTarget != null)
-            {
-                Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
-                Quaternion targetOrientation = Target.GetReferenceOrientation(Target.VcamState.ReferenceUp);
-                Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-                Target.m_FollowOffset += localOffset;
-                Target.m_FollowOffset = Target.EffectiveOffset;
-            }
-        }
-
 #if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
         {
