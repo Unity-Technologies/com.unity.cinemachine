@@ -183,25 +183,27 @@ namespace Cinemachine.Editor
             DrawComponentInspector();
         }
 
-        Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo> m_OnSceneGUIs =
-            new Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo>();
+        System.Reflection.MethodInfo m_RigEditorOnSceneGUI;
         public void OnSceneGUI()
         {
-            if (m_ComponentEditor == null || m_ComponentEditor.target == null) return;
-            
-            if (m_OnSceneGUIs.ContainsKey(m_ComponentEditor))
+            if (m_ComponentEditor != null && m_ComponentEditor.target != null)
             {
-                m_OnSceneGUIs[m_ComponentEditor].Invoke(m_ComponentEditor, null);
-            }
-            else
-            {
-                var mi = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (mi != null)
+                if (m_RigEditorOnSceneGUI == null)
                 {
-                    mi.Invoke(m_ComponentEditor, null);
-                    m_OnSceneGUIs.Add(m_ComponentEditor, mi);
+                    var mi = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    
+                    if (mi != null)
+                    {
+                        mi.Invoke(m_ComponentEditor, null);
+                        m_RigEditorOnSceneGUI = mi;
+                    }
                 }
+                else
+                {
+                    m_RigEditorOnSceneGUI.Invoke(m_ComponentEditor, null);
+                }
+
             }
         }
 
