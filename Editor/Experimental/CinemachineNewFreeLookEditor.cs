@@ -189,20 +189,20 @@ namespace Cinemachine
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                CinemachineSceneToolHelpers.FovToolHandle(newFreelook, ref newFreelook.m_Lens, IsHorizontalFOVUsed());
+                CinemachineSceneToolHelpers.FovToolHandle(newFreelook, 
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Lens), 
+                    newFreelook.m_Lens.Orthographic, IsHorizontalFOVUsed(), newFreelook.m_Lens.IsPhysicalCamera);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook, ref newFreelook.m_Lens);
+                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook,
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Lens));
             }
             else if (newFreelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var so = new SerializedObject(newFreelook);
-                var orbits = so.FindProperty(() => newFreelook.m_Orbits);
-                if (CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook, orbits, ref s_SelectedRig))
-                {
-                    so.ApplyModifiedProperties();
-                }
+                CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook,
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Orbits), ref s_SelectedRig);
+
             }
             Handles.color = originalColor;
         }

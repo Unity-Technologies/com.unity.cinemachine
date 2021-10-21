@@ -133,11 +133,14 @@ namespace Cinemachine.Editor
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                CinemachineSceneToolHelpers.FovToolHandle(vcam, ref vcam.m_Lens, IsHorizontalFOVUsed());
+                CinemachineSceneToolHelpers.FovToolHandle(vcam, 
+                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens), 
+                    vcam.m_Lens.Orthographic, IsHorizontalFOVUsed(), vcam.m_Lens.IsPhysicalCamera);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, ref vcam.m_Lens);
+                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, 
+                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens));
             }
             Handles.color = originalColor;
         }
