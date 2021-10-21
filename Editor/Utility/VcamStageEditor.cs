@@ -183,7 +183,7 @@ namespace Cinemachine.Editor
             DrawComponentInspector();
         }
 
-        private Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo> m_OnSceneGUIs =
+        Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo> m_OnSceneGUIs =
             new Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo>();
         public void OnSceneGUI()
         {

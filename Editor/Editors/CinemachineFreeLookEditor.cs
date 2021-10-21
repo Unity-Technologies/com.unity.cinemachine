@@ -112,15 +112,25 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
      
+        Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo> m_OnSceneGUIs =
+            new Dictionary<UnityEditor.Editor, System.Reflection.MethodInfo>();
         void OnSceneGUI()
         {
             if (m_rigEditor != null && m_rigEditor.target != null)
             {
-                var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (mi != null)
+                if (m_OnSceneGUIs.ContainsKey(m_rigEditor))
                 {
-                    mi.Invoke(m_rigEditor, null);
+                    m_OnSceneGUIs[m_rigEditor].Invoke(m_rigEditor, null);
+                }
+                else
+                {
+                    var mi = m_rigEditor.GetType().GetMethod("OnSceneGUI",
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (mi != null)
+                    {
+                        mi.Invoke(m_rigEditor, null);
+                        m_OnSceneGUIs.Add(m_rigEditor, mi);
+                    }
                 }
             }
 
