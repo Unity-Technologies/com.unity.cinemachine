@@ -194,7 +194,7 @@ namespace Cinemachine.Editor
 
         public void OnSceneGUI()
         {
-            // Forward to embedded editors
+            // Forward to embedded editor
             if (m_ComponentEditor != null && m_ComponentEditorOnSceneGUI != null)
                 m_ComponentEditorOnSceneGUI.Invoke(m_ComponentEditor, null);
         }
@@ -343,8 +343,10 @@ namespace Cinemachine.Editor
             }
         }
 
+        // Call from editor's OnSceneGUI
         public void OnSceneGUI()
         {
+            // Forward to the embedded editors
             for (int i = 0; i < m_subeditors.Length; ++i)
             {
                 var ed = m_subeditors[i];
