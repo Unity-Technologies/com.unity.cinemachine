@@ -189,31 +189,20 @@ namespace Cinemachine
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
-                CinemachineSceneToolHelpers.FovToolHandle(newFreelook, ref newFreelook.m_Lens, IsHorizontalFOVUsed());
+                CinemachineSceneToolHelpers.FovToolHandle(newFreelook, 
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Lens), 
+                    newFreelook.m_Lens, IsHorizontalFOVUsed());
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook, ref newFreelook.m_Lens);
+                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook,
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Lens));
             }
             else if (newFreelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                // convert newFreelook orbits to freelook orbits
-                var tempOrbits = new CinemachineFreeLook.Orbit[newFreelook.m_Orbits.Length];
-                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
-                {
-                    tempOrbits[i].m_Height = newFreelook.m_Orbits[i].m_Height;
-                    tempOrbits[i].m_Radius = newFreelook.m_Orbits[i].m_Radius;
-                }
-            
-                CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook, 
-                    ref tempOrbits, ref s_SelectedRig);
-            
-                // copy freelook orbit values back to new freelook
-                for (var i = 0; i < newFreelook.m_Orbits.Length; ++i)
-                {
-                    newFreelook.m_Orbits[i].m_Height = tempOrbits[i].m_Height;
-                    newFreelook.m_Orbits[i].m_Radius = tempOrbits[i].m_Radius;
-                }
+                CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook,
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Orbits), ref s_SelectedRig);
+
             }
             Handles.color = originalColor;
         }

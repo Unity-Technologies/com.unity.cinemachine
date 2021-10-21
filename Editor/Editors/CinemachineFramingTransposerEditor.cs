@@ -238,8 +238,8 @@ namespace Cinemachine.Editor
             var originalColor = Handles.color;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    framingTransposer, ref framingTransposer.m_TrackedObjectOffset);
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(framingTransposer, 
+                    new SerializedObject(framingTransposer).FindProperty(() => framingTransposer.m_TrackedObjectOffset));
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {

@@ -126,7 +126,8 @@ namespace Cinemachine.Editor
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(composer, ref composer.m_TrackedObjectOffset);
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(composer, 
+                    new SerializedObject(composer).FindProperty(() => composer.m_TrackedObjectOffset));
             }
         }
 #endif

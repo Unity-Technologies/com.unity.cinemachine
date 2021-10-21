@@ -261,13 +261,15 @@ namespace Cinemachine.Editor
         }
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
-        static float m_fovAfterLastToolModification;
-        public static void FovToolHandle(
-            CinemachineVirtualCameraBase vcam, ref LensSettings lens, bool isLensHorizontal)
+        static float s_FOVAfterLastToolModification;
+
+        public static void FovToolHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lensProperty,
+            in LensSettings lens, bool isLensHorizontal)
         {
+            var orthographic = lens.Orthographic;
             if (GUIUtility.hotControl == 0)
             {
-                m_fovAfterLastToolModification = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
+                s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : lens.FieldOfView;
             }
             
             var camPos = vcam.State.FinalPosition;
@@ -277,25 +279,23 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
             var newFov = Handles.ScaleSlider(
-                m_fovAfterLastToolModification, 
+                s_FOVAfterLastToolModification, 
                 camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(vcam, "Changed FOV using handle in scene view.");
-
-                if (lens.Orthographic)
+                if (orthographic)
                 {
-                    lens.OrthographicSize += (m_fovAfterLastToolModification - newFov);
+                    lensProperty.FindPropertyRelative("OrthographicSize").floatValue += 
+                        (s_FOVAfterLastToolModification - newFov);
                 }
                 else
                 {
-                    lens.FieldOfView += (m_fovAfterLastToolModification - newFov);
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue += 
+                        (s_FOVAfterLastToolModification - newFov);
                 }
-                lens.Validate();
-                    
-                InspectorUtility.RepaintGameView();
+                lensProperty.serializedObject.ApplyModifiedProperties();
             }
-            m_fovAfterLastToolModification = newFov;
+            s_FOVAfterLastToolModification = newFov;
 
             if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
             {
@@ -303,10 +303,9 @@ namespace Cinemachine.Editor
                 if (lens.IsPhysicalCamera)
                 {
                     DrawLabel(labelPos, "Focal Length (" + 
-                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, 
-                            lens.SensorSize.y).ToString("F1") + ")");
+                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.SensorSize.y).ToString("F1") + ")");
                 }
-                else if (lens.Orthographic)
+                else if (orthographic)
                 {
                     DrawLabel(labelPos, "Orthographic Size (" + 
                         lens.OrthographicSize.ToString("F1") + ")");
@@ -314,8 +313,7 @@ namespace Cinemachine.Editor
                 else if (isLensHorizontal)
                 {
                     DrawLabel(labelPos, "Horizontal FOV (" +
-                        Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView,
-                            lens.Aspect).ToString("F1") + ")");
+                        Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView, lens.Aspect).ToString("F1") + ")");
                 }
                 else
                 {
@@ -327,14 +325,15 @@ namespace Cinemachine.Editor
             SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId);
         }
 
-        public static void NearFarClipHandle(
-            CinemachineVirtualCameraBase vcam, ref LensSettings lens)
+        public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
         {
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
             var camForward = camRot * Vector3.forward;
-            var nearClipPos = camPos + camForward * lens.NearClipPlane;
-            var farClipPos = camPos + camForward * lens.FarClipPlane;
+            var nearClipPlane = lens.FindPropertyRelative("NearClipPlane");
+            var farClipPlane = lens.FindPropertyRelative("FarClipPlane");
+            var nearClipPos = camPos + camForward * nearClipPlane.floatValue;
+            var farClipPos = camPos + camForward * farClipPlane.floatValue;
             
             EditorGUI.BeginChangeCheck();
             var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
@@ -345,26 +344,20 @@ namespace Cinemachine.Editor
                 HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(vcam, "Changed clip plane using handle in scene view.");
-                
-                lens.NearClipPlane += 
+                nearClipPlane.floatValue += 
                     SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
-                lens.FarClipPlane += 
+                farClipPlane.floatValue += 
                     SliderHandleDelta(newFarClipPos, farClipPos, camForward);
-                lens.Validate();
-                
-                InspectorUtility.RepaintGameView();
+                lens.serializedObject.ApplyModifiedProperties();
             }
 
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
-                DrawLabel(nearClipPos,
-                    "Near Clip Plane (" + lens.NearClipPlane.ToString("F1") + ")");
+                DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
             }
             if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
             {
-                DrawLabel(farClipPos, 
-                    "Far Clip Plane (" + lens.FarClipPlane.ToString("F1") + ")");
+                DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
             }
             
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId,
@@ -372,11 +365,11 @@ namespace Cinemachine.Editor
         }
 
         public static void TrackedObjectOffsetTool(
-            CinemachineComponentBase cmComponent, ref Vector3 trackedObjectOffset)
+            CinemachineComponentBase cmComponent, SerializedProperty trackedObjectOffset)
         {
             var lookAtPos = cmComponent.LookAtTargetPosition;
             var lookAtRot = cmComponent.LookAtTargetRotation;
-            var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset;
+            var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset.vector3Value;
 
             EditorGUI.BeginChangeCheck();
             var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
@@ -384,11 +377,9 @@ namespace Cinemachine.Editor
             var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(cmComponent, "Change Tracked Object Offset using handle in Scene View.");
-
-                trackedObjectOffset += PositionHandleDelta(lookAtRot, newTrackedObjectPos, trackedObjectPos);
-
-                InspectorUtility.RepaintGameView();
+                trackedObjectOffset.vector3Value += 
+                    PositionHandleDelta(lookAtRot, newTrackedObjectPos, trackedObjectPos);
+                trackedObjectOffset.serializedObject.ApplyModifiedProperties();
             }
 
             var trackedObjectOffsetHandleIsDragged = 
@@ -397,8 +388,8 @@ namespace Cinemachine.Editor
                 tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
             if (trackedObjectOffsetHandleIsUsedOrHovered)
             {
-                DrawLabel(trackedObjectPos, 
-                    "(" + cmComponent.Stage + ") Tracked Object Offset " + trackedObjectOffset.ToString("F1"));
+                DrawLabel(trackedObjectPos, "(" + cmComponent.Stage + ") Tracked Object Offset " 
+                    + trackedObjectOffset.vector3Value.ToString("F1"));
             }
             
             var originalColor = Handles.color;
@@ -424,10 +415,10 @@ namespace Cinemachine.Editor
             var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
             if (EditorGUI.EndChangeCheck())
             {
-                // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
                 var so = new SerializedObject(cmComponent);
                 var followOffset = so.FindProperty(() => cmComponent.m_FollowOffset);
                 followOffset.vector3Value += PositionHandleDelta(camRot, newPos, camPos);
+                so.ApplyModifiedProperties();
                 followOffset.vector3Value = cmComponent.EffectiveOffset;
                 so.ApplyModifiedProperties();
             }
@@ -466,61 +457,61 @@ namespace Cinemachine.Editor
             }
         }
         
-        public static void OrbitControlHandle(CinemachineVirtualCameraBase vcam, 
-            ref CinemachineFreeLook.Orbit[] orbits, ref int selectedRig)
+        public static void OrbitControlHandle(
+            CinemachineVirtualCameraBase vcam, SerializedProperty orbits, ref int selectedRig)
         {
             var followPos = vcam.Follow.position;
-                for (var rigIndex = 0; rigIndex < orbits.Length; ++rigIndex)
+            for (var rigIndex = 0; rigIndex < orbits.arraySize; ++rigIndex)
+            {
+                var orbit = orbits.GetArrayElementAtIndex(rigIndex);
+                var orbitHeight = orbit.FindPropertyRelative("m_Height");
+                var orbitRadius = orbit.FindPropertyRelative("m_Radius");
+                Handles.color = Handles.preselectionColor;
+                EditorGUI.BeginChangeCheck();
+            
+                var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var heightHandlePos = followPos + Vector3.up * orbitHeight.floatValue;
+                var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
+                    HandleUtility.GetHandleSize(heightHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+                
+                var radiusHandleOffset = Vector3.right;
+                var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var radiusHandlePos = followPos + Vector3.up * orbitHeight.floatValue
+                    + radiusHandleOffset * orbitRadius.floatValue;
+                var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
+                    HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+
+                if (EditorGUI.EndChangeCheck())
                 {
-                    Handles.color = Handles.preselectionColor;
-                    EditorGUI.BeginChangeCheck();
-                
-                    var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                    var heightHandlePos = followPos + Vector3.up * orbits[rigIndex].m_Height;
-                    var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
-                        HandleUtility.GetHandleSize(heightHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
-                    
-                    var radiusHandleOffset = Vector3.right;
-                    var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                    var radiusHandlePos = followPos + Vector3.up * orbits[rigIndex].m_Height 
-                        + radiusHandleOffset * orbits[rigIndex].m_Radius;
-                    var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
-                        HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
-
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        Undo.RecordObject(vcam, "Changed freelook rig orbit using handle in scene view.");
-                
-                        orbits[rigIndex].m_Height += 
-                            SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
-                        orbits[rigIndex].m_Radius += 
-                            SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
-
-                        InspectorUtility.RepaintGameView();
-                    }
-
-                    Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                    var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
-                    if (isDragged || HandleUtility.nearestControl == heightHandleId || 
-                        HandleUtility.nearestControl == radiusHandleId)
-                    {
-                        Handles.color = Handles.selectedColor;
-                    }
-                    if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
-                    {
-                        DrawLabel(heightHandlePos, "Height: " + orbits[rigIndex].m_Height);
-                    }
-                    if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
-                    {
-                        DrawLabel(radiusHandlePos, "Radius: " + orbits[rigIndex].m_Radius);
-                    }
-
-                    Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbits[rigIndex].m_Radius);
-                    
-                    SoloOnDrag(isDragged, vcam, Mathf.Min(heightHandleId, radiusHandleId));
-
-                    selectedRig = isDragged ? rigIndex : selectedRig; // select rig that is picked by orbit tool
+                    orbitHeight.floatValue += 
+                        SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
+                    orbitRadius.floatValue += 
+                        SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
+                    orbits.serializedObject.ApplyModifiedProperties();
                 }
+
+                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
+                if (isDragged || HandleUtility.nearestControl == heightHandleId || 
+                    HandleUtility.nearestControl == radiusHandleId)
+                {
+                    Handles.color = Handles.selectedColor;
+                }
+                if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
+                {
+                    DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);
+                }
+                if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
+                {
+                    DrawLabel(radiusHandlePos, "Radius: " + orbitRadius.floatValue);
+                }
+
+                Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
+                
+                SoloOnDrag(isDragged, vcam, Mathf.Min(heightHandleId, radiusHandleId));
+
+                selectedRig = isDragged ? rigIndex : selectedRig; // select rig that is picked by orbit tool
+            }
         }
     } 
 }
