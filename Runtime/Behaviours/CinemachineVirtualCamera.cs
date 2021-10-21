@@ -157,7 +157,6 @@ namespace Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
-           
             if (Follow != null)
                 transform.position = State.RawPosition;
             if (LookAt != null)

@@ -202,7 +202,6 @@ namespace Cinemachine
             {
                 CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook,
                     new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Orbits), ref s_SelectedRig);
-
             }
             Handles.color = originalColor;
         }

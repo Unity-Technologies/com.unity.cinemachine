@@ -119,7 +119,6 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        
 #if UNITY_2021_2_OR_NEWER
         void DrawSceneTools()
         {
