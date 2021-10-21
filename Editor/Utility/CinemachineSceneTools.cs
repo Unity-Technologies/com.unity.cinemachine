@@ -385,7 +385,7 @@ namespace Cinemachine.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(cmComponent, "Change Tracked Object Offset using handle in Scene View.");
-                
+
                 trackedObjectOffset += PositionHandleDelta(lookAtRot, newTrackedObjectPos, trackedObjectPos);
 
                 InspectorUtility.RepaintGameView();
@@ -424,13 +424,12 @@ namespace Cinemachine.Editor
             var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(cmComponent, 
-                    "Change Follow Offset Position using handle in Scene View.");
-                
-                cmComponent.m_FollowOffset += PositionHandleDelta(camRot, newPos, camPos);
-                cmComponent.m_FollowOffset = cmComponent.EffectiveOffset; // sanitize offset
-                
-                InspectorUtility.RepaintGameView();
+                // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
+                var so = new SerializedObject(cmComponent);
+                var followOffset = so.FindProperty(() => cmComponent.m_FollowOffset);
+                followOffset.vector3Value += PositionHandleDelta(camRot, newPos, camPos);
+                followOffset.vector3Value = cmComponent.EffectiveOffset;
+                so.ApplyModifiedProperties();
             }
 
             var followOffsetHandleIsDragged = 
@@ -480,35 +479,26 @@ namespace Cinemachine.Editor
                     var heightHandlePos = followPos + Vector3.up * orbits[rigIndex].m_Height;
                     var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
                         HandleUtility.GetHandleSize(heightHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
-
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        Undo.RecordObject(vcam, "Changed freelook rig orbit height using handle in scene view.");
-                
-                        orbits[rigIndex].m_Height += 
-                            SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
-
-                        InspectorUtility.RepaintGameView();
-                    }
                     
-                    EditorGUI.BeginChangeCheck();
                     var radiusHandleOffset = Vector3.right;
                     var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
                     var radiusHandlePos = followPos + Vector3.up * orbits[rigIndex].m_Height 
                         + radiusHandleOffset * orbits[rigIndex].m_Radius;
                     var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
                         HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
-                    
+
                     if (EditorGUI.EndChangeCheck())
                     {
-                        Undo.RecordObject(vcam, "Changed freelook rig orbit radius using handle in scene view.");
+                        Undo.RecordObject(vcam, "Changed freelook rig orbit using handle in scene view.");
                 
+                        orbits[rigIndex].m_Height += 
+                            SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
                         orbits[rigIndex].m_Radius += 
                             SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
 
                         InspectorUtility.RepaintGameView();
                     }
-                    
+
                     Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                     var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
                     if (isDragged || HandleUtility.nearestControl == heightHandleId || 

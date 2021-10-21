@@ -252,14 +252,11 @@ namespace Cinemachine.Editor
                     HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(framingTransposer, 
-                        "Changed FramingTransposer distance using handle in Scene View.");
-                    
-                    framingTransposer.m_CameraDistance -= 
-                        CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
-                    framingTransposer.OnValidate();
-                    
-                    InspectorUtility.RepaintGameView();
+                    // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
+                    var so = new SerializedObject(framingTransposer);
+                    var prop = so.FindProperty(() => framingTransposer.m_CameraDistance);
+                    prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
+                    so.ApplyModifiedProperties();
                 }
 
                 var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;

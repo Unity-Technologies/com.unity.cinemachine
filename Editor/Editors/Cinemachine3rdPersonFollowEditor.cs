@@ -89,16 +89,20 @@ namespace Cinemachine.Editor
                     HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(thirdPerson, "Changed 3rdPersonFollow offsets using handle in Scene View.");
-
-                    thirdPerson.ShoulderOffset += 
+                    // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
+                    var so = new SerializedObject(thirdPerson);
+                    
+                    var shoulderOffset = so.FindProperty(() => thirdPerson.ShoulderOffset);
+                    shoulderOffset.vector3Value += 
                         CinemachineSceneToolHelpers.PositionHandleDelta(heading, newShoulderPosition, shoulderPosition);
-                    thirdPerson.VerticalArmLength += 
+                    var verticalArmLength = so.FindProperty(() => thirdPerson.VerticalArmLength);
+                    verticalArmLength.floatValue += 
                         CinemachineSceneToolHelpers.SliderHandleDelta(newArmPosition, armPosition, followUp);
-                    thirdPerson.CameraDistance -= 
+                    var cameraDistance = so.FindProperty(() => thirdPerson.CameraDistance);
+                    cameraDistance.floatValue -= 
                         CinemachineSceneToolHelpers.SliderHandleDelta(newCamPos, camPos, targetForward);
-
-                    InspectorUtility.RepaintGameView();
+                    
+                    so.ApplyModifiedProperties();
                 }
 
                 var isDragged = IsHandleDragged(sHandleMinId, sHandleMaxId, shoulderPosition, "Shoulder Offset " 
