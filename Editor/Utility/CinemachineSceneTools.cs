@@ -321,7 +321,7 @@ namespace Cinemachine.Editor
                 }
             }
                 
-            SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId);
+            SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam.ParentCamera != null ? vcam.ParentCamera : vcam, fovHandleId);
         }
 
         public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
@@ -360,7 +360,7 @@ namespace Cinemachine.Editor
             }
             
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId,
-                vcam, Mathf.Min(ncHandleId, fcHandleId));
+                vcam.ParentCamera != null ? vcam.ParentCamera : vcam, Mathf.Min(ncHandleId, fcHandleId));
         }
 
         public static void TrackedObjectOffsetTool(
@@ -441,12 +441,12 @@ namespace Cinemachine.Editor
         
         
         static bool s_SoloSetByTools;
-        public static void SoloOnDrag(bool isDragged, CinemachineVirtualCameraBase vcam, int handleMaxId)
+        public static void SoloOnDrag(bool isDragged, ICinemachineCamera vcam, int handleMaxId)
         {
             if (isDragged)
             {
                 // if solo was activated by the user, then it was not the tool who set it to solo.
-                s_SoloSetByTools |= CinemachineBrain.SoloCamera != (ICinemachineCamera) vcam;
+                s_SoloSetByTools |= CinemachineBrain.SoloCamera != vcam;
                 CinemachineBrain.SoloCamera = vcam;
             }
             else if (s_SoloSetByTools && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
@@ -460,6 +460,8 @@ namespace Cinemachine.Editor
             CinemachineVirtualCameraBase vcam, SerializedProperty orbits, ref int selectedRig)
         {
             var followPos = vcam.Follow.position;
+            var isAnyDragged = false;
+            var minIndex = 1;
             for (var rigIndex = 0; rigIndex < orbits.arraySize; ++rigIndex)
             {
                 var orbit = orbits.GetArrayElementAtIndex(rigIndex);
@@ -507,10 +509,12 @@ namespace Cinemachine.Editor
 
                 Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
                 
-                SoloOnDrag(isDragged, vcam, Mathf.Min(heightHandleId, radiusHandleId));
-
                 selectedRig = isDragged ? rigIndex : selectedRig; // select rig that is picked by orbit tool
+                isAnyDragged |= isDragged;
+                minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
             }
+            
+            SoloOnDrag(isAnyDragged, vcam, minIndex);
         }
     } 
 }
