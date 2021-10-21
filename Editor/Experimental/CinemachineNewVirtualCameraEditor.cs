@@ -124,7 +124,7 @@ namespace Cinemachine
             {
                 CinemachineSceneToolHelpers.FovToolHandle(vcam, 
                     new SerializedObject(vcam).FindProperty(() => vcam.m_Lens), 
-                    vcam.m_Lens.Orthographic, IsHorizontalFOVUsed(), vcam.m_Lens.IsPhysicalCamera);
+                    vcam.m_Lens, IsHorizontalFOVUsed());
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {

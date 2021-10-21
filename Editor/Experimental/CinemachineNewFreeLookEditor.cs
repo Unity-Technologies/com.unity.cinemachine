@@ -191,7 +191,7 @@ namespace Cinemachine
             {
                 CinemachineSceneToolHelpers.FovToolHandle(newFreelook, 
                     new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Lens), 
-                    newFreelook.m_Lens.Orthographic, IsHorizontalFOVUsed(), newFreelook.m_Lens.IsPhysicalCamera);
+                    newFreelook.m_Lens, IsHorizontalFOVUsed());
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {

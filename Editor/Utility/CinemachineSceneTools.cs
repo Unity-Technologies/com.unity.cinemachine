@@ -262,14 +262,14 @@ namespace Cinemachine.Editor
 
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         static float s_FOVAfterLastToolModification;
-        public static void FovToolHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens, 
-            bool isOrthographic, bool isLensHorizontal, bool isPhysical)
+
+        public static void FovToolHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lensProperty,
+            in LensSettings lens, bool isLensHorizontal)
         {
-            var orthographicSize = lens.FindPropertyRelative("OrthographicSize");
-            var fieldOfView = lens.FindPropertyRelative("FieldOfView");
+            var orthographic = lens.Orthographic;
             if (GUIUtility.hotControl == 0)
             {
-                s_FOVAfterLastToolModification = isOrthographic ? orthographicSize.floatValue : fieldOfView.floatValue;
+                s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : lens.FieldOfView;
             }
             
             var camPos = vcam.State.FinalPosition;
@@ -283,45 +283,42 @@ namespace Cinemachine.Editor
                 camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
             if (EditorGUI.EndChangeCheck())
             {
-                if (isOrthographic)
+                if (orthographic)
                 {
-                    orthographicSize.floatValue += (s_FOVAfterLastToolModification - newFov);
+                    lensProperty.FindPropertyRelative("OrthographicSize").floatValue += 
+                        (s_FOVAfterLastToolModification - newFov);
                 }
                 else
                 {
-                    fieldOfView.floatValue += (s_FOVAfterLastToolModification - newFov);
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue += 
+                        (s_FOVAfterLastToolModification - newFov);
                 }
-                lens.serializedObject.ApplyModifiedProperties();
+                lensProperty.serializedObject.ApplyModifiedProperties();
             }
             s_FOVAfterLastToolModification = newFov;
 
             if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
             {
                 var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
-                if (isPhysical)
+                if (lens.IsPhysicalCamera)
                 {
-                    var sensorSizeY = lens.FindPropertyRelative("m_SensorSize").vector2Value.y;
                     DrawLabel(labelPos, "Focal Length (" + 
-                        Camera.FieldOfViewToFocalLength(fieldOfView.floatValue, 
-                            sensorSizeY).ToString("F1") + ")");
+                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.SensorSize.y).ToString("F1") + ")");
                 }
-                else if (isOrthographic)
+                else if (orthographic)
                 {
                     DrawLabel(labelPos, "Orthographic Size (" + 
-                        orthographicSize.floatValue.ToString("F1") + ")");
+                        lens.OrthographicSize.ToString("F1") + ")");
                 }
                 else if (isLensHorizontal)
                 {
-                    var sensorSize = lens.FindPropertyRelative("m_SensorSize").vector2Value;
-                    var aspect = sensorSize.y == 0 ? 1f : (sensorSize.x / sensorSize.y);
                     DrawLabel(labelPos, "Horizontal FOV (" +
-                        Camera.VerticalToHorizontalFieldOfView(fieldOfView.floatValue,
-                            aspect).ToString("F1") + ")");
+                        Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView, lens.Aspect).ToString("F1") + ")");
                 }
                 else
                 {
                     DrawLabel(labelPos, "Vertical FOV (" + 
-                        fieldOfView.floatValue.ToString("F1") + ")");
+                        lens.FieldOfView.ToString("F1") + ")");
                 }
             }
                 
