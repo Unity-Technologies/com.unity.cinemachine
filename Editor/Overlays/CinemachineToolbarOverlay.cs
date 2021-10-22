@@ -1,6 +1,5 @@
 #if UNITY_2021_2_OR_NEWER
 using UnityEditor;
-using UnityEditor.EditorTools;
 using UnityEditor.Overlays;
 using UnityEditor.Toolbars;
 using UnityEngine;
@@ -128,7 +127,6 @@ namespace Cinemachine.Editor
         {
             this.RegisterValueChangedCallback(
                 v => CinemachineSceneToolUtility.SetSolo(v.newValue));
-            
             onIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
             offIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleoff@2x").image as Texture2D;
             tooltip = "Solo Vcam Tool";
@@ -149,6 +147,12 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
             EditorApplication.update += ShadowSelectedRigName;
+        }
+
+        ~FreelookRigSelection()
+        {
+            clicked -= FreelookRigSelectionMenu;
+            EditorApplication.update -= ShadowSelectedRigName;
         }
 
         void ShadowSelectedRigName()
