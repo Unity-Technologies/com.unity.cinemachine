@@ -335,7 +335,7 @@ namespace Cinemachine
 
         /// <summary>State information for damping</summary>
         Vector3 m_PreviousCameraPosition = Vector3.zero;
-        PositionPredictor m_Predictor = new PositionPredictor();
+        internal PositionPredictor m_Predictor = new PositionPredictor();
 
         /// <summary>Internal API for inspector</summary>
         public Vector3 TrackedPoint { get; private set; }
