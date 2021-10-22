@@ -440,19 +440,25 @@ namespace Cinemachine.Editor
         }
         
         
-        static bool s_SoloSetByTools;
+        static bool s_IsDragging;
+        static ICinemachineCamera s_UserSolo;
         public static void SoloOnDrag(bool isDragged, ICinemachineCamera vcam, int handleMaxId)
         {
             if (isDragged)
             {
-                // if solo was activated by the user, then it was not the tool who set it to solo.
-                s_SoloSetByTools |= CinemachineBrain.SoloCamera != vcam;
+                if (!s_IsDragging)
+                {
+                    s_UserSolo = CinemachineBrain.SoloCamera;
+                    s_IsDragging = true;
+                }
                 CinemachineBrain.SoloCamera = vcam;
             }
-            else if (s_SoloSetByTools && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
+            else if (s_IsDragging && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
             {
-                CinemachineBrain.SoloCamera = null;
-                s_SoloSetByTools = false;
+                CinemachineBrain.SoloCamera = s_UserSolo;
+                InspectorUtility.RepaintGameView();
+                s_IsDragging = false;
+                s_UserSolo = null;
             }
         }
         
