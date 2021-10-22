@@ -91,7 +91,13 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>Update state information on undo/redo</summary>
-        void UpdateCameraState() => Target.InternalUpdateCameraState(Vector3.up, -1);
+        void UpdateCameraState()
+        {
+            var solo = CinemachineBrain.SoloCamera;
+            CinemachineBrain.SoloCamera = Target;
+            Target.InternalUpdateCameraState(Vector3.up, -1);
+            CinemachineBrain.SoloCamera = solo;
+        }
 
         /// <summary>Inspector panel is being enabled.  
         /// Implementation should call the base class implementation</summary>
