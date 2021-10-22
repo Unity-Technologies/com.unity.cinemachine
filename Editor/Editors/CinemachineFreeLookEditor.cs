@@ -139,17 +139,11 @@ namespace Cinemachine
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, 
                     new SerializedObject(freelook).FindProperty(() => freelook.m_Lens), 
                     freelook.m_Lens, IsHorizontalFOVUsed());
-                Target.mBlendA = null;
-                Target.mBlendB = null;
-                UpdateStateInformation();
             }
             else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(freelook, 
                     new SerializedObject(freelook).FindProperty(() => freelook.m_Lens));
-                Target.mBlendA = null;
-                Target.mBlendB = null;
-                UpdateStateInformation();
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
