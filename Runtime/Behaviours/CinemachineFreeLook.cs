@@ -490,8 +490,8 @@ namespace Cinemachine
 
         void InvalidateRigCache() { mOrbitals = null; }
         CinemachineOrbitalTransposer[] mOrbitals = null;
-        CinemachineBlend mBlendA;
-        CinemachineBlend mBlendB;
+        internal CinemachineBlend mBlendA;
+        internal CinemachineBlend mBlendB;
 
         /// <summary>
         /// Override component pipeline creation.
