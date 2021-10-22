@@ -321,7 +321,7 @@ namespace Cinemachine.Editor
                 }
             }
                 
-            SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam.ParentCamera != null ? vcam.ParentCamera : vcam, fovHandleId);
+            SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId);
         }
 
         public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
@@ -359,8 +359,8 @@ namespace Cinemachine.Editor
                 DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
             }
             
-            SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId,
-                vcam.ParentCamera != null ? vcam.ParentCamera : vcam, Mathf.Min(ncHandleId, fcHandleId));
+            SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
+                vcam, Mathf.Min(ncHandleId, fcHandleId));
         }
 
         public static void TrackedObjectOffsetTool(
