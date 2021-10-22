@@ -8,5 +8,5 @@ This component will expose a non-cinemachine camera to the cinemachine system, a
 
 | **Property:** | **Function:** |
 |:---|:---|
-| __Look At__ | The object that the camera is looking at, if defined. This can be empty, but setting this will improve the quality of the blends to and from this camera. |
+| __Look At__ | The object that the camera is looking at, if defined. This can be empty, but setting this may improve the quality of the blends to and from this camera. |
 | __Blend Hint__ | Hint for blending positions to and from this camera.  |
