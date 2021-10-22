@@ -140,6 +140,7 @@ namespace Cinemachine.Editor
     class FreelookRigSelection : EditorToolbarDropdown
     {
         public const string id = "FreelookRigSelection/Dropdown";
+        public static int SelectedRig;
 
         public FreelookRigSelection()
         {
@@ -152,7 +153,7 @@ namespace Cinemachine.Editor
 
         void ShadowSelectedRigName()
         {
-            text = CinemachineFreeLookEditor.RigNames[CinemachineFreeLookEditor.s_SelectedRig].text;
+            text = CinemachineFreeLookEditor.RigNames[Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length-1)].text;
         }
         
         void FreelookRigSelectionMenu()
@@ -163,8 +164,14 @@ namespace Cinemachine.Editor
                 var rigIndex = i; // vital to capture the index here for the lambda below
                 menu.AddItem(CinemachineFreeLookEditor.RigNames[i], false, () =>
                 {
-                    CinemachineFreeLookEditor.s_SelectedRig = rigIndex;
-                    InspectorUtility.RepaintGameView();
+                    SelectedRig = rigIndex;
+                    var active = Selection.activeObject as GameObject;
+                    if (active != null)
+                    {
+                        var freelook = active.GetComponent<CinemachineFreeLook>();
+                        if (freelook != null)
+                            CinemachineFreeLookEditor.SetSelectedRig(freelook, rigIndex);
+                    }
                 });
             }
             menu.DropDown(worldBound);

@@ -141,13 +141,8 @@ namespace Cinemachine
             // Pipeline Stages
             EditorGUILayout.Space();
             var selectedRig = Selection.objects.Length == 1 
-                ? GUILayout.Toolbar(s_SelectedRig, s_RigNames) : 0;
-            if (selectedRig != s_SelectedRig)
-            {
-                Undo.RecordObject(Target, "selected rig");
-                Target.m_VerticalAxis.Value = selectedRig == 0 ? 1 : (selectedRig == 1 ? 0.5f : 0);
-            }
-            s_SelectedRig = selectedRig;
+                ? GUILayout.Toolbar(GetSelectedRig(Target), s_RigNames) : 0;
+            SetSelectedRig(Target, selectedRig);
             EditorGUILayout.BeginVertical(GUI.skin.box);
             if (selectedRig == 1)
                 m_PipelineSet.OnInspectorGUI(false);
@@ -165,7 +160,23 @@ namespace Cinemachine
             new GUIContent("Main Rig"), 
             new GUIContent("Bottom Rig")
         };
-        static int s_SelectedRig = 1;
+
+        static int GetSelectedRig(CinemachineNewFreeLook freelook)
+        {
+            return freelook.m_VerticalAxis.Value < 0.33f ? 2 : (freelook.m_VerticalAxis.Value > 0.66f ? 0 : 1);
+        }
+
+        static void SetSelectedRig(CinemachineNewFreeLook freelook, int rigIndex)
+        {
+            Debug.Assert(rigIndex >= 0 && rigIndex < 3);
+            if (GetSelectedRig(freelook) != rigIndex)
+            {
+                var prop = new SerializedObject(freelook).FindProperty(
+                    () => freelook.m_VerticalAxis).FindPropertyRelative(() => freelook.m_VerticalAxis.Value);
+                prop.floatValue = rigIndex == 0 ? 1 : (rigIndex == 1 ? 0.5f : 0);
+                prop.serializedObject.ApplyModifiedProperties();
+            }
+        }
         
         void OnSceneGUI()
         {
@@ -201,7 +212,7 @@ namespace Cinemachine
             else if (newFreelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
                 CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook,
-                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Orbits), ref s_SelectedRig);
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Orbits));
             }
             Handles.color = originalColor;
         }

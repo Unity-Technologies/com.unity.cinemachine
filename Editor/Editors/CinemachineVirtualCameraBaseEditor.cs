@@ -91,13 +91,13 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>Update state information on undo/redo</summary>
-        void UpdateStateInformation() => Target.InternalUpdateCameraState(Vector3.up, -1);
+        void UpdateCameraStateState() => Target.InternalUpdateCameraState(Vector3.up, -1);
 
         /// <summary>Inspector panel is being enabled.  
         /// Implementation should call the base class implementation</summary>
         protected virtual void OnEnable()
         {
-            Undo.undoRedoPerformed += UpdateStateInformation;
+            Undo.undoRedoPerformed += UpdateCameraStateState;
             
             IsPrefabBase = Target.gameObject.scene.name == null; // causes a small GC alloc
             if (sExtensionTypes == null)
@@ -124,7 +124,7 @@ namespace Cinemachine.Editor
         /// Implementation should call the base class implementation</summary>
         protected virtual void OnDisable()
         {
-            Undo.undoRedoPerformed -= UpdateStateInformation;
+            Undo.undoRedoPerformed -= UpdateCameraStateState;
             
             if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
             {

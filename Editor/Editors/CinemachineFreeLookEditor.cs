@@ -96,7 +96,7 @@ namespace Cinemachine
             {
                 EditorGUILayout.Separator();
                 EditorGUILayout.Separator();
-                s_SelectedRig = GUILayout.Toolbar(s_SelectedRig, s_RigNames);
+                SetSelectedRig(Target, GUILayout.Toolbar(GetSelectedRig(Target), s_RigNames));
                 UpdateRigEditor();
                 if (m_rigEditor != null)
                 {
@@ -147,8 +147,10 @@ namespace Cinemachine
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.OrbitControlHandle(freelook,
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits), ref s_SelectedRig);
+                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandle(freelook,
+                    new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits));
+                if (draggedRig >= 0)
+                    SetSelectedRig(Target, draggedRig);
             }
             Handles.color = originalColor;
         }
@@ -161,8 +163,28 @@ namespace Cinemachine
             new GUIContent("Bottom Rig")
         };
         internal static GUIContent[] RigNames => s_RigNames;
-        
-        internal static int s_SelectedRig = 1;
+
+        static int GetSelectedRig(CinemachineFreeLook freelook)
+        {
+            return freelook.m_YAxis.Value < 0.33f ? 2 : (freelook.m_YAxis.Value > 0.66f ? 0 : 1);
+        }
+
+        internal static void SetSelectedRig(CinemachineFreeLook freelook, int rigIndex)
+        {
+            Debug.Assert(rigIndex >= 0 && rigIndex < 3);
+            if (GetSelectedRig(freelook) != rigIndex)
+            {
+                var prop = new SerializedObject(freelook).FindProperty(
+                    () => freelook.m_YAxis).FindPropertyRelative(() => freelook.m_YAxis.Value);
+                prop.floatValue = rigIndex == 0 ? 1 : (rigIndex == 1 ? 0.5f : 0);
+                prop.serializedObject.ApplyModifiedProperties();
+                freelook.InternalUpdateCameraState(Vector3.up, -1);
+            }
+#if UNITY_2021_2_OR_NEWER
+            // Push current selection to the rig selection tool
+            FreelookRigSelection.SelectedRig = rigIndex;
+#endif
+        }
 
         UnityEditor.Editor m_rigEditor;
         System.Reflection.MethodInfo m_RigEditorOnSceneGUI;
@@ -170,7 +192,8 @@ namespace Cinemachine
 
         void UpdateRigEditor()
         {
-            CinemachineVirtualCamera rig = Target.GetRig(s_SelectedRig);
+            var selectedRig = GetSelectedRig(Target);
+            CinemachineVirtualCamera rig = Target.GetRig(selectedRig);
             if (m_EditedRig != rig || m_rigEditor == null)
             {
                 m_EditedRig = rig;
@@ -182,8 +205,6 @@ namespace Cinemachine
                 }
                 if (rig != null)
                 {
-                    Undo.RecordObject(Target, "selected rig");
-                    Target.m_YAxis.Value = s_SelectedRig == 0 ? 1 : (s_SelectedRig == 1 ? 0.5f : 0);
                     CreateCachedEditor(rig, null, ref m_rigEditor);
                     if (m_rigEditor != null)
                         m_RigEditorOnSceneGUI = m_rigEditor.GetType().GetMethod("OnSceneGUI", 

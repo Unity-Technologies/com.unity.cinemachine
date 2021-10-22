@@ -462,11 +462,18 @@ namespace Cinemachine.Editor
             }
         }
         
-        public static void OrbitControlHandle(
-            CinemachineVirtualCameraBase vcam, SerializedProperty orbits, ref int selectedRig)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vcam"></param>
+        /// <param name="orbits"></param>
+        /// <param name="selectedRig"></param>
+        /// <returns>index of the rig being edited, or -1 if none</returns>
+        public static int OrbitControlHandle(
+            CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
         {
             var followPos = vcam.Follow.position;
-            var isAnyDragged = false;
+            var draggedRig = -1;
             var minIndex = 1;
             for (var rigIndex = 0; rigIndex < orbits.arraySize; ++rigIndex)
             {
@@ -514,13 +521,14 @@ namespace Cinemachine.Editor
                 }
 
                 Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
-                
-                selectedRig = isDragged ? rigIndex : selectedRig; // select rig that is picked by orbit tool
-                isAnyDragged |= isDragged;
-                minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
+                if (isDragged)
+                {
+                    draggedRig = rigIndex;
+                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
+                }
             }
-            
-            SoloOnDrag(isAnyDragged, vcam, minIndex);
+            SoloOnDrag(draggedRig != -1, vcam, minIndex);
+            return draggedRig;
         }
     } 
 }
