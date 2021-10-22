@@ -9,8 +9,8 @@ namespace Cinemachine.Editor
 {
     /// <summary>
     /// Static class that manages Cinemachine Tools. It knows which tool is active,
-    /// and ensures that no tools is active at the same time.
-    /// The tools and editors requiring tools register/unregister themselves here for control.
+    /// and ensures that exclusive tools are not active at the same time.
+    /// The tools and editors requiring tools register/unregister themselves here.
     /// </summary>
     static class CinemachineSceneToolUtility
     {
