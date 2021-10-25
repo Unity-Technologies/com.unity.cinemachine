@@ -89,6 +89,12 @@ namespace Cinemachine.Editor
             if (Target != null && Target.m_LockStageInInspector != null)
                foreach (var s in Target.m_LockStageInInspector)
                     m_PipelineSet.SetStageIsLocked(s);
+           
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
+#endif
         }
 
         protected override void OnDisable()
@@ -96,31 +102,48 @@ namespace Cinemachine.Editor
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
             m_PipelineSet.Shutdown();
             base.OnDisable();
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
+#endif
         }
 
-        private void OnSceneGUI()
+        void OnSceneGUI()
         {
-            if (!Target.m_UserIsDragging)
-                m_PreviousPosition = Target.transform.position;
-            if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
-                && Event.current.type == EventType.MouseDrag)
-            {
-                // User might be dragging our position handle
-                Target.m_UserIsDragging = true;
-                Vector3 delta = Target.transform.position - m_PreviousPosition;
-                if (!delta.AlmostZero())
-                {
-                    m_PipelineSet.OnPositionDragged(delta);
-                    m_PreviousPosition = Target.transform.position;
-                }
-            }
-            else if (GUIUtility.hotControl == 0 && Target.m_UserIsDragging)
-            {
-                // We're not dragging anything now, but we were
-                InspectorUtility.RepaintGameView();
-                Target.m_UserIsDragging = false;
-            }
+            m_PipelineSet.OnSceneGUI(); // call hidden editors' OnSceneGUI
+            
+#if UNITY_2021_2_OR_NEWER
+            DrawSceneTools();
+#endif
         }
+
+#if UNITY_2021_2_OR_NEWER
+        void DrawSceneTools()
+        {
+            var vcam = Target;
+            if (vcam == null || !vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
+            {
+                return;
+            }
+
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
+            {
+                CinemachineSceneToolHelpers.FovToolHandle(vcam, 
+                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens), 
+                    vcam.m_Lens, IsHorizontalFOVUsed());
+            }
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+            {
+                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, 
+                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens));
+            }
+            Handles.color = originalColor;
+        }
+#endif
 
         public override void OnInspectorGUI()
         {
@@ -223,10 +246,10 @@ namespace Cinemachine.Editor
                                         }
                                     }
                                 }
-                                catch (System.Exception) {} // Just skip uncooperative types
+                                catch (Exception) {} // Just skip uncooperative types
                             }
                         }
-                        catch (System.Exception) {} // Just skip uncooperative assemblies
+                        catch (Exception) {} // Just skip uncooperative assemblies
                     }
                 }
             }

@@ -27,6 +27,10 @@ namespace Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
+   
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
+#endif
         }
 
         protected virtual void OnDisable()
@@ -35,6 +39,10 @@ namespace Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
+  
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
+#endif
         }
 
         public override void OnInspectorGUI()
@@ -101,6 +109,28 @@ namespace Cinemachine.Editor
                 }
             }
         }
+
+#if UNITY_2021_2_OR_NEWER
+        void OnSceneGUI()
+        {
+            DrawSceneTools();
+        }
+        
+        void DrawSceneTools()
+        {
+            var composer = Target;
+            if (composer == null || !composer.IsValid)
+            {
+                return;
+            }
+
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
+            {
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(composer, 
+                    new SerializedObject(composer).FindProperty(() => composer.m_TrackedObjectOffset));
+            }
+        }
+#endif
 
 #if false
         // debugging only

@@ -3,7 +3,6 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
-using System.Reflection;
 
 namespace Cinemachine.Editor
 {
@@ -109,6 +108,7 @@ namespace Cinemachine.Editor
         List<CinemachineComponentBase> m_EditedComponents;
         List<CinemachineComponentBase> m_ScratchComponentList;
         UnityEditor.Editor m_ComponentEditor;
+        System.Reflection.MethodInfo m_ComponentEditorOnSceneGUI;
 
         // Call this from OnEnable()
         public VcamStageEditor(CinemachineCore.Stage stage)
@@ -132,6 +132,7 @@ namespace Cinemachine.Editor
             if (m_ComponentEditor != null)
                 UnityEngine.Object.DestroyImmediate(m_ComponentEditor);
             m_ComponentEditor = null;
+            m_ComponentEditorOnSceneGUI = null;
             m_EditedComponents.Clear();
             m_ScratchComponentList.Clear();
         }
@@ -165,6 +166,8 @@ namespace Cinemachine.Editor
                     UnityEngine.Object.DestroyImmediate(m_ComponentEditor);
                 }
                 m_ComponentEditor = null;
+                m_ComponentEditorOnSceneGUI = null;
+
                 m_EditedComponents.Clear();
                 m_EditedComponents.AddRange(m_ScratchComponentList);
                 m_IsMixedType = false;
@@ -174,7 +177,12 @@ namespace Cinemachine.Editor
             if (numNullComponents > 0 && numComponents > 0)
                 m_IsMixedType = true;
             if (numComponents > 0 && m_ComponentEditor == null && !m_IsMixedType)
+            {
                 UnityEditor.Editor.CreateCachedEditor(m_EditedComponents.ToArray(), null, ref m_ComponentEditor);
+                if (m_ComponentEditor != null)
+                    m_ComponentEditorOnSceneGUI = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            }
             m_StageSelection = GetPopupIndexForComponent(numComponents == 0 ? null : m_EditedComponents[0]);
 
             m_StageError = false;
@@ -182,6 +190,13 @@ namespace Cinemachine.Editor
                 m_StageError = !m_EditedComponents[i].IsValid;
 
             DrawComponentInspector();
+        }
+
+        public void OnSceneGUI()
+        {
+            // Forward to embedded editor
+            if (m_ComponentEditor != null && m_ComponentEditorOnSceneGUI != null)
+                m_ComponentEditorOnSceneGUI.Invoke(m_ComponentEditor, null);
         }
 
         private int GetPopupIndexForComponent(CinemachineComponentBase c)
@@ -248,19 +263,6 @@ namespace Cinemachine.Editor
                     }
                 }
                 sStageData[index].IsExpanded = isExpanded;
-            }
-        }
-
-        public void OnPositionDragged(Vector3 delta)
-        {
-            if (m_ComponentEditor != null)
-            {
-                MethodInfo mi = m_ComponentEditor.GetType().GetMethod("OnVcamPositionDragged"
-                    , BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                if (mi != null && m_ComponentEditor.target != null)
-                {
-                    mi.Invoke(m_ComponentEditor, new object[] { delta } );
-                }
             }
         }
 
@@ -341,12 +343,18 @@ namespace Cinemachine.Editor
             }
         }
 
-        // Pass the dragged event down to the CM component editors
-        public void OnPositionDragged(Vector3 delta)
+        // Call from editor's OnSceneGUI
+        public void OnSceneGUI()
         {
-            foreach (var e in m_subeditors)
-                if (e != null)
-                    e.OnPositionDragged(delta);
+            // Forward to the embedded editors
+            for (int i = 0; i < m_subeditors.Length; ++i)
+            {
+                var ed = m_subeditors[i];
+                if (ed == null)
+                    continue;
+                
+                ed.OnSceneGUI();
+            }
         }
     }
 }

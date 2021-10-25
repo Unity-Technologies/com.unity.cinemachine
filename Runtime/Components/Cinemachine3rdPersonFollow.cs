@@ -219,7 +219,7 @@ namespace Cinemachine
             curState.RawPosition = camPos;
             curState.RawOrientation = targetRot; // not necessary, but left in to avoid breaking scenes that depend on this
         }
-
+        
         /// <summary>
         /// Internal use only.  Public for the inspector gizmo
         /// </summary>
@@ -240,7 +240,7 @@ namespace Cinemachine
 #endif
         }
 
-        static Quaternion GetHeading(Vector3 targetForward, Vector3 up)
+        internal static Quaternion GetHeading(Vector3 targetForward, Vector3 up)
         {
             var planeForward = targetForward.ProjectOntoPlane(up);
             planeForward = Vector3.Cross(up, Vector3.Cross(planeForward, up));
