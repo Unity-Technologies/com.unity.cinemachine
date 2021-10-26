@@ -8,9 +8,25 @@ using System;
 
 namespace Cinemachine.Editor
 {
+#if !UNITY_2021_2_OR_NEWER
     [InitializeOnLoad]
     internal sealed class CinemachineSettings
+#else
+    internal sealed class CinemachineSettings : AssetPostprocessor
+#endif
+    
     {
+
+#if UNITY_2021_2_OR_NEWER
+        static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
+        {
+            if (didDomainReload)
+            {
+                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+            }
+        }
+#endif
+
         public static class CinemachineCoreSettings
         {
             private static readonly string hShowInGameGuidesKey = "CNMCN_Core_ShowInGameGuides";
@@ -256,6 +272,7 @@ namespace Cinemachine.Editor
 
         internal static event Action AdditionalCategories = null;
 
+#if !UNITY_2021_2_OR_NEWER
         [InitializeOnLoadMethod]
         /// Ensures that CM Brain logo is added to the Main Camera
         /// after adding a virtual camera to the project for the first time
@@ -280,6 +297,7 @@ namespace Cinemachine.Editor
                 EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
             }
         }
+#endif
 
         class Styles {
             //private static readonly GUIContent sCoreShowHiddenObjectsToggle = new GUIContent("Show Hidden Objects", "If checked, Cinemachine hidden objects will be shown in the inspector.  This might be necessary to repair broken script mappings when upgrading from a pre-release version");
