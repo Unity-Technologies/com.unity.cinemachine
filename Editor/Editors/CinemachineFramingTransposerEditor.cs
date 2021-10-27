@@ -232,7 +232,7 @@ namespace Cinemachine.Editor
                 Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
-                    HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    HandleUtility.GetHandleSize(camPos) / 20f, Handles.DotHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too

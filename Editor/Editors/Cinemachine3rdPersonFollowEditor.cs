@@ -79,14 +79,14 @@ namespace Cinemachine.Editor
                 var followUp = followTargetRotation * Vector3.up;
                 var aHandleId = GUIUtility.GetControlID(FocusType.Passive); 
                 var newArmPosition = Handles.Slider(aHandleId, armPosition, followUp, 
-                    HandleUtility.GetHandleSize(armPosition) / 10f, Handles.CubeHandleCap, 0.5f);
+                    HandleUtility.GetHandleSize(armPosition) / 20f, Handles.DotHandleCap, 0.5f);
 
                 // cam distance handle
                 var camDistance = thirdPerson.CameraDistance;
                 var camPos = armPosition - targetForward * camDistance;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newCamPos = Handles.Slider(cdHandleId, camPos, targetForward, 
-                    HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    HandleUtility.GetHandleSize(camPos) / 20f, Handles.DotHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
