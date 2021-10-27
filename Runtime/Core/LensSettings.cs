@@ -103,7 +103,7 @@ namespace Cinemachine
         public bool Orthographic 
         { 
             get { return ModeOverride == OverrideModes.Orthographic
-                || ModeOverride == OverrideModes.None && m_OrthoFromCamera; } 
+                || ModeOverride == OverrideModes.None && (!m_OrthoPulledFromCamera || m_OrthoFromCamera); } 
 
             /// Obsolete: do not use
             set { m_OrthoFromCamera = value; ModeOverride = value 
@@ -150,6 +150,7 @@ namespace Cinemachine
 
         [SerializeField]
         Vector2 m_SensorSize;
+        bool m_OrthoPulledFromCamera;
         bool m_OrthoFromCamera;
         bool m_PhysicalFromCamera;
 
@@ -222,6 +223,7 @@ namespace Cinemachine
             if (camera != null && ModeOverride == OverrideModes.None)
             {
                 m_OrthoFromCamera = camera.orthographic;
+                m_OrthoPulledFromCamera = true;
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
                 m_SensorSize = camera.sensorSize;
                 GateFit = camera.gateFit;
