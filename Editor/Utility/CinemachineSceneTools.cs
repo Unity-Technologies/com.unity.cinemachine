@@ -463,12 +463,9 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>
-        /// 
+        /// Draws Orbit handles (e.g. for freelook)
         /// </summary>
-        /// <param name="vcam"></param>
-        /// <param name="orbits"></param>
-        /// <param name="selectedRig"></param>
-        /// <returns>index of the rig being edited, or -1 if none</returns>
+        /// <returns>Index of the rig being edited, or -1 if none</returns>
         public static int OrbitControlHandle(
             CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
         {
