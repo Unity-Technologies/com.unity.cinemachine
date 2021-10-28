@@ -232,7 +232,7 @@ namespace Cinemachine.Editor
                 Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
-                    HandleUtility.GetHandleSize(camPos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    HandleUtility.GetHandleSize(camPos) / 20f, Handles.DotHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
@@ -250,6 +250,11 @@ namespace Cinemachine.Editor
                     CinemachineSceneToolHelpers.DrawLabel(camPos, 
                         "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
                 }
+                
+                Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                Handles.DrawLine(camPos, 
+                    framingTransposer.FollowTarget.position + framingTransposer.m_TrackedObjectOffset);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
                     cdHandleId);

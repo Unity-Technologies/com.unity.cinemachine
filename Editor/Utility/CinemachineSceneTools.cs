@@ -337,10 +337,10 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
             var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
-                HandleUtility.GetHandleSize(nearClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
+                HandleUtility.GetHandleSize(nearClipPos) / 20f, Handles.DotHandleCap, 0.5f);
             var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
             var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
-                HandleUtility.GetHandleSize(farClipPos) / 10f, Handles.CubeHandleCap, 0.5f); // division by 10, because this makes it roughly the same size as the default handles
+                HandleUtility.GetHandleSize(farClipPos) / 20f, Handles.DotHandleCap, 0.5f);
             if (EditorGUI.EndChangeCheck())
             {
                 nearClipPlane.floatValue += 
@@ -463,12 +463,9 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>
-        /// 
+        /// Draws Orbit handles (e.g. for freelook)
         /// </summary>
-        /// <param name="vcam"></param>
-        /// <param name="orbits"></param>
-        /// <param name="selectedRig"></param>
-        /// <returns>index of the rig being edited, or -1 if none</returns>
+        /// <returns>Index of the rig being edited, or -1 if none</returns>
         public static int OrbitControlHandle(
             CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
         {
@@ -486,14 +483,14 @@ namespace Cinemachine.Editor
                 var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var heightHandlePos = followPos + Vector3.up * orbitHeight.floatValue;
                 var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
-                    HandleUtility.GetHandleSize(heightHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    HandleUtility.GetHandleSize(heightHandlePos) / 20f, Handles.DotHandleCap, 0.5f);
                 
                 var radiusHandleOffset = Vector3.right;
                 var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var radiusHandlePos = followPos + Vector3.up * orbitHeight.floatValue
                     + radiusHandleOffset * orbitRadius.floatValue;
                 var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
-                    HandleUtility.GetHandleSize(radiusHandlePos) / 10f, Handles.CubeHandleCap, 0.5f);
+                    HandleUtility.GetHandleSize(radiusHandlePos) / 20f, Handles.DotHandleCap, 0.5f);
 
                 if (EditorGUI.EndChangeCheck())
                 {
