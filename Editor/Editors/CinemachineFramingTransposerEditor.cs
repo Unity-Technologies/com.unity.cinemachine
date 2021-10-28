@@ -250,6 +250,11 @@ namespace Cinemachine.Editor
                     CinemachineSceneToolHelpers.DrawLabel(camPos, 
                         "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
                 }
+                
+                Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
+                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                Handles.DrawLine(camPos, 
+                    framingTransposer.FollowTarget.position + framingTransposer.m_TrackedObjectOffset);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
                     cdHandleId);
