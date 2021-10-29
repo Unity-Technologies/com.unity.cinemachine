@@ -7,7 +7,7 @@ This Virtual Camera __Aim__ algorithm rotates the camera to face the __Look At__
 | **Property:** | **Function:** |
 |:---|:---|
 | **Center On Activate** | Forces the camera to the center of the screen when the camera becomes live. |
-| **Tracked Object Offset** | Offset from the center of the Look At target, in target-local space. Fine-tune the tracking target position when the desired area is not the tracked object’s center. |
+| **Tracked Object Offset** | Offset from the center of the Look At target, in target-local space. Fine-tune the tracking target position when the desired area is not the tracked object’s center. You can also use handles to modify this property. For more information see, [Cinemachine Handle toolbar](handles.md). |
 | __Lookahead Time__ | Adjust the offset based on the motion of the Look At target. The algorithm estimates the point that the target will be this many seconds into the future. This feature is sensitive to noisy animation. It can amplify the noise, resulting in undesirable camera jitter. If the camera jitters unacceptably when the target is in motion, turn down this property or animate the target more smoothly. |
 | __Lookahead Smoothing__ | Controls the smoothness of the lookahead algorithm. Larger values smooth out jittery predictions and increase prediction lag. |
 | __Lookahead Ignore Y__ | Toggle to ignore movement along the Y axis for lookahead calculations. |
