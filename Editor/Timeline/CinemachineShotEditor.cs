@@ -52,10 +52,9 @@ using Cinemachine;
 #endif
 
         static public CinemachineVirtualCameraBase CreatePassiveVcamFromSceneView()
-        {
-            var name = "Virtual Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
-            var vcam = CinemachineMenu.CreatePassiveVirtualCamera(name, null, false);
+       {
+            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
+            var vcam = CinemachineMenu.CreatePassiveVirtualCamera("Virtual Camera", null, false);
             vcam.m_StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
 
 #if false 

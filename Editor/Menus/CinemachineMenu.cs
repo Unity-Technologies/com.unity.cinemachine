@@ -34,26 +34,23 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_GameObjectMenuPriority)]
         static void CreateVirtualCamera(MenuCommand command)
         {
-            var name = "Virtual Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
+            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
             CreateDefaultVirtualCamera(parentObject: command.context as GameObject, select: true);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
         static void CreateFreeLookCamera(MenuCommand command)
         {
-            var name = "FreeLook Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
-            CreateCinemachineObject<CinemachineFreeLook>(name, command.context as GameObject, true);
+            CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
+            CreateCinemachineObject<CinemachineFreeLook>("FreeLook Camera", command.context as GameObject, true);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]
         static void CreateBlendListCamera(MenuCommand command)
         {
-            var name = "Blend List Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
+            CinemachineEditorAnalytics.SendCreateEvent("Blend List Camera");
             var blendListCamera = CreateCinemachineObject<CinemachineBlendListCamera>(
-                name, command.context as GameObject, true);
+                "Blend List Camera", command.context as GameObject, true);
 
             // We give the camera a couple of children as an example of setup
             var childVcam1 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
@@ -72,10 +69,9 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_GameObjectMenuPriority)]
         static void CreateStateDivenCamera(MenuCommand command)
         {
-            var name = "State-Driven Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
+            CinemachineEditorAnalytics.SendCreateEvent("State-Driven Camera");
             var stateDrivenCamera = CreateCinemachineObject<CinemachineStateDrivenCamera>(
-                name, command.context as GameObject, true);
+                "State-Driven Camera", command.context as GameObject, true);
 
             // We give the camera a child as an example setup
             CreateDefaultVirtualCamera(parentObject: stateDrivenCamera.gameObject);
@@ -84,10 +80,9 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_GameObjectMenuPriority)]
         static void CreateClearShotVirtualCamera(MenuCommand command)
         {
-            var name = "ClearShot Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
+            CinemachineEditorAnalytics.SendCreateEvent("ClearShot Camera");
             var clearShotCamera = CreateCinemachineObject<CinemachineClearShot>(
-                name, command.context as GameObject, true);
+                "ClearShot Camera", command.context as GameObject, true);
 
             // We give the camera a child as an example setup
             var childVcam = CreateDefaultVirtualCamera(parentObject: clearShotCamera.gameObject);
@@ -138,10 +133,9 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_GameObjectMenuPriority)]
         static void CreateMixingCamera(MenuCommand command)
         {
-            var name = "Mixing Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
+            CinemachineEditorAnalytics.SendCreateEvent("Mixing Camera");
             var mixingCamera = CreateCinemachineObject<CinemachineMixingCamera>(
-                name, command.context as GameObject, true);
+                "Mixing Camera", command.context as GameObject, true);
 
             // We give the camera a couple of children as an example of setup
             CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
@@ -151,10 +145,9 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
         static void Create2DCamera(MenuCommand command)
         {
-            var name = "2D Camera";
-            CinemachineEditorAnalytics.SendCreateEvent(name);
+            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
             var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(
-                name, command.context as GameObject, true);
+                "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
             AddCinemachineComponent<CinemachineFramingTransposer>(vcam);
