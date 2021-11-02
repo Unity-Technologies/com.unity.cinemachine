@@ -34,20 +34,26 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_GameObjectMenuPriority)]
         static void CreateVirtualCamera(MenuCommand command)
         {
+            var name = "Virtual Camera";
+            CinemachineEditorAnalytics.SendCreateEvent(name);
             CreateDefaultVirtualCamera(parentObject: command.context as GameObject, select: true);
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Free Look Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
         static void CreateFreeLookCamera(MenuCommand command)
         {
-            CreateCinemachineGameObject<CinemachineFreeLook>("Free Look Camera", command.context as GameObject);
+            var name = "FreeLook Camera";
+            CinemachineEditorAnalytics.SendCreateEvent(name);
+            CreateCinemachineGameObject<CinemachineFreeLook>(name, command.context as GameObject);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]
         static void CreateBlendListCamera(MenuCommand command)
         {
+            var name = "Blend List Camera";
+            CinemachineEditorAnalytics.SendCreateEvent(name);
             var blendListCamera = CreateCinemachineGameObject<CinemachineBlendListCamera>(
-                "Blend List Camera", command.context as GameObject);
+                name, command.context as GameObject);
 
             // We give the camera a couple of children as an example of setup
             var childVirtualCamera1 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
@@ -66,18 +72,22 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_GameObjectMenuPriority)]
         static void CreateStateDivenCamera(MenuCommand command)
         {
+            var name = "State-Driven Camera";
+            CinemachineEditorAnalytics.SendCreateEvent(name);
             var stateDrivenCamera = CreateCinemachineGameObject<CinemachineStateDrivenCamera>(
-                "State-Driven Camera", command.context as GameObject);
+                name, command.context as GameObject);
 
             // We give the camera a child as an example setup
             CreateDefaultVirtualCamera(parentObject: stateDrivenCamera.gameObject);
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Clear Shot Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_GameObjectMenuPriority)]
         static void CreateClearShotVirtualCamera(MenuCommand command)
         {
+            var name = "ClearShot Camera";
+            CinemachineEditorAnalytics.SendCreateEvent(name);
             var clearShotCamera = CreateCinemachineGameObject<CinemachineClearShot>(
-                "Clear Shot Camera", command.context as GameObject);
+                name, command.context as GameObject);
 
             // We give the camera a child as an example setup
             var childVirtualCamera = CreateDefaultVirtualCamera(parentObject: clearShotCamera.gameObject);
@@ -88,6 +98,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_GameObjectMenuPriority)]
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
             var path = CreateCinemachineGameObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
             var virtualCamera = CreateCinemachineGameObject<CinemachineVirtualCamera>(
@@ -102,6 +113,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]
         static void CreateDollyTrackWithCart(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
             var path = CreateCinemachineGameObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
             var dollyCart = CreateCinemachineGameObject<CinemachineDollyCart>(
@@ -113,6 +125,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_GameObjectMenuPriority)]
         static void CreateTargetGroupCamera(MenuCommand command)
         {
+            CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
             var virtualCamera = CreateCinemachineGameObject<CinemachineVirtualCamera>(
                 "Virtual Camera", command.context as GameObject, false);
 
@@ -128,8 +141,10 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_GameObjectMenuPriority)]
         static void CreateMixingCamera(MenuCommand command)
         {
+            var name = "Mixing Camera";
+            CinemachineEditorAnalytics.SendCreateEvent(name);
             var mixingCamera = CreateCinemachineGameObject<CinemachineMixingCamera>(
-                "Mixing Camera", command.context as GameObject);
+                name, command.context as GameObject);
 
             // We give the camera a couple of children as an example of setup
             CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
@@ -139,8 +154,10 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
         static void Create2DCamera(MenuCommand command)
         {
+            var name = "2D Camera";
+            CinemachineEditorAnalytics.SendCreateEvent(name);
             var virtualCamera = CreateCinemachineGameObject<CinemachineVirtualCamera>(
-                "2D Camera", command.context as GameObject);
+                name, command.context as GameObject);
             AddCinemachineComponent<CinemachineFramingTransposer>(virtualCamera);
         }
 
@@ -150,7 +167,7 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="virtualCamera">The <see cref="CinemachineVirtualCamera"/> to match with 
         /// the <see cref="SceneView"/> settings to.</param>
-        static void CopySceneViewLook(CinemachineVirtualCamera virtualCamera)
+        public static void CopySceneViewLook(CinemachineVirtualCamera virtualCamera)
         {
             if (SceneView.lastActiveSceneView != null)
             {
@@ -168,7 +185,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Creates a <see cref="CinemachineVirtualCamera"/>, with standard components.
         /// </summary>
-        static CinemachineVirtualCamera CreateDefaultVirtualCamera(
+        public static CinemachineVirtualCamera CreateDefaultVirtualCamera(
             string name = "Virtual Camera", GameObject parentObject = null, bool select = false)
         {
             var virtualCamera = CreateCinemachineGameObject<CinemachineVirtualCamera>(name, parentObject, select);
@@ -187,11 +204,11 @@ namespace Cinemachine.Editor
         /// <param name="parentObject">The <see cref="GameObject"/> to parent the new <see cref="GameObject"/> to.</param>
         /// <param name="select">Whether the new <see cref="GameObject"/> should be selected.</param>
         /// <returns>The instance of the component that is added to the new <see cref="GameObject"/>.</returns>
-        static T CreateCinemachineGameObject<T>(string name, GameObject parentObject, bool select = true) where T : Component
+        public static T CreateCinemachineGameObject<T>(string name, GameObject parentObject, bool select = true) where T : Component
         {
-            CinemachineEditorAnalytics.SendCreateEvent(name);
-
+            // We always enforce the existence of the CM brain
             var brain = GetOrCreateBrain();
+
             // We use ObjectFactory to create a new GameObject as it automatically supports undo/redo
             var go = ObjectFactory.CreateGameObject(name);
             T component = go.AddComponent<T>();
