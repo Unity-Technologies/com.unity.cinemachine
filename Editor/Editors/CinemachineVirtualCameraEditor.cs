@@ -16,8 +16,8 @@ namespace Cinemachine.Editor
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
         Vector3 m_PreviousPosition;
 
-        [MenuItem("CONTEXT/CinemachineVirtualCamera/Adopt Current Camera Settings")]
-        static void AdoptCurrentCameraSettings(MenuCommand command)
+        [MenuItem("CONTEXT/CinemachineVirtualCamera/Adopt Game View Camera Settings")]
+        static void AdoptGameViewCameraSettings(MenuCommand command)
         {
             var vcam = command.context as CinemachineVirtualCamera;
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
@@ -33,7 +33,7 @@ namespace Cinemachine.Editor
         static void AdoptSceneViewCameraSettings(MenuCommand command)
         {
             var vcam = command.context as CinemachineVirtualCamera;
-            CinemachineMenu.CopySceneViewLook(vcam);
+            vcam.m_Lens = CinemachineMenu.MatchSceneViewCamera(vcam.transform);
         }
         
         protected override void OnEnable()

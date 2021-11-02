@@ -51,11 +51,11 @@ using Cinemachine;
         }
 #endif
 
-        static public CinemachineVirtualCameraBase CreateStaticVcamFromSceneView()
+        static public CinemachineVirtualCameraBase CreatePassiveVcamFromSceneView()
         {
             var name = "Virtual Camera";
             CinemachineEditorAnalytics.SendCreateEvent(name);
-            var vcam = CinemachineMenu.CreateCinemachineGameObject<CinemachineVirtualCamera>(name, null, false);
+            var vcam = CinemachineMenu.CreatePassiveVirtualCamera(name, null, false);
             vcam.m_StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
 
 #if false 
@@ -150,7 +150,7 @@ using Cinemachine;
                 rect.x += rect.width; rect.width = createSize.x;
                 if (GUI.Button(rect, createLabel))
                 {
-                    vcam = CreateStaticVcamFromSceneView();
+                    vcam = CreatePassiveVcamFromSceneView();
                     vcamProperty.exposedReferenceValue = vcam;
                 }
                 serializedObject.ApplyModifiedProperties();

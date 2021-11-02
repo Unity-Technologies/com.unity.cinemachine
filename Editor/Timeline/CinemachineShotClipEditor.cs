@@ -73,7 +73,7 @@ public class CinemachineShotClipEditor : ClipEditor
         if (CinemachineShotEditor.AutoCreateShotFromSceneView)
         {
             var asset = clip.asset as CinemachineShot;
-            var vcam = CinemachineShotEditor.CreateStaticVcamFromSceneView();
+            var vcam = CinemachineShotEditor.CreatePassiveVcamFromSceneView();
             var d = TimelineEditor.inspectedDirector;
             if (d != null && d.GetReferenceValue(asset.VirtualCamera.exposedName, out bool idValid) == null)
             {
