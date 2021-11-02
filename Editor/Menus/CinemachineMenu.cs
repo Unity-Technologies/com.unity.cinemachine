@@ -77,6 +77,7 @@ namespace Cinemachine.Editor
             CreateDefaultVirtualCamera(parentObject: stateDrivenCamera.gameObject);
         }
 
+#if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_GameObjectMenuPriority)]
         static void CreateClearShotVirtualCamera(MenuCommand command)
         {
@@ -86,10 +87,9 @@ namespace Cinemachine.Editor
 
             // We give the camera a child as an example setup
             var childVcam = CreateDefaultVirtualCamera(parentObject: clearShotCamera.gameObject);
-#if CINEMACHINE_PHYSICS
             Undo.AddComponent<CinemachineCollider>(childVcam.gameObject).m_AvoidObstacles = false;
-#endif
         }
+#endif
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_GameObjectMenuPriority)]
         static void CreateDollyCameraWithPath(MenuCommand command)
