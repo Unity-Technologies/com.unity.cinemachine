@@ -86,7 +86,9 @@ namespace Cinemachine.Editor
 
             // We give the camera a child as an example setup
             var childVcam = CreateDefaultVirtualCamera(parentObject: clearShotCamera.gameObject);
+#if CINEMACHINE_PHYSICS
             Undo.AddComponent<CinemachineCollider>(childVcam.gameObject).m_AvoidObstacles = false;
+#endif
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_GameObjectMenuPriority)]
