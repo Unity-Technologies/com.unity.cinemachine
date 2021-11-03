@@ -102,8 +102,7 @@ namespace Cinemachine
         /// </summary>
         public bool Orthographic 
         { 
-            get => 
-                ModeOverride == OverrideModes.Orthographic || ModeOverride == OverrideModes.None && m_OrthoFromCamera;
+            get => ModeOverride == OverrideModes.Orthographic || ModeOverride == OverrideModes.None && m_OrthoFromCamera;
 
             /// Obsolete: do not use
             set { m_OrthoFromCamera = value; ModeOverride = value 
