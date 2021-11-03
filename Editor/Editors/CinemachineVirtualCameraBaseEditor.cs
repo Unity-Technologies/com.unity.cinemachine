@@ -375,6 +375,7 @@ namespace Cinemachine.Editor
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target);
             if (brain != null)
                 camera = brain.OutputCamera;
+            
             m_LensSettingsInspectorHelper.SnapshotCameraShadowValues(property, camera);
 
             m_LensSettingsInspectorHelper.DrawLensSettingsInInspector(property);
@@ -439,7 +440,7 @@ namespace Cinemachine.Editor
 
             // Assume lens is up-to-date
             UseHorizontalFOV = false;
-            object lensObject = SerializedPropertyHelper.GetPropertyValue(property);
+            var lensObject = SerializedPropertyHelper.GetPropertyValue(property);
             IsOrtho = AccessProperty<bool>(typeof(LensSettings), lensObject, "Orthographic");
             IsPhysical = AccessProperty<bool>(typeof(LensSettings), lensObject, "IsPhysicalCamera");
             SensorSize = AccessProperty<Vector2>(typeof(LensSettings), lensObject, "SensorSize");
@@ -460,6 +461,13 @@ namespace Cinemachine.Editor
                     IsPhysical = camera.usePhysicalProperties;
                     SensorSize = IsPhysical ? camera.sensorSize : new Vector2(camera.aspect, 1f);
                 }
+            }
+            
+            var nearClipPlaneProperty = property.FindPropertyRelative("NearClipPlane");
+            if (!IsOrtho)
+            {
+                nearClipPlaneProperty.floatValue = Mathf.Max(nearClipPlaneProperty.floatValue, 0.001f);
+                property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
             }
         }
 
