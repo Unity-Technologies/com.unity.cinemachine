@@ -102,8 +102,7 @@ namespace Cinemachine
         /// </summary>
         public bool Orthographic 
         { 
-            get { return ModeOverride == OverrideModes.Orthographic
-                || ModeOverride == OverrideModes.None && m_OrthoFromCamera; } 
+            get => ModeOverride == OverrideModes.Orthographic || ModeOverride == OverrideModes.None && m_OrthoFromCamera;
 
             /// Obsolete: do not use
             set { m_OrthoFromCamera = value; ModeOverride = value 
@@ -325,8 +324,6 @@ namespace Cinemachine
         /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>
         public void Validate()
         {
-            if (!Orthographic)
-                NearClipPlane = Mathf.Max(NearClipPlane, 0.001f);
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.001f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
             m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);
