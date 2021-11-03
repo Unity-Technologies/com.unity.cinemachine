@@ -259,6 +259,8 @@ namespace Cinemachine.Editor
             Handles.Label(position + new Vector3(0, -labelOffset, 0), text, s_LabelStyle);
         }
 
+        public static float CubeHandleCapSize(Vector3 position) => HandleUtility.GetHandleSize(position) / 10f;
+
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         static float s_FOVAfterLastToolModification;
 
@@ -337,10 +339,10 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
             var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
-                HandleUtility.GetHandleSize(nearClipPos) / 20f, Handles.DotHandleCap, 0.5f);
+                CubeHandleCapSize(nearClipPos), Handles.CubeHandleCap, 0.5f);
             var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
             var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
-                HandleUtility.GetHandleSize(farClipPos) / 20f, Handles.DotHandleCap, 0.5f);
+                CubeHandleCapSize(farClipPos), Handles.CubeHandleCap, 0.5f);
             if (EditorGUI.EndChangeCheck())
             {
                 nearClipPlane.floatValue += 
@@ -482,15 +484,15 @@ namespace Cinemachine.Editor
             
                 var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var heightHandlePos = followPos + Vector3.up * orbitHeight.floatValue;
-                var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
-                    HandleUtility.GetHandleSize(heightHandlePos) / 20f, Handles.DotHandleCap, 0.5f);
+                var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up, 
+                    CubeHandleCapSize(heightHandlePos), Handles.CubeHandleCap, 0.5f);
                 
                 var radiusHandleOffset = Vector3.right;
                 var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var radiusHandlePos = followPos + Vector3.up * orbitHeight.floatValue
                     + radiusHandleOffset * orbitRadius.floatValue;
-                var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
-                    HandleUtility.GetHandleSize(radiusHandlePos) / 20f, Handles.DotHandleCap, 0.5f);
+                var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset, 
+                    CubeHandleCapSize(radiusHandlePos), Handles.CubeHandleCap, 0.5f);
 
                 if (EditorGUI.EndChangeCheck())
                 {
