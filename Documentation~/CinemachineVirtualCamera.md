@@ -2,7 +2,7 @@
 
 The Cinemacine Virtual Camera is a component that you add to an empty GameObject. It represents a Virtual Camera in the Unity Scene.
 
-Use the __Aim__, __Body__, and __Noise__ properties to specify how the Virtual Camera animates position, rotation, and other properties. The Virtual Camera applies these settings to the Unity Camera when [Cinemachine Brain](CinemachineBrainProperties.html) or [Timeline](CinemachineTimeline.html) transfers control of the Unity camera to the Virtual Camera.
+Use the __Aim__, __Body__, and __Noise__ properties to specify how the Virtual Camera animates position, rotation, and other properties. The Virtual Camera applies these settings to the Unity Camera when [Cinemachine Brain](CinemachineBrainProperties.html) or [Timeline](CinemachineTimeline.html) transfers control of the Unity camera to the Virtual Camera. You can also use handles to modify some common properties. For more information see, [Cinemachine Handle toolbar](handles.md). 
 
 At any time, each Virtual Camera may be in one of these states:
 
