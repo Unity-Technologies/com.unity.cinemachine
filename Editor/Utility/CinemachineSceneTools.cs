@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.XR;
 
 namespace Cinemachine.Editor
 {
