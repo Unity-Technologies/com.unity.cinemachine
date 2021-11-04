@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace Cinemachine.Editor
 {
@@ -328,8 +329,9 @@ namespace Cinemachine.Editor
 
         public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
         {
-            var camPos = vcam.State.FinalPosition;
-            var camRot = vcam.State.FinalOrientation;
+            var vcamState = vcam.State;
+            var camPos = vcamState.FinalPosition;
+            var camRot = vcamState.FinalOrientation;
             var camForward = camRot * Vector3.forward;
             var nearClipPlane = lens.FindPropertyRelative("NearClipPlane");
             var farClipPlane = lens.FindPropertyRelative("FarClipPlane");
@@ -352,17 +354,133 @@ namespace Cinemachine.Editor
                 lens.serializedObject.ApplyModifiedProperties();
             }
 
+            var vcamLocalToWorld = vcam.transform.localToWorldMatrix;
+            var vcamLens = vcamState.Lens;
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
                 DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
+                DrawPreFrustum(vcamLocalToWorld, vcamLens);
             }
             if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
             {
                 DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
             }
+
+            DrawFrustum(vcamLocalToWorld, vcamLens);
             
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
                 vcam, Mathf.Min(ncHandleId, fcHandleId));
+        }
+
+        static void DrawPreFrustum(Matrix4x4 transform, LensSettings lens)
+        {
+            if (!lens.Orthographic)
+            {
+                DrawPerspectiveFrustum(transform, lens.FieldOfView, 
+                    lens.NearClipPlane, 0, lens.Aspect, true);
+            }
+        }
+
+        static void DrawFrustum(Matrix4x4 transform, LensSettings lens)
+        {
+            if (lens.Orthographic)
+            {
+                DrawOrthographicFrustum(transform, lens.OrthographicSize,
+                    lens.FarClipPlane, lens.NearClipPlane, lens.Aspect);
+            }
+            else
+            {
+                DrawPerspectiveFrustum(transform, lens.FieldOfView, 
+                    lens.FarClipPlane, lens.NearClipPlane, lens.Aspect, false);
+            }
+        }
+
+        static void DrawOrthographicFrustum(Matrix4x4 transform, 
+            float orthographicSize, float farClipPlane, float nearClipRange, float aspect)
+        {
+            Matrix4x4 originalMatrix = Handles.matrix;
+            Handles.matrix = transform;
+            
+            var size = new Vector3(aspect * orthographicSize * 2, 
+                orthographicSize * 2, farClipPlane - nearClipRange);
+            Handles.DrawWireCube(new Vector3(0, 0, (size.z / 2) + nearClipRange), size);
+            
+            Handles.matrix = originalMatrix;
+        }
+        
+        static void DrawPerspectiveFrustum(Matrix4x4 transform, 
+            float fov, float farClipPlane, float nearClipRange, float aspect, bool dottedLine)
+        {
+            Matrix4x4 originalMatrix = Handles.matrix;
+            Handles.matrix = transform;
+            
+            fov = (fov * .5f) * Mathf.Deg2Rad;
+            float tanfov = Mathf.Tan(fov);
+            Vector3 farEnd = new Vector3(0, 0, farClipPlane);
+            Vector3 endSizeX = new Vector3(farClipPlane * tanfov * aspect, 0, 0);
+            Vector3 endSizeY = new Vector3(0, farClipPlane * tanfov, 0);
+
+            Vector3 s1, s2, s3, s4;
+            Vector3 e1 = farEnd + endSizeX + endSizeY;
+            Vector3 e2 = farEnd - endSizeX + endSizeY;
+            Vector3 e3 = farEnd - endSizeX - endSizeY;
+            Vector3 e4 = farEnd + endSizeX - endSizeY;
+            if (nearClipRange <= 0.0f)
+            {
+                s1 = s2 = s3 = s4 = Vector3.zero;
+            }
+            else
+            {
+                Vector3 startSizeX = new Vector3(nearClipRange * tanfov * aspect, 0, 0);
+                Vector3 startSizeY = new Vector3(0, nearClipRange * tanfov, 0);
+                Vector3 startPoint = new Vector3(0, 0, nearClipRange);
+                s1 = startPoint + startSizeX + startSizeY;
+                s2 = startPoint - startSizeX + startSizeY;
+                s3 = startPoint - startSizeX - startSizeY;
+                s4 = startPoint + startSizeX - startSizeY;
+
+                if (dottedLine)
+                {
+                    Handles.DrawDottedLine(s1, s2, k_DottedLineSpacing);
+                    Handles.DrawDottedLine(s2, s3, k_DottedLineSpacing);
+                    Handles.DrawDottedLine(s3, s4, k_DottedLineSpacing);
+                    Handles.DrawDottedLine(s4, s1, k_DottedLineSpacing);
+                }
+                else
+                {
+                    Handles.DrawLine(s1, s2);
+                    Handles.DrawLine(s2, s3);
+                    Handles.DrawLine(s3, s4);
+                    Handles.DrawLine(s4, s1);
+                }
+            }
+
+            if (dottedLine)
+            {
+                Handles.DrawDottedLine(e1, e2, k_DottedLineSpacing);
+                Handles.DrawDottedLine(e2, e3, k_DottedLineSpacing);
+                Handles.DrawDottedLine(e3, e4, k_DottedLineSpacing);
+                Handles.DrawDottedLine(e4, e1, k_DottedLineSpacing);
+
+                Handles.DrawDottedLine(s1, e1, k_DottedLineSpacing);
+                Handles.DrawDottedLine(s2, e2, k_DottedLineSpacing);
+                Handles.DrawDottedLine(s3, e3, k_DottedLineSpacing);
+                Handles.DrawDottedLine(s4, e4, k_DottedLineSpacing);
+            }
+            else
+            {
+                Handles.DrawLine(e1, e2);
+                Handles.DrawLine(e2, e3);
+                Handles.DrawLine(e3, e4);
+                Handles.DrawLine(e4, e1);
+
+                Handles.DrawLine(s1, e1);
+                Handles.DrawLine(s2, e2);
+                Handles.DrawLine(s3, e3);
+                Handles.DrawLine(s4, e4);
+            }
+
+            Handles.matrix = originalMatrix;
         }
 
         public static void TrackedObjectOffsetTool(
