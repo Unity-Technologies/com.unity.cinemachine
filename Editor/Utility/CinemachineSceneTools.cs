@@ -353,7 +353,8 @@ namespace Cinemachine.Editor
                 lens.serializedObject.ApplyModifiedProperties();
             }
 
-            var vcamLocalToWorld = vcam.transform.localToWorldMatrix;
+
+            var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             var vcamLens = vcamState.Lens;
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
@@ -364,16 +365,16 @@ namespace Cinemachine.Editor
             {
                 DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
             }
-
-            DrawFrustum(vcamLocalToWorld, vcamLens);
             
+            DrawFrustum(vcamLocalToWorld, vcamLens);
+
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
                 vcam, Mathf.Min(ncHandleId, fcHandleId));
         }
 
         static void DrawPreFrustum(Matrix4x4 transform, LensSettings lens)
         {
-            if (!lens.Orthographic)
+            if (!lens.Orthographic && lens.NearClipPlane >= 0)
             {
                 DrawPerspectiveFrustum(transform, lens.FieldOfView, 
                     lens.NearClipPlane, 0, lens.Aspect, true);
