@@ -397,7 +397,7 @@ namespace Cinemachine.Editor
         static void DrawOrthographicFrustum(Matrix4x4 transform, 
             float orthographicSize, float farClipPlane, float nearClipRange, float aspect)
         {
-            Matrix4x4 originalMatrix = Handles.matrix;
+            var originalMatrix = Handles.matrix;
             Handles.matrix = transform;
             
             var size = new Vector3(aspect * orthographicSize * 2, 
@@ -410,29 +410,29 @@ namespace Cinemachine.Editor
         static void DrawPerspectiveFrustum(Matrix4x4 transform, 
             float fov, float farClipPlane, float nearClipRange, float aspect, bool dottedLine)
         {
-            Matrix4x4 originalMatrix = Handles.matrix;
+            var originalMatrix = Handles.matrix;
             Handles.matrix = transform;
             
-            fov = (fov * .5f) * Mathf.Deg2Rad;
-            float tanfov = Mathf.Tan(fov);
-            Vector3 farEnd = new Vector3(0, 0, farClipPlane);
-            Vector3 endSizeX = new Vector3(farClipPlane * tanfov * aspect, 0, 0);
-            Vector3 endSizeY = new Vector3(0, farClipPlane * tanfov, 0);
+            fov = fov * 0.5f * Mathf.Deg2Rad;
+            var tanfov = Mathf.Tan(fov);
+            var farEnd = new Vector3(0, 0, farClipPlane);
+            var endSizeX = new Vector3(farClipPlane * tanfov * aspect, 0, 0);
+            var endSizeY = new Vector3(0, farClipPlane * tanfov, 0);
 
             Vector3 s1, s2, s3, s4;
-            Vector3 e1 = farEnd + endSizeX + endSizeY;
-            Vector3 e2 = farEnd - endSizeX + endSizeY;
-            Vector3 e3 = farEnd - endSizeX - endSizeY;
-            Vector3 e4 = farEnd + endSizeX - endSizeY;
+            var e1 = farEnd + endSizeX + endSizeY;
+            var e2 = farEnd - endSizeX + endSizeY;
+            var e3 = farEnd - endSizeX - endSizeY;
+            var e4 = farEnd + endSizeX - endSizeY;
             if (nearClipRange <= 0.0f)
             {
                 s1 = s2 = s3 = s4 = Vector3.zero;
             }
             else
             {
-                Vector3 startSizeX = new Vector3(nearClipRange * tanfov * aspect, 0, 0);
-                Vector3 startSizeY = new Vector3(0, nearClipRange * tanfov, 0);
-                Vector3 startPoint = new Vector3(0, 0, nearClipRange);
+                var startSizeX = new Vector3(nearClipRange * tanfov * aspect, 0, 0);
+                var startSizeY = new Vector3(0, nearClipRange * tanfov, 0);
+                var startPoint = new Vector3(0, 0, nearClipRange);
                 s1 = startPoint + startSizeX + startSizeY;
                 s2 = startPoint - startSizeX + startSizeY;
                 s3 = startPoint - startSizeX - startSizeY;
