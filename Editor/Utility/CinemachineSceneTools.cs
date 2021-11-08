@@ -270,7 +270,8 @@ namespace Cinemachine.Editor
             var orthographic = lens.Orthographic;
             if (GUIUtility.hotControl == 0)
             {
-                s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : lens.FieldOfView;
+                s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : 
+                    Mathf.Clamp(lens.FieldOfView, 0.01f, 179f);
             }
             
             var camPos = vcam.State.FinalPosition;
