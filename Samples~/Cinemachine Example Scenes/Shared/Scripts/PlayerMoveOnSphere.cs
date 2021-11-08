@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Cinemachine.Examples;
 using Cinemachine.Utility;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ public class PlayerMoveOnSphere : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         if (input.magnitude > 0)
         {
@@ -39,5 +41,8 @@ public class PlayerMoveOnSphere : MonoBehaviour
             transform.position = Sphere.transform.position + up * (Sphere.radius + transform.localScale.y / 2);
             transform.rotation = Quaternion.LookRotation(fwd, up);
         }
+#else
+        InputSystemHelper.EnableBackendsWarningMessage();
+#endif
     }
 }

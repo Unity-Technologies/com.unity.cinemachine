@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Cinemachine.Examples;
+using UnityEngine;
 
 // WASD to move, Space to sprint
 public class CharacterMovementNoCamera : MonoBehaviour
@@ -28,6 +29,7 @@ public class CharacterMovementNoCamera : MonoBehaviour
 
     void FixedUpdate()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         var input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         var speed = input.y;
         speed = Mathf.Clamp(speed, -1f, 1f);
@@ -58,5 +60,8 @@ public class CharacterMovementNoCamera : MonoBehaviour
             rot.x = Mathf.Clamp(rot.x, VerticalRotMin, VerticalRotMax);
             InvisibleCameraOrigin.localRotation = Quaternion.Euler(rot);
         }
+#else
+        InputSystemHelper.EnableBackendsWarningMessage();
+#endif
     }
 }

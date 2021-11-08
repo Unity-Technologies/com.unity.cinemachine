@@ -219,11 +219,13 @@ namespace Cinemachine
             
             if (m_InputAxisProvider != null)
                 m_InputAxisValue = m_InputAxisProvider.GetAxisValue(m_InputAxisIndex);
+#if ENABLE_LEGACY_INPUT_MANAGER
             else if (!string.IsNullOrEmpty(m_InputAxisName))
             {
                 try { m_InputAxisValue = CinemachineCore.GetInputAxis(m_InputAxisName); }
                 catch (ArgumentException e) { Debug.LogError(e.ToString()); }
             }
+#endif
 
             float input = m_InputAxisValue;
             if (m_InvertInput)
