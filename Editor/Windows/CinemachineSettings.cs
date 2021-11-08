@@ -56,7 +56,7 @@ namespace Cinemachine.Editor
             }
         
             private static readonly string kCoreActiveGizmoColourKey = "CNMCN_Core_Active_Gizmo_Colour";
-            public static readonly Color kDefaultActiveColour = new Color32(255, 255, 255, 50);
+            public static readonly Color kDefaultActiveColour = new Color32(255, 0, 0, 100);
             public static Color ActiveGizmoColour
             {
                 get
