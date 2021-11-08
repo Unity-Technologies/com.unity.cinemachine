@@ -217,8 +217,9 @@ namespace Cinemachine.Editor
     
     static class CinemachineSceneToolHelpers
     {
+        public const float lineThickness = 2f;
+        public static Color s_HelperLineDefaultColor = new Color(255, 255, 255, 25);
         const float k_DottedLineSpacing = 4f;
-        public const float lineThickness = 4f;
 
         static GUIStyle s_LabelStyle = new GUIStyle 
         { 
@@ -272,6 +273,8 @@ namespace Cinemachine.Editor
             {
                 s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : lens.FieldOfView;
             }
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
             
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
@@ -300,7 +303,9 @@ namespace Cinemachine.Editor
             }
             s_FOVAfterLastToolModification = newFov;
 
-            if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
+            var fovHandleDraggedOrHovered = 
+                GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId;
+            if (fovHandleDraggedOrHovered)
             {
                 var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
                 if (lens.IsPhysicalCamera)
@@ -325,14 +330,20 @@ namespace Cinemachine.Editor
                 }
             }
             
+            Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : s_HelperLineDefaultColor;
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             DrawFrustum(vcamLocalToWorld, lens);
                 
             SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId);
+
+            Handles.color = originalColor;
         }
 
         public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
         {
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            
             var vcamState = vcam.State;
             var camPos = vcamState.FinalPosition;
             var camRot = vcamState.FinalOrientation;
@@ -360,20 +371,25 @@ namespace Cinemachine.Editor
             
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             var vcamLens = vcamState.Lens;
+            Handles.color = s_HelperLineDefaultColor;
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
                 DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
+                Handles.color = Handles.selectedColor;
                 DrawPreFrustum(vcamLocalToWorld, vcamLens);
             }
             if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
             {
                 DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
+                Handles.color = Handles.selectedColor;
             }
             
             DrawFrustum(vcamLocalToWorld, vcamLens);
 
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
                 vcam, Mathf.Min(ncHandleId, fcHandleId));
+
+            Handles.color = originalColor;
         }
 
         static void DrawPreFrustum(Matrix4x4 transform, LensSettings lens)
@@ -490,6 +506,8 @@ namespace Cinemachine.Editor
         public static void TrackedObjectOffsetTool(
             CinemachineComponentBase cmComponent, SerializedProperty trackedObjectOffset)
         {
+            var originalColor = Handles.color;
+            
             var lookAtPos = cmComponent.LookAtTargetPosition;
             var lookAtRot = cmComponent.LookAtTargetRotation;
             var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset.vector3Value;
@@ -515,19 +533,20 @@ namespace Cinemachine.Editor
                     + trackedObjectOffset.vector3Value.ToString("F1"));
             }
             
-            var originalColor = Handles.color;
             Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
                 Handles.selectedColor : s_HelperLineDefaultColor;
             Handles.DrawDottedLine(lookAtPos, trackedObjectPos, k_DottedLineSpacing);
             Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
-            Handles.color = originalColor;
 
             SoloOnDrag(trackedObjectOffsetHandleIsDragged, cmComponent.VirtualCamera, tooHandleMaxId);
+            
+            Handles.color = originalColor;
         }
 
-        public static Color s_HelperLineDefaultColor = new Color32(255, 255, 255, 50);
         public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
         {
+            var originalColor = Handles.color;
+            
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
             var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
             var camPos = cmComponent.GetTargetCameraPosition(up);
@@ -556,35 +575,12 @@ namespace Cinemachine.Editor
                 DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
             }
 
-            var originalColor = Handles.color;
             Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : s_HelperLineDefaultColor;
             Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
-            Handles.color = originalColor;
-
+            
             SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
-        }
-        
-        
-        static bool s_IsDragging;
-        static ICinemachineCamera s_UserSolo;
-        public static void SoloOnDrag(bool isDragged, ICinemachineCamera vcam, int handleMaxId)
-        {
-            if (isDragged)
-            {
-                if (!s_IsDragging)
-                {
-                    s_UserSolo = CinemachineBrain.SoloCamera;
-                    s_IsDragging = true;
-                }
-                CinemachineBrain.SoloCamera = vcam;
-            }
-            else if (s_IsDragging && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
-            {
-                CinemachineBrain.SoloCamera = s_UserSolo;
-                InspectorUtility.RepaintGameView();
-                s_IsDragging = false;
-                s_UserSolo = null;
-            }
+            
+            Handles.color = originalColor;
         }
         
         /// <summary>
@@ -594,6 +590,7 @@ namespace Cinemachine.Editor
         public static int OrbitControlHandle(
             CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
         {
+            var originalColor = Handles.color;
             var followPos = vcam.Follow.position;
             var draggedRig = -1;
             var minIndex = 1;
@@ -626,13 +623,11 @@ namespace Cinemachine.Editor
                     orbits.serializedObject.ApplyModifiedProperties();
                 }
 
-                Handles.color = s_HelperLineDefaultColor;
                 var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
-                if (isDragged || HandleUtility.nearestControl == heightHandleId || 
-                    HandleUtility.nearestControl == radiusHandleId)
-                {
-                    Handles.color = Handles.selectedColor;
-                }
+                Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId ||
+                    HandleUtility.nearestControl == radiusHandleId
+                        ? Handles.selectedColor
+                        : s_HelperLineDefaultColor;
                 if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
                 {
                     DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);
@@ -650,8 +645,33 @@ namespace Cinemachine.Editor
                 }
             }
             SoloOnDrag(draggedRig != -1, vcam, minIndex);
+
+            Handles.color = originalColor;
             return draggedRig;
         }
+        
+        static bool s_IsDragging;
+        static ICinemachineCamera s_UserSolo;
+        public static void SoloOnDrag(bool isDragged, ICinemachineCamera vcam, int handleMaxId)
+        {
+            if (isDragged)
+            {
+                if (!s_IsDragging)
+                {
+                    s_UserSolo = CinemachineBrain.SoloCamera;
+                    s_IsDragging = true;
+                }
+                CinemachineBrain.SoloCamera = vcam;
+            }
+            else if (s_IsDragging && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
+            {
+                CinemachineBrain.SoloCamera = s_UserSolo;
+                InspectorUtility.RepaintGameView();
+                s_IsDragging = false;
+                s_UserSolo = null;
+            }
+        }
+
     } 
 }
 #endif

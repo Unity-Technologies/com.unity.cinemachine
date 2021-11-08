@@ -217,8 +217,7 @@ namespace Cinemachine.Editor
             {
                 return;
             }
-
-            var originalColor = Handles.color;
+            
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(framingTransposer, 
@@ -226,6 +225,7 @@ namespace Cinemachine.Editor
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
+                var originalColor = Handles.color;
                 var camPos = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
@@ -258,8 +258,9 @@ namespace Cinemachine.Editor
 
                 CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
                     cdHandleId);
+                
+                Handles.color = originalColor;
             }
-            Handles.color = originalColor;
         }
 #endif
     }
