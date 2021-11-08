@@ -270,8 +270,7 @@ namespace Cinemachine.Editor
             var orthographic = lens.Orthographic;
             if (GUIUtility.hotControl == 0)
             {
-                s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : 
-                    Mathf.Clamp(lens.FieldOfView, 1f, 179f);
+                s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : lens.FieldOfView;
             }
             
             var camPos = vcam.State.FinalPosition;
@@ -294,6 +293,8 @@ namespace Cinemachine.Editor
                 {
                     lensProperty.FindPropertyRelative("FieldOfView").floatValue += 
                         (s_FOVAfterLastToolModification - newFov);
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue = 
+                        Mathf.Clamp(lensProperty.FindPropertyRelative("FieldOfView").floatValue, 1f, 179f);
                 }
                 lensProperty.serializedObject.ApplyModifiedProperties();
             }
