@@ -123,14 +123,6 @@ namespace Cinemachine
             + "because Virtual Cameras don't like looking straight up or straight down.")]
         public Transform m_WorldUpOverride;
 
-        /// <summary>
-        /// CinemachineBrain controls this gameObject.
-        /// If null, then CinemachineBrain is controlling the gameObject to which it is attached.
-        /// </summary>
-        [Tooltip("CinemachineBrain controls this gameObject. If null, then CinemachineBrain " +
-            "is controlling the gameObject to which it is attached.")]
-        public GameObject m_TargetOverride = null;
-
         /// <summary>This enum defines the options available for the update method.</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum UpdateMethod
@@ -196,9 +188,9 @@ namespace Cinemachine
         {
             get
             {
-                if (m_OutputCamera == null && !Application.isPlaying)
+                if (m_OutputCamera == null || !Application.isPlaying)
 #if UNITY_2019_2_OR_NEWER
-                    m_TargetOverride.TryGetComponent(out m_OutputCamera);
+                    TargetOverride.TryGetComponent(out m_OutputCamera);
 #else
                     m_OutputCamera = GetComponent<Camera>();
 #endif
@@ -206,6 +198,17 @@ namespace Cinemachine
             }
         }
         private Camera m_OutputCamera = null; // never use directly - use accessor
+        
+        /// <summary>
+        /// CinemachineBrain controls this gameObject.
+        /// If null, then CinemachineBrain is controlling the gameObject to which it is attached.
+        /// </summary>
+        public GameObject TargetOverride
+        {
+            get => m_TargetOverride == null ? gameObject : m_TargetOverride;
+            set => m_TargetOverride = value;
+        }
+        private GameObject m_TargetOverride = null; // never use directly - use accessor
 
         /// <summary>Event with a CinemachineBrain parameter</summary>
         [Serializable] public class BrainEvent : UnityEvent<CinemachineBrain> {}
@@ -258,16 +261,11 @@ namespace Cinemachine
 
         private void OnEnable()
         {
-            if (m_TargetOverride == null)
-            {
-                m_TargetOverride = gameObject;
-            }
-            
             // Make sure there is a first stack frame
             if (mFrameStack.Count == 0)
                 mFrameStack.Add(new BrainFrame());
 
-            m_TargetOverride.TryGetComponent(out m_OutputCamera);
+            TargetOverride.TryGetComponent(out m_OutputCamera);
             CinemachineCore.Instance.AddActiveBrain(this);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
@@ -693,8 +691,8 @@ namespace Cinemachine
                 // No active virtal camera.  We create a state representing its position
                 // and call the callback, but we don't actively set the transform or lens
                 var state = CameraState.Default;
-                state.RawPosition = m_TargetOverride.transform.position;
-                state.RawOrientation = m_TargetOverride.transform.rotation;
+                state.RawPosition = TargetOverride.transform.position;
+                state.RawOrientation = TargetOverride.transform.rotation;
                 state.Lens = LensSettings.FromCamera(m_OutputCamera);
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
                 PushStateToUnityCamera(ref state);
@@ -941,9 +939,9 @@ namespace Cinemachine
         {
             CurrentCameraState = state;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
-                m_TargetOverride.transform.position = state.FinalPosition;
+                TargetOverride.transform.position = state.FinalPosition;
             if ((state.BlendHint & CameraState.BlendHintValue.NoOrientation) == 0)
-                m_TargetOverride.transform.rotation = state.FinalOrientation;
+                TargetOverride.transform.rotation = state.FinalOrientation;
             if ((state.BlendHint & CameraState.BlendHintValue.NoLens) == 0)
             {
                 Camera cam = OutputCamera;
