@@ -72,7 +72,11 @@ namespace Cinemachine
         /// <summary>Delegate for overriding Unity's default input system.
         /// If you set this, then your delegate will be called instead of
         /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
+#if ENABLE_LEGACY_INPUT_MANAGER
         public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
+#else
+        public static AxisInputDelegate GetInputAxis = null;
+#endif
 
         /// <summary>
         /// If non-negative, cinemachine will update with this uniform delta time.
