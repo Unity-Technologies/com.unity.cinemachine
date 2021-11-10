@@ -147,7 +147,7 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
         static void Create2DCamera(MenuCommand command)
         {
-            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
+            CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
             var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
