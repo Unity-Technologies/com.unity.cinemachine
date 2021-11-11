@@ -1,5 +1,6 @@
 #if UNITY_2021_2_OR_NEWER
 using UnityEditor;
+using UnityEditor.EditorTools;
 using UnityEditor.Overlays;
 using UnityEditor.Toolbars;
 using UnityEngine;
@@ -7,6 +8,29 @@ using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
+    [EditorTool("Follow Offset", typeof(CinemachineVirtualCameraBase))]
+    class FollowOffsetTool : EditorTool, IDrawSelectedHandles
+    {
+        // IsAvailable() can be polled frequently, make sure that it is not an expensive check
+        public override bool IsAvailable()
+        {
+            Debug.Log("FollowOffsetTool IsAvailable");
+            return CinemachineSceneToolUtility.IsToolRequired(typeof(FollowOffsetTool));
+        }
+
+        // Move Editor.OnSceneGUI code into the tool implementation
+        public override void OnToolGUI(EditorWindow window)
+        {
+            Debug.Log("FollowOffsetTool OnToolGUI");
+        }
+
+        // Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool
+        public void OnDrawHandles()
+        {
+        }
+    }
+
+    
     /// <summary>
     /// To display a CinemachineExclusiveEditorToolbarToggle in the Cinemachine Toolbar,
     /// TODO: Make this extendable when another PR lands (see: CMCL-501),
@@ -20,7 +44,7 @@ namespace Cinemachine.Editor
                 FreelookRigSelection.id,
                 FoVTool.id,
                 FarNearClipTool.id,
-                FollowOffsetTool.id,
+                //FollowOffsetTool.id,
                 TrackedObjectOffsetTool.id
             )
         {
@@ -80,18 +104,18 @@ namespace Cinemachine.Editor
         }
     }
 
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class FollowOffsetTool : CinemachineExclusiveEditorToolbarToggle
-    {
-        public const string id = "FollowOffsetTool/Toggle";
-
-        public FollowOffsetTool()
-        {
-            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/FollowOffset.png");
-            tooltip = "Follow Offset Tool";
-        }
-    }
+    // [EditorToolbarElement(id, typeof(SceneView))]
+    // class FollowOffsetTool : CinemachineExclusiveEditorToolbarToggle
+    // {
+    //     public const string id = "FollowOffsetTool/Toggle";
+    //
+    //     public FollowOffsetTool()
+    //     {
+    //         icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
+    //             + "/Editor/EditorResources/FollowOffset.png");
+    //         tooltip = "Follow Offset Tool";
+    //     }
+    // }
 
     [EditorToolbarElement(id, typeof(SceneView))]
     class TrackedObjectOffsetTool : CinemachineExclusiveEditorToolbarToggle

@@ -58,6 +58,13 @@ namespace Cinemachine.Editor
                 }
             }
         }
+
+        internal static bool IsToolRequired(Type tool)
+        {
+            Debug.Log(s_RequiredTools.ContainsKey(tool));
+            return s_RequiredTools.ContainsKey(tool);
+        }
+        
         static Dictionary<Type, int> s_RequiredTools;
 
         public delegate void ToolHandler(bool v);
