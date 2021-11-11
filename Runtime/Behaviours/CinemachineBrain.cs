@@ -188,7 +188,7 @@ namespace Cinemachine
         {
             get
             {
-                if (m_OutputCamera == null || !Application.isPlaying)
+                if (m_OutputCamera == null && !Application.isPlaying)
 #if UNITY_2019_2_OR_NEWER
                     TargetOverride.TryGetComponent(out m_OutputCamera);
 #else
@@ -265,7 +265,6 @@ namespace Cinemachine
             if (mFrameStack.Count == 0)
                 mFrameStack.Add(new BrainFrame());
 
-            TargetOverride.TryGetComponent(out m_OutputCamera);
             CinemachineCore.Instance.AddActiveBrain(this);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
@@ -303,6 +302,7 @@ namespace Cinemachine
         {
             m_LastFrameUpdated = -1;
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
+            TargetOverride.TryGetComponent(out m_OutputCamera);
         }
 
         private void OnGuiHandler()
@@ -691,8 +691,9 @@ namespace Cinemachine
                 // No active virtal camera.  We create a state representing its position
                 // and call the callback, but we don't actively set the transform or lens
                 var state = CameraState.Default;
-                state.RawPosition = TargetOverride.transform.position;
-                state.RawOrientation = TargetOverride.transform.rotation;
+                var targetOverride = TargetOverride;
+                state.RawPosition = targetOverride.transform.position;
+                state.RawOrientation = targetOverride.transform.rotation;
                 state.Lens = LensSettings.FromCamera(m_OutputCamera);
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
                 PushStateToUnityCamera(ref state);
