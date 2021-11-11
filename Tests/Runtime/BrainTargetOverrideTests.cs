@@ -22,13 +22,13 @@ namespace Tests.Runtime
             
             m_CameraHolderWithoutBrain = CreateGameObject("MainCamera 2", typeof(Camera));
             m_BrainAlone = CreateGameObject("BrainAlone for MainCamera 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>();
-            m_BrainAlone.TargetOverride = m_CameraHolderWithoutBrain;
+            m_BrainAlone.ControlledObject = m_CameraHolderWithoutBrain;
             
             m_GoWithBrain = CreateGameObject("Empty 1", typeof(CinemachineBrain));
 
             m_GoWithoutBrain = CreateGameObject("Empty 2");
             m_BrainAlone2 = CreateGameObject("BrainAlone for Empty 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>(); 
-            m_BrainAlone2.TargetOverride = m_GoWithoutBrain;
+            m_BrainAlone2.ControlledObject = m_GoWithoutBrain;
             
             m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
             m_Vcam.Priority = 100;
@@ -60,8 +60,8 @@ namespace Tests.Runtime
         
         IEnumerator CheckDisconnectedBrains()
         {
-            m_BrainAlone.TargetOverride = null;
-            m_BrainAlone2.TargetOverride = null;
+            m_BrainAlone.ControlledObject = null;
+            m_BrainAlone2.ControlledObject = null;
             m_FollowObject.transform.position += m_Delta;
             yield return null;
             Assert.That(m_CameraHolderWithBrain.transform.position == m_CameraHolderWithoutBrain.transform.position, Is.False);
