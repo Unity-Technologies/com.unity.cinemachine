@@ -75,7 +75,7 @@ namespace Cinemachine
 #if ENABLE_LEGACY_INPUT_MANAGER
         public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
 #else
-        public static AxisInputDelegate GetInputAxis = null;
+        public static AxisInputDelegate GetInputAxis = delegate { return 0; };
 #endif
 
         /// <summary>
