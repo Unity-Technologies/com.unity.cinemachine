@@ -1,4 +1,5 @@
 ﻿using System;
+using Cinemachine.Examples;
 using Cinemachine.Utility;
 using UnityEngine;
 
@@ -41,6 +42,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         Vector3 fwd;
         switch (InputForward)
         {
@@ -89,6 +91,9 @@ public class PlayerMove : MonoBehaviour
             SpaceAction();
         if (Input.GetKeyDown(KeyCode.Return) && EnterAction != null)
             EnterAction();
+#else
+        InputSystemHelper.EnableBackendsWarningMessage();
+#endif
     }
 
     public void Jump() { m_currentJumpSpeed += 10 * JumpTime * 0.5f; }

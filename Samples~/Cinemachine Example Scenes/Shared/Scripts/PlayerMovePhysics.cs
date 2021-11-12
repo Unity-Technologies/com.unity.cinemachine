@@ -1,4 +1,5 @@
 ﻿using System;
+using Cinemachine.Examples;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -25,6 +26,7 @@ public class PlayerMovePhysics : MonoBehaviour
 
     void FixedUpdate()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
         //input = Vector3.forward;
@@ -50,5 +52,9 @@ public class PlayerMovePhysics : MonoBehaviour
             spaceAction();
         if (Input.GetKeyDown(KeyCode.Return) && enterAction != null)
             enterAction();
+        
+#else
+        InputSystemHelper.EnableBackendsWarningMessage();
+#endif
 	}
 }
