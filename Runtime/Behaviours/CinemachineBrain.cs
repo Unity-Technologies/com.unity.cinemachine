@@ -189,15 +189,27 @@ namespace Cinemachine
             get
             {
                 if (m_OutputCamera == null && !Application.isPlaying)
-#if UNITY_2019_2_OR_NEWER
-                    TryGetComponent(out m_OutputCamera);
-#else
-                    m_OutputCamera = GetComponent<Camera>();
-#endif
+                    ControlledObject.TryGetComponent(out m_OutputCamera);
                 return m_OutputCamera;
             }
         }
         private Camera m_OutputCamera = null; // never use directly - use accessor
+        
+        /// <summary>
+        /// CinemachineBrain controls this GameObject.  Normally, this is the GameObject to which 
+        /// the CinemachineBrain component is attached.  However, it is possible to override this
+        /// by setting this property to another GameObject.  If a Camera component is attached to the 
+        /// Controlled Object, then that Camera component's lens settings will also be driven 
+        /// by the CinemachineBrain.
+        /// If this property is set to null, then CinemachineBrain is controlling the GameObject 
+        /// to which it is attached.  The value of this property will always report as non-null.
+        /// </summary>
+        public GameObject ControlledObject
+        {
+            get => m_TargetOverride == null ? gameObject : m_TargetOverride;
+            set => m_TargetOverride = value;
+        }
+        private GameObject m_TargetOverride = null; // never use directly - use accessor
 
         /// <summary>Event with a CinemachineBrain parameter</summary>
         [Serializable] public class BrainEvent : UnityEvent<CinemachineBrain> {}
@@ -254,7 +266,6 @@ namespace Cinemachine
             if (mFrameStack.Count == 0)
                 mFrameStack.Add(new BrainFrame());
 
-            m_OutputCamera = GetComponent<Camera>();
             CinemachineCore.Instance.AddActiveBrain(this);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
@@ -292,6 +303,7 @@ namespace Cinemachine
         {
             m_LastFrameUpdated = -1;
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
+            ControlledObject.TryGetComponent(out m_OutputCamera);
         }
 
         private void OnGuiHandler()
@@ -680,8 +692,9 @@ namespace Cinemachine
                 // No active virtal camera.  We create a state representing its position
                 // and call the callback, but we don't actively set the transform or lens
                 var state = CameraState.Default;
-                state.RawPosition = transform.position;
-                state.RawOrientation = transform.rotation;
+                var target = ControlledObject.transform;
+                state.RawPosition = target.position;
+                state.RawOrientation = target.rotation;
                 state.Lens = LensSettings.FromCamera(m_OutputCamera);
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
                 PushStateToUnityCamera(ref state);
@@ -927,10 +940,11 @@ namespace Cinemachine
         private void PushStateToUnityCamera(ref CameraState state)
         {
             CurrentCameraState = state;
+            var target = ControlledObject.transform;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
-                transform.position = state.FinalPosition;
+                target.position = state.FinalPosition;
             if ((state.BlendHint & CameraState.BlendHintValue.NoOrientation) == 0)
-                transform.rotation = state.FinalOrientation;
+                target.rotation = state.FinalOrientation;
             if ((state.BlendHint & CameraState.BlendHintValue.NoLens) == 0)
             {
                 Camera cam = OutputCamera;
@@ -951,11 +965,7 @@ namespace Cinemachine
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
 #if CINEMACHINE_HDRP
-    #if UNITY_2019_2_OR_NEWER
                         cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
-    #else
-                        var hda = cam.GetComponent<HDAdditionalCameraData>();
-    #endif
                         if (hda != null)
                         {
                             hda.physicalParameters.iso = state.Lens.Iso;
