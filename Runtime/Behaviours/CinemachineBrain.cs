@@ -197,8 +197,8 @@ namespace Cinemachine
         
         /// <summary>
         /// CinemachineBrain controls this GameObject.  Normally, this is the GameObject to which 
-        /// the CinemachinewBrain component is attached.  However, it is possible to override this
-        /// by setting this property to another GamePObject.  If a Camera component is attached to the 
+        /// the CinemachineBrain component is attached.  However, it is possible to override this
+        /// by setting this property to another GameObject.  If a Camera component is attached to the 
         /// Controlled Object, then that Camera component's lens settings will also be driven 
         /// by the CinemachineBrain.
         /// If this property is set to null, then CinemachineBrain is controlling the GameObject 
