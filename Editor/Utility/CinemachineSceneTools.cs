@@ -217,8 +217,9 @@ namespace Cinemachine.Editor
     
     static class CinemachineSceneToolHelpers
     {
+        public const float lineThickness = 2f;
+        public static Color s_HelperLineDefaultColor = new Color(255, 255, 255, 25);
         const float k_DottedLineSpacing = 4f;
-        public const float lineThickness = 4f;
 
         static GUIStyle s_LabelStyle = new GUIStyle 
         { 
@@ -259,6 +260,8 @@ namespace Cinemachine.Editor
             Handles.Label(position + new Vector3(0, -labelOffset, 0), text, s_LabelStyle);
         }
 
+        public static float CubeHandleCapSize(Vector3 position) => HandleUtility.GetHandleSize(position) / 10f;
+
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         static float s_FOVAfterLastToolModification;
 
@@ -270,6 +273,8 @@ namespace Cinemachine.Editor
             {
                 s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : lens.FieldOfView;
             }
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
             
             var camPos = vcam.State.FinalPosition;
             var camRot = vcam.State.FinalOrientation;
@@ -291,12 +296,16 @@ namespace Cinemachine.Editor
                 {
                     lensProperty.FindPropertyRelative("FieldOfView").floatValue += 
                         (s_FOVAfterLastToolModification - newFov);
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue = 
+                        Mathf.Clamp(lensProperty.FindPropertyRelative("FieldOfView").floatValue, 1f, 179f);
                 }
                 lensProperty.serializedObject.ApplyModifiedProperties();
             }
             s_FOVAfterLastToolModification = newFov;
 
-            if (GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId)
+            var fovHandleDraggedOrHovered = 
+                GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId;
+            if (fovHandleDraggedOrHovered)
             {
                 var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
                 if (lens.IsPhysicalCamera)
@@ -320,14 +329,24 @@ namespace Cinemachine.Editor
                         lens.FieldOfView.ToString("F1") + ")");
                 }
             }
+            
+            Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : s_HelperLineDefaultColor;
+            var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
+            DrawFrustum(vcamLocalToWorld, lens);
                 
             SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId);
+
+            Handles.color = originalColor;
         }
 
         public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
         {
-            var camPos = vcam.State.FinalPosition;
-            var camRot = vcam.State.FinalOrientation;
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            
+            var vcamState = vcam.State;
+            var camPos = vcamState.FinalPosition;
+            var camRot = vcamState.FinalOrientation;
             var camForward = camRot * Vector3.forward;
             var nearClipPlane = lens.FindPropertyRelative("NearClipPlane");
             var farClipPlane = lens.FindPropertyRelative("FarClipPlane");
@@ -337,10 +356,10 @@ namespace Cinemachine.Editor
             EditorGUI.BeginChangeCheck();
             var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
             var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
-                HandleUtility.GetHandleSize(nearClipPos) / 20f, Handles.DotHandleCap, 0.5f);
+                CubeHandleCapSize(nearClipPos), Handles.CubeHandleCap, 0.5f);
             var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
             var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
-                HandleUtility.GetHandleSize(farClipPos) / 20f, Handles.DotHandleCap, 0.5f);
+                CubeHandleCapSize(farClipPos), Handles.CubeHandleCap, 0.5f);
             if (EditorGUI.EndChangeCheck())
             {
                 nearClipPlane.floatValue += 
@@ -349,23 +368,146 @@ namespace Cinemachine.Editor
                     SliderHandleDelta(newFarClipPos, farClipPos, camForward);
                 lens.serializedObject.ApplyModifiedProperties();
             }
-
+            
+            var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
+            var vcamLens = vcamState.Lens;
+            Handles.color = s_HelperLineDefaultColor;
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
                 DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
+                Handles.color = Handles.selectedColor;
+                DrawPreFrustum(vcamLocalToWorld, vcamLens);
             }
             if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
             {
                 DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
+                Handles.color = Handles.selectedColor;
             }
             
+            DrawFrustum(vcamLocalToWorld, vcamLens);
+
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
                 vcam, Mathf.Min(ncHandleId, fcHandleId));
+
+            Handles.color = originalColor;
+        }
+
+        static void DrawPreFrustum(Matrix4x4 transform, LensSettings lens)
+        {
+            if (!lens.Orthographic && lens.NearClipPlane >= 0)
+            {
+                DrawPerspectiveFrustum(transform, lens.FieldOfView, 
+                    lens.NearClipPlane, 0, lens.Aspect, true);
+            }
+        }
+
+        static void DrawFrustum(Matrix4x4 transform, LensSettings lens)
+        {
+            if (lens.Orthographic)
+            {
+                DrawOrthographicFrustum(transform, lens.OrthographicSize,
+                    lens.FarClipPlane, lens.NearClipPlane, lens.Aspect);
+            }
+            else
+            {
+                DrawPerspectiveFrustum(transform, lens.FieldOfView, 
+                    lens.FarClipPlane, lens.NearClipPlane, lens.Aspect, false);
+            }
+        }
+
+        static void DrawOrthographicFrustum(Matrix4x4 transform, 
+            float orthographicSize, float farClipPlane, float nearClipRange, float aspect)
+        {
+            var originalMatrix = Handles.matrix;
+            Handles.matrix = transform;
+            
+            var size = new Vector3(aspect * orthographicSize * 2, 
+                orthographicSize * 2, farClipPlane - nearClipRange);
+            Handles.DrawWireCube(new Vector3(0, 0, (size.z / 2) + nearClipRange), size);
+            
+            Handles.matrix = originalMatrix;
+        }
+        
+        static void DrawPerspectiveFrustum(Matrix4x4 transform, 
+            float fov, float farClipPlane, float nearClipRange, float aspect, bool dottedLine)
+        {
+            var originalMatrix = Handles.matrix;
+            Handles.matrix = transform;
+            
+            fov = fov * 0.5f * Mathf.Deg2Rad;
+            var tanfov = Mathf.Tan(fov);
+            var farEnd = new Vector3(0, 0, farClipPlane);
+            var endSizeX = new Vector3(farClipPlane * tanfov * aspect, 0, 0);
+            var endSizeY = new Vector3(0, farClipPlane * tanfov, 0);
+
+            Vector3 s1, s2, s3, s4;
+            var e1 = farEnd + endSizeX + endSizeY;
+            var e2 = farEnd - endSizeX + endSizeY;
+            var e3 = farEnd - endSizeX - endSizeY;
+            var e4 = farEnd + endSizeX - endSizeY;
+            if (nearClipRange <= 0.0f)
+            {
+                s1 = s2 = s3 = s4 = Vector3.zero;
+            }
+            else
+            {
+                var startSizeX = new Vector3(nearClipRange * tanfov * aspect, 0, 0);
+                var startSizeY = new Vector3(0, nearClipRange * tanfov, 0);
+                var startPoint = new Vector3(0, 0, nearClipRange);
+                s1 = startPoint + startSizeX + startSizeY;
+                s2 = startPoint - startSizeX + startSizeY;
+                s3 = startPoint - startSizeX - startSizeY;
+                s4 = startPoint + startSizeX - startSizeY;
+
+                if (dottedLine)
+                {
+                    Handles.DrawDottedLine(s1, s2, k_DottedLineSpacing);
+                    Handles.DrawDottedLine(s2, s3, k_DottedLineSpacing);
+                    Handles.DrawDottedLine(s3, s4, k_DottedLineSpacing);
+                    Handles.DrawDottedLine(s4, s1, k_DottedLineSpacing);
+                }
+                else
+                {
+                    Handles.DrawLine(s1, s2);
+                    Handles.DrawLine(s2, s3);
+                    Handles.DrawLine(s3, s4);
+                    Handles.DrawLine(s4, s1);
+                }
+            }
+
+            if (dottedLine)
+            {
+                Handles.DrawDottedLine(e1, e2, k_DottedLineSpacing);
+                Handles.DrawDottedLine(e2, e3, k_DottedLineSpacing);
+                Handles.DrawDottedLine(e3, e4, k_DottedLineSpacing);
+                Handles.DrawDottedLine(e4, e1, k_DottedLineSpacing);
+
+                Handles.DrawDottedLine(s1, e1, k_DottedLineSpacing);
+                Handles.DrawDottedLine(s2, e2, k_DottedLineSpacing);
+                Handles.DrawDottedLine(s3, e3, k_DottedLineSpacing);
+                Handles.DrawDottedLine(s4, e4, k_DottedLineSpacing);
+            }
+            else
+            {
+                Handles.DrawLine(e1, e2);
+                Handles.DrawLine(e2, e3);
+                Handles.DrawLine(e3, e4);
+                Handles.DrawLine(e4, e1);
+
+                Handles.DrawLine(s1, e1);
+                Handles.DrawLine(s2, e2);
+                Handles.DrawLine(s3, e3);
+                Handles.DrawLine(s4, e4);
+            }
+
+            Handles.matrix = originalMatrix;
         }
 
         public static void TrackedObjectOffsetTool(
             CinemachineComponentBase cmComponent, SerializedProperty trackedObjectOffset)
         {
+            var originalColor = Handles.color;
+            
             var lookAtPos = cmComponent.LookAtTargetPosition;
             var lookAtRot = cmComponent.LookAtTargetRotation;
             var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset.vector3Value;
@@ -391,18 +533,20 @@ namespace Cinemachine.Editor
                     + trackedObjectOffset.vector3Value.ToString("F1"));
             }
             
-            var originalColor = Handles.color;
             Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
-                Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                Handles.selectedColor : s_HelperLineDefaultColor;
             Handles.DrawDottedLine(lookAtPos, trackedObjectPos, k_DottedLineSpacing);
             Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
-            Handles.color = originalColor;
 
             SoloOnDrag(trackedObjectOffsetHandleIsDragged, cmComponent.VirtualCamera, tooHandleMaxId);
+            
+            Handles.color = originalColor;
         }
 
         public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
         {
+            var originalColor = Handles.color;
+            
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
             var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
             var camPos = cmComponent.GetTargetCameraPosition(up);
@@ -430,15 +574,81 @@ namespace Cinemachine.Editor
             {
                 DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
             }
-            var originalColor = Handles.color;
-            Handles.color = followOffsetHandleIsDraggedOrHovered ? 
-                Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-            Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
-            Handles.color = originalColor;
 
+            Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : s_HelperLineDefaultColor;
+            Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
+            
             SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
+            
+            Handles.color = originalColor;
         }
         
+        /// <summary>
+        /// Draws Orbit handles (e.g. for freelook)
+        /// </summary>
+        /// <returns>Index of the rig being edited, or -1 if none</returns>
+        public static int OrbitControlHandle(
+            CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
+        {
+            var originalColor = Handles.color;
+            var followPos = vcam.Follow.position;
+            var draggedRig = -1;
+            var minIndex = 1;
+            for (var rigIndex = 0; rigIndex < orbits.arraySize; ++rigIndex)
+            {
+                var orbit = orbits.GetArrayElementAtIndex(rigIndex);
+                var orbitHeight = orbit.FindPropertyRelative("m_Height");
+                var orbitRadius = orbit.FindPropertyRelative("m_Radius");
+                Handles.color = Handles.preselectionColor;
+                EditorGUI.BeginChangeCheck();
+            
+                var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var heightHandlePos = followPos + Vector3.up * orbitHeight.floatValue;
+                var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up, 
+                    CubeHandleCapSize(heightHandlePos), Handles.CubeHandleCap, 0.5f);
+                
+                var radiusHandleOffset = Vector3.right;
+                var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var radiusHandlePos = followPos + Vector3.up * orbitHeight.floatValue
+                    + radiusHandleOffset * orbitRadius.floatValue;
+                var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset, 
+                    CubeHandleCapSize(radiusHandlePos), Handles.CubeHandleCap, 0.5f);
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    orbitHeight.floatValue += 
+                        SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
+                    orbitRadius.floatValue += 
+                        SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
+                    orbits.serializedObject.ApplyModifiedProperties();
+                }
+
+                var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
+                Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId ||
+                    HandleUtility.nearestControl == radiusHandleId
+                        ? Handles.selectedColor
+                        : s_HelperLineDefaultColor;
+                if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
+                {
+                    DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);
+                }
+                if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
+                {
+                    DrawLabel(radiusHandlePos, "Radius: " + orbitRadius.floatValue);
+                }
+
+                Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
+                if (isDragged)
+                {
+                    draggedRig = rigIndex;
+                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
+                }
+            }
+            SoloOnDrag(draggedRig != -1, vcam, minIndex);
+
+            Handles.color = originalColor;
+            return draggedRig;
+        }
         
         static bool s_IsDragging;
         static ICinemachineCamera s_UserSolo;
@@ -461,72 +671,7 @@ namespace Cinemachine.Editor
                 s_UserSolo = null;
             }
         }
-        
-        /// <summary>
-        /// Draws Orbit handles (e.g. for freelook)
-        /// </summary>
-        /// <returns>Index of the rig being edited, or -1 if none</returns>
-        public static int OrbitControlHandle(
-            CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
-        {
-            var followPos = vcam.Follow.position;
-            var draggedRig = -1;
-            var minIndex = 1;
-            for (var rigIndex = 0; rigIndex < orbits.arraySize; ++rigIndex)
-            {
-                var orbit = orbits.GetArrayElementAtIndex(rigIndex);
-                var orbitHeight = orbit.FindPropertyRelative("m_Height");
-                var orbitRadius = orbit.FindPropertyRelative("m_Radius");
-                Handles.color = Handles.preselectionColor;
-                EditorGUI.BeginChangeCheck();
-            
-                var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var heightHandlePos = followPos + Vector3.up * orbitHeight.floatValue;
-                var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up,
-                    HandleUtility.GetHandleSize(heightHandlePos) / 20f, Handles.DotHandleCap, 0.5f);
-                
-                var radiusHandleOffset = Vector3.right;
-                var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var radiusHandlePos = followPos + Vector3.up * orbitHeight.floatValue
-                    + radiusHandleOffset * orbitRadius.floatValue;
-                var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset,
-                    HandleUtility.GetHandleSize(radiusHandlePos) / 20f, Handles.DotHandleCap, 0.5f);
 
-                if (EditorGUI.EndChangeCheck())
-                {
-                    orbitHeight.floatValue += 
-                        SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
-                    orbitRadius.floatValue += 
-                        SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
-                    orbits.serializedObject.ApplyModifiedProperties();
-                }
-
-                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
-                var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
-                if (isDragged || HandleUtility.nearestControl == heightHandleId || 
-                    HandleUtility.nearestControl == radiusHandleId)
-                {
-                    Handles.color = Handles.selectedColor;
-                }
-                if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
-                {
-                    DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);
-                }
-                if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
-                {
-                    DrawLabel(radiusHandlePos, "Radius: " + orbitRadius.floatValue);
-                }
-
-                Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
-                if (isDragged)
-                {
-                    draggedRig = rigIndex;
-                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
-                }
-            }
-            SoloOnDrag(draggedRig != -1, vcam, minIndex);
-            return draggedRig;
-        }
     } 
 }
 #endif
