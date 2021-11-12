@@ -3,7 +3,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
-using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
@@ -12,7 +11,6 @@ namespace Tests.Runtime
         GameObject m_CameraHolderWithBrain, m_CameraHolderWithoutBrain, m_GoWithBrain, m_GoWithoutBrain;
         CinemachineVirtualCamera m_Vcam;
         GameObject m_FollowObject;
-
         CinemachineBrain m_BrainAlone, m_BrainAlone2;
 
         [SetUp]
@@ -36,8 +34,6 @@ namespace Tests.Runtime
             
             base.SetUp();
         }
-        
-        
 
         Vector3 m_Delta = new Vector3(10, 0, 0);
         IEnumerator CheckThatBrainsAreControllingTheirTargets()
