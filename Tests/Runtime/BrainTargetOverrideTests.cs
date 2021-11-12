@@ -37,15 +37,7 @@ namespace Tests.Runtime
             base.SetUp();
         }
         
-        void AreBrainControlledTransformsTheSame()
-        {
-            Assert.That(m_CameraHolderWithBrain.GetComponent<Camera>().fieldOfView == m_CameraHolderWithoutBrain.GetComponent<Camera>().fieldOfView, Is.True);
-            Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_CameraHolderWithoutBrain.transform), Is.True);
-            Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_GoWithBrain.transform), Is.True);
-            Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_GoWithoutBrain.transform), Is.True);
-            
-            bool EqualTransforms(Transform a, Transform b) => a.position == b.position && a.rotation == b.rotation;
-        }
+        
 
         Vector3 m_Delta = new Vector3(10, 0, 0);
         IEnumerator CheckThatBrainsAreControllingTheirTargets()
@@ -56,6 +48,16 @@ namespace Tests.Runtime
             m_FollowObject.transform.position += m_Delta;
             yield return null;
             AreBrainControlledTransformsTheSame();
+            
+            void AreBrainControlledTransformsTheSame()
+            {
+                Assert.That(m_CameraHolderWithBrain.GetComponent<Camera>().fieldOfView == m_CameraHolderWithoutBrain.GetComponent<Camera>().fieldOfView, Is.True);
+                Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_CameraHolderWithoutBrain.transform), Is.True);
+                Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_GoWithBrain.transform), Is.True);
+                Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_GoWithoutBrain.transform), Is.True);
+            
+                bool EqualTransforms(Transform a, Transform b) => a.position == b.position && a.rotation == b.rotation;
+            }
         }
         
         IEnumerator CheckDisconnectedBrains()
@@ -64,8 +66,9 @@ namespace Tests.Runtime
             m_BrainAlone2.ControlledObject = null;
             m_FollowObject.transform.position += m_Delta;
             yield return null;
-            Assert.That(m_CameraHolderWithBrain.transform.position == m_CameraHolderWithoutBrain.transform.position, Is.False);
-            Assert.That(m_CameraHolderWithBrain.transform.position == m_GoWithoutBrain.transform.position, Is.False);
+            var position = m_CameraHolderWithBrain.transform.position;
+            Assert.That(position == m_CameraHolderWithoutBrain.transform.position, Is.False);
+            Assert.That(position == m_GoWithoutBrain.transform.position, Is.False);
         }
         
         [UnityTest]
@@ -84,9 +87,7 @@ namespace Tests.Runtime
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();
         }
-
         
-
         [UnityTest]
         public IEnumerator FramingTransposer()
         {
