@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
 - Regression fix: could not change the projection of the main camera if a CM virtual camera is active.
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
-- Bugfix: Cinemachine assigns a default input controller delegate that returns 0 when Input System is present.
+- Bugfix: Cinemachine assigns a default input controller delegate that returns 0 when the legacy input system is disabled.
 - Cinemachine example scenes show informative text when used with Input System instead of throwing error messages.
 
 ## [2.9.0-pre.1] - 2021-10-26
