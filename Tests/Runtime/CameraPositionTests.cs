@@ -71,7 +71,6 @@ namespace Tests.Runtime
         public IEnumerator OrbTransposer()
         {
             var component = m_Vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
-            component.m_XAxis.m_InputAxisName = ""; // to avoid error when the Input System is installed in the testing project
             component.m_XDamping = 0;
             component.m_YDamping = 0;
             component.m_ZDamping = 0;
