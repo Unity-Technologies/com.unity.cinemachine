@@ -1,4 +1,5 @@
 #if UNITY_2021_2_OR_NEWER
+using System;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.Overlays;
@@ -8,7 +9,47 @@ using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [EditorTool("Follow Offset", typeof(CinemachineVirtualCameraBase))]
+    class CinemachineTool : EditorTool, IDrawSelectedHandles
+    {
+        GUIContent m_IconContent;
+        public override GUIContent toolbarIcon => m_IconContent;
+        Type m_Type;
+
+        void OnEnable()
+        {
+            m_Type = GetType();
+        }
+
+        public override void OnActivated()
+        {
+            base.OnActivated();
+            CinemachineSceneToolUtility.SetTool(true, m_Type);
+        }
+
+        public override void OnWillBeDeactivated()
+        {
+            base.OnWillBeDeactivated();
+            CinemachineSceneToolUtility.SetTool(false, m_Type);
+        }
+
+        // IsAvailable() can be polled frequently, make sure that it is not an expensive check
+        public override bool IsAvailable()
+        {
+            return CinemachineSceneToolUtility.IsToolRequired(m_Type);
+        }
+
+        // Move Editor.OnSceneGUI code into the tool implementation
+        public override void OnToolGUI(EditorWindow window)
+        {
+        }
+
+        // Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool
+        public void OnDrawHandles()
+        {
+        }
+    }
+    
+    [EditorTool("Follow Offset Tool", typeof(CinemachineVirtualCameraBase))]
     class FollowOffsetTool : EditorTool, IDrawSelectedHandles
     {
         FollowOffsetTool()
@@ -16,6 +57,23 @@ namespace Cinemachine.Editor
             // TODO: how to query if tool is clicked
             // from within the tool you can use ToolManager.IsActiveTool(this),
             // or outside you can use ToolManager.activeToolType == typeof(FollowOffsetTool)
+        }
+        
+        GUIContent m_IconContent;
+        void OnEnable()
+        {
+            m_IconContent = new GUIContent()
+            {
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
+                    + "/Editor/EditorResources/FollowOffset.png"),
+                text = "Follow Offset Tool",
+                tooltip = "Follow Offset Tool"
+            };
+        }
+
+        public override GUIContent toolbarIcon
+        {
+            get { return m_IconContent; }
         }
 
         public override void OnActivated()
