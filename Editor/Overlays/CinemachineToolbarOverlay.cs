@@ -11,6 +11,26 @@ namespace Cinemachine.Editor
     [EditorTool("Follow Offset", typeof(CinemachineVirtualCameraBase))]
     class FollowOffsetTool : EditorTool, IDrawSelectedHandles
     {
+        FollowOffsetTool()
+        {
+            // TODO: how to query if tool is clicked
+            // from within the tool you can use ToolManager.IsActiveTool(this),
+            // or outside you can use ToolManager.activeToolType == typeof(FollowOffsetTool)
+        }
+
+        public override void OnActivated()
+        {
+            base.OnActivated();
+            CinemachineSceneToolUtility.SetTool(true, typeof(FollowOffsetTool));
+        }
+
+        public override void OnWillBeDeactivated()
+        {
+            base.OnWillBeDeactivated();
+            CinemachineSceneToolUtility.SetTool(false, typeof(FollowOffsetTool));
+            
+        }
+
         // IsAvailable() can be polled frequently, make sure that it is not an expensive check
         public override bool IsAvailable()
         {
@@ -33,31 +53,31 @@ namespace Cinemachine.Editor
     /// To display a CinemachineExclusiveEditorToolbarToggle in the Cinemachine Toolbar,
     /// TODO: Make this extendable when another PR lands (see: CMCL-501),
     /// </summary>
-    [Overlay(typeof(SceneView), "Cinemachine")]
-    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
-    class CinemachineToolbarOverlay : ToolbarOverlay
-    {
-        public CinemachineToolbarOverlay()
-            : base(
-                FreelookRigSelection.id,
-                FoVTool.id,
-                FarNearClipTool.id,
-                //FollowOffsetTool.id,
-                TrackedObjectOffsetTool.id
-            )
-        {
-            CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
-            CinemachineSceneToolUtility.RegisterToolbarDisplayHandler(v =>
-            {
-                if (displayed == v)
-                {
-                    return false;
-                }
-                displayed = v;
-                return true;
-            });
-        }
-    }
+    // [Overlay(typeof(SceneView), "Cinemachine")]
+    // [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
+    // class CinemachineToolbarOverlay : ToolbarOverlay
+    // {
+    //     public CinemachineToolbarOverlay()
+    //         : base(
+    //             FreelookRigSelection.id,
+    //             FoVTool.id,
+    //             FarNearClipTool.id,
+    //             //FollowOffsetTool.id,
+    //             TrackedObjectOffsetTool.id
+    //         )
+    //     {
+    //         CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
+    //         CinemachineSceneToolUtility.RegisterToolbarDisplayHandler(v =>
+    //         {
+    //             if (displayed == v)
+    //             {
+    //                 return false;
+    //             }
+    //             displayed = v;
+    //             return true;
+    //         });
+    //     }
+    // }
 
     /// <summary>
     /// Creates a toggle tool on the Cinemachine toolbar that is exclusive with other
@@ -137,21 +157,6 @@ namespace Cinemachine.Editor
         {
             CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => value = isOn, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
-        }
-    }
-    
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class SoloVcamTool : CinemachineEditorToolbarToggle
-    {
-        public const string id = "SoloVcamTool/Toggle";
-
-        public SoloVcamTool()
-        {
-            this.RegisterValueChangedCallback(
-                v => CinemachineSceneToolUtility.SetSolo(v.newValue));
-            onIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleon@2x").image as Texture2D;
-            offIcon = EditorGUIUtility.IconContent("animationvisibilitytoggleoff@2x").image as Texture2D;
-            tooltip = "Solo Vcam Tool";
         }
     }
     

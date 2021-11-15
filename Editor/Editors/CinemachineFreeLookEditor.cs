@@ -35,7 +35,6 @@ namespace Cinemachine
             Target.UpdateInputAxisProvider();
             
 #if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -52,7 +51,6 @@ namespace Cinemachine
                 UnityEngine.Object.DestroyImmediate(m_rigEditor);
         
 #if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));

@@ -91,7 +91,6 @@ namespace Cinemachine.Editor
                     m_PipelineSet.SetStageIsLocked(s);
            
 #if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
 #endif
@@ -104,7 +103,6 @@ namespace Cinemachine.Editor
             base.OnDisable();
             
 #if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
 #endif

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 namespace Cinemachine.Editor
@@ -134,33 +135,12 @@ namespace Cinemachine.Editor
             s_ToolBarDisplay = handler;
         }
 
-        internal static void SetSolo(bool active)
-        {
-            if (active)
-            {
-                foreach (var o in Selection.gameObjects)
-                {
-                    var vcam = o.GetComponent<ICinemachineCamera>();
-                    if (vcam != null)
-                    {
-                        CinemachineBrain.SoloCamera = vcam;
-                        InspectorUtility.RepaintGameView();
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                CinemachineBrain.SoloCamera = null;
-            }
-        }
-
         internal static void SetTool(bool active, Type tool)
         {
             if (active)
             {
                 s_ActiveExclusiveTool = tool;
-                EnsureCinemachineToolsAreExclusiveWithUnityTools();
+                //EnsureCinemachineToolsAreExclusiveWithUnityTools();
             }
             else
             {
@@ -170,14 +150,14 @@ namespace Cinemachine.Editor
 
         static void EnsureCinemachineToolsAreExclusiveWithUnityTools()
         {
-            foreach (var toolHandle in s_ExclusiveTools)
-            {
-                toolHandle.Value.ToggleSetter(toolHandle.Key == s_ActiveExclusiveTool);
-            }
-            if (s_ActiveExclusiveTool != null)
-            {
-                Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
-            }
+            // foreach (var toolHandle in s_ExclusiveTools)
+            // {
+            //     toolHandle.Value.ToggleSetter(toolHandle.Key == s_ActiveExclusiveTool);
+            // }
+            // if (s_ActiveExclusiveTool != null)
+            // {
+            //     Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
+            // }
         }
 
         static CinemachineSceneToolUtility()
@@ -188,6 +168,7 @@ namespace Cinemachine.Editor
 
             EditorApplication.update += () =>
             {
+                Debug.Log(s_ActiveExclusiveTool);
                 if (s_RequiredTools.Count <= 0)
                 {
                     s_ToolbarTurnOffByMe |= s_ToolBarDisplay(false);
@@ -198,36 +179,30 @@ namespace Cinemachine.Editor
                     s_ToolbarTurnOffByMe = false;
                 }
                 
-                var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
+                //var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
                 // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
-                if (s_ActiveExclusiveTool != null && (Tools.current != Tool.None || cmToolbarIsHidden))
-                {
-                    SetTool(true, null);
-                }
+                // if (s_ActiveExclusiveTool != null && (Tools.current != Tool.None || cmToolbarIsHidden))
+                // {
+                //     SetTool(true, null);
+                // }
 
-                if (!cmToolbarIsHidden)
-                {
-                    // only display cm tools that are relevant for the current selection
-                    foreach (var toolHandle in s_ExclusiveTools)
-                    {
-                        toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
-                    }
-                    foreach (var toolHandle in s_Tools)
-                    {
-                        toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
-                    }
-                }
-                
-                if (s_Tools.ContainsKey(s_SoloVcamToolType)) {
-                    s_Tools[s_SoloVcamToolType].ToggleSetter(CinemachineBrain.SoloCamera != null);
-                }
-                
-                // EditorApplication.delayCall += RefreshToolbarHack;
+                // if (!cmToolbarIsHidden)
+                // {
+                //     // only display cm tools that are relevant for the current selection
+                //     foreach (var toolHandle in s_ExclusiveTools)
+                //     {
+                //         toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
+                //     }
+                //     foreach (var toolHandle in s_Tools)
+                //     {
+                //         toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
+                //     }
+                // }
+
                 RefreshToolbarHack();
             };
             
         }
-        static Type s_SoloVcamToolType = typeof(SoloVcamTool);
 
         // TODO: remove RefreshToolbarHack hack, when the Tools expose a public API to refresh it!
         static bool s_TriggerRefresh;
