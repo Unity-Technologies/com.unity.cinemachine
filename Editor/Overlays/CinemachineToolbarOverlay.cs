@@ -14,14 +14,12 @@ namespace Cinemachine.Editor
         // IsAvailable() can be polled frequently, make sure that it is not an expensive check
         public override bool IsAvailable()
         {
-            Debug.Log("FollowOffsetTool IsAvailable");
             return CinemachineSceneToolUtility.IsToolRequired(typeof(FollowOffsetTool));
         }
 
         // Move Editor.OnSceneGUI code into the tool implementation
         public override void OnToolGUI(EditorWindow window)
         {
-            Debug.Log("FollowOffsetTool OnToolGUI");
         }
 
         // Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool

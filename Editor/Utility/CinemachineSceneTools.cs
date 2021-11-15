@@ -1,5 +1,6 @@
 #if UNITY_2021_2_OR_NEWER
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
@@ -40,6 +41,8 @@ namespace Cinemachine.Editor
             {
                 s_RequiredTools.Add(tool, 1);
             }
+
+            s_TriggerRefresh = true;
         }
         
         /// <summary>
@@ -57,11 +60,12 @@ namespace Cinemachine.Editor
                     s_RequiredTools.Remove(tool);
                 }
             }
+
+            s_TriggerRefresh = true;
         }
 
         internal static bool IsToolRequired(Type tool)
         {
-            Debug.Log(s_RequiredTools.ContainsKey(tool));
             return s_RequiredTools.ContainsKey(tool);
         }
         
@@ -175,7 +179,8 @@ namespace Cinemachine.Editor
                 Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
             }
         }
-        
+
+        static bool s_TriggerRefresh;
         static CinemachineSceneToolUtility()
         {
             s_ExclusiveTools = new Dictionary<Type, CinemachineSceneToolDelegates>();
@@ -217,9 +222,34 @@ namespace Cinemachine.Editor
                 if (s_Tools.ContainsKey(s_SoloVcamToolType)) {
                     s_Tools[s_SoloVcamToolType].ToggleSetter(CinemachineBrain.SoloCamera != null);
                 }
+                
+                // EditorApplication.delayCall += RefreshToolbarHack;
+                RefreshToolbarHack();
             };
+            
         }
         static Type s_SoloVcamToolType = typeof(SoloVcamTool);
+
+        static void RefreshToolbarHack()
+        {
+            if (s_TriggerRefresh)
+            {
+                foreach (var scene in SceneView.sceneViews)
+                {
+                    if (((SceneView)scene).TryGetOverlay("unity-transform-toolbar", out var tools))
+                    {
+                        if (tools.displayed)
+                        {
+                            tools.displayed = false;
+                            tools.displayed = true;
+                            break;
+                        }
+                    }
+                }
+                
+                s_TriggerRefresh = false;
+            }
+        }
     }
     
     static class CinemachineSceneToolHelpers
@@ -678,7 +708,6 @@ namespace Cinemachine.Editor
                 s_UserSolo = null;
             }
         }
-
     } 
 }
 #endif
