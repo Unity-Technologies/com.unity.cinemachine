@@ -9,11 +9,15 @@ using UnityEngine.UIElements;
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// TODO: describe ux
+    /// This is a generic Tool class for Cinemachine tools.
+    /// To add a new tool, inherit from this class and implement the default Constructor to set m_Type, and
+    /// implement OnEnable to set m_IconContent.
     /// </summary>
     public class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
-        public override GUIContent toolbarIcon => m_IconContent;
+        /// <summary>This lets the editor find the icon of the tool.</summary>
+        public override GUIContent toolbarIcon => m_IconContent; 
+        
         protected GUIContent m_IconContent;
         protected Type m_Type;
 
@@ -29,7 +33,6 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.SetTool(false, m_Type);
         }
 
-        // IsAvailable() can be polled frequently, make sure that it is not an expensive check
         public override bool IsAvailable()
         {
             return CinemachineSceneToolUtility.IsToolRequired(m_Type);
@@ -59,13 +62,12 @@ namespace Cinemachine.Editor
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                     + "/Editor/EditorResources/FOV.png"),
-                text = "Field of View Tool",
                 tooltip = "Field of View Tool",
             };
         }
     }
     
-    [EditorTool("Far/Near Clip Tool", typeof(CinemachineVirtualCameraBase))]
+    [EditorTool("Far-Near Clip Tool", typeof(CinemachineVirtualCameraBase))]
     class FarNearClipTool : CinemachineTool
     {
         FarNearClipTool()
@@ -78,7 +80,6 @@ namespace Cinemachine.Editor
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                     + "/Editor/EditorResources/FarNearClip.png"),
-                text = "Far/Near Clip Tool",
                 tooltip = "Far/Near Clip Tool",
             };
         }
@@ -97,7 +98,6 @@ namespace Cinemachine.Editor
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                     + "/Editor/EditorResources/FollowOffset.png"),
-                text = "Follow Offset Tool",
                 tooltip = "Follow Offset Tool"
             };
         }
@@ -117,7 +117,6 @@ namespace Cinemachine.Editor
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
                     + "/Editor/EditorResources/TrackedObjectOffset.png"),
-                text = "Tracked Object Offset Tool",
                 tooltip = "Tracked Object Offset Tool",
             };
         }
