@@ -1,10 +1,8 @@
 #if UNITY_2021_2_OR_NEWER
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 namespace Cinemachine.Editor
@@ -69,78 +67,13 @@ namespace Cinemachine.Editor
         {
             return s_RequiredTools.ContainsKey(tool);
         }
-        
         static Dictionary<Type, int> s_RequiredTools;
-
-        public delegate void ToolHandler(bool v);
-        struct CinemachineSceneToolDelegates
-        {
-            public ToolHandler ToggleSetter;
-            public ToolHandler IsDisplayedSetter;
-        }
-        static Dictionary<Type, CinemachineSceneToolDelegates> s_ExclusiveTools; // tools that can't be active at the same time
-        static Dictionary<Type, CinemachineSceneToolDelegates> s_Tools; // tools without restrictions
         
-        /// <summary>
-        /// Use for registering tool handlers for tools that are exclusive with each other,
-        /// meaning they cannot be active at the same time.
-        /// </summary>
-        /// <param name="tool">The tool to register.</param>
-        /// <param name="toggleSetter">The tool's toggle value setter.</param>
-        /// <param name="isDisplayedSetter">The tool's isDisplayed setter.</param>
-        internal static void RegisterExclusiveToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
-        {
-            RegisterToolHandlers(ref s_ExclusiveTools, tool, toggleSetter, isDisplayedSetter);
-        }
-        
-        /// <summary>
-        /// Use for registering tool handlers for tools that can be active anytime
-        /// without taking other tools into consideration.
-        /// </summary>
-        /// <param name="tool">The tool to register.</param>
-        /// <param name="toggleSetter">The tool's toggle value setter.</param>
-        /// <param name="isDisplayedSetter">The tool's isDisplayed setter.</param>
-        internal static void RegisterToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
-        {
-            RegisterToolHandlers(ref s_Tools, tool, toggleSetter, isDisplayedSetter);
-        }
-
-        static void RegisterToolHandlers(ref Dictionary<Type, CinemachineSceneToolDelegates> tools,
-            Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
-        {
-            if (tools.ContainsKey(tool))
-            {
-                tools.Remove(tool);
-            }
-            
-            tools.Add(tool, new CinemachineSceneToolDelegates
-            {
-                ToggleSetter = toggleSetter,
-                IsDisplayedSetter = isDisplayedSetter,
-            });
-        }
-        
-        internal delegate bool ToolbarHandler();
-        static ToolbarHandler s_ToolBarIsDisplayed;
-        internal static void RegisterToolbarIsDisplayedHandler(ToolbarHandler handler)
-        {
-            s_ToolBarIsDisplayed = handler;
-        }
-
-        static bool s_ToolbarTurnOffByMe;
-        internal delegate bool ToolbarTurnOnOffHandler(bool on);
-        static ToolbarTurnOnOffHandler s_ToolBarDisplay;
-        internal static void RegisterToolbarDisplayHandler(ToolbarTurnOnOffHandler handler)
-        {
-            s_ToolBarDisplay = handler;
-        }
-
         internal static void SetTool(bool active, Type tool)
         {
             if (active)
             {
                 s_ActiveExclusiveTool = tool;
-                //EnsureCinemachineToolsAreExclusiveWithUnityTools();
             }
             else
             {
@@ -148,59 +81,10 @@ namespace Cinemachine.Editor
             }
         }
 
-        static void EnsureCinemachineToolsAreExclusiveWithUnityTools()
-        {
-            // foreach (var toolHandle in s_ExclusiveTools)
-            // {
-            //     toolHandle.Value.ToggleSetter(toolHandle.Key == s_ActiveExclusiveTool);
-            // }
-            // if (s_ActiveExclusiveTool != null)
-            // {
-            //     Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
-            // }
-        }
-
         static CinemachineSceneToolUtility()
         {
-            s_ExclusiveTools = new Dictionary<Type, CinemachineSceneToolDelegates>();
-            s_Tools = new Dictionary<Type, CinemachineSceneToolDelegates>();
             s_RequiredTools = new Dictionary<Type, int>();
-
-            EditorApplication.update += () =>
-            {
-                // if (s_RequiredTools.Count <= 0)
-                // {
-                //     s_ToolbarTurnOffByMe |= s_ToolBarDisplay(false);
-                // }
-                // else if (s_ToolbarTurnOffByMe)
-                // {
-                //     s_ToolBarDisplay(true);
-                //     s_ToolbarTurnOffByMe = false;
-                // }
-                
-                //var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
-                // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
-                // if (s_ActiveExclusiveTool != null && (Tools.current != Tool.None || cmToolbarIsHidden))
-                // {
-                //     SetTool(true, null);
-                // }
-
-                // if (!cmToolbarIsHidden)
-                // {
-                //     // only display cm tools that are relevant for the current selection
-                //     foreach (var toolHandle in s_ExclusiveTools)
-                //     {
-                //         toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
-                //     }
-                //     foreach (var toolHandle in s_Tools)
-                //     {
-                //         toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
-                //     }
-                // }
-
-                RefreshToolbarHack();
-            };
-            
+            EditorApplication.update += RefreshToolbarHack;
         }
 
         // TODO: remove RefreshToolbarHack hack, when the Tools expose a public API to refresh it!
@@ -230,7 +114,7 @@ namespace Cinemachine.Editor
     static class CinemachineSceneToolHelpers
     {
         public const float lineThickness = 2f;
-        public static Color s_HelperLineDefaultColor = new Color(255, 255, 255, 25);
+        public static Color helperLineDefaultColor = new Color(255, 255, 255, 25);
         const float k_DottedLineSpacing = 4f;
 
         static GUIStyle s_LabelStyle = new GUIStyle 
@@ -342,7 +226,7 @@ namespace Cinemachine.Editor
                 }
             }
             
-            Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : s_HelperLineDefaultColor;
+            Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : helperLineDefaultColor;
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             DrawFrustum(vcamLocalToWorld, lens);
                 
@@ -383,7 +267,7 @@ namespace Cinemachine.Editor
             
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             var vcamLens = vcamState.Lens;
-            Handles.color = s_HelperLineDefaultColor;
+            Handles.color = helperLineDefaultColor;
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
                 DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
@@ -546,7 +430,7 @@ namespace Cinemachine.Editor
             }
             
             Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
-                Handles.selectedColor : s_HelperLineDefaultColor;
+                Handles.selectedColor : helperLineDefaultColor;
             Handles.DrawDottedLine(lookAtPos, trackedObjectPos, k_DottedLineSpacing);
             Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
 
@@ -587,7 +471,7 @@ namespace Cinemachine.Editor
                 DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
             }
 
-            Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : s_HelperLineDefaultColor;
+            Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : helperLineDefaultColor;
             Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
             
             SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
@@ -639,7 +523,7 @@ namespace Cinemachine.Editor
                 Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId ||
                     HandleUtility.nearestControl == radiusHandleId
                         ? Handles.selectedColor
-                        : s_HelperLineDefaultColor;
+                        : helperLineDefaultColor;
                 if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
                 {
                     DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);

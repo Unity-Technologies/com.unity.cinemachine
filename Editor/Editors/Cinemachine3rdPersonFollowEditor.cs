@@ -138,7 +138,7 @@ namespace Cinemachine.Editor
                     CinemachineSceneToolHelpers.DrawLabel(labelPos, text);
                     
                 Handles.color = handleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
+                    Handles.selectedColor : CinemachineSceneToolHelpers.helperLineDefaultColor;
                 Handles.DrawLine(lineStart, lineEnd, CinemachineSceneToolHelpers.lineThickness);
                     
                 return handleIsDragged;

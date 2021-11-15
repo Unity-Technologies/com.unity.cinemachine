@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.Toolbars;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -12,6 +11,16 @@ namespace Cinemachine.Editor
     /// This is a generic Tool class for Cinemachine tools.
     /// To add a new tool, inherit from this class and implement the default Constructor to set m_Type, and
     /// implement OnEnable to set m_IconContent.
+    ///
+    /// A tool will be drawn iff it has been registered using CinemachineSceneToolUtility.RegisterTool.
+    /// This is generally done in the OnEnable function of the editor script of the cinemachine component
+    /// (CinemahcineVirtualCamera, CinemachineComponentBase), for which the tool was meant.
+    /// To unregister, call CinemachineSceneToolUtility.UnregisterTool in the same script's OnDisable function.
+    ///
+    /// To draw the handles related to the tool, you need to implement your drawing function and call it in the
+    /// editor script's OnSceneGUI function.
+    ///
+    /// To check, if a tool has been enabled/disabled in the editor, use CinemachineSceneToolUtility.IsToolActive.
     /// </summary>
     public class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
@@ -133,8 +142,8 @@ namespace Cinemachine.Editor
         {
             tooltip = "Freelook Rig Selection";
             clicked += FreelookRigSelectionMenu;
-            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
-                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
+            // CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
+            //     display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
             EditorApplication.update += ShadowSelectedRigName;
         }
 
