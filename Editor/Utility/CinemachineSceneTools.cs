@@ -168,16 +168,15 @@ namespace Cinemachine.Editor
 
             EditorApplication.update += () =>
             {
-                Debug.Log(s_ActiveExclusiveTool);
-                if (s_RequiredTools.Count <= 0)
-                {
-                    s_ToolbarTurnOffByMe |= s_ToolBarDisplay(false);
-                }
-                else if (s_ToolbarTurnOffByMe)
-                {
-                    s_ToolBarDisplay(true);
-                    s_ToolbarTurnOffByMe = false;
-                }
+                // if (s_RequiredTools.Count <= 0)
+                // {
+                //     s_ToolbarTurnOffByMe |= s_ToolBarDisplay(false);
+                // }
+                // else if (s_ToolbarTurnOffByMe)
+                // {
+                //     s_ToolBarDisplay(true);
+                //     s_ToolbarTurnOffByMe = false;
+                // }
                 
                 //var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
                 // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
