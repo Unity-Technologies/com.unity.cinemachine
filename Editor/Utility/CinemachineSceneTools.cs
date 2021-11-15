@@ -180,7 +180,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        static bool s_TriggerRefresh;
         static CinemachineSceneToolUtility()
         {
             s_ExclusiveTools = new Dictionary<Type, CinemachineSceneToolDelegates>();
@@ -230,6 +229,8 @@ namespace Cinemachine.Editor
         }
         static Type s_SoloVcamToolType = typeof(SoloVcamTool);
 
+        // TODO: remove RefreshToolbarHack hack, when the Tools expose a public API to refresh it!
+        static bool s_TriggerRefresh;
         static void RefreshToolbarHack()
         {
             if (s_TriggerRefresh)
