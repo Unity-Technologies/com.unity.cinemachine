@@ -9,8 +9,8 @@ namespace Tests.Runtime
 {
     public class CameraPositionTests : CinemachineFixtureBase
     {
-        private CinemachineVirtualCamera m_Vcam;
-        private GameObject m_FollowObject;
+        CinemachineVirtualCamera m_Vcam;
+        GameObject m_FollowObject;
 
         [SetUp]
         public override void SetUp()
@@ -27,7 +27,7 @@ namespace Tests.Runtime
         public IEnumerator DoNothing()
         {
             m_Vcam.Follow = m_FollowObject.transform;
-            Vector3 oldPos = m_Vcam.transform.position;
+            var oldPos = m_Vcam.transform.position;
             m_FollowObject.transform.position += new Vector3(2, 2, 2);
             yield return null;
             Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
@@ -46,7 +46,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator FramingTransposer()
         {
-            CinemachineFramingTransposer component = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            var component = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
             component.m_XDamping = 0;
             component.m_YDamping = 0;
             component.m_ZDamping = 0;
@@ -70,7 +70,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator OrbTransposer()
         {
-            CinemachineOrbitalTransposer component = m_Vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
+            var component = m_Vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
             component.m_XDamping = 0;
             component.m_YDamping = 0;
             component.m_ZDamping = 0;
@@ -86,7 +86,7 @@ namespace Tests.Runtime
         {
             m_Vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
             m_Vcam.Follow = m_FollowObject.transform;
-            Vector3 oldPos = m_Vcam.transform.position;
+            var oldPos = m_Vcam.transform.position;
             m_FollowObject.transform.position += new Vector3(2, 2, 2);
             yield return null;
             Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
@@ -95,7 +95,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator Transposer()
         {
-            CinemachineTransposer component = m_Vcam.AddCinemachineComponent<CinemachineTransposer>();
+            var component = m_Vcam.AddCinemachineComponent<CinemachineTransposer>();
             component.m_XDamping = 0;
             component.m_YDamping = 0;
             component.m_ZDamping = 0;

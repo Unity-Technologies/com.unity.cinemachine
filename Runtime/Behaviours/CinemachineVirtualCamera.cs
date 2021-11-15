@@ -157,13 +157,11 @@ namespace Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
-            if (!m_UserIsDragging)
-            {
-                if (Follow != null)
-                    transform.position = State.RawPosition;
-                if (LookAt != null)
-                    transform.rotation = State.RawOrientation;
-            }
+            if (Follow != null)
+                transform.position = State.RawPosition;
+            if (LookAt != null)
+                transform.rotation = State.RawOrientation;
+            
             PreviousStateIsValid = true;
         }
 
@@ -392,9 +390,6 @@ namespace Cinemachine
                 }
             }
         }
-
-        /// <summary>API for the editor, to make the dragging of position handles behave better.</summary>
-        internal bool m_UserIsDragging;
 
         CameraState m_State = CameraState.Default; // Current state this frame
 

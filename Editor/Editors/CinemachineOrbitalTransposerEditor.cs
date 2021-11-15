@@ -15,7 +15,6 @@ namespace Cinemachine.Editor
             base.GetExcludedPropertiesInInspector(excluded);
             if (Target.m_HeadingIsSlave)
             {
-                excluded.Add(FieldPath(x => x.m_FollowOffset));
                 excluded.Add(FieldPath(x => x.m_BindingMode));
                 excluded.Add(FieldPath(x => x.m_Heading));
                 excluded.Add(FieldPath(x => x.m_XAxis));
@@ -69,12 +68,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        private void OnEnable()
-        {
-            for (int i = 0; i < targets.Length; ++i)
-                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
-        }
-
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -89,23 +82,7 @@ namespace Cinemachine.Editor
                 = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
             DrawRemainingPropertiesInInspector();
         }
-
-        /// Process a position drag from the user.
-        /// Called "magically" by the vcam editor, so don't change the signature.
-        private void OnVcamPositionDragged(Vector3 delta)
-        {
-            if (Target.FollowTarget != null)
-            {
-                Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
-                Quaternion targetOrientation = Target.GetReferenceOrientation(Target.VcamState.ReferenceUp);
-                targetOrientation = targetOrientation * Quaternion.Euler(0, Target.m_Heading.m_Bias, 0);
-                Vector3 localOffset = Quaternion.Inverse(targetOrientation) * delta;
-                localOffset.x = 0;
-                Target.m_FollowOffset += localOffset;
-                Target.m_FollowOffset = Target.EffectiveOffset;
-            }
-        }
-
+        
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]
         static void DrawTransposerGizmos(CinemachineOrbitalTransposer target, GizmoType selectionType)
         {
@@ -144,5 +121,49 @@ namespace Cinemachine.Editor
             }
             Gizmos.matrix = prevMatrix;
         }
+        
+        protected virtual void OnEnable()
+        {
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
+
+#if UNITY_2021_2_OR_NEWER
+            if (!Target.HideOffsetInInspector)
+            {
+                CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+            }
+#endif
+        }
+        
+        protected virtual void OnDisable()
+        {
+#if UNITY_2021_2_OR_NEWER
+            if (!Target.HideOffsetInInspector)
+            {
+                CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+            }
+#endif
+        }
+        
+#if UNITY_2021_2_OR_NEWER
+        void OnSceneGUI()
+        {
+            DrawSceneTools();
+        }
+
+        void DrawSceneTools()
+        {
+            var orbitalTransposer = Target;
+            if (orbitalTransposer == null || !orbitalTransposer.IsValid || orbitalTransposer.HideOffsetInInspector)
+            {
+                return;
+            }
+            
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            {
+                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer);
+            }
+        }
+#endif
     }
 }

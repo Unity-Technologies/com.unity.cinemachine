@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
-using Cinemachine.Utility;
+using System.Linq;
 
 namespace Cinemachine
 {
@@ -61,6 +61,12 @@ namespace Cinemachine
                         }
                     }
                 });
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
+#endif
         }
 
         protected override void OnDisable()
@@ -68,6 +74,12 @@ namespace Cinemachine
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
             m_PipelineSet.Shutdown();
             base.OnDisable();
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
+#endif
         }
 
         void ResetTargetOnUndo() 
@@ -88,31 +100,40 @@ namespace Cinemachine
             DrawExtensionsWidgetInInspector();
         }
 
-        Vector3 m_PreviousPosition; // for position dragging
-        private void OnSceneGUI()
+        void OnSceneGUI()
         {
-            if (!Target.UserIsDragging)
-                m_PreviousPosition = Target.transform.position;
-            if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
-                && Event.current.type == EventType.MouseDrag)
-            {
-                // User might be dragging our position handle
-                Target.UserIsDragging = true;
-                Vector3 delta = Target.transform.position - m_PreviousPosition;
-                if (!delta.AlmostZero())
-                {
-                    m_PipelineSet.OnPositionDragged(delta);
-                    m_PreviousPosition = Target.transform.position;
-                }
-            }
-            else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
-            {
-                // We're not dragging anything now, but we were
-                InspectorUtility.RepaintGameView();
-                Target.UserIsDragging = false;
-            }
+            m_PipelineSet.OnSceneGUI(); // call hidden editors
+            
+#if UNITY_2021_2_OR_NEWER
+            DrawSceneTools();
+#endif
         }
 
+#if UNITY_2021_2_OR_NEWER
+        void DrawSceneTools()
+        {
+            var vcam = Target;
+            if (vcam == null || !vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
+            {
+                return;
+            }
+
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
+            {
+                CinemachineSceneToolHelpers.FovToolHandle(vcam, 
+                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens), 
+                    vcam.m_Lens, IsHorizontalFOVUsed());
+            }
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+            {
+                CinemachineSceneToolHelpers.NearFarClipHandle(vcam,
+                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens));
+            }
+            Handles.color = originalColor;
+        }
+#endif
     }
 }
 #endif

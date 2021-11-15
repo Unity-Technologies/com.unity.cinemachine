@@ -93,6 +93,11 @@ namespace Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
+            
+#if UNITY_2021_2_OR_NEWER           
+            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
+#endif
         }
 
         protected virtual void OnDisable()
@@ -101,6 +106,11 @@ namespace Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
+
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
+#endif
         }
 
         public override void OnInspectorGUI()
@@ -122,23 +132,6 @@ namespace Cinemachine.Editor
             // Draw the properties
             DrawRemainingPropertiesInInspector();
             m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
-        }
-
-
-        /// Process a position drag from the user.
-        /// Called "magically" by the vcam editor, so don't change the signature.
-        public void OnVcamPositionDragged(Vector3 delta)
-        {
-            if (Target.FollowTarget != null)
-            {
-                Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
-                var fwd = Target.transform.forward;
-                var zComponent = Vector3.Dot(fwd, delta);
-                delta -= fwd * zComponent;
-                Vector3 localOffset = Quaternion.Inverse(Target.FollowTarget.rotation) * delta;
-                Target.m_TrackedObjectOffset += localOffset;
-                Target.m_CameraDistance  = Mathf.Max(0.01f, Target.m_CameraDistance - zComponent);
-            }
         }
         
         protected virtual void OnGUI()
@@ -210,5 +203,65 @@ namespace Cinemachine.Editor
                 Gizmos.matrix = m;
             }
         }
+
+#if UNITY_2021_2_OR_NEWER
+        void OnSceneGUI()
+        {
+            DrawSceneTools();
+        }
+        
+        void DrawSceneTools()
+        {
+            var framingTransposer = Target;
+            if (framingTransposer == null || !framingTransposer.IsValid)
+            {
+                return;
+            }
+            
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
+            {
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(framingTransposer, 
+                    new SerializedObject(framingTransposer).FindProperty(() => framingTransposer.m_TrackedObjectOffset));
+            }
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            {
+                var originalColor = Handles.color;
+                var camPos = framingTransposer.VcamState.RawPosition;
+                var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                EditorGUI.BeginChangeCheck();
+                Handles.color = CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
+                var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
+                    CinemachineSceneToolHelpers.CubeHandleCapSize(camPos), Handles.CubeHandleCap, 0.5f);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
+                    var so = new SerializedObject(framingTransposer);
+                    var prop = so.FindProperty(() => framingTransposer.m_CameraDistance);
+                    prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
+                    so.ApplyModifiedProperties();
+                }
+
+                var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
+                var cameraDistanceHandleIsUsedOrHovered = cameraDistanceHandleIsDragged || 
+                    HandleUtility.nearestControl == cdHandleId;
+                if (cameraDistanceHandleIsUsedOrHovered)
+                {
+                    CinemachineSceneToolHelpers.DrawLabel(camPos, 
+                        "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
+                }
+                
+                Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
+                    Handles.selectedColor : CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
+                Handles.DrawLine(camPos, 
+                    framingTransposer.FollowTarget.position + framingTransposer.m_TrackedObjectOffset);
+
+                CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
+                    cdHandleId);
+                
+                Handles.color = originalColor;
+            }
+        }
+#endif
     }
 }

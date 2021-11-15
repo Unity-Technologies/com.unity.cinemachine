@@ -90,10 +90,16 @@ namespace Cinemachine.Editor
                 excluded.AddRange(Target.m_ExcludedPropertiesInInspector);
         }
 
+        /// <summary>Update state information on undo/redo</summary>
+        void UpdateCameraState() => Target.InternalUpdateCameraState(Vector3.up, -1);
+        
+
         /// <summary>Inspector panel is being enabled.  
         /// Implementation should call the base class implementation</summary>
         protected virtual void OnEnable()
         {
+            Undo.undoRedoPerformed += UpdateCameraState;
+            
             IsPrefabBase = Target.gameObject.scene.name == null; // causes a small GC alloc
             if (sExtensionTypes == null)
             {
@@ -119,6 +125,8 @@ namespace Cinemachine.Editor
         /// Implementation should call the base class implementation</summary>
         protected virtual void OnDisable()
         {
+            Undo.undoRedoPerformed -= UpdateCameraState;
+            
             if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
             {
                 CinemachineBrain.SoloCamera = null;
@@ -357,6 +365,8 @@ namespace Cinemachine.Editor
         }
 
         LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
+        internal bool IsHorizontalFOVUsed() => 
+            m_LensSettingsInspectorHelper != null && m_LensSettingsInspectorHelper.UseHorizontalFOV;
 
         /// <summary>
         /// Draw the Lens Settings controls in the inspector
@@ -375,6 +385,7 @@ namespace Cinemachine.Editor
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target);
             if (brain != null)
                 camera = brain.OutputCamera;
+            
             m_LensSettingsInspectorHelper.SnapshotCameraShadowValues(property, camera);
 
             m_LensSettingsInspectorHelper.DrawLensSettingsInInspector(property);
@@ -404,7 +415,7 @@ namespace Cinemachine.Editor
         bool IsOrtho;
         bool IsPhysical;
         Vector2 SensorSize;
-        bool UseHorizontalFOV;
+        internal bool UseHorizontalFOV;
         static bool s_AdvancedExpanded;
         SerializedProperty ModeOverrideProperty;
 
@@ -439,7 +450,7 @@ namespace Cinemachine.Editor
 
             // Assume lens is up-to-date
             UseHorizontalFOV = false;
-            object lensObject = SerializedPropertyHelper.GetPropertyValue(property);
+            var lensObject = SerializedPropertyHelper.GetPropertyValue(property);
             IsOrtho = AccessProperty<bool>(typeof(LensSettings), lensObject, "Orthographic");
             IsPhysical = AccessProperty<bool>(typeof(LensSettings), lensObject, "IsPhysicalCamera");
             SensorSize = AccessProperty<Vector2>(typeof(LensSettings), lensObject, "SensorSize");
@@ -460,6 +471,13 @@ namespace Cinemachine.Editor
                     IsPhysical = camera.usePhysicalProperties;
                     SensorSize = IsPhysical ? camera.sensorSize : new Vector2(camera.aspect, 1f);
                 }
+            }
+            
+            var nearClipPlaneProperty = property.FindPropertyRelative("NearClipPlane");
+            if (!IsOrtho)
+            {
+                nearClipPlaneProperty.floatValue = Mathf.Max(nearClipPlaneProperty.floatValue, 0.001f);
+                property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
             }
         }
 

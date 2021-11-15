@@ -8,7 +8,7 @@ The procedural nature of these modules makes Cinemachine bug-resistant. When you
 
 Cinemachine works in real time across all genres including FPS, third person, 2D, side-scroller, top down, and RTS. It supports as many shots in your Scene as you need. Its modular system lets you compose sophisticated behaviors.
 
-Cinemachine works well with other Unity tools, acting as a powerful complement to Timeline, animation, and post-processing assets.  Create your own [extensions](CinemachineVirtualCameraExtensions.html) or integrate it with your custom camera scripts.
+Cinemachine works well with other Unity tools, acting as a powerful complement to Timeline, animation, and post-processing assets. Create your own [extensions](CinemachineVirtualCameraExtensions.html) or integrate it with your custom camera scripts.
 
 ## Installing Cinemachine
 
@@ -24,7 +24,7 @@ If you already installed Cinemachine from the Unity Asset Store, you can upgrade
 
 To upgrade to the Cinemachine Package:
 
-1. In Unity Editor, 2018.4.17f1 or later, open your project.
+1. In Unity Editor, 2019.4+ or later, open your project.
 
 2. Save the current Scene you are working on.
 
@@ -40,16 +40,6 @@ Cinemachine has no external dependencies. Just install it and start using it. If
 
 There are similar `ifdef`-protected behaviours for other packages, such as HDRP Volumes, Timeline, and Pixel-Perfect.
 
-This Cinemachine version 2.6 is compatible with the following versions of the Unity Editor:
+This version of Cinemachine is supported by the following versions of the Unity Editor:
 
-* 2018.4.17f1 and later
-
-## Revision History
-
-| **Date:** | **Reason:** |
-|:---|:---|
-| May 01, 2020 | Updated for 2.6. |
-| Nov 15, 2019 | Updated for 2.4. Restructured Table of Contents and added Pixel Perfect extension. |
-| July 3, 2018 | Updated for 2.2.6. |
-| February 15, 2018 | Updated for 2.1.11. |
-| November 21, 2017 | Initial version. |
+* 2019.4+ and later

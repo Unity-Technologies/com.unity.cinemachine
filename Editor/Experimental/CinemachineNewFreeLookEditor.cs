@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -82,12 +81,26 @@ namespace Cinemachine
 
             for (int i = 0; i < targets.Length; ++i)
                 (targets[i] as CinemachineNewFreeLook).UpdateInputAxisProvider();
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+#endif
         }
 
         protected override void OnDisable()
         {
             m_PipelineSet.Shutdown();
             base.OnDisable();
+            
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+#endif
         }
 
         void ResetTargetOnUndo() 
@@ -128,13 +141,8 @@ namespace Cinemachine
             // Pipeline Stages
             EditorGUILayout.Space();
             var selectedRig = Selection.objects.Length == 1 
-                ? GUILayout.Toolbar(s_SelectedRig, s_RigNames) : 0;
-            if (selectedRig != s_SelectedRig)
-            {
-                Undo.RecordObject(Target, "selected rig");
-                Target.m_VerticalAxis.Value = selectedRig == 0 ? 1 : (selectedRig == 1 ? 0.5f : 0);
-            }
-            s_SelectedRig = selectedRig;
+                ? GUILayout.Toolbar(GetSelectedRig(Target), s_RigNames) : 0;
+            SetSelectedRig(Target, selectedRig);
             EditorGUILayout.BeginVertical(GUI.skin.box);
             if (selectedRig == 1)
                 m_PipelineSet.OnInspectorGUI(false);
@@ -152,52 +160,60 @@ namespace Cinemachine
             new GUIContent("Main Rig"), 
             new GUIContent("Bottom Rig")
         };
-        static int s_SelectedRig = 1;
 
-        Vector3 mPreviousPosition; // for position dragging
-        private void OnSceneGUI()
+        static int GetSelectedRig(CinemachineNewFreeLook freelook)
         {
-            if (!Target.UserIsDragging)
-                mPreviousPosition = Target.transform.position;
-            if (Selection.Contains(Target.gameObject) && Tools.current == Tool.Move
-                && Event.current.type == EventType.MouseDrag)
-            {
-                // User might be dragging our position handle
-                Target.UserIsDragging = true;
-                Vector3 delta = Target.transform.position - mPreviousPosition;
-                if (!delta.AlmostZero())
-                {
-                    m_PipelineSet.OnPositionDragged(delta);
-                    mPreviousPosition = Target.transform.position;
+            return freelook.m_VerticalAxis.Value < 0.33f ? 2 : (freelook.m_VerticalAxis.Value > 0.66f ? 0 : 1);
+        }
 
-                    // Adjust the rigs height and scale
-                    Transform follow = Target.Follow;
-                    if (follow != null)
-                    {
-                        Undo.RegisterCompleteObjectUndo(Target, "Camera drag");
-                        Vector3 up = Target.State.ReferenceUp;
-                        float heightDelta = Vector3.Dot(up, delta);
-
-                        Vector3 fwd = (Target.State.FinalPosition - follow.position).normalized;
-                        float oldRadius = Target.GetLocalPositionForCameraFromInput(
-                            Target.m_VerticalAxis.Value).magnitude;
-                        float newRadius = Mathf.Max(0.01f, oldRadius + Vector3.Dot(fwd, delta));
-                        for (int i = 0; i < 3; ++i)
-                        {
-                            Target.m_Orbits[i].m_Height += heightDelta;
-                            if (oldRadius > 0.001f)
-                                Target.m_Orbits[i].m_Radius *= newRadius / oldRadius;
-                        }
-                    }
-                }
-            }
-            else if (GUIUtility.hotControl == 0 && Target.UserIsDragging)
+        static void SetSelectedRig(CinemachineNewFreeLook freelook, int rigIndex)
+        {
+            Debug.Assert(rigIndex >= 0 && rigIndex < 3);
+            if (GetSelectedRig(freelook) != rigIndex)
             {
-                // We're not dragging anything now, but we were
-                InspectorUtility.RepaintGameView();
-                Target.UserIsDragging = false;
+                var prop = new SerializedObject(freelook).FindProperty(
+                    () => freelook.m_VerticalAxis).FindPropertyRelative(() => freelook.m_VerticalAxis.Value);
+                prop.floatValue = rigIndex == 0 ? 1 : (rigIndex == 1 ? 0.5f : 0);
+                prop.serializedObject.ApplyModifiedProperties();
             }
         }
+        
+        void OnSceneGUI()
+        {
+            m_PipelineSet.OnSceneGUI(); 
+            
+#if UNITY_2021_2_OR_NEWER
+            DrawSceneTools();
+#endif
+        }
+        
+#if UNITY_2021_2_OR_NEWER
+        void DrawSceneTools()
+        {
+            var newFreelook = Target;
+            if (newFreelook == null || !newFreelook.IsValid)
+            {
+                return;
+            }
+
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
+            {
+                CinemachineSceneToolHelpers.FovToolHandle(newFreelook, 
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Lens), 
+                    newFreelook.m_Lens, IsHorizontalFOVUsed());
+            }
+            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+            {
+                CinemachineSceneToolHelpers.NearFarClipHandle(newFreelook,
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Lens));
+            }
+            else if (newFreelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            {
+                CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook,
+                    new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Orbits));
+            }
+        }
+#endif
 
         void DrawRigEditor(int rigIndex)
         {
