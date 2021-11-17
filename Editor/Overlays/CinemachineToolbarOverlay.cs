@@ -6,6 +6,9 @@ using UnityEditor.Overlays;
 using UnityEditor.Toolbars;
 using UnityEngine;
 using UnityEngine.UIElements;
+#if UNITY_2022_1_OR_NEWER
+using System.Collections.Generic;
+#endif
 
 namespace Cinemachine.Editor
 {
@@ -133,15 +136,42 @@ namespace Cinemachine.Editor
         }
     }
 
-    /// <summary>
-    /// TODO: implement extendable when available
-    /// </summary>
+#if UNITY_2022_1_OR_NEWER
     [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
-    class CinemachineToolbarOverlay : ToolbarOverlay
+    public class CinemachineToolSettingsOverlay : Overlay, ICreateToolbar
     {
-        public CinemachineToolbarOverlay() : base(FreelookRigSelection.id) {}
+        static readonly string[] k_CmToolbarItems = { FreelookRigSelection.id };
+
+        public override VisualElement CreatePanelContent()
+        {
+            return new Label("I'm the content shown in panel mode!");
+        }
+
+        public static string[] customToolbarItems = null;
+        public IEnumerable<string> toolbarElements
+        {
+            get
+            {
+                if (customToolbarItems != null)
+                {
+                    var toolbarItems = new List<string>(k_CmToolbarItems);
+                    toolbarItems.AddRange(customToolbarItems);
+                    return toolbarItems;
+                }
+                
+                return k_CmToolbarItems;
+            }
+        }
     }
+#else
+    [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
+    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
+    class CinemachineToolSettingsOverlay : ToolbarOverlay
+    {
+        public CinemachineToolSettingsOverlay() : base(FreelookRigSelection.id) {}
+    }
+#endif
     
     [EditorToolbarElement(id, typeof(SceneView))]
     class FreelookRigSelection : EditorToolbarDropdown
