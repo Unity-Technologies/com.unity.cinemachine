@@ -5,6 +5,7 @@ using UnityEditor.EditorTools;
 using UnityEditor.Overlays;
 using UnityEditor.Toolbars;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -132,33 +133,16 @@ namespace Cinemachine.Editor
         }
     }
 
+    /// <summary>
+    /// TODO: implement extendable when available
+    /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
     class CinemachineToolbarOverlay : ToolbarOverlay
     {
-        public CinemachineToolbarOverlay()
-            : base(FreelookRigSelection.id)
-        {
-            // CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
-            // CinemachineSceneToolUtility.RegisterToolbarDisplayHandler(v =>
-            // {
-            //     if (displayed == v)
-            //     {
-            //         return false;
-            //     }
-            //
-            //     displayed = v;
-            //     return true;
-            // });
-            
-            EditorApplication.update += () =>
-            {
-                var freelook = Selection.activeGameObject.GetComponent<CinemachineFreeLook>();
-                displayed = freelook != null;
-            };
-        }
+        public CinemachineToolbarOverlay() : base(FreelookRigSelection.id) {}
     }
-
+    
     [EditorToolbarElement(id, typeof(SceneView))]
     class FreelookRigSelection : EditorToolbarDropdown
     {
@@ -169,22 +153,25 @@ namespace Cinemachine.Editor
         {
             tooltip = "Freelook Rig Selection";
             clicked += FreelookRigSelectionMenu;
-            // CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
-            //     display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
             EditorApplication.update += ShadowSelectedRigName;
+            EditorApplication.update += DisplayIfRequired;
         }
 
         ~FreelookRigSelection()
         {
             clicked -= FreelookRigSelectionMenu;
             EditorApplication.update -= ShadowSelectedRigName;
+            EditorApplication.update -= DisplayIfRequired;
         }
 
-        void ShadowSelectedRigName()
-        {
-            text = CinemachineFreeLookEditor.RigNames[Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length-1)].text;
-        }
-        
+        Type m_FreelookRigSelectionType = typeof(FreelookRigSelection);
+        void DisplayIfRequired() => style.display = 
+            CinemachineSceneToolUtility.IsToolRequired(m_FreelookRigSelectionType) 
+                ? DisplayStyle.Flex : DisplayStyle.None;
+
+        void ShadowSelectedRigName() => text = CinemachineFreeLookEditor.RigNames[Mathf.Clamp(
+                SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1)].text;
+
         void FreelookRigSelectionMenu()
         {
             var menu = new GenericMenu();
