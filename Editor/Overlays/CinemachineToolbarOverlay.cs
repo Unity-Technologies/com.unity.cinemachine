@@ -2,6 +2,7 @@
 using System;
 using UnityEditor;
 using UnityEditor.EditorTools;
+using UnityEditor.Overlays;
 using UnityEditor.Toolbars;
 using UnityEngine;
 
@@ -131,7 +132,33 @@ namespace Cinemachine.Editor
         }
     }
 
-    // TODO: FreelookRigSelection dropdown needs to be in the Tools Settings toolbar
+    [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
+    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
+    class CinemachineToolbarOverlay : ToolbarOverlay
+    {
+        public CinemachineToolbarOverlay()
+            : base(FreelookRigSelection.id)
+        {
+            // CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
+            // CinemachineSceneToolUtility.RegisterToolbarDisplayHandler(v =>
+            // {
+            //     if (displayed == v)
+            //     {
+            //         return false;
+            //     }
+            //
+            //     displayed = v;
+            //     return true;
+            // });
+            
+            EditorApplication.update += () =>
+            {
+                var freelook = Selection.activeGameObject.GetComponent<CinemachineFreeLook>();
+                displayed = freelook != null;
+            };
+        }
+    }
+
     [EditorToolbarElement(id, typeof(SceneView))]
     class FreelookRigSelection : EditorToolbarDropdown
     {
