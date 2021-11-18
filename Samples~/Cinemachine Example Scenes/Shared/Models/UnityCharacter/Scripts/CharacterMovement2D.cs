@@ -31,10 +31,11 @@ public class CharacterMovement2D : MonoBehaviour
 	    targetrot = transform.rotation;        
 	}
 	
+#if ENABLE_LEGACY_INPUT_MANAGER
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
-	    input.x = Input.GetAxis("Horizontal");
+		input.x = Input.GetAxis("Horizontal");
 
         // Check if direction changes
 	    if ((input.x < 0f && !headingleft) || (input.x > 0f && headingleft))
@@ -56,15 +57,20 @@ public class CharacterMovement2D : MonoBehaviour
 	    if ((Input.GetKeyUp(sprintJoystick) || Input.GetKeyUp(sprintKeyboard))|| input == Vector2.zero) isSprinting = false;
         anim.SetBool("isSprinting", isSprinting);
     }
-
+#endif
     private void Update()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         // Jump
 	    if ((Input.GetKeyDown(jumpJoystick) || Input.GetKeyDown(jumpKeyboard)))
 	    {
 		    rigbody.AddForce(new Vector3(0, jumpVelocity, 0), ForceMode.Impulse);
 	    }
+#else
+	    InputSystemHelper.EnableBackendsWarningMessage();
+#endif
 	}
+
 
     public bool isGrounded()
     {

@@ -196,8 +196,6 @@ namespace Cinemachine
                 return;
             }
 
-            var originalColor = Handles.color;
-            Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(newFreelook, 
@@ -214,7 +212,6 @@ namespace Cinemachine
                 CinemachineSceneToolHelpers.OrbitControlHandle(newFreelook,
                     new SerializedObject(newFreelook).FindProperty(() => newFreelook.m_Orbits));
             }
-            Handles.color = originalColor;
         }
 #endif
 

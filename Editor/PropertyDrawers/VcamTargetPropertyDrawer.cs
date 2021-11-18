@@ -24,12 +24,9 @@ namespace Cinemachine.Editor
                 GenericMenu menu = new GenericMenu();
                 menu.AddItem(new GUIContent("Convert to TargetGroup"), false, () =>
                 {
-                    GameObject go = InspectorUtility.CreateGameObject(
-                            CinemachineMenu.GenerateUniqueObjectName(
-                                typeof(CinemachineTargetGroup), "CM TargetGroup"),
-                            typeof(CinemachineTargetGroup));
+                    GameObject go = ObjectFactory.CreateGameObject("Target Group", typeof(CinemachineTargetGroup));
                     var group = go.GetComponent<CinemachineTargetGroup>();
-                    Undo.RegisterCreatedObjectUndo(go, "convert to TargetGroup");
+                   
                     group.m_RotationMode = CinemachineTargetGroup.RotationMode.GroupAverage;
                     group.AddMember(target, 1, 1);
                     property.objectReferenceValue = group.Transform;

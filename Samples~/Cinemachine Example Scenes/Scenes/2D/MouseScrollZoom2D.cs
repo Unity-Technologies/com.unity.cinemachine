@@ -48,8 +48,12 @@ namespace Cinemachine.Examples
 
         void Update()
         {
+#if ENABLE_LEGACY_INPUT_MANAGER
             float zoom = m_VirtualCamera.m_Lens.OrthographicSize + Input.mouseScrollDelta.y * ZoomMultiplier;
             m_VirtualCamera.m_Lens.OrthographicSize = Mathf.Clamp(zoom, MinZoom, MaxZoom);
+#else
+            InputSystemHelper.EnableBackendsWarningMessage();
+#endif
         }
     }
 }

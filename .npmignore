@@ -20,4 +20,5 @@ TestRunnerOptions.json
 upm-ci.log
 .gitattributes/**
 .github/**
-appcollector.yml
+appcollector.yaml
+appcollector.yaml.meta

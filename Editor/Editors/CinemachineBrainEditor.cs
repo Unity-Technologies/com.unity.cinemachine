@@ -106,6 +106,7 @@ namespace Cinemachine.Editor
 
             Matrix4x4 originalMatrix = Gizmos.matrix;
             Color originalGizmoColour = Gizmos.color;
+            
             Gizmos.color = color;
             Gizmos.matrix = transform;
             if (ortho)
