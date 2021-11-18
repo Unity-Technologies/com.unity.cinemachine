@@ -19,20 +19,17 @@ namespace Cinemachine.Editor
     ///
     /// A tool will be drawn iff it has been registered using CinemachineSceneToolUtility.RegisterTool.
     /// This is generally done in the OnEnable function of the editor script of the cinemachine component
-    /// (CinemahcineVirtualCamera, CinemachineComponentBase), for which the tool was meant.
+    /// (CinemachineVirtualCamera, CinemachineComponentBase), for which the tool was meant.
     /// To unregister, call CinemachineSceneToolUtility.UnregisterTool in the same script's OnDisable function.
     ///
     /// To draw the handles related to the tool, you need to implement your drawing function and call it in the
     /// editor script's OnSceneGUI function. An alternative for drawing handles is to override this function's
-    /// OnToolGUI and OnDrawHandles functions (see EditorTool docs for more information).
+    /// OnToolGUI or OnDrawHandles functions (see EditorTool or IDrawSelectedHandles docs for more information).
     ///
-    /// To check, if a tool has been enabled/disabled in the editor, use CinemachineSceneToolUtility.IsToolActive.
+    /// To check, if a tool has been enabled/disabled in the editor script, use CinemachineSceneToolUtility.IsToolActive.
     /// </summary>
     public class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
-        /// <summary>This lets the editor find the icon of the tool.</summary>
-        public override GUIContent toolbarIcon => m_IconContent; 
-        
         protected GUIContent m_IconContent;
         Type m_Type;
 
@@ -40,25 +37,31 @@ namespace Cinemachine.Editor
         {
             m_Type = GetType();
         }
+        
+        /// <summary>This lets the editor find the icon of the tool.</summary>
+        public override GUIContent toolbarIcon => m_IconContent;
 
+        // <summary>This is called when the Tool is selected in the editor.</summary>
         public override void OnActivated()
         {
             base.OnActivated();
             CinemachineSceneToolUtility.SetTool(true, m_Type);
         }
 
+        // <summary>This is called when the Tool is deselected in the editor.</summary>
         public override void OnWillBeDeactivated()
         {
             base.OnWillBeDeactivated();
             CinemachineSceneToolUtility.SetTool(false, m_Type);
         }
-
+        
+        // <summary>This checks whether this tool should be displayed or not.</summary>
         public override bool IsAvailable()
         {
             return CinemachineSceneToolUtility.IsToolRequired(m_Type);
         }
         
-        // Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool
+        // Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool.
         public void OnDrawHandles()
         {
         }
@@ -135,6 +138,7 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreatePanelContent() => CreateContent(Layout.HorizontalToolbar);
 
+        /// <summary>Set this with your custom tools' IDs.</summary>
         public static string[] customToolbarItems = null;
         public IEnumerable<string> toolbarElements
         {
