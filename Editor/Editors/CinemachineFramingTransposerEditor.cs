@@ -217,8 +217,7 @@ namespace Cinemachine.Editor
             {
                 return;
             }
-
-            var originalColor = Handles.color;
+            
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(framingTransposer, 
@@ -226,13 +225,14 @@ namespace Cinemachine.Editor
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
+                var originalColor = Handles.color;
                 var camPos = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
-                Handles.color = CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                Handles.color = CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
-                    HandleUtility.GetHandleSize(camPos) / 20f, Handles.DotHandleCap, 0.5f);
+                    CinemachineSceneToolHelpers.CubeHandleCapSize(camPos), Handles.CubeHandleCap, 0.5f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
@@ -252,14 +252,15 @@ namespace Cinemachine.Editor
                 }
                 
                 Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour;
+                    Handles.selectedColor : CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
                 Handles.DrawLine(camPos, 
                     framingTransposer.FollowTarget.position + framingTransposer.m_TrackedObjectOffset);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
                     cdHandleId);
+                
+                Handles.color = originalColor;
             }
-            Handles.color = originalColor;
         }
 #endif
     }

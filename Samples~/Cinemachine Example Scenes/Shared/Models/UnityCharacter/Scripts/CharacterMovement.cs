@@ -33,6 +33,7 @@ public class CharacterMovement : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
+#if ENABLE_LEGACY_INPUT_MANAGER
 	    input.x = Input.GetAxis("Horizontal");
 	    input.y = Input.GetAxis("Vertical");
 
@@ -71,6 +72,9 @@ public class CharacterMovement : MonoBehaviour
 
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
         }
+#else
+        InputSystemHelper.EnableBackendsWarningMessage();
+#endif
 	}
 
     public virtual void UpdateTargetDirection()
