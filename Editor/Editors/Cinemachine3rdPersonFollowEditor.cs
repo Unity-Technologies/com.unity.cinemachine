@@ -139,7 +139,7 @@ namespace Cinemachine.Editor
                     
                 Handles.color = handleIsDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSceneToolHelpers.helperLineDefaultColor;
-                Handles.DrawLine(lineStart, lineEnd, CinemachineSceneToolHelpers.lineThickness);
+                    Handles.DrawLine(lineStart, lineEnd, CinemachineSceneToolHelpers.lineThickness);
                     
                 return handleIsDragged;
             }

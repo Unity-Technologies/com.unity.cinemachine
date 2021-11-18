@@ -2,6 +2,7 @@
     * [Using Cinemachine](CinemachineUsing)
     * [Using Virtual Cameras](CinemachineSetUpVCam)
         * [Setting Virtual Camera properties](CinemachineVirtualCamera)
+            * [Handle Toolbar](handles.md)
             * [Body properties](CinemachineVirtualCameraBody)
                 * [Do Nothing](CinemachineBodyDoNothing)
                 * [3rd Person Follow](Cinemachine3rdPersonFollow.md)

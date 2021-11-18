@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Cinemachine.Examples;
+using UnityEngine;
 
 public class ActivateOnKeypress : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class ActivateOnKeypress : MonoBehaviour
 
     void Update()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         if (vcam != null)
         {
             if (Input.GetKey(ActivationKey))
@@ -34,5 +36,8 @@ public class ActivateOnKeypress : MonoBehaviour
         }
         if (Reticle != null)
             Reticle.SetActive(boosted);
+#else
+        InputSystemHelper.EnableBackendsWarningMessage();
+#endif
     }
 }
