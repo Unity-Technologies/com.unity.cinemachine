@@ -317,6 +317,9 @@ namespace Cinemachine
                             displacement += (state.ReferenceLookAt + dir * distance) - pos;
                         }
                     }
+                    
+                    if (displacement.AlmostZero())
+                        extra.ResetDistanceSmoothing(m_SmoothingTime);
 
                     // Apply additional correction due to camera radius
                     var cameraPos = state.CorrectedPosition + displacement;
