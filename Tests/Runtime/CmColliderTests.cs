@@ -8,7 +8,6 @@ namespace Tests.Runtime
 {
     public class CmColliderTests : CinemachineFixtureBase
     {
-        GameObject m_CameraHolderWithBrain;
         CinemachineVirtualCamera m_Vcam;
         CinemachineCollider m_Collider;
         GameObject m_FollowObject;
@@ -16,11 +15,11 @@ namespace Tests.Runtime
         [SetUp]
         public override void SetUp()
         {
-            m_CameraHolderWithBrain = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
 
             m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera), typeof(CinemachineCollider)).GetComponent<CinemachineVirtualCamera>();
             m_Vcam.Priority = 100;
-            m_FollowObject = CreateGameObject("Follow Object");
+            m_Vcam.Follow = CreateGameObject("Follow Object").transform;
             var framingTransposer = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
             framingTransposer.m_CameraDistance = 5f;
             m_Collider = m_Vcam.GetComponent<CinemachineCollider>();
@@ -33,6 +32,15 @@ namespace Tests.Runtime
             m_Vcam.AddExtension(m_Collider);
             
             base.SetUp();
+            Debug.Log("Setup");
+        }
+
+        GameObject CreateObstacle(Vector3 position)
+        {
+            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            obstacle.transform.position = position; // put obstacle in the way
+            m_GameObjectsToDestroy.Add(obstacle);
+            return obstacle;
         }
 
         [UnityTest]
@@ -44,14 +52,15 @@ namespace Tests.Runtime
             yield return null;
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
 
-            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            obstacle.transform.position = originalCamPosition; // put obstacle in the way
+            var obstacle = CreateObstacle(originalCamPosition);
 
+            yield return null;
             yield return null;
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
 
+            yield return null;
             yield return new WaitForSeconds(1);
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
         }
@@ -59,41 +68,49 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckDampingWhenOccluded()
         {
-            m_Collider.m_DampingWhenOccluded = 10;
+            m_Collider.m_DampingWhenOccluded = 5;
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return null;
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
 
-            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            obstacle.transform.position = originalCamPosition; // put obstacle in the way
+            var obstacle = CreateObstacle(originalCamPosition);
 
+            yield return null;
             yield return null;
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
             var pos1 = m_Vcam.State.FinalPosition;
 
             yield return null;
+            yield return null;
             Assert.That(pos1 == m_Vcam.State.FinalPosition, Is.False);
+            
+            obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
+
+            yield return null;
+            yield return null;
+            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
         }
         
         [UnityTest]
         public IEnumerator CheckDamping()
         {
-            m_Collider.m_Damping = 10;
+            m_Collider.m_Damping = 5;
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return null;
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
 
-            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            obstacle.transform.position = originalCamPosition; // put obstacle in the way
+            var obstacle = CreateObstacle(originalCamPosition);
 
+            yield return null;
             yield return null;
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
             var pos1 = m_Vcam.State.FinalPosition;
 
+            yield return null;
             yield return null;
             Assert.That(pos1 == m_Vcam.State.FinalPosition, Is.False);
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
