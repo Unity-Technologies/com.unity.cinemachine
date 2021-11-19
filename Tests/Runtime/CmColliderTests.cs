@@ -43,6 +43,11 @@ namespace Tests.Runtime
             return obstacle;
         }
 
+        void DebugLog(Vector3 v1, Vector3 v2, string condition)
+        {
+            Debug.Log(v1 + " == " + v2 + " is " + condition);
+        }
+
         [UnityTest]
         public IEnumerator CheckSmoothingTime()
         {
@@ -50,18 +55,23 @@ namespace Tests.Runtime
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return null;
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "TRUE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
 
             var obstacle = CreateObstacle(originalCamPosition);
 
             yield return null;
             yield return null;
+            yield return null;
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "FALSE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
 
             yield return null;
+            yield return null;
             yield return new WaitForSeconds(1);
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "TRUE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
         }
         
@@ -72,23 +82,30 @@ namespace Tests.Runtime
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return null;
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "TRUE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
 
             var obstacle = CreateObstacle(originalCamPosition);
 
             yield return null;
             yield return null;
+            yield return null;
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "FALSE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
             var pos1 = m_Vcam.State.FinalPosition;
 
             yield return null;
             yield return null;
+            yield return null;
+            DebugLog(pos1, m_Vcam.State.FinalPosition, "FALSE");
             Assert.That(pos1 == m_Vcam.State.FinalPosition, Is.False);
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
 
             yield return null;
             yield return null;
+            yield return null;
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "TRUE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
         }
         
@@ -99,12 +116,15 @@ namespace Tests.Runtime
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return null;
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "TRUE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
 
             var obstacle = CreateObstacle(originalCamPosition);
 
             yield return null;
             yield return null;
+            yield return null;
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "FALSE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
@@ -112,7 +132,10 @@ namespace Tests.Runtime
 
             yield return null;
             yield return null;
+            yield return null;
+            DebugLog(pos1, m_Vcam.State.FinalPosition, "FALSE");
             Assert.That(pos1 == m_Vcam.State.FinalPosition, Is.False);
+            DebugLog(originalCamPosition, m_Vcam.State.FinalPosition, "FALSE");
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
         }
     }
