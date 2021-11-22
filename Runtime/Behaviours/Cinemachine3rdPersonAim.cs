@@ -47,7 +47,7 @@ namespace Cinemachine
         /// <summary>World space position of where the player would hit if a projectile were to 
         /// be fired from the player origin.  This may be different
         /// from state.ReferenceLookAt due to camera offset from player origin.</summary>
-        public Vector3 AimTarget { get; private set; }
+        private Vector3 AimTarget { get; set; }
 
         private void OnValidate()
         {
