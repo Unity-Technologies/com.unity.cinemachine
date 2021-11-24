@@ -49,11 +49,12 @@ namespace Tests.Runtime
             CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
 
-        internal IEnumerator Wait2FullFrames()
+        internal IEnumerator WaitForXFullFrames(int x)
         {
-            yield return new WaitForEndOfFrame(); // wait for this frame to end
-            yield return new WaitForEndOfFrame(); // wait for next frame to end
-            yield return new WaitForEndOfFrame(); // wait for next frame to end
+            for (var i = 0; i <= x; ++i) // wait 1 + x frames, because we need to finish current frame
+            {
+                yield return new WaitForEndOfFrame();
+            }
         }
 
         internal IEnumerator WaitForSeconds(float time)
