@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using NUnit.Framework;
@@ -48,5 +49,19 @@ namespace Tests.Runtime
             CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
 
+        internal IEnumerator Wait2FullFrames()
+        {
+            yield return new WaitForEndOfFrame(); // wait for this frame to end
+            yield return new WaitForEndOfFrame(); // wait for next frame to end
+            yield return new WaitForEndOfFrame(); // wait for next frame to end
+        }
+
+        internal IEnumerator WaitForSeconds(float time)
+        {
+            yield return new WaitForEndOfFrame(); // wait for this frame to end
+            yield return new WaitForEndOfFrame(); // wait for next frame to end
+            yield return new WaitForSeconds(time); // wait for time seconds
+            yield return new WaitForEndOfFrame(); // wait for this frame to end
+        }
     }
 }
