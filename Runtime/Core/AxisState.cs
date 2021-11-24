@@ -210,7 +210,10 @@ namespace Cinemachine
                 return false;
             m_LastUpdateFrame = Time.frameCount;
 
-            deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
+            // Cheating: we want the render frame time, not the fixed frame time
+            if (deltaTime >= 0 && m_LastUpdateTime != 0) 
+                deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
+            
             m_LastUpdateTime = Time.realtimeSinceStartup;
             
             if (m_InputAxisProvider != null)
@@ -423,7 +426,10 @@ namespace Cinemachine
             /// <param name="recenterTarget">The value that is considered to be centered</param>
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
-                deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
+                // Cheating: we want the render frame time, not the fixed frame time
+                if (deltaTime >= 0)
+                    deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
+                
                 m_LastUpdateTime = Time.realtimeSinceStartup;
                 
                 if (!m_enabled && deltaTime >= 0)
