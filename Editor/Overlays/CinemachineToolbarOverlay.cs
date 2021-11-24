@@ -16,6 +16,7 @@ namespace Cinemachine.Editor
     /// This is a generic Tool class for Cinemachine tools.
     /// To create a new tool, inherit from this class and implement OnEnable to set m_IconContent's image and tooltip
     /// attributes.
+    /// Your new tool will need to have the [EditorTool("tool-name", typeof(CinemachineVirtualCameraBase))] attribute.
     ///
     /// A tool will be drawn iff it has been registered using CinemachineSceneToolUtility.RegisterTool.
     /// This is generally done in the OnEnable function of the editor script of the cinemachine component
