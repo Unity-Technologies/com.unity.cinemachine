@@ -113,8 +113,8 @@ namespace Cinemachine.Editor
     
     static class CinemachineSceneToolHelpers
     {
-        public const float lineThickness = 2f;
-        public static Color helperLineDefaultColor = new Color(255, 255, 255, 25);
+        public const float LineThickness = 2f;
+        public static readonly Color HelperLineDefaultColor = new Color(255, 255, 255, 25);
         const float k_DottedLineSpacing = 4f;
 
         static GUIStyle s_LabelStyle = new GUIStyle 
@@ -226,7 +226,7 @@ namespace Cinemachine.Editor
                 }
             }
             
-            Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : helperLineDefaultColor;
+            Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             DrawFrustum(vcamLocalToWorld, lens);
                 
@@ -267,7 +267,7 @@ namespace Cinemachine.Editor
             
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             var vcamLens = vcamState.Lens;
-            Handles.color = helperLineDefaultColor;
+            Handles.color = HelperLineDefaultColor;
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
                 DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
@@ -430,7 +430,7 @@ namespace Cinemachine.Editor
             }
             
             Handles.color = trackedObjectOffsetHandleIsUsedOrHovered ? 
-                Handles.selectedColor : helperLineDefaultColor;
+                Handles.selectedColor : HelperLineDefaultColor;
             Handles.DrawDottedLine(lookAtPos, trackedObjectPos, k_DottedLineSpacing);
             Handles.DrawLine(trackedObjectPos, cmComponent.VcamState.FinalPosition);
 
@@ -471,7 +471,7 @@ namespace Cinemachine.Editor
                 DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
             }
 
-            Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : helperLineDefaultColor;
+            Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
             Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
             
             SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
@@ -521,7 +521,7 @@ namespace Cinemachine.Editor
 
                 var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
                 Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId ||
-                    HandleUtility.nearestControl == radiusHandleId ? Handles.selectedColor : helperLineDefaultColor;
+                    HandleUtility.nearestControl == radiusHandleId ? Handles.selectedColor : HelperLineDefaultColor;
                 if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
                 {
                     DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);

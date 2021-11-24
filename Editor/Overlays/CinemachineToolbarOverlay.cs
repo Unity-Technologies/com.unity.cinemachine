@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// This is a generic Tool class for Cinemachine tools.
     /// To create a new tool, inherit from this class and implement OnEnable to set m_IconContent's image and tooltip
-    /// attributes. If you implement a constructor for your tool, don't forget to call the base constructor.
+    /// attributes.
     ///
     /// A tool will be drawn iff it has been registered using CinemachineSceneToolUtility.RegisterTool.
     /// This is generally done in the OnEnable function of the editor script of the cinemachine component
@@ -31,13 +31,7 @@ namespace Cinemachine.Editor
     public class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
         protected GUIContent m_IconContent;
-        Type m_Type;
 
-        protected CinemachineTool()
-        {
-            m_Type = GetType();
-        }
-        
         /// <summary>This lets the editor find the icon of the tool.</summary>
         public override GUIContent toolbarIcon => m_IconContent;
 
@@ -45,20 +39,20 @@ namespace Cinemachine.Editor
         public override void OnActivated()
         {
             base.OnActivated();
-            CinemachineSceneToolUtility.SetTool(true, m_Type);
+            CinemachineSceneToolUtility.SetTool(true, GetType());
         }
 
         // <summary>This is called when the Tool is deselected in the editor.</summary>
         public override void OnWillBeDeactivated()
         {
             base.OnWillBeDeactivated();
-            CinemachineSceneToolUtility.SetTool(false, m_Type);
+            CinemachineSceneToolUtility.SetTool(false, GetType());
         }
         
         // <summary>This checks whether this tool should be displayed or not.</summary>
         public override bool IsAvailable()
         {
-            return CinemachineSceneToolUtility.IsToolRequired(m_Type);
+            return CinemachineSceneToolUtility.IsToolRequired(GetType());
         }
         
         // Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool.
