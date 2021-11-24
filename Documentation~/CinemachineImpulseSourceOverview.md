@@ -73,7 +73,7 @@ Impulse assumes that the main direction for an impact is “down,” so as a gen
 
 The **Cinemachine Impulse Source** and **Cinemachine Collision Impulse Source** components have properties that control the orientation of the raw signal. Use these properties to mimic real-world vibration.
 
-- For the **Cinemachine Impulse Source** component, the [GenerateImpulse()](../api/Cinemachine.CinemachineImpulseSource.html#Cinemachine_CinemachineImpulseSource_GenerateImpulse_) method takes a velocity vector as a parameter.  This vector defines the direction and strength of the impact.  The Impulse system uses this to calculate the final signal based on the Raw signal definition, rotating and scaling it appropriately.
+- For the **Cinemachine Impulse Source** component, the [GenerateImpulse()](../api/Cinemachine.CinemachineImpulseSource.md#Cinemachine_CinemachineImpulseSource_GenerateImpulse_) method takes a velocity vector as a parameter.  This vector defines the direction and strength of the impact.  The Impulse system uses this to calculate the final signal based on the Raw signal definition, rotating and scaling it appropriately.
 
 - For the **Cinemachine Collision Impulse Source** component, the velocity vector is generated automatically based on the directions and masses of the GameObjects involved.
 
