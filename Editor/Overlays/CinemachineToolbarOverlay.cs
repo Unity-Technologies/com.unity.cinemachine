@@ -150,15 +150,6 @@ namespace Cinemachine.Editor
             }
         }
     }
-#else
-    // Not extendable overlay
-    [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
-    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
-    class CinemachineToolSettingsOverlay : ToolbarOverlay
-    {
-        public CinemachineToolSettingsOverlay() : base(FreelookRigSelection.id) {}
-    }
-#endif
     
     [EditorToolbarElement(id, typeof(SceneView))]
     class FreelookRigSelection : EditorToolbarDropdown
@@ -211,5 +202,6 @@ namespace Cinemachine.Editor
             menu.DropDown(worldBound);
         }
     }
+#endif
 }
 #endif
