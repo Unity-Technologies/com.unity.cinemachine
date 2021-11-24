@@ -23,11 +23,13 @@ namespace Cinemachine.Editor
                 Gizmos.DrawLine(shoulder, hand);
                 Gizmos.DrawSphere(root, 0.02f);
                 Gizmos.DrawSphere(shoulder, 0.02f);
+#if CINEMACHINE_PHYSICS
                 Gizmos.DrawSphere(hand, target.CameraRadius);
 
                 if (isLive)
                     Gizmos.color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
                 Gizmos.DrawSphere(target.VirtualCamera.State.RawPosition, target.CameraRadius);
+#endif
 
                 Gizmos.color = originalGizmoColour;
             }

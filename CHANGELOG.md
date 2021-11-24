@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New feature: CinemachineBrain may control other GameObject instead of the one it is attached to.
 - Bugfix: Cinemachine assigns a default input controller delegate that returns 0 when the legacy input system is disabled.
 - Cinemachine example scenes show informative text when used with Input System instead of throwing error messages.
+- Regression fix: compilation errors when physics module is not present
+-
 
 ## [2.9.0-pre.1] - 2021-10-26
 - Added ability to directly set the active blend in CinemachineBrain.
