@@ -14,6 +14,7 @@ namespace Cinemachine.Editor
     /// </summary>
     static class CinemachineSceneToolUtility
     {
+#if UNITY_2022_1_OR_NEWER
         /// <summary>
         /// Checks whether tool is the currently active exclusive tool.
         /// </summary>
@@ -109,6 +110,181 @@ namespace Cinemachine.Editor
                 s_TriggerRefresh = false;
             }
         }
+#else
+        /// <summary>
+        /// Checks whether tool is the currently active exclusive tool.
+        /// </summary>
+        /// <param name="tool">Tool to check.</param>
+        /// <returns>True, when the tool is the active exclusive tool. False, otherwise.</returns>
+        public static bool IsToolActive(Type tool)
+        {
+            return s_ActiveExclusiveTool == tool;
+        }
+        static Type s_ActiveExclusiveTool;
+
+        /// <summary>
+        /// Register your Type from the editor script's OnEnable function.
+        /// This way CinemachineTools will know which tools to display.
+        /// </summary>
+        /// <param name="tool">Tool to register</param>
+        public static void RegisterTool(Type tool)
+        {
+            if (s_RequiredTools.ContainsKey(tool))
+            {
+                s_RequiredTools[tool]++;
+            }
+            else
+            {
+                s_RequiredTools.Add(tool, 1);
+            }
+        }
+        
+        /// <summary>
+        /// Unregister your Type from the editor script's OnDisable function.
+        /// This way CinemachineTools will know which tools to display.
+        /// </summary>
+        /// <param name="tool">Tool to register</param>
+        public static void UnregisterTool(Type tool)
+        {
+            if (s_RequiredTools.ContainsKey(tool))
+            {
+                s_RequiredTools[tool]--;
+                if (s_RequiredTools[tool] <= 0)
+                {
+                    s_RequiredTools.Remove(tool);
+                }
+            }
+        }
+        static Dictionary<Type, int> s_RequiredTools;
+
+        public delegate void ToolHandler(bool v);
+        struct CinemachineSceneToolDelegates
+        {
+            public ToolHandler ToggleSetter;
+            public ToolHandler IsDisplayedSetter;
+        }
+        static Dictionary<Type, CinemachineSceneToolDelegates> s_ExclusiveTools; // tools that can't be active at the same time
+        static Dictionary<Type, CinemachineSceneToolDelegates> s_Tools; // tools without restrictions
+        
+        /// <summary>
+        /// Use for registering tool handlers for tools that are exclusive with each other,
+        /// meaning they cannot be active at the same time.
+        /// </summary>
+        /// <param name="tool">The tool to register.</param>
+        /// <param name="toggleSetter">The tool's toggle value setter.</param>
+        /// <param name="isDisplayedSetter">The tool's isDisplayed setter.</param>
+        internal static void RegisterExclusiveToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
+        {
+            RegisterToolHandlers(ref s_ExclusiveTools, tool, toggleSetter, isDisplayedSetter);
+        }
+        
+        /// <summary>
+        /// Use for registering tool handlers for tools that can be active anytime
+        /// without taking other tools into consideration.
+        /// </summary>
+        /// <param name="tool">The tool to register.</param>
+        /// <param name="toggleSetter">The tool's toggle value setter.</param>
+        /// <param name="isDisplayedSetter">The tool's isDisplayed setter.</param>
+        internal static void RegisterToolHandlers(Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
+        {
+            RegisterToolHandlers(ref s_Tools, tool, toggleSetter, isDisplayedSetter);
+        }
+
+        static void RegisterToolHandlers(ref Dictionary<Type, CinemachineSceneToolDelegates> tools,
+            Type tool, ToolHandler toggleSetter, ToolHandler isDisplayedSetter)
+        {
+            if (tools.ContainsKey(tool))
+            {
+                tools.Remove(tool);
+            }
+            
+            tools.Add(tool, new CinemachineSceneToolDelegates
+            {
+                ToggleSetter = toggleSetter,
+                IsDisplayedSetter = isDisplayedSetter,
+            });
+        }
+        
+        internal delegate bool ToolbarHandler();
+        static ToolbarHandler s_ToolBarIsDisplayed;
+        internal static void RegisterToolbarIsDisplayedHandler(ToolbarHandler handler)
+        {
+            s_ToolBarIsDisplayed = handler;
+        }
+
+        static bool s_ToolbarTurnOffByMe;
+        internal delegate bool ToolbarTurnOnOffHandler(bool on);
+        static ToolbarTurnOnOffHandler s_ToolBarDisplay;
+        internal static void RegisterToolbarDisplayHandler(ToolbarTurnOnOffHandler handler)
+        {
+            s_ToolBarDisplay = handler;
+        }
+
+        internal static void SetTool(bool active, Type tool)
+        {
+            if (active)
+            {
+                s_ActiveExclusiveTool = tool;
+                EnsureCinemachineToolsAreExclusiveWithUnityTools();
+            }
+            else
+            {
+                s_ActiveExclusiveTool = s_ActiveExclusiveTool == tool ? null : s_ActiveExclusiveTool;
+            }
+        }
+
+        static void EnsureCinemachineToolsAreExclusiveWithUnityTools()
+        {
+            foreach (var toolHandle in s_ExclusiveTools)
+            {
+                toolHandle.Value.ToggleSetter(toolHandle.Key == s_ActiveExclusiveTool);
+            }
+            if (s_ActiveExclusiveTool != null)
+            {
+                Tools.current = Tool.None; // Cinemachine tools are exclusive with unity tools
+            }
+        }
+        
+        static CinemachineSceneToolUtility()
+        {
+            s_ExclusiveTools = new Dictionary<Type, CinemachineSceneToolDelegates>();
+            s_Tools = new Dictionary<Type, CinemachineSceneToolDelegates>();
+            s_RequiredTools = new Dictionary<Type, int>();
+
+            EditorApplication.update += () =>
+            {
+                if (s_RequiredTools.Count <= 0)
+                {
+                    s_ToolbarTurnOffByMe |= s_ToolBarDisplay(false);
+                }
+                else if (s_ToolbarTurnOffByMe)
+                {
+                    s_ToolBarDisplay(true);
+                    s_ToolbarTurnOffByMe = false;
+                }
+                
+                var cmToolbarIsHidden = !s_ToolBarIsDisplayed();
+                // if a unity tool is selected or cmToolbar is hidden, unselect our tools.
+                if (s_ActiveExclusiveTool != null && (Tools.current != Tool.None || cmToolbarIsHidden))
+                {
+                    SetTool(true, null);
+                }
+
+                if (!cmToolbarIsHidden)
+                {
+                    // only display cm tools that are relevant for the current selection
+                    foreach (var toolHandle in s_ExclusiveTools)
+                    {
+                        toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
+                    }
+                    foreach (var toolHandle in s_Tools)
+                    {
+                        toolHandle.Value.IsDisplayedSetter(s_RequiredTools.ContainsKey(toolHandle.Key));
+                    }
+                }
+            };
+        }
+#endif
     }
     
     static class CinemachineSceneToolHelpers
