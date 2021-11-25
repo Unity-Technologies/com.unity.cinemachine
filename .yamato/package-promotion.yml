@@ -1,4 +1,4 @@
-{% metadata_file .yamato/metadata.yml %}
+{% metadata_file .yamato/metadata.metafile %}
 ---
 
 promote:
@@ -22,10 +22,4 @@ promote:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/package-pack.yml#pack
-  {% for config in promote_configurations %}
-  {% for editor in config.editors %}
-  {% for platform in config.platforms %}
-    - .yamato/package-test.yml#test_{{ config.name }}_{{ platform.name }}_{{ editor }}
-  {% endfor %}
-  {% endfor %}
-  {% endfor %}
+    - .yamato/package-publish.yml#publish

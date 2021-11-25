@@ -1,17 +1,17 @@
-{% metadata_file .yamato/metadata.yml %}
+{% metadata_file .yamato/metadata.metafile %}
 ---
 
 {% for config in all_configurations %}
 {% for editor in config.editors %}
-{% for platform in config.platforms %}
-test_{{ config.name }}_{{ platform }}_{{ editor }}:
-  name : Test {{ config.name }} {{ platform.name }} {{ editor }}
+{% for platform in all_platforms %}
+test_{{ config.name }}_{{ platform.name }}_{{ editor }}:
+  name : Test {{ config.name }} on {{ platform.name }} with {{ editor }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
-    flavor: {{ platform.flavor}}
-  variables:
+    flavor: {{ platform.flavor }}
   {% if platform.name == "centos" %}
+  variables:
     DISPLAY: ":0"
   {% endif %}
   commands:
@@ -40,10 +40,18 @@ test_trigger:
     cancel_old_ci: true
   dependencies:
     - .yamato/package-pack.yml#pack
-    {% for config in test_configurations %}
+    {% for config_name in test_configurations %}
+    {% for config in all_configurations %}
+    {% if config.name == config_name %}
+    {% for platform_name in test_platforms %}
+    {% for platform in all_platforms %}
+    {% if platform.name == platform_name %}
     {% for editor in config.editors %}
-    {% for platform in config.platforms %}
     - .yamato/package-test.yml#test_{{config.name}}_{{platform.name}}_{{editor}}
     {% endfor %}
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
     {% endfor %}
     {% endfor %}
