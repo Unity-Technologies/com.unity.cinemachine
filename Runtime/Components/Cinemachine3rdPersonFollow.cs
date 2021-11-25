@@ -148,7 +148,7 @@ namespace Cinemachine
         { 
             return Mathf.Max(
                 Mathf.Max(DampingIntoCollision, DampingFromCollision), 
-                Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z))); 
+                Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)));
         }
 #endif
 

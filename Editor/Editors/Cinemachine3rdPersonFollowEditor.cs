@@ -28,6 +28,7 @@ namespace Cinemachine.Editor
 
                 if (isLive)
                     Gizmos.color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
+
                 Gizmos.DrawSphere(target.VirtualCamera.State.RawPosition, target.CameraRadius);
 #endif
 
