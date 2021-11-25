@@ -66,6 +66,7 @@ namespace Cinemachine.Editor
             blendListCamera.m_Instructions[1].m_Blend.m_Time = 2f;
         }
 
+#if CINEMACHINE_UNITY_ANIMATION
         [MenuItem(m_CinemachineGameObjectRootMenu + "State-Driven Camera", false, m_GameObjectMenuPriority)]
         static void CreateStateDivenCamera(MenuCommand command)
         {
@@ -76,6 +77,7 @@ namespace Cinemachine.Editor
             // We give the camera a child as an example setup
             CreateDefaultVirtualCamera(parentObject: stateDrivenCamera.gameObject);
         }
+#endif
 
 #if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_GameObjectMenuPriority)]
