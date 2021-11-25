@@ -5,7 +5,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.8.3] - 2021-11-22
-- Cinemachine3rdPersonAim exposes AimTarget, which is the position of where the player would hit.
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
 - Removed legacy .unitypackages
 - Regression fix: could not change the projection of the main camera if a CM virtual camera is active
