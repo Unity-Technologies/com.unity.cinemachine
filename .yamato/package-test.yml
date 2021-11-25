@@ -5,7 +5,7 @@
 {% for editor in config.editors %}
 {% for platform in config.platforms %}
 test_{{ config.name }}_{{ platform }}_{{ editor }}:
-  name : Test {{ config.name }} {{ editor }} on {{ platform }}
+  name : Test {{ config.name }} {{ platform.name }} {{ editor }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
