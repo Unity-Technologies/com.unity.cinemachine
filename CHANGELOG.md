@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
 - Removed legacy .unitypackages
 - Regression fix: could not change the projection of the main camera if a CM virtual camera is active
+- Regression fix: compilation errors when physics module is not present
 
 
 ## [2.8.2] - 2021-10-19
