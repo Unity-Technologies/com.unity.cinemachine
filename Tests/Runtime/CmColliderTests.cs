@@ -108,5 +108,21 @@ namespace Tests.Runtime
             Assert.That(pos1 == m_Vcam.State.FinalPosition, Is.False);
             Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
         }
+        
+        internal IEnumerator WaitForXFullFrames(int x)
+        {
+            for (var i = 0; i <= x; ++i) // wait 1 + x frames, because we need to finish current frame
+            {
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        internal IEnumerator WaitForSeconds(float time)
+        {
+            yield return new WaitForEndOfFrame(); // wait for this frame to end
+            yield return new WaitForEndOfFrame(); // wait for next frame to end
+            yield return new WaitForSeconds(time); // wait for time seconds
+            yield return new WaitForEndOfFrame(); // wait for this frame to end
+        }
     }
 }
