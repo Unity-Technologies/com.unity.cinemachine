@@ -444,20 +444,18 @@ namespace Cinemachine.Editor
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             var vcamLens = vcamState.Lens;
             Handles.color = HelperLineDefaultColor;
+            DrawFrustum(vcamLocalToWorld, vcamLens);
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
             {
-                DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
-                Handles.color = Handles.selectedColor;
                 DrawPreFrustum(vcamLocalToWorld, vcamLens);
+                DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
             }
             if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
             {
+                DrawPreFrustum(vcamLocalToWorld, vcamLens);
                 DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
-                Handles.color = Handles.selectedColor;
             }
             
-            DrawFrustum(vcamLocalToWorld, vcamLens);
-
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
                 vcam, Mathf.Min(ncHandleId, fcHandleId));
 
