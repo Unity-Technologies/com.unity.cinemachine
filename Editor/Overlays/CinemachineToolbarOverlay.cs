@@ -321,7 +321,7 @@ namespace Cinemachine.Editor
     {
         public const string id = "FreelookRigSelection/Dropdown";
         public static int SelectedRig;
-        public Texture2D[] icons;
+        Texture2D[] m_Icons;
 
         public FreelookRigSelection()
         {
@@ -331,7 +331,7 @@ namespace Cinemachine.Editor
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
             EditorApplication.update += ShadowSelectedRigName;
             
-            icons = new[]
+            m_Icons = new Texture2D[]
             {
                 AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
                     + "/Editor/EditorResources/FreelookRigTop.png"),
@@ -351,7 +351,7 @@ namespace Cinemachine.Editor
         void ShadowSelectedRigName()
         {
             var index = Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1);
-            icon = icons[index];
+            icon = m_Icons[index];
             text = CinemachineFreeLookEditor.RigNames[index].text;
         }
         
