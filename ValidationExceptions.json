@@ -1,0 +1,20 @@
+{
+    "ErrorExceptions": [
+        {
+            "ValidationTest": "API Validation",
+            "ExceptionMessage": "Additions require a new minor or major version.",
+            "PackageVersion": "2.8.3"
+        },
+        {
+            "ValidationTest": "API Validation",
+            "ExceptionMessage": "New assembly \"com.unity.cinemachine.Tests\" may only be added in a new minor or major version.",
+            "PackageVersion": "2.8.3"
+        },
+        {
+            "ValidationTest": "API Validation",
+            "ExceptionMessage": "New assembly \"com.unity.cinemachine.EditorTests\" may only be added in a new minor or major version.",
+            "PackageVersion": "2.8.3"
+        }
+    ],
+    "WarningExceptions": []
+}
