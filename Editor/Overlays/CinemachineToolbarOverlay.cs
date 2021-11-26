@@ -13,8 +13,7 @@ namespace Cinemachine.Editor
 #if UNITY_2022_1_OR_NEWER
     /// <summary>
     /// This is a generic Tool class for Cinemachine tools.
-    /// To create a new tool, inherit from this class and implement OnEnable to set m_IconContent's image and tooltip
-    /// attributes.
+    /// To create a new tool, inherit from CinemachineTool and implement GetIcon().
     /// Your new tool will need to have the [EditorTool("tool-name", typeof(CinemachineVirtualCameraBase))] attribute.
     ///
     /// A tool will be drawn iff it has been registered using CinemachineSceneToolUtility.RegisterTool.
@@ -28,12 +27,18 @@ namespace Cinemachine.Editor
     ///
     /// To check, if a tool has been enabled/disabled in the editor script, use CinemachineSceneToolUtility.IsToolActive.
     /// </summary>
-    public class CinemachineTool : EditorTool, IDrawSelectedHandles
+    public abstract class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
-        protected GUIContent m_IconContent;
+        GUIContent m_IconContent;
+
+        /// <summary>
+        /// Implement this to set your Tool's icon and tooltip.
+        /// </summary>
+        /// <returns>A GUIContent with an icon set.</returns>
+        protected abstract GUIContent GetIcon();
 
         /// <summary>This lets the editor find the icon of the tool.</summary>
-        public override GUIContent toolbarIcon => m_IconContent;
+        public override GUIContent toolbarIcon => m_IconContent ??= GetIcon();
 
         // <summary>This is called when the Tool is selected in the editor.</summary>
         public override void OnActivated()
@@ -64,9 +69,9 @@ namespace Cinemachine.Editor
     [EditorTool("Field of View Tool", typeof(CinemachineVirtualCameraBase))]
     class FoVTool : CinemachineTool
     {
-        void OnEnable()
+        protected override GUIContent GetIcon()
         {
-            m_IconContent = new GUIContent()
+            return new GUIContent
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                     + "/Editor/EditorResources/FOV.png"),
@@ -78,13 +83,13 @@ namespace Cinemachine.Editor
     [EditorTool("Far-Near Clip Tool", typeof(CinemachineVirtualCameraBase))]
     class FarNearClipTool : CinemachineTool
     {
-        void OnEnable()
+        protected override GUIContent GetIcon()
         {
-            m_IconContent = new GUIContent()
+            return new GUIContent()
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                     + "/Editor/EditorResources/FarNearClip.png"),
-                tooltip = "Far/Near Clip Tool",
+                tooltip = "Far-Near Clip Tool",
             };
         }
     }
@@ -92,9 +97,9 @@ namespace Cinemachine.Editor
     [EditorTool("Follow Offset Tool", typeof(CinemachineVirtualCameraBase))]
     class FollowOffsetTool : CinemachineTool
     {
-        void OnEnable()
+        protected override GUIContent GetIcon()
         {
-            m_IconContent = new GUIContent()
+            return new GUIContent()
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
                     + "/Editor/EditorResources/FollowOffset.png"),
@@ -106,9 +111,9 @@ namespace Cinemachine.Editor
     [EditorTool("Tracked Object Offset Tool", typeof(CinemachineVirtualCameraBase))]
     class TrackedObjectOffsetTool : CinemachineTool
     {
-        void OnEnable()
+        protected override GUIContent GetIcon()
         {
-            m_IconContent = new GUIContent()
+            return new GUIContent()
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
                     + "/Editor/EditorResources/TrackedObjectOffset.png"),
@@ -316,6 +321,7 @@ namespace Cinemachine.Editor
     {
         public const string id = "FreelookRigSelection/Dropdown";
         public static int SelectedRig;
+        public Texture2D[] icons;
 
         public FreelookRigSelection()
         {
@@ -324,6 +330,16 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
             EditorApplication.update += ShadowSelectedRigName;
+            
+            icons = new[]
+            {
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/FreelookRigTop.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/FreelookRigMiddle.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/FreelookRigBottom.png"),
+            };
         }
 
         ~FreelookRigSelection()
@@ -334,7 +350,9 @@ namespace Cinemachine.Editor
 
         void ShadowSelectedRigName()
         {
-            text = CinemachineFreeLookEditor.RigNames[Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length-1)].text;
+            var index = Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1);
+            icon = icons[index];
+            text = CinemachineFreeLookEditor.RigNames[index].text;
         }
         
         void FreelookRigSelectionMenu()
