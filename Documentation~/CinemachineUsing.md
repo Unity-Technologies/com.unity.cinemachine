@@ -31,11 +31,11 @@ One Virtual Camera has control of the Unity camera at any point in time. This is
 
 The Cinemachine Brain is a component in the Unity Camera itself. The Cinemachine Brain monitors all active Virtual Cameras in the Scene. To specify the next live Virtual Camera, you [activate or deactivate](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) the desired Virtual Camera's game object. Cinemachine Brain then chooses the most recently activated Virtual Camera with the same or higher priority as the live Virtual Camera.  It performs a cut or blend between the previous and new Virtual Cameras.
 
-**Tip**: Use Cinemachine Brain to respond to dynamic game events in real time. It allows your game logic to control the camera by manipulating priorities. This is particularly useful for live gameplay, where action isn’t always predictable. Use [Timeline](CinemachineTimeline.html) to choreograph cameras in predictable situations, like cutscenes. Timeline overrides the Cinemachine Brain priority system to give you precise, to-the-frame camera control.
+**Tip**: Use Cinemachine Brain to respond to dynamic game events in real time. It allows your game logic to control the camera by manipulating priorities. This is particularly useful for live gameplay, where action isn’t always predictable. Use [Timeline](CinemachineTimeline.md) to choreograph cameras in predictable situations, like cutscenes. Timeline overrides the Cinemachine Brain priority system to give you precise, to-the-frame camera control.
 
 ## Moving and aiming
 
-Use the [__Body__ properties](CinemachineVirtualCameraBody.html) in a Virtual Camera to specify how to move it in the Scene. Use the [__Aim__ properties](CinemachineVirtualCameraAim.html) to specify how to rotate it.
+Use the [__Body__ properties](CinemachineVirtualCameraBody.md) in a Virtual Camera to specify how to move it in the Scene. Use the [__Aim__ properties](CinemachineVirtualCameraAim.md) to specify how to rotate it.
 
 A Virtual Camera has two targets:
 
@@ -65,7 +65,7 @@ The __Aim__ properties offer the following procedural algorithms for rotating a 
 
 ## Composing a shot
 
-The [__Framing Transposer__](CinemachineBodyFramingTransposer.html), [__Composer__](CinemachineAimComposer.html), and [__Group Composer__](CinemachineAimGroupComposer.html) algorithms define areas in the camera frame for you to compose a shot:
+The [__Framing Transposer__](CinemachineBodyFramingTransposer.md), [__Composer__](CinemachineAimComposer.md), and [__Group Composer__](CinemachineAimGroupComposer.md) algorithms define areas in the camera frame for you to compose a shot:
 
 * __Dead zone__: The area of the frame that Cinemachine keeps the target in.
 
@@ -85,6 +85,6 @@ Adjust these areas to get a wide range of camera behaviors. To do this, drag the
 
 ## Using noise to simulate camera shake
 
-Real-world physical cameras are often heavy and cumbersome. They are hand-held by the camera operator or mounted on unstable objects like moving vehicles. Use [Noise properties](CinemachineVirtualCameraNoise.html) to simulate these real-world qualities for cinematic effect. For example, you could add a camera shake when following a running character to immerse the player in the action.
+Real-world physical cameras are often heavy and cumbersome. They are hand-held by the camera operator or mounted on unstable objects like moving vehicles. Use [Noise properties](CinemachineVirtualCameraNoise.md) to simulate these real-world qualities for cinematic effect. For example, you could add a camera shake when following a running character to immerse the player in the action.
 
 At each frame update, Cinemachine adds noise separately from the movement of the camera to follow a target. Noise does not influence the camera’s position in future frames. This separation ensures that properties like __damping__ behave as expected.

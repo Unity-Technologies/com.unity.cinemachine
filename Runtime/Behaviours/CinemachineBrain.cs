@@ -890,7 +890,8 @@ namespace Cinemachine
                     cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
                     cam.lensShift = state.Lens.LensShift;
-                    cam.orthographic = state.Lens.Orthographic;
+                    if (state.Lens.ModeOverride != LensSettings.OverrideModes.None)
+                        cam.orthographic = state.Lens.Orthographic;
                     bool isPhysical = state.Lens.ModeOverride == LensSettings.OverrideModes.None 
                         ? cam.usePhysicalProperties : state.Lens.IsPhysicalCamera;
                     cam.usePhysicalProperties = isPhysical;

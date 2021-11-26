@@ -103,9 +103,11 @@ namespace Cinemachine
             Damping.x = Mathf.Max(0, Damping.x);
             Damping.y = Mathf.Max(0, Damping.y);
             Damping.z = Mathf.Max(0, Damping.z);
+#if CINEMACHINE_PHYSICS
             CameraRadius = Mathf.Max(0.001f, CameraRadius);
             DampingIntoCollision = Mathf.Max(0, DampingIntoCollision);
             DampingFromCollision = Mathf.Max(0, DampingFromCollision);
+#endif
         }
 
         void Reset()
@@ -137,6 +139,7 @@ namespace Cinemachine
         /// Always returns the Aim stage</summary>
         public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
+#if CINEMACHINE_PHYSICS
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
@@ -145,8 +148,9 @@ namespace Cinemachine
         { 
             return Mathf.Max(
                 Mathf.Max(DampingIntoCollision, DampingFromCollision), 
-                Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z))); 
+                Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)));
         }
+#endif
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
