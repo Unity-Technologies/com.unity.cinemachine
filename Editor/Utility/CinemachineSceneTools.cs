@@ -424,6 +424,7 @@ namespace Cinemachine.Editor
             var farClipPlane = lens.FindPropertyRelative("FarClipPlane");
             var nearClipPos = camPos + camForward * nearClipPlane.floatValue;
             var farClipPos = camPos + camForward * farClipPlane.floatValue;
+            var vcamLens = vcamState.Lens;
             
             EditorGUI.BeginChangeCheck();
             var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
@@ -436,13 +437,16 @@ namespace Cinemachine.Editor
             {
                 nearClipPlane.floatValue += 
                     SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
+                if (!vcamLens.Orthographic)
+                {
+                    nearClipPlane.floatValue = Mathf.Max(0.01f, nearClipPlane.floatValue);
+                }
                 farClipPlane.floatValue += 
                     SliderHandleDelta(newFarClipPos, farClipPos, camForward);
                 lens.serializedObject.ApplyModifiedProperties();
             }
             
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
-            var vcamLens = vcamState.Lens;
             Handles.color = HelperLineDefaultColor;
             DrawFrustum(vcamLocalToWorld, vcamLens);
             if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
