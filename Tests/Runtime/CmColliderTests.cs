@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
+using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
@@ -49,17 +50,17 @@ namespace Tests.Runtime
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return WaitForXFullFrames(1);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
+            Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             var obstacle = CreateObstacle(originalCamPosition);
 
             yield return WaitForXFullFrames(2);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
+            Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
 
             yield return WaitForSeconds(m_Collider.m_SmoothingTime);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
+            Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
         [UnityTest]
@@ -69,22 +70,22 @@ namespace Tests.Runtime
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return WaitForXFullFrames(1);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
+            Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             var obstacle = CreateObstacle(originalCamPosition);
 
             yield return WaitForXFullFrames(2);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
+            Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             var pos1 = m_Vcam.State.FinalPosition;
 
             yield return WaitForXFullFrames(2);
-            Assert.That(pos1 == m_Vcam.State.FinalPosition, Is.False);
+            Assert.That(pos1, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
 
             yield return WaitForXFullFrames(2);
             Debug.Log("m_Vcam.State.FinalPosition:"+m_Vcam.State.FinalPosition+" vs "+originalCamPosition);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
+            Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
         [UnityTest]
@@ -94,19 +95,19 @@ namespace Tests.Runtime
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
             yield return WaitForXFullFrames(1);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.True);
+            Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             var obstacle = CreateObstacle(originalCamPosition);
 
             yield return WaitForXFullFrames(2);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
+            Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
             var pos1 = m_Vcam.State.FinalPosition;
             
             yield return WaitForXFullFrames(2);
-            Assert.That(pos1 == m_Vcam.State.FinalPosition, Is.False);
-            Assert.That(originalCamPosition == m_Vcam.State.FinalPosition, Is.False);
+            Assert.That(pos1, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
+            Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
         internal IEnumerator WaitForXFullFrames(int x)
