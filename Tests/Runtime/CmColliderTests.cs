@@ -54,7 +54,7 @@ namespace Tests.Runtime
 
             var obstacle = CreateObstacle(originalCamPosition);
 
-            yield return WaitForXFullFrames(2);
+            yield return WaitForSeconds(0.1f);
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
@@ -74,11 +74,11 @@ namespace Tests.Runtime
 
             var obstacle = CreateObstacle(originalCamPosition);
 
-            yield return WaitForXFullFrames(2);
+            yield return WaitForSeconds(0.1f);
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             var pos1 = m_Vcam.State.FinalPosition;
-
-            yield return WaitForXFullFrames(2);
+            
+            yield return WaitForSeconds(0.1f);
             Assert.That(pos1, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
@@ -98,8 +98,8 @@ namespace Tests.Runtime
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             var obstacle = CreateObstacle(originalCamPosition);
-
-            yield return WaitForXFullFrames(2);
+            
+            yield return WaitForSeconds(0.1f);
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
