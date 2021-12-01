@@ -236,6 +236,7 @@ namespace Cinemachine.Editor
                 SetComponent(m_Stage, type);
                 if (m_StageSelection != 0)
                     sStageData[index].IsExpanded = true;
+                Shutdown();
                 GUIUtility.ExitGUI();
                 return; // let the component editor be recreated
             }
