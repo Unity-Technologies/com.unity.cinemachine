@@ -120,11 +120,6 @@ namespace Cinemachine.Editor
             m_ScratchComponentList = new List<CinemachineComponentBase>();
         }
 
-        ~VcamStageEditor()
-        {
-            Shutdown();
-        }
-
         // Call this from OnDisable()
         public void Shutdown()
         {
