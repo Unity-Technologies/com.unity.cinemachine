@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Cinemachine example scenes show informative text when used with Input System instead of throwing error messages.
 - Regression fix: compilation errors when physics module is not present
 - GameObjects created with Gameobject menu items now follow Unity naming conventions.
+- Handles now consistent with design
 
 
 ## [2.9.0-pre.1] - 2021-10-26
