@@ -1,0 +1,36 @@
+all_platforms:
+  - name: windows
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  - name: macOS
+    type: Unity::VM::osx
+    image: package-ci/mac:stable
+    flavor: m1.mac
+  - name: ubuntu
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.large
+
+all_configurations:
+  - name: integration_tests
+    editors: [2019.4, 2020.3, 2021.2, trunk]
+    platforms: [windows, macOS, ubuntu]
+    args: --type package-tests
+  - name: isolation_tests
+    editors: [2019.4, 2020.3, 2021.2, trunk]
+    platforms: [windows, macOS, ubuntu]
+    args: --type package-tests --enable-load-and-test-isolation
+  - name: coverage
+    editors: [trunk]
+    platforms: [windows]
+    args: --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Cinemachine,+com.unity.cinemachine.editor'
+  - name: promotion_tests
+    editors: [2019.4, 2020.3, 2021.2, trunk]
+    platforms: [windows, macOS, ubuntu]
+    args: --type vetting-tests --platform editmode
+
+test_configurations: [integration_tests, isolation_tests, coverage]
+test_platforms: [ubuntu]
+publish_configurations: [integration_tests, isolation_tests, promotion_tests]
+publish_platforms: [windows, macOS, ubuntu]
