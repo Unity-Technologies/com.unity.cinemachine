@@ -159,6 +159,7 @@ namespace Cinemachine.Editor
     {
         public const string id = "FreelookRigSelection/Dropdown";
         public static int SelectedRig;
+        Texture2D[] m_Icons;
 
         public FreelookRigSelection()
         {
@@ -166,6 +167,16 @@ namespace Cinemachine.Editor
             clicked += FreelookRigSelectionMenu;
             EditorApplication.update += ShadowSelectedRigName;
             EditorApplication.update += DisplayIfRequired;
+            
+            m_Icons = new Texture2D[]
+            {
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/FreelookRigTop.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/FreelookRigMiddle.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/FreelookRigBottom.png"),
+            };
         }
 
         ~FreelookRigSelection()
@@ -181,8 +192,12 @@ namespace Cinemachine.Editor
                 ? DisplayStyle.Flex : DisplayStyle.None;
 
         // text is currently only visibly in Panel mode due to this bug: https://jira.unity3d.com/browse/STO-2278
-        void ShadowSelectedRigName() => text = CinemachineFreeLookEditor.RigNames[Mathf.Clamp(
-                SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1)].text;
+        void ShadowSelectedRigName()
+        {
+            var index = Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1);
+            text = CinemachineFreeLookEditor.RigNames[index].text;
+            icon = m_Icons[index];
+        }
 
         void FreelookRigSelectionMenu()
         {
