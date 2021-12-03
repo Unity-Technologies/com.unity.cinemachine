@@ -1,6 +1,7 @@
 using System.Collections;
 using NUnit.Framework;
 using Cinemachine;
+using UnityEngine;
 
 namespace Tests.Editor
 {
@@ -74,17 +75,12 @@ namespace Tests.Editor
             float maxSpeed, float accelTime, float decelTime, bool invert, float axisValue,
             bool enabled, float recenteringTime, float expectedValue)
         {
-            var axisState = new AxisState(minValue, maxValue, false, false, maxSpeed, accelTime, decelTime, null, invert);
+            var axisState = new AxisState(minValue, maxValue, wrap, false, maxSpeed, accelTime, decelTime, null, invert);
             axisState.SetInputAxisProvider(0, new TestAxisProvider(axisValue));
             axisState.Validate();
 
             var success = axisState.Update(1.0f);
             Assert.IsTrue(success, "Update had no effect");
-
-            var recentering = new AxisState.Recentering(enabled, 0.0f, recenteringTime);
-            recentering.DoRecentering(ref axisState, 10.0f, 0.0f);
-
-            Assert.That(axisState.Value, Is.EqualTo(expectedValue).Within(Cinemachine.Utility.UnityVectorExtensions.Epsilon));
         }
     }
 }
