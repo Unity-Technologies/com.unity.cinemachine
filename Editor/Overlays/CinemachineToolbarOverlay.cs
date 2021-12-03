@@ -30,37 +30,38 @@ namespace Cinemachine.Editor
     public abstract class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
         GUIContent m_IconContent;
-
-        /// <summary>
-        /// Implement this to set your Tool's icon and tooltip.
-        /// </summary>
+        
+        /// <summary>Implement this to set your Tool's icon and tooltip.</summary>
         /// <returns>A GUIContent with an icon set.</returns>
         protected abstract GUIContent GetIcon();
 
         /// <summary>This lets the editor find the icon of the tool.</summary>
         public override GUIContent toolbarIcon => m_IconContent ??= GetIcon();
 
-        // <summary>This is called when the Tool is selected in the editor.</summary>
+        /// <summary>This is called when the Tool is selected in the editor.</summary>
         public override void OnActivated()
         {
             base.OnActivated();
             CinemachineSceneToolUtility.SetTool(true, GetType());
         }
 
-        // <summary>This is called when the Tool is deselected in the editor.</summary>
+        /// <summary>This is called when the Tool is deselected in the editor.</summary>
         public override void OnWillBeDeactivated()
         {
             base.OnWillBeDeactivated();
             CinemachineSceneToolUtility.SetTool(false, GetType());
         }
         
-        // <summary>This checks whether this tool should be displayed or not.</summary>
+        
+        /// <summary>This checks whether this tool should be displayed or not.</summary>
+        /// <returns>True, when this tool is to be drawn. False, otherwise.</returns>
         public override bool IsAvailable()
         {
             return CinemachineSceneToolUtility.IsToolRequired(GetType());
         }
         
-        // Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool.
+        
+        /// <summary>Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool.</summary>
         public void OnDrawHandles()
         {
         }
@@ -134,10 +135,17 @@ namespace Cinemachine.Editor
     {
         static readonly string[] k_CmToolbarItems = { FreelookRigSelection.id };
 
+        /// <summary>
+        /// Override this method to return your visual element content.
+        /// By default, this draws the same visual element as the HorizontalToolbar
+        /// </summary>
+        /// <returns>VisualElement for the Panel conent.</returns>
         public override VisualElement CreatePanelContent() => CreateContent(Layout.HorizontalToolbar);
-
+        
         /// <summary>Set this with your custom tools' IDs.</summary>
         public static string[] customToolbarItems = null;
+        
+        /// <summary>The list of tools that this toolbar is going to contain.</summary>
         public IEnumerable<string> toolbarElements
         {
             get
