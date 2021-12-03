@@ -36,14 +36,26 @@ namespace Cinemachine.Editor
         protected abstract GUIContent GetIcon();
 
         /// <summary>This lets the editor find the icon of the tool.</summary>
-        public override GUIContent toolbarIcon => m_IconContent ??= GetIcon();
+        public override GUIContent toolbarIcon
+        {
+            get
+            {
+                if (m_IconContent == null || m_State.refreshIcon)
+                {
+                    m_IconContent = GetIcon();
+                    m_State.refreshIcon = false;
+                }
+                return m_IconContent;
+            }
+        }
 
         /// <summary>This is called when the Tool is selected in the editor.</summary>
         public override void OnActivated()
         {
             base.OnActivated();
             CinemachineSceneToolUtility.SetTool(true, GetType());
-            m_Selected = true;
+            m_State.refreshIcon = true;
+            m_State.isSelected = true;
         }
 
         /// <summary>This is called when the Tool is deselected in the editor.</summary>
@@ -51,29 +63,36 @@ namespace Cinemachine.Editor
         {
             base.OnWillBeDeactivated();
             CinemachineSceneToolUtility.SetTool(false, GetType());
-            m_Selected = false;
+            m_State.refreshIcon = true;
+            m_State.isSelected = false;
         }
-        
         
         /// <summary>This checks whether this tool should be displayed or not.</summary>
         /// <returns>True, when this tool is to be drawn. False, otherwise.</returns>
-        public override bool IsAvailable()
-        {
-            return CinemachineSceneToolUtility.IsToolRequired(GetType());
-        }
-        
-        
+        public override bool IsAvailable() => CinemachineSceneToolUtility.IsToolRequired(GetType());
+
         /// <summary>Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool.</summary>
         public void OnDrawHandles()
         {
         }
 
-        bool m_Selected;
-        private protected string GetIconPath() =>
-            ScriptableObjectUtility.CinemachineRealativeInstallPath + "/Editor/EditorResources/Handles/" + 
-            (EditorGUIUtility.isProSkin ? 
-                (m_Selected ? "Dark-Selected" : "Dark") : 
-                (m_Selected ? "Light-Selected" : "Light")) + "/";
+        private protected string GetIconPath()
+        {
+            m_State.refreshIcon = m_State.isProSkin != EditorGUIUtility.isProSkin;
+            m_State.isProSkin = EditorGUIUtility.isProSkin;
+            return ScriptableObjectUtility.CinemachineRealativeInstallPath + "/Editor/EditorResources/Handles/" +
+                (m_State.isProSkin ? 
+                    (m_State.isSelected ? "Dark-Selected" : "Dark") : 
+                    (m_State.isSelected ? "Light-Selected" : "Light")) + "/";
+        }
+
+        struct ToolState
+        {
+            public bool isSelected;
+            public bool isProSkin;
+            public bool refreshIcon;
+        }
+        ToolState m_State = new ToolState { refreshIcon = true };
     }
     
     [EditorTool("Field of View Tool", typeof(CinemachineVirtualCameraBase))]

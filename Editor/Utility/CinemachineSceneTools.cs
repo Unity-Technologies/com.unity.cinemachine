@@ -80,6 +80,8 @@ namespace Cinemachine.Editor
             {
                 s_ActiveExclusiveTool = s_ActiveExclusiveTool == tool ? null : s_ActiveExclusiveTool;
             }
+            
+            s_TriggerRefresh = true;
         }
 
         static CinemachineSceneToolUtility()
