@@ -43,6 +43,7 @@ namespace Cinemachine.Editor
         {
             base.OnActivated();
             CinemachineSceneToolUtility.SetTool(true, GetType());
+            m_Selected = true;
         }
 
         /// <summary>This is called when the Tool is deselected in the editor.</summary>
@@ -50,6 +51,7 @@ namespace Cinemachine.Editor
         {
             base.OnWillBeDeactivated();
             CinemachineSceneToolUtility.SetTool(false, GetType());
+            m_Selected = false;
         }
         
         
@@ -65,62 +67,57 @@ namespace Cinemachine.Editor
         public void OnDrawHandles()
         {
         }
+
+        bool m_Selected;
+        private protected string GetIconPath() =>
+            ScriptableObjectUtility.CinemachineRealativeInstallPath + "/Editor/EditorResources/Handles/" + 
+            (EditorGUIUtility.isProSkin ? 
+                (m_Selected ? "Dark-Selected" : "Dark") : 
+                (m_Selected ? "Light-Selected" : "Light")) + "/";
     }
     
     [EditorTool("Field of View Tool", typeof(CinemachineVirtualCameraBase))]
     class FoVTool : CinemachineTool
     {
-        protected override GUIContent GetIcon()
-        {
-            return new GUIContent
+        protected override GUIContent GetIcon() =>
+            new GUIContent
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                    + "/Editor/EditorResources/FOV.png"),
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath() + "FOV.png"),
                 tooltip = "Field of View Tool",
             };
-        }
     }
     
     [EditorTool("Far-Near Clip Tool", typeof(CinemachineVirtualCameraBase))]
     class FarNearClipTool : CinemachineTool
     {
-        protected override GUIContent GetIcon()
-        {
-            return new GUIContent()
+        protected override GUIContent GetIcon() =>
+            new GUIContent
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                    + "/Editor/EditorResources/FarNearClip.png"),
-                tooltip = "Far-Near Clip Tool",
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath() + "FarNearClip.png"),
+                tooltip = "Field of View Tool",
             };
-        }
     }
     
     [EditorTool("Follow Offset Tool", typeof(CinemachineVirtualCameraBase))]
     class FollowOffsetTool : CinemachineTool
     {
-        protected override GUIContent GetIcon()
-        {
-            return new GUIContent()
+        protected override GUIContent GetIcon() =>
+            new GUIContent
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                    + "/Editor/EditorResources/FollowOffset.png"),
-                tooltip = "Follow Offset Tool"
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath() + "FollowOffset.png"),
+                tooltip = "Field of View Tool",
             };
-        }
     }
 
     [EditorTool("Tracked Object Offset Tool", typeof(CinemachineVirtualCameraBase))]
     class TrackedObjectOffsetTool : CinemachineTool
     {
-        protected override GUIContent GetIcon()
-        {
-            return new GUIContent()
+        protected override GUIContent GetIcon() =>
+            new GUIContent
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/TrackedObjectOffset.png"),
-                tooltip = "Tracked Object Offset Tool",
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath() + "TrackedObjectOffset.png"),
+                tooltip = "Field of View Tool",
             };
-        }
     }
 
     /// <summary>
@@ -179,11 +176,11 @@ namespace Cinemachine.Editor
             m_Icons = new Texture2D[]
             {
                 AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/FreelookRigTop.png"),
+                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
                 AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/FreelookRigMiddle.png"),
+                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
                 AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/FreelookRigBottom.png"),
+                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
             };
         }
 
@@ -357,11 +354,11 @@ namespace Cinemachine.Editor
             m_Icons = new Texture2D[]
             {
                 AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/FreelookRigTop.png"),
+                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
                 AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/FreelookRigMiddle.png"),
+                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
                 AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/FreelookRigBottom.png"),
+                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
             };
         }
 
