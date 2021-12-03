@@ -361,7 +361,7 @@ namespace Cinemachine
             for (int i = 0; i < allExtraStates.Count; ++i)
             {
                 var e = allExtraStates[i];
-                if (e.m_BakedSolution != null && CinemachineCore.Instance.IsLive(e.m_vcam))
+                if (e.m_BakedSolution != null)
                 {
                     currentPath.AddRange(e.m_BakedSolution.GetBakedPath());
                 }
