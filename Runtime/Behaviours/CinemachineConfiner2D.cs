@@ -247,6 +247,7 @@ namespace Cinemachine
             /// <param name="aspectRatio">Aspect ratio/param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
+            /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(
                 Collider2D boundingShape2D, float maxWindowSize, 
                 float aspectRatio, out bool confinerStateChanged)
