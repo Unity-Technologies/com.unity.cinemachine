@@ -82,6 +82,11 @@
             "name": "com.unity.modules.imgui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_IMGUI"
+        },
+        {
+            "name": "com.unity.splines",
+            "expression": "0.9.9",
+            "define": "CINEMACHINE_UNITY_SPLINES"
         }
     ],
     "noEngineReferences": false

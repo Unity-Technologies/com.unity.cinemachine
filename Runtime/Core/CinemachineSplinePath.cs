@@ -1,5 +1,4 @@
-﻿#if false
-
+﻿#if CINEMACHINE_UNITY_SPLINES
 using UnityEngine;
 using UnityEngine.Splines;
 using System.Collections.Generic;
@@ -45,7 +44,7 @@ namespace Cinemachine
         {
             get
             {
-                int count = Spline.KnotCount - 1;
+                int count = Spline.Count - 1;
                 if (count < 1)
                     return 0;
                 return Spline.Closed ? count + 1 : count;
@@ -68,8 +67,8 @@ namespace Cinemachine
         void Reset()
         {
             m_Spline = new Spline();
-            m_Spline.AddKnot(new BezierKnot { Position = new float3(0, 0, -5), Rotation = quaternion.identity });
-            m_Spline.AddKnot(new BezierKnot { Position = new float3(0, 0, 5), Rotation = quaternion.identity });
+            m_Spline.Add(new BezierKnot { Position = new float3(0, 0, -5), Rotation = quaternion.identity });
+            m_Spline.Add(new BezierKnot { Position = new float3(0, 0, 5), Rotation = quaternion.identity });
             m_Appearance = new Appearance();
             InvalidateDistanceCache();
         }
@@ -85,7 +84,7 @@ namespace Cinemachine
         float GetBoundingIndices(float pos, out int indexA, out int indexB)
         {
             pos = StandardizePos(pos);
-            var waypointCount = Spline.KnotCount;
+            var waypointCount = Spline.Count;
             if (waypointCount < 2)
                 indexA = indexB = 0;
             else
@@ -118,7 +117,7 @@ namespace Cinemachine
         public override Vector3 EvaluatePosition(float pos)
         {
             var result = Vector3.zero;
-            if (Spline.KnotCount > 0)
+            if (Spline.Count > 0)
             {
                 pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
@@ -137,7 +136,7 @@ namespace Cinemachine
         public override Vector3 EvaluateTangent(float pos)
         {
             var result = transform.rotation * Vector3.forward;
-            if (Spline.KnotCount > 1)
+            if (Spline.Count > 1)
             {
                 pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
@@ -154,12 +153,13 @@ namespace Cinemachine
         /// <returns>World-space orientation of the path tangent.</returns>
         public override Quaternion EvaluateOrientation(float pos)
         {
-            if (Spline.KnotCount > 1)
+            var knotCount = Spline.Count;
+            if (knotCount > 1)
             {
                 pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 return transform.rotation * Quaternion.Slerp(Spline[indexA].Rotation, Spline[indexB].Rotation, pos - indexA);
             }
-            return Spline.KnotCount == 1 ? transform.rotation * Spline[0].Rotation : Quaternion.identity;
+            return knotCount == 1 ? transform.rotation * Spline[0].Rotation : Quaternion.identity;
         }
 
     }

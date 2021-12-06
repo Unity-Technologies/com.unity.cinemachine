@@ -1,10 +1,10 @@
-﻿#if false
+﻿#if CINEMACHINE_UNITY_SPLINES
 using UnityEditor;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSplinePath))]
-    internal sealed class CinemachineSplinePathEditor : BaseEditor<CinemachineSplinePath>
+    sealed class CinemachineSplinePathEditor : BaseEditor<CinemachineSplinePath>
     {
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSplinePath))]
@@ -14,7 +14,6 @@ namespace Cinemachine.Editor
             CinemachinePathEditor.DrawPathGizmo(path,
                 isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
         }
-        
     }
 }
 #endif
