@@ -40,9 +40,6 @@ namespace Cinemachine
         /// other virtual cameras </summary>
         public TransitionParams m_Transitions;
 
-        /// <summary>API for the editor, to make the dragging of position handles behave better.</summary>
-        public bool UserIsDragging;
-
         /// <summary>Updates the child rig cache</summary>
         protected override void OnEnable()
         {
@@ -196,13 +193,11 @@ namespace Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
-            if (!UserIsDragging)
-            {
-                if (Follow != null)
-                    transform.position = State.RawPosition;
-                if (LookAt != null)
-                    transform.rotation = State.RawOrientation;
-            }
+            if (Follow != null)
+                transform.position = State.RawPosition;
+            if (LookAt != null)
+                transform.rotation = State.RawOrientation;
+            
             // Signal that it's all done
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;

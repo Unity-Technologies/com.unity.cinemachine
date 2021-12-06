@@ -197,11 +197,11 @@ namespace Cinemachine
         public bool HasInputProvider { get => m_InputAxisProvider != null; }
 
         /// <summary>
-        /// Updates the state of this axis based on the axis defined
+        /// Updates the state of this axis based on the Input axis defined
         /// by AxisState.m_AxisName
         /// </summary>
         /// <param name="deltaTime">Delta time in seconds</param>
-        /// <returns>Returns <b>true</b> if this axis' input was non-zero this Update,
+        /// <returns>Returns <b>true</b> if this axis's input was non-zero this Update,
         /// <b>false</b> otherwise</returns>
         public bool Update(float deltaTime)
         {
@@ -213,9 +213,9 @@ namespace Cinemachine
             // Cheating: we want the render frame time, not the fixed frame time
             if (CinemachineCore.UniformDeltaTimeOverride >= 0)
                 deltaTime = CinemachineCore.UniformDeltaTimeOverride; 
-            else if (deltaTime >= 0 && m_LastUpdateTime != 0)
-                deltaTime = Time.time - m_LastUpdateTime;
-            m_LastUpdateTime = Time.time;
+            else if (Time.inFixedTimeStep && deltaTime >= 0 && m_LastUpdateTime != 0)
+                deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
+            m_LastUpdateTime = Time.realtimeSinceStartup;
             
             if (m_InputAxisProvider != null)
                 m_InputAxisValue = m_InputAxisProvider.GetAxisValue(m_InputAxisIndex);

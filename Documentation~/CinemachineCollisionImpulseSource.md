@@ -21,6 +21,7 @@ The properties in the Cinemachine Collision Impulse Source Inspector window are 
 - [Trigger Object Filter](#TriggerObject)
 - [How to Generate The Impulse](#GenerateImpulse)
 
+<a name="ImpulseChannel"></a>
 ### Impulse Channel
 
 Impulse Listeners filter impulses based on channels to control which Impulse Sources they react to. Channels work like Camera Layers, but are distinct from them. These properties control the channels that the Collision Impulse Source broadcasts impulse signals on. For details, see documentation on [Filtering](CinemachineImpulseFiltering.md).

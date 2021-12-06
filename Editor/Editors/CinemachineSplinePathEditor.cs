@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if false
+using UnityEditor;
 
 namespace Cinemachine.Editor
 {
@@ -16,3 +17,4 @@ namespace Cinemachine.Editor
         
     }
 }
+#endif

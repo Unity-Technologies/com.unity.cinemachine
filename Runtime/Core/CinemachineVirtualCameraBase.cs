@@ -789,7 +789,7 @@ namespace Cinemachine
         protected void UpdateTargetCache()
         {
             var target = ResolveFollow(Follow);
-            FollowTargetChanged |= target != m_CachedFollowTarget;
+            FollowTargetChanged = target != m_CachedFollowTarget;
             if (FollowTargetChanged)
             {
                 m_CachedFollowTarget = target;
@@ -802,7 +802,7 @@ namespace Cinemachine
                 }
             }
             target = ResolveLookAt(LookAt);
-            LookAtTargetChanged |= target != m_CachedLookAtTarget;
+            LookAtTargetChanged = target != m_CachedLookAtTarget;
             if (LookAtTargetChanged)
             {
                 m_CachedLookAtTarget = target;

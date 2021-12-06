@@ -143,7 +143,7 @@ namespace Cinemachine
         }
 
         /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
-        public bool m_HideOffsetInInspector;
+        public bool HideOffsetInInspector { get; set; }
 
         /// <summary>Get the target offset, with sanitization</summary>
         public Vector3 EffectiveOffset

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if false
+
+using UnityEngine;
 using UnityEngine.Splines;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -162,3 +164,4 @@ namespace Cinemachine
 
     }
 }
+#endif

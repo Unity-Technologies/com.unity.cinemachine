@@ -145,11 +145,12 @@ namespace Cinemachine.Editor
 
         // Temporarily here
         /// <summary>
-        /// Create a game object.  Uses ObjectFactory if the Unity version is sufficient.
+        /// Creates a new GameObject.
         /// </summary>
-        /// <param name="name">Name to give the object</param>
-        /// <param name="types">Optional components to add</param>
-        /// <returns></returns>
+        /// <param name="name">Name to give the object.</param>
+        /// <param name="types">Optional components to add.</param>
+        /// <returns>The GameObject that was created.</returns>
+        [Obsolete("Use ObjectFactory.CreateGameObject(string name, params Type[] types) instead.")]
         public static GameObject CreateGameObject(string name, params Type[] types)
         {
             return ObjectFactory.CreateGameObject(name, types);

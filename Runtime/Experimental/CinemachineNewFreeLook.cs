@@ -264,7 +264,7 @@ namespace Cinemachine
             var orbital = gameObject.AddComponent<CinemachineOrbitalTransposer>();
             gameObject.AddComponent<CinemachineComposer>();
 #endif
-            orbital.m_HideOffsetInInspector = true;
+            orbital.HideOffsetInInspector = true;
             orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
 
             InvalidateComponentCache();
@@ -418,13 +418,11 @@ namespace Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
-            if (!UserIsDragging)
-            {
-                if (Follow != null)
-                    transform.position = State.RawPosition;
-                if (LookAt != null)
-                    transform.rotation = State.RawOrientation;
-            }
+            if (Follow != null)
+                transform.position = State.RawPosition;
+            if (LookAt != null)
+                transform.rotation = State.RawOrientation;
+            
             // Signal that it's all done
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
@@ -437,7 +435,7 @@ namespace Cinemachine
             var transposer = Transposer;
             if (transposer != null)
             {
-                transposer.m_HideOffsetInInspector = true;
+                transposer.HideOffsetInInspector = true;
                 transposer.m_FollowOffset = new Vector3(
                     0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
             }
