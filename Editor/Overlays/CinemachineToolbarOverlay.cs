@@ -273,6 +273,8 @@ namespace Cinemachine.Editor
             });
         }
     }
+    
+    
 
     /// <summary>
     /// Creates a toggle tool on the Cinemachine toolbar that is exclusive with other
@@ -299,7 +301,7 @@ namespace Cinemachine.Editor
         public FoVTool()
         {
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/FOV.png");
+                + "/Editor/EditorResources/Handles/Dark/FOV.png");
             tooltip = "Field of View Tool";
         }
     }
@@ -312,7 +314,7 @@ namespace Cinemachine.Editor
         public FarNearClipTool()
         {
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/FarNearClip.png");
+                + "/Editor/EditorResources/Handles/Dark/FarNearClip.png");
             tooltip = "Far/Near Clip Tool";
         }
     }
@@ -325,7 +327,7 @@ namespace Cinemachine.Editor
         public FollowOffsetTool()
         {
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/FollowOffset.png");
+                + "/Editor/EditorResources/Handles/Dark/FollowOffset.png");
             tooltip = "Follow Offset Tool";
         }
     }
@@ -338,7 +340,7 @@ namespace Cinemachine.Editor
         public TrackedObjectOffsetTool()
         {
             icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/TrackedObjectOffset.png");
+                + "/Editor/EditorResources/Handles/Dark/TrackedObjectOffset.png");
             tooltip = "Tracked Object Offset Tool";
         }
     }
