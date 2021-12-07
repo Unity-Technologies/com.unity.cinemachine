@@ -504,7 +504,8 @@ namespace Cinemachine
             else
             {
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
-                    m_ComponentPipeline[i].PrePipelineMutateCameraState(ref state, deltaTime);
+                    if (m_ComponentPipeline[i] != null)
+                        m_ComponentPipeline[i].PrePipelineMutateCameraState(ref state, deltaTime);
 
                 int componentIndex = 0;
                 CinemachineComponentBase postAimBody = null;

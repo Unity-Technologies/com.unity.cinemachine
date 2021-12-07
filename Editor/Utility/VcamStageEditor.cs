@@ -120,11 +120,6 @@ namespace Cinemachine.Editor
             m_ScratchComponentList = new List<CinemachineComponentBase>();
         }
 
-        ~VcamStageEditor()
-        {
-            Shutdown();
-        }
-
         // Call this from OnDisable()
         public void Shutdown()
         {
@@ -226,6 +221,7 @@ namespace Cinemachine.Editor
                 SetComponent(m_Stage, type);
                 if (m_StageSelection != 0)
                     sStageData[index].IsExpanded = true;
+                Shutdown();
                 GUIUtility.ExitGUI();
                 return; // let the component editor be recreated
             }
