@@ -4,6 +4,7 @@ using UnityEngine.Splines;
 using System.Collections.Generic;
 using Unity.Mathematics;
 
+// TODO: no need to implement this. Just use SplineContainer directly.
 namespace Cinemachine
 {
     /// <summary>Defines a world-space path, consisting of an array of knots,
