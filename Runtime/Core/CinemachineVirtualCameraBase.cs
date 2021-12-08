@@ -584,6 +584,7 @@ namespace Cinemachine
             if (!CinemachineCore.Instance.IsLive(this))
                 PreviousStateIsValid = false;
             CinemachineCore.Instance.CameraEnabled(this);
+            InvalidateCachedTargets();
             // Sanity check - if another vcam component is enabled, shut down
             var vcamComponents = GetComponents<CinemachineVirtualCameraBase>();
             for (int i = 0; i < vcamComponents.Length; ++i)
@@ -770,22 +771,29 @@ namespace Cinemachine
         private CinemachineVirtualCameraBase m_CachedLookAtTargetVcam;
         private ICinemachineTargetGroup m_CachedLookAtTargetGroup;
 
+        private void InvalidateCachedTargets()
+        {
+            m_CachedFollowTarget = null;
+            m_CachedFollowTargetVcam = null;
+            m_CachedFollowTargetGroup = null;
+            m_CachedLookAtTarget = null;
+            m_CachedLookAtTargetVcam = null;
+            m_CachedLookAtTargetGroup = null;
+        }
+
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoad]
         class OnDomainReload 
         { 
             static OnDomainReload() 
             {
+#if UNITY_2020_1_OR_NEWER
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
+#else
+                var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>();
+#endif
                 foreach (var vcam in vcams)
-                {
-                    vcam.m_CachedFollowTarget = null;
-                    vcam.m_CachedFollowTargetVcam = null;
-                    vcam.m_CachedFollowTargetGroup = null;
-                    vcam.m_CachedLookAtTarget = null;
-                    vcam.m_CachedLookAtTargetVcam = null;
-                    vcam.m_CachedLookAtTargetGroup = null;
-                }
+                    vcam.InvalidateCachedTargets();
             }
         }
 #endif
