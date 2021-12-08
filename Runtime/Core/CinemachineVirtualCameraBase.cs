@@ -770,6 +770,25 @@ namespace Cinemachine
         private CinemachineVirtualCameraBase m_CachedLookAtTargetVcam;
         private ICinemachineTargetGroup m_CachedLookAtTargetGroup;
 
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoad]
+        class OnDomainReload 
+        { 
+            static OnDomainReload() 
+            {
+                var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
+                foreach (var vcam in vcams)
+                {
+                    vcam.m_CachedFollowTarget = null;
+                    vcam.m_CachedFollowTargetVcam = null;
+                    vcam.m_CachedFollowTargetGroup = null;
+                    vcam.m_CachedLookAtTarget = null;
+                    vcam.m_CachedLookAtTargetVcam = null;
+                    vcam.m_CachedLookAtTargetGroup = null;
+                }
+            }
+        }
+#endif
 
         /// <summary>
         /// This property is true if the Follow target was changed this frame.
