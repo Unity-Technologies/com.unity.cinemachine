@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
 - Bugfix: Cinemachine assigns a default input controller delegate that returns 0 when the legacy input system is disabled.
 - Cinemachine example scenes show informative text when used with Input System instead of throwing error messages.
+- Moved Cinemachine tools into the main Tools overlay (2022.1+), moved Freelook rig selection to a separate overlay, updated icons to support light and dark themes
 
 ## [2.9.0-pre.1] - 2021-10-26
 - Added ability to directly set the active blend in CinemachineBrain.
