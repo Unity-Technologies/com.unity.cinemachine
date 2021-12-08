@@ -16,7 +16,8 @@
         "Unity.RenderPipelines.Universal.Editor",
         "Unity.Splines",
         "Unity.Splines.Editor",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [
         "Editor"

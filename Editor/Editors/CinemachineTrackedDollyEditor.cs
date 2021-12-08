@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+#if CINEMACHINE_UNITY_SPLINES
+using Unity.Mathematics;
+#endif
 
 namespace Cinemachine.Editor
 {
@@ -53,13 +56,17 @@ namespace Cinemachine.Editor
         {
             if (target.IsValid)
             {
-                CinemachinePathBase path = target.m_Path;
+                var path = target.m_Path;
                 if (path != null)
                 {
                     var isActive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
-                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
-                    Vector3 pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
-                    Color oldColor = Gizmos.color;
+                    // CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
+#if CINEMACHINE_UNITY_SPLINES
+                    var pos = path.EvaluatePosition(target.m_PathPosition);
+#else
+                    var pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
+#endif
+                    var oldColor = Gizmos.color;
                     Gizmos.color = isActive
                         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                         : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;

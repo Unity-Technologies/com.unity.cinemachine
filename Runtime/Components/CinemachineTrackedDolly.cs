@@ -4,6 +4,7 @@ using Cinemachine.Utility;
 using UnityEngine.Serialization;
 
 #if CINEMACHINE_UNITY_SPLINES
+using Unity.Mathematics;
 using UnityEngine.Splines;
 #endif
 
@@ -27,7 +28,6 @@ namespace Cinemachine
         [Tooltip("The path to which the camera will be constrained.  This must be non-null.")]
 #if CINEMACHINE_UNITY_SPLINES
         public SplineContainer m_Path;
-        public SplineData<float> m_PathData;
 #else
         public CinemachinePathBase m_Path;
 #endif
@@ -46,7 +46,11 @@ namespace Cinemachine
             + "0 represents the first waypoint on the path, 1 is the second, and so on.  Values "
             + "in-between are points on the path in between the waypoints.  If set to Distance, "
             + "then Path Position represents distance along the path.")]
+#if CINEMACHINE_UNITY_SPLINES
+        public PathIndexUnit m_PositionUnits = PathIndexUnit.Normalized;
+#else
         public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.PathUnits;
+#endif
 
         /// <summary>Where to put the camera realtive to the path postion.  X is perpendicular 
         /// to the path, Y is up, and Z is parallel to the path.</summary>
@@ -201,6 +205,12 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
+#if CINEMACHINE_UNITY_SPLINES
+            // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
+            var pathSpline = m_Path.Spline;
+            m_PathPosition = 
+                SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, m_PositionUnits, PathIndexUnit.Normalized);
+#endif
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
@@ -214,12 +224,19 @@ namespace Cinemachine
                 m_PathPosition = 0;
                 return;
             }
-            m_PathPosition = m_Path.StandardizeUnit(m_PathPosition, m_PositionUnits);
 
+#if !CINEMACHINE_UNITY_SPLINES
+            m_PathPosition = m_Path.StandardizeUnit(m_PathPosition, m_PositionUnits);
+#endif
+            
             // Get the new ideal path base position
             if (m_AutoDolly.m_Enabled && FollowTarget != null)
             {
+#if CINEMACHINE_UNITY_SPLINES
+                SplineUtility.GetNearestPoint(pathSpline, FollowTargetPosition, out _, out m_PathPosition);
+#else
                 float prevPos = m_Path.ToNativePathUnits(m_PreviousPathPosition, m_PositionUnits);
+
                 // This works in path units
                 m_PathPosition = m_Path.FindClosestPoint(
                     FollowTargetPosition,
@@ -227,8 +244,9 @@ namespace Cinemachine
                     (deltaTime < 0 || m_AutoDolly.m_SearchRadius <= 0)
                         ? -1 : m_AutoDolly.m_SearchRadius,
                     m_AutoDolly.m_SearchResolution);
+                
                 m_PathPosition = m_Path.FromPathNativeUnits(m_PathPosition, m_PositionUnits);
-
+#endif
                 // Apply the path position offset
                 m_PathPosition += m_AutoDolly.m_PositionOffset;
             }
@@ -237,12 +255,26 @@ namespace Cinemachine
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 // Normalize previous position to find the shortest path
+#if CINEMACHINE_UNITY_SPLINES
+                float maxUnit = 1; // we are always using normalized unit [0-1]
+#else
                 float maxUnit = m_Path.MaxUnit(m_PositionUnits);
                 if (maxUnit > 0)
+#endif
                 {
+#if CINEMACHINE_UNITY_SPLINES
+                    float prev = m_PreviousPathPosition;
+                    float next = newPathPosition;
+#else
                     float prev = m_Path.StandardizeUnit(m_PreviousPathPosition, m_PositionUnits);
                     float next = m_Path.StandardizeUnit(newPathPosition, m_PositionUnits);
-                    if (m_Path.Looped && Mathf.Abs(next - prev) > maxUnit / 2)
+#endif
+#if CINEMACHINE_UNITY_SPLINES
+                    if (pathSpline.Closed
+#else
+                    if (m_Path.Looped 
+#endif
+                        && Mathf.Abs(next - prev) > maxUnit / 2)
                     {
                         if (next > prev)
                             prev += maxUnit;
@@ -259,10 +291,16 @@ namespace Cinemachine
                 newPathPosition = m_PreviousPathPosition - offset;
             }
             m_PreviousPathPosition = newPathPosition;
-            Quaternion newPathOrientation = m_Path.EvaluateOrientationAtUnit(newPathPosition, m_PositionUnits);
+#if CINEMACHINE_UNITY_SPLINES
+            SplineUtility.Evaluate(pathSpline, newPathPosition, 
+                out var newCameraPosTemp, out _, out var newUpVector);
+            Vector3 newCameraPos = newCameraPosTemp;
+            Quaternion newPathOrientation = Quaternion.FromToRotation(m_Path.transform.up, newUpVector);
+#else
+            var newPathOrientation = m_Path.EvaluateOrientationAtUnit(newPathPosition, m_PositionUnits);
+#endif
 
             // Apply the offset to get the new camera position
-            Vector3 newCameraPos = m_Path.EvaluatePositionAtUnit(newPathPosition, m_PositionUnits);
             Vector3 offsetX = newPathOrientation * Vector3.right;
             Vector3 offsetY = newPathOrientation * Vector3.up;
             Vector3 offsetZ = newPathOrientation * Vector3.forward;
