@@ -229,7 +229,7 @@ namespace Cinemachine.Editor
                 var camPos = framingTransposer.VcamState.RawPosition;
                 var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
-                Handles.color = CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
+                Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
                     CinemachineSceneToolHelpers.CubeHandleCapSize(camPos), Handles.CubeHandleCap, 0.5f);
@@ -252,7 +252,7 @@ namespace Cinemachine.Editor
                 }
                 
                 Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
+                    Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 Handles.DrawLine(camPos, 
                     framingTransposer.FollowTarget.position + framingTransposer.m_TrackedObjectOffset);
 

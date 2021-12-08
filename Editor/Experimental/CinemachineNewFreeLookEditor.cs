@@ -83,7 +83,6 @@ namespace Cinemachine
                 (targets[i] as CinemachineNewFreeLook).UpdateInputAxisProvider();
             
 #if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.RegisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -96,7 +95,6 @@ namespace Cinemachine
             base.OnDisable();
             
 #if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.UnregisterTool(typeof(SoloVcamTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
