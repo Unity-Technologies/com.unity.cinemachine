@@ -8,9 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
 - Regression fix: could not change the projection of the main camera if a CM virtual camera is active.
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
+- Removed legacy .unitypackages
+- New feature: CinemachineBrain may control other GameObject instead of the one it is attached to.
 - Bugfix: Cinemachine assigns a default input controller delegate that returns 0 when the legacy input system is disabled.
 - Cinemachine example scenes show informative text when used with Input System instead of throwing error messages.
+- Regression fix: compilation errors when physics module is not present.
+- GameObjects created with Gameobject menu items now follow Unity naming conventions.
+- Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
 - Moved Cinemachine tools into the main Tools overlay (2022.1+), moved Freelook rig selection to a separate overlay, updated icons to support light and dark themes
+
 
 ## [2.9.0-pre.1] - 2021-10-26
 - Added ability to directly set the active blend in CinemachineBrain.

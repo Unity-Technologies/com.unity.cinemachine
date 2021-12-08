@@ -137,7 +137,7 @@ namespace Cinemachine
         public int BrainCount { get { return mActiveBrains.Count; } }
 
         /// <summary>Access the array of active CinemachineBrains in the scene
-        /// without gebnerating garbage</summary>
+        /// without generating garbage</summary>
         /// <param name="index">Index of the brain to access, range 0-BrainCount</param>
         /// <returns>The brain at the specified index</returns>
         public CinemachineBrain GetActiveBrain(int index)
