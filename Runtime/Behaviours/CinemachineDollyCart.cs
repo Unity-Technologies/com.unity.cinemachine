@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
+#if CINEMACHINE_UNITY_SPLINES
+using UnityEngine.Splines;
+#endif
+
 namespace Cinemachine
 {
     /// <summary>
@@ -16,7 +20,16 @@ namespace Cinemachine
     {
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
+#if CINEMACHINE_UNITY_SPLINES
+        public SplineContainer m_Path;
+        Spline m_Spline;
+        SplineData<float> m_StandardizeUnit;
+        SplineData<Vector3> m_PathPosition;
+        SplineData<Quaternion> m_PathRotation;
+#else
         public CinemachinePathBase m_Path;
+#endif
+        
 
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
@@ -35,8 +48,11 @@ namespace Cinemachine
 
         /// <summary>How to interpret the Path Position</summary>
         [Tooltip("How to interpret the Path Position.  If set to Path Units, values are as follows: 0 represents the first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in between the waypoints.  If set to Distance, then Path Position represents distance along the path.")]
+#if CINEMACHINE_UNITY_SPLINES
+        public PathIndexUnit m_PositionUnits = PathIndexUnit.Distance;
+#else
         public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.Distance;
-
+#endif
         /// <summary>Move the cart with this speed</summary>
         [Tooltip("Move the cart with this speed along the path.  The value is interpreted according to the Position Units setting.")]
         [FormerlySerializedAs("m_Velocity")]
@@ -72,6 +88,7 @@ namespace Cinemachine
         {
             if (m_Path != null)
             {
+                m_StandardizeUnit.Evaluate(m_Spline, distanceAlongPath, m_PositionUnits, );
                 m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
                 transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
                 transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);

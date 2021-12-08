@@ -1,5 +1,8 @@
 using UnityEngine;
 using UnityEditor;
+#if CINEMACHINE_UNITY_SPLINES
+using UnityEngine.Splines;
+#endif
 
 namespace Cinemachine.Editor
 {
@@ -96,10 +99,13 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_GameObjectMenuPriority)]
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
-            // TODO: use new spline if present
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
+#if CINEMACHINE_UNITY_SPLINES
+            var path = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+#else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
+#endif
             var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
@@ -111,10 +117,13 @@ namespace Cinemachine.Editor
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]
         static void CreateDollyTrackWithCart(MenuCommand command)
         {
-            // TODO: use new spline if present
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
+#if CINEMACHINE_UNITY_SPLINES
+            var path = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+#else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
+#endif
             CreateCinemachineObject<CinemachineDollyCart>(
                 "Dolly Cart", command.context as GameObject, true).m_Path = path;
         }

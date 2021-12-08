@@ -3,6 +3,10 @@ using System;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 
+#if CINEMACHINE_UNITY_SPLINES
+using UnityEngine.Splines;
+#endif
+
 namespace Cinemachine
 {
     /// <summary>
@@ -21,7 +25,12 @@ namespace Cinemachine
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
         [Tooltip("The path to which the camera will be constrained.  This must be non-null.")]
+#if CINEMACHINE_UNITY_SPLINES
+        public SplineContainer m_Path;
+        public SplineData<float> m_PathData;
+#else
         public CinemachinePathBase m_Path;
+#endif
 
         /// <summary>The position along the path at which the camera will be placed.
         /// This can be animated directly, or set automatically by the Auto-Dolly feature
