@@ -206,6 +206,8 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
 #if CINEMACHINE_UNITY_SPLINES
+            if (m_Path == null) return;
+            
             // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
             var pathSpline = m_Path.Spline;
             m_PathPosition = 

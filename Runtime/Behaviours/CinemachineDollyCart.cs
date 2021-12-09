@@ -23,9 +23,6 @@
 // #if CINEMACHINE_UNITY_SPLINES
 //         public SplineContainer m_Path;
 //         Spline m_Spline;
-//         SplineData<float> m_StandardizeUnit;
-//         SplineData<Vector3> m_PathPosition;
-//         SplineData<Quaternion> m_PathRotation;
 // #else
 //         public CinemachinePathBase m_Path;
 // #endif
