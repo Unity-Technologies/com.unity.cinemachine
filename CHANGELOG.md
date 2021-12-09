@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.8.4] - 2021-12-10
 - Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
+- BugFix: InputProvider no longer causes a tiny gc alloc every frame.
 
 
 ## [2.8.3] - 2021-11-22
