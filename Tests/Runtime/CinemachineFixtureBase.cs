@@ -39,6 +39,5 @@ namespace Tests.Runtime
             
             CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
-
     }
 }
