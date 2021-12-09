@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - GameObjects created with Gameobject menu items now follow Unity naming conventions.
 - Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
 - BugFix: InputProvider no longer causes a tiny gc alloc every frame.
+- Moved Cinemachine tools into the main Tools overlay (2022.1+), moved Freelook rig selection to a separate overlay, updated icons to support light and dark themes
 
 
 ## [2.9.0-pre.1] - 2021-10-26
