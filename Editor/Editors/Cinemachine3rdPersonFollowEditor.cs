@@ -67,9 +67,9 @@ namespace Cinemachine.Editor
                 thirdPerson.GetRigPositions(out var followTargetPosition, out var shoulderPosition, 
                     out var armPosition);
                 var followTargetRotation = thirdPerson.FollowTargetRotation;
+                var targetForward = followTargetRotation * Vector3.forward;
                 var heading = Cinemachine3rdPersonFollow.GetHeading(
                     followTargetRotation, thirdPerson.VirtualCamera.State.ReferenceUp);
-                var targetForward = heading * Vector3.forward;
 
                 EditorGUI.BeginChangeCheck();
                 // shoulder handle

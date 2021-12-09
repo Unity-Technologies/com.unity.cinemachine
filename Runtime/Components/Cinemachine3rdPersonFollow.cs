@@ -185,8 +185,8 @@ namespace Cinemachine
             var up = curState.ReferenceUp;
             var targetPos = FollowTargetPosition;
             var targetRot = FollowTargetRotation;
+            var targetForward = targetRot * Vector3.forward;
             var heading = GetHeading(targetRot, up);
-            var targetForward = heading * Vector3.forward;
 
             if (deltaTime < 0)
             {
