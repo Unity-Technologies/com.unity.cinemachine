@@ -205,7 +205,7 @@ namespace Cinemachine
 
             m_PreviousFollowTargetPosition = targetPos;
             var root = targetPos;
-            GetRawRigPositions(root, heading, out _, out Vector3 hand);
+            GetRawRigPositions(root, targetRot, heading, out _, out Vector3 hand);
 
             // Place the camera at the correct distance from the hand
             var camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
@@ -236,7 +236,7 @@ namespace Cinemachine
             var targetRot = FollowTargetRotation;
             var heading = GetHeading(targetRot, up);
             root = m_PreviousFollowTargetPosition;
-            GetRawRigPositions(root, heading, out shoulder, out hand);
+            GetRawRigPositions(root, targetRot, heading, out shoulder, out hand);
 #if CINEMACHINE_PHYSICS
             float dummy = 0;
             hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
@@ -253,7 +253,7 @@ namespace Cinemachine
         }
 
         void GetRawRigPositions(
-            Vector3 root, Quaternion heading, 
+            Vector3 root, Quaternion targetRot, Quaternion heading, 
             out Vector3 shoulder, out Vector3 hand)
         {
             var shoulderOffset = ShoulderOffset;
@@ -261,7 +261,7 @@ namespace Cinemachine
             shoulderOffset.x += m_DampingCorrection.x;
             shoulderOffset.y += m_DampingCorrection.y;
             shoulder = root + heading * shoulderOffset;
-            hand = shoulder + heading * new Vector3(0, VerticalArmLength, 0);   
+            hand = shoulder + targetRot * new Vector3(0, VerticalArmLength, 0);   
         }
 
 #if CINEMACHINE_PHYSICS
