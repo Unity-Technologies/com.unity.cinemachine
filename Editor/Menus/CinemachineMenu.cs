@@ -124,8 +124,8 @@ namespace Cinemachine.Editor
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
 #endif
-            // CreateCinemachineObject<CinemachineDollyCart>(
-            //     "Dolly Cart", command.context as GameObject, true).m_Path = path;
+            CreateCinemachineObject<CinemachineDollyCart>(
+                "Dolly Cart", command.context as GameObject, true).m_Path = path;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_GameObjectMenuPriority)]
