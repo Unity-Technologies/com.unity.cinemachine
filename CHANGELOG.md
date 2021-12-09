@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: compilation errors when physics module is not present.
 - GameObjects created with Gameobject menu items now follow Unity naming conventions.
 - Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
+- BugFix: InputProvider no longer causes a tiny gc alloc every frame.
 
 
 ## [2.9.0-pre.1] - 2021-10-26
