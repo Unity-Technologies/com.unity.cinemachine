@@ -185,8 +185,8 @@ namespace Cinemachine
             var up = curState.ReferenceUp;
             var targetPos = FollowTargetPosition;
             var targetRot = FollowTargetRotation;
-            var targetForward = targetRot * Vector3.forward;
-            var heading = GetHeading(targetForward, up);
+            var heading = GetHeading(targetRot, up);
+            var targetForward = heading * Vector3.forward;
 
             if (deltaTime < 0)
             {
@@ -205,7 +205,7 @@ namespace Cinemachine
 
             m_PreviousFollowTargetPosition = targetPos;
             var root = targetPos;
-            GetRawRigPositions(root, targetRot, heading, out _, out Vector3 hand);
+            GetRawRigPositions(root, heading, out _, out Vector3 hand);
 
             // Place the camera at the correct distance from the hand
             var camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
@@ -234,25 +234,26 @@ namespace Cinemachine
         {
             var up = VirtualCamera.State.ReferenceUp;
             var targetRot = FollowTargetRotation;
-            var targetForward = targetRot * Vector3.forward;
-            var heading = GetHeading(targetForward, up);
+            var heading = GetHeading(targetRot, up);
             root = m_PreviousFollowTargetPosition;
-            GetRawRigPositions(root, targetRot, heading, out shoulder, out hand);
+            GetRawRigPositions(root, heading, out shoulder, out hand);
 #if CINEMACHINE_PHYSICS
             float dummy = 0;
             hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
 #endif
         }
 
-        internal static Quaternion GetHeading(Vector3 targetForward, Vector3 up)
+        internal static Quaternion GetHeading(Quaternion targetRot, Vector3 up)
         {
-            var planeForward = targetForward.ProjectOntoPlane(up);
-            planeForward = Vector3.Cross(up, Vector3.Cross(planeForward, up));
+            var targetForward = targetRot * Vector3.forward;
+            var planeForward = Vector3.Cross(up, Vector3.Cross(targetForward.ProjectOntoPlane(up), up));
+            if (planeForward.AlmostZero())
+                planeForward = Vector3.Cross(targetRot * Vector3.right, up);
             return Quaternion.LookRotation(planeForward, up);
         }
 
         void GetRawRigPositions(
-            Vector3 root, Quaternion targetRot, Quaternion heading, 
+            Vector3 root, Quaternion heading, 
             out Vector3 shoulder, out Vector3 hand)
         {
             var shoulderOffset = ShoulderOffset;
@@ -260,7 +261,7 @@ namespace Cinemachine
             shoulderOffset.x += m_DampingCorrection.x;
             shoulderOffset.y += m_DampingCorrection.y;
             shoulder = root + heading * shoulderOffset;
-            hand = shoulder + targetRot * new Vector3(0, VerticalArmLength, 0);   
+            hand = shoulder + heading * new Vector3(0, VerticalArmLength, 0);   
         }
 
 #if CINEMACHINE_PHYSICS

@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: compilation errors when physics module is not present.
 - GameObjects created with Gameobject menu items now follow Unity naming conventions.
 - Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
-- Moved Cinemachine tools into the main Tools overlay (2022.1+), moved Freelook rig selection to a separate overlay, updated icons to support light and dark themes
+- Moved Cinemachine tools into the main Tools overlay (2022.1+), moved Freelook rig selection to a separate overlay, updated icons to support light and dark themes.
+- Bugfix: 3rdPersonFollow logged console messages when looking straight up or down.
 
 
 ## [2.9.0-pre.1] - 2021-10-26
