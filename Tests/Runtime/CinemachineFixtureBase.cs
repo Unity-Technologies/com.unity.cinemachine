@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using NUnit.Framework;
@@ -39,6 +40,5 @@ namespace Tests.Runtime
             
             CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
-
     }
 }
