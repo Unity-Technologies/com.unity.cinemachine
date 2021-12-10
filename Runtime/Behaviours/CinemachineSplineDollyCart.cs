@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Splines;
 
 namespace Cinemachine
 {
@@ -12,13 +13,12 @@ namespace Cinemachine
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
-    public class CinemachineDollyCart : MonoBehaviour
+    public class CinemachineSplineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
-        public CinemachinePathBase m_Path;
-
-
+        public SplineContainer m_Path;
+        
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
         {
@@ -35,9 +35,13 @@ namespace Cinemachine
         public UpdateMethod m_UpdateMethod = UpdateMethod.Update;
 
         /// <summary>How to interpret the Path Position</summary>
-        [Tooltip("How to interpret the Path Position.  If set to Path Units, values are as follows: 0 represents the first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in between the waypoints.  If set to Distance, then Path Position represents distance along the path.")]
-        public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.Distance;
-        
+        [Tooltip("How to interpret the Path Position:\n"+
+        "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"+
+        "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"+
+        "- Knot: Values are defined by knot indices and a fractional value representing the"+
+        "normalized interpolation between the specific knot index and the next knot.\n")]
+        public PathIndexUnit m_PositionUnits = PathIndexUnit.Distance;
+
         /// <summary>Move the cart with this speed</summary>
         [Tooltip("Move the cart with this speed along the path.  The value is interpreted according to the Position Units setting.")]
         [FormerlySerializedAs("m_Velocity")]
@@ -73,9 +77,12 @@ namespace Cinemachine
         {
             if (m_Path != null)
             {
-                m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
-                transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
-                transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+                var splinePath = m_Path.Spline;
+                var normalizedPath = splinePath.ConvertIndexUnit(distanceAlongPath, m_PositionUnits, PathIndexUnit.Normalized);
+                m_Path.Evaluate(normalizedPath, out var newCameraPos, out _, out var newUpVector);
+                transform.position = newCameraPos;
+                transform.rotation = Quaternion.FromToRotation(m_Path.transform.up, newUpVector);
+                m_Position = splinePath.ConvertIndexUnit(normalizedPath, PathIndexUnit.Normalized, m_PositionUnits);
             } else
             {
                 m_Position = 0;
