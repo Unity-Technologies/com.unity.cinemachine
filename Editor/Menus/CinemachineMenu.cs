@@ -119,9 +119,9 @@ namespace Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
 #if CINEMACHINE_UNITY_SPLINES
-            var path = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
             CreateCinemachineObject<CinemachineSplineDollyCart>(
-                "Dolly Cart", command.context as GameObject, true).m_Path = path;
+                "Dolly Cart", command.context as GameObject, true).m_SplineContainer = splineContainer;
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
