@@ -170,4 +170,20 @@ namespace Cinemachine
             }
         }
     }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class SpeedHandleAttribute : SplineDataHandleAttribute
+    {
+        public float maxSpeed;
+        public SpeedHandleAttribute(float maxSpeed)
+        {
+            this.maxSpeed = maxSpeed;
+        }
+    }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class TiltHandleAttribute : SplineDataHandleAttribute {}
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class DriftHandleAttribute : SplineDataHandleAttribute {}
 }
