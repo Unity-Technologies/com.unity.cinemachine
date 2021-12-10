@@ -85,16 +85,9 @@ namespace Cinemachine
             if (m_Path != null)
             {
 #if CINEMACHINE_UNITY_SPLINES
-                var pathSpline = m_Path.Spline;
-                int i = 0;
-                foreach (var knot in pathSpline.Knots)
-                {
-                    Debug.Log(i++ + ":" + knot.Position);
-                }
-                Debug.Log("length:" + pathSpline.GetLength());
-                var normalizedDistanceAlongPath = 
-                    SplineUtility.ConvertIndexUnit(pathSpline, distanceAlongPath, m_PositionUnits, PathIndexUnit.Normalized);
-                SplineUtility.Evaluate(pathSpline, normalizedDistanceAlongPath, 
+                m_Position = m_Path.Spline.ConvertIndexUnit(distanceAlongPath, m_PositionUnits, PathIndexUnit.Normalized);
+                m_Path.Evaluate(
+                    m_Path.Spline.ConvertIndexUnit(distanceAlongPath, m_PositionUnits, PathIndexUnit.Normalized), 
                     out var newCameraPos, out _, out var newUpVector);
                 transform.position = newCameraPos;
                 transform.rotation = Quaternion.FromToRotation(m_Path.transform.up, newUpVector);
