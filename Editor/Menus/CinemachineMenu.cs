@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEditor;
 #if CINEMACHINE_UNITY_SPLINES
@@ -120,6 +121,9 @@ namespace Cinemachine.Editor
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
 #if CINEMACHINE_UNITY_SPLINES
             var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.Add(new BezierKnot(new float3(0,0,0)));
+            splineContainer.Spline.Add(new BezierKnot(new float3(1,0,0)));
             CreateCinemachineObject<CinemachineSplineDollyCart>(
                 "Dolly Cart", command.context as GameObject, true).m_SplineContainer = splineContainer;
 #else

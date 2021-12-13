@@ -50,7 +50,7 @@ namespace Cinemachine
 
         /// <summary>Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.</summary>
         [Tooltip("Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.")]
-        [SpeedHandle(30f)]
+        //[SpeedHandle(30f)]
         public SplineData<float> m_SpeedOverride;
         
         /// <summary>Default tilt of the cart on the track.</summary>
@@ -59,7 +59,7 @@ namespace Cinemachine
         
         /// <summary>Tilt value overrides for specific location on the track. Vectors with magnitude 0 are replaced with m_DefaultTilt.</summary>
         [Tooltip("Tilt value overrides for specific location on the track. Vectors with magnitude 0 are replaced with m_DefaultTilt.")]
-        [TiltHandle]
+        //[TiltHandle]
         public SplineData<float3> m_TiltOverride;
 
         /// <summary>Default offset of the cart on the track.</summary>
@@ -67,33 +67,35 @@ namespace Cinemachine
         
         /// <summary>Offset value overrides for specific location on the track. Could be useful for simulating a Jib Arm.</summary>
         [Tooltip("Offset value overrides for specific location on the track. Could be useful for simulating a Jib Arm.")]
-        [DriftHandle]
+        //[DriftHandle]
         public SplineData<float> m_OffsetOverride;
         
         
         void OnValidate()
         {
-            for(int index = 0; index < m_SpeedOverride.Count; index++)
-            {
-                var data = m_SpeedOverride[index];
-                //We don't want to have a value that is negative or null as it might block the simulation
-                if(data.Value <= 0)
+            if (m_SpeedOverride != null)
+                for(int index = 0; index < m_SpeedOverride.Count; index++)
                 {
-                    data.Value = m_DefaultSpeed;
-                    m_SpeedOverride[index] = data;
+                    var data = m_SpeedOverride[index];
+                    //We don't want to have a value that is negative or null as it might block the simulation
+                    if(data.Value <= 0)
+                    {
+                        data.Value = m_DefaultSpeed;
+                        m_SpeedOverride[index] = data;
+                    }
                 }
-            }
             
-            for(int index = 0; index < m_TiltOverride.Count; index++)
-            {
-                var data = m_TiltOverride[index];
-                //We don't want to have a up vector of magnitude 0
-                if(math.length(data.Value) == 0)
+            if (m_TiltOverride != null)
+                for(int index = 0; index < m_TiltOverride.Count; index++)
                 {
-                    data.Value = m_DefaultTilt;
-                    m_TiltOverride[index] = data;
+                    var data = m_TiltOverride[index];
+                    //We don't want to have a up vector of magnitude 0
+                    if(math.length(data.Value) == 0)
+                    {
+                        data.Value = m_DefaultTilt;
+                        m_TiltOverride[index] = data;
+                    }
                 }
-            }
         }
 
         void Update()
@@ -135,6 +137,7 @@ namespace Cinemachine
 
             SplineUtility.Evaluate(spline, m_NormalizedPosition, 
                 out var posOnSplineLocal, out var direction, out var upSplineDirection);
+            direction = FixDirection(direction, spline);
             var right = math.normalize(math.cross(upSplineDirection, direction));
             var offsetOverride = 
                 (m_OffsetOverride == null || m_OffsetOverride.Count == 0) ? 
@@ -152,6 +155,18 @@ namespace Cinemachine
             transform.rotation = Quaternion.LookRotation(direction, rot * up);
             
             m_Position = spline.ConvertIndexUnit(m_NormalizedPosition, PathIndexUnit.Normalized, m_PositionUnit);
+
+            static float3 FixDirection(float3 dir, Spline spline)
+            {
+                if (dir.x == 0 && dir.y == 0 && dir.z == 0)
+                {
+                    return math.normalize(spline[1].Position - spline[0].Position);
+                }
+                else
+                {
+                    return dir;
+                }
+            }
         }
         
 
