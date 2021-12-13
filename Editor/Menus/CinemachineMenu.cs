@@ -100,18 +100,18 @@ namespace Cinemachine.Editor
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
-#if CINEMACHINE_UNITY_SPLINES
-            var path = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
-#else
-            var path = CreateCinemachineObject<CinemachineSmoothPath>(
-                "Dolly Track", command.context as GameObject, false);
-#endif
             var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
-
             AddCinemachineComponent<CinemachineComposer>(vcam);
+#if CINEMACHINE_UNITY_SPLINES
+            var path = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Path = path;
+#else
+            var path = CreateCinemachineObject<CinemachineSmoothPath>(
+                "Dolly Track", command.context as GameObject, false);
             AddCinemachineComponent<CinemachineTrackedDolly>(vcam).m_Path = path;
+#endif
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]

@@ -108,8 +108,12 @@ namespace Cinemachine.Editor
         /// <returns>The nicified name</returns>
         public static string NicifyClassName(string name)
         {
+            if (name == "CinemachineTrackedDolly")
+                name = "CinemachineTrackedDolly (Deprecated)";
+            
             if (name.StartsWith("Cinemachine"))
                 name = name.Substring(11); // Trim the prefix
+            
             return ObjectNames.NicifyVariableName(name);
         }
 
