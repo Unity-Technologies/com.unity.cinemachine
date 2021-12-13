@@ -203,21 +203,25 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            // Init previous frame state info
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
-            {
-                m_PreviousPathPosition = m_PathPosition;
-                m_PreviousCameraPosition = curState.RawPosition;
-                m_PreviousOrientation = curState.RawOrientation;
-            }
-
             if (!IsValid)
             {
                 m_PathPosition = 0;
                 return;
             }
-            var pathSpline = m_Track.Spline;
             
+            // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
+            var pathSpline = m_Track.Spline;
+            m_PathPosition = 
+                SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, m_PositionUnits, PathIndexUnit.Normalized);
+            
+            // Init previous frame state info
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
+            {
+                m_PreviousNormalizedPathPosition = m_PathPosition;
+                m_PreviousCameraPosition = curState.RawPosition;
+                m_PreviousOrientation = curState.RawOrientation;
+            }
+
             // Get the new ideal path base position
             if (m_AutoDolly.m_Enabled && FollowTarget != null)
             {
@@ -228,19 +232,13 @@ namespace Cinemachine
                 // Apply the path position offset
                 m_PathPosition += m_AutoDolly.m_PositionOffset;
             }
-            else
-            {
-                // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
-                m_PathPosition = 
-                    SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, m_PositionUnits, PathIndexUnit.Normalized);
-            }
             float newPathPosition = m_PathPosition;
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 float maxUnit = 1; // we are always using normalized unit [0-1]
                 {
-                    float prev = m_PreviousPathPosition;
+                    float prev = m_PreviousNormalizedPathPosition;
                     float next = newPathPosition;
                     if (pathSpline.Closed && Mathf.Abs(next - prev) > maxUnit / 2)
                     {
@@ -249,27 +247,25 @@ namespace Cinemachine
                         else
                             prev -= maxUnit;
                     }
-                    m_PreviousPathPosition = prev;
+                    m_PreviousNormalizedPathPosition = prev;
                     newPathPosition = next;
                 }
 
                 // Apply damping along the path direction
-                float offset = m_PreviousPathPosition - newPathPosition;
+                float offset = m_PreviousNormalizedPathPosition - newPathPosition;
                 offset = Damper.Damp(offset, m_ZDamping, deltaTime);
-                newPathPosition = m_PreviousPathPosition - offset;
+                newPathPosition = m_PreviousNormalizedPathPosition - offset;
             }
-            m_PreviousPathPosition = newPathPosition;
+            m_PreviousNormalizedPathPosition = newPathPosition;
             m_Track.Evaluate(newPathPosition, 
-                out var newCameraPosTemp, out _, out var newUpVector);
-            // SplineUtility.Evaluate(pathSpline, newPathPosition, 
-            //     out var newCameraPosTemp, out _, out var newUpVector);
-            Vector3 newCameraPos = newCameraPosTemp;
-            Quaternion newPathOrientation = Quaternion.FromToRotation(m_Track.transform.up, newUpVector);
+                out var localPosition, out var localTangent, out var localUp);
+            Vector3 newCameraPos = localPosition;
+            var newPathOrientation = Quaternion.LookRotation(localTangent, localUp);
 
             // Apply the offset to get the new camera position
-            Vector3 offsetX = newPathOrientation * Vector3.right;
-            Vector3 offsetY = newPathOrientation * Vector3.up;
-            Vector3 offsetZ = newPathOrientation * Vector3.forward;
+            var offsetX = newPathOrientation * Vector3.right;
+            var offsetY = newPathOrientation * Vector3.up;
+            var offsetZ = newPathOrientation * Vector3.forward;
             newCameraPos += m_PathOffset.x * offsetX;
             newCameraPos += m_PathOffset.y * offsetY;
             newCameraPos += m_PathOffset.z * offsetZ;
@@ -349,7 +345,7 @@ namespace Cinemachine
             }
         }
 
-        private float m_PreviousPathPosition = 0;
+        private float m_PreviousNormalizedPathPosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         private Vector3 m_PreviousCameraPosition = Vector3.zero;
     }
