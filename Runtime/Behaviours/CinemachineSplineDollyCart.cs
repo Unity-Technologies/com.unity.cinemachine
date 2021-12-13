@@ -2,8 +2,6 @@ using System;
 using UnityEngine;
 using UnityEngine.Splines;
 using Unity.Mathematics;
-using Interpolators = UnityEngine.Splines.Interpolators;
-using Quaternion = UnityEngine.Quaternion;
 
 namespace Cinemachine
 {
@@ -122,6 +120,12 @@ namespace Cinemachine
         {
             if(m_Track == null)
                 return;
+            if (m_Track.Spline.Count == 1)
+            {
+                m_Position = 0;
+                transform.position = m_Track.transform.TransformPoint(m_Track.Spline[0].Position);
+                return;
+            }
             if (!Application.isPlaying) 
                 m_CurrentSpeed = 0;
 
@@ -130,7 +134,8 @@ namespace Cinemachine
             m_NormalizedPosition = spline.Closed ? m_NormalizedPosition % 1f : Mathf.Clamp01(m_NormalizedPosition);
             
             if (m_SpeedOverride != null && m_SpeedOverride.Count > 0)
-                m_CurrentSpeed = m_SpeedOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, new Interpolators.LerpFloat());
+                m_CurrentSpeed = m_SpeedOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, 
+                    new UnityEngine.Splines.Interpolators.LerpFloat());
             else
                 m_CurrentSpeed = m_DefaultSpeed;
 
@@ -141,50 +146,31 @@ namespace Cinemachine
             var offsetOverride = 
                 (m_OffsetOverride == null || m_OffsetOverride.Count == 0) ? 
                     m_DefaultOffset : 
-                    m_OffsetOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, new Interpolators.LerpFloat());
+                    m_OffsetOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, 
+                        new UnityEngine.Splines.Interpolators.LerpFloat());
             
             transform.position = m_Track.transform.TransformPoint(posOnSplineLocal + offsetOverride * right);
 
             var up = 
                 (m_TiltOverride == null  || m_TiltOverride.Count == 0) ?
                     m_DefaultTilt : 
-                    (Vector3)m_TiltOverride.Evaluate(spline, m_NormalizedPosition,PathIndexUnit.Normalized, new Interpolators.LerpFloat3());
+                    (Vector3)m_TiltOverride.Evaluate(spline, m_NormalizedPosition,PathIndexUnit.Normalized, 
+                        new UnityEngine.Splines.Interpolators.LerpFloat3());
 
             var rot = Quaternion.LookRotation(direction, upSplineDirection);
             transform.rotation = Quaternion.LookRotation(direction, rot * up);
             
+            // convert unit back to user's preference
             m_Position = spline.ConvertIndexUnit(m_NormalizedPosition, PathIndexUnit.Normalized, m_PositionUnit);
-
-            static float3 FixDirection(float3 dir, Spline spline)
-            {
-                if (dir.x == 0 && dir.y == 0 && dir.z == 0)
-                {
-                    return math.normalize(spline[1].Position - spline[0].Position);
-                }
-                else
-                {
-                    return dir;
-                }
-            }
         }
         
-
-        static float ConvertSpeed(float speed, Spline spline, PathIndexUnit unit)
+        static float3 FixDirection(float3 dir, Spline spline)
         {
-            switch (unit)
-            {
-                case PathIndexUnit.Distance:
-                    return speed;
-                case PathIndexUnit.Normalized:
-                    return spline.ConvertIndexUnit(speed, PathIndexUnit.Normalized, PathIndexUnit.Distance);
-                case PathIndexUnit.Knot:
-                    return spline.ConvertIndexUnit(speed, PathIndexUnit.Knot, PathIndexUnit.Distance);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
-            }
+            return dir.x == 0 && dir.y == 0 && dir.z == 0 ? math.normalize(spline[1].Position - spline[0].Position) : dir;
         }
     }
     
+    // Attribute handles for dolly cart
     [AttributeUsage(AttributeTargets.Field)]
     public class SpeedHandleAttribute : SplineDataHandleAttribute
     {

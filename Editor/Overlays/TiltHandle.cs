@@ -11,8 +11,11 @@ using Interpolators = UnityEngine.Splines.Interpolators;
 
 namespace Cinemachine.Editor
 {
+    /// <summary>
+    /// Taken from the Spline package.
+    /// </summary>
     [CustomSplineDataHandle(typeof(TiltHandleAttribute))]
-    public class TiltHandle : SplineDataHandle<float3>
+    class TiltHandle : SplineDataHandle<float3>
     {
         static float s_DisplaySpace = 0.5f;
 

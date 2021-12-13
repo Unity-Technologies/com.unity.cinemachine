@@ -1,8 +1,6 @@
 using UnityEngine;
 using System;
 using Cinemachine.Utility;
-using UnityEngine.Serialization;
-using Unity.Mathematics;
 using UnityEngine.Splines;
 
 namespace Cinemachine
@@ -140,36 +138,46 @@ namespace Cinemachine
             [Tooltip("Offset, in current position units, from the closest point on the path to the follow target")]
             public float m_PositionOffset;
 
-            /// <summary>Search up to this many waypoints on either side of the current position.  Use 0 for Entire path</summary>
-            [Tooltip("Search up to this many waypoints on either side of the current position.  Use 0 for Entire path.")]
-            public int m_SearchRadius;
-
-            /// <summary>We search between waypoints by dividing the segment into this many straight pieces.
-            /// The higher the number, the more accurate the result, but performance is
-            /// proportionally slower for higher numbers</summary>
-            [FormerlySerializedAs("m_StepsPerSegment")]
-            [Tooltip("We search between waypoints by dividing the segment into this many straight pieces.  "
-                + "he higher the number, the more accurate the result, but performance is proportionally "
-                + "slower for higher numbers")]
+            /// <summary>
+            /// Affects how many segments to split a spline (Track) into when calculating the nearest point.
+            /// Higher values mean smaller and more segments, which increases accuracy at the cost of processing time.
+            /// In most cases, the default resolution is appropriate. Use with <seealso cref="m_SearchIteration"/> to fine tune point accuracy.
+            /// For more information, see SplineUtility.GetNearestPoint.
+            /// </summary>
+            [Tooltip("Affects how many segments to split a spline (Track) into when calculating the nearest point." +
+                "Higher values mean smaller and more segments, which increases accuracy at the cost of processing time. " +
+                "In most cases, the default value (4) is appropriate. Use with SearchIteration to fine tune point accuracy.")]
             public int m_SearchResolution;
+
+            /// <summary>
+            /// The nearest point is calculated by finding the nearest point on the entire length
+            /// of the spline using <seealso cref="m_SearchResolution"/> to divide into equally spaced line segments. Successive
+            /// iterations will then subdivide further the nearest segment, producing more accurate results. In most cases,
+            /// the default value is sufficient.
+            /// For more information, see SplineUtility.GetNearestPoint.
+            /// </summary>
+            [Tooltip("The nearest point is calculated by finding the nearest point on the entire length of the spline " +
+                "using SearchResolution to divide into equally spaced line segments. Successive iterations will then " +
+                "subdivide further the nearest segment, producing more accurate results. In most cases, the default value (2) is sufficient.")]
+            public int m_SearchIteration;
 
             /// <summary>Constructor with specific field values</summary>
             /// <param name="enabled">Whether to enable automatic dolly</param>
             /// <param name="positionOffset">Offset, in current position units, from the closest point on the path to the follow target</param>
-            /// <param name="searchRadius">Search up to this many waypoints on either side of the current position</param>
-            /// <param name="stepsPerSegment">We search between waypoints by dividing the segment into this many straight pieces</param>
-            public AutoDolly(bool enabled, float positionOffset, int searchRadius, int stepsPerSegment)
+            /// <param name="searchResolution">We search between waypoints by dividing the segment into this many straight pieces</param>
+            /// <param name="searchIteration">Straight pieces defined by searchResolution are further subdivided.</param>
+            public AutoDolly(bool enabled, float positionOffset, int searchResolution, int searchIteration)
             {
                 m_Enabled = enabled;
                 m_PositionOffset = positionOffset;
-                m_SearchRadius = searchRadius;
-                m_SearchResolution = stepsPerSegment;
+                m_SearchResolution = searchResolution;
+                m_SearchIteration = searchIteration;
             }
         };
 
         /// <summary>Controls how automatic dollying occurs</summary>
         [Tooltip("Controls how automatic dollying occurs.  A Follow target is necessary to use this feature.")]
-        public AutoDolly m_AutoDolly = new AutoDolly(false, 0, 2, 5);
+        public AutoDolly m_AutoDolly = new AutoDolly(false, 0, 4, 2);
 
         /// <summary>True if component is enabled and has a path</summary>
         public override bool IsValid { get { return enabled && m_Track != null; } }
@@ -195,12 +203,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (m_Track == null) return;
-            // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
-            var pathSpline = m_Track.Spline;
-            m_PathPosition = 
-                SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, m_PositionUnits, PathIndexUnit.Normalized);
-
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
@@ -214,15 +216,23 @@ namespace Cinemachine
                 m_PathPosition = 0;
                 return;
             }
+            var pathSpline = m_Track.Spline;
             
             // Get the new ideal path base position
             if (m_AutoDolly.m_Enabled && FollowTarget != null)
             {
                 // convert follow target into spline local space, because SplineUtility works in spline local space
                 SplineUtility.GetNearestPoint(pathSpline, 
-                    m_Track.transform.InverseTransformPoint(FollowTargetPosition), out _, out m_PathPosition);
+                    m_Track.transform.InverseTransformPoint(FollowTargetPosition), out _, out m_PathPosition, 
+                    m_AutoDolly.m_SearchResolution, m_AutoDolly.m_SearchIteration);
                 // Apply the path position offset
                 m_PathPosition += m_AutoDolly.m_PositionOffset;
+            }
+            else
+            {
+                // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
+                m_PathPosition = 
+                    SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, m_PositionUnits, PathIndexUnit.Normalized);
             }
             float newPathPosition = m_PathPosition;
 
@@ -296,10 +306,9 @@ namespace Cinemachine
             if (m_CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
             
-            // convert unit back
+            // convert unit back to user's preference
             m_PathPosition = 
                 SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, PathIndexUnit.Normalized, m_PositionUnits);
-
         }
 
         private Quaternion GetCameraOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)

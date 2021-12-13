@@ -10,8 +10,11 @@ using Interpolators = UnityEngine.Splines.Interpolators;
 
 namespace Cinemachine.Editor
 {
+    /// <summary>
+    /// Taken from the Spline package.
+    /// </summary>
     [CustomSplineDataHandle(typeof(DriftHandleAttribute))]
-    public class DriftHandle  : SplineDataHandle<float>
+    class DriftHandle  : SplineDataHandle<float>
     {
          const float k_HandleSize = 0.15f;
          
