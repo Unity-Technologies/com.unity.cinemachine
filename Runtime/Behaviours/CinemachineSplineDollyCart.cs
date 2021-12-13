@@ -50,7 +50,7 @@ namespace Cinemachine
 
         /// <summary>Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.</summary>
         [Tooltip("Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.")]
-        //[SpeedHandle(30f)]
+        [SpeedHandle(30f)]
         public SplineData<float> m_SpeedOverride;
         
         /// <summary>Default tilt of the cart on the track.</summary>
@@ -59,7 +59,7 @@ namespace Cinemachine
         
         /// <summary>Tilt value overrides for specific location on the track. Vectors with magnitude 0 are replaced with m_DefaultTilt.</summary>
         [Tooltip("Tilt value overrides for specific location on the track. Vectors with magnitude 0 are replaced with m_DefaultTilt.")]
-        //[TiltHandle]
+        [TiltHandle]
         public SplineData<float3> m_TiltOverride;
 
         /// <summary>Default offset of the cart on the track.</summary>
@@ -67,7 +67,7 @@ namespace Cinemachine
         
         /// <summary>Offset value overrides for specific location on the track. Could be useful for simulating a Jib Arm.</summary>
         [Tooltip("Offset value overrides for specific location on the track. Could be useful for simulating a Jib Arm.")]
-        //[DriftHandle]
+        [DriftHandle]
         public SplineData<float> m_OffsetOverride;
         
         
