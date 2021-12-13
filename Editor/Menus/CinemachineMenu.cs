@@ -110,7 +110,7 @@ namespace Cinemachine.Editor
             splineContainer.Spline.EditType = SplineType.CatmullRom;
             splineContainer.Spline.Add(new BezierKnot(new float3(0,0,0)));
             splineContainer.Spline.Add(new BezierKnot(new float3(1,0,0)));
-            AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Path = splineContainer;
+            AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Track = splineContainer;
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
@@ -128,7 +128,7 @@ namespace Cinemachine.Editor
             splineContainer.Spline.Add(new BezierKnot(new float3(0,0,0)));
             splineContainer.Spline.Add(new BezierKnot(new float3(1,0,0)));
             CreateCinemachineObject<CinemachineSplineDollyCart>(
-                "Dolly Cart", command.context as GameObject, true).m_SplineContainer = splineContainer;
+                "Dolly Cart", command.context as GameObject, true).m_Track = splineContainer;
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);

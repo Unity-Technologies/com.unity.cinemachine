@@ -23,7 +23,7 @@ namespace Cinemachine
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
         [Tooltip("The path to which the camera will be constrained.  This must be non-null.")]
-        public SplineContainer m_Path;
+        public SplineContainer m_Track;
 
         /// <summary>The position along the path at which the camera will be placed.
         /// This can be animated directly, or set automatically by the Auto-Dolly feature
@@ -172,7 +172,7 @@ namespace Cinemachine
         public AutoDolly m_AutoDolly = new AutoDolly(false, 0, 2, 5);
 
         /// <summary>True if component is enabled and has a path</summary>
-        public override bool IsValid { get { return enabled && m_Path != null; } }
+        public override bool IsValid { get { return enabled && m_Track != null; } }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
@@ -195,9 +195,9 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (m_Path == null) return;
+            if (m_Track == null) return;
             // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
-            var pathSpline = m_Path.Spline;
+            var pathSpline = m_Track.Spline;
             m_PathPosition = 
                 SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, m_PositionUnits, PathIndexUnit.Normalized);
 
@@ -220,7 +220,7 @@ namespace Cinemachine
             {
                 // convert follow target into spline local space, because SplineUtility works in spline local space
                 SplineUtility.GetNearestPoint(pathSpline, 
-                    m_Path.transform.InverseTransformPoint(FollowTargetPosition), out _, out m_PathPosition);
+                    m_Track.transform.InverseTransformPoint(FollowTargetPosition), out _, out m_PathPosition);
                 // Apply the path position offset
                 m_PathPosition += m_AutoDolly.m_PositionOffset;
             }
@@ -249,12 +249,12 @@ namespace Cinemachine
                 newPathPosition = m_PreviousPathPosition - offset;
             }
             m_PreviousPathPosition = newPathPosition;
-            m_Path.Evaluate(newPathPosition, 
+            m_Track.Evaluate(newPathPosition, 
                 out var newCameraPosTemp, out _, out var newUpVector);
             // SplineUtility.Evaluate(pathSpline, newPathPosition, 
             //     out var newCameraPosTemp, out _, out var newUpVector);
             Vector3 newCameraPos = newCameraPosTemp;
-            Quaternion newPathOrientation = Quaternion.FromToRotation(m_Path.transform.up, newUpVector);
+            Quaternion newPathOrientation = Quaternion.FromToRotation(m_Track.transform.up, newUpVector);
 
             // Apply the offset to get the new camera position
             Vector3 offsetX = newPathOrientation * Vector3.right;

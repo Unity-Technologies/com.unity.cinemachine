@@ -13,7 +13,7 @@ namespace Cinemachine
     {
         /// <summary>SplineContainer that contains the spline which defines the dolly track.</summary>
         [Tooltip("SplineContainer that contains the spline which defines the dolly track.")]
-        public SplineContainer m_SplineContainer;
+        public SplineContainer m_Track;
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
@@ -120,12 +120,12 @@ namespace Cinemachine
         float m_NormalizedPosition;
         void CalculateCartPosition()
         {
-            if(m_SplineContainer == null)
+            if(m_Track == null)
                 return;
             if (!Application.isPlaying) 
                 m_CurrentSpeed = 0;
 
-            var spline = m_SplineContainer.Spline;
+            var spline = m_Track.Spline;
             m_NormalizedPosition = spline.ConvertIndexUnit(m_Position + m_CurrentSpeed * Time.deltaTime, m_PositionUnit, PathIndexUnit.Normalized);
             m_NormalizedPosition = spline.Closed ? m_NormalizedPosition % 1f : Mathf.Clamp01(m_NormalizedPosition);
             
@@ -143,7 +143,7 @@ namespace Cinemachine
                     m_DefaultOffset : 
                     m_OffsetOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, new Interpolators.LerpFloat());
             
-            transform.position = m_SplineContainer.transform.TransformPoint(posOnSplineLocal + offsetOverride * right);
+            transform.position = m_Track.transform.TransformPoint(posOnSplineLocal + offsetOverride * right);
 
             var up = 
                 (m_TiltOverride == null  || m_TiltOverride.Count == 0) ?
