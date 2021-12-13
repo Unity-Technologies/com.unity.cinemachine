@@ -106,8 +106,11 @@ namespace Cinemachine.Editor
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
             AddCinemachineComponent<CinemachineComposer>(vcam);
 #if CINEMACHINE_UNITY_SPLINES
-            var path = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
-            AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Path = path;
+            var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.Add(new BezierKnot(new float3(0,0,0)));
+            splineContainer.Spline.Add(new BezierKnot(new float3(1,0,0)));
+            AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Path = splineContainer;
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
