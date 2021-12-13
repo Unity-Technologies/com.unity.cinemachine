@@ -126,11 +126,8 @@ namespace Cinemachine
                 m_CurrentSpeed = 0;
 
             var spline = m_SplineContainer.Spline;
-            var splineLength = m_SplineContainer.CalculateLength();
             m_NormalizedPosition = spline.ConvertIndexUnit(m_Position + m_CurrentSpeed * Time.deltaTime, m_PositionUnit, PathIndexUnit.Normalized);
             m_NormalizedPosition = spline.Closed ? m_NormalizedPosition % 1f : Mathf.Clamp01(m_NormalizedPosition);
-
-            // m_NormalizedPosition = (m_NormalizedPosition + ConvertSpeed(m_CurrentSpeed, spline, m_PositionUnit) * Time.deltaTime / splineLength) % 1f;
             
             if (m_SpeedOverride != null && m_SpeedOverride.Count > 0)
                 m_CurrentSpeed = m_SpeedOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, new Interpolators.LerpFloat());
