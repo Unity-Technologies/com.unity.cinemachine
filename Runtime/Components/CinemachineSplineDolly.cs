@@ -35,10 +35,11 @@ namespace Cinemachine
         public float m_PathPosition;
 
         /// <summary>How to interpret the Path Position</summary>
-        [Tooltip("How to interpret Path Position.  If set to Path Units, values are as follows: "
-            + "0 represents the first waypoint on the path, 1 is the second, and so on.  Values "
-            + "in-between are points on the path in between the waypoints.  If set to Distance, "
-            + "then Path Position represents distance along the path.")] 
+        [Tooltip("How to interpret the Path Position:\n"+
+            "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"+
+            "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"+
+            "- Knot: Values are defined by knot indices and a fractional value representing the"+
+            "normalized interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit m_PositionUnits = PathIndexUnit.Normalized;
 
         /// <summary>Where to put the camera realtive to the path postion.  X is perpendicular 
