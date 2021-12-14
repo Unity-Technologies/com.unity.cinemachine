@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
+    /// Deprecated
     /// A Cinemachine Virtual Camera Body component that constrains camera motion
     /// to a CinemachinePath.  The camera can move along the path.
     ///
@@ -17,6 +18,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
     public class CinemachineTrackedDolly : CinemachineComponentBase
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
