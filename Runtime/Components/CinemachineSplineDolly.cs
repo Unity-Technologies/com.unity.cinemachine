@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using Cinemachine.Utility;
+using Unity.Mathematics;
 using UnityEngine.Splines;
 
 namespace Cinemachine
@@ -197,7 +198,31 @@ namespace Cinemachine
             var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
             return Mathf.Max(a, b); 
         }
-        
+
+        void OnValidate()
+        {
+            // TODO:
+            //UpdateOverrideCache();
+        }
+
+        void UpdateOverrideCache()
+        {
+            var cinemachineSplineRollExtension = transform.parent.GetComponent<CinemachineSplineRollExtension>();
+            if (cinemachineSplineRollExtension != null)
+            {
+                m_RollOverride = cinemachineSplineRollExtension.RollOverride;
+            }
+            else
+            {
+                cinemachineSplineRollExtension = m_Track.GetComponent<CinemachineSplineRollExtension>();
+                if (cinemachineSplineRollExtension != null)
+                {
+                    m_RollOverride = cinemachineSplineRollExtension.RollOverride;
+                }
+            }
+        }
+
+        SplineData<float3> m_RollOverride = null;
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
@@ -209,6 +234,22 @@ namespace Cinemachine
                 return;
             }
             
+            // TODO: cache this, and update it when Spline notifies us.
+            var cinemachineSplineRollExtension = transform.parent.GetComponent<CinemachineSplineRollExtension>();
+            if (cinemachineSplineRollExtension != null)
+            {
+                cinemachineSplineRollExtension.splineContainer = m_Track;
+                m_RollOverride = cinemachineSplineRollExtension.RollOverride;
+            }
+            else
+            {
+                cinemachineSplineRollExtension = m_Track.GetComponent<CinemachineSplineRollExtension>();
+                if (cinemachineSplineRollExtension != null)
+                {
+                    m_RollOverride = cinemachineSplineRollExtension.RollOverride;
+                }
+            }
+
             // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
             var pathSpline = m_Track.Spline;
             m_PathPosition = 
@@ -261,6 +302,12 @@ namespace Cinemachine
                 out var localPosition, out var localTangent, out var localUp);
             Vector3 newCameraPos = localPosition;
             var newPathOrientation = Quaternion.LookRotation(localTangent, localUp);
+            if (m_RollOverride != null)
+            {
+                Vector3 roll = m_RollOverride.Evaluate(pathSpline, newPathPosition, PathIndexUnit.Normalized, 
+                    new UnityEngine.Splines.Interpolators.LerpFloat3());
+                newPathOrientation = Quaternion.LookRotation(localTangent, newPathOrientation * roll);
+            }
 
             // Apply the offset to get the new camera position
             var offsetX = newPathOrientation * Vector3.right;

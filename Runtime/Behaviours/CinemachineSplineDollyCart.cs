@@ -182,8 +182,5 @@ namespace Cinemachine
     }
     
     [AttributeUsage(AttributeTargets.Field)]
-    public class TiltHandleAttribute : SplineDataHandleAttribute {}
-    
-    [AttributeUsage(AttributeTargets.Field)]
     public class DriftHandleAttribute : SplineDataHandleAttribute {}
 }
