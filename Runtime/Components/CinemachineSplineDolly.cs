@@ -201,28 +201,36 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            // TODO:
-            //UpdateOverrideCache();
+            if (m_Track != null && m_Track.Spline != null)
+            {
+                m_Track.Spline.changed += UpdateOverrideCache;
+            }
+            UpdateOverrideCache();
         }
 
-        void UpdateOverrideCache()
+        internal void UpdateOverrideCache()
         {
+            Debug.Log("CinemachineSplineDolly->UpdateOverrideCache");
+            m_RollOverride = null;
+            // if vcam has an enabled override, use that
             var cinemachineSplineRollExtension = transform.parent.GetComponent<CinemachineSplineRollExtension>();
-            if (cinemachineSplineRollExtension != null)
+            if (cinemachineSplineRollExtension != null && cinemachineSplineRollExtension.enabled)
             {
+                cinemachineSplineRollExtension.splineContainer = m_Track;
                 m_RollOverride = cinemachineSplineRollExtension.RollOverride;
             }
+            // else if the spline has an enabled override, use that
             else
             {
                 cinemachineSplineRollExtension = m_Track.GetComponent<CinemachineSplineRollExtension>();
-                if (cinemachineSplineRollExtension != null)
+                if (cinemachineSplineRollExtension != null && cinemachineSplineRollExtension.enabled)
                 {
                     m_RollOverride = cinemachineSplineRollExtension.RollOverride;
                 }
             }
         }
 
-        SplineData<float3> m_RollOverride = null;
+        SplineData<float3> m_RollOverride;
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
@@ -232,22 +240,6 @@ namespace Cinemachine
             {
                 m_PathPosition = 0;
                 return;
-            }
-            
-            // TODO: cache this, and update it when Spline notifies us.
-            var cinemachineSplineRollExtension = transform.parent.GetComponent<CinemachineSplineRollExtension>();
-            if (cinemachineSplineRollExtension != null)
-            {
-                cinemachineSplineRollExtension.splineContainer = m_Track;
-                m_RollOverride = cinemachineSplineRollExtension.RollOverride;
-            }
-            else
-            {
-                cinemachineSplineRollExtension = m_Track.GetComponent<CinemachineSplineRollExtension>();
-                if (cinemachineSplineRollExtension != null)
-                {
-                    m_RollOverride = cinemachineSplineRollExtension.RollOverride;
-                }
             }
 
             // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start

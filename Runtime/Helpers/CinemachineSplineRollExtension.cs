@@ -5,6 +5,7 @@ using UnityEngine.Splines;
 
 namespace Cinemachine
 {
+    [ExecuteInEditMode] // for onEnable, onDisable
     [DisallowMultipleComponent]
     public class CinemachineSplineRollExtension : MonoBehaviour
     {
@@ -19,7 +20,40 @@ namespace Cinemachine
         [TiltHandle]
         public SplineData<float3> RollOverride;
         
-        internal SplineContainer splineContainer;
+        internal SplineContainer splineContainer; // this is used by Handle Drawer
+
+        void OnEnable()
+        {
+            UpdateCache();
+        }
+
+        void OnDisable()
+        {
+            UpdateCache();
+        }
+
+        void UpdateCache()
+        {
+            Debug.Log("CinemachineSplineRollExtension->UpdateCache");
+            if (splineContainer != null && splineContainer.Spline != null)
+            {
+                // trigger change event in spline hack to notify all vcams that might be using this splineContainer
+                splineContainer.Spline[0] = splineContainer.Spline[0];
+            }
+            else if (splineContainer == null)
+            {
+                var vcam = GetComponent<CinemachineVirtualCamera>();
+                if (vcam != null)
+                {
+                    var dolly = vcam.GetCinemachineComponent<CinemachineSplineDolly>();
+                    if (dolly != null)
+                    {
+                        dolly.UpdateOverrideCache();
+                    }
+                }
+            }
+        }
+
 
         float3 m_Up = Vector3.up;
         void OnValidate()
@@ -37,11 +71,7 @@ namespace Cinemachine
                         RollOverride[i] = data;
                     }
                 }
-                
-                // TODO: notify spline or vcam about change!
             }
-
-            var splineContainer = GetComponent<SplineContainer>();
         }
     }
     
