@@ -108,6 +108,7 @@ namespace Cinemachine.Editor
         /// <returns>The nicified name</returns>
         public static string NicifyClassName(string name)
         {
+            // TODO: add deprecated tag based on Obsolete
             if (name == "CinemachineTrackedDolly")
                 name = "CinemachineTrackedDolly (Deprecated)";
             
