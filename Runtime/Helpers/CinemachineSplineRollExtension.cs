@@ -19,37 +19,35 @@ namespace Cinemachine
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
         [TiltHandle]
         public SplineData<float3> RollOverride;
-        
-        internal SplineContainer splineContainer; // this is used by Handle Drawer
 
-        void OnEnable()
+#if UNITY_EDITOR
+        // this is used by TiltHandle Drawer
+        internal SplineContainer splineContainer; 
+#endif
+
+        void Awake()
         {
             UpdateCache();
         }
 
-        void OnDisable()
-        {
-            UpdateCache();
-        }
-
+        /// <summary>
+        /// If SplineRollExtension is on a GameObject with a SplineContainer, then use that as target.
+        /// Otherwise check if we are on a vcam that uses a SplineContainer, then use that as target.
+        /// </summary>
         void UpdateCache()
         {
-            Debug.Log("CinemachineSplineRollExtension->UpdateCache");
-            if (splineContainer != null && splineContainer.Spline != null)
+            if (
+#if UNITY_EDITOR
+                !TryGetComponent(out splineContainer) &&  
+#endif
+                TryGetComponent(out CinemachineVirtualCamera vcam))
             {
-                // trigger change event in spline hack to notify all vcams that might be using this splineContainer
-                splineContainer.Spline[0] = splineContainer.Spline[0];
-            }
-            else if (splineContainer == null)
-            {
-                var vcam = GetComponent<CinemachineVirtualCamera>();
-                if (vcam != null)
+                var body = vcam.GetCinemachineComponent(CinemachineCore.Stage.Body);
+                var splineDataCacheUpdate = body.GetType().GetMethod("UpdateOverrideCache",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (splineDataCacheUpdate != null)
                 {
-                    var dolly = vcam.GetCinemachineComponent<CinemachineSplineDolly>();
-                    if (dolly != null)
-                    {
-                        dolly.UpdateOverrideCache();
-                    }
+                    splineDataCacheUpdate.Invoke(body, null);
                 }
             }
         }

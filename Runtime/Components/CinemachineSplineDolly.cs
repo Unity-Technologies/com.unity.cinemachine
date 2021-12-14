@@ -199,38 +199,31 @@ namespace Cinemachine
             return Mathf.Max(a, b); 
         }
 
-        void OnValidate()
+        void UpdateOverrideCache()
         {
-            if (m_Track != null && m_Track.Spline != null)
+            m_RollOverrideExtension = null;
+            // if vcam has an override, use that
+            if (transform.parent.TryGetComponent(out m_RollOverrideExtension))
             {
-                m_Track.Spline.changed += UpdateOverrideCache;
+#if UNITY_EDITOR
+                m_RollOverrideExtension.splineContainer = m_Track; // this is needed to make the handles work in the scene view
+#endif
             }
-            UpdateOverrideCache();
+            // else if the spline has an override, use that
+            else if (m_Track.TryGetComponent(out m_RollOverrideExtension)) {}
         }
 
-        internal void UpdateOverrideCache()
+        CinemachineSplineRollExtension m_RollOverrideExtension; // don't use this directly
+        CinemachineSplineRollExtension RollOverrideExtension
         {
-            Debug.Log("CinemachineSplineDolly->UpdateOverrideCache");
-            m_RollOverride = null;
-            // if vcam has an enabled override, use that
-            var cinemachineSplineRollExtension = transform.parent.GetComponent<CinemachineSplineRollExtension>();
-            if (cinemachineSplineRollExtension != null && cinemachineSplineRollExtension.enabled)
+            get
             {
-                cinemachineSplineRollExtension.splineContainer = m_Track;
-                m_RollOverride = cinemachineSplineRollExtension.RollOverride;
-            }
-            // else if the spline has an enabled override, use that
-            else
-            {
-                cinemachineSplineRollExtension = m_Track.GetComponent<CinemachineSplineRollExtension>();
-                if (cinemachineSplineRollExtension != null && cinemachineSplineRollExtension.enabled)
-                {
-                    m_RollOverride = cinemachineSplineRollExtension.RollOverride;
-                }
+                if(m_RollOverrideExtension == null)
+                    UpdateOverrideCache();
+
+                return m_RollOverrideExtension;
             }
         }
-
-        SplineData<float3> m_RollOverride;
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
@@ -294,10 +287,11 @@ namespace Cinemachine
                 out var localPosition, out var localTangent, out var localUp);
             Vector3 newCameraPos = localPosition;
             var newPathOrientation = Quaternion.LookRotation(localTangent, localUp);
-            if (m_RollOverride != null)
+            
+            if (RollOverrideExtension != null && RollOverrideExtension.enabled)
             {
-                Vector3 roll = m_RollOverride.Evaluate(pathSpline, newPathPosition, PathIndexUnit.Normalized, 
-                    new UnityEngine.Splines.Interpolators.LerpFloat3());
+                Vector3 roll = RollOverrideExtension.RollOverride.Evaluate(pathSpline, newPathPosition, 
+                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat3());
                 newPathOrientation = Quaternion.LookRotation(localTangent, newPathOrientation * roll);
             }
 
