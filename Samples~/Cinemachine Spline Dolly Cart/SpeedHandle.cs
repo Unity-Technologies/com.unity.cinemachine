@@ -8,7 +8,7 @@ using UnityEngine.Splines;
 
 using Interpolators = UnityEngine.Splines.Interpolators;
 
-namespace Cinemachine.Editor
+namespace Cinemachine.Samples
 {
     /// <summary>
     /// Taken from the Spline package.

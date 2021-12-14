@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Splines;
 using Unity.Mathematics;
 
-namespace Cinemachine
+namespace Cinemachine.Samples
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -48,7 +48,7 @@ namespace Cinemachine
 
         /// <summary>Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.</summary>
         [Tooltip("Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.")]
-        [SpeedHandle(30f)]
+        [SpeedHandle(50f)]
         public SplineData<float> m_SpeedOverride;
         
         /// <summary>Default tilt of the cart on the track.</summary>

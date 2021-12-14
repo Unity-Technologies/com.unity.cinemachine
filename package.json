@@ -13,6 +13,11 @@
             "displayName": "Cinemachine Example Scenes",
             "description": "Sample scenes illustrating various ways to use Cinemachine",
             "path": "Samples~/Cinemachine Example Scenes"
+        },
+        {
+            "displayName": "Cinemachine Spline Dolly Cart",
+            "description": "Sample scene illustrating how to create a Dolly Cart that rolls on track made from a spline. You need to have the Spline package installed for this example.",
+            "path": "Samples~/Cinemachine Spline Dolly Cart"
         }
     ]
 }

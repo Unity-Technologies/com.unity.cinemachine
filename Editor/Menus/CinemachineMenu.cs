@@ -122,19 +122,10 @@ namespace Cinemachine.Editor
         static void CreateDollyTrackWithCart(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
-#if CINEMACHINE_UNITY_SPLINES
-            var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
-            splineContainer.Spline.EditType = SplineType.CatmullRom;
-            splineContainer.Spline.Add(new BezierKnot(new float3(0,0,0)));
-            splineContainer.Spline.Add(new BezierKnot(new float3(1,0,0)));
-            CreateCinemachineObject<CinemachineSplineDollyCart>(
-                "Dolly Cart", command.context as GameObject, true).m_Track = splineContainer;
-#else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
             CreateCinemachineObject<CinemachineDollyCart>(
                 "Dolly Cart", command.context as GameObject, true).m_Path = path;
-#endif
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_GameObjectMenuPriority)]
