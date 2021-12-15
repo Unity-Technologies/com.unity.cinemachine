@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEditor;
 #if CINEMACHINE_UNITY_SPLINES
 using UnityEngine.Splines;
-using Unity.Mathematics;
 #endif
 
 namespace Cinemachine.Editor
@@ -108,8 +107,8 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_UNITY_SPLINES
             var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
             splineContainer.Spline.EditType = SplineType.CatmullRom;
-            splineContainer.Spline.Add(new BezierKnot(new float3(0,0,0)));
-            splineContainer.Spline.Add(new BezierKnot(new float3(1,0,0)));
+            splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
+            splineContainer.Spline.Add(new BezierKnot(Vector3.right));
             AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Track = splineContainer;
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(

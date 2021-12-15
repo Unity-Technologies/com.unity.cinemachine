@@ -6,7 +6,6 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// Deprecated
     /// A Cinemachine Virtual Camera Body component that constrains camera motion
     /// to a CinemachinePath.  The camera can move along the path.
     ///

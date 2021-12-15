@@ -702,7 +702,6 @@ namespace Cinemachine.Editor
                 var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
                 Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId ||
                     HandleUtility.nearestControl == radiusHandleId ? Handles.selectedColor : HelperLineDefaultColor;
-
                 if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
                 {
                     DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);

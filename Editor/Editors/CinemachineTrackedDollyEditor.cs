@@ -57,9 +57,8 @@ namespace Cinemachine.Editor
                 if (path != null)
                 {
                     var isActive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
-                    // CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
+                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
                     var pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
-                    
                     var oldColor = Gizmos.color;
                     Gizmos.color = isActive
                         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
