@@ -300,7 +300,9 @@ namespace Cinemachine
             m_Track.Evaluate(newPathPosition, 
                 out var localPosition, out var localTangent, out var localUp);
             Vector3 newCameraPos = localPosition;
-            var newPathOrientation = Quaternion.LookRotation(localTangent, localUp);
+            var newPathOrientation = 
+                Vector3.SqrMagnitude(localTangent) == 0 || Vector3.SqrMagnitude(localUp) == 0 ? 
+                    Quaternion.identity : Quaternion.LookRotation(localTangent, localUp);
             
             if (RollOverrideExtension != null && RollOverrideExtension.enabled)
             {
