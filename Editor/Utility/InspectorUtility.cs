@@ -3,6 +3,7 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace Cinemachine.Editor
 {
@@ -108,9 +109,20 @@ namespace Cinemachine.Editor
         /// <returns>The nicified name</returns>
         public static string NicifyClassName(string name)
         {
-            // TODO: add deprecated tag based on Obsolete
-            if (name == "CinemachineTrackedDolly")
-                name = "CinemachineTrackedDolly (Deprecated)";
+            if (name.StartsWith("Cinemachine"))
+                name = name.Substring(11); // Trim the prefix
+            
+            return ObjectNames.NicifyVariableName(name);
+        }
+        
+        public static string NicifyClassName(Type type)
+        {
+            var name = type.Name;
+            var attribute = type.GetCustomAttribute<ObsoleteAttribute>();
+            if (attribute != null)
+            {
+                name += " (Obsolete)";
+            }
             
             if (name.StartsWith("Cinemachine"))
                 name = name.Substring(11); // Trim the prefix
