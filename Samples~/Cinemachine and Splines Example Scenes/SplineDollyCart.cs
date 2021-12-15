@@ -5,9 +5,12 @@ using Unity.Mathematics;
 
 namespace Cinemachine.Samples
 {
+    /// <summary>
+    /// This is a modified version of the AnimateCarAlongSpline script found in the Splines package.
+    /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class CinemachineSplineDollyCart : MonoBehaviour
+    public class SplineDollyCart : MonoBehaviour
     {
         /// <summary>SplineContainer that contains the spline which defines the dolly track.</summary>
         [Tooltip("SplineContainer that contains the spline which defines the dolly track.")]
