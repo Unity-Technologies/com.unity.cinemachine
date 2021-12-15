@@ -8,7 +8,7 @@ namespace Cinemachine
 {
     /// <summary>
     /// A Cinemachine Virtual Camera Body component that constrains camera motion
-    /// to a CinemachinePath.  The camera can move along the path.
+    /// to a Spline.  The camera can move along the path.
     ///
     /// This behaviour can operate in two modes: manual positioning, and Auto-Dolly positioning.
     /// In Manual mode, the camera's position is specified by animating the Path Position field.
@@ -20,13 +20,13 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class CinemachineSplineDolly : CinemachineComponentBase
     {
-        /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
-        [Tooltip("The path to which the camera will be constrained.  This must be non-null.")]
+        /// <summary>The Spline container to which the camera will be constrained.  This must be non-null.</summary>
+        [Tooltip("The Spline container to which the camera will be constrained.  This must be non-null.")]
         public SplineContainer m_Track;
 
-        /// <summary>The position along the path at which the camera will be placed.
-        /// This can be animated directly, or set automatically by the Auto-Dolly feature
-        /// to get as close as possible to the Follow target.</summary>
+        /// <summary>The position along the path at which the camera will be placed. This can be animated directly,
+        /// or set automatically by the Auto-Dolly feature to get as close as possible to the Follow target.
+        /// The value is interpreted according to the Position Units setting.</summary>
         [Tooltip("The position along the path at which the camera will be placed.  "
            + "This can be animated directly, or set automatically by the Auto-Dolly feature to "
             + "get as close as possible to the Follow target.  The value is interpreted "
