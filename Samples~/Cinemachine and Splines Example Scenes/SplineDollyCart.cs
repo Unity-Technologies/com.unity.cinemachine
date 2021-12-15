@@ -79,6 +79,8 @@ namespace Cinemachine.Samples
 #endif
         }
         
+        bool m_Registered = false;
+        SplineContainer m_TrackCache;
         void OnValidate()
         {
             if (m_SpeedOverride != null)
@@ -105,8 +107,18 @@ namespace Cinemachine.Samples
                     }
                 }
             
-            m_Track.Spline.changed -= OnChangeEvent;
-            m_Track.Spline.changed += OnChangeEvent;
+            if (m_TrackCache != null)
+            {
+                m_TrackCache.Spline.changed -= OnChangeEvent;
+                m_TrackCache = m_Track;
+                m_Registered = false;
+            }
+            if (!m_Registered && m_Track != null && m_Track.Spline != null)
+            {
+                m_Registered = true;
+                m_TrackCache = m_Track;
+                m_Track.Spline.changed += OnChangeEvent;
+            }
         }
 
         void Update()
