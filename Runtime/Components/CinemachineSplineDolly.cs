@@ -1,7 +1,7 @@
+#if CINEMACHINE_UNITY_SPLINES
 using UnityEngine;
 using System;
 using Cinemachine.Utility;
-using Unity.Mathematics;
 using UnityEngine.Splines;
 
 namespace Cinemachine
@@ -198,6 +198,20 @@ namespace Cinemachine
             var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
             return Mathf.Max(a, b); 
         }
+        
+        /// <summary>Override this if you'd like to react to spline changes.</summary>
+        protected virtual void OnChangeEvent()
+        {
+#if UNITY_EDITOR
+            Debug.Log("Spline ("+ m_Track.gameObject.name +") used by "+ name +" has changed!");
+#endif
+        }
+
+        void OnValidate()
+        {
+            m_Track.Spline.changed -= OnChangeEvent;
+            m_Track.Spline.changed += OnChangeEvent;
+        }
 
         void UpdateOverrideCache()
         {
@@ -340,7 +354,7 @@ namespace Cinemachine
                 SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, PathIndexUnit.Normalized, m_PositionUnits);
         }
 
-        private Quaternion GetCameraOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)
+        Quaternion GetCameraOrientationAtPathPoint(Quaternion pathOrientation, Vector3 up)
         {
             switch (m_CameraUp)
             {
@@ -361,7 +375,7 @@ namespace Cinemachine
             return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
         }
 
-        private Vector3 AngularDamping
+        Vector3 AngularDamping
         {
             get
             {
@@ -378,8 +392,9 @@ namespace Cinemachine
             }
         }
 
-        private float m_PreviousNormalizedPathPosition = 0;
+        float m_PreviousNormalizedPathPosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
-        private Vector3 m_PreviousCameraPosition = Vector3.zero;
+        Vector3 m_PreviousCameraPosition = Vector3.zero;
     }
 }
+#endif

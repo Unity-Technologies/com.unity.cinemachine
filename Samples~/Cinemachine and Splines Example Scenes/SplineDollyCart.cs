@@ -71,6 +71,13 @@ namespace Cinemachine.Samples
         [DriftHandle]
         public SplineData<float> m_OffsetOverride;
         
+        /// <summary>Override this if you'd like to react to spline changes.</summary>
+        protected virtual void OnChangeEvent()
+        {
+#if UNITY_EDITOR
+            Debug.Log("Spline ("+ m_Track.gameObject.name +") used by "+ name +" has changed!");
+#endif
+        }
         
         void OnValidate()
         {
@@ -97,6 +104,9 @@ namespace Cinemachine.Samples
                         m_TiltOverride[index] = data;
                     }
                 }
+            
+            m_Track.Spline.changed -= OnChangeEvent;
+            m_Track.Spline.changed += OnChangeEvent;
         }
 
         void Update()
