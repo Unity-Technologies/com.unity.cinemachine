@@ -68,11 +68,11 @@ namespace Cinemachine.Editor
                     out var armPosition);
                 var followTargetRotation = thirdPerson.FollowTargetRotation;
                 var targetForward = followTargetRotation * Vector3.forward;
+                var heading = Cinemachine3rdPersonFollow.GetHeading(
+                    followTargetRotation, thirdPerson.VirtualCamera.State.ReferenceUp);
 
                 EditorGUI.BeginChangeCheck();
                 // shoulder handle
-                var heading = Cinemachine3rdPersonFollow.GetHeading(
-                    targetForward, thirdPerson.VirtualCamera.State.ReferenceUp);
                 var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
                 var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
@@ -141,8 +141,8 @@ namespace Cinemachine.Editor
                     CinemachineSceneToolHelpers.DrawLabel(labelPos, text);
                     
                 Handles.color = handleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSceneToolHelpers.s_HelperLineDefaultColor;
-                Handles.DrawLine(lineStart, lineEnd, CinemachineSceneToolHelpers.lineThickness);
+                    Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
+                    Handles.DrawLine(lineStart, lineEnd, CinemachineSceneToolHelpers.LineThickness);
                     
                 return handleIsDragged;
             }

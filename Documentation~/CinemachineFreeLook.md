@@ -40,7 +40,7 @@ Free Look uses player input along the x and y axes. The x axis controls the orbi
 | | _Decel Time_ | The amount of time in seconds to decelerate to zero. |
 | | _Input Axis Name_ | The name of this axis as specified in Unity Input manager. Setting to an empty string disables the automatic updating of the axis. |
 | | _Input Axis Value_ | The value of the input axis. A value of 0 means no input. To drive this directly, use a custom input system. Or you set the Axis Name to control the value with the Unity Input Manager. |
-| | _Invert_ | Check to invert the raw value of the input axis. |
+| | _Invert_ | Check to invert the raw value of the input axis. The X Axis and Y Axis have opposite defaults. Checking this box causes the view to move **opposite** the input for the X Axis. Checking the box for the Y Axis causes the view to move in the **same** direction as the input.|
 | __Y Axis Recentering__ || Controls the automatic recentering on the y axis. |
 | | _Enabled_ | Check to enable automatic recentering. |
 | | _Wait Time_ | When no user input has been detected on the axis, the camera waits this long in seconds before recentering. |

@@ -186,7 +186,7 @@ namespace Cinemachine
             var targetPos = FollowTargetPosition;
             var targetRot = FollowTargetRotation;
             var targetForward = targetRot * Vector3.forward;
-            var heading = GetHeading(targetForward, up);
+            var heading = GetHeading(targetRot, up);
 
             if (deltaTime < 0)
             {
@@ -234,8 +234,7 @@ namespace Cinemachine
         {
             var up = VirtualCamera.State.ReferenceUp;
             var targetRot = FollowTargetRotation;
-            var targetForward = targetRot * Vector3.forward;
-            var heading = GetHeading(targetForward, up);
+            var heading = GetHeading(targetRot, up);
             root = m_PreviousFollowTargetPosition;
             GetRawRigPositions(root, targetRot, heading, out shoulder, out hand);
 #if CINEMACHINE_PHYSICS
@@ -244,10 +243,12 @@ namespace Cinemachine
 #endif
         }
 
-        internal static Quaternion GetHeading(Vector3 targetForward, Vector3 up)
+        internal static Quaternion GetHeading(Quaternion targetRot, Vector3 up)
         {
-            var planeForward = targetForward.ProjectOntoPlane(up);
-            planeForward = Vector3.Cross(up, Vector3.Cross(planeForward, up));
+            var targetForward = targetRot * Vector3.forward;
+            var planeForward = Vector3.Cross(up, Vector3.Cross(targetForward.ProjectOntoPlane(up), up));
+            if (planeForward.AlmostZero())
+                planeForward = Vector3.Cross(targetRot * Vector3.right, up);
             return Quaternion.LookRotation(planeForward, up);
         }
 

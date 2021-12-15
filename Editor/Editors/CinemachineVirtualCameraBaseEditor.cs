@@ -476,7 +476,7 @@ namespace Cinemachine.Editor
             var nearClipPlaneProperty = property.FindPropertyRelative("NearClipPlane");
             if (!IsOrtho)
             {
-                nearClipPlaneProperty.floatValue = Mathf.Max(nearClipPlaneProperty.floatValue, 0.001f);
+                nearClipPlaneProperty.floatValue = Mathf.Max(nearClipPlaneProperty.floatValue, 0.01f);
                 property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
             }
         }

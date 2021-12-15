@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using NUnit.Framework;
@@ -7,7 +8,7 @@ namespace Tests.Runtime
 {
     public class CinemachineFixtureBase
     {
-        private readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
+        protected readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
         
         internal GameObject CreateGameObject(string name, params System.Type[] components)
         {
@@ -47,6 +48,5 @@ namespace Tests.Runtime
             
             CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
-
     }
 }
