@@ -71,7 +71,8 @@ namespace Cinemachine.Samples
         [DriftHandle]
         public SplineData<float> m_OffsetOverride;
         
-        /// <summary>Override this if you'd like to react to spline changes.</summary>
+        /// <summary>Override this if you'd like to react to spline changes. By default, in Editor only,
+        /// it warns the user when a change happens to the spline about a potentially affected vcam</summary>
         protected virtual void OnChangeEvent()
         {
 #if UNITY_EDITOR
