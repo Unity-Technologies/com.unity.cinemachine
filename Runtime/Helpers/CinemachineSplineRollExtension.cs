@@ -1,6 +1,7 @@
+#if CINEMACHINE_UNITY_SPLINES
 using System;
-using Unity.Mathematics;
 using UnityEngine;
+using Unity.Mathematics;
 using UnityEngine.Splines;
 
 namespace Cinemachine
@@ -76,3 +77,4 @@ namespace Cinemachine
     [AttributeUsage(AttributeTargets.Field)]
     public class TiltHandleAttribute : SplineDataHandleAttribute {}
 }
+#endif

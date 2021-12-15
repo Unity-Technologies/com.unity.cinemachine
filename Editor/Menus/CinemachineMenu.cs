@@ -1,8 +1,8 @@
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEditor;
 #if CINEMACHINE_UNITY_SPLINES
 using UnityEngine.Splines;
+using Unity.Mathematics;
 #endif
 
 namespace Cinemachine.Editor

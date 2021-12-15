@@ -18,7 +18,9 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+#if CINEMACHINE_UNITY_SPLINES
     [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
+#endif   
     public class CinemachineTrackedDolly : CinemachineComponentBase
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
