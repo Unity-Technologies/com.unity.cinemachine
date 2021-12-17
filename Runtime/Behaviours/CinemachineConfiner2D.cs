@@ -247,6 +247,7 @@ namespace Cinemachine
             /// <param name="aspectRatio">Aspect ratio/param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
+            /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(
                 Collider2D boundingShape2D, float maxWindowSize, 
                 float aspectRatio, out bool confinerStateChanged)
@@ -361,7 +362,7 @@ namespace Cinemachine
             for (int i = 0; i < allExtraStates.Count; ++i)
             {
                 var e = allExtraStates[i];
-                if (e.m_BakedSolution != null && CinemachineCore.Instance.IsLive(e.m_vcam))
+                if (e.m_BakedSolution != null)
                 {
                     currentPath.AddRange(e.m_BakedSolution.GetBakedPath());
                 }

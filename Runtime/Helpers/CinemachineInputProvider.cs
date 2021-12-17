@@ -81,20 +81,23 @@ namespace Cinemachine
                 m_cachedActions = new InputAction[NUM_AXES];
             if (m_cachedActions[axis] != null && actionRef.action.id != m_cachedActions[axis].id)
                 m_cachedActions[axis] = null;
+            
             if (m_cachedActions[axis] == null)
             {
                 m_cachedActions[axis] = actionRef.action;
                 if (PlayerIndex != -1)
                 {
-                    var user = InputUser.all[PlayerIndex];
-                    m_cachedActions[axis] = user.actions.First(x => x.id == actionRef.action.id);
+                    m_cachedActions[axis] = GetFirstMatch(InputUser.all[PlayerIndex], actionRef);
                 }
             }
             // Auto-enable it if disabled
             if (m_cachedActions[axis] != null && !m_cachedActions[axis].enabled)
                 m_cachedActions[axis].Enable();
-
+            
             return m_cachedActions[axis];
+            // local static function to wrap the lambda which otherwise causes a tiny gc
+            static InputAction GetFirstMatch(in InputUser user, InputActionReference actionRef) => 
+                user.actions.First(x => x.id == actionRef.action.id);
         }
 
         // Clean up
