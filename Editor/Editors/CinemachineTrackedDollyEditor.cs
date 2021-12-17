@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
-#if CINEMACHINE_UNITY_SPLINES
+#if UNITY_2022_1_OR_NEWER
     [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
 #endif   
     internal sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
