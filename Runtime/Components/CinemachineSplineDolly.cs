@@ -228,27 +228,27 @@ namespace Cinemachine
 
         void UpdateOverrideCache()
         {
-            m_RollOverrideExtension = null;
+            m_UpOverrideExtension = null;
             // if vcam has an override, use that
-            if (transform.parent.TryGetComponent(out m_RollOverrideExtension))
+            if (transform.parent.TryGetComponent(out m_UpOverrideExtension))
             {
 #if UNITY_EDITOR
-                m_RollOverrideExtension.splineContainer = m_Track; // this is needed to make the handles work in the scene view
+                m_UpOverrideExtension.splineContainer = m_Track; // this is needed to make the handles work in the scene view
 #endif
             }
             // else if the spline has an override, use that
-            else if (m_Track.TryGetComponent(out m_RollOverrideExtension)) {}
+            else if (m_Track.TryGetComponent(out m_UpOverrideExtension)) {}
         }
 
-        CinemachineSplineRollExtension m_RollOverrideExtension; // don't use this directly
-        CinemachineSplineRollExtension RollOverrideExtension
+        CinemachineSplineUpOverrideExtension m_UpOverrideExtension; // don't use this directly
+        CinemachineSplineUpOverrideExtension UpOverrideExtension
         {
             get
             {
-                if(m_RollOverrideExtension == null)
+                if(m_UpOverrideExtension == null)
                     UpdateOverrideCache();
 
-                return m_RollOverrideExtension;
+                return m_UpOverrideExtension;
             }
         }
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
@@ -264,6 +264,17 @@ namespace Cinemachine
 
             // splines work with normalized position by default, so we convert m_PathPosition to normalized at the start
             var pathSpline = m_Track.Spline;
+            if (pathSpline == null || pathSpline.Count == 0)
+            {
+                return;
+            }
+            if (pathSpline.Count == 1)
+            {
+                curState.RawPosition = m_PreviousCameraPosition = pathSpline[0].Position;
+                curState.RawOrientation = m_PreviousOrientation = pathSpline[0].Rotation;
+                return;
+            }
+            
             m_PathPosition = 
                 SplineUtility.ConvertIndexUnit(pathSpline, m_PathPosition, m_PositionUnits, PathIndexUnit.Normalized);
             
@@ -317,9 +328,9 @@ namespace Cinemachine
                 Vector3.SqrMagnitude(localTangent) == 0 || Vector3.SqrMagnitude(localUp) == 0 ? 
                     Quaternion.identity : Quaternion.LookRotation(localTangent, localUp);
             
-            if (RollOverrideExtension != null && RollOverrideExtension.enabled)
+            if (UpOverrideExtension != null && UpOverrideExtension.enabled)
             {
-                Vector3 roll = RollOverrideExtension.RollOverride.Evaluate(pathSpline, newPathPosition, 
+                Vector3 roll = UpOverrideExtension.UpOverride.Evaluate(pathSpline, newPathPosition, 
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat3());
                 newPathOrientation = Quaternion.LookRotation(localTangent, newPathOrientation * roll);
             }

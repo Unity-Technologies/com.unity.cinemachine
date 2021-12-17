@@ -17,18 +17,18 @@ namespace Cinemachine
     /// </summary>
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
-    public class CinemachineSplineRollExtension : MonoBehaviour
+    public class CinemachineSplineUpOverrideExtension : MonoBehaviour
     {
         /// <summary>
-        /// Roll value overrides for specific location on the track. Vectors with magnitude 0 are replaced with Vector3.up.
+        /// Up vector overrides for specific location on the track. Vectors with magnitude 0 are replaced with Vector3.up.
         /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
         /// Whem placed on a vcam, this is going to be a local override that only affects that vcam.
         /// </summary>
-        [Tooltip("Roll value overrides for specific location on the track. Vectors with magnitude 0 are replaced with Vector3.up.\n" +
+        [Tooltip("Up vector overrides for specific location on the track. Vectors with magnitude 0 are replaced with Vector3.up.\n" +
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
         [TiltHandle]
-        public SplineData<float3> RollOverride;
+        public SplineData<float3> UpOverride;
 
 #if UNITY_EDITOR
         // this is used by TiltHandle Drawer
@@ -62,17 +62,17 @@ namespace Cinemachine
         float3 m_Up = Vector3.up; // just to avoid cast and conversion
         void OnValidate()
         {
-            if (RollOverride != null)
+            if (UpOverride != null)
             {
-                for (int i = 0; i < RollOverride.Count; ++i)
+                for (int i = 0; i < UpOverride.Count; ++i)
                 {
-                    var data = RollOverride[i];
+                    var data = UpOverride[i];
 
                     // replace vectors with magnitude 0 with Vector3.up
                     if (math.lengthsq(data.Value) == 0)
                     {
                         data.Value = m_Up;
-                        RollOverride[i] = data;
+                        UpOverride[i] = data;
                     }
                 }
             }
