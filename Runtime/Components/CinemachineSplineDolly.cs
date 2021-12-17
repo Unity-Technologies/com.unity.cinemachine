@@ -330,9 +330,9 @@ namespace Cinemachine
             
             if (UpOverrideExtension != null && UpOverrideExtension.enabled)
             {
-                Vector3 roll = UpOverrideExtension.UpOverride.Evaluate(pathSpline, newPathPosition, 
+                Vector3 upOverride = UpOverrideExtension.UpOverride.Evaluate(pathSpline, newPathPosition, 
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat3());
-                newPathOrientation = Quaternion.LookRotation(localTangent, newPathOrientation * roll);
+                newPathOrientation = Quaternion.LookRotation(localTangent, newPathOrientation * upOverride);
             }
 
             // Apply the offset to get the new camera position
