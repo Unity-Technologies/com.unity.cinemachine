@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
+#if CINEMACHINE_UNITY_SPLINES
+    [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
+#endif   
     internal sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
