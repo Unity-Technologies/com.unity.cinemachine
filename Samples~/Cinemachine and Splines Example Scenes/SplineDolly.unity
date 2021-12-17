@@ -550,7 +550,7 @@ MonoBehaviour:
           y: 0
           z: 0
           w: 1
-    m_Length: 12.000001
+    m_Length: 16
     m_Closed: 0
 --- !u!4 &952674341
 Transform:
@@ -614,8 +614,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Track: {fileID: 952674340}
-  m_PathPosition: 0.47104993
-  m_PositionUnits: 1
+  m_PathPosition: 0
+  m_PositionUnits: 2
   m_PathOffset: {x: 0, y: 3, z: 0}
   m_XDamping: 0
   m_YDamping: 0
@@ -625,7 +625,7 @@ MonoBehaviour:
   m_YawDamping: 0
   m_RollDamping: 0
   m_AutoDolly:
-    m_Enabled: 1
+    m_Enabled: 0
     m_PositionOffset: 0
     m_SearchResolution: 4
     m_SearchIteration: 2
@@ -731,8 +731,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1036175981}
-  m_LocalRotation: {x: 0.046600353, y: 0.0000128873, z: -0.00000060120584, w: 0.99891365}
-  m_LocalPosition: {x: -2.3501377, y: 2.4993918, z: -3.3407712}
+  m_LocalRotation: {x: 0.0521679, y: 0.33254382, z: -0.018426748, w: 0.9414636}
+  m_LocalPosition: {x: -8, y: 3, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1020,7 +1020,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.12685, y: 1}
+    m_SensorSize: {x: 2.102757, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1036,8 +1036,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634770345}
-  m_LocalRotation: {x: 0.046600353, y: 0.0000128873, z: -0.00000060120584, w: 0.99891365}
-  m_LocalPosition: {x: -2.3501377, y: 2.4993918, z: -3.3407712}
+  m_LocalRotation: {x: 0.0521679, y: 0.33254382, z: -0.018426748, w: 0.9414636}
+  m_LocalPosition: {x: -8, y: 3, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1054,10 +1054,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1634770345}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b061e3ecd9a1f4dbfad0bd32db5429d6, type: 3}
+  m_Script: {fileID: 11500000, guid: 21bd57292e0b743df95303eb2542c1a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RollOverride:
+  UpOverride:
     m_IndexUnit: 2
     m_DataPoints:
     - m_Index: 0
@@ -1067,8 +1067,8 @@ MonoBehaviour:
         z: 0
     - m_Index: 0.5
       m_Value:
-        x: -0.7296441
-        y: 0.68382704
+        x: -0.31341907
+        y: 0.94961494
         z: 0
     - m_Index: 1
       m_Value:
