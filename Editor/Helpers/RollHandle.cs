@@ -97,8 +97,21 @@ namespace Cinemachine.Editor
                 var newHandleRotationGlobalSpace = Handles.Disc(controlID, handleRotationGlobalSpace, Vector3.zero, Vector3.forward, 1, false, 0);
                 if (GUIUtility.hotControl == controlID)
                 {
+                    // Handles.Disc returns roll values in the [0, 360] range. Therefore, it works only in fixed ranges
+                    // For example, within any of these ..., [-720, -360], [-360, 0], [0, 360], [360, 720], ...
+                    // But we want to be able to rotate through these ranges, and not get stuck. We can detect when to
+                    // move between ranges: when the roll delta is big. e.g. 359 -> 1 (358), instead of 1 -> 2 (1)
                     var newHandleRotationLocalSpace = m_DefaultHandleOrientationInverse * newHandleRotationGlobalSpace;
                     var deltaRoll = newHandleRotationLocalSpace.eulerAngles.y - handleRotationLocalSpace.eulerAngles.y;
+                    if (deltaRoll > 180)
+                    {
+                        deltaRoll -= 360; // Roll down one range
+                    }
+                    else if (deltaRoll < -180)
+                    {
+                        deltaRoll += 360; // Roll up one range
+                    }
+
                     rollData.Value += deltaRoll;
                     splineData[dataPointIndex] = rollData;
                 }
