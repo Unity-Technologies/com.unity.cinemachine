@@ -228,27 +228,27 @@ namespace Cinemachine
 
         void UpdateOverrideCache()
         {
-            m_UpOverrideExtension = null;
+            m_RollOverrideExtension = null;
             // if vcam has an override, use that
-            if (transform.parent.TryGetComponent(out m_UpOverrideExtension))
+            if (transform.parent.TryGetComponent(out m_RollOverrideExtension))
             {
 #if UNITY_EDITOR
-                m_UpOverrideExtension.splineContainer = m_Track; // this is needed to make the handles work in the scene view
+                m_RollOverrideExtension.splineContainer = m_Track; // this is needed to make the handles work in the scene view
 #endif
             }
             // else if the spline has an override, use that
-            else if (m_Track.TryGetComponent(out m_UpOverrideExtension)) {}
+            else if (m_Track.TryGetComponent(out m_RollOverrideExtension)) {}
         }
 
-        CinemachineSplineUpOverrideExtension m_UpOverrideExtension; // don't use this directly
-        CinemachineSplineUpOverrideExtension UpOverrideExtension
+        CinemachineSplineRollOverrideExtension m_RollOverrideExtension; // don't use this directly
+        CinemachineSplineRollOverrideExtension RollOverrideExtension
         {
             get
             {
-                if(m_UpOverrideExtension == null)
+                if(m_RollOverrideExtension == null)
                     UpdateOverrideCache();
 
-                return m_UpOverrideExtension;
+                return m_RollOverrideExtension;
             }
         }
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
@@ -328,11 +328,12 @@ namespace Cinemachine
                 Vector3.SqrMagnitude(localTangent) == 0 || Vector3.SqrMagnitude(localUp) == 0 ? 
                     Quaternion.identity : Quaternion.LookRotation(localTangent, localUp);
             
-            if (UpOverrideExtension != null && UpOverrideExtension.enabled)
+            if (RollOverrideExtension != null && RollOverrideExtension.enabled)
             {
-                Vector3 upOverride = UpOverrideExtension.UpOverride.Evaluate(pathSpline, newPathPosition, 
-                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat3());
-                newPathOrientation = Quaternion.LookRotation(localTangent, newPathOrientation * upOverride);
+                // float roll = RollOverrideExtension.RollOverride.Evaluate(pathSpline, newPathPosition, 
+                //     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
+                // var rollRotation = Quaternion.AngleAxis(roll, localTangent);
+                // newPathOrientation = Quaternion.LookRotation(localTangent, rollRotation * localUp);
             }
 
             // Apply the offset to get the new camera position

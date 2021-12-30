@@ -1,7 +1,6 @@
 #if CINEMACHINE_UNITY_SPLINES
 using System;
 using UnityEngine;
-using Unity.Mathematics;
 using UnityEngine.Splines;
 
 namespace Cinemachine
@@ -17,18 +16,18 @@ namespace Cinemachine
     /// </summary>
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
-    public class CinemachineSplineUpOverrideExtension : MonoBehaviour
+    public class CinemachineSplineRollOverrideExtension : MonoBehaviour
     {
         /// <summary>
-        /// Up vector overrides for specific location on the track. Vectors with magnitude 0 are replaced with Vector3.up.
+        /// Roll (in angles) along the forward direction for specific location on the track.
         /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
         /// Whem placed on a vcam, this is going to be a local override that only affects that vcam.
         /// </summary>
-        [Tooltip("Up vector overrides for specific location on the track. Vectors with magnitude 0 are replaced with Vector3.up.\n" +
+        [Tooltip("Roll (in angles) along the forward direction for specific location on the track.\n" +
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
-        [TiltHandle]
-        public SplineData<float3> UpOverride;
+        [RollHandle]
+        public SplineData<float> RollOverride;
 
 #if UNITY_EDITOR
         // this is used by TiltHandle Drawer
@@ -58,28 +57,9 @@ namespace Cinemachine
                 }
             }
         }
-
-        float3 m_Up = Vector3.up; // just to avoid cast and conversion
-        void OnValidate()
-        {
-            if (UpOverride != null)
-            {
-                for (int i = 0; i < UpOverride.Count; ++i)
-                {
-                    var data = UpOverride[i];
-
-                    // replace vectors with magnitude 0 with Vector3.up
-                    if (math.lengthsq(data.Value) == 0)
-                    {
-                        data.Value = m_Up;
-                        UpOverride[i] = data;
-                    }
-                }
-            }
-        }
     }
     
     [AttributeUsage(AttributeTargets.Field)]
-    public class TiltHandleAttribute : SplineDataHandleAttribute {}
+    public class RollHandleAttribute : SplineDataHandleAttribute {}
 }
 #endif
