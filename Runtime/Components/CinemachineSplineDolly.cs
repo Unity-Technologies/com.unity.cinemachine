@@ -345,6 +345,7 @@ namespace Cinemachine
             {
                 Vector3 relative = (Quaternion.Inverse(m_PreviousOrientation)
                     * newOrientation).eulerAngles;
+                Debug.Log("relative:"+relative);
                 for (int i = 0; i < 3; ++i)
                     if (relative[i] > 180)
                         relative[i] -= 360;
@@ -383,6 +384,7 @@ namespace Cinemachine
             return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
         }
 
+        // TODO: KGB - I don't see the use of this. I'd delete this, and related.
         Vector3 AngularDamping
         {
             get
