@@ -345,7 +345,6 @@ namespace Cinemachine
             {
                 Vector3 relative = (Quaternion.Inverse(m_PreviousOrientation)
                     * newOrientation).eulerAngles;
-                Debug.Log("relative:"+relative);
                 for (int i = 0; i < 3; ++i)
                     if (relative[i] > 180)
                         relative[i] -= 360;
