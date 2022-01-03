@@ -1,3 +1,4 @@
+#if CINEMACHINE_UNITY_SPLINES
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -6,12 +7,12 @@ using UnityEditor.Splines;
 using UnityEngine;
 using UnityEngine.Splines;
 
-using Interpolators = UnityEngine.Splines.Interpolators;
-
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// Taken from the Spline package.
+    /// RollHandle drawer (roll is used by CinemachineSplineRollOverride). This draws the disc handles that allows the
+    /// user to rotate the roll values in the scene view. It also draws up vectors along the spline indicating
+    /// the roll at those points.
     /// </summary>
     [CustomSplineDataHandle(typeof(RollHandleAttribute))]
     class RollHandle : SplineDataHandle<float>
@@ -30,7 +31,7 @@ namespace Cinemachine.Editor
             Color color)
         {
             s_LineSegments.Clear();
-            using (var nativeSpline = new NativeSpline(spline, localToWorld))
+            using (var nativeSpline = new NativeSpline(spline))
             {
                 if(GUIUtility.hotControl == 0 || controlIDs.Contains(GUIUtility.hotControl))
                 {
@@ -40,15 +41,15 @@ namespace Cinemachine.Editor
                         var t = currentOffset / nativeSpline.GetLength();
                         nativeSpline.Evaluate(t, out float3 position, out float3 direction, out float3 up);
                         var roll = splineData.Evaluate(nativeSpline, t, PathIndexUnit.Normalized,
-                            new Interpolators.LerpFloat());
+                            new UnityEngine.Splines.Interpolators.LerpFloat());
 
                         Matrix4x4 localMatrix = Matrix4x4.identity;
                         var rollRotation = Quaternion.AngleAxis(-roll, direction);
                         var rolledUp = rollRotation * up;
                         localMatrix.SetTRS(position, Quaternion.LookRotation(direction, rolledUp), Vector3.one);
                         var currentPosition = localMatrix.GetPosition();
-                        s_LineSegments.Add(currentPosition);
-                        s_LineSegments.Add(localMatrix.MultiplyPoint(up));
+                        s_LineSegments.Add(localToWorld.MultiplyPoint(currentPosition));
+                        s_LineSegments.Add(localToWorld.MultiplyPoint(localMatrix.MultiplyPoint(up)));
                         
                         currentOffset += s_DisplaySpace;
                     }
@@ -62,6 +63,7 @@ namespace Cinemachine.Editor
             }
         }
 
+        // inverse pre-calculation optimization
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
         /// <summary>
@@ -119,3 +121,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

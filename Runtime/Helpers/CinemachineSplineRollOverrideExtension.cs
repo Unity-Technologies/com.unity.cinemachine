@@ -30,12 +30,11 @@ namespace Cinemachine
         public SplineData<float> RollOverride;
 
 #if UNITY_EDITOR
-        // this is used by TiltHandle Drawer
-        internal SplineContainer splineContainer; 
+        internal SplineContainer splineContainer; // this is needed by the RollHandle to work in the scene view
 #endif
 
         /// <summary>
-        /// TiltHandle needs to know for which Spline to draw its handles.
+        /// RollHandle needs to know for which Spline to draw its handles.
         /// If SplineRollExtension is added to a GameObject with a SplineContainer, then use that as target.
         /// Otherwise check if we are on a vcam that uses a SplineContainer, then use that as target.
         /// </summary>
@@ -43,7 +42,7 @@ namespace Cinemachine
         {
             if (
 #if UNITY_EDITOR
-                !TryGetComponent(out splineContainer) &&  
+                !TryGetComponent(out splineContainer) && // this is needed by the RollHandle to work in the scene view
 #endif
                 TryGetComponent(out CinemachineVirtualCamera vcam))
             {

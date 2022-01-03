@@ -199,14 +199,11 @@ namespace Cinemachine
             return Mathf.Max(a, b); 
         }
         
-        /// <summary>Override this if you'd like to react to spline changes. By default, in Editor only,
-        /// it warns the user when a change happens to the spline about a potentially affected vcam</summary>
-        protected virtual void OnChangeEvent()
-        {
-#if UNITY_EDITOR
-            Debug.Log("Spline ("+ m_Track.gameObject.name +") used by "+ transform.parent.name +" has changed!");
-#endif
-        }
+        /// <summary>
+        /// Subscribe to onSplineChanged if you'd like to react to changes to the Spline attached to this vcam.
+        /// This action is invoked by the Spline's changed event when a spline property is modified.
+        /// </summary>
+        public event Action onSplineChanged;
 
         bool m_Registered = false;
         SplineContainer m_TrackCache;
@@ -214,7 +211,7 @@ namespace Cinemachine
         {
             if (m_TrackCache != null)
             {
-                m_TrackCache.Spline.changed -= OnChangeEvent;
+                m_TrackCache.Spline.changed -= onSplineChanged;
                 m_TrackCache = m_Track;
                 m_Registered = false;
             }
@@ -222,7 +219,7 @@ namespace Cinemachine
             {
                 m_Registered = true;
                 m_TrackCache = m_Track;
-                m_Track.Spline.changed += OnChangeEvent;
+                m_Track.Spline.changed += onSplineChanged;
             }
         }
 
@@ -233,7 +230,7 @@ namespace Cinemachine
             if (transform.parent.TryGetComponent(out m_RollOverrideExtension))
             {
 #if UNITY_EDITOR
-                m_RollOverrideExtension.splineContainer = m_Track; // this is needed to make the handles work in the scene view
+                m_RollOverrideExtension.splineContainer = m_Track; // this is needed by the RollHandle to work in the scene view
 #endif
             }
             // else if the spline has an override, use that
@@ -330,10 +327,11 @@ namespace Cinemachine
             
             if (RollOverrideExtension != null && RollOverrideExtension.enabled)
             {
-                // float roll = RollOverrideExtension.RollOverride.Evaluate(pathSpline, newPathPosition, 
-                //     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
-                // var rollRotation = Quaternion.AngleAxis(roll, localTangent);
-                // newPathOrientation = Quaternion.LookRotation(localTangent, rollRotation * localUp);
+                float roll = RollOverrideExtension.RollOverride.Evaluate(pathSpline, newPathPosition, 
+                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
+                var rollRotation = Quaternion.AngleAxis(-roll, localTangent);
+                newPathOrientation = Quaternion.LookRotation(localTangent, rollRotation * localUp);
+                //Debug.Log("Quaternion"+rollRotation+" Quaternion"+newPathOrientation);
             }
 
             // Apply the offset to get the new camera position
