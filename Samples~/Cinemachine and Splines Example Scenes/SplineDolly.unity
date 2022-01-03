@@ -438,11 +438,11 @@ MonoBehaviour:
     - m_Index: 4
       m_Value: 1
     - m_Index: 4.5
-      m_Value: 5
+      m_Value: 2
     - m_Index: 5
-      m_Value: 8
+      m_Value: 4
     - m_Index: 5.5
-      m_Value: 5
+      m_Value: 2
     - m_Index: 6
       m_Value: 1
   rollOverride:
@@ -485,7 +485,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 859386657}
-  m_LocalRotation: {x: 0.05363862, y: 0.8727126, z: -0.057217993, w: -0.48189384}
+  m_LocalRotation: {x: -0.13551863, y: 0.86379343, z: 0.04787803, w: -0.4829113}
   m_LocalPosition: {x: -2.5056238, y: 1.9921575, z: 1.9077129}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -572,7 +572,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 952674339}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.57, y: 1.14, z: 1.14}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -626,7 +626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Track: {fileID: 952674340}
-  m_PathPosition: 0.47
+  m_PathPosition: 0.38209614
   m_PositionUnits: 2
   m_PathOffset: {x: 0, y: 1, z: 0}
   m_XDamping: 0
@@ -637,7 +637,7 @@ MonoBehaviour:
   m_YawDamping: 0
   m_RollDamping: 0
   m_AutoDolly:
-    m_Enabled: 0
+    m_Enabled: 1
     m_PositionOffset: 0
     m_SearchResolution: 4
     m_SearchIteration: 2
@@ -743,8 +743,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1036175981}
-  m_LocalRotation: {x: -0.06598833, y: -0.21090081, z: -0.014271302, w: 0.9751732}
-  m_LocalPosition: {x: 0.5597341, y: 0.9835651, z: -4.8476887}
+  m_LocalRotation: {x: -0.02593689, y: 0.000009454508, z: 0.00000024530308, w: 0.9996636}
+  m_LocalPosition: {x: -2.5057697, y: 1.5916017, z: -5.8062305}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1048,8 +1048,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634770345}
-  m_LocalRotation: {x: -0.06598833, y: -0.21090081, z: -0.014271302, w: 0.9751732}
-  m_LocalPosition: {x: 0.5597341, y: 0.9835651, z: -4.8476887}
+  m_LocalRotation: {x: -0.02593689, y: 0.000009454508, z: 0.00000024530308, w: 0.9996636}
+  m_LocalPosition: {x: -2.5057697, y: 1.5916017, z: -5.8062305}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1072,7 +1072,7 @@ MonoBehaviour:
   RollOverride:
     m_IndexUnit: 2
     m_DataPoints:
-    - m_Index: 0.2
-      m_Value: 180
+    - m_Index: 0.3
+      m_Value: 80
     - m_Index: 0.8
-      m_Value: 0
+      m_Value: -80
