@@ -223,7 +223,7 @@ namespace Cinemachine
             }
         }
 
-        void UpdateOverrideCache()
+        void UpdateSplineRollOverrideCache()
         {
             m_RollOverrideExtension = null;
             // if vcam has an override, use that
@@ -243,7 +243,7 @@ namespace Cinemachine
             get
             {
                 if(m_RollOverrideExtension == null)
-                    UpdateOverrideCache();
+                    UpdateSplineRollOverrideCache();
 
                 return m_RollOverrideExtension;
             }

@@ -48,11 +48,14 @@ namespace Cinemachine
             {
                 // set splineContainer through the vcam
                 var body = vcam.GetCinemachineComponent(CinemachineCore.Stage.Body);
-                var splineDataCacheUpdate = body.GetType().GetMethod("UpdateOverrideCache",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (splineDataCacheUpdate != null)
+                if (body != null)
                 {
-                    splineDataCacheUpdate.Invoke(body, null);
+                    var splineDataCacheUpdate = body.GetType().GetMethod("UpdateSplineRollOverrideCache",
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (splineDataCacheUpdate != null)
+                    {
+                        splineDataCacheUpdate.Invoke(body, null);
+                    }
                 }
             }
         }
