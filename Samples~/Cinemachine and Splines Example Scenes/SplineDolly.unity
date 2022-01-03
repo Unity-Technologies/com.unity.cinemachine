@@ -425,47 +425,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abf569f42d7a643f7ba1df049c9bd877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Track: {fileID: 214315827}
-  m_UpdateMethod: 0
-  m_Position: 0
-  m_PositionUnit: 0
-  m_DefaultSpeed: 2.5
-  m_SpeedOverride:
-    m_IndexUnit: 2
-    m_DataPoints: []
-  m_DefaultTilt: {x: 0, y: 1, z: 0}
-  m_TiltOverride:
+  track: {fileID: 214315827}
+  updateMethod: 0
+  position: 0.18
+  positionUnit: 0
+  defaultSpeed: 1
+  speedOverride:
     m_IndexUnit: 2
     m_DataPoints:
-    - m_Index: 0.10539585
-      m_Value:
-        x: 0
-        y: 1
-        z: 0
-    - m_Index: 0.47827908
-      m_Value:
-        x: -1
-        y: 0
-        z: 0
-    - m_Index: 0.9323677
-      m_Value:
-        x: 0
-        y: -1
-        z: 0
-    - m_Index: 1.4438343
-      m_Value:
-        x: 1
-        y: 0
-        z: 0
-    - m_Index: 1.9339501
-      m_Value:
-        x: 0
-        y: 1
-        z: 0
-  m_DefaultOffset: 0
-  m_OffsetOverride:
+    - m_Index: 0
+      m_Value: 1
+    - m_Index: 4
+      m_Value: 1
+    - m_Index: 4.5
+      m_Value: 5
+    - m_Index: 5
+      m_Value: 8
+    - m_Index: 5.5
+      m_Value: 5
+    - m_Index: 6
+      m_Value: 1
+  rollOverride:
     m_IndexUnit: 2
-    m_DataPoints: []
+    m_DataPoints:
+    - m_Index: 0
+      m_Value: 0
+    - m_Index: 0.25
+      m_Value: 90
+    - m_Index: 0.5
+      m_Value: 180
+    - m_Index: 0.75
+      m_Value: 270
+    - m_Index: 1
+      m_Value: 360
+    - m_Index: 2
+      m_Value: 720
+    - m_Index: 3
+      m_Value: 0
+    - m_Index: 4
+      m_Value: 105.10925
+    - m_Index: 5
+      m_Value: -90
+    - m_Index: 6
+      m_Value: 0
+  defaultOffset: 0
+  offsetOverride:
+    m_IndexUnit: 2
+    m_DataPoints:
+    - m_Index: 4
+      m_Value: 0
+    - m_Index: 5
+      m_Value: 1
+    - m_Index: 6
+      m_Value: 0
 --- !u!4 &859386659
 Transform:
   m_ObjectHideFlags: 0
@@ -473,8 +485,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 859386657}
-  m_LocalRotation: {x: 0.03813262, y: -0.8623983, z: -0.000000011069776, w: 0.5047921}
-  m_LocalPosition: {x: -2.35, y: 2, z: 2}
+  m_LocalRotation: {x: 0.05363862, y: 0.8727126, z: -0.057217993, w: -0.48189384}
+  m_LocalPosition: {x: -2.5056238, y: 1.9921575, z: 1.9077129}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -515,7 +527,7 @@ MonoBehaviour:
     m_EditModeType: 1
     m_Knots:
     - Position:
-        x: -8
+        x: -9
         y: 0
         z: -5
       TangentIn:
@@ -560,7 +572,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 952674339}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1.57, y: 1.14, z: 1.14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -614,9 +626,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Track: {fileID: 952674340}
-  m_PathPosition: 0
+  m_PathPosition: 0.47
   m_PositionUnits: 2
-  m_PathOffset: {x: 0, y: 3, z: 0}
+  m_PathOffset: {x: 0, y: 1, z: 0}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 1
@@ -731,8 +743,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1036175981}
-  m_LocalRotation: {x: 0.0521679, y: 0.33254382, z: -0.018426748, w: 0.9414636}
-  m_LocalPosition: {x: -8, y: 3, z: -5}
+  m_LocalRotation: {x: -0.06598833, y: -0.21090081, z: -0.014271302, w: 0.9751732}
+  m_LocalPosition: {x: 0.5597341, y: 0.9835651, z: -4.8476887}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -821,7 +833,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414898694}
-  m_LocalRotation: {x: -0.03813262, y: 0.8623983, z: 0.000000011069776, w: 0.5047921}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
@@ -878,7 +890,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414898694}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1483186208
 GameObject:
   m_ObjectHideFlags: 0
@@ -1020,7 +1032,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.102757, y: 1}
+    m_SensorSize: {x: 2.3510895, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1036,8 +1048,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634770345}
-  m_LocalRotation: {x: 0.0521679, y: 0.33254382, z: -0.018426748, w: 0.9414636}
-  m_LocalPosition: {x: -8, y: 3, z: -5}
+  m_LocalRotation: {x: -0.06598833, y: -0.21090081, z: -0.014271302, w: 0.9751732}
+  m_LocalPosition: {x: 0.5597341, y: 0.9835651, z: -4.8476887}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1054,24 +1066,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1634770345}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21bd57292e0b743df95303eb2542c1a3, type: 3}
+  m_Script: {fileID: 11500000, guid: b4c2fd12e52bd43d090cc96971c745a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpOverride:
+  RollOverride:
     m_IndexUnit: 2
     m_DataPoints:
-    - m_Index: 0
-      m_Value:
-        x: 0
-        y: 1
-        z: 0
-    - m_Index: 0.5
-      m_Value:
-        x: -0.31341907
-        y: 0.94961494
-        z: 0
-    - m_Index: 1
-      m_Value:
-        x: 0
-        y: 1
-        z: 0
+    - m_Index: 0.2
+      m_Value: 180
+    - m_Index: 0.8
+      m_Value: 0
