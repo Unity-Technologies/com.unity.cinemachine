@@ -48,39 +48,20 @@ namespace Cinemachine
             + "be offset from the path itself (as if on a tripod, for example).")]
         public Vector3 m_PathOffset = Vector3.zero;
 
-        /// <summary>How aggressively the camera tries to maintain the offset perpendicular to the path.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the target's
-        /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain its position in a direction "
-            + "perpendicular to the path.  Small numbers are more responsive, rapidly translating "
-            + "the camera to keep the target's x-axis offset.  Larger numbers give a more heavy "
-            + "slowly responding camera. Using different settings per axis can yield a wide range "
-            + "of camera behaviors.")]
-        public float m_XDamping = 0f;
-
-        /// <summary>How aggressively the camera tries to maintain the offset in the path-local up direction.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the target's
-        /// y-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain its position in the path-local up direction.  "
-            + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
-            + "y-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different "
-            + "settings per axis can yield a wide range of camera behaviors.")]
-        public float m_YDamping = 0f;
-
-        /// <summary>How aggressively the camera tries to maintain the offset parallel to the path.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the
-        /// target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain its position in a direction parallel to the path.  "
-            + "Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  "
-            + "Larger numbers give a more heavy slowly responding camera. Using different settings per axis "
-            + "can yield a wide range of camera behaviors.")]
-        public float m_ZDamping = 1f;
+        /// <summary>How aggressively the camera tries to maintain the offset along the x, y, or z directions in path local space.
+        /// Meaning:
+        /// - x represents the axis that is perpendicular to the path.
+        /// - y represents the axis that is defined by the path-local up direction.
+        /// - z represents the axis that is parallel to the path.
+        /// Smaller numbers are more responsive. Larger numbers give a more heavy, slowly responding camera.
+        /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
+        [Tooltip("How aggressively the camera tries to maintain the offset along the x, y, or z directions in path local space. \n" +
+            "- x represents the axis that is perpendicular to the path. \n" +
+            "- y represents the axis that is defined by the path-local up direction. \n" +
+            "- z represents the axis that is parallel to the path. \n" +
+            "Smaller numbers are more responsive, larger numbers give a more heavy, slowly responding camera. " +
+            "Using different settings per axis can yield a wide range of camera behaviors.")]
+        public Vector3 m_Damping = Vector3.zero;
 
         /// <summary>Different ways to set the camera's up vector</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -194,7 +175,7 @@ namespace Cinemachine
         public override float GetMaxDampTime() 
         { 
             var d2 = AngularDamping;
-            var a = Mathf.Max(m_XDamping, Mathf.Max(m_YDamping, m_ZDamping)); 
+            var a = Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)); 
             var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
             return Mathf.Max(a, b); 
         }
@@ -221,6 +202,10 @@ namespace Cinemachine
                 m_TrackCache = m_Track;
                 m_Track.Spline.changed += onSplineChanged;
             }
+
+            m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
+            m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
+            m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
         }
 
         void UpdateSplineRollOverrideCache()
@@ -314,7 +299,7 @@ namespace Cinemachine
 
                 // Apply damping along the path direction
                 float offset = m_PreviousNormalizedPathPosition - newPathPosition;
-                offset = Damper.Damp(offset, m_ZDamping, deltaTime);
+                offset = Damper.Damp(offset, m_Damping.z, deltaTime);
                 newPathPosition = m_PreviousNormalizedPathPosition - offset;
             }
             m_PreviousNormalizedPathPosition = newPathPosition;
@@ -348,15 +333,14 @@ namespace Cinemachine
                 Vector3 delta = (currentCameraPos - newCameraPos);
                 Vector3 delta1 = Vector3.Dot(delta, offsetY) * offsetY;
                 Vector3 delta0 = delta - delta1;
-                delta0 = Damper.Damp(delta0, m_XDamping, deltaTime);
-                delta1 = Damper.Damp(delta1, m_YDamping, deltaTime);
+                delta0 = Damper.Damp(delta0, m_Damping.x, deltaTime);
+                delta1 = Damper.Damp(delta1, m_Damping.y, deltaTime);
                 newCameraPos = currentCameraPos - (delta0 + delta1);
             }
             curState.RawPosition = m_PreviousCameraPosition = newCameraPos;
 
             // Set the orientation and up
-            Quaternion newOrientation
-                = GetCameraOrientationAtPathPoint(newPathOrientation, curState.ReferenceUp);
+            Quaternion newOrientation = GetCameraOrientationAtPathPoint(newPathOrientation, curState.ReferenceUp);
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 Vector3 relative = (Quaternion.Inverse(m_PreviousOrientation)
