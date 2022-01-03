@@ -331,7 +331,6 @@ namespace Cinemachine
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
                 var rollRotation = Quaternion.AngleAxis(-roll, localTangent);
                 newPathOrientation = Quaternion.LookRotation(localTangent, rollRotation * localUp);
-                //Debug.Log("Quaternion"+rollRotation+" Quaternion"+newPathOrientation);
             }
 
             // Apply the offset to get the new camera position
