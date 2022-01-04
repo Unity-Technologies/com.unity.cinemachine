@@ -28,7 +28,7 @@ namespace Tests.Runtime
             m_Dolly = m_vcam.AddCinemachineComponent<CinemachineSplineDolly>();
             m_vcam.AddCinemachineComponent<CinemachineComposer>();
             m_Dolly.m_Track = m_SplineContainer;
-            m_Dolly.m_ZDamping = 0;
+            m_Dolly.m_Damping = Vector3.zero;
         }
 
         [UnityTest]
@@ -145,7 +145,6 @@ namespace Tests.Runtime
             yield return null;
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(m_vcam.State.FinalPosition, new Vector3(7, 1, -2.5f)), 0, 0.1f);
         }
-
     }
 }
 #endif
