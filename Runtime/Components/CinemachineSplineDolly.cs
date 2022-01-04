@@ -33,19 +33,22 @@ namespace Cinemachine
             + "according to the Position Units setting.")]
         public float m_PathPosition;
 
-        /// <summary>How to interpret the Path Position</summary>
+        /// <summary>How to interpret the Path Position:
+        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
+        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
+        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
+        /// interpolation between the specific knot index and the next knot."</summary>
         [Tooltip("How to interpret the Path Position:\n"+
             "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"+
             "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"+
-            "- Knot: Values are defined by knot indices and a fractional value representing the"+
-            "normalized interpolation between the specific knot index and the next knot.\n")]
+            "- Knot: Values are defined by knot indices and a fractional value representing the normalized " +
+            "interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit m_PositionUnits = PathIndexUnit.Normalized;
 
         /// <summary>Where to put the camera realtive to the path postion.  X is perpendicular 
         /// to the path, Y is up, and Z is parallel to the path.</summary>
         [Tooltip("Where to put the camera relative to the path position.  X is perpendicular "
-            + "to the path, Y is up, and Z is parallel to the path.  This allows the camera to "
-            + "be offset from the path itself (as if on a tripod, for example).")]
+            + "to the path, Y is up, and Z is parallel to the path.")]
         public Vector3 m_PathOffset = Vector3.zero;
 
         /// <summary>How aggressively the camera tries to maintain the offset along the x, y, or z directions in path local space.
@@ -84,26 +87,11 @@ namespace Cinemachine
             + "the camera Aim behaviours will always try to respect the Up direction.")]
         public CameraUpMode m_CameraUp = CameraUpMode.Default;
 
-        /// <summary>"How aggressively the camera tries to track the target rotation's X angle.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are "
-            + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float m_PitchDamping = 0;
-
-        /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are "
-            + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float m_YawDamping = 0;
-
-        /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers "
-            + "are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float m_RollDamping = 0f;
+        /// <summary>
+        /// How aggressively the camera tries to track the target rotation (x: Pitch, y: Yaw, z: Roll).
+        /// Smaller numbers are more responsive. Larger numbers give a more heavy, slowly responding camera.</summary>
+        /// </summary>
+        public Vector3 m_RotationDamping = Vector3.zero;
 
         /// <summary>Controls how automatic dollying occurs</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -123,12 +111,12 @@ namespace Cinemachine
             /// <summary>
             /// Affects how many segments to split a spline (Track) into when calculating the nearest point.
             /// Higher values mean smaller and more segments, which increases accuracy at the cost of processing time.
-            /// In most cases, the default resolution is appropriate. Use with <seealso cref="m_SearchIteration"/> to fine tune point accuracy.
+            /// In most cases, the default resolution is appropriate. Use with <seealso cref="m_SearchIteration"/> to fine-tune point accuracy.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
             [Tooltip("Affects how many segments to split a spline (Track) into when calculating the nearest point." +
                 "Higher values mean smaller and more segments, which increases accuracy at the cost of processing time. " +
-                "In most cases, the default value (4) is appropriate. Use with SearchIteration to fine tune point accuracy.")]
+                "In most cases, the default value (4) is appropriate. Use with SearchIteration to fine-tune point accuracy.")]
             public int m_SearchResolution;
 
             /// <summary>
@@ -206,6 +194,9 @@ namespace Cinemachine
             m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
             m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
             m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
+            m_RotationDamping.x = Mathf.Clamp(m_RotationDamping.x, 0, 20);
+            m_RotationDamping.y = Mathf.Clamp(m_RotationDamping.y, 0, 20);
+            m_RotationDamping.z = Mathf.Clamp(m_RotationDamping.z, 0, 20);
         }
 
         void UpdateSplineRollOverrideCache()
@@ -383,7 +374,6 @@ namespace Cinemachine
             return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
         }
 
-        // TODO: KGB - I don't see the use of this. I'd delete this, and related.
         Vector3 AngularDamping
         {
             get
@@ -392,11 +382,11 @@ namespace Cinemachine
                 {
                     case CameraUpMode.PathNoRoll:
                     case CameraUpMode.FollowTargetNoRoll:
-                        return new Vector3(m_PitchDamping, m_YawDamping, 0);
+                        return new Vector3(m_RotationDamping.x, m_RotationDamping.y, 0);
                     case CameraUpMode.Default:
                         return Vector3.zero;
                     default:
-                        return new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping);
+                        return new Vector3(m_RotationDamping.x, m_RotationDamping.y, m_RotationDamping.z);
                 }
             }
         }

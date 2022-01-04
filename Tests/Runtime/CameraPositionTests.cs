@@ -84,7 +84,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator TrackedDolly()
         {
+#pragma warning disable 618 // disable obsolete warning
             m_Vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
+#pragma warning restore 618
             m_Vcam.Follow = m_FollowObject.transform;
             var oldPos = m_Vcam.transform.position;
             m_FollowObject.transform.position += new Vector3(2, 2, 2);

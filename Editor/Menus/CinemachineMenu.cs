@@ -113,7 +113,9 @@ namespace Cinemachine.Editor
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
+#pragma warning disable 618 // disable obsolete warning
             AddCinemachineComponent<CinemachineTrackedDolly>(vcam).m_Path = path;
+#pragma warning restore 618
 #endif
         }
 

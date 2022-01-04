@@ -18,7 +18,6 @@ namespace Cinemachine.Editor
     class RollHandle : SplineDataHandle<float>
     {
         static float s_DisplaySpace = 0.5f;
-        
         static List<Vector3> s_LineSegments = new List<Vector3>();
         
         /// <summary>
