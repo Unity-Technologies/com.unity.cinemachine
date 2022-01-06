@@ -2,7 +2,7 @@
 
 The Cinemachine Handle toolbar is a group of 3D controls that allow you to manipulate virtual camera parameters visually in the Scene view. You can use the handle tools to interactively adjust the selected object's parameters quickly and efficiently rather than controlling them via the inspector.
 
-The toolbar automatically appears in the Scene view **toolbar** Overlay when you select a type of camera with an associated handle.
+The toolbar automatically appears in the Scene view **toolbar** Overlay when you select a type of virtual camera with an associated handle.
 
 ![scene-view](images/scene-view.png)
 
