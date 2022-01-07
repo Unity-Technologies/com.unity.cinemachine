@@ -17,51 +17,6 @@ namespace Cinemachine.Editor
     [CustomSplineDataHandle(typeof(RollHandleAttribute))]
     class RollHandle : SplineDataHandle<float>
     {
-        static float s_DisplaySpace = 0.5f;
-        static List<Vector3> s_LineSegments = new List<Vector3>();
-        
-        /// <summary>
-        /// Draws up vectors along the spline indicating roll.
-        /// </summary>
-        public override void DrawSplineData(
-            SplineData<float> splineData,
-            Spline spline,
-            Matrix4x4 localToWorld,
-            Color color)
-        {
-            s_LineSegments.Clear();
-            using (var nativeSpline = new NativeSpline(spline))
-            {
-                if(GUIUtility.hotControl == 0 || controlIDs.Contains(GUIUtility.hotControl))
-                {
-                    var currentOffset = s_DisplaySpace;
-                    while (currentOffset < nativeSpline.GetLength())
-                    {
-                        var t = currentOffset / nativeSpline.GetLength();
-                        nativeSpline.Evaluate(t, out float3 position, out float3 direction, out float3 up);
-                        var roll = splineData.Evaluate(nativeSpline, t, PathIndexUnit.Normalized,
-                            new UnityEngine.Splines.Interpolators.LerpFloat());
-
-                        Matrix4x4 localMatrix = Matrix4x4.identity;
-                        var rollRotation = Quaternion.AngleAxis(-roll, direction);
-                        var rolledUp = rollRotation * up;
-                        localMatrix.SetTRS(position, Quaternion.LookRotation(direction, rolledUp), Vector3.one);
-                        var currentPosition = localMatrix.GetPosition();
-                        s_LineSegments.Add(localToWorld.MultiplyPoint(currentPosition));
-                        s_LineSegments.Add(localToWorld.MultiplyPoint(localMatrix.MultiplyPoint(up)));
-                        
-                        currentOffset += s_DisplaySpace;
-                    }
-                }
-                
-                if(!(controlIDs.Contains(HandleUtility.nearestControl) || controlIDs.Contains(GUIUtility.hotControl)))
-                    color.a = 0.33f;
-                
-                using(new Handles.DrawingScope(color))
-                    Handles.DrawLines(s_LineSegments.ToArray());    
-            }
-        }
-
         // inverse pre-calculation optimization
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
