@@ -803,7 +803,7 @@ MonoBehaviour:
     affect all vcams that read that SplineContainer. \n- When CinemachineSplineRollExtension
     script is attached to a vcam, then it will only affect that one vcam locally.
     In this case, the vcam will ignore CinemachineSplineRollExtension attached directly
-    to the Spline."
+    to the Spline.\n\nYou can turn on Gizmos for the Game View to visualize the splines."
 --- !u!1 &1414898694
 GameObject:
   m_ObjectHideFlags: 0
@@ -1028,7 +1028,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.2553763, y: 1}
+    m_SensorSize: {x: 2.484456, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

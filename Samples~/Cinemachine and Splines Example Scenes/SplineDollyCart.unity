@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44407046, g: 0.49331486, b: 0.57238823, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -169,7 +169,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.3510895, y: 1}
+    m_SensorSize: {x: 2.484456, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -464,7 +464,11 @@ MonoBehaviour:
     place a vcam in it.
 
     Notice, that the dolly carts are moving with different
-    speeds along the Spline. This is achieved using their local Speed overrides.'
+    speeds along the Spline. This is achieved using their local Speed overrides.
+
+
+    You
+    can turn on Gizmos for the Game View to visualize the splines.'
 --- !u!1 &515081412
 GameObject:
   m_ObjectHideFlags: 3
@@ -1302,7 +1306,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1456349641}
-  m_LocalRotation: {x: -0.22513475, y: -0.15972921, z: -0.11809505, w: 0.95386297}
+  m_LocalRotation: {x: -0.2494297, y: -0.11825345, z: 0.049161956, w: 0.9598875}
   m_LocalPosition: {x: 13.538692, y: 2.7929459, z: 8.314803}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1535,7 +1539,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1708967602}
-  m_LocalRotation: {x: -0.17932421, y: -0.10945227, z: -0.066287525, w: 0.97543275}
+  m_LocalRotation: {x: -0.18906885, y: -0.09159663, z: 0.028358066, w: 0.97727114}
   m_LocalPosition: {x: 14.432953, y: 1.1050591, z: 4.803461}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
