@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44407046, g: 0.49331486, b: 0.57238823, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -540,10 +540,10 @@ MonoBehaviour:
         z: 0
       Rotation:
         value:
-          x: 0
-          y: 0
-          z: 0
-          w: 1
+          x: -0.104190126
+          y: 0.831675
+          z: -0.5445264
+          w: 0.03085524
     - Position:
         x: 8
         y: 0
@@ -558,11 +558,11 @@ MonoBehaviour:
         z: 0
       Rotation:
         value:
-          x: 0
-          y: 0
-          z: 0
-          w: 1
-    m_Length: 16
+          x: 0.21538998
+          y: 0.7168698
+          z: 0.6069371
+          w: -0.26708108
+    m_Length: 17
     m_Closed: 0
 --- !u!4 &952674341
 Transform:
@@ -626,18 +626,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Track: {fileID: 952674340}
-  m_PathPosition: 0.38209614
+  m_PathPosition: 0.29
   m_PositionUnits: 2
   m_PathOffset: {x: 0, y: 1, z: 0}
-  m_XDamping: 0
-  m_YDamping: 0
-  m_ZDamping: 1
+  m_Damping: {x: 0, y: 0, z: 0}
   m_CameraUp: 0
-  m_PitchDamping: 0
-  m_YawDamping: 0
-  m_RollDamping: 0
+  m_RotationDamping: {x: 0, y: 0, z: 0}
   m_AutoDolly:
-    m_Enabled: 1
+    m_Enabled: 0
     m_PositionOffset: 0
     m_SearchResolution: 4
     m_SearchIteration: 2
@@ -743,8 +739,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1036175981}
-  m_LocalRotation: {x: -0.02593689, y: 0.000009454508, z: 0.00000024530308, w: 0.9996636}
-  m_LocalPosition: {x: -2.5057697, y: 1.5916017, z: -5.8062305}
+  m_LocalRotation: {x: 0.00047961556, y: 0.11209352, z: -0.000054102777, w: 0.9936976}
+  m_LocalPosition: {x: -4.0736938, y: 1.9989522, z: -4.9542336}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1032,7 +1028,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.3510895, y: 1}
+    m_SensorSize: {x: 2.2553763, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1048,8 +1044,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634770345}
-  m_LocalRotation: {x: -0.02593689, y: 0.000009454508, z: 0.00000024530308, w: 0.9996636}
-  m_LocalPosition: {x: -2.5057697, y: 1.5916017, z: -5.8062305}
+  m_LocalRotation: {x: 0.00047961556, y: 0.11209352, z: -0.000054102777, w: 0.9936976}
+  m_LocalPosition: {x: -4.0736938, y: 1.9989522, z: -4.9542336}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1073,6 +1069,6 @@ MonoBehaviour:
     m_IndexUnit: 2
     m_DataPoints:
     - m_Index: 0.3
-      m_Value: 80
+      m_Value: -21.921793
     - m_Index: 0.8
-      m_Value: -80
+      m_Value: 4.335217
