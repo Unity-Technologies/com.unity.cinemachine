@@ -109,7 +109,7 @@ namespace Cinemachine.Editor
             splineContainer.Spline.EditType = SplineType.CatmullRom;
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
-            AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Track = splineContainer;
+            AddCinemachineComponent<CinemachineSplineDolly>(vcam).m_Spline = splineContainer;
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);

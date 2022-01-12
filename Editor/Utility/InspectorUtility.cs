@@ -118,16 +118,15 @@ namespace Cinemachine.Editor
         public static string NicifyClassName(Type type)
         {
             var name = type.Name;
-            var attribute = type.GetCustomAttribute<ObsoleteAttribute>();
-            if (attribute != null)
-            {
-                name += " (Obsolete)";
-            }
-            
             if (name.StartsWith("Cinemachine"))
                 name = name.Substring(11); // Trim the prefix
             
-            return ObjectNames.NicifyVariableName(name);
+            name = ObjectNames.NicifyVariableName(name);
+            
+            if (type.GetCustomAttribute<ObsoleteAttribute>() != null) 
+                name += " (Obsolete)";
+
+            return name;
         }
 
         /// <summary>
