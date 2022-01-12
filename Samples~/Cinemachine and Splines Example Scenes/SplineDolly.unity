@@ -425,7 +425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abf569f42d7a643f7ba1df049c9bd877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  track: {fileID: 214315827}
+  m_Spline: {fileID: 214315827}
   updateMethod: 0
   position: 0.18
   positionUnit: 0
