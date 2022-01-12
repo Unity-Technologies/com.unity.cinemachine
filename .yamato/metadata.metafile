@@ -17,22 +17,26 @@ all_configurations:
     editors: [2019.4, 2020.3, 2021.2, trunk]
     platforms: [windows, macOS, ubuntu]
     args: --type package-tests
+    promotion: 0
   - name: isolation_tests
     editors: [2019.4, 2020.3, 2021.2, trunk]
     platforms: [windows, macOS, ubuntu]
     args: --type package-tests --enable-load-and-test-isolation
+    promotion: 0
   - name: coverage
     editors: [trunk]
     platforms: [windows]
     args: --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Cinemachine,+com.unity.cinemachine.editor'
+    promotion: 0
   - name: promotion_tests
     editors: [2019.4, 2020.3, 2021.2, trunk]
     platforms: [windows, macOS, ubuntu]
-    args: --type vetting-tests --platform editmode
+    args: --type promotion-audit --platform editmode
+    promotion: 1
 
 test_configurations: [integration_tests, isolation_tests, coverage]
 test_platforms: [ubuntu]
-publish_configurations: [integration_tests, isolation_tests, promotion_tests]
+publish_configurations: [integration_tests, isolation_tests, vetting_tests]
 publish_platforms: [windows, macOS, ubuntu]
 promote_configurations: [promotion_tests]
 promote_platforms: [windows]

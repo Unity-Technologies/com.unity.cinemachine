@@ -13,6 +13,7 @@ test_{{ config.name }}_{{ platform.name }}_{{ editor }}:
   {% if platform.name == "centos" %}
   variables:
     DISPLAY: ":0"
+    UPMCI_PROMOTION: {{ config.promotion }}
   {% endif %}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm

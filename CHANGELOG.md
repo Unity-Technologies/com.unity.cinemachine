@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.9.0-pre.4] - 2022-01-11
+## [2.9.0-pre.5] - 2022-01-11
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
 - Regression fix: could not change the projection of the main camera if a CM virtual camera is active.
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
