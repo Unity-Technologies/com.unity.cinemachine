@@ -1,6 +1,5 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-
 promote:
   name: Promote to Production
   agent:
@@ -23,14 +22,14 @@ promote:
   dependencies:
     - .yamato/package-pack.yml#pack
     - .yamato/package-publish.yml#publish
-    {% for config_name in promote_configurations %}
-    {% for config in all_configurations %}
-    {% if config.name == config_name %}
-    {% for platform_name in promote_platforms %}
+    {% for test_name in all_configurations.promote.test_names %}
+    {% for test in all_tests %}
+    {% if test.name == test_name %}
+    {% for platform_name in all_configurations.promote.platform_names %}
     {% for platform in all_platforms %}
     {% if platform.name == platform_name %}
-    {% for editor in config.editors %}
-    - .yamato/package-test.yml#test_{{config.name}}_{{platform.name}}_{{editor}}
+    {% for editor in test.editors %}
+    - .yamato/package-test.yml#test_{{test.name}}_{{platform.name}}_{{editor}}
     {% endfor %}
     {% endif %}
     {% endfor %}

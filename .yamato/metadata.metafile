@@ -12,31 +12,36 @@ all_platforms:
     image: package-ci/ubuntu:stable
     flavor: b1.large
 
-all_configurations:
+all_tests:
   - name: integration_tests
-    editors: [2019.4, 2020.3, 2021.2, trunk]
-    platforms: [windows, macOS, ubuntu]
+    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type package-tests
-    promotion: 0
+    variables:
   - name: isolation_tests
-    editors: [2019.4, 2020.3, 2021.2, trunk]
-    platforms: [windows, macOS, ubuntu]
-    args: --type package-tests --enable-load-and-test-isolation
-    promotion: 0
+    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+    args: --type isolation-tests --enable-load-and-test-isolation
+    variables:
   - name: coverage
     editors: [trunk]
-    platforms: [windows]
     args: --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Cinemachine,+com.unity.cinemachine.editor'
-    promotion: 0
+    variables:
+  - name: vetting_tests
+    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+    args: --type vetting-tests --platform editmode
+    variables:
   - name: promotion_tests
-    editors: [2019.4, 2020.3, 2021.2, trunk]
-    platforms: [windows, macOS, ubuntu]
+    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type promotion-audit --platform editmode
-    promotion: 1
+    variables:
+     - "UPMCI_PROMOTION: 1"
 
-test_configurations: [integration_tests, isolation_tests, coverage]
-test_platforms: [ubuntu]
-publish_configurations: [integration_tests, isolation_tests, vetting_tests]
-publish_platforms: [windows, macOS, ubuntu]
-promote_configurations: [promotion_tests]
-promote_platforms: [windows]
+all_configurations:
+  ci:
+    test_names: [integration_tests, isolation_tests, coverage]
+    platform_names: [ubuntu]
+  publish:
+    test_names: [integration_tests, isolation_tests, vetting_tests]
+    platform_names: [windows, macOS, ubuntu]
+  promote:
+    test_names: [promotion_tests]
+    platform_names: [windows]

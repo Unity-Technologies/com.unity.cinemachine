@@ -1,3 +1,5 @@
+{% metadata_file .yamato/metadata.metafile %}
+---
 pack:
   name: Pack
   agent:
