@@ -15,7 +15,6 @@ namespace Cinemachine
     /// In Auto-Dolly mode, the Spline Position field is animated automatically every frame by finding
     /// the position on the spline that's closest to the virtual camera's Follow target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     public class CinemachineSplineDolly : CinemachineComponentBase
@@ -45,7 +44,7 @@ namespace Cinemachine
             "interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit m_PositionUnits = PathIndexUnit.Normalized;
 
-        /// <summary>Where to put the camera realtive to the spline postion.  X is perpendicular 
+        /// <summary>Where to put the camera relative to the spline postion.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
         [Tooltip("Where to put the camera relative to the spline position.  X is perpendicular "
             + "to the spline, Y is up, and Z is parallel to the spline.")]
@@ -67,7 +66,6 @@ namespace Cinemachine
         public Vector3 m_Damping = Vector3.zero;
 
         /// <summary>Different ways to set the camera's up vector</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum CameraUpMode
         {
             /// <summary>Leave the camera's up vector alone.  It will be set according to the Brain's WorldUp.</summary>
@@ -94,7 +92,6 @@ namespace Cinemachine
         public Vector3 m_RotationDamping = Vector3.zero;
 
         /// <summary>Controls how automatic dollying occurs</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct AutoDolly
         {
