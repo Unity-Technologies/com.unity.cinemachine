@@ -85,11 +85,12 @@ namespace Cinemachine
             + "the camera Aim behaviours will always try to respect the Up direction.")]
         public CameraUpMode m_CameraUp = CameraUpMode.Default;
 
-        /// <summary>
-        /// How aggressively the camera tries to track the target rotation (x: Pitch, y: Yaw, z: Roll).
-        /// Smaller numbers are more responsive. Larger numbers give a more heavy, slowly responding camera.</summary>
-        /// </summary>
-        public Vector3 m_RotationDamping = Vector3.zero;
+        /// <summary>How aggressively the camera tries to track the target's orientation.
+        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
+        [Range(0f, 20f)]
+        [Tooltip("How aggressively the camera tries to track the target's orientation.  "
+            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        public float m_AngularDamping = 0f;
 
         /// <summary>Controls how automatic dollying occurs</summary>
         [Serializable]
@@ -157,14 +158,9 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            var d2 = AngularDamping;
-            var a = Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)); 
-            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
-            return Mathf.Max(a, b); 
-        }
-        
+        public override float GetMaxDampTime() => 
+            Mathf.Max(Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)), m_AngularDamping);
+
         /// <summary>
         /// Subscribe to onSplineChanged if you'd like to react to changes to the Spline attached to this vcam.
         /// This action is invoked by the Spline's changed event when a spline property is modified. Available in editor only.
@@ -191,9 +187,7 @@ namespace Cinemachine
             m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
             m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
             m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
-            m_RotationDamping.x = Mathf.Clamp(m_RotationDamping.x, 0, 20);
-            m_RotationDamping.y = Mathf.Clamp(m_RotationDamping.y, 0, 20);
-            m_RotationDamping.z = Mathf.Clamp(m_RotationDamping.z, 0, 20);
+            m_AngularDamping = Mathf.Clamp(m_AngularDamping, 0, 20);
         }
 
         CinemachineSplineRollExtension m_RollExtension; // don't use this directly
@@ -329,7 +323,7 @@ namespace Cinemachine
                 for (int i = 0; i < 3; ++i)
                     if (relative[i] > 180)
                         relative[i] -= 360;
-                relative = Damper.Damp(relative, AngularDamping, deltaTime);
+                relative = Damper.Damp(relative, m_AngularDamping, deltaTime);
                 newOrientation = m_PreviousOrientation * Quaternion.Euler(relative);
             }
             m_PreviousOrientation = newOrientation;
@@ -358,23 +352,6 @@ namespace Cinemachine
                     break;
             }
             return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
-        }
-
-        Vector3 AngularDamping
-        {
-            get
-            {
-                switch (m_CameraUp)
-                {
-                    case CameraUpMode.SplineNoRoll:
-                    case CameraUpMode.FollowTargetNoRoll:
-                        return new Vector3(m_RotationDamping.x, m_RotationDamping.y, 0);
-                    case CameraUpMode.Default:
-                        return Vector3.zero;
-                    default:
-                        return new Vector3(m_RotationDamping.x, m_RotationDamping.y, m_RotationDamping.z);
-                }
-            }
         }
 
         float m_PreviousNormalizedSplinePosition = 0;
