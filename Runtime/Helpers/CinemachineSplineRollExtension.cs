@@ -19,11 +19,11 @@ namespace Cinemachine
     public class CinemachineSplineRollExtension : MonoBehaviour
     {
         /// <summary>
-        /// Roll (in angles) along the forward direction for specific location on the track.
+        /// Roll (in angles) around the forward direction for specific location on the track.
         /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
         /// Whem placed on a vcam, this is going to be a local override that only affects that vcam.
         /// </summary>
-        [Tooltip("Roll (in angles) along the forward direction for specific location on the track.\n" +
+        [Tooltip("Roll (in angles) around the forward direction for specific location on the track.\n" +
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
         [SplineRollHandle]
