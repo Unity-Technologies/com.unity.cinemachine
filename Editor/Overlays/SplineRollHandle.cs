@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
     /// the roll at those points.
     /// </summary>
     [CustomSplineDataHandle(typeof(SplineRollHandleAttribute))]
-    class RollHandle : SplineDataHandle<float>
+    class SplineRollHandle : SplineDataHandle<float>
     {
         // inverse pre-calculation optimization
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
