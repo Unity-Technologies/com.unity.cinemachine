@@ -12,9 +12,9 @@ namespace Cinemachine.Samples
     [DisallowMultipleComponent]
     public class SplineDollyCart : MonoBehaviour
     {
-        /// <summary>SplineContainer that contains the spline which defines the dolly track.</summary>
-        [Tooltip("SplineContainer that contains the spline which defines the dolly track.")]
-        public SplineContainer track;
+        /// <summary>SplineContainer that contains the spline on which to dolly.</summary>
+        [Tooltip("SplineContainer that contains the spline on which to dolly.")]
+        public SplineContainer m_Spline;
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
@@ -31,55 +31,52 @@ namespace Cinemachine.Samples
         [Tooltip("When to move the cart, if Velocity is non-zero")]
         public UpdateMethod updateMethod = UpdateMethod.Update;
 
-        /// <summary>The cart's current position on the path.</summary>
-        [Tooltip("The position along the path at which the cart will be placed.  This can be animated directly or, " +
+        /// <summary>The cart's current position on the spline.</summary>
+        [Tooltip("The position along the spline at which the cart will be placed.  This can be animated directly or, " +
             "if the velocity is non-zero, will be updated automatically.  \n" +
             "The value is interpreted according to the Position Units setting.")]
         public float position;
         
-        /// <summary>How to interpret the Path Position</summary>
-        [Tooltip("How to interpret the Path Position:\n"+
+        /// <summary>How to interpret the Spline Position</summary>
+        [Tooltip("How to interpret the position:\n"+
             "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"+
             "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"+
             "- Knot: Values are defined by knot indices and a fractional value representing the"+
             "normalized interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit positionUnit;
         
-        /// <summary>Default speed of the cart on the track.</summary>
-        [Tooltip("Default speed of the cart on the track. Unit is defined by PositionUnit.")]
+        /// <summary>Default speed of the cart on the spline.</summary>
+        [Tooltip("Default speed of the cart on the spline. Unit is defined by PositionUnit.")]
         public float defaultSpeed = 10f;
 
-        /// <summary>Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.</summary>
-        [Tooltip("Positive speed value overrides for specific positions on the track. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.")]
+        /// <summary>Positive speed value overrides for specific positions on the spline. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.</summary>
+        [Tooltip("Positive speed value overrides for specific positions on the spline. Values that are less than or equal to 0, are replaced with m_DefaultSpeed.")]
         [SpeedHandle(50f)]
         public SplineData<float> speedOverride;
 
         /// <summary>
-        /// Roll (in angles) along the forward direction for specific location on the track.
+        /// Roll (in angles) along the forward direction for specific location on the spline.
         /// </summary>
-        [Tooltip("Roll (in angles) along the forward direction for specific location on the track.")]
+        [Tooltip("Roll (in angles) along the forward direction for specific location on the spline.")]
         [SplineRollHandle]
         public SplineData<float> rollOverride;
 
-        /// <summary>Default offset of the cart on the track.</summary>
+        /// <summary>Default offset of the cart on the spline.</summary>
         public float defaultOffset = 0f;
         
-        /// <summary>Offset value overrides for specific location on the track. Could be useful for simulating a Jib Arm.</summary>
-        [Tooltip("Offset value overrides for specific location on the track. Could be useful for simulating a Jib Arm.")]
+        /// <summary>Offset value overrides for specific location on the spline. Could be useful for simulating a Jib Arm.</summary>
+        [Tooltip("Offset value overrides for specific location on the spline. Could be useful for simulating a Jib Arm.")]
         [DriftHandle]
         public SplineData<float> offsetOverride;
         
-        /// <summary>Override this if you'd like to react to spline changes. By default, in Editor only,
-        /// it warns the user when a change happens to the spline about a potentially affected vcam</summary>
-        protected virtual void OnChangeEvent()
-        {
-#if UNITY_EDITOR
-            Debug.Log("Spline ("+ track.gameObject.name +") used by "+ name +" has changed!");
-#endif
-        }
+        /// <summary>
+        /// Subscribe to onSplineChanged if you'd like to react to changes to the Spline attached to this vcam.
+        /// This action is invoked by the Spline's changed event when a spline property is modified. Available in editor only.
+        /// </summary>
+        public event Action onSplineChanged;
         
         bool m_Registered = false;
-        SplineContainer m_TrackCache;
+        SplineContainer m_SplineCache;
         void OnValidate()
         {
             if (speedOverride != null)
@@ -94,17 +91,17 @@ namespace Cinemachine.Samples
                     }
                 }
 
-            if (m_TrackCache != null)
+            if (m_SplineCache != null)
             {
-                m_TrackCache.Spline.changed -= OnChangeEvent;
-                m_TrackCache = track;
+                m_SplineCache.Spline.changed -= onSplineChanged;
+                m_SplineCache = m_Spline;
                 m_Registered = false;
             }
-            if (!m_Registered && track != null && track.Spline != null)
+            if (!m_Registered && m_Spline != null && m_Spline.Spline != null)
             {
                 m_Registered = true;
-                m_TrackCache = track;
-                track.Spline.changed += OnChangeEvent;
+                m_SplineCache = m_Spline;
+                m_Spline.Spline.changed += onSplineChanged;
             }
         }
 
@@ -130,18 +127,18 @@ namespace Cinemachine.Samples
         float m_NormalizedPosition;
         void CalculateCartPosition()
         {
-            if(track == null)
+            if(m_Spline == null)
                 return;
-            if (track.Spline.Count == 1)
+            if (m_Spline.Spline.Count == 1)
             {
                 position = 0;
-                transform.position = track.transform.TransformPoint(track.Spline[0].Position);
+                transform.position = m_Spline.transform.TransformPoint(m_Spline.Spline[0].Position);
                 return;
             }
             if (!Application.isPlaying) 
                 m_CurrentSpeed = 0;
 
-            var spline = track.Spline;
+            var spline = m_Spline.Spline;
             m_NormalizedPosition = spline.ConvertIndexUnit(position + m_CurrentSpeed * Time.deltaTime, positionUnit, PathIndexUnit.Normalized);
             m_NormalizedPosition = spline.Closed ? m_NormalizedPosition % 1f : Mathf.Clamp01(m_NormalizedPosition);
             
@@ -161,7 +158,7 @@ namespace Cinemachine.Samples
                     this.offsetOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, 
                         new UnityEngine.Splines.Interpolators.LerpFloat());
             
-            transform.position = track.transform.TransformPoint(posOnSplineLocal + offsetOverride * right);
+            transform.position = m_Spline.transform.TransformPoint(posOnSplineLocal + offsetOverride * right);
 
             var roll = 
                 (rollOverride == null  || rollOverride.Count == 0) ?
