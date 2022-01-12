@@ -169,7 +169,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.484456, y: 1}
+    m_SensorSize: {x: 2.490909, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -185,7 +185,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 280895651}
-  m_LocalRotation: {x: 0.08243472, y: -0.31947583, z: 0.027910342, w: 0.9435893}
+  m_LocalRotation: {x: 0.08240291, y: -0.31947684, z: 0.02789958, w: 0.9435921}
   m_LocalPosition: {x: 40, y: 8.6, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abf569f42d7a643f7ba1df049c9bd877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  track: {fileID: 1030080976}
+  track: {fileID: 901190886}
   updateMethod: 0
   position: 0
   positionUnit: 0
@@ -241,15 +241,7 @@ MonoBehaviour:
       m_Value: 10
   rollOverride:
     m_IndexUnit: 2
-    m_DataPoints:
-    - m_Index: 0
-      m_Value: 0
-    - m_Index: 1
-      m_Value: -45
-    - m_Index: 2
-      m_Value: -45
-    - m_Index: 3
-      m_Value: 0
+    m_DataPoints: []
   defaultOffset: 0
   offsetOverride:
     m_IndexUnit: 2
@@ -262,13 +254,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 406336971}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15, y: 0, z: 0}
+  m_LocalPosition: {x: 15, y: 0.0031006336, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 999246707}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &429919117
 GameObject:
@@ -320,7 +312,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 429919117}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14.47706, y: 1.0051279, z: 3.394278}
+  m_LocalPosition: {x: 14.477049, y: 1.008117, z: 3.394318}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -405,7 +397,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 486602760}
-  m_LocalRotation: {x: 0.08243472, y: -0.31947583, z: 0.027910342, w: 0.9435893}
+  m_LocalRotation: {x: 0.08240291, y: -0.31947684, z: 0.02789958, w: 0.9435921}
   m_LocalPosition: {x: 40, y: 8.6, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -665,6 +657,127 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 634555794}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &901190885
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 901190887}
+  - component: {fileID: 901190886}
+  m_Layer: 0
+  m_Name: Dolly Track Saddle for Carts
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &901190886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901190885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dab5c7d4c32e743048dfca98e2d5914f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Spline:
+    m_EditModeType: 0
+    m_Knots:
+    - Position:
+        x: 15
+        y: 0.0031006336
+        z: 0
+      TangentIn:
+        x: 0
+        y: 0
+        z: -10
+      TangentOut:
+        x: 0
+        y: 0
+        z: 10
+      Rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+    - Position:
+        x: 0
+        y: 20
+        z: 30
+      TangentIn:
+        x: 5
+        y: 0.00051677227
+        z: 0
+      TangentOut:
+        x: -5
+        y: -0.00051677227
+        z: 0
+      Rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+    - Position:
+        x: -15
+        y: 0
+        z: 0
+      TangentIn:
+        x: 0
+        y: 0
+        z: 10
+      TangentOut:
+        x: 0
+        y: 0
+        z: -10
+      Rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+    - Position:
+        x: 0
+        y: 20
+        z: -30
+      TangentIn:
+        x: -5
+        y: -0.00051677227
+        z: 0
+      TangentOut:
+        x: 5
+        y: 0.00051677227
+        z: 0
+      Rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+    m_Length: 162.16486
+    m_Closed: 1
+--- !u!4 &901190887
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901190885}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &999246706
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,127 +877,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 999246706}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1030080975
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1030080977}
-  - component: {fileID: 1030080976}
-  m_Layer: 0
-  m_Name: Dolly Track Saddle for Carts
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1030080976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1030080975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dab5c7d4c32e743048dfca98e2d5914f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Spline:
-    m_EditModeType: 0
-    m_Knots:
-    - Position:
-        x: 15
-        y: 0
-        z: 0
-      TangentIn:
-        x: 0
-        y: 0
-        z: -10
-      TangentOut:
-        x: 0
-        y: 0
-        z: 10
-      Rotation:
-        value:
-          x: 0
-          y: 0
-          z: 0
-          w: 1
-    - Position:
-        x: 0
-        y: 20
-        z: 30
-      TangentIn:
-        x: 5
-        y: 0
-        z: 0
-      TangentOut:
-        x: -5
-        y: 0
-        z: 0
-      Rotation:
-        value:
-          x: 0
-          y: 0
-          z: 0
-          w: 1
-    - Position:
-        x: -15
-        y: 0
-        z: 0
-      TangentIn:
-        x: 0
-        y: 0
-        z: 10
-      TangentOut:
-        x: 0
-        y: 0
-        z: -10
-      Rotation:
-        value:
-          x: 0
-          y: 0
-          z: 0
-          w: 1
-    - Position:
-        x: 0
-        y: 20
-        z: -30
-      TangentIn:
-        x: -5
-        y: 0
-        z: 0
-      TangentOut:
-        x: 5
-        y: 0
-        z: 0
-      Rotation:
-        value:
-          x: 0
-          y: 0
-          z: 0
-          w: 1
-    m_Length: 153.8821
-    m_Closed: 1
---- !u!4 &1030080977
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1030080975}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1103125260
 GameObject:
   m_ObjectHideFlags: 0
@@ -1268,7 +1260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abf569f42d7a643f7ba1df049c9bd877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  track: {fileID: 1030080976}
+  track: {fileID: 901190886}
   updateMethod: 0
   position: 9
   positionUnit: 0
@@ -1306,14 +1298,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1456349641}
-  m_LocalRotation: {x: -0.2494297, y: -0.11825345, z: 0.049161956, w: 0.9598875}
-  m_LocalPosition: {x: 13.538692, y: 2.7929459, z: 8.314803}
+  m_LocalRotation: {x: -0.2494052, y: -0.11825678, z: 0.04916919, w: 0.9598931}
+  m_LocalPosition: {x: 13.538658, y: 2.7957423, z: 8.314918}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2085000619}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1515133760
 GameObject:
@@ -1501,7 +1493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abf569f42d7a643f7ba1df049c9bd877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  track: {fileID: 1030080976}
+  track: {fileID: 901190886}
   updateMethod: 0
   position: 5
   positionUnit: 0
@@ -1539,14 +1531,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1708967602}
-  m_LocalRotation: {x: -0.18906885, y: -0.09159663, z: 0.028358066, w: 0.97727114}
-  m_LocalPosition: {x: 14.432953, y: 1.1050591, z: 4.803461}
+  m_LocalRotation: {x: -0.18904804, y: -0.091598175, z: 0.028362222, w: 0.9772749}
+  m_LocalPosition: {x: 14.432945, y: 1.1080292, z: 4.803495}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1103125261}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2085000618
 GameObject:

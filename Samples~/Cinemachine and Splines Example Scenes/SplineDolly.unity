@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 214315828}
   - component: {fileID: 214315827}
   m_Layer: 0
-  m_Name: Dolly Track for Target
+  m_Name: Dolly Track for Cart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -170,7 +170,7 @@ MonoBehaviour:
       Rotation:
         value:
           x: 0.03813262
-          y: -0.8623983
+          y: -0.86239845
           z: 0
           w: 0.5047921
     - Position:
@@ -196,73 +196,73 @@ MonoBehaviour:
         y: 0.5939616
         z: -1.0681368
       TangentIn:
-        x: -0.00000011829368
-        y: -0.000000065758826
+        x: -0
+        y: -0
         z: -1.6057646
       TangentOut:
-        x: 0.00000017038171
-        y: 0.00000009471429
+        x: 0
+        y: 0
         z: 2.312828
       Rotation:
         value:
-          x: -0.008778447
-          y: -0.06831104
-          z: 0.01741543
-          w: 0.9974734
+          x: -0.007584633
+          y: -0.06845385
+          z: -8.7519304e-11
+          w: 0.99762547
     - Position:
         x: 3.135199
         y: 0.7132592
         z: 0.3803141
       TangentIn:
-        x: -0.00000009469349
-        y: 0.000000028653115
+        x: -0
+        y: -0
         z: -3.400576
       TangentOut:
-        x: 0.000000021296747
-        y: -0.0000000064441408
+        x: 0
+        y: 0
         z: 0.7647961
       Rotation:
         value:
-          x: -0.0062657655
-          y: -0.020053789
-          z: 0.0039996244
-          w: 0.9997713
+          x: -0.006185486
+          y: -0.02007868
+          z: 0
+          w: 0.9997793
     - Position:
-        x: 0.5059667
-        y: 0.8959176
-        z: 1.1323906
+        x: 0.5059668
+        y: 1.4780848
+        z: 0.20512533
       TangentIn:
-        x: 0.00000010473974
-        y: -0.000000050614876
+        x: -0
+        y: -0
         z: -0.8960208
       TangentOut:
-        x: -0.000000100311105
-        y: 0.000000048474764
+        x: 0
+        y: 0
         z: 0.85813504
       Rotation:
         value:
-          x: -0.039320305
-          y: -0.35174942
-          z: 0.02077104
-          w: 0.9350374
+          x: -0.031498756
+          y: -0.35253602
+          z: 0
+          w: 0.935268
     - Position:
         x: 0.57726145
         y: 1
         z: 3.088179
       TangentIn:
-        x: 0.00000033599295
-        y: -0.00000007184574
-        z: -0.5267637
+        x: -0.00000016418858
+        y: 0.0000000010179111
+        z: -0.6581692
       TangentOut:
-        x: -0.000001482979
-        y: 0.00000031710704
-        z: 2.3249876
+        x: 0.00000057999694
+        y: -0.0000000035957757
+        z: 2.3249857
       Rotation:
         value:
-          x: 0.028429631
-          y: 0.69164586
-          z: -0.031823453
-          w: -0.7209751
+          x: 0.0013540733
+          y: -0.4469529
+          z: -7.203198e-10
+          w: 0.8945565
     - Position:
         x: -1.7666092
         y: 0.5
@@ -279,9 +279,9 @@ MonoBehaviour:
         value:
           x: 0.12104102
           y: 0.8777042
-          z: 0
+          z: -0.000000008488715
           w: -0.46366414
-    m_Length: 27.204163
+    m_Length: 28.62338
     m_Closed: 1
 --- !u!4 &214315828
 Transform:
@@ -394,7 +394,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &859386657
 GameObject:
@@ -435,15 +435,15 @@ MonoBehaviour:
     m_DataPoints:
     - m_Index: 0
       m_Value: 1
-    - m_Index: 4
+    - m_Index: 2
       m_Value: 1
-    - m_Index: 4.5
+    - m_Index: 2.5
       m_Value: 2
-    - m_Index: 5
+    - m_Index: 3
       m_Value: 4
-    - m_Index: 5.5
+    - m_Index: 3.5
       m_Value: 2
-    - m_Index: 6
+    - m_Index: 4
       m_Value: 1
   rollOverride:
     m_IndexUnit: 2
@@ -485,8 +485,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 859386657}
-  m_LocalRotation: {x: -0.13551863, y: 0.86379343, z: 0.04787803, w: -0.4829113}
-  m_LocalPosition: {x: -2.5056238, y: 1.9921575, z: 1.9077129}
+  m_LocalRotation: {x: -0.13551863, y: 0.86379355, z: 0.047878012, w: -0.48291114}
+  m_LocalPosition: {x: -2.5056238, y: 1.9921575, z: 1.9077128}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -505,7 +505,7 @@ GameObject:
   - component: {fileID: 952674341}
   - component: {fileID: 952674340}
   m_Layer: 0
-  m_Name: Vcam Dolly Track
+  m_Name: Dolly Track
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -524,45 +524,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Spline:
-    m_EditModeType: 1
+    m_EditModeType: 2
     m_Knots:
     - Position:
-        x: -9
+        x: -2.5
         y: 0
         z: -5
       TangentIn:
-        x: 0
+        x: -1.6666666
         y: 0
         z: 0
       TangentOut:
-        x: 0
+        x: 1.6666666
         y: 0
         z: 0
       Rotation:
         value:
-          x: -0.104190126
-          y: 0.831675
-          z: -0.5445264
-          w: 0.03085524
+          x: 0
+          y: 0
+          z: 0
+          w: 1
     - Position:
-        x: 8
+        x: 2.5
         y: 0
         z: -5
       TangentIn:
-        x: 0
+        x: -1.6666666
         y: 0
         z: 0
       TangentOut:
-        x: 0
+        x: 1.6666666
         y: 0
         z: 0
       Rotation:
         value:
-          x: 0.21538998
-          y: 0.7168698
-          z: 0.6069371
-          w: -0.26708108
-    m_Length: 17
+          x: 0
+          y: 0
+          z: 0
+          w: -1
+    m_Length: 4.500001
     m_Closed: 0
 --- !u!4 &952674341
 Transform:
@@ -577,7 +577,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1005597322
 GameObject:
@@ -625,15 +625,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90eebaab98e4b44b0ba8c79821e554e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Track: {fileID: 952674340}
-  m_PathPosition: 0.29
-  m_PositionUnits: 2
-  m_PathOffset: {x: 0, y: 1, z: 0}
+  m_Spline: {fileID: 952674340}
+  m_SplinePosition: -0.0012497389
+  m_PositionUnits: 1
+  m_SplineOffset: {x: 0, y: 1, z: 0}
   m_Damping: {x: 0, y: 0, z: 0}
-  m_CameraUp: 0
-  m_RotationDamping: {x: 0, y: 0, z: 0}
+  m_CameraUp: 3
+  m_AngularDamping: 0
   m_AutoDolly:
-    m_Enabled: 0
+    m_Enabled: 1
     m_PositionOffset: 0
     m_SearchResolution: 4
     m_SearchIteration: 2
@@ -739,8 +739,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1036175981}
-  m_LocalRotation: {x: 0.00047961556, y: 0.11209352, z: -0.000054102777, w: 0.9936976}
-  m_LocalPosition: {x: -4.0736938, y: 1.9989522, z: -4.9542336}
+  m_LocalRotation: {x: -0.02267344, y: 0.0018552713, z: 0.0975587, w: 0.9949697}
+  m_LocalPosition: {x: -2.5, y: 1.6427875, z: -5.7660446}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -803,7 +803,10 @@ MonoBehaviour:
     affect all vcams that read that SplineContainer. \n- When CinemachineSplineRollExtension
     script is attached to a vcam, then it will only affect that one vcam locally.
     In this case, the vcam will ignore CinemachineSplineRollExtension attached directly
-    to the Spline.\n\nYou can turn on Gizmos for the Game View to visualize the splines."
+    to the Spline.\n\nNotice, that the camera orientation matches the target's orientation.
+    This is enabled by the CinemachineSplineDolly component's CameraUp attribute.
+    See Spline Dolly Vcam gameobject.\n\nYou can turn on Gizmos for the Game View
+    to visualize the splines."
 --- !u!1 &1414898694
 GameObject:
   m_ObjectHideFlags: 0
@@ -993,7 +996,7 @@ GameObject:
   - component: {fileID: 1634770346}
   - component: {fileID: 1634770348}
   m_Layer: 0
-  m_Name: Spline Dolly Vcam
+  m_Name: Dolly Vcam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1028,7 +1031,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.484456, y: 1}
+    m_SensorSize: {x: 2.490909, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1044,14 +1047,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634770345}
-  m_LocalRotation: {x: 0.00047961556, y: 0.11209352, z: -0.000054102777, w: 0.9936976}
-  m_LocalPosition: {x: -4.0736938, y: 1.9989522, z: -4.9542336}
+  m_LocalRotation: {x: -0.02267344, y: 0.0018552713, z: 0.0975587, w: 0.9949697}
+  m_LocalPosition: {x: -2.5, y: 1.6427875, z: -5.7660446}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1005597323}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1634770348
 MonoBehaviour:
@@ -1062,13 +1065,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1634770345}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4c2fd12e52bd43d090cc96971c745a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 1aee109404ed3410ab86e2dbcc21c591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   RollOverride:
     m_IndexUnit: 2
     m_DataPoints:
-    - m_Index: 0.3
-      m_Value: -21.921793
-    - m_Index: 0.8
-      m_Value: 4.335217
+    - m_Index: 0.5
+      m_Value: 50

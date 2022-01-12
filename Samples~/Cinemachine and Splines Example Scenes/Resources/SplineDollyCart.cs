@@ -58,7 +58,7 @@ namespace Cinemachine.Samples
         /// Roll (in angles) along the forward direction for specific location on the track.
         /// </summary>
         [Tooltip("Roll (in angles) along the forward direction for specific location on the track.")]
-        [RollHandle]
+        [SplineRollHandle]
         public SplineData<float> rollOverride;
 
         /// <summary>Default offset of the cart on the track.</summary>
