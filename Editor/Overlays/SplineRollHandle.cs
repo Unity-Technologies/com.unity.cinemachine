@@ -20,6 +20,7 @@ namespace Cinemachine.Editor
         // inverse pre-calculation optimization
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
+        Matrix4x4 m_LocalMatrix;
         /// <summary>
         /// Handles for roll control: rotatable disc and an arrow indicating the up vector.
         /// </summary>
@@ -34,9 +35,9 @@ namespace Cinemachine.Editor
             if (direction == Vector3.zero)
                 return;
 
-            Matrix4x4 localMatrix = Matrix4x4.identity;
-            localMatrix.SetTRS(position, Quaternion.LookRotation(direction, upDirection), Vector3.one);
-            var matrix = Handles.matrix * localMatrix;
+            m_LocalMatrix = Matrix4x4.identity;
+            m_LocalMatrix.SetTRS(position, Quaternion.LookRotation(direction, upDirection), Vector3.one);
+            var matrix = Handles.matrix * m_LocalMatrix;
             using (new Handles.DrawingScope(matrix)) // use draw matrix, so we work in local space
             {
                 var rollData = splineData[dataPointIndex];
