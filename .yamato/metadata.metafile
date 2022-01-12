@@ -29,6 +29,7 @@ all_tests:
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type vetting-tests --platform editmode
     variables:
+     - "UPMCI_PROMOTION: 1"
   - name: promotion_tests
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type promotion-audit --platform editmode
@@ -43,5 +44,5 @@ all_configurations:
     test_names: [integration_tests, isolation_tests, vetting_tests]
     platform_names: [windows, macOS, ubuntu]
   promote:
-    test_names: [promotion_tests]
+    test_names: [promotion_tests, vetting_tests]
     platform_names: [windows]
