@@ -235,13 +235,13 @@ namespace Cinemachine
             }
             
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
-            m_SplinePosition = 
+            var normalizedSplinePosition = 
                 SplineUtility.ConvertIndexUnit(spline, m_SplinePosition, m_PositionUnits, PathIndexUnit.Normalized);
             
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
-                m_PreviousNormalizedSplinePosition = m_SplinePosition;
+                m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
                 m_PreviousCameraPosition = curState.RawPosition;
                 m_PreviousOrientation = curState.RawOrientation;
             }
@@ -251,19 +251,21 @@ namespace Cinemachine
             {
                 // convert follow target into spline local space, because SplineUtility works in spline local space
                 SplineUtility.GetNearestPoint(spline, 
-                    m_Spline.transform.InverseTransformPoint(FollowTargetPosition), out _, out m_SplinePosition, 
+                    m_Spline.transform.InverseTransformPoint(FollowTargetPosition), out _, out normalizedSplinePosition, 
                     m_AutoDolly.m_SearchResolution, m_AutoDolly.m_SearchIteration);
+                m_SplinePosition = SplineUtility.ConvertIndexUnit(spline, normalizedSplinePosition, 
+                    PathIndexUnit.Normalized, m_PositionUnits);
+                
                 // Apply the spline position offset
-                m_SplinePosition += m_AutoDolly.m_PositionOffset;
+                normalizedSplinePosition += m_AutoDolly.m_PositionOffset;
             }
-            float newSplinePosition = m_SplinePosition;
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 float maxUnit = 1; // we are always using normalized unit [0-1]
                 {
                     float prev = m_PreviousNormalizedSplinePosition;
-                    float next = newSplinePosition;
+                    float next = normalizedSplinePosition;
                     if (spline.Closed && Mathf.Abs(next - prev) > maxUnit / 2)
                     {
                         if (next > prev)
@@ -272,16 +274,16 @@ namespace Cinemachine
                             prev -= maxUnit;
                     }
                     m_PreviousNormalizedSplinePosition = prev;
-                    newSplinePosition = next;
+                    normalizedSplinePosition = next;
                 }
 
                 // Apply damping in the spline direction
-                float offset = m_PreviousNormalizedSplinePosition - newSplinePosition;
+                float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
                 offset = Damper.Damp(offset, m_Damping.z, deltaTime);
-                newSplinePosition = m_PreviousNormalizedSplinePosition - offset;
+                normalizedSplinePosition = m_PreviousNormalizedSplinePosition - offset;
             }
-            m_PreviousNormalizedSplinePosition = newSplinePosition;
-            m_Spline.Evaluate(newSplinePosition, 
+            m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
+            m_Spline.Evaluate(normalizedSplinePosition, 
                 out var localPosition, out var localTangent, out var localUp);
             Vector3 newCameraPos = localPosition;
             var newSplineOrientation = 
@@ -291,7 +293,7 @@ namespace Cinemachine
             var rollExt = rollExtension;
             if (rollExt != null && rollExt.enabled)
             {
-                float roll = rollExt.RollOverride.Evaluate(spline, newSplinePosition, 
+                float roll = rollExt.RollOverride.Evaluate(spline, normalizedSplinePosition, 
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
                 var rollRotation = Quaternion.AngleAxis(-roll, localTangent);
                 newSplineOrientation = Quaternion.LookRotation(localTangent, rollRotation * localUp);
@@ -335,10 +337,6 @@ namespace Cinemachine
             curState.RawOrientation = newOrientation;
             if (m_CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
-            
-            // convert unit back to user's preference
-            m_SplinePosition = 
-                SplineUtility.ConvertIndexUnit(spline, m_SplinePosition, PathIndexUnit.Normalized, m_PositionUnits);
         }
 
         Quaternion GetCameraOrientationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
