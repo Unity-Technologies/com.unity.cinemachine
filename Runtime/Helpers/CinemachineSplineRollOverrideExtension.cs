@@ -26,7 +26,7 @@ namespace Cinemachine
         [Tooltip("Roll (in angles) along the forward direction for specific location on the track.\n" +
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
-        [RollHandle]
+        [SplineRollHandle]
         public SplineData<float> RollOverride;
 
 #if UNITY_EDITOR
@@ -62,6 +62,6 @@ namespace Cinemachine
     }
     
     [AttributeUsage(AttributeTargets.Field)]
-    public class RollHandleAttribute : SplineDataHandleAttribute {}
+    public class SplineRollHandleAttribute : SplineDataHandleAttribute {}
 }
 #endif

@@ -14,7 +14,7 @@ namespace Cinemachine.Editor
     /// user to rotate the roll values in the scene view. It also draws up vectors along the spline indicating
     /// the roll at those points.
     /// </summary>
-    [CustomSplineDataHandle(typeof(RollHandleAttribute))]
+    [CustomSplineDataHandle(typeof(SplineRollHandleAttribute))]
     class RollHandle : SplineDataHandle<float>
     {
         // inverse pre-calculation optimization
