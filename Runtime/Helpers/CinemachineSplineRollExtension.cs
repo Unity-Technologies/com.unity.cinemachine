@@ -16,7 +16,7 @@ namespace Cinemachine
     /// </summary>
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
-    public class CinemachineSplineRollOverrideExtension : MonoBehaviour
+    public class CinemachineSplineRollExtension : MonoBehaviour
     {
         /// <summary>
         /// Roll (in angles) along the forward direction for specific location on the track.
@@ -50,11 +50,13 @@ namespace Cinemachine
                 var body = vcam.GetCinemachineComponent(CinemachineCore.Stage.Body);
                 if (body != null)
                 {
-                    var splineDataCacheUpdate = body.GetType().GetMethod("UpdateSplineRollOverrideCache",
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    if (splineDataCacheUpdate != null)
+                    var splineDolly = body as CinemachineSplineDolly;
+                    if (splineDolly != null)
                     {
-                        splineDataCacheUpdate.Invoke(body, null);
+                        splineDolly.rollExtension = this;
+#if UNITY_EDITOR
+                        splineContainer = splineDolly.m_Spline; // this is needed by the RollHandle to work in the scene view
+#endif
                     }
                 }
             }

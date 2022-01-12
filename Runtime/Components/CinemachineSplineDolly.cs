@@ -196,29 +196,19 @@ namespace Cinemachine
             m_RotationDamping.z = Mathf.Clamp(m_RotationDamping.z, 0, 20);
         }
 
-        void UpdateSplineRollOverrideCache()
+        CinemachineSplineRollExtension m_RollExtension; // don't use this directly
+        internal CinemachineSplineRollExtension rollExtension
         {
-            m_RollOverrideExtension = null;
-            // if vcam has an override, use that
-            if (transform.parent.TryGetComponent(out m_RollOverrideExtension))
+            private get
             {
-#if UNITY_EDITOR
-                m_RollOverrideExtension.splineContainer = m_Spline; // this is needed by the RollHandle to work in the scene view
-#endif
+                if (m_RollExtension == null)
+                    m_Spline.TryGetComponent(out m_RollExtension); // check if our spline has roll extension
+
+                return m_RollExtension;
             }
-            // else if the spline has an override, use that
-            else if (m_Spline.TryGetComponent(out m_RollOverrideExtension)) {}
-        }
-
-        CinemachineSplineRollOverrideExtension m_RollOverrideExtension; // don't use this directly
-        CinemachineSplineRollOverrideExtension RollOverrideExtension
-        {
-            get
+            set
             {
-                if(m_RollOverrideExtension == null)
-                    UpdateSplineRollOverrideCache();
-
-                return m_RollOverrideExtension;
+                m_RollExtension = value; // called by CinemachineSplineRollExtension
             }
         }
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
@@ -297,10 +287,11 @@ namespace Cinemachine
             var newSplineOrientation = 
                 Vector3.SqrMagnitude(localTangent) == 0 || Vector3.SqrMagnitude(localUp) == 0 ? 
                     Quaternion.identity : Quaternion.LookRotation(localTangent, localUp);
-            
-            if (RollOverrideExtension != null && RollOverrideExtension.enabled)
+
+            var rollExt = rollExtension;
+            if (rollExt != null && rollExt.enabled)
             {
-                float roll = RollOverrideExtension.RollOverride.Evaluate(spline, newSplinePosition, 
+                float roll = rollExt.RollOverride.Evaluate(spline, newSplinePosition, 
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
                 var rollRotation = Quaternion.AngleAxis(-roll, localTangent);
                 newSplineOrientation = Quaternion.LookRotation(localTangent, rollRotation * localUp);
