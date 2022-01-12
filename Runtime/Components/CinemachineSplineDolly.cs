@@ -167,7 +167,7 @@ namespace Cinemachine
         
         /// <summary>
         /// Subscribe to onSplineChanged if you'd like to react to changes to the Spline attached to this vcam.
-        /// This action is invoked by the Spline's changed event when a spline property is modified.
+        /// This action is invoked by the Spline's changed event when a spline property is modified. Available in editor only.
         /// </summary>
         public event Action onSplineChanged;
 
