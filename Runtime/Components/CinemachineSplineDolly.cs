@@ -50,6 +50,11 @@ namespace Cinemachine
             + "to the spline, Y is up, and Z is parallel to the spline.")]
         public Vector3 m_SplineOffset = Vector3.zero;
 
+        /// <summary>How to set the virtual camera's Up vector.  This will affect the screen composition.</summary>
+        [Tooltip("How to set the virtual camera's Up vector.  This will affect the screen composition, because "
+            + "the camera Aim behaviours will always try to respect the Up direction.")]
+        public CameraUpMode m_CameraUp = CameraUpMode.Default;
+        
         /// <summary>How aggressively the camera tries to maintain the offset along the x, y, or z directions in spline local space.
         /// Meaning:
         /// - x represents the axis that is perpendicular to the spline.
@@ -79,12 +84,7 @@ namespace Cinemachine
             /// <summary>Take the up vector from the Follow target's up vector, but with the roll zeroed out</summary>
             FollowTargetNoRoll,
         };
-
-        /// <summary>How to set the virtual camera's Up vector.  This will affect the screen composition.</summary>
-        [Tooltip("How to set the virtual camera's Up vector.  This will affect the screen composition, because "
-            + "the camera Aim behaviours will always try to respect the Up direction.")]
-        public CameraUpMode m_CameraUp = CameraUpMode.Default;
-
+        
         /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
@@ -112,6 +112,7 @@ namespace Cinemachine
             /// In most cases, the default resolution is appropriate. Use with <seealso cref="m_SearchIteration"/> to fine-tune point accuracy.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
+            [HideInInspector]
             [Tooltip("Affects how many segments to split a spline into when calculating the nearest point." +
                 "Higher values mean smaller and more segments, which increases accuracy at the cost of processing time. " +
                 "In most cases, the default value (4) is appropriate. Use with SearchIteration to fine-tune point accuracy.")]
@@ -124,6 +125,7 @@ namespace Cinemachine
             /// the default value is sufficient.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
+            [HideInInspector]
             [Tooltip("The nearest point is calculated by finding the nearest point on the entire length of the spline " +
                 "using SearchResolution to divide into equally spaced line segments. Successive iterations will then " +
                 "subdivide further the nearest segment, producing more accurate results. In most cases, the default value (2) is sufficient.")]
