@@ -17,9 +17,7 @@ namespace Cinemachine.Samples
     class DriftHandle  : SplineDataHandle<float>
     {
          const float k_HandleSize = 0.15f;
-         
          static float s_DisplaySpace = 0.2f;
-         
          static List<Vector3> s_LineSegments = new List<Vector3>();
          
          public override void DrawSplineData(
@@ -73,7 +71,6 @@ namespace Cinemachine.Samples
              
              using(new Handles.DrawingScope(color, localToWorld))
                  Handles.DrawLines(s_LineSegments.ToArray());
-             
          }
                   
          public override void DrawDataPoint(
