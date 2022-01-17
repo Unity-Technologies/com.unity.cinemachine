@@ -55,16 +55,22 @@ namespace Cinemachine
             + "the camera Aim behaviours will always try to respect the Up direction.")]
         public CameraUpMode m_CameraUp = CameraUpMode.Default;
         
-        /// <summary>How aggressively the camera tries to maintain the offset along the x, y, or z directions in spline local space.
+        /// <summary>How aggressively the camera tries to maintain the offset along
+        /// the x, y, or z directions in spline local space.
         /// Meaning:
-        /// - x represents the axis that is perpendicular to the spline. This may move the camera off the spline.
-        /// - y represents the axis that is defined by the spline-local up direction. This may move the camera off the spline.
+        /// - x represents the axis that is perpendicular to the spline. Use this to smooth out
+        /// imperfection in the path. This may move the camera off the spline.
+        /// - y represents the axis that is defined by the spline-local up direction. Use this to smooth out
+        /// imperfection in the path. This may move the camera off the spline.
         /// - z represents the axis that is parallel to the spline. This won't move the camera off the spline.
         /// Smaller numbers are more responsive. Larger numbers give a more heavy, slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
-        [Tooltip("How aggressively the camera tries to maintain the offset along the x, y, or z directions in spline local space. \n" +
-            "- x represents the axis that is perpendicular to the spline. This may move the camera off the spline.\n" +
-            "- y represents the axis that is defined by the spline-local up direction. This may move the camera off the spline.\n" +
+        [Tooltip("How aggressively the camera tries to maintain the offset along the " +
+            "x, y, or z directions in spline local space. \n" +
+            "- x represents the axis that is perpendicular to the spline. Use this to smooth out " +
+            "imperfection in the path. This may move the camera off the spline.\n" +
+            "- y represents the axis that is defined by the spline-local up direction. Use this to smooth out " +
+            "imperfection in the path. This may move the camera off the spline.\n" +
             "- z represents the axis that is parallel to the spline. This won't move the camera off the spline.\n\n" +
             "Smaller numbers are more responsive, larger numbers give a more heavy, slowly responding camera. " +
             "Using different settings per axis can yield a wide range of camera behaviors.")]
