@@ -61,6 +61,8 @@ namespace Cinemachine
                 }
             }
         }
+
+        void OnEnable() {} // so we can disable it in the editor
     }
     
     [AttributeUsage(AttributeTargets.Field)]
