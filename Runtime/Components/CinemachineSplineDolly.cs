@@ -136,31 +136,24 @@ namespace Cinemachine
                 "using SearchResolution to divide into equally spaced line segments. Successive iterations will then " +
                 "subdivide further the nearest segment, producing more accurate results. In most cases, the default value (2) is sufficient.")]
             public int m_SearchIteration;
-
-            /// <summary>Constructor with specific field values</summary>
-            /// <param name="enabled">Whether to enable automatic dolly</param>
-            /// <param name="positionOffset">Offset, in current position units, from the closest point on the spline to the follow target</param>
-            /// <param name="searchResolution">We search between waypoints by dividing the segment into this many straight pieces</param>
-            /// <param name="searchIteration">Straight pieces defined by searchResolution are further subdivided.</param>
-            public AutoDolly(bool enabled, float positionOffset, int searchResolution, int searchIteration)
-            {
-                m_Enabled = enabled;
-                m_PositionOffset = positionOffset;
-                m_SearchResolution = searchResolution;
-                m_SearchIteration = searchIteration;
-            }
-        };
+        }
 
         /// <summary>Controls how automatic dollying occurs</summary>
         [Tooltip("Controls how automatic dollying occurs.  A Follow target is necessary to use this feature.")]
-        public AutoDolly m_AutoDolly = new AutoDolly(false, 0, 4, 2);
+        public AutoDolly m_AutoDolly = new AutoDolly 
+        { 
+            m_Enabled = false, 
+            m_PositionOffset = 0,
+            m_SearchIteration = 4, 
+            m_SearchResolution = 2,
+        };
 
         /// <summary>True if component is enabled and has a spline</summary>
-        public override bool IsValid { get { return enabled && m_Spline != null; } }
+        public override bool IsValid => enabled && m_Spline != null;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
         /// <summary>
         /// Report maximum damping time needed for this component.
