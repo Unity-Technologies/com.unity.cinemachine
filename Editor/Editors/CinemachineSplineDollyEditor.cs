@@ -1,3 +1,4 @@
+#if CINEMACHINE_UNITY_SPLINES
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -27,3 +28,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif
