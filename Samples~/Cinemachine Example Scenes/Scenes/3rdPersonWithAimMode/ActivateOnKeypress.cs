@@ -1,43 +1,46 @@
-﻿using Cinemachine.Examples;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ActivateOnKeypress : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public KeyCode ActivationKey = KeyCode.LeftControl;
-    public int PriorityBoostAmount = 10;
-    public GameObject Reticle;
-
-    Cinemachine.CinemachineVirtualCameraBase vcam;
-    bool boosted = false;
-
-    void Start()
+    public class ActivateOnKeypress : MonoBehaviour
     {
-        vcam = GetComponent<Cinemachine.CinemachineVirtualCameraBase>();
-    }
+        public KeyCode ActivationKey = KeyCode.LeftControl;
+        public int PriorityBoostAmount = 10;
+        public GameObject Reticle;
 
-    void Update()
-    {
-#if ENABLE_LEGACY_INPUT_MANAGER
-        if (vcam != null)
+        Cinemachine.CinemachineVirtualCameraBase vcam;
+        bool boosted = false;
+
+        void Start()
         {
-            if (Input.GetKey(ActivationKey))
+            vcam = GetComponent<Cinemachine.CinemachineVirtualCameraBase>();
+        }
+
+        void Update()
+        {
+#if ENABLE_LEGACY_INPUT_MANAGER
+            if (vcam != null)
             {
-                if (!boosted)
+                if (Input.GetKey(ActivationKey))
                 {
-                    vcam.Priority += PriorityBoostAmount;
-                    boosted = true;
+                    if (!boosted)
+                    {
+                        vcam.Priority += PriorityBoostAmount;
+                        boosted = true;
+                    }
+                }
+                else if (boosted)
+                {
+                    vcam.Priority -= PriorityBoostAmount;
+                    boosted = false;
                 }
             }
-            else if (boosted)
-            {
-                vcam.Priority -= PriorityBoostAmount;
-                boosted = false;
-            }
-        }
-        if (Reticle != null)
-            Reticle.SetActive(boosted);
+
+            if (Reticle != null)
+                Reticle.SetActive(boosted);
 #else
         InputSystemHelper.EnableBackendsWarningMessage();
 #endif
+        }
     }
 }
