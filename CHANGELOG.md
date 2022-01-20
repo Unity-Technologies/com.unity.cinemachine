@@ -4,6 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+- Bugfix: Standalone profiler no longer crashed with CM.
+
 ## [2.9.0-pre.6] - 2022-01-12
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
 - Regression fix: could not change the projection of the main camera if a CM virtual camera is active.
