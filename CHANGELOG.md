@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow logged console messages when looking straight up or down.
 - BugFix: InputProvider no longer causes a tiny gc alloc every frame.
 - Regression fix: CinemachineCollider smoothing time did not reset correctly, so it was working once only.
+- Bugfix: Overlay tooltip names were incorrect.
 
 
 ## [2.9.0-pre.1] - 2021-10-26
