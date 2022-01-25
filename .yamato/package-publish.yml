@@ -1,6 +1,5 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-
 publish:
   name: Publish to Internal Registry
   agent:
@@ -22,14 +21,14 @@ publish:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/package-pack.yml#pack
-    {% for config_name in publish_configurations %}
-    {% for config in all_configurations %}
-    {% if config.name == config_name %}
-    {% for platform_name in publish_platforms %}
+    {% for test_name in all_configurations.publish.test_names %}
+    {% for test in all_tests %}
+    {% if test.name == test_name %}
+    {% for platform_name in all_configurations.publish.platform_names %}
     {% for platform in all_platforms %}
     {% if platform.name == platform_name %}
-    {% for editor in config.editors %}
-    - .yamato/package-test.yml#test_{{config.name}}_{{platform.name}}_{{editor}}
+    {% for editor in test.editors %}
+    - .yamato/package-test.yml#test_{{test.name}}_{{platform.name}}_{{editor}}
     {% endfor %}
     {% endif %}
     {% endfor %}

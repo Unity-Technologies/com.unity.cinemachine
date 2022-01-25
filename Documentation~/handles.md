@@ -2,19 +2,9 @@
 
 The Cinemachine Handle toolbar is a group of 3D controls that allow you to manipulate virtual camera parameters visually in the Scene view. You can use the handle tools to interactively adjust the selected object's parameters quickly and efficiently rather than controlling them via the inspector.
 
-## Activating and deactivating the toolbar
+The toolbar automatically appears in the Scene view **toolbar** Overlay when you select a type of virtual camera with an associated handle.
 
-To activate the Handle toolbar:
-
-* Right-click on the **Scene** tab in the Scene view.
-* Select **Overlays** and then **Cinemachine** from the pop-up menu.
-
-![overlays-menu](images/overlays-menu.png)
-
-The Cinemachine Handle toolbar appears as shown above.
-* Select any Handle tool from the toolbar.
-* The corresponding Handle then appears in the Scene view.
-* You can then select the Handle again to deactivate it from the Scene view.
+![scene-view](images/scene-view.png)
 
 ## Handle tools
 
@@ -32,7 +22,7 @@ The FOV tool can adjust Vertical FOV, Horizontal FOV, Orthographic Size, or Foca
 
 ![FOV](images/FOV.png)
 
-For more information on the Field of View (FOV) property see, [Setting Virtual Camera properties](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.9/manual/CinemachineVirtualCamera.html).
+For more information on the Field of View (FOV) property see, [Setting Virtual Camera properties](CinemachineVirtualCamera.md).
 
 **2. Far/Near clip planes**
 
@@ -40,7 +30,7 @@ For more information on the Field of View (FOV) property see, [Setting Virtual C
 
 ![clip-plane](images/clip-plane.png)
 
-For more information on the Far and Near clip plane properties see, [Setting Virtual Camera properties](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.9/manual/CinemachineVirtualCamera.html).
+For more information on the Far and Near clip plane properties see, [Setting Virtual Camera properties](CinemachineVirtualCamera.md).
 
 **3. Follow offset**
 
@@ -48,7 +38,7 @@ The Follow offset is an offset from the Follow Target. You can drag the points t
 
 ![follow-offset](images/follow-offset.png)
 
-For more information on the Follow offset property see, [Orbital Transposer properties](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.9/manual/CinemachineBodyOrbitalTransposer.html).
+For more information on the Follow offset property see, [Orbital Transposer properties](CinemachineBodyOrbitalTransposer.md).
 
 **4. Tracked object offset**
 
@@ -56,4 +46,17 @@ This starts from where the camera is placed. You can drag the points to increase
 
 ![tracked-object-offset](images/tracked-object-offset.png)
 
-For more information on the Tracked object offset property see, [Composer properties](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.9/manual/CinemachineAimComposer.html).
+For more information on the Tracked object offset property see, [Composer properties](CinemachineAimComposer.md).
+
+## Cinemachine tool settings
+
+The Cinemachine tool settings are automatically displayed when a Free Look camera is selected. These settings allow you to adjust the position of the three separate camera rigs: **Top**, **Middle**, and **Bottom**.
+
+![overlays-menu](images/overlays-menu.png)
+
+For more information, see [Cinemachine Free Look Camera](CinemachineFreeLook.md).
+
+To deactivate the Cinemachine tool settings for a Free Look camera:
+
+* Right-click on the **Scene** tab in the Scene view.
+* Select **Overlays** and then **Cinemachine tools** from the pop-up menu.
