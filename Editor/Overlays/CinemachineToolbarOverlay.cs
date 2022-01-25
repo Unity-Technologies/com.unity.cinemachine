@@ -113,7 +113,7 @@ namespace Cinemachine.Editor
             new GUIContent
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath() + "FarNearClip.png"),
-                tooltip = "Field of View Tool",
+                tooltip = "Far/Near Clip Tool",
             };
     }
     
@@ -124,7 +124,7 @@ namespace Cinemachine.Editor
             new GUIContent
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath() + "FollowOffset.png"),
-                tooltip = "Field of View Tool",
+                tooltip = "Follow Offset Tool",
             };
     }
 
@@ -135,7 +135,7 @@ namespace Cinemachine.Editor
             new GUIContent
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath() + "TrackedObjectOffset.png"),
-                tooltip = "Field of View Tool",
+                tooltip = "Tracked Object Offset Tool",
             };
     }
 
@@ -331,7 +331,7 @@ namespace Cinemachine.Editor
             tooltip = "Follow Offset Tool";
         }
     }
-
+    
     [EditorToolbarElement(id, typeof(SceneView))]
     class TrackedObjectOffsetTool : CinemachineExclusiveEditorToolbarToggle
     {
