@@ -33,3 +33,21 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
 {% endfor %}
 {% endfor %}
 {% endfor %}
+
+test_coverage_ubuntu_trunk:
+  name: Test coverage on ubuntu with trunk
+  agent:
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package test -u trunk --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Cinemachine,+com.unity.cinemachine.editor' --extra-utr-arg=--coverage-results-path=${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults
+    - curl --output-dir ~codecov --create-dirs -Os https://uploader.codecov.io/latest/linux/codecov
+    - ~codecov/codecov -t ${CODECOV_TOKEN} -v -f "${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults/**/*.xml" -B ${GIT_BRANCH}"
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/package-pack.yml#pack

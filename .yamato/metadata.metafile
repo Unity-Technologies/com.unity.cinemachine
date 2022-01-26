@@ -35,13 +35,6 @@ all_tests:
     commands:
     variables:
       - "UPMCI_PROMOTION: 1"
-  - name: coverage
-    editors: [trunk]
-    args: --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Cinemachine,+com.unity.cinemachine.editor' --extra-utr-arg=--coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/test-results/CoverageResults
-    commands:
-      - git clone -b latest --single-branch git@github.cds.internal.unity3d.com:unity/re.codecoverage.tools.git coverage-tools
-      - coverage-tools/codecov{% if platform.name == "windows" %}.bat{% endif %} --reports "upm-ci~/test-results/CoverageResults/**/*.xml" --name {{ platform.name }}_{{ editor.version }} --flags "{{ platform.name }},{{ editor.version }}" -v
-    variables:
 
 all_configurations:
   ci:
