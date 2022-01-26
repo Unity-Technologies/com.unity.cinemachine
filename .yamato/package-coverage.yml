@@ -1,7 +1,7 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-test_coverage_ubuntu_trunk:
-  name: Test coverage on ubuntu with trunk
+coverage_ubuntu_trunk:
+  name: Coverage on ubuntu with trunk
   agent:
     type: Unity::VM
     image: package-ci/ubuntu:stable
