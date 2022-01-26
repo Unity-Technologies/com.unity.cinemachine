@@ -28,4 +28,4 @@ ci_trigger:
     {% endif %}
     {% endfor %}
     {% endfor %}
-    - .yamato/package-test.yml/test_coverage_ubuntu_trunk
+    - .yamato/package-test.yml#test_coverage_ubuntu_trunk
