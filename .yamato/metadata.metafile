@@ -38,7 +38,8 @@ all_tests:
 
 all_configurations:
   ci:
-    test_names: [integration_tests, isolation_tests, coverage]
+    prev_test_names: [integration_tests, isolation_tests, coverage]
+    test_names: []
     platform_names: [ubuntu]
   publish:
     test_names: [integration_tests, isolation_tests, vetting_tests]
