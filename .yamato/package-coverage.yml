@@ -11,7 +11,7 @@ coverage_ubuntu_trunk:
     - upm-ci package test -u trunk --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Cinemachine,+com.unity.cinemachine.editor' --extra-utr-arg=--coverage-results-path=${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults
     - curl -Os https://uploader.codecov.io/latest/linux/codecov
     - chmod +x codecov
-    - sh -c "./codecov -t ${CODECOV_TOKEN} -v -f ${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults/**/*.xml -B ${GIT_BRANCH}"
+    - find "${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults" -name 'TestCoverageResults*.xml' -type f -print0 | xargs -0 printf -- '-f %s\n' | xargs -0 ./codecov -v -t "${CODECOV_TOKEN}" -B "${GIT_BRANCH}" -T "${GIT_TAG}" -P "${YAMATO_PR_ID}"
   artifacts:
     logs:
       paths:
