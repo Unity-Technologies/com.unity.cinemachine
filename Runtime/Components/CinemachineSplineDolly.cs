@@ -281,15 +281,20 @@ namespace Cinemachine
             m_Spline.Evaluate(normalizedSplinePosition, 
                 out var localPosition, out var localTangent, out var localUp);
             Vector3 newCameraPos = localPosition;
-            if (Vector3.SqrMagnitude(localTangent) != 0)
+            // fix tangent when 0
+            if (!localTangent.Equals(Vector3.zero))
             {
                 m_CorrectedTangent = localTangent;
+                if (m_CorrectedTangent.Equals(localUp))
+                {
+                    // Find tangent perpendicular to localUp, localUp is always normalized
+                    var newTangent = new Vector3(localUp.z, localUp.z, -localUp.x - localUp.y);
+                    m_CorrectedTangent = !newTangent.Equals(Vector3.zero)
+                        ? newTangent
+                        : new Vector3(-localUp.y - localUp.z, localUp.x, localUp.x);
+                }
             }
-            if (Vector3.SqrMagnitude(localUp) != 0)
-            {
-                m_CorrectedUp = localUp;
-            }
-            var newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, m_CorrectedUp);
+            var newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, localUp);
 
             CinemachineSplineRoll roll = splineRoll;
             if (roll != null && roll.enabled)
@@ -297,7 +302,7 @@ namespace Cinemachine
                 float rollValue = roll.RollOverride.Evaluate(spline, normalizedSplinePosition, 
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
                 var rollRotation = Quaternion.AngleAxis(-rollValue, m_CorrectedTangent);
-                newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, rollRotation * m_CorrectedUp);
+                newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, rollRotation * localUp);
             }
 
             // Apply the offset to get the new camera position
@@ -365,7 +370,6 @@ namespace Cinemachine
         Quaternion m_PreviousOrientation = Quaternion.identity;
         Vector3 m_PreviousCameraPosition = Vector3.zero;
         Vector3 m_CorrectedTangent = Vector3.forward; // represents the most recent non-zero tangent vector
-        Vector3 m_CorrectedUp = Vector3.up; // represents the most recent non-zero up vector
     }
 }
 #endif
