@@ -232,6 +232,30 @@ namespace Cinemachine.Editor
 
         internal static event Action AdditionalCategories = null;
 
+#if !UNITY_2021_2_OR_NEWER
+        [InitializeOnLoadMethod]
+        /// Ensures that CM Brain logo is added to the Main Camera
+        /// after adding a virtual camera to the project for the first time
+        static void OnPackageLoadedInEditor()
+        {
+#if UNITY_2020_3_OR_NEWER
+            // Nothing to load in the context of a secondary process.
+            if ((int)UnityEditor.MPE.ProcessService.level == 2 /*UnityEditor.MPE.ProcessLevel.Secondary*/)
+                return;
+#endif
+            if (CinemachineLogoTexture == null) 
+            {
+                // After adding the CM to a project, we need to wait for one update cycle for the assets to load
+                EditorApplication.update -= OnPackageLoadedInEditor;
+                EditorApplication.update += OnPackageLoadedInEditor; 
+            }
+            else
+            {
+                EditorApplication.update -= OnPackageLoadedInEditor;
+                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI; // Update hierarchy with CM Brain logo
+            }
+        }
+
         static CinemachineSettings()
         {
             if (CinemachineLogoTexture != null)
