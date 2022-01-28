@@ -27,6 +27,9 @@ namespace Cinemachine
          /// <summary>Blended camera state</summary>
         private CameraState m_State = CameraState.Default;
 
+        /// <summary>Keeps track of the previous state</summary>
+        private CameraState m_LastState = CameraState.Default;
+
         /// <summary>Keeps track of the blended cameras, maximum of 2</summary>
         private CinemachineVirtualCameraBase[] m_BlendCameras = new CinemachineVirtualCameraBase[2];
 
@@ -136,8 +139,8 @@ namespace Cinemachine
                 if (bvcam == null)
                     continue;
                 camCount++;
-                bvcam.UpdateCameraState(worldUp, deltaTime);
-			}
+                bvcam.InternalUpdateCameraState(worldUp, deltaTime);
+            }
 
             // If we got two cameras we need to actually blend.
             if (camCount == 2)
@@ -145,7 +148,12 @@ namespace Cinemachine
             // If there's just the one it has to be the secondary by definition.
             else if(camCount == 1)
                 m_State = m_BlendCameras[1].State;
-            // Otherwise keep the camera where it is.
+            // Otherwise keep the camera where it is and save its state.
+            else
+                m_State = m_LastState;
+
+            // We need to store the old state so extensions do not get applied multiple times.
+            m_LastState = m_State;
 
             InvokePostPipelineStageCallback(
                 this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
