@@ -17,7 +17,7 @@ public class CinemachineShotClipEditor : ClipEditor
     [InitializeOnLoad]
     class EditorInitialize 
     { 
-        static EditorInitialize() { CinemachineMixer.GetMasterPlayableDirector = GetMasterDirector; } 
+        static EditorInitialize() { CinemachineBrainMixer.GetMasterPlayableDirector = GetMasterDirector; } 
         static PlayableDirector GetMasterDirector() { return TimelineEditor.masterDirector; }
     }
     public delegate double TimelineGlobalToLocalTimeDelegate(double globalTime);
