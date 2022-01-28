@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿#if !UNITY_2019_1_OR_NEWER
+#define CINEMACHINE_TIMELINE
+#endif
+#if CINEMACHINE_TIMELINE
+
+using UnityEngine;
 using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
@@ -180,3 +185,4 @@ namespace Cinemachine
         }
     }
 }
+#endif
