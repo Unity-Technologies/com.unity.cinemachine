@@ -191,19 +191,19 @@ namespace Cinemachine
             m_AngularDamping = Mathf.Clamp(m_AngularDamping, 0, 20);
         }
 
-        CinemachineSplineRollExtension m_RollExtension; // don't use this directly
-        internal CinemachineSplineRollExtension rollExtension
+        CinemachineSplineRoll m_Roll; // don't use this directly
+        internal CinemachineSplineRoll splineRoll
         {
             private get
             {
-                if (m_RollExtension == null)
-                    m_Spline.TryGetComponent(out m_RollExtension); // check if our spline has roll extension
+                if (m_Roll == null)
+                    m_Spline.TryGetComponent(out m_Roll); // check if our spline has CinemachineSplineRoll
 
-                return m_RollExtension;
+                return m_Roll;
             }
             set
             {
-                m_RollExtension = value; // called by CinemachineSplineRollExtension
+                m_Roll = value; // called by CinemachineSplineRoll
             }
         }
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
@@ -291,12 +291,12 @@ namespace Cinemachine
             }
             var newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, m_CorrectedUp);
 
-            var rollExt = rollExtension;
-            if (rollExt != null && rollExt.enabled)
+            CinemachineSplineRoll roll = splineRoll;
+            if (roll != null && roll.enabled)
             {
-                float roll = rollExt.RollOverride.Evaluate(spline, normalizedSplinePosition, 
+                float rollValue = roll.RollOverride.Evaluate(spline, normalizedSplinePosition, 
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
-                var rollRotation = Quaternion.AngleAxis(-roll, m_CorrectedTangent);
+                var rollRotation = Quaternion.AngleAxis(-rollValue, m_CorrectedTangent);
                 newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, rollRotation * m_CorrectedUp);
             }
 

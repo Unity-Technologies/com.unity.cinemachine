@@ -16,7 +16,7 @@ namespace Cinemachine
     /// </summary>
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
-    public class CinemachineSplineRollExtension : MonoBehaviour
+    public class CinemachineSplineRoll : MonoBehaviour
     {
         /// <summary>
         /// Roll (in angles) around the forward direction for specific location on the track.
@@ -53,7 +53,7 @@ namespace Cinemachine
                     var splineDolly = body as CinemachineSplineDolly;
                     if (splineDolly != null)
                     {
-                        splineDolly.rollExtension = this;
+                        splineDolly.splineRoll = this;
 #if UNITY_EDITOR
                         splineContainer = splineDolly.m_Spline; // this is needed by the RollHandle to work in the scene view
 #endif
