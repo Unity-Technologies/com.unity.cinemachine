@@ -7,6 +7,7 @@ using UnityEngine;
 using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Playables;
 
 namespace Cinemachine
 {
@@ -20,6 +21,10 @@ namespace Cinemachine
     /// Therefore, this camera itself can be blended, mixed or referenced in all other places
     /// where a <see cref="CinemachineVirtualCameraBase"/> or <see cref="ICinemachineCamera"/>
     /// is used.
+    /// 
+    /// Before playback of an associated <see cref="CinemachineCameraTrack"/> the camera
+    /// stays uninitialized. Make sure to update the <see cref="PlayableDirector"/> before you set it Live.
+    /// After the track's playback the last known state is being kept.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
@@ -29,7 +34,7 @@ namespace Cinemachine
     //[HelpURL(Documentation.BaseURL + "manual/CinemachineMixingCamera.html")]
     public class CinemachineTimelineCamera : CinemachineVirtualCameraBase
     {
-         /// <summary>Blended camera state</summary>
+        /// <summary>Blended camera state</summary>
         private CameraState m_State = CameraState.Default;
 
         /// <summary>Keeps track of the previous state</summary>
@@ -50,12 +55,12 @@ namespace Cinemachine
         /// <summary>Not used</summary>
         public override Transform Follow { get; set; }
 
-		/// <summary>This is called to notify the vcam that a target got warped,
-		/// so that the vcam can update its internal state to make the camera
-		/// also warp seamlessy.</summary>
-		/// <param name="target">The object that was warped</param>
-		/// <param name="positionDelta">The amount the target's position changed</param>
-		public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        /// <summary>This is called to notify the vcam that a target got warped,
+        /// so that the vcam can update its internal state to make the camera
+        /// also warp seamlessy.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
         {
             foreach (var bvcam in m_BlendCameras)
             {
@@ -74,7 +79,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             foreach (var bvcam in m_BlendCameras)
-			{
+            {
                 if (bvcam == null)
                     continue;
                 bvcam.ForceCameraPosition(pos, rot);
@@ -97,7 +102,7 @@ namespace Cinemachine
             }
             else
             {
-                foreach(var bvcam in m_BlendCameras)
+                foreach (var bvcam in m_BlendCameras)
                 {
                     if (bvcam == null)
                         continue;
@@ -110,11 +115,11 @@ namespace Cinemachine
             return false;
         }
 
-		/// <summary>Notification that this virtual camera is going live.</summary>
-		/// <param name="fromCam">The camera being deactivated.  May be null.</param>
-		/// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-		/// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-		public override void OnTransitionFromCamera(
+        /// <summary>Notification that this virtual camera is going live.</summary>
+        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        public override void OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
@@ -151,7 +156,7 @@ namespace Cinemachine
             if (camCount == 2)
                 m_State = CameraState.Lerp(m_BlendCameras[0].State, m_BlendCameras[1].State, m_BlendWeight);
             // If there's just the one it has to be the secondary by definition.
-            else if(camCount == 1)
+            else if (camCount == 1)
                 m_State = m_BlendCameras[1].State;
             // Otherwise keep the camera where it is and save its state.
             else
