@@ -14,7 +14,7 @@ internal sealed class CinemachineBrainMixer : CinemachineMixerBase<CinemachineBr
     protected override void ProcessBlendFrame(FrameData info, CinemachineBrain target, ICinemachineCamera camA, ICinemachineCamera camB, float blendWeight)
 	{
         m_BrainOverrideStack = target;
-        target.SetCameraOverride(m_BrainOverrideId, camA, camB, blendWeight, GetDeltaTime(info.deltaTime));
+        m_BrainOverrideId = target.SetCameraOverride(m_BrainOverrideId, camA, camB, blendWeight, GetDeltaTime(info.deltaTime));
 	}
 
 	public override void OnPlayableDestroy(Playable playable)
