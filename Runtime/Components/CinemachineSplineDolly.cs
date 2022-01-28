@@ -213,7 +213,6 @@ namespace Cinemachine
         {
             if (!IsValid)
             {
-                m_SplinePosition = 0;
                 return;
             }
 
@@ -252,7 +251,8 @@ namespace Cinemachine
                     PathIndexUnit.Normalized, m_PositionUnits);
                 
                 // Apply the spline position offset
-                normalizedSplinePosition += m_AutoDolly.m_PositionOffset;
+                normalizedSplinePosition += SplineUtility.ConvertIndexUnit(
+                    spline, m_AutoDolly.m_PositionOffset, m_PositionUnits, PathIndexUnit.Normalized);
             }
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
