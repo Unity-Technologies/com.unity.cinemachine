@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.7.10] - 2022-02-05
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor
+- Bugfix: Standalone profiler no longer crashed with CM.
 
 ## [2.7.9] - 2021-09-29
 - Bugfix: OnTargetObjectWarped() did not work properly for 3rdPersonFollow.
