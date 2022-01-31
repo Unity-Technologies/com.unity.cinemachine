@@ -57,8 +57,5 @@
         * [Cinemachine Impulse Sources](CinemachineImpulseSourceOverview.md)
             * [Cinemachine Collision Impulse Source](CinemachineCollisionImpulseSource.md)
             * [Cinemachine Impulse Source](CinemachineImpulseSource.md)
-        * [Raw Vibration Signals](CinemachineImpulseRawSignal.md)
-            * [Using Noise Profiles](CinemachineImpulseNoiseProfiles.md)
-            * [Using Fixed Signals](CinemachineImpulseFixedSignals.md)
         * [Cinemachine Impulse Listener](CinemachineImpulseListener.md)
         * [Filtering impulses](CinemachineImpulseFiltering.md)
