@@ -149,7 +149,15 @@ namespace Cinemachine
                 if (bvcam == null)
                     continue;
                 camCount++;
-                bvcam.InternalUpdateCameraState(worldUp, deltaTime);
+
+                // Check if camera is registered as child of this instance. If it's not, we might need to update it manually.
+                if (bvcam.ParentCamera != (ICinemachineCamera)this)
+                {
+                    // We could also check if bvcam.m_StandbyUpdate == StandbyUpdateMode.Never and warn if it's not.
+                    // E.g. damping might not work correctly if updated two times in the same frame as would happen
+                    // for StandbyUpdateMode.RoundRobin and StandbyUpdateMode.Always.
+                    bvcam.InternalUpdateCameraState(worldUp, deltaTime);
+                }
             }
 
             // If we got two cameras we need to actually blend.
