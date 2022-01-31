@@ -455,7 +455,11 @@ MonoBehaviour:
     example uses the CinemachineTimelineCamera and the CinemachineCameraTrack. The
     cameras on the track manipulate the CinemachineTimelineCamera.\n\nCinemachineTimelineCamera
     acts just like any other camera. E.g. you can increase the priority of the OtherShot
-    camera and the Brain will blend to it as expected."
+    camera and the Brain will blend to it as expected.\n\nNote: For updating to work
+    correctly in advanced scenarios you need to:\nA) set all cameras on the Timeline's
+    track to be child GameObjects of the CinemachineTimelineCamera's GameObject (like
+    done here)\nOR\nB) set Standby Update to Never for all cameras on the Timeline's
+    track"
 --- !u!114 &468527925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,13 +563,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 544285541}
-  m_LocalRotation: {x: 0, y: -0.44568163, z: -0, w: 0.89519155}
-  m_LocalPosition: {x: -286.0345, y: 4.1, z: -19.395824}
+  m_LocalRotation: {x: 0.47839573, y: 0.17747067, z: -0.09939426, w: -0.8542614}
+  m_LocalPosition: {x: 7.6837635, y: -13.884094, z: 49.46685}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 927596456}
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 897524829}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &704122339
 GameObject:
@@ -636,13 +640,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 704122339}
-  m_LocalRotation: {x: 0.17807573, y: 0.4393341, z: -0.08931363, w: 0.8759553}
-  m_LocalPosition: {x: -416.88824, y: 66.27028, z: -96.96246}
+  m_LocalRotation: {x: 0.22890598, y: -0.50072944, z: 0.43130612, w: -0.71473575}
+  m_LocalPosition: {x: -144.40001, y: 15.890007, z: -5.199999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1022545397}
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 897524829}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &897524826
 GameObject:
@@ -731,7 +735,11 @@ Transform:
   m_LocalRotation: {x: -0.472554, y: 0.22185837, z: -0.12423527, w: -0.84382296}
   m_LocalPosition: {x: -285.83377, y: 53.531654, z: -35.372314}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 704122341}
+  - {fileID: 1921475703}
+  - {fileID: 1874841811}
+  - {fileID: 544285543}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1454,13 +1462,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1874841809}
-  m_LocalRotation: {x: 0.090856895, y: 0.46529675, z: -0.04808586, w: 0.8791654}
-  m_LocalPosition: {x: -537.9606, y: 64.37469, z: -171.54793}
+  m_LocalRotation: {x: 0.29164797, y: -0.5536675, z: 0.38983452, w: -0.6755908}
+  m_LocalPosition: {x: -286.5, y: 10.299995, z: -6.4000015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1435734808}
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 897524829}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1921475701
 GameObject:
@@ -1531,13 +1539,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1921475701}
-  m_LocalRotation: {x: 0.13361649, y: 0.51159084, z: -0.08090428, w: 0.8449118}
-  m_LocalPosition: {x: -530.7185, y: 88.78309, z: -130.28444}
+  m_LocalRotation: {x: 0.24090946, y: -0.5643113, z: 0.44463497, w: -0.6525451}
+  m_LocalPosition: {x: -259.89996, y: 50.649994, z: -10.300003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 56166743}
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Father: {fileID: 897524829}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1981081790
 GameObject:
@@ -1614,5 +1622,5 @@ Transform:
   m_Children:
   - {fileID: 1753332199}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
