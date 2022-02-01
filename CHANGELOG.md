@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
-
+- Bugfix: Standalone profiler no longer crashed with CM.
 
 ## [2.9.0-pre.6] - 2022-01-12
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
