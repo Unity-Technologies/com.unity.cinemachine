@@ -100,8 +100,6 @@ namespace Cinemachine
             InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) => 
                 user.actions.First(x => x.id == aRef.action.id);
         }
-        
-        
 
         // Clean up
         protected virtual void OnDisable()
