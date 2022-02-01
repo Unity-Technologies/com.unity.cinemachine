@@ -95,10 +95,18 @@ namespace Cinemachine
                 m_cachedActions[axis].Enable();
             
             return m_cachedActions[axis];
+            #if UNITY_2020_1_OR_NEWER 
             // local static function to wrap the lambda which otherwise causes a tiny gc
-            static InputAction GetFirstMatch(in InputUser user, InputActionReference actionRef) => 
-                user.actions.First(x => x.id == actionRef.action.id);
+            static InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) => 
+                user.actions.First(x => x.id == aRef.action.id);
+            #endif
         }
+        #if !UNITY_2020_1_OR_NEWER
+        static InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) => 
+            user.actions.First(x => x.id == aRef.action.id);
+        #endif
+        
+        
 
         // Clean up
         protected virtual void OnDisable()
