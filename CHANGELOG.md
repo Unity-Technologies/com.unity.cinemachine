@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 - Bugfix: Standalone profiler no longer crashed with CM.
+- Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
 
 ## [2.9.0-pre.6] - 2022-01-12
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
