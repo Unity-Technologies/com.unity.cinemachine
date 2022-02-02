@@ -95,9 +95,10 @@ namespace Cinemachine
                 m_cachedActions[axis].Enable();
             
             return m_cachedActions[axis];
-            // local static function to wrap the lambda which otherwise causes a tiny gc
-            static InputAction GetFirstMatch(in InputUser user, InputActionReference actionRef) => 
-                user.actions.First(x => x.id == actionRef.action.id);
+            
+            // local function to wrap the lambda which otherwise causes a tiny gc
+            InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) => 
+                user.actions.First(x => x.id == aRef.action.id);
         }
 
         // Clean up
