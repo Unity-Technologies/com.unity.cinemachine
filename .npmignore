@@ -22,3 +22,5 @@ upm-ci.log
 .github/**
 appcollector.yaml
 appcollector.yaml.meta
+codecov.yaml
+codecov.yaml.meta
