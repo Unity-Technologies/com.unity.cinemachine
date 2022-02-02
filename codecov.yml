@@ -8,6 +8,7 @@ coverage:
   round: down
   range: "50...70"
   status:
+    patch: off
     default_rules:
       flag_coverage_not_uploaded_behavior: exclude
     project:
