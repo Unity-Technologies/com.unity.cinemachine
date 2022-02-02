@@ -4,9 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ## [2.8.5] - 2022-02-02
 - Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
+- Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
 
 ## [2.8.4] - 2021-12-10
 - Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
