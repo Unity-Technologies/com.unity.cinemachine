@@ -16,30 +16,25 @@ all_tests:
   - name: integration_tests
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type package-tests
-    commands:
     variables:
   - name: isolation_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type isolation-tests --enable-load-and-test-isolation
-    commands:
     variables:
   - name: vetting_tests
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type vetting-tests --platform editmode
-    commands:
     variables:
      - "UPMCI_PROMOTION: 1"
   - name: promotion_tests
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type promotion-audit --platform editmode
-    commands:
     variables:
       - "UPMCI_PROMOTION: 1"
 
 all_configurations:
   ci:
-    prev_test_names: [integration_tests, isolation_tests, coverage]
-    test_names: []
+    test_names: [integration_tests, isolation_tests]
     platform_names: [ubuntu]
   publish:
     test_names: [integration_tests, isolation_tests, vetting_tests]
