@@ -9,12 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
 - Bugfix: Standalone profiler no longer crashed with CM.
 
+
 ## [2.8.4] - 2021-12-10
 - Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
-- Moved Cinemachine tools into the main Tools overlay (2022.1+), moved Freelook rig selection to a separate overlay, updated icons to support light and dark themes.
 - Bugfix: 3rdPersonFollow logged console messages when looking straight up or down.
 - BugFix: InputProvider no longer causes a tiny gc alloc every frame.
 - Regression fix: CinemachineCollider smoothing time did not reset correctly, so it was working once only.
+- Bugfix: Confiner2D now displays the calculated confining area when its vcam is selected.
 
 
 ## [2.8.3] - 2021-11-22
