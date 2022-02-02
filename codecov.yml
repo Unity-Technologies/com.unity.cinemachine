@@ -12,12 +12,13 @@ coverage:
     default_rules:
       flag_coverage_not_uploaded_behavior: exclude
     project:
-      target: auto
-      threshold: 0%
-      base: auto 
-      if_ci_failed: success
-      informational: false
-      only_pulls: true
+      default:
+        target: auto
+        threshold: 0%
+        base: auto 
+        if_ci_failed: success
+        informational: false
+        only_pulls: true
 
 comment:
   layout: "reach,diff,flags,files"
