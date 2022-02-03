@@ -1,9 +1,5 @@
 # Cinemachine
 
-
-
-
-
 ## What is Cinemachine?
 Cinemachine is a suite of ‘smart’ procedural modules which allow you to define the shot and
 they’ll dynamically follow your direction. Set up shots which track and compose motion in
