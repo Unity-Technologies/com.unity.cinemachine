@@ -263,6 +263,7 @@ namespace Cinemachine.Editor
                 EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
             }
         }
+#endif
 
         class Styles {
             //private static readonly GUIContent sCoreShowHiddenObjectsToggle = new GUIContent("Show Hidden Objects", "If checked, Cinemachine hidden objects will be shown in the inspector.  This might be necessary to repair broken script mappings when upgrading from a pre-release version");
