@@ -72,10 +72,12 @@ namespace Cinemachine
                 Enable,
                 /// <summary>Disable a component</summary>
                 Disable,
+#if CINEMACHINE_TIMELINE
                 /// <summary>Start animation on target</summary>
                 Play,
                 /// <summary>Stop animation on target</summary>
                 Stop
+#endif
             }
 
             /// <summary>Serializable parameterless game event</summary>
@@ -184,6 +186,7 @@ namespace Cinemachine
                                     targetBehaviour.enabled = false;
                                 break;
                             }
+#if CINEMACHINE_TIMELINE
                         case Mode.Play:
                             {
                                 PlayableDirector playable
@@ -234,6 +237,7 @@ namespace Cinemachine
                                 }
                                 break;
                             }
+#endif
                     }
                 }
                 m_Event.Invoke();

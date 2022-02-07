@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
 - Bugfix: Standalone profiler no longer crashed with CM.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
+- Timeline guards added to scripts that rely on it.
 
 
 ## [2.8.4] - 2021-12-10
