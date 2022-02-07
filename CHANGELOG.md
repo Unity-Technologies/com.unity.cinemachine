@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [2.6.12] - 2022-02-15
-- Bugfix: Standalone profiler no longer crashed with CM.
+- Bugfix: Standalone profiler no longer crashes with CM.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 
