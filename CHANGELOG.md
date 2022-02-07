@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor
 - Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
 - Bugfix: Standalone profiler no longer crashed with CM.
+- Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
+- Timeline guards added to scripts that rely on it.
 
 
 ## [2.7.9] - 2021-09-29
