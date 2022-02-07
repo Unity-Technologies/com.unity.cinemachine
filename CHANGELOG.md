@@ -5,9 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.8.5] - 2022-02-15
-- Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
-- Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
-- Bugfix: Standalone profiler no longer crashed with CM.
+- Bugfix: A memory leak no longer occurs with PostProcessing if no PP layer is present on the camera.
+- Bugfix: Cinemachine no longer produces a compiler error in Unity Editor versions older than 2020 when an Input System package is installed.
+- Bugfix: Standalone profiler no longer crashes with CM.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 
