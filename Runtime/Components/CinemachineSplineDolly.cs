@@ -196,6 +196,13 @@ namespace Cinemachine
         {
             private get
             {
+                if (m_Roll == null) {
+                    transform.parent.TryGetComponent(out m_Roll); // check if vcam has CinemachineSplineRoll
+#if UNITY_EDITOR
+                    if (m_Roll != null)
+                        m_Roll.splineContainer = m_Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes
+#endif
+                }
                 if (m_Roll == null)
                     m_Spline.TryGetComponent(out m_Roll); // check if our spline has CinemachineSplineRoll
 

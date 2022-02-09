@@ -21,7 +21,7 @@ namespace Cinemachine
         /// <summary>
         /// Roll (in angles) around the forward direction for specific location on the track.
         /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
-        /// Whem placed on a vcam, this is going to be a local override that only affects that vcam.
+        /// When placed on a vcam, this is going to be a local override that only affects that vcam.
         /// </summary>
         [Tooltip("Roll (in angles) around the forward direction for specific location on the track.\n" +
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
@@ -30,39 +30,13 @@ namespace Cinemachine
         public SplineData<float> RollOverride;
 
 #if UNITY_EDITOR
-        internal SplineContainer splineContainer; // this is needed by the RollHandle to work in the scene view
+        internal SplineContainer splineContainer; // SplineRollHandle needs this for drawing the handles
 #endif
 
-        /// <summary>
-        /// RollHandle needs to know for which Spline to draw its handles.
-        /// If SplineRollExtension is added to a GameObject with a SplineContainer, then use that as target.
-        /// Otherwise check if we are on a vcam that uses a SplineContainer, then use that as target.
-        /// </summary>
-        void Awake()
-        {
-            if (
-#if UNITY_EDITOR
-                !TryGetComponent(out splineContainer) && // this is needed by the RollHandle to work in the scene view
-#endif
-                TryGetComponent(out CinemachineVirtualCamera vcam))
-            {
-                // set splineContainer through the vcam
-                var body = vcam.GetCinemachineComponent(CinemachineCore.Stage.Body);
-                if (body != null)
-                {
-                    var splineDolly = body as CinemachineSplineDolly;
-                    if (splineDolly != null)
-                    {
-                        splineDolly.splineRoll = this;
-#if UNITY_EDITOR
-                        splineContainer = splineDolly.m_Spline; // this is needed by the RollHandle to work in the scene view
-#endif
-                    }
-                }
-            }
-        }
-
-        void OnEnable() {} // so we can disable it in the editor
+        // Check if CinemachineSplineRoll is attached to a SplineContainer
+        void Awake() => TryGetComponent(out splineContainer);
+        
+        void OnEnable() {} // Needed, so we can disable it in the editor
     }
     
     [AttributeUsage(AttributeTargets.Field)]
