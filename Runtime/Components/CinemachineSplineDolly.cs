@@ -330,13 +330,9 @@ namespace Cinemachine
             Quaternion newOrientation = GetCameraOrientationAtSplinePoint(newSplineOrientation, curState.ReferenceUp);
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                Vector3 relative = (Quaternion.Inverse(m_PreviousOrientation)
-                    * newOrientation).eulerAngles;
-                for (int i = 0; i < 3; ++i)
-                    if (relative[i] > 180)
-                        relative[i] -= 360;
-                relative = Damper.Damp(relative, m_AngularDamping, deltaTime);
-                newOrientation = m_PreviousOrientation * Quaternion.Euler(relative);
+                float t = VirtualCamera.DetachedFollowTargetDamp(1, m_AngularDamping, deltaTime);
+                newOrientation = Quaternion.Slerp(
+                    m_PreviousOrientation, newOrientation, t);
             }
             m_PreviousOrientation = newOrientation;
 
