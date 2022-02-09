@@ -192,9 +192,9 @@ namespace Cinemachine
         }
 
         CinemachineSplineRoll m_Roll; // don't use this directly
-        internal CinemachineSplineRoll splineRoll
+        CinemachineSplineRoll SplineRoll
         {
-            private get
+            get
             {
                 if (m_Roll == null) {
                     transform.parent.TryGetComponent(out m_Roll); // check if vcam has CinemachineSplineRoll
@@ -207,10 +207,6 @@ namespace Cinemachine
                     m_Spline.TryGetComponent(out m_Roll); // check if our spline has CinemachineSplineRoll
 
                 return m_Roll;
-            }
-            set
-            {
-                m_Roll = value; // called by CinemachineSplineRoll
             }
         }
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
@@ -297,7 +293,7 @@ namespace Cinemachine
             }
             var newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, localUp);
 
-            CinemachineSplineRoll roll = splineRoll;
+            CinemachineSplineRoll roll = SplineRoll;
             if (roll != null && roll.enabled)
             {
                 float rollValue = roll.RollOverride.Evaluate(spline, normalizedSplinePosition, 
