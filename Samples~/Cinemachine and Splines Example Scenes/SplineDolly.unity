@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44407046, g: 0.49331486, b: 0.57238823, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -527,24 +527,42 @@ MonoBehaviour:
     m_EditModeType: 2
     m_Knots:
     - Position:
-        x: -2.5
-        y: 0.4917326
+        x: -5
+        y: 1.5
         z: -5
       TangentIn:
-        x: 0
+        x: -3.3333333
         y: 0
-        z: -0.33333334
+        z: 0
       TangentOut:
-        x: 0
+        x: 3.3333333
         y: 0
-        z: 0.33333334
+        z: 0
       Rotation:
         value:
           x: 0
           y: 0
           z: 0
           w: 1
-    m_Length: -1
+    - Position:
+        x: 5
+        y: 1.5
+        z: -5
+      TangentIn:
+        x: -3.3333333
+        y: 0
+        z: 0
+      TangentOut:
+        x: 3.3333333
+        y: 0
+        z: 0
+      Rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+    m_Length: 10.012492
     m_Closed: 0
 --- !u!4 &952674341
 Transform:
@@ -608,12 +626,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Spline: {fileID: 952674340}
-  m_SplinePosition: -0.0012497389
+  m_SplinePosition: 0.24912277
   m_PositionUnits: 1
   m_SplineOffset: {x: 0, y: 1, z: 0}
   m_CameraUp: 3
   m_Damping: {x: 0, y: 0, z: 0}
-  m_AngularDamping: 0
+  m_AngularDamping: 10
   m_AutoDolly:
     m_Enabled: 1
     m_PositionOffset: 0
@@ -721,8 +739,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1036175981}
-  m_LocalRotation: {x: -0.10674004, y: -0.0004047423, z: -0.000043450447, w: 0.9942869}
-  m_LocalPosition: {x: -2.5, y: 0.4917326, z: -5}
+  m_LocalRotation: {x: 0.096425444, y: -0.009139903, z: 0.093946, w: 0.99085456}
+  m_LocalPosition: {x: -2.5056605, y: 3.424406, z: -5.38141}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1013,7 +1031,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.4818652, y: 1}
+    m_SensorSize: {x: 2.12, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1029,8 +1047,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634770345}
-  m_LocalRotation: {x: -0.10674004, y: -0.0004047423, z: -0.000043450447, w: 0.9942869}
-  m_LocalPosition: {x: -2.5, y: 0.4917326, z: -5}
+  m_LocalRotation: {x: 0.096425444, y: -0.009139903, z: 0.093946, w: 0.99085456}
+  m_LocalPosition: {x: -2.5056605, y: 3.424406, z: -5.38141}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1047,11 +1065,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1634770345}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1aee109404ed3410ab86e2dbcc21c591, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ef78c821529f4517a6443b746648cd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   RollOverride:
-    m_IndexUnit: 2
+    m_IndexUnit: 1
     m_DataPoints:
     - m_Index: 0
-      m_Value: 50
+      m_Value: 0
+    - m_Index: 1
+      m_Value: 90
