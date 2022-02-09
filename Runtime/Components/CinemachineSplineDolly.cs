@@ -228,12 +228,12 @@ namespace Cinemachine
             {
                 return;
             }
-            if (spline.Count == 1)
-            {
-                curState.RawPosition = m_PreviousCameraPosition = spline[0].Position;
-                curState.RawOrientation = m_PreviousOrientation = spline[0].Rotation;
-                return;
-            }
+            // if (spline.Count == 1)
+            // {
+            //     curState.RawPosition = m_PreviousCameraPosition = spline[0].Position;
+            //     curState.RawOrientation = m_PreviousOrientation = spline[0].Rotation;
+            //     return;
+            // }
             
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
