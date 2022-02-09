@@ -291,7 +291,7 @@ namespace Cinemachine.Editor
             prop.NextVisible(true); // Skip outer foldout
             do
             {
-                if (!prop.propertyPath.StartsWith(prefix))
+                if (!prop.propertyPath.Contains(prefix)) // if it is part of an array, then it won't StartWith prefix
                     break;
                 string header = HeaderText(prop);
                 if (header != null)
@@ -327,7 +327,7 @@ namespace Cinemachine.Editor
             prop.NextVisible(true); // Skip outer foldout
             do
             {
-                if (!prop.propertyPath.StartsWith(prefix))
+                if (!prop.propertyPath.Contains(prefix)) // if it is part of an array, then it won't StartWith prefix
                     break;
                 string header = HeaderText(prop);
                 if (header != null)

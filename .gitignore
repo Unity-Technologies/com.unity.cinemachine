@@ -6,3 +6,4 @@ npm-debug.log
 npm-debug.log.meta
 .DS_Store
 .idea
+.yamato/expectations/*

@@ -1,48 +1,48 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Cinemachine.Examples;
-using Cinemachine.Utility;
+﻿using Cinemachine.Utility;
 using UnityEngine;
 
-public class PlayerMoveOnSphere : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public SphereCollider Sphere;
-
-    public float speed = 5;
-    public bool rotatePlayer = true;
-    public float rotationDamping = 0.5f;
-
-    // Update is called once per frame
-    void Update()
+    public class PlayerMoveOnSphere : MonoBehaviour
     {
-#if ENABLE_LEGACY_INPUT_MANAGER
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        if (input.magnitude > 0)
+        public SphereCollider Sphere;
+
+        public float speed = 5;
+        public bool rotatePlayer = true;
+        public float rotationDamping = 0.5f;
+
+        // Update is called once per frame
+        void Update()
         {
-            input = Camera.main.transform.rotation * input;
-            if (input.magnitude > 0.001f)
+#if ENABLE_LEGACY_INPUT_MANAGER
+            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            if (input.magnitude > 0)
             {
-                transform.position += input * (speed * Time.deltaTime);
-                if (rotatePlayer)
+                input = Camera.main.transform.rotation * input;
+                if (input.magnitude > 0.001f)
                 {
-                    float t = Cinemachine.Utility.Damper.Damp(1, rotationDamping, Time.deltaTime);
-                    Quaternion newRotation = Quaternion.LookRotation(input.normalized, transform.up);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, t);
+                    transform.position += input * (speed * Time.deltaTime);
+                    if (rotatePlayer)
+                    {
+                        float t = Cinemachine.Utility.Damper.Damp(1, rotationDamping, Time.deltaTime);
+                        Quaternion newRotation = Quaternion.LookRotation(input.normalized, transform.up);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, t);
+                    }
                 }
             }
-        }
 
-        // Stick to sphere surface
-        if (Sphere != null)
-        {
-            var up = transform.position - Sphere.transform.position;
-            up = up.normalized;
-            var fwd = transform.forward.ProjectOntoPlane(up);
-            transform.position = Sphere.transform.position + up * (Sphere.radius + transform.localScale.y / 2);
-            transform.rotation = Quaternion.LookRotation(fwd, up);
-        }
+            // Stick to sphere surface
+            if (Sphere != null)
+            {
+                var up = transform.position - Sphere.transform.position;
+                up = up.normalized;
+                var fwd = transform.forward.ProjectOntoPlane(up);
+                transform.position = Sphere.transform.position + up * (Sphere.radius + transform.localScale.y / 2);
+                transform.rotation = Quaternion.LookRotation(fwd, up);
+            }
 #else
         InputSystemHelper.EnableBackendsWarningMessage();
 #endif
+        }
     }
 }

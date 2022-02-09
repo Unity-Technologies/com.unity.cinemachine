@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 
-public class TagChanger : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public void PlayerTagChanger()
+    public class TagChanger : MonoBehaviour
     {
-        this.tag = "Player";
-    }
-    public void UntaggedTagChanger()
-    {
-        this.tag = "Untagged";
+        public void PlayerTagChanger()
+        {
+            this.tag = "Player";
+        }
+
+        public void UntaggedTagChanger()
+        {
+            this.tag = "Untagged";
+        }
     }
 }

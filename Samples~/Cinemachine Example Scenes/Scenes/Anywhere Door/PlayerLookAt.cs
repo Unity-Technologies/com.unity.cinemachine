@@ -1,22 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Cinemachine.Examples;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerLookAt : MonoBehaviour
+namespace Cinemachine.Examples
 {
-	public float speed = 5f;
-
-	void Update()
+	public class PlayerLookAt : MonoBehaviour
 	{
-#if ENABLE_LEGACY_INPUT_MANAGER
-		float horizontal = Input.GetAxis("Mouse X") * speed;
-		float vertical = Input.GetAxis("Mouse Y") * speed;
+		public float speed = 5f;
 
-		transform.Rotate(0f, horizontal, 0f, Space.World);
-		transform.Rotate(-vertical, 0f, 0f, Space.Self);
+		void Update()
+		{
+#if ENABLE_LEGACY_INPUT_MANAGER
+			float horizontal = Input.GetAxis("Mouse X") * speed;
+			float vertical = Input.GetAxis("Mouse Y") * speed;
+
+			transform.Rotate(0f, horizontal, 0f, Space.World);
+			transform.Rotate(-vertical, 0f, 0f, Space.Self);
 #else
 		InputSystemHelper.EnableBackendsWarningMessage();
 #endif
+		}
 	}
 }

@@ -278,9 +278,15 @@ namespace Cinemachine.Editor
         /// after adding a virtual camera to the project for the first time
         static void OnPackageLoadedInEditor()
         {
+#if UNITY_2020_3_OR_NEWER
+            // Nothing to load in the context of a secondary process.
+            if ((int)UnityEditor.MPE.ProcessService.level == 2 /*UnityEditor.MPE.ProcessLevel.Secondary*/)
+                return;
+#endif
             if (CinemachineLogoTexture == null) 
             {
                 // After adding the CM to a project, we need to wait for one update cycle for the assets to load
+                EditorApplication.update -= OnPackageLoadedInEditor;
                 EditorApplication.update += OnPackageLoadedInEditor; 
             }
             else

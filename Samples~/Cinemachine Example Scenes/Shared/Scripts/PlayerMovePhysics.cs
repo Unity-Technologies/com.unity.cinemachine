@@ -1,60 +1,63 @@
 ﻿using System;
-using Cinemachine.Examples;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class PlayerMovePhysics : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public float speed = 5;
-    public bool worldDirection = true;
-    public bool rotatePlayer = true;
-
-    public Action spaceAction;
-    public Action enterAction;
-
-    Rigidbody rb;
-
-	void Start()
+    public class PlayerMovePhysics : MonoBehaviour
     {
-	    rb = GetComponent<Rigidbody> ();
-	}
+        public float speed = 5;
+        public bool worldDirection = true;
+        public bool rotatePlayer = true;
 
-    private void OnEnable()
-    {
-        transform.position += new Vector3(10, 0, 0);
-    }
+        public Action spaceAction;
+        public Action enterAction;
 
-    void FixedUpdate()
-    {
-#if ENABLE_LEGACY_INPUT_MANAGER
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        Rigidbody rb;
 
-        //input = Vector3.forward;
-		if (input.magnitude > 0)
+        void Start()
         {
-            Vector3 fwd = worldDirection
-                ? Vector3.forward : transform.position - Camera.main.transform.position;
-            fwd.y = 0;
-            fwd = fwd.normalized;
-            if (fwd.magnitude > 0.001f)
+            rb = GetComponent<Rigidbody>();
+        }
+
+        private void OnEnable()
+        {
+            transform.position += new Vector3(10, 0, 0);
+        }
+
+        void FixedUpdate()
+        {
+#if ENABLE_LEGACY_INPUT_MANAGER
+            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+            //input = Vector3.forward;
+            if (input.magnitude > 0)
             {
-                Quaternion inputFrame = Quaternion.LookRotation(fwd, Vector3.up);
-                input = inputFrame * input;
-                if (input.magnitude > 0.001f)
+                Vector3 fwd = worldDirection
+                    ? Vector3.forward
+                    : transform.position - Camera.main.transform.position;
+                fwd.y = 0;
+                fwd = fwd.normalized;
+                if (fwd.magnitude > 0.001f)
                 {
-                    rb.AddForce(speed * input);
-                    if (rotatePlayer)
-                        transform.rotation = Quaternion.LookRotation(input.normalized, Vector3.up);
+                    Quaternion inputFrame = Quaternion.LookRotation(fwd, Vector3.up);
+                    input = inputFrame * input;
+                    if (input.magnitude > 0.001f)
+                    {
+                        rb.AddForce(speed * input);
+                        if (rotatePlayer)
+                            transform.rotation = Quaternion.LookRotation(input.normalized, Vector3.up);
+                    }
                 }
             }
-        }
-        if (Input.GetKeyDown(KeyCode.Space) && spaceAction != null)
-            spaceAction();
-        if (Input.GetKeyDown(KeyCode.Return) && enterAction != null)
-            enterAction();
-        
+
+            if (Input.GetKeyDown(KeyCode.Space) && spaceAction != null)
+                spaceAction();
+            if (Input.GetKeyDown(KeyCode.Return) && enterAction != null)
+                enterAction();
+
 #else
         InputSystemHelper.EnableBackendsWarningMessage();
 #endif
-	}
+        }
+    }
 }
