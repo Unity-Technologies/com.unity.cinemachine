@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Standalone profiler no longer crashes with CM.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
+- Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
 
 
 ## [2.8.4] - 2021-12-10
@@ -25,7 +26,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Removed legacy .unitypackages
 - Regression fix: could not change the projection of the main camera if a CM virtual camera is active
 - Regression fix: compilation errors when physics module is not present
-- Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
 
 
 ## [2.8.2] - 2021-10-19
