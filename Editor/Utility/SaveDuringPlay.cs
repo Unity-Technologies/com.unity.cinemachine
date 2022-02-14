@@ -140,14 +140,42 @@ namespace SaveDuringPlay
                 && !typeof(ScriptableObject).IsAssignableFrom(type)
                 && !typeof(GameObject).IsAssignableFrom(type))
             {
-                if (IsICollection(type))
+                if (type.IsArray)
                 {
+                    isLeaf = false;
+                    var array = obj as Array;
+                    object arrayLength = array.Length;
+                    if (OnLeafField != null && OnLeafField(
+                            fullName + ".Length", arrayLength.GetType(), ref arrayLength))
+                    {
+                        Array newArray = Array.CreateInstance(
+                                array.GetType().GetElementType(), Convert.ToInt32(arrayLength));
+                        Array.Copy(array, 0, newArray, 0, Math.Min(array.Length, newArray.Length));
+                        array = newArray;
+                        doneSomething = true;
+                    }
+                    for (int i = 0; i < array.Length; ++i)
+                    {
+                        object element = array.GetValue(i);
+                        if (ScanFields(fullName + "[" + i + "]", array.GetType().GetElementType(), ref element))
+                        {
+                            array.SetValue(element, i);
+                            doneSomething = true;
+                        }
+                    }
+                    if (doneSomething)
+                        obj = array;
+                }
+                else if (IsICollection(type))
+                {
+                    Array a;
                     isLeaf = false;
                     var collection = obj as IList;
                     object length = collection.Count;
                     if (OnLeafField != null && OnLeafField(
                         fullName + ".Length", length.GetType(), ref length))
                     {
+                        // TODO: for adding removing...
                         // Array newArray = Array.CreateInstance(
                         //     array.GetType().GetElementType(), Convert.ToInt32(arrayLength));
                         // Array.Copy(array, 0, newArray, 0, Math.Min(array.Length, newArray.Length));
@@ -167,32 +195,6 @@ namespace SaveDuringPlay
                     
                     if (doneSomething)
                         obj = collection;
-                }
-                else if (type.IsArray)
-                {
-                    isLeaf = false;
-                    var array = obj as Array;
-                    object arrayLength = array.Length;
-                    if (OnLeafField != null && OnLeafField(
-                            fullName + ".Length", arrayLength.GetType(), ref arrayLength))
-                    {
-                        // Array newArray = Array.CreateInstance(
-                        //         array.GetType().GetElementType(), Convert.ToInt32(arrayLength));
-                        // Array.Copy(array, 0, newArray, 0, Math.Min(array.Length, newArray.Length));
-                        // array = newArray;
-                        doneSomething = true;
-                    }
-                    for (int i = 0; i < array.Length; ++i)
-                    {
-                        object element = array.GetValue(i);
-                        if (ScanFields(fullName + "[" + i + "]", array.GetType().GetElementType(), ref element))
-                        {
-                            array.SetValue(element, i);
-                            doneSomething = true;
-                        }
-                    }
-                    if (doneSomething)
-                        obj = array;
                 }
                 else
                 {
