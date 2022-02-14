@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -138,7 +140,45 @@ namespace SaveDuringPlay
                 && !typeof(ScriptableObject).IsAssignableFrom(type)
                 && !typeof(GameObject).IsAssignableFrom(type))
             {
-                // Is it an array?
+                // if (IsIEnumerable(type))
+                // {
+                //     // var enumerable = obj as IEnumerable;
+                //     // foreach (var egg in enumerable)
+                //     // {
+                //     //     var a = egg;
+                //     // }
+                //     //
+                //     // var e = enumerable.GetEnumerator();
+                //     // while (e.MoveNext())
+                //     // {
+                //     //     var a = e.Current;
+                //     // }
+                //
+                //     isLeaf = false;
+                //     var enumerable = obj as IEnumerable;
+                //     object length = enumerable.Cast<object>().Count();
+                //     if (OnLeafField != null && OnLeafField(
+                //         fullName + ".Length", length.GetType(), ref length))
+                //     {
+                //         // Array newArray = Array.CreateInstance(
+                //         //     array.GetType().GetElementType(), Convert.ToInt32(arrayLength));
+                //         // Array.Copy(array, 0, newArray, 0, Math.Min(array.Length, newArray.Length));
+                //         // array = newArray;
+                //         // doneSomething = true;
+                //     }
+                //
+                //     int i = 0;
+                //     foreach (var e in enumerable)
+                //     {
+                //         var element = e;
+                //         if (ScanFields(fullName + "[" + i + "]", type, ref element))
+                //         {
+                //             
+                //         }
+                //         i++;
+                //     }
+                // }
+                // else 
                 if (type.IsArray)
                 {
                     isLeaf = false;
@@ -147,10 +187,10 @@ namespace SaveDuringPlay
                     if (OnLeafField != null && OnLeafField(
                             fullName + ".Length", arrayLength.GetType(), ref arrayLength))
                     {
-                        Array newArray = Array.CreateInstance(
-                                array.GetType().GetElementType(), Convert.ToInt32(arrayLength));
-                        Array.Copy(array, 0, newArray, 0, Math.Min(array.Length, newArray.Length));
-                        array = newArray;
+                        // Array newArray = Array.CreateInstance(
+                        //         array.GetType().GetElementType(), Convert.ToInt32(arrayLength));
+                        // Array.Copy(array, 0, newArray, 0, Math.Min(array.Length, newArray.Length));
+                        // array = newArray;
                         doneSomething = true;
                     }
                     for (int i = 0; i < array.Length; ++i)
@@ -195,6 +235,13 @@ namespace SaveDuringPlay
                     doneSomething = true;
 
             return doneSomething;
+        }
+        
+        static bool IsIEnumerable(Type requestType)
+        {
+            var isIEnumerable = typeof(IEnumerable).IsAssignableFrom(requestType);
+            var notString = !typeof(string).IsAssignableFrom(requestType);
+            return isIEnumerable && notString;
         }
 
         bool ScanFields(string fullName, MonoBehaviour b)
