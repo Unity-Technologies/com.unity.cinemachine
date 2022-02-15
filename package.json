@@ -13,11 +13,6 @@
             "displayName": "Cinemachine Example Scenes",
             "description": "Sample scenes illustrating various ways to use Cinemachine",
             "path": "Samples~/Cinemachine Example Scenes"
-        },
-        {
-            "displayName": "Cinemachine and Splines Example Scenes",
-            "description": "Sample scenes illustrating how to use Cinemachine with the Splines package. Sample scenes demonstrate a new SplineDolly body component and a DollyCart that rolls on Splines. Splines package needs to be installed for these example scenes.",
-            "path": "Samples~/Cinemachine and Splines Example Scenes"
         }
     ]
 }
