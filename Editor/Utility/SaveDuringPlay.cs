@@ -166,35 +166,33 @@ namespace SaveDuringPlay
                     if (doneSomething)
                         obj = array;
                 }
-                else if (IsICollection(type))
+                else if (IsIList(type))
                 {
-                    Array a;
+                    var serializedObject = obj as SerializedObject;
                     isLeaf = false;
-                    var collection = obj as IList;
-                    object length = collection.Count;
+                    var list = obj as IList;
+                    object length = list.Count;
                     if (OnLeafField != null && OnLeafField(
                         fullName + ".Length", length.GetType(), ref length))
                     {
                         // TODO: for adding removing...
-                        // Array newArray = Array.CreateInstance(
-                        //     array.GetType().GetElementType(), Convert.ToInt32(arrayLength));
-                        // Array.Copy(array, 0, newArray, 0, Math.Min(array.Length, newArray.Length));
-                        // array = newArray;
-                        // doneSomething = true;
+                        var newList = list;
+                        list = newList;
+                        doneSomething = true;
                     }
 
-                    for (int i = 0; i < collection.Count; ++i)
+                    for (int i = 0; i < list.Count; ++i)
                     {
-                        var c = collection[i];
+                        var c = list[i];
                         if (ScanFields(fullName + "[" + i + "]", c.GetType(), ref c))
                         {
-                            collection[i] = c;
+                            list[i] = c;
                             doneSomething = true;
                         }
                     }
                     
                     if (doneSomething)
-                        obj = collection;
+                        obj = list;
                 }
                 else
                 {
@@ -228,9 +226,9 @@ namespace SaveDuringPlay
             return doneSomething;
         }
         
-        static bool IsICollection(Type requestType)
+        static bool IsIList(Type requestType)
         {
-            return typeof(ICollection).IsAssignableFrom(requestType);
+            return typeof(IList).IsAssignableFrom(requestType);
         }
 
         bool ScanFields(string fullName, MonoBehaviour b)
