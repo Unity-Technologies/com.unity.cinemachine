@@ -61,14 +61,6 @@ namespace Cinemachine.Samples
         [SplineRollHandle]
         public SplineData<float> rollOverride;
 
-        /// <summary>Default offset of the cart on the spline.</summary>
-        public float defaultOffset = 0f;
-        
-        /// <summary>Offset value overrides for specific location on the spline. Could be useful for simulating a Jib Arm.</summary>
-        [Tooltip("Offset value overrides for specific location on the spline. Could be useful for simulating a Jib Arm.")]
-        [DriftHandle]
-        public SplineData<float> offsetOverride;
-        
         /// <summary>
         /// Subscribe to onSplineChanged if you'd like to react to changes to the Spline attached to this vcam.
         /// This action is invoked by the Spline's changed event when a spline property is modified. Available in editor only.
@@ -151,14 +143,7 @@ namespace Cinemachine.Samples
             SplineUtility.Evaluate(spline, m_NormalizedPosition, 
                 out var posOnSplineLocal, out var direction, out var upSplineDirection);
             direction = FixDirection(direction, spline);
-            var right = math.normalize(math.cross(upSplineDirection, direction));
-            var offsetOverride = 
-                (this.offsetOverride == null || this.offsetOverride.Count == 0) ? 
-                    defaultOffset : 
-                    this.offsetOverride.Evaluate(spline, m_NormalizedPosition, PathIndexUnit.Normalized, 
-                        new UnityEngine.Splines.Interpolators.LerpFloat());
-            
-            transform.position = m_Spline.transform.TransformPoint(posOnSplineLocal + offsetOverride * right);
+            transform.position = m_Spline.transform.TransformPoint(posOnSplineLocal);
 
             var roll = 
                 (rollOverride == null  || rollOverride.Count == 0) ?
@@ -189,7 +174,4 @@ namespace Cinemachine.Samples
             this.maxSpeed = maxSpeed;
         }
     }
-    
-    [AttributeUsage(AttributeTargets.Field)]
-    public class DriftHandleAttribute : SplineDataHandleAttribute {}
 }

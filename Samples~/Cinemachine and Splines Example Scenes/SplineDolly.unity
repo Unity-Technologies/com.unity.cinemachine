@@ -468,16 +468,6 @@ MonoBehaviour:
       m_Value: -90
     - m_Index: 6
       m_Value: 0
-  defaultOffset: 0
-  offsetOverride:
-    m_IndexUnit: 2
-    m_DataPoints:
-    - m_Index: 4
-      m_Value: 0
-    - m_Index: 5
-      m_Value: 1
-    - m_Index: 6
-      m_Value: 0
 --- !u!4 &859386659
 Transform:
   m_ObjectHideFlags: 0
@@ -793,7 +783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f555523173bd4788a699439b1709a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: 
+  m_Title: SplineDolly
   m_Description: "This example demostrates how to use SplineDolly body component.
     \nNotice, that Vcam Dolly Track is a straight line, but the vcam still experiences
     roll along it. This is, because Spline Dolly Vcam has an offset with respect
@@ -1031,7 +1021,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.12, y: 1}
+    m_SensorSize: {x: 2.11625, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

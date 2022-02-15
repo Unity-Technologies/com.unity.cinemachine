@@ -169,7 +169,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.12, y: 1}
+    m_SensorSize: {x: 2.11625, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -240,10 +240,6 @@ MonoBehaviour:
     - m_Index: 3
       m_Value: 10
   rollOverride:
-    m_IndexUnit: 2
-    m_DataPoints: []
-  defaultOffset: 0
-  offsetOverride:
     m_IndexUnit: 2
     m_DataPoints: []
 --- !u!4 &406336973
@@ -451,7 +447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f555523173bd4788a699439b1709a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: 
+  m_Title: SplineDollyCart
   m_Description: 'This example demostrates how to use SplineDollyCart and how to
     place a vcam in it.
 
@@ -542,14 +538,14 @@ MonoBehaviour:
   m_ScreenY: 0.5
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
-  m_SoftZoneWidth: 0.8
-  m_SoftZoneHeight: 0.8
+  m_SoftZoneWidth: 0.1
+  m_SoftZoneHeight: 0.2
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
   m_GroupFramingSize: 0.8
   m_FramingMode: 2
-  m_FrameDamping: 8
+  m_FrameDamping: 2
   m_AdjustmentMode: 0
   m_MaxDollyIn: 5000
   m_MaxDollyOut: 5000
@@ -668,7 +664,7 @@ GameObject:
   - component: {fileID: 901190887}
   - component: {fileID: 901190886}
   m_Layer: 0
-  m_Name: Dolly Track Saddle for Carts
+  m_Name: Dolly Track for Carts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -987,7 +983,7 @@ GameObject:
   - component: {fileID: 1185571790}
   - component: {fileID: 1185571789}
   m_Layer: 0
-  m_Name: Dolly Track Elipse for Vcam's Cart
+  m_Name: Dolly Track for Vcam's Cart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1279,10 +1275,6 @@ MonoBehaviour:
       m_Value: -45
     - m_Index: 3
       m_Value: 0
-  defaultOffset: 0
-  offsetOverride:
-    m_IndexUnit: 2
-    m_DataPoints: []
 --- !u!4 &1456349643
 Transform:
   m_ObjectHideFlags: 0
@@ -1437,10 +1429,6 @@ MonoBehaviour:
   rollOverride:
     m_IndexUnit: 2
     m_DataPoints: []
-  defaultOffset: 0
-  offsetOverride:
-    m_IndexUnit: 2
-    m_DataPoints: []
 --- !u!4 &1529322730
 Transform:
   m_ObjectHideFlags: 0
@@ -1512,10 +1500,6 @@ MonoBehaviour:
       m_Value: -45
     - m_Index: 3
       m_Value: 0
-  defaultOffset: 0
-  offsetOverride:
-    m_IndexUnit: 2
-    m_DataPoints: []
 --- !u!4 &1708967604
 Transform:
   m_ObjectHideFlags: 0
