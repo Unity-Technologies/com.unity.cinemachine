@@ -209,6 +209,39 @@ namespace Cinemachine
                 return m_Roll;
             }
         }
+
+        internal void EvaluateSpline(float tNormalized, out Vector3 position, out Quaternion rotation)
+        {
+            m_Spline.Evaluate(tNormalized, out var localPosition, out var localTangent, out var localUp);
+            position = localPosition;
+            Vector3 fwd = localTangent;
+            Vector3 up = localUp;
+
+            // fix tangent when 0
+            if (fwd.Equals(Vector3.zero))
+            {
+                const float delta = 0.001f;
+                var atEnd = tNormalized > 1.0f - delta;
+                var t1 = atEnd ? tNormalized - delta : tNormalized + delta;
+                var p = m_Spline.EvaluatePosition(t1);
+                fwd = atEnd ? localPosition - p : p - localPosition;
+                fwd.Normalize();
+            }
+            // GML todo: what if fwd and up are parallel?
+            rotation = Quaternion.LookRotation(fwd, up);
+
+            // Apply extra roll
+            var roll = SplineRoll;
+            if (roll != null && roll.enabled)
+            {
+                float rollValue = roll.RollOverride.Evaluate(m_Spline.Spline, tNormalized, 
+                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
+                var rollRotation = Quaternion.AngleAxis(-rollValue, fwd);
+                rotation = Quaternion.LookRotation(fwd, rollRotation * localUp);
+            }
+        }
+
+
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
@@ -275,32 +308,8 @@ namespace Cinemachine
                 normalizedSplinePosition = m_PreviousNormalizedSplinePosition - offset;
             }
             m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
-            m_Spline.Evaluate(normalizedSplinePosition, 
-                out var localPosition, out var localTangent, out var localUp);
-            Vector3 newCameraPos = localPosition;
-            // fix tangent when 0
-            if (!localTangent.Equals(Vector3.zero))
-            {
-                m_CorrectedTangent = localTangent;
-                if (m_CorrectedTangent.Equals(localUp))
-                {
-                    // Find tangent perpendicular to localUp, localUp is always normalized
-                    var newTangent = new Vector3(localUp.z, localUp.z, -localUp.x - localUp.y);
-                    m_CorrectedTangent = !newTangent.Equals(Vector3.zero)
-                        ? newTangent
-                        : new Vector3(-localUp.y - localUp.z, localUp.x, localUp.x);
-                }
-            }
-            var newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, localUp);
 
-            CinemachineSplineRoll roll = SplineRoll;
-            if (roll != null && roll.enabled)
-            {
-                float rollValue = roll.RollOverride.Evaluate(spline, normalizedSplinePosition, 
-                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
-                var rollRotation = Quaternion.AngleAxis(-rollValue, m_CorrectedTangent);
-                newSplineOrientation = Quaternion.LookRotation(m_CorrectedTangent, rollRotation * localUp);
-            }
+            EvaluateSpline(normalizedSplinePosition, out var newCameraPos, out var newSplineOrientation);
 
             // Apply the offset to get the new camera position
             var offsetX = newSplineOrientation * Vector3.right;
@@ -328,8 +337,7 @@ namespace Cinemachine
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 float t = VirtualCamera.DetachedFollowTargetDamp(1, m_AngularDamping, deltaTime);
-                newOrientation = Quaternion.Slerp(
-                    m_PreviousOrientation, newOrientation, t);
+                newOrientation = Quaternion.Slerp(m_PreviousOrientation, newOrientation, t);
             }
             m_PreviousOrientation = newOrientation;
 
@@ -362,7 +370,6 @@ namespace Cinemachine
         float m_PreviousNormalizedSplinePosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         Vector3 m_PreviousCameraPosition = Vector3.zero;
-        Vector3 m_CorrectedTangent = Vector3.forward; // represents the most recent non-zero tangent vector
     }
 }
 #endif
