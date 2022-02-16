@@ -234,7 +234,7 @@ namespace Cinemachine
             var roll = SplineRoll;
             if (roll != null && roll.enabled)
             {
-                float rollValue = roll.RollOverride.Evaluate(m_Spline.Spline, tNormalized, 
+                float rollValue = roll.Roll.Evaluate(m_Spline.Spline, tNormalized, 
                     PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
                 var rollRotation = Quaternion.AngleAxis(-rollValue, fwd);
                 rotation = Quaternion.LookRotation(fwd, rollRotation * localUp);
