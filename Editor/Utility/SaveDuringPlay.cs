@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SaveDuringPlay
 {
@@ -166,18 +167,34 @@ namespace SaveDuringPlay
                     if (doneSomething)
                         obj = array;
                 }
-                else if (IsIList(type))
+                else if (typeof(IList).IsAssignableFrom(type))
                 {
-                    var serializedObject = obj as SerializedObject;
                     isLeaf = false;
                     var list = obj as IList;
                     object length = list.Count;
                     if (OnLeafField != null && OnLeafField(
                         fullName + ".Length", length.GetType(), ref length))
                     {
-                        // TODO: for adding removing...
-                        var newList = list;
-                        list = newList;
+                        var newLength = (int)length;
+                        var currentLength = list.Count;
+                        for (int i = 0; i < currentLength - newLength; ++i)
+                        {
+                            list.RemoveAt(0);
+                        }
+                        
+                        object newValue;
+                        if (list.Count <= 0)
+                        {
+                            newValue = GetValue(type.GetGenericArguments()[0]);
+                        }
+                        else
+                        {
+                            newValue = list[0];
+                        }
+                        for (int i = 0;  i < newLength - currentLength; ++i)
+                        {
+                            list.Add(newValue);
+                        }
                         doneSomething = true;
                     }
 
@@ -225,10 +242,11 @@ namespace SaveDuringPlay
 
             return doneSomething;
         }
-        
-        static bool IsIList(Type requestType)
+
+        static object GetValue(Type type)
         {
-            return typeof(IList).IsAssignableFrom(requestType);
+            Assert.IsNotNull(type);
+            return Activator.CreateInstance(type);
         }
 
         bool ScanFields(string fullName, MonoBehaviour b)
@@ -281,8 +299,6 @@ namespace SaveDuringPlay
             return doneSomething;
         }
     };
-    
-
 
     /// <summary>
     /// Using reflection, this class scans a GameObject (and optionally its children)
