@@ -209,7 +209,7 @@ namespace Cinemachine
 
         CinemachineSplineRoll m_RollCache; // don't use this directly
 
-        CinemachineSplineRoll SplineRoll
+        internal CinemachineSplineRoll SplineRoll
         {
             get
             {
@@ -398,7 +398,7 @@ namespace Cinemachine
             if (roll != null && roll.enabled)
             {
                 float rollValue = roll.RollOverride.Evaluate(spline.Spline, tNormalized, 
-                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.SmoothStepFloat());
+                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
                 rotation = Quaternion.AngleAxis(-rollValue, fwd) * rotation;
             }
             return true;
