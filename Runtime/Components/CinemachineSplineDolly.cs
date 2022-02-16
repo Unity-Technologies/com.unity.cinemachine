@@ -191,53 +191,33 @@ namespace Cinemachine
             m_AngularDamping = Mathf.Clamp(m_AngularDamping, 0, 20);
         }
 
-        CinemachineSplineRoll m_Roll; // don't use this directly
+        private void OnEnable()
+        {
+            RefreshRollCache();
+        }
+
+        void RefreshRollCache()
+        {
+            VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
+#if UNITY_EDITOR
+            if (m_RollCache != null)
+                m_RollCache.SplineContainer = m_Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes
+#endif
+            if (m_RollCache == null)
+                m_Spline.TryGetComponent(out m_RollCache); // check if our spline has CinemachineSplineRoll
+        }
+
+        CinemachineSplineRoll m_RollCache; // don't use this directly
+
         CinemachineSplineRoll SplineRoll
         {
             get
             {
-                if (m_Roll == null) {
-                    VirtualCamera.TryGetComponent(out m_Roll); // check if vcam has CinemachineSplineRoll
 #if UNITY_EDITOR
-                    if (m_Roll != null)
-                        m_Roll.SplineContainer = m_Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes
+                if (!Application.isPlaying)
+                    RefreshRollCache();
 #endif
-                }
-                if (m_Roll == null)
-                    m_Spline.TryGetComponent(out m_Roll); // check if our spline has CinemachineSplineRoll
-
-                return m_Roll;
-            }
-        }
-
-        internal void EvaluateSpline(float tNormalized, out Vector3 position, out Quaternion rotation)
-        {
-            m_Spline.Evaluate(tNormalized, out var localPosition, out var localTangent, out var localUp);
-            position = localPosition;
-            Vector3 fwd = localTangent;
-            Vector3 up = localUp;
-
-            // fix tangent when 0
-            if (fwd.Equals(Vector3.zero))
-            {
-                const float delta = 0.001f;
-                var atEnd = tNormalized > 1.0f - delta;
-                var t1 = atEnd ? tNormalized - delta : tNormalized + delta;
-                var p = m_Spline.EvaluatePosition(t1);
-                fwd = atEnd ? localPosition - p : p - localPosition;
-                fwd.Normalize();
-            }
-            // GML todo: what if fwd and up are parallel?
-            rotation = Quaternion.LookRotation(fwd, up);
-
-            // Apply extra roll
-            var roll = SplineRoll;
-            if (roll != null && roll.enabled)
-            {
-                float rollValue = roll.RollOverride.Evaluate(m_Spline.Spline, tNormalized, 
-                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
-                var rollRotation = Quaternion.AngleAxis(-rollValue, fwd);
-                rotation = Quaternion.LookRotation(fwd, rollRotation * localUp);
+                return m_RollCache;
             }
         }
         
@@ -290,6 +270,7 @@ namespace Cinemachine
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
+                const float k_MaxNormalizedValue = 1f;
                 float prev = m_PreviousNormalizedSplinePosition;
                 float next = normalizedSplinePosition;
                 if (spline.Closed && Mathf.Abs(next - prev) > k_MaxNormalizedValue / 2f)
@@ -310,7 +291,8 @@ namespace Cinemachine
             }
             m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
 
-            EvaluateSpline(normalizedSplinePosition, out var newCameraPos, out var newSplineOrientation);
+            m_Spline.EvaluateSplineWithRoll(
+                SplineRoll, normalizedSplinePosition, out var newCameraPos, out var newSplineOrientation);
 
             // Apply the offset to get the new camera position
             var offsetX = newSplineOrientation * Vector3.right;
@@ -347,8 +329,6 @@ namespace Cinemachine
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
 
-        const float k_MaxNormalizedValue = 1f;
-        
         /// <summary>
         /// Returns normalized position between 0 and 1. For example, 1.2 -> 0.2, -0.2 -> 0.8.
         /// </summary>
@@ -381,6 +361,48 @@ namespace Cinemachine
         float m_PreviousNormalizedSplinePosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         Vector3 m_PreviousCameraPosition = Vector3.zero;
+    }
+
+    internal static class SplineContainerExtensions
+    {
+        public static bool EvaluateSplineWithRoll(
+            this SplineContainer spline,
+            CinemachineSplineRoll roll,
+            float tNormalized, 
+            out Vector3 position, out Quaternion rotation)
+        {
+            if (!spline.Evaluate(tNormalized, out var localPosition, out var localTangent, out var localUp))
+            {
+                position = localPosition;
+                rotation = Quaternion.identity;
+                return false;
+            }
+
+            position = localPosition;
+            Vector3 fwd = localTangent;
+            Vector3 up = localUp;
+
+            // fix tangent when 0
+            if (fwd.Equals(Vector3.zero))
+            {
+                const float delta = 0.001f;
+                var atEnd = tNormalized > 1.0f - delta;
+                var t1 = atEnd ? tNormalized - delta : tNormalized + delta;
+                var p = spline.EvaluatePosition(t1);
+                fwd = atEnd ? localPosition - p : p - localPosition;
+            }
+            // GML todo: what if fwd and up are parallel?
+            rotation = Quaternion.LookRotation(fwd, up);
+
+            // Apply extra roll
+            if (roll != null && roll.enabled)
+            {
+                float rollValue = roll.RollOverride.Evaluate(spline.Spline, tNormalized, 
+                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.SmoothStepFloat());
+                rotation = Quaternion.AngleAxis(-rollValue, fwd) * rotation;
+            }
+            return true;
+        }
     }
 }
 #endif
