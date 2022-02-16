@@ -240,8 +240,7 @@ namespace Cinemachine
                 rotation = Quaternion.LookRotation(fwd, rollRotation * localUp);
             }
         }
-
-
+        
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
@@ -261,6 +260,10 @@ namespace Cinemachine
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
                 SplineUtility.ConvertIndexUnit(spline, m_SplinePosition, m_PositionUnits, PathIndexUnit.Normalized);
+            if (spline.Closed)
+            {
+                normalizedSplinePosition = NormalizePosition01(normalizedSplinePosition);
+            }
             
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
@@ -287,20 +290,18 @@ namespace Cinemachine
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                float maxUnit = 1; // we are always using normalized unit [0-1]
+                float prev = m_PreviousNormalizedSplinePosition;
+                float next = normalizedSplinePosition;
+                if (spline.Closed && Mathf.Abs(next - prev) > k_MaxNormalizedValue / 2f)
                 {
-                    float prev = m_PreviousNormalizedSplinePosition;
-                    float next = normalizedSplinePosition;
-                    if (spline.Closed && Mathf.Abs(next - prev) > maxUnit / 2)
-                    {
-                        if (next > prev)
-                            prev += maxUnit;
-                        else
-                            prev -= maxUnit;
-                    }
-                    m_PreviousNormalizedSplinePosition = prev;
-                    normalizedSplinePosition = next;
+                    if (next > prev)
+                        prev += k_MaxNormalizedValue;
+                    else
+                        prev -= k_MaxNormalizedValue;
                 }
+
+                m_PreviousNormalizedSplinePosition = prev;
+                normalizedSplinePosition = next;
 
                 // Apply damping in the spline direction
                 float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
@@ -344,6 +345,16 @@ namespace Cinemachine
             curState.RawOrientation = newOrientation;
             if (m_CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
+        }
+
+        const float k_MaxNormalizedValue = 1f;
+        
+        /// <summary>
+        /// Returns normalized position between 0 and 1. For example, 1.2 -> 0.2, -0.2 -> 0.8.
+        /// </summary>
+        static float NormalizePosition01(float tNormalized)
+        {
+            return tNormalized - Mathf.Floor(tNormalized);
         }
 
         Quaternion GetCameraOrientationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
