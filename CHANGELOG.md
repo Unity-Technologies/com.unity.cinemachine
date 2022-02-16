@@ -19,9 +19,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New feature: CinemachineBrain may control other GameObject instead of the one it is attached to.
 - Bugfix: Cinemachine assigns a default input controller delegate that returns 0 when the legacy input system is disabled.
 - Cinemachine example scenes show informative text when used with Input System instead of throwing error messages.
-- Regression fix: compilation errors when physics module is not present
-- GameObjects created with Gameobject menu items now follow Unity naming conventions.
-- Handles now consistent with design
 - Regression fix: compilation errors when physics module is not present.
 - GameObjects created with Gameobject menu items now follow Unity naming conventions.
 - Regression fix: virtual cameras no longer forget that they are targeting groups on domain reload.
