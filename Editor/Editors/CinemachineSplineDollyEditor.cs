@@ -40,11 +40,11 @@ namespace Cinemachine.Editor
         static void DrawDollyGizmo(CinemachineSplineDolly dolly, Color pathColor, float width)
         {
             var spline = dolly.m_Spline;
-            if (dolly.m_Spline == null || spline.Spline == null || spline.Spline.Count == 0)
+            if (spline == null || spline.Spline == null || spline.Spline.Count == 0)
                 return;
 
             var length = spline.CalculateLength();
-            var numSteps = (int)Mathf.Round(Mathf.Clamp(length / width, 3, 1000));
+            var numSteps = Mathf.RoundToInt(Mathf.Clamp(length / width, 3, 1000));
             var stepSize = 1.0f / numSteps;
             var halfWidth = width * 0.5f;
 
