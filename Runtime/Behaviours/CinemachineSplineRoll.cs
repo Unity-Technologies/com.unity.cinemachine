@@ -8,7 +8,7 @@ namespace Cinemachine
     /// <summary>
     /// Extension that can be added to a SplineContainer or a vcam that uses a SplineContainer, for example a vcam
     /// that has SplineDolly as Body component.
-    /// - When CinemachineSplineRollExtension is added to a gameObject that has SplineContainer,
+    /// - When CinemachineSplineRoll is added to a gameObject that has SplineContainer,
     /// then the roll affects any vcam that reads that SplineContainer globally.
     /// - When CinemachineSplineRoll is added to a vcam, then roll only affects that vcam locally.
     /// </summary>
