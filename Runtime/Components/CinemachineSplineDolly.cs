@@ -209,7 +209,7 @@ namespace Cinemachine
 
         CinemachineSplineRoll m_RollCache; // don't use this directly
 
-        internal CinemachineSplineRoll SplineRoll
+        CinemachineSplineRoll SplineRoll
         {
             get
             {
