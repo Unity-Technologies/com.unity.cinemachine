@@ -180,7 +180,7 @@ namespace SaveDuringPlay
                         var currentLength = list.Count;
                         for (int i = 0; i < currentLength - newLength; ++i)
                         {
-                            list.RemoveAt(0); // make list shorter if needed
+                            list.RemoveAt(currentLength - i - 1); // make list shorter if needed
                         }
                         for (int i = 0;  i < newLength - currentLength; ++i)
                         {
