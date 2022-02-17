@@ -42,7 +42,7 @@ namespace Cinemachine.Editor
                 return;
 
             var length = spline.CalculateLength();
-            var numSteps = Mathf.RoundToInt(Mathf.Clamp(length / width, 3, maxSteps));
+            var numSteps = Mathf.FloorToInt(Mathf.Clamp(length / width, 3, maxSteps));
             var stepSize = 1.0f / numSteps;
             var halfWidth = width * 0.5f;
 
@@ -50,13 +50,14 @@ namespace Cinemachine.Editor
             spline.EvaluateSplineWithRoll(splineRoll, 0, out var p, out var q);
             var w = (q * Vector3.right) * halfWidth;
 
+            var indices = new int[2 * 3 * numSteps];
+            numSteps++; // ceil
             var vertices = new Vector3[2 * numSteps];
             var normals = new Vector3[vertices.Length];
             int vIndex = 0;
             vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
             vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
 
-            var indices = new int[2 * 3 * numSteps];
             int iIndex = 0;
 
             for (int i = 1; i < numSteps; ++i)
