@@ -1,4 +1,5 @@
 #if CINEMACHINE_UNITY_SPLINES
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,6 +9,19 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     sealed class CinemachineSplineDollyEditor : BaseEditor<CinemachineSplineDolly>
     {
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        {
+            base.GetExcludedPropertiesInInspector(excluded);
+            excluded.Add(FieldPath(x => x.m_SplinePosition));
+            excluded.Add(FieldPath(x => x.m_PositionUnits));
+            excluded.Add(FieldPath(x => x.m_SplineOffset));
+            excluded.Add(FieldPath(x => x.m_CameraUp));
+            excluded.Add(FieldPath(x => x.m_DampingEnabled));
+            excluded.Add(FieldPath(x => x.m_Damping));
+            excluded.Add(FieldPath(x => x.m_AngularDamping));
+            excluded.Add(FieldPath(x => x.m_AutoDolly));
+        }
+
         public override void OnInspectorGUI()
         {
             BeginInspector();

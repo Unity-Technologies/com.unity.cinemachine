@@ -55,6 +55,26 @@ namespace Cinemachine
             + "the camera Aim behaviours will always try to respect the Up direction.")]
         public CameraUpMode m_CameraUp = CameraUpMode.Default;
         
+        /// <summary>Different ways to set the camera's up vector</summary>
+        public enum CameraUpMode
+        {
+            /// <summary>Leave the camera's up vector alone.  It will be set according to the Brain's WorldUp.</summary>
+            Default,
+            /// <summary>Take the up vector from the spline's up vector at the current point</summary>
+            Spline,
+            /// <summary>Take the up vector from the spline's up vector at the current point, but with the roll zeroed out</summary>
+            SplineNoRoll,
+            /// <summary>Take the up vector from the Follow target's up vector</summary>
+            FollowTarget,
+            /// <summary>Take the up vector from the Follow target's up vector, but with the roll zeroed out</summary>
+            FollowTargetNoRoll,
+        };
+
+        /// <summary>
+        /// Is damping enabled.
+        /// </summary>
+        public bool m_DampingEnabled;
+        
         /// <summary>How aggressively the camera tries to maintain the offset along
         /// the x, y, or z directions in spline local space.
         /// Meaning:
@@ -76,21 +96,6 @@ namespace Cinemachine
             "Using different settings per axis can yield a wide range of camera behaviors.")]
         public Vector3 m_Damping = Vector3.zero;
 
-        /// <summary>Different ways to set the camera's up vector</summary>
-        public enum CameraUpMode
-        {
-            /// <summary>Leave the camera's up vector alone.  It will be set according to the Brain's WorldUp.</summary>
-            Default,
-            /// <summary>Take the up vector from the spline's up vector at the current point</summary>
-            Spline,
-            /// <summary>Take the up vector from the spline's up vector at the current point, but with the roll zeroed out</summary>
-            SplineNoRoll,
-            /// <summary>Take the up vector from the Follow target's up vector</summary>
-            FollowTarget,
-            /// <summary>Take the up vector from the Follow target's up vector, but with the roll zeroed out</summary>
-            FollowTargetNoRoll,
-        };
-        
         /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Range(0f, 20f)]
@@ -159,7 +164,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => 
+        public override float GetMaxDampTime() => m_DampingEnabled ? 0 :
             Mathf.Max(Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)), m_AngularDamping);
 
         /// <summary>
@@ -285,9 +290,12 @@ namespace Cinemachine
                 normalizedSplinePosition = next;
 
                 // Apply damping in the spline direction
-                float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
-                offset = Damper.Damp(offset, m_Damping.z, deltaTime);
-                normalizedSplinePosition = m_PreviousNormalizedSplinePosition - offset;
+                if (m_DampingEnabled)
+                {
+                    float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
+                    offset = Damper.Damp(offset, m_Damping.z, deltaTime);
+                    normalizedSplinePosition = m_PreviousNormalizedSplinePosition - offset;
+                }
             }
             m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
 
@@ -303,7 +311,7 @@ namespace Cinemachine
             newCameraPos += m_SplineOffset.z * offsetZ;
 
             // Apply damping to the remaining directions
-            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            if (m_DampingEnabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 Vector3 currentCameraPos = m_PreviousCameraPosition;
                 Vector3 delta = (currentCameraPos - newCameraPos);
@@ -317,7 +325,7 @@ namespace Cinemachine
 
             // Set the orientation and up
             Quaternion newOrientation = GetCameraOrientationAtSplinePoint(newSplineOrientation, curState.ReferenceUp);
-            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            if (m_DampingEnabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 float t = VirtualCamera.DetachedFollowTargetDamp(1, m_AngularDamping, deltaTime);
                 newOrientation = Quaternion.Slerp(m_PreviousOrientation, newOrientation, t);
