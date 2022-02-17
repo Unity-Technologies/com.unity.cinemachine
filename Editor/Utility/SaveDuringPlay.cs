@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -172,6 +171,8 @@ namespace SaveDuringPlay
                     isLeaf = false;
                     var list = obj as IList;
                     object length = list.Count;
+                    
+                    // restore list size
                     if (OnLeafField != null && OnLeafField(
                         fullName + ".Length", length.GetType(), ref length))
                     {
@@ -179,16 +180,16 @@ namespace SaveDuringPlay
                         var currentLength = list.Count;
                         for (int i = 0; i < currentLength - newLength; ++i)
                         {
-                            list.RemoveAt(0);
+                            list.RemoveAt(0); // make list shorter if needed
                         }
-                        
                         for (int i = 0;  i < newLength - currentLength; ++i)
                         {
-                            list.Add(GetValue(type.GetGenericArguments()[0]));
+                            list.Add(GetValue(type.GetGenericArguments()[0])); // make list longer if needed
                         }
                         doneSomething = true;
                     }
 
+                    // restore values
                     for (int i = 0; i < list.Count; ++i)
                     {
                         var c = list[i];
