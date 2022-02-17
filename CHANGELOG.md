@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
 - Bugfix: SensorSize is not saved when not using physical camera.
 - Bugfix: No redundant RepaintAllViews calls.
+- Bugfix: SaveDuringPlay works with ILists now.
 
 
 ## [2.8.6] - 2022-05-03
