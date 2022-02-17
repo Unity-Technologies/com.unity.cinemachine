@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
+- Bugfix: SaveDuringPlay works with ILists now.
 
 ## [2.9.0-pre.6] - 2022-01-12
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
