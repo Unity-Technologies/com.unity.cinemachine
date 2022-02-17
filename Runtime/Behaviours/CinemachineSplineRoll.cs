@@ -8,7 +8,7 @@ namespace Cinemachine
     /// <summary>
     /// Extension that can be added to a SplineContainer or a vcam that uses a SplineContainer, for example a vcam
     /// that has SplineDolly as Body component.
-    /// - When CinemachineSplineRollExtension is added to a gameObject that has SplineContainer,
+    /// - When CinemachineSplineRoll is added to a gameObject that has SplineContainer,
     /// then the roll affects any vcam that reads that SplineContainer globally.
     /// - When CinemachineSplineRoll is added to a vcam, then roll only affects that vcam locally.
     /// </summary>
@@ -25,7 +25,7 @@ namespace Cinemachine
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
         [SplineRollHandle]
-        public SplineData<float> RollOverride;
+        public SplineData<float> Roll;
 
 #if UNITY_EDITOR
         // Only needed for drawing the gizmo
