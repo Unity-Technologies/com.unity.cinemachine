@@ -1,8 +1,6 @@
 #if CINEMACHINE_UNITY_SPLINES
-using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
 {
@@ -30,41 +28,42 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
-                | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSplineDolly))]
-        static void DrawGizmos(CinemachineSplineDolly dolly, GizmoType selectionType)
+                | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSplineRoll))]
+        static void DrawGizmos(CinemachineSplineRoll splineRoll, GizmoType selectionType)
         {
-            if (Selection.activeGameObject == dolly.VirtualCamera.gameObject)
-                DrawDollyGizmo(dolly, Color.green, 1); // GML todo: make this configurable
+            if (Selection.activeGameObject == splineRoll.gameObject)
+                DrawSplineGizmo(splineRoll, Color.green, 1, 1000); // GML todo: make this configurable
         }
 
-        static void DrawDollyGizmo(CinemachineSplineDolly dolly, Color pathColor, float width)
+        static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int maxSteps)
         {
-            var spline = dolly.m_Spline;
+            var spline = splineRoll == null ? null : splineRoll.SplineContainer;
             if (spline == null || spline.Spline == null || spline.Spline.Count == 0)
                 return;
 
             var length = spline.CalculateLength();
-            var numSteps = Mathf.RoundToInt(Mathf.Clamp(length / width, 3, 1000));
+            var numSteps = Mathf.FloorToInt(Mathf.Clamp(length / width, 3, maxSteps));
             var stepSize = 1.0f / numSteps;
             var halfWidth = width * 0.5f;
 
             // For efficiency, we create a mesh with the track and draw it in one shot
-            dolly.EvaluateSpline(0, out var p, out var q);
+            spline.EvaluateSplineWithRoll(splineRoll, 0, out var p, out var q);
             var w = (q * Vector3.right) * halfWidth;
 
+            var indices = new int[2 * 3 * numSteps];
+            numSteps++; // ceil
             var vertices = new Vector3[2 * numSteps];
             var normals = new Vector3[vertices.Length];
             int vIndex = 0;
             vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
             vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
 
-            var indices = new int[2 * 3 * numSteps];
             int iIndex = 0;
 
             for (int i = 1; i < numSteps; ++i)
             {
                 var t = i * stepSize;
-                dolly.EvaluateSpline(t, out p, out q);
+                spline.EvaluateSplineWithRoll(splineRoll, t, out p, out q);
                 w = (q * Vector3.right) * halfWidth;
 
                 indices[iIndex++] = vIndex - 2;

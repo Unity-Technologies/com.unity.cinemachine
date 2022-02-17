@@ -17,23 +17,32 @@ namespace Cinemachine
     public class CinemachineSplineRoll : MonoBehaviour
     {
         /// <summary>
-        /// Roll (in angles) around the forward direction for specific location on the track.
-        /// - When placed on a SplineContainer, this is going to affect all vcams using the SplineContainer globally.
-        /// - When placed on a vcam, this is going to affect this vcam locally.
+        /// Roll (in degrees) around the forward direction for specific location on the track.
+        /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
+        /// When placed on a vcam, this is going to be a local override that only affects that vcam.
         /// </summary>
-        [Tooltip("Roll (in angles) around the forward direction for specific location on the track.\n" +
-            "- When placed on a SplineContainer, this is going to affect all vcams using the SplineContainer globally.\n" +
-            "- When placed on a vcam, this is going to affect this vcam locally.")]
+        [Tooltip("Roll (in degrees) around the forward direction for specific location on the track.\n" +
+            "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
+            "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
         [SplineRollHandle]
         public SplineData<float> Roll;
 
 #if UNITY_EDITOR
-        internal SplineContainer SplineContainer; // SplineRollHandle needs this for drawing the handles
+        // Only needed for drawing the gizmo
+        internal SplineContainer SplineContainer
+        {
+            get 
+            { 
+                // In case behavour was reparented in the editor, we check every time
+                TryGetComponent(out SplineContainer container);
+                if (container != null)
+                    return container;
+                return m_SplineContainer;
+            }
+            set { m_SplineContainer = value; }
+        }
+        SplineContainer m_SplineContainer;
 #endif
-
-        // Check if CinemachineSplineRoll is attached to a SplineContainer
-        void Awake() => TryGetComponent(out SplineContainer);
-        
         void OnEnable() {} // Needed, so we can disable it in the editor
     }
     
