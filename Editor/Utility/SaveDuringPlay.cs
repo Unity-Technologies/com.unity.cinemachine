@@ -182,18 +182,9 @@ namespace SaveDuringPlay
                             list.RemoveAt(0);
                         }
                         
-                        object newValue;
-                        if (list.Count <= 0)
-                        {
-                            newValue = GetValue(type.GetGenericArguments()[0]);
-                        }
-                        else
-                        {
-                            newValue = list[0];
-                        }
                         for (int i = 0;  i < newLength - currentLength; ++i)
                         {
-                            list.Add(newValue);
+                            list.Add(GetValue(type.GetGenericArguments()[0]));
                         }
                         doneSomething = true;
                     }
