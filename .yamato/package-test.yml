@@ -20,7 +20,7 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
   {% endif %}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u --project-path {{ Projects/URP }} {{ test.args }}
+    - upm-ci project test -u --project-path {{ Projects/URP }} {{ test.args }} --unity-version {{ editor.version }}
   artifacts:
     logs:
       paths:
