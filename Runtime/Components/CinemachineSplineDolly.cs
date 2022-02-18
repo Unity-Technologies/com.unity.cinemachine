@@ -200,7 +200,7 @@ namespace Cinemachine
             RefreshRollCache();
         }
 
-        void RefreshRollCache()
+        public void RefreshRollCache()
         {
             VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
 #if UNITY_EDITOR
