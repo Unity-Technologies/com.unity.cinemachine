@@ -16,6 +16,7 @@ all_tests:
   - name: integration_tests
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type project-tests
+    projects: [Projects/URP]
     variables:
   - name: isolation_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
