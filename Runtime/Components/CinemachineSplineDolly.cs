@@ -30,7 +30,7 @@ namespace Cinemachine
            + "This can be animated directly, or set automatically by the Auto-Dolly feature to "
             + "get as close as possible to the Follow target.  The value is interpreted "
             + "according to the Position Units setting.")]
-        public float m_SplinePosition;
+        public float m_CameraPosition;
 
         /// <summary>How to interpret the Spline Position:
         /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
@@ -244,7 +244,7 @@ namespace Cinemachine
             
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
-                SplineUtility.ConvertIndexUnit(spline, m_SplinePosition, m_PositionUnits, PathIndexUnit.Normalized);
+                SplineUtility.ConvertIndexUnit(spline, m_CameraPosition, m_PositionUnits, PathIndexUnit.Normalized);
             if (spline.Closed)
             {
                 normalizedSplinePosition = NormalizePosition01(normalizedSplinePosition);
@@ -265,7 +265,7 @@ namespace Cinemachine
                 SplineUtility.GetNearestPoint(spline, 
                     m_Spline.transform.InverseTransformPoint(FollowTargetPosition), out _, out normalizedSplinePosition, 
                     m_AutoDolly.m_SearchResolution, m_AutoDolly.m_SearchIteration);
-                m_SplinePosition = SplineUtility.ConvertIndexUnit(spline, normalizedSplinePosition, 
+                m_CameraPosition = SplineUtility.ConvertIndexUnit(spline, normalizedSplinePosition, 
                     PathIndexUnit.Normalized, m_PositionUnits);
                 
                 // Apply the spline position offset

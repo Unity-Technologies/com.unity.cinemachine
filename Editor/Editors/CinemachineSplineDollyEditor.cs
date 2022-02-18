@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
 {
@@ -12,7 +13,7 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.m_SplinePosition));
+            excluded.Add(FieldPath(x => x.m_CameraPosition));
             excluded.Add(FieldPath(x => x.m_PositionUnits));
             excluded.Add(FieldPath(x => x.m_SplineOffset));
             excluded.Add(FieldPath(x => x.m_CameraUp));
@@ -39,6 +40,32 @@ namespace Cinemachine.Editor
                 EditorGUILayout.HelpBox("AutoDolly requires a Follow Target", MessageType.Warning);
 
             DrawRemainingPropertiesInInspector();
+
+            var splineDolly = Target;
+            EditorGUILayout.BeginHorizontal();
+            splineDolly.m_CameraPosition = EditorGUILayout.FloatField("Camera Position", splineDolly.m_CameraPosition);
+            splineDolly.m_PositionUnits = 
+                (PathIndexUnit) EditorGUILayout.EnumPopup(splineDolly.m_PositionUnits, GUILayout.MaxWidth(100));
+            EditorGUILayout.EndHorizontal();
+            splineDolly.m_SplineOffset = EditorGUILayout.Vector3Field("Offset", splineDolly.m_SplineOffset);
+            splineDolly.m_CameraUp = 
+                (CinemachineSplineDolly.CameraUpMode) EditorGUILayout.EnumPopup("Camera Up", splineDolly.m_CameraUp);
+            splineDolly.m_AutoDolly.m_Enabled = EditorGUILayout.Toggle("Auto Dolly", splineDolly.m_AutoDolly.m_Enabled);
+            if (splineDolly.m_AutoDolly.m_Enabled)
+            {
+                EditorGUI.indentLevel++;
+                splineDolly.m_AutoDolly.m_PositionOffset = 
+                    EditorGUILayout.FloatField("Position Offset", splineDolly.m_AutoDolly.m_PositionOffset);
+                EditorGUI.indentLevel--;
+            }
+            splineDolly.m_DampingEnabled = EditorGUILayout.Toggle("Damping", splineDolly.m_DampingEnabled);
+            if (splineDolly.m_DampingEnabled)
+            {
+                EditorGUI.indentLevel++;
+                splineDolly.m_Damping = EditorGUILayout.Vector3Field("Positional", splineDolly.m_Damping);
+                splineDolly.m_AngularDamping = EditorGUILayout.FloatField("Angular", splineDolly.m_AngularDamping);
+                EditorGUI.indentLevel--;
+            }
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
