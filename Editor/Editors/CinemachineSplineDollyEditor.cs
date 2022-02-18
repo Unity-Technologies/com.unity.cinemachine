@@ -52,14 +52,12 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-            
             BeginInspector();
             bool needWarning = false;
             for (int i = 0; !needWarning && i < targets.Length; ++i)
                 needWarning = (targets[i] as CinemachineSplineDolly).m_Spline == null;
             if (needWarning)
-                EditorGUILayout.HelpBox("A Path is required", MessageType.Warning);
+                EditorGUILayout.HelpBox("A Spline is required", MessageType.Warning);
 
             needWarning = false;
             for (int i = 0; !needWarning && i < targets.Length; ++i)

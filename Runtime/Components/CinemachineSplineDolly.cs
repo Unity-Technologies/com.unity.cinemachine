@@ -200,7 +200,7 @@ namespace Cinemachine
             RefreshRollCache();
         }
 
-        public void RefreshRollCache()
+        void RefreshRollCache()
         {
             VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
 #if UNITY_EDITOR
@@ -255,6 +255,7 @@ namespace Cinemachine
                 m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
                 m_PreviousCameraPosition = curState.RawPosition;
                 m_PreviousOrientation = curState.RawOrientation;
+                RefreshRollCache();
             }
 
             // Get the new ideal spline base position
@@ -289,7 +290,7 @@ namespace Cinemachine
                 normalizedSplinePosition = next;
 
                 // Apply damping in the spline direction
-                if (m_DampingEnabled)
+                if (m_DampingEnabled && deltaTime >= 0)
                 {
                     float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
                     offset = Damper.Damp(offset, m_Damping.z, deltaTime);
