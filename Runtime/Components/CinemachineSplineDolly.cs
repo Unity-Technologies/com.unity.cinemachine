@@ -207,7 +207,7 @@ namespace Cinemachine
             if (m_RollCache != null)
                 m_RollCache.SplineContainer = m_Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes
 #endif
-            if (m_RollCache == null)
+            if (m_Spline != null && m_RollCache == null)
                 m_Spline.TryGetComponent(out m_RollCache); // check if our spline has CinemachineSplineRoll
         }
 
