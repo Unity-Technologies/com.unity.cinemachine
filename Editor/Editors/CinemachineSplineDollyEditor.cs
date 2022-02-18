@@ -22,6 +22,29 @@ namespace Cinemachine.Editor
             excluded.Add(FieldPath(x => x.m_AngularDamping));
             excluded.Add(FieldPath(x => x.m_AutoDolly));
         }
+        
+        SerializedProperty m_CameraPosition;
+        SerializedProperty m_PositionUnits;
+        SerializedProperty m_SplineOffset;
+        SerializedProperty m_CameraUp;
+        SerializedProperty m_DampingEnabled;
+        SerializedProperty m_Damping;
+        SerializedProperty m_AngularDamping;
+        SerializedProperty m_AutoDolly_m_Enabled;
+        SerializedProperty m_AutoDolly_m_PositionOffset;
+        void OnEnable()
+        {
+            //Assign it on enable
+            m_CameraPosition = serializedObject.FindProperty("m_CameraPosition");
+            m_PositionUnits = serializedObject.FindProperty("m_PositionUnits");
+            m_SplineOffset = serializedObject.FindProperty("m_SplineOffset");
+            m_CameraUp = serializedObject.FindProperty("m_CameraUp");
+            m_DampingEnabled = serializedObject.FindProperty("m_DampingEnabled");
+            m_Damping = serializedObject.FindProperty("m_Damping");
+            m_AngularDamping = serializedObject.FindProperty("m_AngularDamping");
+            m_AutoDolly_m_Enabled = serializedObject.FindProperty("m_AutoDolly.m_Enabled");
+            m_AutoDolly_m_PositionOffset = serializedObject.FindProperty("m_AutoDolly.m_PositionOffset");
+        }
 
         public override void OnInspectorGUI()
         {
