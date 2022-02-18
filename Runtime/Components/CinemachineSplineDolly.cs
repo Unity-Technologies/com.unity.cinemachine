@@ -70,9 +70,8 @@ namespace Cinemachine
             FollowTargetNoRoll,
         };
 
-        /// <summary>
-        /// Is damping enabled.
-        /// </summary>
+        /// <summary>If checked, will enable damping.</summary>
+        [Tooltip("If checked, will enable damping.")]
         public bool m_DampingEnabled;
         
         /// <summary>How aggressively the camera tries to maintain the offset along
