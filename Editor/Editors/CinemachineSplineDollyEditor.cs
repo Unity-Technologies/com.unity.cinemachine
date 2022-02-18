@@ -1,5 +1,4 @@
 #if CINEMACHINE_UNITY_SPLINES
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,30 +14,32 @@ namespace Cinemachine.Editor
         GUIContent m_SplineGUIContent, m_CameraPositionGUIContent, m_PositionUnitsGUIContent, m_SplineOffsetGUIContent, 
             m_CameraUpGUIContent, m_DampingEnabledGUIContent, m_DampingGUIContent, 
             m_AngularDampingGUIContent, m_AutoDollyEnabledGUIContent, m_AutoDollyPositionOffsetGUIContent;
+
         void OnEnable()
         {
-            m_SplineGUIContent = new GUIContent("Spline", 
+            m_SplineGUIContent = new GUIContent("Spline",
                 (m_Spline = serializedObject.FindProperty("m_Spline")).tooltip);
             m_CameraPositionGUIContent = new GUIContent("Camera Position",
                 (m_CameraPosition = serializedObject.FindProperty("m_CameraPosition")).tooltip);
             m_PositionUnitsGUIContent = new GUIContent("",
                 (m_PositionUnits = serializedObject.FindProperty("m_PositionUnits")).tooltip);
-            m_SplineOffsetGUIContent = new GUIContent("Offset", 
+            m_SplineOffsetGUIContent = new GUIContent("Offset",
                 (m_SplineOffset = serializedObject.FindProperty("m_SplineOffset")).tooltip);
-            m_CameraUpGUIContent = new GUIContent("Camera Up", 
+            m_CameraUpGUIContent = new GUIContent("Camera Up",
                 (m_CameraUp = serializedObject.FindProperty("m_CameraUp")).tooltip);
-            m_DampingEnabledGUIContent = new GUIContent("Damping", 
+            m_DampingEnabledGUIContent = new GUIContent("Damping",
                 (m_DampingEnabled = serializedObject.FindProperty("m_DampingEnabled")).tooltip);
-            m_DampingGUIContent = new GUIContent("Positional", 
+            m_DampingGUIContent = new GUIContent("Positional",
                 (m_Damping = serializedObject.FindProperty("m_Damping")).tooltip);
-            m_AngularDampingGUIContent = new GUIContent("Angular", 
+            m_AngularDampingGUIContent = new GUIContent("Angular",
                 (m_AngularDamping = serializedObject.FindProperty("m_AngularDamping")).tooltip);
-            m_AutoDollyEnabledGUIContent = new GUIContent("Auto Dolly", 
+            m_AutoDollyEnabledGUIContent = new GUIContent("Auto Dolly",
                 (m_AutoDollyEnabled = serializedObject.FindProperty("m_AutoDolly.m_Enabled")).tooltip);
-            m_AutoDollyPositionOffsetGUIContent = new GUIContent("Position Offset", 
+            m_AutoDollyPositionOffsetGUIContent = new GUIContent("Position Offset",
                 (m_AutoDollyPositionOffset = serializedObject.FindProperty("m_AutoDolly.m_PositionOffset")).tooltip);
         }
 
+        static float ExtraSpaceHackWTF() { return EditorGUI.indentLevel * (EditorGUIUtility.singleLineHeight - 3); }
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -59,8 +60,13 @@ namespace Cinemachine.Editor
             EditorGUILayout.PropertyField(m_Spline, m_SplineGUIContent);
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.PropertyField(m_CameraPosition, m_CameraPositionGUIContent);
-                EditorGUILayout.PropertyField(m_PositionUnits, m_PositionUnitsGUIContent, GUILayout.MaxWidth(100));
+                var currentWidth = EditorGUIUtility.currentViewWidth;
+                var rect = EditorGUILayout.GetControlRect();
+                rect.width = 0.6f * currentWidth;
+                EditorGUI.PropertyField(rect, m_CameraPosition, m_CameraPositionGUIContent);
+                rect.x += rect.width - ExtraSpaceHackWTF();
+                rect.width = 0.4f * currentWidth - ExtraSpaceHackWTF() - 6f; // hack to nicely fit
+                EditorGUI.PropertyField(rect, m_PositionUnits, m_PositionUnitsGUIContent);
             } 
             EditorGUILayout.EndHorizontal();
 
