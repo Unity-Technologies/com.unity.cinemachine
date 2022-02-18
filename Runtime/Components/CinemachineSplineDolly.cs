@@ -163,7 +163,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => m_DampingEnabled ? 0 :
+        public override float GetMaxDampTime() => !m_DampingEnabled ? 0 :
             Mathf.Max(Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)), m_AngularDamping);
 
         /// <summary>
