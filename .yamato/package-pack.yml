@@ -9,7 +9,7 @@ pack:
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package pack --package-path com.unity.cinemachine
-    - upm-ci package pack --package-path com.unity.cinemachine.test
+    - upm-ci package pack --package-path com.unity.cinemachine.tests
   artifacts:
     packages:
       paths:
