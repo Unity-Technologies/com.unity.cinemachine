@@ -23,6 +23,7 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
     {% for project in test.projects %}
     - upm-ci project test -u {{ editor }} --project-path {{ project }} --type project-tests
     {% endfor %}
+    - upm-ci package test -u {{ editor }} {{ test.args }}
   artifacts:
     logs:
       paths:
