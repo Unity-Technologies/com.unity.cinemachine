@@ -23,9 +23,6 @@ namespace Cinemachine
         /// <summary>Data version string.  Used to upgrade from legacy projects</summary>
         public static readonly int kStreamingVersion = 20170927;
 
-        /// <summary>Human-readable Cinemachine Version</summary>
-        public static readonly string kVersionString = "2.9.0";
-
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
         /// UI organization>.  This enum defines the pipeline order.
