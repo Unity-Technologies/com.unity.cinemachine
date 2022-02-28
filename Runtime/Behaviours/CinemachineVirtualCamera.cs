@@ -223,7 +223,7 @@ namespace Cinemachine
                 return;
             }
 #endif
-            DestroyPipeline();
+            DestroyPipeline(out _);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Cinemachine
         /// the CinemachineVirtualCamera class.
         /// </summary>
         public delegate Transform CreatePipelineDelegate(
-            CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom);
+            CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom, List<Transform> oldPipeline);
 
         /// <summary>
         /// Override component pipeline destruction.
@@ -255,9 +255,9 @@ namespace Cinemachine
         public delegate void DestroyPipelineDelegate(GameObject pipeline);
 
         /// <summary>Destroy any existing pipeline container.</summary>
-        private void DestroyPipeline()
+        void DestroyPipeline(out List<Transform> oldPipeline)
         {
-            List<Transform> oldPipeline = new List<Transform>();
+            oldPipeline = new List<Transform>();
             foreach (Transform child in transform)
                 if (child.GetComponent<CinemachinePipeline>() != null)
                     oldPipeline.Add(child);
@@ -278,7 +278,7 @@ namespace Cinemachine
 
         /// <summary>Create a default pipeline container.
         /// Note: copyFrom only supported in Editor, not build</summary>
-        private Transform CreatePipeline(CinemachineVirtualCamera copyFrom)
+        private Transform CreatePipeline(CinemachineVirtualCamera copyFrom, List<Transform> oldPipeline = null)
         {
             CinemachineComponentBase[] components = null;
             if (copyFrom != null)
@@ -289,7 +289,7 @@ namespace Cinemachine
 
             Transform newPipeline = null;
             if (CreatePipelineOverride != null)
-                newPipeline = CreatePipelineOverride(this, PipelineName, components);
+                newPipeline = CreatePipelineOverride(this, PipelineName, components, oldPipeline);
             else
             {
                 GameObject go =  new GameObject(PipelineName);
@@ -406,8 +406,16 @@ namespace Cinemachine
                 {
                     CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
                         ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : null;
-                    DestroyPipeline();
+                    DestroyPipeline(out _);
                     m_ComponentOwner = CreatePipeline(copyFrom);
+                }
+                else
+                {
+                    CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
+                        ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : null;
+                    DestroyPipeline(out var oldPipeline);
+                    m_ComponentOwner = CreatePipeline(copyFrom, oldPipeline);
+                    m_ComponentOwner.parent = transform;
                 }
             }
             if (m_ComponentOwner != null)

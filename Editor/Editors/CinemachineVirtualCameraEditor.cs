@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
+using NUnit.Framework;
 
 namespace Cinemachine.Editor
 {
@@ -172,14 +173,54 @@ namespace Cinemachine.Editor
             static CreatePipelineWithUndo()
             {
                 CinemachineVirtualCamera.CreatePipelineOverride =
-                    (CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom) =>
+                    (CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom, List<Transform> oldPipeline) =>
                     {
                         // Create a new pipeline
+                        bool partOfPrefab = PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject);
+                        if (partOfPrefab)
+                        {
+                            if (oldPipeline != null)
+                            {
+                                var oldGo = oldPipeline[0].gameObject;
+                                if (copyFrom != null)
+                                {
+                                    foreach (Component c in copyFrom)
+                                    {
+                                        var copy = oldGo.GetComponent(c.GetType());
+                                        if (copy != null)
+                                        {
+                                            Undo.RecordObject(copy, "copying pipeline");
+                                            ReflectionHelpers.CopyFields(c, copy);
+                                        }
+                                        else
+                                        {
+                                            var cmCopy = (CinemachineComponentBase)c;
+                                            if (cmCopy != null)
+                                            {
+                                                var components = vcam.GetComponentsInChildren<CinemachineComponentBase>();
+                                                for (var i = 0; i < components.Length; i++)
+                                                {
+                                                    if (components[i].Stage == cmCopy.Stage)
+                                                    {
+                                                        RuntimeUtility.DestroyObject(components[i]);
+                                                    }
+                                                }
+                                                
+                                                copy = Undo.AddComponent(oldGo, c.GetType());
+                                                Undo.RecordObject(copy, "copying pipeline");
+                                                ReflectionHelpers.CopyFields(c, copy);
+                                            }
+                                        }
+                                    }
+                                }
+                                return oldGo.transform;
+                            }
+                        }
+                        
                         GameObject go =  ObjectFactory.CreateGameObject(name);
                         Undo.RegisterCreatedObjectUndo(go, "created pipeline");
-                        bool partOfPrefab = PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject);
-                        if (!partOfPrefab)
-                            Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
+                        
+                        Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
                         Undo.AddComponent<CinemachinePipeline>(go);
 
                         // If copying, transfer the components
