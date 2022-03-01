@@ -43,20 +43,31 @@ namespace Cinemachine.Editor
         {
             serializedObject.Update();
             
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineSplineDolly).m_Spline == null;
-            if (needWarning)
+            bool nullSpline = false;
+            for (int i = 0; !nullSpline && i < targets.Length; ++i)
+                nullSpline = (targets[i] as CinemachineSplineDolly).m_Spline == null;
+            if (nullSpline)
+            {
                 EditorGUILayout.HelpBox("A Spline is required", MessageType.Warning);
+            }
 
-            needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineSplineDolly).m_AutoDolly.m_Enabled 
-                    && (targets[i] as CinemachineSplineDolly).FollowTarget == null;
-            if (needWarning)
+            bool noFollowTarget = false;
+            bool autoDollyEnabled = false;
+            for (int i = 0; !(noFollowTarget && autoDollyEnabled) && i < targets.Length; ++i)
+            {
+                autoDollyEnabled = (targets[i] as CinemachineSplineDolly).m_AutoDolly.m_Enabled;
+                noFollowTarget = (targets[i] as CinemachineSplineDolly).FollowTarget == null;
+            }
+
+            if (autoDollyEnabled && noFollowTarget)
                 EditorGUILayout.HelpBox("AutoDolly requires a Follow Target", MessageType.Warning);
 
             EditorGUILayout.PropertyField(m_Spline, m_SplineGUIContent);
+
+            if (nullSpline)
+            {
+                GUI.enabled = false;
+            }
             EditorGUILayout.BeginHorizontal();
             {
                 var rect = EditorGUILayout.GetControlRect();
@@ -78,12 +89,20 @@ namespace Cinemachine.Editor
             EditorGUILayout.PropertyField(m_SplineOffset, m_SplineOffsetGUIContent);
             EditorGUILayout.PropertyField(m_CameraUp, m_CameraUpGUIContent);
 
+            if (noFollowTarget)
+            {
+                GUI.enabled = false;
+            }
             EditorGUILayout.PropertyField(m_AutoDollyEnabled, m_AutoDollyEnabledGUIContent);
             if (m_AutoDollyEnabled.boolValue)
             {
                 EditorGUI.indentLevel++; 
                 EditorGUILayout.PropertyField(m_AutoDollyPositionOffset, m_AutoDollyPositionOffsetGUIContent); 
                 EditorGUI.indentLevel--;
+            }
+            if (noFollowTarget)
+            {
+                GUI.enabled = true;
             }
 
             EditorGUILayout.PropertyField(m_DampingEnabled, m_DampingEnabledGUIContent);
@@ -96,6 +115,7 @@ namespace Cinemachine.Editor
             }
             
             serializedObject.ApplyModifiedProperties();
+            GUI.enabled = true;
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
