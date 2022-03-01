@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 - Bugfix: SaveDuringPlay works with ILists now.
+- Bugfix: Pasting values to prefab instances is working now.
 
 ## [2.9.0-pre.6] - 2022-01-12
 - Bugfix: Negative Near Clip Plane value is kept when camera is orthographic.
