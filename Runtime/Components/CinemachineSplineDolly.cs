@@ -336,7 +336,6 @@ namespace Cinemachine
                 {
                     var knotCount = spline.Knots.Count();
                     m_SplinePosition = knotCount + m_SplinePosition % knotCount;
-                    Debug.Log(m_SplinePosition);
                 }
                 else
                 {
