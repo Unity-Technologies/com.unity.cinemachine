@@ -209,6 +209,7 @@ namespace Cinemachine.Editor
                                                 copy = Undo.AddComponent(oldGo, c.GetType());
                                                 Undo.RecordObject(copy, "copying pipeline");
                                                 ReflectionHelpers.CopyFields(c, copy);
+                                                vcam.InvalidateComponentPipeline();
                                             }
                                         }
                                     }
