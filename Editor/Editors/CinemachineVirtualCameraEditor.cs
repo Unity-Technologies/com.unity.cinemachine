@@ -175,46 +175,42 @@ namespace Cinemachine.Editor
                     (CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom, List<Transform> oldPipeline) =>
                     {
                         // Create a new pipeline
-                        bool partOfPrefab = PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject);
-                        if (partOfPrefab)
+                        // special handling for prefabs
+                        if (PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject) && oldPipeline != null)
                         {
-                            if (oldPipeline != null)
+                            var oldGo = oldPipeline[0].gameObject;
+                            if (copyFrom != null)
                             {
-                                var oldGo = oldPipeline[0].gameObject;
-                                if (copyFrom != null)
+                                foreach (CinemachineComponentBase c in copyFrom)
                                 {
-                                    foreach (Component c in copyFrom)
+                                    var copy = oldGo.GetComponent(c.GetType());
+                                    if (copy != null)
                                     {
-                                        var copy = oldGo.GetComponent(c.GetType());
-                                        if (copy != null)
+                                        Undo.RecordObject(copy, "copying pipeline");
+                                        ReflectionHelpers.CopyFields(c, copy);
+                                    }
+                                    else
+                                    {
+                                        if (c != null)
                                         {
+                                            var components = vcam.GetComponentsInChildren<CinemachineComponentBase>();
+                                            for (var i = 0; i < components.Length; i++)
+                                            {
+                                                if (components[i].Stage == c.Stage)
+                                                {
+                                                    RuntimeUtility.DestroyObject(components[i]);
+                                                }
+                                            }
+                                            
+                                            copy = Undo.AddComponent(oldGo, c.GetType());
                                             Undo.RecordObject(copy, "copying pipeline");
                                             ReflectionHelpers.CopyFields(c, copy);
-                                        }
-                                        else
-                                        {
-                                            var cmCopy = (CinemachineComponentBase)c;
-                                            if (cmCopy != null)
-                                            {
-                                                var components = vcam.GetComponentsInChildren<CinemachineComponentBase>();
-                                                for (var i = 0; i < components.Length; i++)
-                                                {
-                                                    if (components[i].Stage == cmCopy.Stage)
-                                                    {
-                                                        RuntimeUtility.DestroyObject(components[i]);
-                                                    }
-                                                }
-                                                
-                                                copy = Undo.AddComponent(oldGo, c.GetType());
-                                                Undo.RecordObject(copy, "copying pipeline");
-                                                ReflectionHelpers.CopyFields(c, copy);
-                                                vcam.InvalidateComponentPipeline();
-                                            }
+                                            vcam.InvalidateComponentPipeline();
                                         }
                                     }
                                 }
-                                return oldGo.transform;
                             }
+                            return oldGo.transform;
                         }
                         
                         GameObject go =  ObjectFactory.CreateGameObject(name);
