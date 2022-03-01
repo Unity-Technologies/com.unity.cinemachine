@@ -89,7 +89,7 @@ namespace Cinemachine.Editor
             EditorGUILayout.PropertyField(m_SplineOffset, m_SplineOffsetGUIContent);
             EditorGUILayout.PropertyField(m_CameraUp, m_CameraUpGUIContent);
 
-            if (noFollowTarget)
+            if (!nullSpline && noFollowTarget)
             {
                 GUI.enabled = false;
             }
@@ -100,7 +100,7 @@ namespace Cinemachine.Editor
                 EditorGUILayout.PropertyField(m_AutoDollyPositionOffset, m_AutoDollyPositionOffsetGUIContent); 
                 EditorGUI.indentLevel--;
             }
-            if (noFollowTarget)
+            if (!nullSpline && noFollowTarget)
             {
                 GUI.enabled = true;
             }
@@ -115,7 +115,10 @@ namespace Cinemachine.Editor
             }
             
             serializedObject.ApplyModifiedProperties();
-            GUI.enabled = true;
+            if (nullSpline)
+            {
+                GUI.enabled = true;
+            }
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
