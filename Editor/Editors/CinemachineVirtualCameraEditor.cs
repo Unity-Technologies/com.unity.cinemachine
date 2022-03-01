@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
-using NUnit.Framework;
 
 namespace Cinemachine.Editor
 {
@@ -236,10 +235,8 @@ namespace Cinemachine.Editor
                         }
                         return go.transform;
                     };
-                CinemachineVirtualCamera.DestroyPipelineOverride = (GameObject pipeline) =>
-                    {
-                        Undo.DestroyObjectImmediate(pipeline);
-                    };
+                CinemachineVirtualCamera.DestroyPipelineOverride = 
+                    (GameObject pipeline) => Undo.DestroyObjectImmediate(pipeline);
             }
         }
 
