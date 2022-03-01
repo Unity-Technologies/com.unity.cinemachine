@@ -1,6 +1,7 @@
 #if CINEMACHINE_UNITY_SPLINES
 using UnityEngine;
 using System;
+using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine.Splines;
 
@@ -240,14 +241,11 @@ namespace Cinemachine
             {
                 return;
             }
-            
+
+            SanitizeSplinePosition(spline);
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
-                SplineUtility.ConvertIndexUnit(spline, m_CameraPosition, m_PositionUnits, PathIndexUnit.Normalized);
-            if (spline.Closed)
-            {
-                normalizedSplinePosition = NormalizePosition01(normalizedSplinePosition);
-            }
+                    SplineUtility.ConvertIndexUnit(spline, m_CameraPosition, m_PositionUnits, PathIndexUnit.Normalized);
             
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
@@ -337,12 +335,21 @@ namespace Cinemachine
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
 
-        /// <summary>
-        /// Returns normalized position between 0 and 1. For example, 1.2 -> 0.2, -0.2 -> 0.8.
-        /// </summary>
-        static float NormalizePosition01(float tNormalized)
+        void SanitizeSplinePosition(Spline spline)
         {
-            return tNormalized - Mathf.Floor(tNormalized);
+            // SplineUtility does not work with knot values outside of [0, knotCount) range.
+            if (m_PositionUnits == PathIndexUnit.Knot && spline.Closed)
+            {
+                if (m_CameraPosition < 0)
+                {
+                    var knotCount = spline.Knots.Count();
+                    m_CameraPosition = knotCount + m_CameraPosition % knotCount;
+                }
+                else
+                {
+                    m_CameraPosition %= spline.Knots.Count();
+                }
+            }
         }
 
         Quaternion GetCameraOrientationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
