@@ -325,20 +325,11 @@ namespace Cinemachine
                 return; // up to date
 
             m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
+            // TODO: this is wrong, we dont use GetComponents 
             var existing = GetComponents<CinemachineComponentBase>();
             for (int i = 0; existing != null && i < existing.Length; ++i)
                 m_Components[(int)existing[i].Stage] = existing[i];
-
-            for (int i = 0; i < m_Components.Length; ++i)
-            {
-                if (m_Components[i] != null)
-                {
-                    if (CinemachineCore.sShowHiddenObjects)
-                        m_Components[i].hideFlags &= ~HideFlags.HideInInspector;
-                    else
-                        m_Components[i].hideFlags |= HideFlags.HideInInspector;
-                }
-            }
+            
             OnComponentCacheUpdated();
         }
 
@@ -349,14 +340,9 @@ namespace Cinemachine
         /// <summary>Destroy all the CinmachineComponentBase components</summary>
         protected void DestroyComponents()
         {
-            var existing = GetComponents<CinemachineComponentBase>();
-            for (int i = 0; i < existing.Length; ++i)
+            for (int i = 0; i < m_Components.Length; ++i)
             {
-#if UNITY_EDITOR
-                UnityEditor.Undo.DestroyObjectImmediate(existing[i]);
-#else
-                UnityEngine.Object.Destroy(existing[i]);
-#endif
+                m_Components[i] = null;
             }
             InvalidateComponentCache();
         }
