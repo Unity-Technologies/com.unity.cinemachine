@@ -318,6 +318,8 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public void AddCinemachineComponent(CinemachineComponentBase component)
         {
+            if (component == null) return;
+            
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();
         }
@@ -332,6 +334,8 @@ namespace Cinemachine
         /// <summary>Remove a component from the cinemachine pipeline.</summary>
         public void DestroyCinemachineComponent(CinemachineComponentBase component)
         {
+            if (component == null) return;
+            
             m_Components[(int)component.Stage] = null;
             OnComponentCacheUpdated();
         }

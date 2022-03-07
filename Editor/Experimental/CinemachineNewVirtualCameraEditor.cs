@@ -39,13 +39,13 @@ namespace Cinemachine
                 // SetComponent
                 (stage, type) => 
                 {
-                    // TODO: undo support
+                    // TODO: undo support - Undo.SetCurrentGroupName("Cinemachine pipeline change");
                     foreach (var obj in targets)
                     {
                         var vcam = obj as CinemachineNewVirtualCamera;
                         if (vcam != null)
                         {
-                            CinemachineComponentBase c = vcam.GetCinemachineComponent(stage);
+                            var c = vcam.GetCinemachineComponent(stage);
                             if (c != null && c.GetType() == type)
                                 continue;
                             if (c != null)
