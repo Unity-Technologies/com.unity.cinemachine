@@ -202,9 +202,6 @@ namespace Cinemachine.Editor
             var vcam = CreateCinemachineObject<CinemachineNewVirtualCamera>(name, parentObject, select);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.AddCinemachineComponent(new CinemachineComposer());
-            vcam.AddCinemachineComponent(new CinemachineTransposer());
-
             return vcam;
         }
 
