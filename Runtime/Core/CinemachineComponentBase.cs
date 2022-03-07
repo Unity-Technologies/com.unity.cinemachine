@@ -6,7 +6,7 @@ namespace Cinemachine
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
-    public abstract class CinemachineComponentBase
+    public abstract class CinemachineComponentBase : Object
     {
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;

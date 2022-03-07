@@ -278,7 +278,7 @@ namespace Cinemachine
         CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
         /// For inspector
-        internal CinemachineComponentBase[] ComponentCache => m_Components;
+        internal CinemachineComponentBase[] ComponentCache => m_Components; // TODO: no need for cache
 
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>

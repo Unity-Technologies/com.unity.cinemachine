@@ -262,7 +262,6 @@ namespace Cinemachine
             });
             AddCinemachineComponent(new CinemachineComposer());
 
-            InvalidateComponentCache();
             m_Rigs = new Rig[2] { new Rig(), new Rig() };
 
             // Default orbits

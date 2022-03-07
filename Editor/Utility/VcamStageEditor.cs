@@ -35,25 +35,25 @@ namespace Cinemachine.Editor
                 }
 
                 // Get all ICinemachineComponents
-                var allTypes
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
+                // var allTypes
+                //     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                //             (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
 
-                // GML todo: use class attribute instead
-                // Create a temp game object so we can instance behaviours
-                GameObject go = new GameObject("Cinemachine Temp Object");
-                go.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
-                foreach (Type t in allTypes)
-                {
-                    MonoBehaviour b = go.AddComponent(t) as MonoBehaviour;
-                    CinemachineComponentBase c = b != null ? (CinemachineComponentBase)b : null;
-                    if (c != null)
-                    {
-                        CinemachineCore.Stage stage = c.Stage;
-                        stageTypes[(int)stage].Add(t);
-                    }
-                }
-                GameObject.DestroyImmediate(go);
+                // // GML todo: use class attribute instead
+                // // Create a temp game object so we can instance behaviours
+                // GameObject go = new GameObject("Cinemachine Temp Object");
+                // go.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
+                // foreach (Type t in allTypes)
+                // {
+                //     MonoBehaviour b = go.AddComponent(t) as MonoBehaviour;
+                //     CinemachineComponentBase c = b != null ? (CinemachineComponentBase)b : null;
+                //     if (c != null)
+                //     {
+                //         CinemachineCore.Stage stage = c.Stage;
+                //         stageTypes[(int)stage].Add(t);
+                //     }
+                // }
+                // GameObject.DestroyImmediate(go);
 
                 // Create the static lists
                 for (int i = 0; i < stageTypes.Length; ++i)

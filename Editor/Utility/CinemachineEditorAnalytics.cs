@@ -96,11 +96,11 @@ namespace Cinemachine.Editor
             var vcamData = new VcamData(id, vcamBase);
             
             // VirtualCamera
-            var vcam = vcamBase as CinemachineVirtualCamera;
+            var vcam = vcamBase as CinemachineNewVirtualCamera;
             if (vcam != null)
             {
                 vcamData.SetTransitionsAndLens(vcam.m_Transitions, vcam.m_Lens);
-                vcamData.SetComponents(vcam.GetComponentPipeline());
+                vcamData.SetComponents(vcam.ComponentCache);
                 
                 vcamDatas.Add(vcamData);
                 return;
@@ -120,7 +120,7 @@ namespace Cinemachine.Editor
 #endif
             
             // Composite vcam (Freelook, Mixing, StateDriven, ClearShot...):
-            var freeLook = vcamBase as CinemachineFreeLook;
+            var freeLook = vcamBase as CinemachineNewFreeLook;
             if (freeLook != null)
             {
                 vcamData.SetTransitionsAndLens(freeLook.m_Transitions, freeLook.m_Lens);
