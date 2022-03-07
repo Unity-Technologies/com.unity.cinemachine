@@ -308,18 +308,19 @@ namespace Cinemachine
         protected void UpdateComponentCache()
         {
 #if UNITY_EDITOR
+            // TODO: check this
             // Special case: if we have serialized in with some other game object's
             // components, then we have just been pasted so we should clone them
-            for (int i = 0; m_Components != null && i < m_Components.Length; ++i)
-            {
-                if (m_Components[i] != null && m_Components[i].gameObject != gameObject)
-                {
-                    var copyFrom = m_Components;
-                    DestroyComponents();
-                    CopyComponents(copyFrom);
-                    break;
-                }
-            }
+            // for (int i = 0; m_Components != null && i < m_Components.Length; ++i)
+            // {
+            //     if (m_Components[i] != null && m_Components[i].gameObject != gameObject)
+            //     {
+            //         var copyFrom = m_Components;
+            //         DestroyComponents();
+            //         CopyComponents(copyFrom);
+            //         break;
+            //     }
+            // }
 #endif
             if (m_Components != null && m_Components.Length == (int)CinemachineCore.Stage.Finalize + 1)
                 return; // up to date
@@ -396,34 +397,15 @@ namespace Cinemachine
         }
 
         /// <summary>Add a component to the cinemachine pipeline.</summary>
-        public T AddCinemachineComponent<T>() where T : CinemachineComponentBase
+        public void AddCinemachineComponent(CinemachineComponentBase component)
         {
-            var components = ComponentCache;
-            T c = gameObject.AddComponent<T>();
-            var oldC = components[(int)c.Stage];
-            if (oldC != null)
-            {
-                oldC.enabled = false;
-                RuntimeUtility.DestroyObject(oldC);
-            }
-            InvalidateComponentCache();
-            return c;
+            m_Components[(int)component.Stage] = component;
         }
 
         /// <summary>Remove a component from the cinemachine pipeline.</summary>
-        public void DestroyCinemachineComponent<T>() where T : CinemachineComponentBase
+        public void DestroyCinemachineComponent(CinemachineComponentBase component)
         {
-            var components = ComponentCache;
-            foreach (var c in components)
-            {
-                if (c is T)
-                {
-                    c.enabled = false;
-                    RuntimeUtility.DestroyObject(c);
-                    InvalidateComponentCache();
-                    return;
-                }
-            }
+            m_Components[(int)component.Stage] = null;
         }
     }
 }

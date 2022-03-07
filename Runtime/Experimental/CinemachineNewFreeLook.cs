@@ -257,15 +257,10 @@ namespace Cinemachine
         void Reset()
         {
             DestroyComponents();
-#if UNITY_EDITOR
-            var orbital = UnityEditor.Undo.AddComponent<CinemachineOrbitalTransposer>(gameObject);
-            UnityEditor.Undo.AddComponent<CinemachineComposer>(gameObject);
-#else
-            var orbital = gameObject.AddComponent<CinemachineOrbitalTransposer>();
-            gameObject.AddComponent<CinemachineComposer>();
-#endif
-            orbital.HideOffsetInInspector = true;
-            orbital.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+            AddCinemachineComponent(new CinemachineOrbitalTransposer { 
+                HideOffsetInInspector = true, m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
+            });
+            AddCinemachineComponent(new CinemachineComposer());
 
             InvalidateComponentCache();
             m_Rigs = new Rig[2] { new Rig(), new Rig() };
