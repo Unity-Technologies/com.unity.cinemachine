@@ -10,10 +10,6 @@ namespace Cinemachine
     [Serializable]
     public abstract class CinemachineComponentBase
     {
-        public CinemachineComponentBase() : base()
-        {
-            Debug.Log("Constructor called - CinemachineComponentBase");
-        }
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
 

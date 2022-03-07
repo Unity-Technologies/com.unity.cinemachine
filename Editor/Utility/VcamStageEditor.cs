@@ -77,10 +77,12 @@ namespace Cinemachine.Editor
                 int selected = GetSelectedComponent(i, components);
                 int newSelection = EditorGUILayout.Popup(
                     new GUIContent(sStageData[i].Name), selected, sStageData[i].PopupOptions);
-                if (selected != newSelection)
+                if (newSelection == 0)
                 {
-                    var instance = Activator.CreateInstance(sStageData[i].types[newSelection]);
-                    var instance2 = UnityEngine.Object.Instantiate((UnityEngine.Object)instance);
+                    vcam.DestroyCinemachineComponent((CinemachineCore.Stage) i);
+                }
+                else if (selected != newSelection)
+                {
                     vcam.AddCinemachineComponent(
                         
                         (CinemachineComponentBase)Activator.CreateInstance(sStageData[i].types[newSelection]));

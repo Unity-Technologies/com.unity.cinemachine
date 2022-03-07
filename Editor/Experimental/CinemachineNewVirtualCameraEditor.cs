@@ -50,7 +50,6 @@ namespace Cinemachine
             
             var vcam = Target;
             VcamStageEditor.DrawAddButtons(vcam, vcam.m_Components);
-            DrawPropertyInInspector(FindProperty(x => x.m_Components));
             
             DrawExtensionsWidgetInInspector();
         }

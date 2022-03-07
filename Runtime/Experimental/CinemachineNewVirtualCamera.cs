@@ -274,7 +274,7 @@ namespace Cinemachine
         }
 
         // Component Cache - serialized only for copy/paste
-        [SerializeField, HideInInspector, NoSaveDuringPlay]
+        [SerializeReference, NoSaveDuringPlay]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
         /// For inspector

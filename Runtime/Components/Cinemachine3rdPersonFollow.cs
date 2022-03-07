@@ -2,6 +2,7 @@
 #define CINEMACHINE_PHYSICS
 #endif
 
+using System;
 using UnityEngine;
 using Cinemachine.Utility;
 
@@ -12,13 +13,9 @@ namespace Cinemachine
     /// vertical about the shoulder.  
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
-    [SaveDuringPlay]
+    [SaveDuringPlay, Serializable]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
     {
-        public Cinemachine3rdPersonFollow() : base()
-        {
-            Debug.Log("Constructor called - Cinemachine3rdPersonFollow");
-        }
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 
         /// can have its own setting.  Value is the approximate time it takes the camera 
         /// to catch up to the target's new position.  Smaller values give a more rigid 
