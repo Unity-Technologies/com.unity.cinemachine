@@ -40,13 +40,6 @@ namespace Cinemachine
         /// other virtual cameras </summary>
         public TransitionParams m_Transitions;
 
-        /// <summary>Updates the child rig cache</summary>
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            InvalidateComponentCache();
-        }
-
         void Reset()
         {
             DestroyComponents();
@@ -93,7 +86,7 @@ namespace Cinemachine
                 transform.position += positionDelta;
                 m_State.RawPosition += positionDelta;
             }
-            UpdateComponentCache();
+            
             for (int i = 0; i < m_Components.Length; ++i)
             {
                 if (m_Components[i] != null)
@@ -115,7 +108,6 @@ namespace Cinemachine
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
-            UpdateComponentCache();
             for (int i = 0; i < m_Components.Length; ++i)
                 if (m_Components[i] != null)
                     m_Components[i].ForceCameraPosition(pos, rot);
@@ -130,7 +122,7 @@ namespace Cinemachine
         public override float GetMaxDampTime()
         {
             float maxDamp = base.GetMaxDampTime();
-            UpdateComponentCache();
+            
             for (int i = 0; i < m_Components.Length; ++i)
                 if (m_Components[i] != null)
                     maxDamp = Mathf.Max(maxDamp, m_Components[i].GetMaxDampTime());
@@ -152,7 +144,7 @@ namespace Cinemachine
             {
                 ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
             }
-            UpdateComponentCache();
+            
             for (int i = 0; i < m_Components.Length; ++i)
             {
                 if (m_Components[i] != null
@@ -239,8 +231,6 @@ namespace Cinemachine
         protected CameraState InvokeComponentPipeline(
             ref CameraState state, Vector3 worldUp, float deltaTime)
         {
-            UpdateComponentCache();
-
             // Extensions first
             InvokePrePipelineMutateCameraStateCallback(this, ref state, deltaTime);
 
@@ -285,54 +275,10 @@ namespace Cinemachine
 
         // Component Cache - serialized only for copy/paste
         [SerializeField, HideInInspector, NoSaveDuringPlay]
-        CinemachineComponentBase[] m_Components;
+        CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
         /// For inspector
-        internal CinemachineComponentBase[] ComponentCache
-        {
-            get
-            {
-                UpdateComponentCache();
-                return m_Components;
-            }
-        }
-
-        /// <summary>Call this when CinemachineCompponentBase compponents are added
-        /// or removed.  If you don't call this, you may get null reference errors.</summary>
-        public void InvalidateComponentCache()
-        {
-            m_Components = null;
-        }
-
-        /// <summary>Bring the component cache up to date if needed</summary>
-        protected void UpdateComponentCache()
-        {
-#if UNITY_EDITOR
-            // TODO: check this
-            // Special case: if we have serialized in with some other game object's
-            // components, then we have just been pasted so we should clone them
-            // for (int i = 0; m_Components != null && i < m_Components.Length; ++i)
-            // {
-            //     if (m_Components[i] != null && m_Components[i].gameObject != gameObject)
-            //     {
-            //         var copyFrom = m_Components;
-            //         DestroyComponents();
-            //         CopyComponents(copyFrom);
-            //         break;
-            //     }
-            // }
-#endif
-            if (m_Components != null && m_Components.Length == (int)CinemachineCore.Stage.Finalize + 1)
-                return; // up to date
-
-            m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
-            // TODO: this is wrong, we dont use GetComponents 
-            var existing = GetComponents<CinemachineComponentBase>();
-            for (int i = 0; existing != null && i < existing.Length; ++i)
-                m_Components[(int)existing[i].Stage] = existing[i];
-            
-            OnComponentCacheUpdated();
-        }
+        internal CinemachineComponentBase[] ComponentCache => m_Components;
 
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>
@@ -345,34 +291,7 @@ namespace Cinemachine
             {
                 m_Components[i] = null;
             }
-            InvalidateComponentCache();
         }
-
-#if UNITY_EDITOR
-        // This gets called when user pastes component values
-        void CopyComponents(CinemachineComponentBase[] copyFrom)
-        {
-            foreach (CinemachineComponentBase c in copyFrom)
-            {
-                if (c != null)
-                {
-                    Type type = c.GetType();
-                    var copy = UnityEditor.Undo.AddComponent(gameObject, type);
-                    UnityEditor.Undo.RecordObject(copy, "copying pipeline");
-
-                    System.Reflection.BindingFlags bindingAttr
-                        = System.Reflection.BindingFlags.Public
-                        | System.Reflection.BindingFlags.NonPublic
-                        | System.Reflection.BindingFlags.Instance;
-
-                    System.Reflection.FieldInfo[] fields = type.GetFields(bindingAttr);
-                    for (int i = 0; i < fields.Length; ++i)
-                        if (!fields[i].IsStatic)
-                            fields[i].SetValue(copy, fields[i].GetValue(c));
-                }
-            }
-        }
-#endif
 
         /// Legacy support for an old API.  GML todo: deprecate these methods
 
@@ -400,12 +319,14 @@ namespace Cinemachine
         public void AddCinemachineComponent(CinemachineComponentBase component)
         {
             m_Components[(int)component.Stage] = component;
+            OnComponentCacheUpdated();
         }
 
         /// <summary>Remove a component from the cinemachine pipeline.</summary>
         public void DestroyCinemachineComponent(CinemachineComponentBase component)
         {
             m_Components[(int)component.Stage] = null;
+            OnComponentCacheUpdated();
         }
     }
 }

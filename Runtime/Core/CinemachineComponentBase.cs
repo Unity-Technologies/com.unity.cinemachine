@@ -14,18 +14,9 @@ namespace Cinemachine
         public bool enabled = true;
 
         /// <summary>Get the associated CinemachineVirtualCameraBase</summary>
-        public CinemachineVirtualCameraBase VirtualCamera
-        {
-            get
-            {
-                if (m_vcamOwner == null)
-                    m_vcamOwner = GetComponent<CinemachineVirtualCameraBase>();
-                if (m_vcamOwner == null && transform.parent != null)
-                    m_vcamOwner = transform.parent.GetComponent<CinemachineVirtualCameraBase>();
-                return m_vcamOwner;
-            }
-        }
-        CinemachineVirtualCameraBase m_vcamOwner;
+        public CinemachineVirtualCameraBase VirtualCamera => m_vcamOwner;
+
+        internal CinemachineVirtualCameraBase m_vcamOwner;
 
         /// <summary>Returns the owner vcam's Follow target.</summary>
         public Transform FollowTarget
