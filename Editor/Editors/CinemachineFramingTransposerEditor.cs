@@ -141,8 +141,9 @@ namespace Cinemachine.Editor
                 return;
 
             // If inspector is collapsed in the vcam editor, don't draw the guides
-            if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
-                return;
+            // TODO: collapse check
+            // if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
+            //     return;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))

@@ -275,7 +275,7 @@ namespace Cinemachine
 
         // Component Cache - serialized only for copy/paste
         [SerializeField, HideInInspector, NoSaveDuringPlay]
-        CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
+        internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
         /// For inspector
         internal CinemachineComponentBase[] ComponentCache => m_Components; // TODO: no need for cache
@@ -318,7 +318,7 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public void AddCinemachineComponent(CinemachineComponentBase component)
         {
-            if (component == null) return;
+            //if (component == null) return;
             
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();

@@ -11,55 +11,11 @@ namespace Cinemachine
     internal sealed class CinemachineNewVirtualCameraEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
     {
-        VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
-
         protected override void OnEnable()
         {
             base.OnEnable();
             Undo.undoRedoPerformed += ResetTargetOnUndo;
-            m_PipelineSet.Initialize(
-                // GetComponent
-                (stage, result) =>
-                {
-                    int numNullComponents = 0;
-                    foreach (var obj in targets)
-                    {
-                        var vcam = obj as CinemachineNewVirtualCamera;
-                        if (vcam != null)
-                        {
-                            var c = vcam.GetCinemachineComponent(stage);
-                            if (c != null)
-                                result.Add(c);
-                            else
-                                ++numNullComponents;
-                        }
-                    }
-                    return numNullComponents;
-                },
-                // SetComponent
-                (stage, type) => 
-                {
-                    // TODO: undo support - Undo.SetCurrentGroupName("Cinemachine pipeline change");
-                    foreach (var obj in targets)
-                    {
-                        var vcam = obj as CinemachineNewVirtualCamera;
-                        if (vcam != null)
-                        {
-                            var c = vcam.GetCinemachineComponent(stage);
-                            if (c != null && c.GetType() == type)
-                                continue;
-                            if (c != null)
-                            {
-                                vcam.DestroyCinemachineComponent(stage);
-                            }
-                            if (type != null)
-                            {
-                                vcam.AddCinemachineComponent((CinemachineComponentBase) System.Activator.CreateInstance(type));
-                            }
-                        }
-                    }
-                });
-            
+
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
@@ -69,7 +25,6 @@ namespace Cinemachine
         protected override void OnDisable()
         {
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
-            m_PipelineSet.Shutdown();
             base.OnDisable();
             
 #if UNITY_2021_2_OR_NEWER
@@ -92,13 +47,18 @@ namespace Cinemachine
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
-            m_PipelineSet.OnInspectorGUI(true);
+            
+            var vcam = Target;
+            VcamStageEditor.DrawAddButtons(vcam, vcam.m_Components);
+            DrawPropertyInInspector(FindProperty(x => x.m_Components));
+            
             DrawExtensionsWidgetInInspector();
         }
 
         void OnSceneGUI()
         {
-            m_PipelineSet.OnSceneGUI(); // call hidden editors
+            // TODO: OnSceneGUI calls for handles of components
+            //m_PipelineSet.OnSceneGUI(); // call hidden editors
             
 #if UNITY_2021_2_OR_NEWER
             DrawSceneTools();
