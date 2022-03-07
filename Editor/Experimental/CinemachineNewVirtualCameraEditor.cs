@@ -39,24 +39,22 @@ namespace Cinemachine
                 // SetComponent
                 (stage, type) => 
                 {
-                    Undo.SetCurrentGroupName("Cinemachine pipeline change");
+                    // TODO: undo support
                     foreach (var obj in targets)
                     {
                         var vcam = obj as CinemachineNewVirtualCamera;
                         if (vcam != null)
                         {
-                            Component c = vcam.GetCinemachineComponent(stage);
+                            CinemachineComponentBase c = vcam.GetCinemachineComponent(stage);
                             if (c != null && c.GetType() == type)
                                 continue;
                             if (c != null)
                             {
-                                Undo.DestroyObjectImmediate(c);
-                                vcam.InvalidateComponentCache();
+                                vcam.DestroyCinemachineComponent(stage);
                             }
                             if (type != null)
                             {
-                                Undo.AddComponent(vcam.gameObject, type);
-                                vcam.InvalidateComponentCache();
+                                vcam.AddCinemachineComponent((CinemachineComponentBase) System.Activator.CreateInstance(type));
                             }
                         }
                     }

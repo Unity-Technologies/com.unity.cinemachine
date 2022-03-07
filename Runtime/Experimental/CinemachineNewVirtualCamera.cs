@@ -321,6 +321,13 @@ namespace Cinemachine
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();
         }
+        
+        /// <summary>Remove a component from the cinemachine pipeline.</summary>
+        public void DestroyCinemachineComponent(CinemachineCore.Stage stage)
+        {
+            m_Components[(int) stage] = null;
+            OnComponentCacheUpdated();
+        }
 
         /// <summary>Remove a component from the cinemachine pipeline.</summary>
         public void DestroyCinemachineComponent(CinemachineComponentBase component)

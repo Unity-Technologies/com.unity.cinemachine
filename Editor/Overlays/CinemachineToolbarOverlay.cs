@@ -391,26 +391,26 @@ namespace Cinemachine.Editor
 
         void ShadowSelectedRigName()
         {
-            var index = Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1);
+            var index = Mathf.Clamp(SelectedRig, 0, CinemachineNewFreeLookEditor.m_OrbitNames.Length - 1);
             icon = m_Icons[index];
-            text = CinemachineFreeLookEditor.RigNames[index].text;
+            text = CinemachineNewFreeLookEditor.m_OrbitNames[index].text;
         }
         
         void FreelookRigSelectionMenu()
         {
             var menu = new GenericMenu();
-            for (var i = 0; i < CinemachineFreeLookEditor.RigNames.Length; ++i)
+            for (var i = 0; i < CinemachineNewFreeLookEditor.m_OrbitNames.Length; ++i)
             {
                 var rigIndex = i; // vital to capture the index here for the lambda below
-                menu.AddItem(CinemachineFreeLookEditor.RigNames[i], false, () =>
+                menu.AddItem(CinemachineNewFreeLookEditor.m_OrbitNames[i], false, () =>
                 {
                     SelectedRig = rigIndex;
                     var active = Selection.activeObject as GameObject;
                     if (active != null)
                     {
-                        var freelook = active.GetComponent<CinemachineFreeLook>();
+                        var freelook = active.GetComponent<CinemachineNewFreeLook>();
                         if (freelook != null)
-                            CinemachineFreeLookEditor.SetSelectedRig(freelook, rigIndex);
+                            CinemachineNewFreeLookEditor.SetSelectedRig(freelook, rigIndex);
                     }
                 });
             }

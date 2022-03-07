@@ -10,7 +10,7 @@ namespace Cinemachine
     sealed class CinemachineNewFreeLookEditor
         : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
     {
-        GUIContent[] m_OrbitNames = new GUIContent[]
+        internal static GUIContent[] m_OrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
 
         GUIContent m_CustomizeLabel = new GUIContent(
@@ -164,7 +164,7 @@ namespace Cinemachine
             return freelook.m_VerticalAxis.Value < 0.33f ? 2 : (freelook.m_VerticalAxis.Value > 0.66f ? 0 : 1);
         }
 
-        static void SetSelectedRig(CinemachineNewFreeLook freelook, int rigIndex)
+        internal static void SetSelectedRig(CinemachineNewFreeLook freelook, int rigIndex)
         {
             Debug.Assert(rigIndex >= 0 && rigIndex < 3);
             if (GetSelectedRig(freelook) != rigIndex)
