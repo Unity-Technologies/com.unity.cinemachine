@@ -389,7 +389,13 @@ namespace Cinemachine
         CameraState m_State = CameraState.Default; // Current state this frame
 
         CinemachineComponentBase[] m_ComponentPipeline = null;
-        [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;   // serialized to handle copy/paste
+
+        // Serialized only to implement copy/paste of CM subcomponents.
+        // Note however that this strategy has its limitations: the CM pipeline Components
+        // won't be pasted onto a prefab asset outside the scene unless the prefab
+        // is opened in Prefab edit mode.
+        [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;
+
         void UpdateComponentPipeline()
         {
 #if UNITY_EDITOR
@@ -402,6 +408,9 @@ namespace Cinemachine
                 CreatePipeline(copyFrom);
                 m_ComponentOwner = null;
             }
+            // Make sure the pipeline stays hidden, even through prefab
+            if (m_ComponentOwner != null)
+                SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
 #endif
             // Early out if we're up-to-date
             if (m_ComponentOwner != null && m_ComponentPipeline != null)
@@ -426,11 +435,6 @@ namespace Cinemachine
             if (m_ComponentOwner == null)
                 m_ComponentOwner = CreatePipeline(null);
 
-#if UNITY_EDITOR
-            // Make sure the pipeline stays hidden, even through prefab
-            if (m_ComponentOwner != null)
-                SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
-#endif
             if (m_ComponentOwner != null && m_ComponentOwner.gameObject != null)
             {
                 // Sort the pipeline
