@@ -175,11 +175,14 @@ namespace Cinemachine
 
         bool m_Registered = false;
         SplineContainer m_SplineCache;
+        float m_SplineLength;
+        int m_SplineKnot;
         void OnValidate()
         {
             if (m_SplineCache != null)
             {
                 m_SplineCache.Spline.changed -= onSplineChanged;
+                m_SplineCache.Spline.changed -= UpdateSplineData;
                 m_SplineCache = m_Spline;
                 m_Registered = false;
             }
@@ -188,6 +191,7 @@ namespace Cinemachine
                 m_Registered = true;
                 m_SplineCache = m_Spline;
                 m_Spline.Spline.changed += onSplineChanged;
+                m_Spline.Spline.changed += UpdateSplineData;
             }
 
             m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
@@ -199,6 +203,13 @@ namespace Cinemachine
         private void OnEnable()
         {
             RefreshRollCache();
+        }
+
+        void UpdateSplineData()
+        {
+            m_SplineLength = m_Spline.Spline.GetLength();
+            m_SplineKnot = m_Spline.Spline.Knots.Count();
+            Debug.Log("SplineDataUpdated ("+m_SplineLength+","+m_SplineKnot+")");
         }
 
         void RefreshRollCache()
@@ -273,15 +284,15 @@ namespace Cinemachine
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                const float k_MaxNormalizedValue = 1f;
+                const float maxNormalizedValue = 1f;
                 float prev = m_PreviousNormalizedSplinePosition;
                 float next = normalizedSplinePosition;
-                if (spline.Closed && Mathf.Abs(next - prev) > k_MaxNormalizedValue / 2f)
+                if (spline.Closed && Mathf.Abs(next - prev) > maxNormalizedValue / 2f)
                 {
                     if (next > prev)
-                        prev += k_MaxNormalizedValue;
+                        prev += maxNormalizedValue;
                     else
-                        prev -= k_MaxNormalizedValue;
+                        prev -= maxNormalizedValue;
                 }
 
                 m_PreviousNormalizedSplinePosition = prev;
@@ -337,18 +348,26 @@ namespace Cinemachine
 
         void SanitizeSplinePosition(Spline spline)
         {
-            // SplineUtility does not work with knot values outside of [0, knotCount) range.
-            if (m_PositionUnits == PathIndexUnit.Knot && spline.Closed)
+            switch (m_PositionUnits)
             {
-                if (m_CameraPosition < 0)
-                {
-                    var knotCount = spline.Knots.Count();
-                    m_CameraPosition = knotCount + m_CameraPosition % knotCount;
-                }
-                else
-                {
-                    m_CameraPosition %= spline.Knots.Count();
-                }
+                case PathIndexUnit.Distance:
+                    if (!spline.Closed) m_SplinePosition = Mathf.Clamp(m_SplinePosition, 0, m_SplineLength);
+                    break;
+                case PathIndexUnit.Normalized:
+                    if (!spline.Closed) m_SplinePosition = Mathf.Clamp01(m_SplinePosition);
+                    break;
+                case PathIndexUnit.Knot:
+                    if (spline.Closed)
+                    {
+                        m_SplinePosition %= m_SplineKnot;
+                        if (m_SplinePosition < 0)
+                        {
+                            m_SplinePosition += m_SplineKnot;
+                        }
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
