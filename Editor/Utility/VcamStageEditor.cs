@@ -84,7 +84,6 @@ namespace Cinemachine.Editor
                 else if (selected != newSelection)
                 {
                     vcam.AddCinemachineComponent(
-                        
                         (CinemachineComponentBase)Activator.CreateInstance(sStageData[i].types[newSelection]));
                 }
             }

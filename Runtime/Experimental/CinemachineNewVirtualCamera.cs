@@ -319,6 +319,7 @@ namespace Cinemachine
         public void AddCinemachineComponent(CinemachineComponentBase component)
         {
             //if (component == null) return;
+            component.m_vcamOwner = this;
             
             m_Components[(int)component.Stage] = component;
             component.m_vcamOwner = this; // TODO: these? also rethink arch
