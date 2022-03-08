@@ -219,6 +219,10 @@ namespace Cinemachine
                 m_SplineLength = m_Spline.Spline.GetLength();
                 m_SplineKnot = m_Spline.Spline.Knots.Count();
             }
+            else
+            {
+                m_SplineLength = m_SplineKnot = 0;
+            }
         }
 
         void RefreshRollCache()
