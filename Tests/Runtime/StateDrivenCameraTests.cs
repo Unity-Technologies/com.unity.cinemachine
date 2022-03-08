@@ -16,7 +16,7 @@ namespace Tests.Runtime
     {
         private CinemachineStateDrivenCamera m_StateDrivenCamera;
         private Animator m_Animator;
-        private CinemachineVirtualCamera m_Vcam1, m_Vcam2;
+        private CinemachineNewVirtualCamera m_Vcam1, m_Vcam2;
 
         [SetUp]
         public override void SetUp()
@@ -32,8 +32,8 @@ namespace Tests.Runtime
             var stateDrivenCamera = CreateGameObject("CM StateDrivenCamera", typeof(CinemachineStateDrivenCamera)).GetComponent<CinemachineStateDrivenCamera>();
             stateDrivenCamera.m_AnimatedTarget = character.GetComponent<Animator>();
 
-            var vcam1 = CreateGameObject("Vcam1", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-            var vcam2 = CreateGameObject("Vcam1", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            var vcam1 = CreateGameObject("Vcam1", typeof(CinemachineNewVirtualCamera)).GetComponent<CinemachineNewVirtualCamera>();
+            var vcam2 = CreateGameObject("Vcam1", typeof(CinemachineNewVirtualCamera)).GetComponent<CinemachineNewVirtualCamera>();
             vcam1.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
             vcam2.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
 
