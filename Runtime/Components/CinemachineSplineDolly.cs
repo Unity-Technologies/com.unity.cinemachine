@@ -167,6 +167,10 @@ namespace Cinemachine
         public override float GetMaxDampTime() => !m_DampingEnabled ? 0 :
             Mathf.Max(Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)), m_AngularDamping);
 
+        /// <summary>
+        /// Adds spline to SplineDolly.
+        /// </summary>
+        /// <param name="spline">The spline to add. If null, then any spline on SplineDolly will be removed.</param>
         public void AddSplineContainer(SplineContainer spline)
         {
             m_Spline = spline;
