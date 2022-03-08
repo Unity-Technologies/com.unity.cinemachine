@@ -145,6 +145,15 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
+            if (Target.GetComponentOwner() == null)
+            {
+                EditorGUILayout.HelpBox(
+                    "It's not possible to add this component to a prefab instance.  "
+                    + "Instead, you can open the Prefab in Prefab Mode or unpack "
+                    + "the Prefab instance to remove the Prefab connection.",
+                    MessageType.Error);
+                return;
+            }
             BeginInspector();
             DrawHeaderInInspector();
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
@@ -174,13 +183,30 @@ namespace Cinemachine.Editor
                 CinemachineVirtualCamera.CreatePipelineOverride =
                     (CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom) =>
                     {
-                        // Create a new pipeline
-                        GameObject go =  ObjectFactory.CreateGameObject(name);
-                        Undo.RegisterCreatedObjectUndo(go, "created pipeline");
-                        bool partOfPrefab = PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject);
-                        if (!partOfPrefab)
+                        // Recycle existing pipeline child (if any)
+                        GameObject go = null;
+                        foreach (Transform child in vcam.transform)
+                        {
+                            if (child.GetComponent<CinemachinePipeline>() != null)
+                            {
+                                go = child.gameObject;
+                                break;
+                            }
+                        }
+                        if (go == null)
+                        {
+                            // Create a new pipeline - can't do it if prefab instance
+                            if (PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject))
+                                return null;
+                            go =  ObjectFactory.CreateGameObject(name);
+                            Undo.RegisterCreatedObjectUndo(go, "created pipeline");
                             Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
-                        Undo.AddComponent<CinemachinePipeline>(go);
+                            Undo.AddComponent<CinemachinePipeline>(go);
+                        }
+
+                        var oldStuff = go.GetComponents<CinemachineComponentBase>();
+                        foreach (var c in oldStuff)
+                            Undo.DestroyObjectImmediate(c);
 
                         // If copying, transfer the components
                         if (copyFrom != null)
@@ -196,7 +222,13 @@ namespace Cinemachine.Editor
                     };
                 CinemachineVirtualCamera.DestroyPipelineOverride = (GameObject pipeline) =>
                     {
-                        Undo.DestroyObjectImmediate(pipeline);
+                        var oldStuff = pipeline.GetComponents<CinemachineComponentBase>();
+                        foreach (var c in oldStuff)
+                            Undo.DestroyObjectImmediate(c);
+                        // Cannot create or destroy child objects if prefab.
+                        // Just leave it there in that case, it will get discovered and recycled.
+                        if (!PrefabUtility.IsPartOfAnyPrefab(pipeline))
+                            Undo.DestroyObjectImmediate(pipeline);
                     };
             }
         }

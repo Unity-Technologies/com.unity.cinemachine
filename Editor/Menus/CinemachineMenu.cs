@@ -283,6 +283,8 @@ namespace Cinemachine.Editor
             // We can't use the CinemachineVirtualCamera.AddCinemachineComponent<T>()
             // because we want to support undo/redo
             var componentOwner = vcam.GetComponentOwner().gameObject;
+            if (componentOwner == null)
+                return null; // maybe it's an invalid prefab instance
             var component = Undo.AddComponent<T>(componentOwner);
             vcam.InvalidateComponentPipeline();
             return component;

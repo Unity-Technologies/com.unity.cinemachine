@@ -564,9 +564,13 @@ namespace Cinemachine
                     GameObject go = new GameObject(RigNames[i]);
                     go.transform.parent = transform;
                     newRigs[i] = go.AddComponent<CinemachineVirtualCamera>();
-                    go = newRigs[i].GetComponentOwner().gameObject;
-                    go.AddComponent<CinemachineOrbitalTransposer>();
-                    go.AddComponent<CinemachineComposer>();
+                    var owner = newRigs[i].GetComponentOwner();
+                    if (owner != null) // maybe it's an invalid prefab instance
+                    {
+                        go = newRigs[i].GetComponentOwner().gameObject;
+                        go.AddComponent<CinemachineOrbitalTransposer>();
+                        go.AddComponent<CinemachineComposer>();
+                    }
                 }
 
                 // Set up the defaults

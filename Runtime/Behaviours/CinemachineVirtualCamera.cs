@@ -214,15 +214,6 @@ namespace Cinemachine
 
         void Reset()
         {
-#if UNITY_EDITOR
-            if (UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject)
-                != UnityEditor.PrefabInstanceStatus.NotAPrefab)
-            {
-                Debug.Log("You cannot reset a prefab instance.  "
-                    + "First disconnect this instance from the prefab, or enter Prefab Edit mode");
-                return;
-            }
-#endif
             DestroyPipeline();
         }
 
@@ -262,17 +253,21 @@ namespace Cinemachine
                 if (child.GetComponent<CinemachinePipeline>() != null)
                     oldPipeline.Add(child);
 
-            if (!RuntimeUtility.IsPrefab(gameObject))
+            foreach (Transform child in oldPipeline)
             {
-                foreach (Transform child in oldPipeline)
+                if (DestroyPipelineOverride != null)
+                    DestroyPipelineOverride(child.gameObject);
+                else
                 {
-                    if (DestroyPipelineOverride != null)
-                        DestroyPipelineOverride(child.gameObject);
-                    else
+                    var oldStuff = child.GetComponents<CinemachineComponentBase>();
+                    foreach (var c in oldStuff)
+                        Destroy(c);
+                    if (!RuntimeUtility.IsPrefab(gameObject))
                         Destroy(child.gameObject);
                 }
-                m_ComponentOwner = null;
             }
+            m_ComponentOwner = null;
+            InvalidateComponentPipeline();
             PreviousStateIsValid = false;
         }
 
@@ -397,21 +392,16 @@ namespace Cinemachine
         [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;   // serialized to handle copy/paste
         void UpdateComponentPipeline()
         {
-            bool isPrefab = RuntimeUtility.IsPrefab(gameObject);
 #if UNITY_EDITOR
             // Did we just get copy/pasted?
             if (m_ComponentOwner != null && m_ComponentOwner.parent != transform)
             {
-                if (!isPrefab) // can't paste to a prefab
-                {
-                    CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
-                        ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : null;
-                    DestroyPipeline();
-                    m_ComponentOwner = CreatePipeline(copyFrom);
-                }
+                CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
+                    ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : null;
+                DestroyPipeline();
+                CreatePipeline(copyFrom);
+                m_ComponentOwner = null;
             }
-            if (m_ComponentOwner != null)
-                SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
 #endif
             // Early out if we're up-to-date
             if (m_ComponentOwner != null && m_ComponentPipeline != null)
@@ -423,21 +413,24 @@ namespace Cinemachine
             {
                 if (child.GetComponent<CinemachinePipeline>() != null)
                 {
-                    m_ComponentOwner = child;
                     CinemachineComponentBase[] components = child.GetComponents<CinemachineComponentBase>();
                     foreach (CinemachineComponentBase c in components)
                         if (c.enabled)
                             list.Add(c);
+                    m_ComponentOwner = child;
+                    break;
                 }
             }
 
             // Make sure we have a pipeline owner
-            if (m_ComponentOwner == null && !isPrefab)
+            if (m_ComponentOwner == null)
                 m_ComponentOwner = CreatePipeline(null);
 
+#if UNITY_EDITOR
             // Make sure the pipeline stays hidden, even through prefab
             if (m_ComponentOwner != null)
                 SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
+#endif
             if (m_ComponentOwner != null && m_ComponentOwner.gameObject != null)
             {
                 // Sort the pipeline
