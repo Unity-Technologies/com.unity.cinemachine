@@ -27,7 +27,7 @@ namespace Tests.Runtime
             m_Vcam = CreateGameObject("CM vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
             m_Vcam.Follow = CreatePrimitive(PrimitiveType.Cube).transform;
             m_Dolly = m_Vcam.AddCinemachineComponent<CinemachineSplineDolly>();
-            m_Dolly.m_Spline = m_SplineContainer;
+            m_Dolly.AddSplineContainer(m_SplineContainer);
             m_Dolly.m_CameraUp = CinemachineSplineDolly.CameraUpMode.Default;
             m_Dolly.m_DampingEnabled = false;
         }

@@ -21,8 +21,8 @@ namespace Cinemachine
     public class CinemachineSplineDolly : CinemachineComponentBase
     {
         /// <summary>The Spline container to which the camera will be constrained.  This must be non-null.</summary>
-        [Tooltip("The Spline container to which the camera will be constrained.  This must be non-null.")]
-        public SplineContainer m_Spline;
+        [Tooltip("The Spline container to which the camera will be constrained.  This must be non-null."), SerializeField]
+        internal SplineContainer m_Spline;
 
         /// <summary>The position along the spline at which the camera will be placed. This can be animated directly,
         /// or set automatically by the Auto-Dolly feature to get as close as possible to the Follow target.
@@ -167,6 +167,12 @@ namespace Cinemachine
         public override float GetMaxDampTime() => !m_DampingEnabled ? 0 :
             Mathf.Max(Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)), m_AngularDamping);
 
+        public void AddSplineContainer(SplineContainer spline)
+        {
+            m_Spline = spline;
+            UpdateSplineData();
+        }
+
         /// <summary>
         /// Subscribe to onSplineChanged if you'd like to react to changes to the Spline attached to this vcam.
         /// This action is invoked by the Spline's changed event when a spline property is modified. Available in editor only.
@@ -175,8 +181,6 @@ namespace Cinemachine
 
         bool m_Registered = false;
         SplineContainer m_SplineCache;
-        float m_SplineLength;
-        int m_SplineKnot;
         void OnValidate()
         {
             if (m_SplineCache != null)
@@ -198,18 +202,23 @@ namespace Cinemachine
             m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
             m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
             m_AngularDamping = Mathf.Clamp(m_AngularDamping, 0, 20);
+            UpdateSplineData();
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
             RefreshRollCache();
         }
 
+        float m_SplineLength;
+        int m_SplineKnot;
         void UpdateSplineData()
         {
-            m_SplineLength = m_Spline.Spline.GetLength();
-            m_SplineKnot = m_Spline.Spline.Knots.Count();
-            Debug.Log("SplineDataUpdated ("+m_SplineLength+","+m_SplineKnot+")");
+            if (m_Spline != null && m_Spline.Spline != null)
+            {
+                m_SplineLength = m_Spline.Spline.GetLength();
+                m_SplineKnot = m_Spline.Spline.Knots.Count();
+            }
         }
 
         void RefreshRollCache()
@@ -351,18 +360,18 @@ namespace Cinemachine
             switch (m_PositionUnits)
             {
                 case PathIndexUnit.Distance:
-                    if (!spline.Closed) m_SplinePosition = Mathf.Clamp(m_SplinePosition, 0, m_SplineLength);
+                    if (!spline.Closed) m_CameraPosition = Mathf.Clamp(m_CameraPosition, 0, m_SplineLength);
                     break;
                 case PathIndexUnit.Normalized:
-                    if (!spline.Closed) m_SplinePosition = Mathf.Clamp01(m_SplinePosition);
+                    if (!spline.Closed) m_CameraPosition = Mathf.Clamp01(m_CameraPosition);
                     break;
                 case PathIndexUnit.Knot:
                     if (spline.Closed)
                     {
-                        m_SplinePosition %= m_SplineKnot;
-                        if (m_SplinePosition < 0)
+                        m_CameraPosition %= m_SplineKnot;
+                        if (m_CameraPosition < 0)
                         {
-                            m_SplinePosition += m_SplineKnot;
+                            m_CameraPosition += m_SplineKnot;
                         }
                     }
                     break;
@@ -397,7 +406,7 @@ namespace Cinemachine
         Vector3 m_PreviousCameraPosition = Vector3.zero;
     }
 
-    internal static class SplineContainerExtensions
+    static class SplineContainerExtensions
     {
         public static bool EvaluateSplineWithRoll(
             this SplineContainer spline,
