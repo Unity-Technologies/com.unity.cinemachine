@@ -1,7 +1,6 @@
 #if CINEMACHINE_UNITY_SPLINES
 using System;
 using System.Linq.Expressions;
-using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,7 +21,7 @@ namespace Cinemachine.Editor
         // Helper to avoid string literals, enabling compiler to check for errors
         SerializedProperty FindProperty<TValue>(Expression<Func<CinemachineSplineDolly, TValue>> expr)
         {
-            return serializedObject.FindProperty(ReflectionHelpers.GetFieldPath(expr));
+            return serializedObject.FindProperty(Utility.ReflectionHelpers.GetFieldPath(expr));
         }
 
         void OnEnable()
