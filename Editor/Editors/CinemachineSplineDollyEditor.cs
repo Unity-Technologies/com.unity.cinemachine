@@ -125,8 +125,10 @@ namespace Cinemachine.Editor
                 | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSplineRoll))]
         static void DrawGizmos(CinemachineSplineRoll splineRoll, GizmoType selectionType)
         {
-            if (Selection.activeGameObject == splineRoll.gameObject)
-                DrawSplineGizmo(splineRoll, Color.green, 1, 1000); // GML todo: make this configurable
+            if (Selection.activeGameObject != splineRoll.gameObject) return;
+            
+            DrawSplineGizmo(splineRoll, CinemachineSplineDollyPrefs.SplineRollColor, 
+                CinemachineSplineDollyPrefs.SplineWidth, CinemachineSplineDollyPrefs.SplineResolution);
         }
 
         static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int maxSteps)
