@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
             
             bool nullSpline = false;
             for (int i = 0; !nullSpline && i < targets.Length; ++i)
-                nullSpline = (targets[i] as CinemachineSplineDolly).m_Spline == null;
+                nullSpline = ((CinemachineSplineDolly)targets[i]).m_Spline == null;
             if (nullSpline)
             {
                 EditorGUILayout.HelpBox("A Spline is required", MessageType.Warning);
@@ -55,8 +55,8 @@ namespace Cinemachine.Editor
             bool autoDollyEnabled = false;
             for (int i = 0; !(noFollowTarget && autoDollyEnabled) && i < targets.Length; ++i)
             {
-                autoDollyEnabled = (targets[i] as CinemachineSplineDolly).m_AutoDolly.m_Enabled;
-                noFollowTarget = (targets[i] as CinemachineSplineDolly).FollowTarget == null;
+                autoDollyEnabled = ((CinemachineSplineDolly)targets[i]).m_AutoDolly.m_Enabled;
+                noFollowTarget = ((CinemachineSplineDolly)targets[i]).FollowTarget == null;
             }
 
             if (autoDollyEnabled && noFollowTarget)
