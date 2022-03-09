@@ -215,6 +215,7 @@ namespace Cinemachine
         void Reset()
         {
             DestroyPipeline();
+            UpdateComponentPipeline();
         }
 
         /// <summary>
@@ -246,7 +247,7 @@ namespace Cinemachine
         public delegate void DestroyPipelineDelegate(GameObject pipeline);
 
         /// <summary>Destroy any existing pipeline container.</summary>
-        private void DestroyPipeline()
+        internal void DestroyPipeline()
         {
             List<Transform> oldPipeline = new List<Transform>();
             foreach (Transform child in transform)
@@ -273,7 +274,7 @@ namespace Cinemachine
 
         /// <summary>Create a default pipeline container.
         /// Note: copyFrom only supported in Editor, not build</summary>
-        private Transform CreatePipeline(CinemachineVirtualCamera copyFrom)
+        internal Transform CreatePipeline(CinemachineVirtualCamera copyFrom)
         {
             CinemachineComponentBase[] components = null;
             if (copyFrom != null)
@@ -285,9 +286,9 @@ namespace Cinemachine
             Transform newPipeline = null;
             if (CreatePipelineOverride != null)
                 newPipeline = CreatePipelineOverride(this, PipelineName, components);
-            else
+            else if (!RuntimeUtility.IsPrefab(gameObject))
             {
-                GameObject go =  new GameObject(PipelineName);
+                GameObject go = new GameObject(PipelineName);
                 go.transform.parent = transform;
                 go.AddComponent<CinemachinePipeline>();
                 newPipeline = go.transform;

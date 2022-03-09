@@ -2,6 +2,7 @@ using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
+using System.Collections.Generic;
 
 namespace Cinemachine
 {
@@ -159,7 +160,7 @@ namespace Cinemachine
             InvalidateRigCache();
             
 #if UNITY_EDITOR
-            for (int i = 0; m_Rigs != null && i < 3 && i < m_Rigs.Length; ++i)
+            for (int i = 0; m_Rigs != null && i < m_Rigs.Length; ++i)
                 if (m_Rigs[i] != null)
                     CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 #endif
@@ -170,9 +171,10 @@ namespace Cinemachine
         /// <returns>The rig, or null if index is bad.</returns>
         public CinemachineVirtualCamera GetRig(int i)
         {
-            UpdateRigCache();
-            return (i < 0 || i > 2) ? null : m_Rigs[i];
+            return (UpdateRigCache() && i >= 0 && i < 3) ? m_Rigs[i] : null;
         }
+
+        internal bool RigsAreCreated { get => m_Rigs != null && m_Rigs.Length == 3; }
 
         /// <summary>Names of the 3 child rigs</summary>
         public static string[] RigNames { get { return new string[] { "TopRig", "MiddleRig", "BottomRig" }; } }
@@ -226,15 +228,8 @@ namespace Cinemachine
 
         void Reset()
         {
-#if UNITY_EDITOR
-            if (RuntimeUtility.IsPrefab(gameObject))
-            {
-                Debug.Log("You cannot reset a prefab instance.  "
-                    + "First disconnect this instance from the prefab, or enter Prefab Edit mode");
-                return;
-            }
-#endif
             DestroyRigs();
+            UpdateRigCache();
         }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
@@ -278,7 +273,7 @@ namespace Cinemachine
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             // Do not update the rig cache here or there will be infinite loop at creation time
-            if (m_Rigs == null || m_Rigs.Length != 3)
+            if (!RigsAreCreated)
                 return false;
             var y = GetYAxisValue();
             if (dominantChildOnly)
@@ -306,7 +301,7 @@ namespace Cinemachine
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
         {
             UpdateRigCache();
-            if (m_Rigs != null)
+            if (RigsAreCreated)
                 foreach (var vcam in m_Rigs)
                     vcam.OnTargetObjectWarped(target, positionDelta);
             base.OnTargetObjectWarped(target, positionDelta);
@@ -329,16 +324,17 @@ namespace Cinemachine
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
-            UpdateRigCache();
-            if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(pos, up);
+            if (UpdateRigCache())
+            {
+                if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                    m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(pos, up);
 
-            PushSettingsToRigs();
-            for (int i = 0; i < 3; ++i)
-                m_Rigs[i].ForceCameraPosition(pos, rot);
+                PushSettingsToRigs();
+                for (int i = 0; i < 3; ++i)
+                    m_Rigs[i].ForceCameraPosition(pos, rot);
 
-            InternalUpdateCameraState(up, -1);
-
+                InternalUpdateCameraState(up, -1);
+            }
             base.ForceCameraPosition(pos, rot);
         }
         
@@ -351,6 +347,8 @@ namespace Cinemachine
         {
             UpdateTargetCache();
             UpdateRigCache();
+            if (!RigsAreCreated)
+                return;
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
@@ -391,6 +389,8 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            if (!RigsAreCreated)
+                return;
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 //            m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
@@ -484,7 +484,10 @@ namespace Cinemachine
 
         CameraState m_State = CameraState.Default;          // Current state this frame
 
-        /// Serialized in order to support copy/paste
+        // Serialized only to implement copy/paste of rigs.
+        // Note however that this strategy has its limitations: the rigs
+        // won't be pasted onto a prefab asset outside the scene unless the prefab
+        // is opened in Prefab edit mode.
         [SerializeField][HideInInspector][NoSaveDuringPlay]
         CinemachineVirtualCamera[] m_Rigs = new CinemachineVirtualCamera[3];
 
@@ -522,168 +525,202 @@ namespace Cinemachine
 
         private void DestroyRigs()
         {
-            CinemachineVirtualCamera[] oldRigs = new CinemachineVirtualCamera[RigNames.Length];
+            // First collect rigs because we will destroy as we go
+            var rigs = new List<CinemachineVirtualCamera>(3);
             for (int i = 0; i < RigNames.Length; ++i)
-            {
                 foreach (Transform child in transform)
                     if (child.gameObject.name == RigNames[i])
-                        oldRigs[i] = child.GetComponent<CinemachineVirtualCamera>();
-            }
-            for (int i = 0; i < oldRigs.Length; ++i)
+                        rigs.Add(child.GetComponent<CinemachineVirtualCamera>());
+
+            foreach (var rig in rigs)
             {
-                if (oldRigs[i] != null)
+                if (rig != null)
                 {
                     if (DestroyRigOverride != null)
-                        DestroyRigOverride(oldRigs[i].gameObject);
+                        DestroyRigOverride(rig.gameObject);
                     else
-                        Destroy(oldRigs[i].gameObject);
+                    {
+                        rig.DestroyPipeline();
+                        Destroy(rig);
+                        if (!RuntimeUtility.IsPrefab(gameObject))
+                            Destroy(rig.gameObject);
+                    }
                 }
             }
-            m_Rigs = null;
             mOrbitals = null;
+            m_Rigs = null;
         }
 
         private CinemachineVirtualCamera[] CreateRigs(CinemachineVirtualCamera[] copyFrom)
         {
+            float[] softCenterDefaultsV = new float[] { 0.5f, 0.55f, 0.6f };
+
             // Invalidate the cache
             mOrbitals = null;
-            float[] softCenterDefaultsV = new float[] { 0.5f, 0.55f, 0.6f };
-            CinemachineVirtualCamera[] newRigs = new CinemachineVirtualCamera[3];
-            for (int i = 0; i < RigNames.Length; ++i)
-            {
-                CinemachineVirtualCamera src = null;
-                if (copyFrom != null && copyFrom.Length > i)
-                    src = copyFrom[i];
+            m_Rigs = null;
 
+            // Create the rig contents
+            CinemachineVirtualCamera[] newRigs = new CinemachineVirtualCamera[3];
+            for (int i = 0; i < newRigs.Length; ++i)
+            {
+                var src = (copyFrom != null && copyFrom.Length > i) ? copyFrom[i] : null;
                 if (CreateRigOverride != null)
                     newRigs[i] = CreateRigOverride(this, RigNames[i], src);
                 else
                 {
+                    // Recycle the game object if it exists
+                    GameObject go = null;
+                    foreach (Transform child in transform)
+                    {
+                        if (child.gameObject.name == RigNames[i])
+                        {
+                            go = child.gameObject;
+                            break;
+                        }
+                    }
+
                     // Create a new rig with default components
                     // Note: copyFrom only supported in Editor, not build
-                    GameObject go = new GameObject(RigNames[i]);
-                    go.transform.parent = transform;
-                    newRigs[i] = go.AddComponent<CinemachineVirtualCamera>();
-                    var owner = newRigs[i].GetComponentOwner();
-                    if (owner != null) // maybe it's an invalid prefab instance
+                    if (go == null)
                     {
-                        go = newRigs[i].GetComponentOwner().gameObject;
-                        go.AddComponent<CinemachineOrbitalTransposer>();
-                        go.AddComponent<CinemachineComposer>();
+                        if (!RuntimeUtility.IsPrefab(gameObject))
+                        {
+                            go = new GameObject(RigNames[i]);
+                            go.transform.parent = transform;
+                        }
+                    }
+                    if (go == null)
+                        newRigs[i] = null;
+                    else
+                    {
+                        newRigs[i] = go.AddComponent<CinemachineVirtualCamera>();
+                        newRigs[i].AddCinemachineComponent<CinemachineOrbitalTransposer>();
+                        newRigs[i].AddCinemachineComponent<CinemachineComposer>();
                     }
                 }
 
                 // Set up the defaults
-                newRigs[i].InvalidateComponentPipeline();
-                CinemachineOrbitalTransposer orbital = newRigs[i].GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                if (orbital == null)
-                    orbital = newRigs[i].AddCinemachineComponent<CinemachineOrbitalTransposer>(); // should not happen
-                if (src == null)
+                if (newRigs[i] != null)
                 {
-                    // Only set defaults if not copying
-                    orbital.m_YawDamping = 0;
-                    CinemachineComposer composer = newRigs[i].GetCinemachineComponent<CinemachineComposer>();
-                    if (composer != null)
+                    newRigs[i].InvalidateComponentPipeline();
+                    CinemachineOrbitalTransposer orbital = newRigs[i].GetCinemachineComponent<CinemachineOrbitalTransposer>();
+                    if (orbital == null)
+                        orbital = newRigs[i].AddCinemachineComponent<CinemachineOrbitalTransposer>(); // should not happen
+                    if (src == null)
                     {
-                        composer.m_HorizontalDamping = composer.m_VerticalDamping = 0;
-                        composer.m_ScreenX = 0.5f;
-                        composer.m_ScreenY = softCenterDefaultsV[i];
-                        composer.m_DeadZoneWidth = composer.m_DeadZoneHeight = 0f;
-                        composer.m_SoftZoneWidth = composer.m_SoftZoneHeight = 0.8f;
-                        composer.m_BiasX = composer.m_BiasY = 0;
+                        // Only set defaults if not copying
+                        orbital.m_YawDamping = 0;
+                        CinemachineComposer composer = newRigs[i].GetCinemachineComponent<CinemachineComposer>();
+                        if (composer != null)
+                        {
+                            composer.m_HorizontalDamping = composer.m_VerticalDamping = 0;
+                            composer.m_ScreenX = 0.5f;
+                            composer.m_ScreenY = softCenterDefaultsV[i];
+                            composer.m_DeadZoneWidth = composer.m_DeadZoneHeight = 0f;
+                            composer.m_SoftZoneWidth = composer.m_SoftZoneHeight = 0.8f;
+                            composer.m_BiasX = composer.m_BiasY = 0;
+                        }
                     }
                 }
             }
             return newRigs;
         }
 
-        private void UpdateRigCache()
+        private bool UpdateRigCache()
         {
             if (mIsDestroyed)
-                return;
-
-            bool isPrefab = RuntimeUtility.IsPrefab(gameObject);
+                return false;
 
 #if UNITY_EDITOR
             // Special condition: Did we just get copy/pasted?
             if (m_Rigs != null && m_Rigs.Length == 3
                 && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
             {
-                if (!isPrefab) // can't paste to a prefab
-                {
-                    var copyFrom = m_Rigs;
-                    DestroyRigs();
-                    m_Rigs = CreateRigs(copyFrom);
-                }
+                var copyFrom = m_Rigs;
+                DestroyRigs();
+                CreateRigs(copyFrom);
             }
 #endif
 
             // Early out if we're up to date
             if (mOrbitals != null && mOrbitals.Length == 3)
-                return;
+                return true;
 
             // Locate existing rigs, and recreate them if any are missing
-            if (LocateExistingRigs(RigNames, false) != 3 && !isPrefab)
+            m_CachedXAxisHeading = 0;
+            m_Rigs = null;
+            mOrbitals = null;
+            var rigs = LocateExistingRigs(false);
+            if (rigs == null || rigs.Count != 3)
             {
                 DestroyRigs();
-                m_Rigs = CreateRigs(null);
-                LocateExistingRigs(RigNames, true);
+                CreateRigs(null);
+                rigs = LocateExistingRigs(true);
             }
+            if (rigs != null && rigs.Count == 3)
+                m_Rigs = rigs.ToArray();
+
+            if (RigsAreCreated)
+            {
+                mOrbitals = new CinemachineOrbitalTransposer[m_Rigs.Length];
+                for (int i = 0; i < m_Rigs.Length; ++i)
+                     mOrbitals[i] = m_Rigs[i].GetCinemachineComponent<CinemachineOrbitalTransposer>();
 
 #if UNITY_EDITOR
-            foreach (var rig in m_Rigs)
-            {
-                // Configure the UI
-                if (rig == null)
-                    continue;
-                rig.m_ExcludedPropertiesInInspector = m_CommonLens
-                    ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
-                    : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
-                rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
-            }
+                foreach (var rig in m_Rigs)
+                {
+                    // Configure the UI
+                    if (rig == null)
+                        continue;
+                    rig.m_ExcludedPropertiesInInspector = m_CommonLens
+                        ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
+                        : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
+                    rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
+                }
 #endif
 
-            // Create the blend objects
-            mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
-            mBlendB = new CinemachineBlend(m_Rigs[2], m_Rigs[1], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
+                // Create the blend objects
+                mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
+                mBlendB = new CinemachineBlend(m_Rigs[2], m_Rigs[1], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
+
+                return true;
+            }
+            return false;
         }
 
-        private int LocateExistingRigs(string[] rigNames, bool forceOrbital)
+        private List<CinemachineVirtualCamera> LocateExistingRigs(bool forceOrbital)
         {
-            m_CachedXAxisHeading = 0;
-            mOrbitals = new CinemachineOrbitalTransposer[rigNames.Length];
-            m_Rigs = new CinemachineVirtualCamera[rigNames.Length];
-            int rigsFound = 0;
+            var rigs = new List<CinemachineVirtualCamera>(3);
             foreach (Transform child in transform)
             {
                 CinemachineVirtualCamera vcam = child.GetComponent<CinemachineVirtualCamera>();
                 if (vcam != null)
                 {
                     GameObject go = child.gameObject;
-                    for (int i = 0; i < rigNames.Length; ++i)
+                    for (int i = 0; i < RigNames.Length; ++i)
                     {
-                        if (mOrbitals[i] == null && go.name == rigNames[i])
+                        if (go.name != RigNames[i])
+                            continue;
+
+                        // Must have an orbital transposer or it's no good
+                        var orbital = vcam.GetCinemachineComponent<CinemachineOrbitalTransposer>();
+                        if (orbital == null && forceOrbital)
+                            orbital = vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
+                        if (orbital != null)
                         {
-                            // Must have an orbital transposer or it's no good
-                            mOrbitals[i] = vcam.GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                            if (mOrbitals[i] == null && forceOrbital)
-                                mOrbitals[i] = vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
-                            if (mOrbitals[i] != null)
-                            {
-                                mOrbitals[i].m_HeadingIsSlave = true;
-                                mOrbitals[i].HideOffsetInInspector = true;
-                                mOrbitals[i].m_XAxis.m_InputAxisName = string.Empty;
-                                mOrbitals[i].HeadingUpdater = UpdateXAxisHeading;
-                                mOrbitals[i].m_RecenterToTargetHeading.m_enabled = false;
-                                m_Rigs[i] = vcam;
-                                m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
-                                ++rigsFound;
-                            }
+                            orbital.m_HeadingIsSlave = true;
+                            orbital.HideOffsetInInspector = true;
+                            orbital.m_XAxis.m_InputAxisName = string.Empty;
+                            orbital.HeadingUpdater = UpdateXAxisHeading;
+                            orbital.m_RecenterToTargetHeading.m_enabled = false;
+
+                            vcam.m_StandbyUpdate = m_StandbyUpdate;
+                            rigs.Add(vcam);
                         }
                     }
                 }
             }
-            return rigsFound;
+            return rigs;
         }
 
         float m_CachedXAxisHeading;
@@ -708,12 +745,8 @@ namespace Cinemachine
 
         void PushSettingsToRigs()
         {
-            UpdateRigCache();
             for (int i = 0; i < m_Rigs.Length; ++i)
             {
-                if (m_Rigs[i] == null)
-                    continue;
-
                 if (m_CommonLens)
                     m_Rigs[i].m_Lens = m_Lens;
 
