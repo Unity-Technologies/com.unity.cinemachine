@@ -8,8 +8,8 @@ using UnityEngine.Splines;
 namespace Cinemachine
 {
     /// <summary>
-    /// A Cinemachine Virtual Camera Body component that constrains camera motion
-    /// to a Spline.  The camera can move along the spline.
+    /// A Cinemachine Virtual Camera Body component that constrains camera motion to a Spline.
+    /// The camera can move along the spline.
     ///
     /// This behaviour can operate in two modes: manual positioning, and Auto-Dolly positioning.
     /// In Manual mode, the camera's position is specified by animating the Spline Position field.
@@ -183,77 +183,6 @@ namespace Cinemachine
         /// </summary>
         public event Action onSplineChanged;
 
-        bool m_Registered = false;
-        SplineContainer m_SplineCache;
-        void OnValidate()
-        {
-            if (m_SplineCache != null)
-            {
-                m_SplineCache.Spline.changed -= onSplineChanged;
-                m_SplineCache.Spline.changed -= UpdateSplineData;
-                m_SplineCache = m_Spline;
-                m_Registered = false;
-            }
-            if (!m_Registered && m_Spline != null && m_Spline.Spline != null)
-            {
-                m_Registered = true;
-                m_SplineCache = m_Spline;
-                m_Spline.Spline.changed += onSplineChanged;
-                m_Spline.Spline.changed += UpdateSplineData;
-            }
-
-            m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
-            m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
-            m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
-            m_AngularDamping = Mathf.Clamp(m_AngularDamping, 0, 20);
-            UpdateSplineData();
-        }
-
-        void OnEnable()
-        {
-            RefreshRollCache();
-        }
-
-        float m_SplineLength;
-        int m_SplineKnot;
-        void UpdateSplineData()
-        {
-            if (m_Spline != null && m_Spline.Spline != null)
-            {
-                m_SplineLength = m_Spline.Spline.GetLength();
-                m_SplineKnot = m_Spline.Spline.Knots.Count();
-            }
-            else
-            {
-                m_SplineLength = m_SplineKnot = 0;
-            }
-        }
-
-        void RefreshRollCache()
-        {
-            VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
-#if UNITY_EDITOR
-            if (m_RollCache != null)
-                m_RollCache.SplineContainer = m_Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes
-#endif
-            if (m_Spline != null && m_RollCache == null)
-                m_Spline.TryGetComponent(out m_RollCache); // check if our spline has CinemachineSplineRoll
-        }
-
-        CinemachineSplineRoll m_RollCache; // don't use this directly
-
-        CinemachineSplineRoll SplineRoll
-        {
-            get
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    RefreshRollCache();
-#endif
-                return m_RollCache;
-            }
-        }
-        
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
@@ -270,10 +199,14 @@ namespace Cinemachine
                 return;
             }
 
-            SanitizeSplinePosition(spline);
+#if false
+            m_CameraPosition = spline.SanitizeInterpolationValue(m_CameraPosition, m_PositionUnits);
+#else
+            m_CameraPosition = SanitizeInterpolationValue(spline, m_CameraPosition, m_PositionUnits);
+#endif
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
-                    SplineUtility.ConvertIndexUnit(spline, m_CameraPosition, m_PositionUnits, PathIndexUnit.Normalized);
+                spline.ConvertIndexUnit(m_CameraPosition, m_PositionUnits, PathIndexUnit.Normalized);
             
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
@@ -291,12 +224,12 @@ namespace Cinemachine
                 SplineUtility.GetNearestPoint(spline, 
                     m_Spline.transform.InverseTransformPoint(FollowTargetPosition), out _, out normalizedSplinePosition, 
                     m_AutoDolly.m_SearchResolution, m_AutoDolly.m_SearchIteration);
-                m_CameraPosition = SplineUtility.ConvertIndexUnit(spline, normalizedSplinePosition, 
+                m_CameraPosition = spline.ConvertIndexUnit(normalizedSplinePosition, 
                     PathIndexUnit.Normalized, m_PositionUnits);
                 
                 // Apply the spline position offset
-                normalizedSplinePosition += SplineUtility.ConvertIndexUnit(
-                    spline, m_AutoDolly.m_PositionOffset, m_PositionUnits, PathIndexUnit.Normalized);
+                normalizedSplinePosition += spline.ConvertIndexUnit(m_AutoDolly.m_PositionOffset, 
+                    m_PositionUnits, PathIndexUnit.Normalized);
             }
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
@@ -363,29 +296,74 @@ namespace Cinemachine
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
 
-        void SanitizeSplinePosition(Spline spline)
+
+        CinemachineSplineRoll m_RollCache; // don't use this directly
+
+        CinemachineSplineRoll SplineRoll
         {
-            switch (m_PositionUnits)
+            get
             {
-                case PathIndexUnit.Distance:
-                    if (!spline.Closed) m_CameraPosition = Mathf.Clamp(m_CameraPosition, 0, m_SplineLength);
-                    break;
-                case PathIndexUnit.Normalized:
-                    if (!spline.Closed) m_CameraPosition = Mathf.Clamp01(m_CameraPosition);
-                    break;
-                case PathIndexUnit.Knot:
-                    if (spline.Closed)
-                    {
-                        m_CameraPosition %= m_SplineKnot;
-                        if (m_CameraPosition < 0)
-                        {
-                            m_CameraPosition += m_SplineKnot;
-                        }
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                    RefreshRollCache();
+#endif
+                return m_RollCache;
             }
+        }
+        
+        static float SanitizeInterpolationValue(Spline spline, float t, PathIndexUnit unit)
+        {
+            var sanitized = t;
+            if (spline.Closed)
+            {
+                switch (unit)
+                {
+                    case PathIndexUnit.Distance:
+                        var splineLength = spline.GetLength();
+                        sanitized %= splineLength;
+                        if (sanitized < 0)
+                        {
+                            sanitized += splineLength;
+                        }
+                        break;
+                    case PathIndexUnit.Normalized:
+                        sanitized -= Mathf.Floor(sanitized);
+                        if (sanitized < 0)
+                        {
+                            sanitized += 1f;
+                        }
+                        break;
+                    case PathIndexUnit.Knot:
+                        var knotCount = spline.Count;
+                        sanitized %= knotCount;
+                        if (sanitized < 0)
+                        {
+                            sanitized += knotCount;
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
+                }
+            }
+            else {
+                switch (unit)
+                {
+                    case PathIndexUnit.Distance:
+                        var splineLength = spline.GetLength();
+                        sanitized = Mathf.Clamp(sanitized, 0, splineLength);
+                        break;
+                    case PathIndexUnit.Normalized:
+                        sanitized = Mathf.Clamp01(sanitized);
+                        break;
+                    case PathIndexUnit.Knot:
+                        var knotCount = spline.Count;
+                        sanitized = Mathf.Clamp(sanitized, 0, knotCount);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
+                }
+            }
+            return sanitized;
         }
 
         Quaternion GetCameraOrientationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
@@ -412,6 +390,63 @@ namespace Cinemachine
         float m_PreviousNormalizedSplinePosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         Vector3 m_PreviousCameraPosition = Vector3.zero;
+        
+        bool m_Registered = false;
+        SplineContainer m_SplineCache;
+        void OnValidate()
+        {
+            if (m_SplineCache != null)
+            {
+                m_SplineCache.Spline.changed -= onSplineChanged;
+                m_SplineCache.Spline.changed -= UpdateSplineData;
+                m_SplineCache = m_Spline;
+                m_Registered = false;
+            }
+            if (!m_Registered && m_Spline != null && m_Spline.Spline != null)
+            {
+                m_Registered = true;
+                m_SplineCache = m_Spline;
+                m_Spline.Spline.changed += onSplineChanged;
+                m_Spline.Spline.changed += UpdateSplineData;
+            }
+
+            m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
+            m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
+            m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
+            m_AngularDamping = Mathf.Clamp(m_AngularDamping, 0, 20);
+            UpdateSplineData();
+        }
+
+        void OnEnable()
+        {
+            RefreshRollCache();
+        }
+
+        float m_SplineLength;
+        int m_SplineKnot;
+        void UpdateSplineData()
+        {
+            if (m_Spline != null && m_Spline.Spline != null)
+            {
+                m_SplineLength = m_Spline.Spline.GetLength();
+                m_SplineKnot = m_Spline.Spline.Knots.Count();
+            }
+            else
+            {
+                m_SplineLength = m_SplineKnot = 0;
+            }
+        }
+
+        void RefreshRollCache()
+        {
+            VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
+#if UNITY_EDITOR
+            if (m_RollCache != null)
+                m_RollCache.SplineContainer = m_Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes
+#endif
+            if (m_Spline != null && m_RollCache == null)
+                m_Spline.TryGetComponent(out m_RollCache); // check if our spline has CinemachineSplineRoll
+        }
     }
 
     static class SplineContainerExtensions
