@@ -311,7 +311,7 @@ namespace Cinemachine
             }
         }
         
-        static float SanitizeInterpolationValue(Spline spline, float t, PathIndexUnit unit)
+        float SanitizeInterpolationValue(Spline spline, float t, PathIndexUnit unit)
         {
             var sanitized = t;
             if (spline.Closed)
@@ -319,7 +319,7 @@ namespace Cinemachine
                 switch (unit)
                 {
                     case PathIndexUnit.Distance:
-                        var splineLength = spline.GetLength();
+                        var splineLength = m_SplineLength;
                         sanitized %= splineLength;
                         if (sanitized < 0)
                         {
@@ -334,7 +334,7 @@ namespace Cinemachine
                         }
                         break;
                     case PathIndexUnit.Knot:
-                        var knotCount = spline.Count;
+                        var knotCount = m_SplineKnotCount;
                         sanitized %= knotCount;
                         if (sanitized < 0)
                         {
@@ -349,14 +349,14 @@ namespace Cinemachine
                 switch (unit)
                 {
                     case PathIndexUnit.Distance:
-                        var splineLength = spline.GetLength();
+                        var splineLength = m_SplineLength;
                         sanitized = Mathf.Clamp(sanitized, 0, splineLength);
                         break;
                     case PathIndexUnit.Normalized:
                         sanitized = Mathf.Clamp01(sanitized);
                         break;
                     case PathIndexUnit.Knot:
-                        var knotCount = spline.Count;
+                        var knotCount = m_SplineKnotCount;
                         sanitized = Mathf.Clamp(sanitized, 0, knotCount);
                         break;
                     default:
@@ -423,17 +423,17 @@ namespace Cinemachine
         }
 
         float m_SplineLength;
-        int m_SplineKnot;
+        int m_SplineKnotCount;
         void UpdateSplineData()
         {
             if (m_Spline != null && m_Spline.Spline != null)
             {
                 m_SplineLength = m_Spline.Spline.GetLength();
-                m_SplineKnot = m_Spline.Spline.Knots.Count();
+                m_SplineKnotCount = m_Spline.Spline.Knots.Count();
             }
             else
             {
-                m_SplineLength = m_SplineKnot = 0;
+                m_SplineLength = m_SplineKnotCount = 0;
             }
         }
 
