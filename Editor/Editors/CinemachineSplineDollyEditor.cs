@@ -130,14 +130,14 @@ namespace Cinemachine.Editor
                 CinemachineSplineDollyPrefs.SplineWidth, CinemachineSplineDollyPrefs.SplineResolution);
         }
 
-        static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int maxSteps)
+        static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution)
         {
             var spline = splineRoll == null ? null : splineRoll.SplineContainer;
             if (spline == null || spline.Spline == null || spline.Spline.Count == 0)
                 return;
 
-            var length = spline.CalculateLength();
-            var numSteps = Mathf.FloorToInt(Mathf.Clamp(length / width, 3, maxSteps));
+            var numKnots = spline.Spline.Count;
+            var numSteps = numKnots * resolution;
             var stepSize = 1.0f / numSteps;
             var halfWidth = width * 0.5f;
 
