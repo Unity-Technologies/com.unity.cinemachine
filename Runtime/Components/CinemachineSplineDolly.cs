@@ -198,12 +198,8 @@ namespace Cinemachine
             {
                 return;
             }
-
-#if false
-            m_CameraPosition = spline.SanitizeInterpolationValue(m_CameraPosition, m_PositionUnits);
-#else
+            
             m_CameraPosition = SanitizeInterpolationValue(spline, m_CameraPosition, m_PositionUnits);
-#endif
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
                 spline.ConvertIndexUnit(m_CameraPosition, m_PositionUnits, PathIndexUnit.Normalized);
@@ -314,53 +310,52 @@ namespace Cinemachine
         float SanitizeInterpolationValue(Spline spline, float t, PathIndexUnit unit)
         {
             var sanitized = t;
-            if (spline.Closed)
+            var splineClosed = spline.Closed;
+            switch (unit)
             {
-                switch (unit)
+                case PathIndexUnit.Distance:
                 {
-                    case PathIndexUnit.Distance:
-                        var splineLength = m_SplineLength;
+                    var splineLength = m_SplineLength;
+                    if (splineClosed)
+                    {
                         sanitized %= splineLength;
                         if (sanitized < 0)
                         {
                             sanitized += splineLength;
                         }
-                        break;
-                    case PathIndexUnit.Normalized:
-                        sanitized -= Mathf.Floor(sanitized);
-                        if (sanitized < 0)
-                        {
-                            sanitized += 1f;
-                        }
-                        break;
-                    case PathIndexUnit.Knot:
-                        var knotCount = m_SplineKnotCount;
+                    }
+                    else sanitized = Mathf.Clamp(sanitized, 0, splineLength);
+
+                    break;
+                }
+                case PathIndexUnit.Knot:
+                {
+                    var knotCount = m_SplineKnotCount;
+                    if (splineClosed)
+                    {
                         sanitized %= knotCount;
                         if (sanitized < 0)
                         {
                             sanitized += knotCount;
                         }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
+                    }
+                    else sanitized = Mathf.Clamp(sanitized, 0, knotCount);
+
+                    break;
                 }
-            }
-            else {
-                switch (unit)
+                default:
+                case PathIndexUnit.Normalized:
                 {
-                    case PathIndexUnit.Distance:
-                        var splineLength = m_SplineLength;
-                        sanitized = Mathf.Clamp(sanitized, 0, splineLength);
-                        break;
-                    case PathIndexUnit.Normalized:
-                        sanitized = Mathf.Clamp01(sanitized);
-                        break;
-                    case PathIndexUnit.Knot:
-                        var knotCount = m_SplineKnotCount;
-                        sanitized = Mathf.Clamp(sanitized, 0, knotCount);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
+                    if (splineClosed)
+                    {
+                        sanitized -= Mathf.Floor(sanitized);
+                        if (sanitized < 0)
+                        {
+                            sanitized += 1f;
+                        }
+                    }
+                    else sanitized = Mathf.Clamp01(sanitized);
+                    break;
                 }
             }
             return sanitized;
