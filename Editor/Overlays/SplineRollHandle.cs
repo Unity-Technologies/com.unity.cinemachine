@@ -51,7 +51,10 @@ namespace Cinemachine.Editor
                 using (new Handles.DrawingScope(color))
                     Handles.ArrowHandleCap(-1, Vector3.zero, handleRotationGlobalSpace, 1f, EventType.Repaint);
                 
-                var newHandleRotationGlobalSpace = Handles.Disc(controlID, handleRotationGlobalSpace, Vector3.zero, Vector3.forward, CinemachineSplineDollyPrefs.SplineWidth, false, 0);
+                var newHandleRotationGlobalSpace = Handles.Disc(controlID, handleRotationGlobalSpace, 
+                    Vector3.zero, Vector3.forward, 
+                    Mathf.Max(HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth), 
+                    false, 0);
                 if (GUIUtility.hotControl == controlID)
                 {
                     // Handles.Disc returns roll values in the [0, 360] range. Therefore, it works only in fixed ranges
