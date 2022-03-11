@@ -16,17 +16,17 @@ all_tests:
   - name: integration_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type project-tests
-    projects: [URP, Standelone]
+    projects: [HDRP, URP, Standelone]
     variables:
   - name: isolation_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type isolation-tests --enable-load-and-test-isolation
-    projects: [URP, Standelone]
+    projects: [HDRP, URP, Standelone]
     variables:
   - name: vetting_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type vetting-tests --platform editmode
-    projects: [URP, Standelone]
+    projects: [HDRP, URP, Standelone]
     variables:
      - "UPMCI_PROMOTION: 1"
   - name: promotion_tests
