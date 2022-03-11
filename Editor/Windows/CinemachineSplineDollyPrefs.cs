@@ -34,8 +34,8 @@ namespace Cinemachine
             }
         }
 
-        public static float SplineWidth = 1;
-        public static int SplineResolution = 1000;
+        public static float SplineWidth = 0.5f;
+        public static int SplineResolution = 10;
 
         const string k_SplineSettingsFoldoutKey = "CNMCN_Spline_Foldout";
         const string k_SplineRollColorKey = "CNMCN_Spline_Roll_Colour";
@@ -44,11 +44,11 @@ namespace Cinemachine
 
         static CinemachineSplineDollyPrefs()
         {
-            CinemachineSettings.AdditionalCategories += DrawColliderSettings;
+            CinemachineSettings.AdditionalCategories += DrawSplineSettings;
             
             s_SplineRollColorGUIContent = new GUIContent
             {
-                text = "Spline Roll",
+                text = "Spline Track",
                 tooltip = "The color with which the spline is drawn, when a " + nameof(CinemachineSplineRoll) + " is attached."
             };
             s_SplineWidthGUIContent = new GUIContent
@@ -63,7 +63,7 @@ namespace Cinemachine
             };
         }
 
-        static void DrawColliderSettings()
+        static void DrawSplineSettings()
         {
             SettingsFoldedOut = EditorGUILayout.Foldout(SettingsFoldedOut, "Spline Settings", true);
             if (SettingsFoldedOut)
@@ -72,8 +72,8 @@ namespace Cinemachine
                 EditorGUI.BeginChangeCheck();
 
                 SplineRollColor = EditorGUILayout.ColorField(s_SplineRollColorGUIContent, SplineRollColor);
-                SplineWidth = Mathf.Max(0, EditorGUILayout.FloatField(s_SplineWidthGUIContent, SplineWidth));
-                SplineResolution = Mathf.Max(1, EditorGUILayout.IntField(s_SplineResolutionGUIContent, SplineResolution));
+                SplineWidth = Mathf.Max(0.01f, EditorGUILayout.FloatField(s_SplineWidthGUIContent, SplineWidth));
+                SplineResolution = Mathf.Clamp(EditorGUILayout.IntField(s_SplineResolutionGUIContent, SplineResolution), 3, 100);
 
                 if (EditorGUI.EndChangeCheck())
                 {
