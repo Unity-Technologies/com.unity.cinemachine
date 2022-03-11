@@ -14,7 +14,7 @@ all_platforms:
 
 all_tests:
   - name: integration_tests
-    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+    editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type project-tests
     projects: [URP, Standelone]
     variables:
@@ -24,13 +24,13 @@ all_tests:
     projects: [URP, Standelone]
     variables:
   - name: vetting_tests
-    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+    editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type vetting-tests --platform editmode
     projects: [URP, Standelone]
     variables:
      - "UPMCI_PROMOTION: 1"
   - name: promotion_tests
-    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+    editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type promotion-audit --platform editmode
     projects: [URP, Standelone]
     variables:
