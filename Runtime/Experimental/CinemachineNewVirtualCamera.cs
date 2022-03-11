@@ -318,8 +318,7 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public T AddCinemachineComponent<T>() where T : CinemachineComponentBase, new()
         {
-            var component = new T();
-            component.m_vcamOwner = this;
+            var component = new T { m_vcamOwner = this };
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();
             return component;
