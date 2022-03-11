@@ -257,10 +257,10 @@ namespace Cinemachine
         void Reset()
         {
             DestroyComponents();
-            AddCinemachineComponent(new CinemachineOrbitalTransposer { 
-                HideOffsetInInspector = true, m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
-            });
-            AddCinemachineComponent(new CinemachineComposer());
+            var orbitalTransposer = AddCinemachineComponent<CinemachineOrbitalTransposer>();
+            orbitalTransposer.HideOffsetInInspector = true;
+            orbitalTransposer.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+            AddCinemachineComponent<CinemachineComposer>();
 
             m_Rigs = new Rig[2] { new Rig(), new Rig() };
 

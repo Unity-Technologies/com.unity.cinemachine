@@ -316,14 +316,22 @@ namespace Cinemachine
         }
 
         /// <summary>Add a component to the cinemachine pipeline.</summary>
-        public void AddCinemachineComponent(CinemachineComponentBase component)
+        public T AddCinemachineComponent<T>() where T : CinemachineComponentBase, new()
         {
-            //if (component == null) return;
+            var component = new T();
             component.m_vcamOwner = this;
-            
             m_Components[(int)component.Stage] = component;
-            component.m_vcamOwner = this; // TODO: these? also rethink arch
             OnComponentCacheUpdated();
+            return component;
+        }
+
+        /// <summary>Add a component to the cinemachine pipeline.</summary>
+        public CinemachineComponentBase AddCinemachineComponent(CinemachineComponentBase component)
+        {
+            component.m_vcamOwner = this;
+            m_Components[(int)component.Stage] = component;
+            OnComponentCacheUpdated();
+            return component;
         }
         
         /// <summary>Remove a component from the cinemachine pipeline.</summary>

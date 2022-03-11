@@ -25,8 +25,8 @@ namespace Tests.Runtime
             m_VCam = CreateGameObject("Source CM Vcam", typeof(CinemachineNewVirtualCamera)).GetComponent<CinemachineNewVirtualCamera>();
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
-            m_VCam.AddCinemachineComponent(new CinemachineFramingTransposer());
-            m_VCam.AddCinemachineComponent(new CinemachineComposer());
+            m_VCam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            m_VCam.AddCinemachineComponent<CinemachineComposer>();
             m_FramingTransposer = m_VCam.GetCinemachineComponent<CinemachineFramingTransposer>();
             m_Composer = m_VCam.GetCinemachineComponent<CinemachineComposer>();
             m_FramingTransposer.m_LookaheadSmoothing = m_Composer.m_LookaheadSmoothing = 0.3f;

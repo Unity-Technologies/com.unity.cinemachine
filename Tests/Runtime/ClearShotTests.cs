@@ -38,7 +38,7 @@ namespace Tests.Runtime
             vcam1Holder.transform.SetParent(clearShotHolder.transform);
             vcam1Holder.transform.position = new Vector3(0, 0, 8); 
             m_Vcam1 = vcam1Holder.GetComponent<CinemachineNewVirtualCamera>();
-            m_Vcam1.AddCinemachineComponent(new CinemachineHardLookAt());
+            m_Vcam1.AddCinemachineComponent<CinemachineHardLookAt>();
             m_Vcam1.Priority = 20;
             
             // a completely locked vcam2

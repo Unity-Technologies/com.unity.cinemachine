@@ -103,11 +103,9 @@ namespace Cinemachine.Editor
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.AddCinemachineComponent(new CinemachineComposer());
-            vcam.AddCinemachineComponent(new CinemachineTrackedDolly
-            {
-                m_Path = path
-            });
+            vcam.AddCinemachineComponent<CinemachineComposer>();
+            var trackedDolly = vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
+            trackedDolly.m_Path = path;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]
@@ -128,8 +126,8 @@ namespace Cinemachine.Editor
                 "Virtual Camera", command.context as GameObject, false);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.AddCinemachineComponent(new CinemachineGroupComposer());
-            vcam.AddCinemachineComponent(new CinemachineTransposer());
+            vcam.AddCinemachineComponent<CinemachineGroupComposer>();
+            vcam.AddCinemachineComponent<CinemachineTransposer>();
 
             var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
                 "Target Group", command.context as GameObject, true);
@@ -157,7 +155,7 @@ namespace Cinemachine.Editor
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.AddCinemachineComponent(new CinemachineFramingTransposer());
+            vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
         }
 
         /// <summary>
