@@ -5,7 +5,7 @@
 {% for editor in test.editors %}
 {% for test_project in all_testprojects %}
 test_{{ test.name }}_{{ platform.name }}_{{ editor }}_{{test_project.name}}:
-  name : Test {{ test.name }} on {{ platform.name }} with {{ editor }} and {{test_project.name}}
+  name : {{ test.name }} {{ platform.name }} {{ editor }} {{test_project.name}}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
