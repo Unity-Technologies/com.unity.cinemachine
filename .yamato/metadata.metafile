@@ -41,6 +41,8 @@ all_testprojects:
       path: Projects/URP
     - name: Standelone
       path: Projects/Standelone
+    - name: HDRP
+      path: Projects/HDRP
 
 all_configurations:
   ci:
