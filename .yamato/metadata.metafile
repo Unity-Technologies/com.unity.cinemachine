@@ -47,7 +47,7 @@ all_testprojects:
 all_configurations:
   ci:
     test_names: [integration_tests, isolation_tests]
-    platform_names: [ubuntu, windows]
+    platform_names: [ubuntu]
   publish:
     test_names: [integration_tests, isolation_tests, vetting_tests]
     platform_names: [windows, macOS, ubuntu]
