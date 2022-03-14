@@ -32,7 +32,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CinemachineOrbitalTransposer : CinemachineTransposer
+    public class CmOrbitalTransposer : CmTransposer
     {
         /// <summary>
         /// How the "forward" direction is defined.  Orbital offset is in relation to the forward
@@ -165,7 +165,7 @@ namespace Cinemachine
         /// Delegate that allows the the m_XAxis object to be replaced with another one.
         /// </summary>
         internal delegate float UpdateHeadingDelegate(
-            CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up);
+            CmOrbitalTransposer orbital, float deltaTime, Vector3 up);
 
         /// <summary>
         /// Delegate that allows the the XAxis object to be replaced with another one.
@@ -174,7 +174,7 @@ namespace Cinemachine
         /// used to calculate the heading.
         /// </summary>
         internal UpdateHeadingDelegate HeadingUpdater
-            = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
+            = (CmOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
                     return orbital.UpdateHeading(
                         deltaTime, up, ref orbital.m_XAxis,
                         ref orbital.m_RecenterToTargetHeading,
@@ -307,7 +307,7 @@ namespace Cinemachine
             m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
-                && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
+                && m_BindingMode != CmTransposer.BindingMode.SimpleFollowWithWorldUp
                 && transitionParams.m_InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {

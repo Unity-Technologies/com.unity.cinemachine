@@ -11,7 +11,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CinemachineSameAsFollowTarget : CmProceduralBehaviour
+    public class CmSameAsFollowTarget : CmProceduralBehaviour
     {
         /// <summary>
         /// How much time it takes for the aim to catch up to the target's rotation

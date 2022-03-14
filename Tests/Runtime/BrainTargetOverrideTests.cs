@@ -77,7 +77,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator ThirdPerson()
         {
-            m_Vcam.AddCinemachineComponent<Cinemachine3rdPersonFollow>();
+            m_Vcam.AddCinemachineComponent<CmThirdPersonFollow>();
             m_Vcam.m_Lens.FieldOfView = 50;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
@@ -87,7 +87,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator FramingTransposer()
         {
-            var framingTransposer = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            var framingTransposer = m_Vcam.AddCinemachineComponent<CmFramingTransposer>();
             framingTransposer.m_XDamping = 0;
             framingTransposer.m_YDamping = 0;
             framingTransposer.m_ZDamping = 0;
@@ -100,7 +100,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator HardLockToTarget()
         {
-            m_Vcam.AddCinemachineComponent<CinemachineHardLockToTarget>();
+            m_Vcam.AddCinemachineComponent<CmHardLockToTarget>();
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();
@@ -109,7 +109,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator OrbTransposer()
         {
-            var orbitalTransposer = m_Vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
+            var orbitalTransposer = m_Vcam.AddCinemachineComponent<CmOrbitalTransposer>();
             orbitalTransposer.m_XDamping = 0;
             orbitalTransposer.m_YDamping = 0;
             orbitalTransposer.m_ZDamping = 0;
@@ -122,7 +122,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator Transposer()
         {
-            var transposer = m_Vcam.AddCinemachineComponent<CinemachineTransposer>();
+            var transposer = m_Vcam.AddCinemachineComponent<CmTransposer>();
             transposer.m_XDamping = 0;
             transposer.m_YDamping = 0;
             transposer.m_ZDamping = 0;

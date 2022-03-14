@@ -86,7 +86,7 @@ namespace Cinemachine
                 [Range(0f, 20f)] public float m_YawDamping;
                 [Range(0f, 20f)] public float m_RollDamping;
 
-                internal void Lerp(CinemachineTransposer o, float t)
+                internal void Lerp(CmTransposer o, float t)
                 {
                     o.m_XDamping = Mathf.Lerp(o.m_XDamping, m_XDamping, t);
                     o.m_YDamping = Mathf.Lerp(o.m_YDamping, m_YDamping, t);
@@ -96,7 +96,7 @@ namespace Cinemachine
                     o.m_RollDamping = Mathf.Lerp(o.m_RollDamping, m_RollDamping, t);
                 }
 
-                internal void PullFrom(CinemachineTransposer o)
+                internal void PullFrom(CmTransposer o)
                 {
                     m_XDamping = o.m_XDamping;
                     m_YDamping = o.m_YDamping;
@@ -106,7 +106,7 @@ namespace Cinemachine
                     m_RollDamping = o.m_RollDamping;
                 }
 
-                internal void PushTo(CinemachineTransposer o)
+                internal void PushTo(CmTransposer o)
                 {
                     o.m_XDamping = m_XDamping;
                     o.m_YDamping = m_YDamping;
@@ -134,7 +134,7 @@ namespace Cinemachine
                 [Range(-0.5f, 0.5f)] public float m_BiasX;
                 [Range(-0.5f, 0.5f)] public float m_BiasY;
 
-                internal void Lerp(CinemachineComposer c, float t)
+                internal void Lerp(CmComposer c, float t)
                 {
                     c.m_TrackedObjectOffset = Vector3.Lerp(c.m_TrackedObjectOffset, m_LookAtOffset, t);
                     c.m_HorizontalDamping = Mathf.Lerp(c.m_HorizontalDamping, m_HorizontalDamping, t);
@@ -149,7 +149,7 @@ namespace Cinemachine
                     c.m_BiasY = Mathf.Lerp(c.m_BiasY, m_BiasY, t);
                 }
 
-                internal void PullFrom(CinemachineComposer c)
+                internal void PullFrom(CmComposer c)
                 {
                     m_LookAtOffset = c.m_TrackedObjectOffset;
                     m_HorizontalDamping = c.m_HorizontalDamping;
@@ -164,7 +164,7 @@ namespace Cinemachine
                     m_BiasY = c.m_BiasY;
                 }
 
-                internal void PushTo(CinemachineComposer c)
+                internal void PushTo(CmComposer c)
                 {
                     c.m_TrackedObjectOffset = m_LookAtOffset;
                     c.m_HorizontalDamping = m_HorizontalDamping;
@@ -186,19 +186,19 @@ namespace Cinemachine
                 public float m_AmplitudeGain;
                 public float m_FrequencyGain;
 
-                internal void Lerp(CinemachineBasicMultiChannelPerlin p, float t)
+                internal void Lerp(CmBasicMultiChannelPerlin p, float t)
                 {
                     p.m_AmplitudeGain = Mathf.Lerp(p.m_AmplitudeGain, m_AmplitudeGain, t);
                     p.m_FrequencyGain =Mathf.Lerp(p.m_FrequencyGain, m_FrequencyGain, t);
                 }
 
-                internal void PullFrom(CinemachineBasicMultiChannelPerlin p)
+                internal void PullFrom(CmBasicMultiChannelPerlin p)
                 {
                     m_AmplitudeGain = p.m_AmplitudeGain;
                     m_FrequencyGain = p.m_FrequencyGain;
                 }
 
-                internal void PushTo(CinemachineBasicMultiChannelPerlin p)
+                internal void PushTo(CmBasicMultiChannelPerlin p)
                 {
                     p.m_AmplitudeGain = m_AmplitudeGain;
                     p.m_FrequencyGain = m_FrequencyGain;
@@ -213,9 +213,9 @@ namespace Cinemachine
         public Rig RigSettings(RigID rig) { return m_Rigs[(int)rig]; }
 
         /// Easy access to the transposer (may be null)
-        CinemachineTransposer Transposer
+        CmTransposer Transposer
         {
-            get { return ComponentCache[(int)CinemachineCore.Stage.Body] as CinemachineTransposer; }
+            get { return ComponentCache[(int)CinemachineCore.Stage.Body] as CmTransposer; }
         }
 
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
@@ -257,10 +257,10 @@ namespace Cinemachine
         void Reset()
         {
             DestroyComponents();
-            var orbitalTransposer = AddCinemachineComponent<CinemachineOrbitalTransposer>();
+            var orbitalTransposer = AddCinemachineComponent<CmOrbitalTransposer>();
             orbitalTransposer.HideOffsetInInspector = true;
-            orbitalTransposer.m_BindingMode = CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
-            AddCinemachineComponent<CinemachineComposer>();
+            orbitalTransposer.m_BindingMode = CmTransposer.BindingMode.SimpleFollowWithWorldUp;
+            AddCinemachineComponent<CmComposer>();
 
             m_Rigs = new Rig[2] { new Rig(), new Rig() };
 
@@ -532,14 +532,14 @@ namespace Cinemachine
                     orbital.m_FollowOffset = mFreeLook.GetLocalPositionForCameraFromInput(y);
 
                 var components = mFreeLook.ComponentCache;
-                var composer = components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
+                var composer = components[(int)CinemachineCore.Stage.Aim] as CmComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                 {
                     composerSaved.PullFrom(composer);
                     mFreeLook.m_Rigs[OtherRig].m_Aim.Lerp(composer, BlendAmount);
                 }
 
-                var noise = components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
+                var noise = components[(int)CinemachineCore.Stage.Noise] as CmBasicMultiChannelPerlin;
                 if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
                 {
                     noiseSaved.PullFrom(noise);
@@ -556,11 +556,11 @@ namespace Cinemachine
                     orbital.m_FollowOffset = new Vector3(
                         0, mFreeLook.m_Orbits[1].m_Height, -mFreeLook.m_Orbits[1].m_Radius);
                 var components = mFreeLook.ComponentCache;
-                var composer = components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
+                var composer = components[(int)CinemachineCore.Stage.Aim] as CmComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                     composerSaved.PushTo(composer);
 
-                var noise = components[(int)CinemachineCore.Stage.Noise] as CinemachineBasicMultiChannelPerlin;
+                var noise = components[(int)CinemachineCore.Stage.Noise] as CmBasicMultiChannelPerlin;
                 if (noise != null && mFreeLook.m_Rigs[OtherRig].m_CustomNoise)
                     noiseSaved.PushTo(noise);
             }

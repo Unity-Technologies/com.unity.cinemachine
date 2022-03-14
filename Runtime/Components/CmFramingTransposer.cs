@@ -30,7 +30,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CinemachineFramingTransposer : CmProceduralBehaviour
+    public class CmFramingTransposer : CmProceduralBehaviour
     {
         /// <summary>
         /// Offset from the Follow Target object (in target-local co-ordinates).  The camera will attempt to

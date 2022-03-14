@@ -184,38 +184,38 @@ namespace Cinemachine
             }
 
             int index = (int)CinemachineCore.Stage.Body;
-            if (components[index] is CinemachineTransposer)
+            if (components[index] is CmTransposer)
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomBody),
                     rig.FindPropertyRelative(() => def.m_Body)))
                 {
                     Target.m_Rigs[rigIndex].m_Body.PullFrom(
-                        components[index] as CinemachineTransposer);
+                        components[index] as CmTransposer);
                 }
             }
 
             index = (int)CinemachineCore.Stage.Aim;
-            if (components[index] is CinemachineComposer)
+            if (components[index] is CmComposer)
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomAim),
                     rig.FindPropertyRelative(() => def.m_Aim)))
                 {
                     Target.m_Rigs[rigIndex].m_Aim.PullFrom(
-                        components[index] as CinemachineComposer);
+                        components[index] as CmComposer);
                 }
             }
 
             index = (int)CinemachineCore.Stage.Noise;
-            if (components[index] is CinemachineBasicMultiChannelPerlin)
+            if (components[index] is CmBasicMultiChannelPerlin)
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomNoise),
                     rig.FindPropertyRelative(() => def.m_Noise)))
                 {
                     Target.m_Rigs[rigIndex].m_Noise.PullFrom(
-                        components[index] as CinemachineBasicMultiChannelPerlin);
+                        components[index] as CmBasicMultiChannelPerlin);
                 }
             }
             --EditorGUI.indentLevel;
@@ -276,13 +276,13 @@ namespace Cinemachine
                 if (brain != null)
                     up = brain.DefaultWorldUp;
 
-                var middleRig = vcam.GetComponent<CinemachineTransposer>();
+                var middleRig = vcam.GetComponent<CmTransposer>();
                 if (middleRig != null)
                 {
                     float scale = vcam.m_RadialAxis.Value;
                     Quaternion orient = middleRig.GetReferenceOrientation(up);
                     up = orient * Vector3.up;
-                    var orbital = middleRig as CinemachineOrbitalTransposer;
+                    var orbital = middleRig as CmOrbitalTransposer;
                     if (orbital != null)
                     {
                         float rotation = orbital.m_XAxis.Value + orbital.m_Heading.m_Bias;

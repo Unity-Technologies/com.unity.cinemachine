@@ -15,7 +15,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CinemachineGroupComposer : CinemachineComposer
+    public class CmGroupComposer : CmComposer
     {
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
         [Space]
