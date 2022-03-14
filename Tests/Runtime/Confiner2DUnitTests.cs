@@ -13,15 +13,15 @@ namespace Tests.Runtime
     public class Confiner2DUnitTests : CinemachineFixtureBase
     {
         private Camera m_Cam;
-        private CinemachineNewVirtualCamera m_Vcam;
+        private CmCamera m_Vcam;
         private CinemachineConfiner2D m_Confiner2D;
 
         [SetUp]
         public override void SetUp()
         {
             m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
-            var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineNewVirtualCamera), typeof(CinemachineConfiner2D));
-            m_Vcam = vcamHolder.GetComponent<CinemachineNewVirtualCamera>();
+            var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
+            m_Vcam = vcamHolder.GetComponent<CmCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
             m_Vcam.Priority = 100;
             m_Cam.orthographic = true;

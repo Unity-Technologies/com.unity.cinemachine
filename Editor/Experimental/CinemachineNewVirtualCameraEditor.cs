@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace Cinemachine
 {
-    [CustomEditor(typeof(CinemachineNewVirtualCamera))]
+    [CustomEditor(typeof(CmCamera))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineNewVirtualCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineNewVirtualCamera>
+        : CinemachineVirtualCameraBaseEditor<CmCamera>
     {
         protected override void OnEnable()
         {

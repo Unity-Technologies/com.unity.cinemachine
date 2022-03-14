@@ -14,7 +14,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CinemachinePOV : CinemachineComponentBase
+    public class CinemachinePOV : CmProceduralBehaviour
     {
         /// <summary>
         /// Defines the recentering target: Recentering goes here

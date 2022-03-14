@@ -9,7 +9,7 @@ namespace Tests.Runtime
     public class BrainTargetOverrideTests : CinemachineFixtureBase
     {
         GameObject m_CameraHolderWithBrain, m_CameraHolderWithoutBrain, m_GoWithBrain, m_GoWithoutBrain;
-        CinemachineNewVirtualCamera m_Vcam;
+        CmCamera m_Vcam;
         GameObject m_FollowObject;
         CinemachineBrain m_BrainAlone, m_BrainAlone2;
 
@@ -28,7 +28,7 @@ namespace Tests.Runtime
             m_BrainAlone2 = CreateGameObject("BrainAlone for Empty 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>(); 
             m_BrainAlone2.ControlledObject = m_GoWithoutBrain;
             
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineNewVirtualCamera)).GetComponent<CinemachineNewVirtualCamera>();
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_FollowObject = CreateGameObject("Follow Object");
             

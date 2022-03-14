@@ -23,7 +23,7 @@ namespace Cinemachine
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CinemachineNewFreeLook")]
     [SaveDuringPlay]
-    public class CinemachineNewFreeLook : CinemachineNewVirtualCamera
+    public class CinemachineNewFreeLook : CmCamera
     {
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Tooltip("The Vertical axis.  Value is 0..1.  0.5 is the middle rig.  Chooses how to blend the child rigs")]

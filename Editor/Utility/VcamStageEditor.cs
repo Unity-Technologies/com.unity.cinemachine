@@ -37,11 +37,11 @@ namespace Cinemachine.Editor
                 // Get all ICinemachineComponents
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
+                            (Type t) => typeof(CmProceduralBehaviour).IsAssignableFrom(t) && !t.IsAbstract);
 
                 foreach (var t in allTypes)
                 {
-                    var componentBase = (CinemachineComponentBase) Activator.CreateInstance(t);
+                    var componentBase = (CmProceduralBehaviour) Activator.CreateInstance(t);
                     stageTypes[(int)componentBase.Stage].Add(t);
                 }
 
@@ -68,7 +68,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        public static void DrawAddButtons(CinemachineNewVirtualCamera vcam, CinemachineComponentBase[] components)
+        public static void DrawAddButtons(CmCamera vcam, CmProceduralBehaviour[] components)
         {
             Assert.IsTrue(components.Length == sStageData.Length);
             
@@ -84,12 +84,12 @@ namespace Cinemachine.Editor
                 else if (selected != newSelection)
                 {
                     vcam.AddCinemachineComponent(
-                        (CinemachineComponentBase)Activator.CreateInstance(sStageData[i].types[newSelection]));
+                        (CmProceduralBehaviour)Activator.CreateInstance(sStageData[i].types[newSelection]));
                 }
             }
         }
 
-        static int GetSelectedComponent(int i, CinemachineComponentBase[] components)
+        static int GetSelectedComponent(int i, CmProceduralBehaviour[] components)
         {
             if (components[i] != null)
             {

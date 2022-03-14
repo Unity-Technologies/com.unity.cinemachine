@@ -1,4 +1,5 @@
-﻿// using System.Collections.Generic;
+﻿// using System;
+// using System.Collections.Generic;
 // using System.Linq;
 // using UnityEngine;
 // using UnityEngine.Serialization;
@@ -54,6 +55,7 @@
 //     [DisallowMultipleComponent]
 //     [ExecuteAlways]
 //     [ExcludeFromPreset]
+//     [Obsolete("Use CmCamera instead.")]
 //     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
 //     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
 //     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase

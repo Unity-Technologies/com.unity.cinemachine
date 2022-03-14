@@ -9,14 +9,14 @@ namespace Tests.Runtime
 {
     public class CameraPositionTests : CinemachineFixtureBase
     {
-        CinemachineNewVirtualCamera m_Vcam;
+        CmCamera m_Vcam;
         GameObject m_FollowObject;
 
         [SetUp]
         public override void SetUp()
         {
             CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineNewVirtualCamera)).GetComponent<CinemachineNewVirtualCamera>();
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_FollowObject = CreateGameObject("Follow Object");
             

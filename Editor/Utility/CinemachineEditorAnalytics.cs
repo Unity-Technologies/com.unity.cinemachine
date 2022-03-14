@@ -96,7 +96,7 @@ namespace Cinemachine.Editor
             var vcamData = new VcamData(id, vcamBase);
             
             // VirtualCamera
-            var vcam = vcamBase as CinemachineNewVirtualCamera;
+            var vcam = vcamBase as CmCamera;
             if (vcam != null)
             {
                 vcamData.SetTransitionsAndLens(vcam.m_Transitions, vcam.m_Lens);
@@ -108,7 +108,7 @@ namespace Cinemachine.Editor
             
 #if CINEMACHINE_EXPERIMENTAL_VCAM
             // NewVirtualCamera or NewFreeLook
-            var vcamNew = vcamBase as CinemachineNewVirtualCamera;
+            var vcamNew = vcamBase as CmCamera;
             if (vcamNew != null)
             {
                 vcamData.SetTransitionsAndLens(vcamNew.m_Transitions, vcamNew.m_Lens);
@@ -204,7 +204,7 @@ namespace Cinemachine.Editor
                 mode_overwrite = lens.ModeOverride.ToString();
             }
 
-            public void SetComponents(CinemachineComponentBase[] cmComps)
+            public void SetComponents(CmProceduralBehaviour[] cmComps)
             {
                 custom_component_count = 0;
                 body_component = aim_component = noise_component = "";

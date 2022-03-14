@@ -99,7 +99,7 @@ namespace Cinemachine.Editor
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
-            var vcam = CreateCinemachineObject<CinemachineNewVirtualCamera>(
+            var vcam = CreateCinemachineObject<CmCamera>(
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
@@ -122,7 +122,7 @@ namespace Cinemachine.Editor
         static void CreateTargetGroupCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
-            var vcam = CreateCinemachineObject<CinemachineNewVirtualCamera>(
+            var vcam = CreateCinemachineObject<CmCamera>(
                 "Virtual Camera", command.context as GameObject, false);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
@@ -151,7 +151,7 @@ namespace Cinemachine.Editor
         static void Create2DCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
-            var vcam = CreateCinemachineObject<CinemachineNewVirtualCamera>(
+            var vcam = CreateCinemachineObject<CmCamera>(
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
@@ -194,10 +194,10 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Creates a <see cref="CinemachineVirtualCamera"/> with standard procedural components.
         /// </summary>
-        public static CinemachineNewVirtualCamera CreateDefaultVirtualCamera(
+        public static CmCamera CreateDefaultVirtualCamera(
             string name = "Virtual Camera", GameObject parentObject = null, bool select = false)
         {
-            var vcam = CreateCinemachineObject<CinemachineNewVirtualCamera>(name, parentObject, select);
+            var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
             return vcam;
@@ -206,10 +206,10 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Creates a <see cref="CinemachineVirtualCamera"/> with no procedural components.
         /// </summary>
-        public static CinemachineNewVirtualCamera CreatePassiveVirtualCamera(
+        public static CmCamera CreatePassiveVirtualCamera(
             string name = "Virtual Camera", GameObject parentObject = null, bool select = false)
         {
-            var vcam = CreateCinemachineObject<CinemachineNewVirtualCamera>(name, parentObject, select);
+            var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
             return vcam;
         }
