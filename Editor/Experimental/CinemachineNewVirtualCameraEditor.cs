@@ -49,7 +49,7 @@ namespace Cinemachine
             DrawRemainingPropertiesInInspector();
             
             var vcam = Target;
-            VcamStageEditor.DrawAddButtons(vcam, vcam.m_Components);
+            CmProceduralBehaviourEditorUtility.DrawAddPopups(vcam, vcam.m_Components);
             
             DrawExtensionsWidgetInInspector();
         }
