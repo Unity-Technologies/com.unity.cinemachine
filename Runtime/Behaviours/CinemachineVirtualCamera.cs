@@ -55,7 +55,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [Obsolete("Use CmCamera instead.")]
+    [Obsolete("This is deprecated. Use CmCamera instead.")]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
