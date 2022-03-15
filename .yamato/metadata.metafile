@@ -21,7 +21,7 @@ all_tests:
   - name: isolation_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type isolation-tests --enable-load-and-test-isolation
-    projects: [HDRP, URP, Standalone]
+    projects: [Standalone]
     variables:
   - name: vetting_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
