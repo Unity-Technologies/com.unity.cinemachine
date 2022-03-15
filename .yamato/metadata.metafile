@@ -46,7 +46,7 @@ all_testprojects:
 
 all_configurations:
   ci:
-    test_names: [integration_tests, isolation_tests]
+    test_names: [integration_tests, isolation_tests, promotion_tests]
     platform_names: [ubuntu]
   publish:
     test_names: [integration_tests, isolation_tests, vetting_tests]
