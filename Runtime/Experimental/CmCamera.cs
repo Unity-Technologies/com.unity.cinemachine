@@ -318,7 +318,7 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public T AddCinemachineComponent<T>() where T : CmProceduralBehaviour, new()
         {
-            var component = new T { m_vcamOwner = this };
+            var component = new T { vcamOwner = this };
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();
             return component;
@@ -327,7 +327,8 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public CmProceduralBehaviour AddCinemachineComponent(CmProceduralBehaviour component)
         {
-            component.m_vcamOwner = this;
+            component.vcamOwner = this;
+            Debug.Log(component.vcamOwner);
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();
             return component;

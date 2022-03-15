@@ -16,9 +16,9 @@ namespace Cinemachine
         public bool enabled = true;
 
         /// <summary>Get the associated CinemachineVirtualCameraBase</summary>
-        public CinemachineVirtualCameraBase VirtualCamera => m_vcamOwner;
+        public CinemachineVirtualCameraBase VirtualCamera => vcamOwner;
 
-        internal CinemachineVirtualCameraBase m_vcamOwner;
+        internal CinemachineVirtualCameraBase vcamOwner;
 
         /// <summary>Returns the owner vcam's Follow target.</summary>
         public Transform FollowTarget

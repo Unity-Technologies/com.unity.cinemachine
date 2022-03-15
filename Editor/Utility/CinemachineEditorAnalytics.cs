@@ -120,7 +120,7 @@ namespace Cinemachine.Editor
 #endif
             
             // Composite vcam (Freelook, Mixing, StateDriven, ClearShot...):
-            var freeLook = vcamBase as CinemachineNewFreeLook;
+            var freeLook = vcamBase as CmFreeLook;
             if (freeLook != null)
             {
                 vcamData.SetTransitionsAndLens(freeLook.m_Transitions, freeLook.m_Lens);

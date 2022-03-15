@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace Cinemachine
 {
-    [CustomEditor(typeof(CinemachineNewFreeLook))]
+    [CustomEditor(typeof(CmFreeLook))]
     sealed class CinemachineNewFreeLookEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineNewFreeLook>
+        : CinemachineVirtualCameraBaseEditor<CmFreeLook>
     {
         internal static GUIContent[] m_OrbitNames = new GUIContent[]
             { new GUIContent("Top Rig"), new GUIContent("Main Rig"), new GUIContent("Bottom Rig") };
@@ -32,7 +32,7 @@ namespace Cinemachine
             Undo.undoRedoPerformed += ResetTargetOnUndo;
 
             for (int i = 0; i < targets.Length; ++i)
-                (targets[i] as CinemachineNewFreeLook).UpdateInputAxisProvider();
+                (targets[i] as CmFreeLook).UpdateInputAxisProvider();
             
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
@@ -66,38 +66,41 @@ namespace Cinemachine
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
+            
+            var vcam = Target;
+            CmProceduralBehaviourEditorUtility.DrawAddPopups(vcam, vcam.m_Components);
             DrawRemainingPropertiesInInspector();
-
-            // Orbits
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Orbits", EditorStyles.boldLabel);
-            SerializedProperty orbits = FindProperty(x => x.m_Orbits);
-            EditorGUI.BeginChangeCheck();
-            for (int i = 0; i < 3; ++i)
-            {
-                var o = orbits.GetArrayElementAtIndex(i);
-                Rect rect = EditorGUILayout.GetControlRect(true);
-                InspectorUtility.MultiPropertyOnLine(
-                    rect, m_OrbitNames[i],
-                    new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),
-                            o.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
-                    null);
-            }
-            EditorGUILayout.PropertyField(FindProperty(x => x.m_SplineCurvature));
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
-
-            // Pipeline Stages
-            EditorGUILayout.Space();
-            var selectedRig = Selection.objects.Length == 1 
-                ? GUILayout.Toolbar(GetSelectedRig(Target), s_RigNames) : 0;
-            SetSelectedRig(Target, selectedRig);
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            if (selectedRig == 1)
-                DrawPropertyInInspector(FindProperty(x => x.m_Components));
-            else
-                DrawRigEditor(selectedRig == 0 ? 0 : 1);
-            EditorGUILayout.EndVertical();
+            //
+            // // Orbits
+            // EditorGUILayout.Space();
+            // EditorGUILayout.LabelField("Orbits", EditorStyles.boldLabel);
+            // SerializedProperty orbits = FindProperty(x => x.m_Orbits);
+            // EditorGUI.BeginChangeCheck();
+            // for (int i = 0; i < 3; ++i)
+            // {
+            //     var o = orbits.GetArrayElementAtIndex(i);
+            //     Rect rect = EditorGUILayout.GetControlRect(true);
+            //     InspectorUtility.MultiPropertyOnLine(
+            //         rect, m_OrbitNames[i],
+            //         new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),
+            //                 o.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
+            //         null);
+            // }
+            // EditorGUILayout.PropertyField(FindProperty(x => x.m_SplineCurvature));
+            // if (EditorGUI.EndChangeCheck())
+            //     serializedObject.ApplyModifiedProperties();
+            //
+            // // Pipeline Stages
+            // EditorGUILayout.Space();
+            // var selectedRig = Selection.objects.Length == 1 
+            //     ? GUILayout.Toolbar(GetSelectedRig(Target), s_RigNames) : 0;
+            // SetSelectedRig(Target, selectedRig);
+            // EditorGUILayout.BeginVertical(GUI.skin.box);
+            // if (selectedRig == 1)
+            //     DrawPropertyInInspector(FindProperty(x => x.m_Components));
+            // else
+            //     DrawRigEditor(selectedRig == 0 ? 0 : 1);
+            // EditorGUILayout.EndVertical();
 
             // Extensions
             DrawExtensionsWidgetInInspector();
@@ -110,12 +113,12 @@ namespace Cinemachine
             new GUIContent("Bottom Rig")
         };
 
-        static int GetSelectedRig(CinemachineNewFreeLook freelook)
+        static int GetSelectedRig(CmFreeLook freelook)
         {
             return freelook.m_VerticalAxis.Value < 0.33f ? 2 : (freelook.m_VerticalAxis.Value > 0.66f ? 0 : 1);
         }
 
-        internal static void SetSelectedRig(CinemachineNewFreeLook freelook, int rigIndex)
+        internal static void SetSelectedRig(CmFreeLook freelook, int rigIndex)
         {
             Debug.Assert(rigIndex >= 0 && rigIndex < 3);
             if (GetSelectedRig(freelook) != rigIndex)
@@ -171,7 +174,7 @@ namespace Cinemachine
 
             SerializedProperty rig = FindProperty(x => x.m_Rigs).GetArrayElementAtIndex(rigIndex);
 
-            CinemachineNewFreeLook.Rig def = new CinemachineNewFreeLook.Rig(); // for properties
+            CmFreeLook.Rig def = new CmFreeLook.Rig(); // for properties
             EditorGUIUtility.labelWidth -= kBoxMargin;
 
             ++EditorGUI.indentLevel;
@@ -256,56 +259,56 @@ namespace Cinemachine
             return false;
         }
 
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineNewFreeLook))]
-        private static void DrawFreeLookGizmos(CinemachineNewFreeLook vcam, GizmoType selectionType)
-        {
-            // Standard frustum and logo
-            CinemachineBrainEditor.DrawVirtualCameraBaseGizmos(vcam, selectionType);
-
-            Color originalGizmoColour = Gizmos.color;
-            bool isActiveVirtualCam = CinemachineCore.Instance.IsLive(vcam);
-            Gizmos.color = isActiveVirtualCam
-                ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
-
-            if (vcam.Follow != null)
-            {
-                Vector3 pos = vcam.Follow.position;
-                Vector3 up = Vector3.up;
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
-                if (brain != null)
-                    up = brain.DefaultWorldUp;
-
-                var middleRig = vcam.GetComponent<CmTransposer>();
-                if (middleRig != null)
-                {
-                    float scale = vcam.m_RadialAxis.Value;
-                    Quaternion orient = middleRig.GetReferenceOrientation(up);
-                    up = orient * Vector3.up;
-                    var orbital = middleRig as CmOrbitalTransposer;
-                    if (orbital != null)
-                    {
-                        float rotation = orbital.m_XAxis.Value + orbital.m_Heading.m_Bias;
-                        orient = Quaternion.AngleAxis(rotation, up) * orient;
-                    }
-                    // CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    //     pos + up * vcam.m_Orbits[0].m_Height * scale,
-                    //     orient, vcam.m_Orbits[0].m_Radius * scale);
-                    // CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    //     pos + up * vcam.m_Orbits[1].m_Height * scale,
-                    //     orient, vcam.m_Orbits[1].m_Radius * scale);
-                    // CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                    //     pos + up * vcam.m_Orbits[2].m_Height * scale,
-                    //     orient, vcam.m_Orbits[2].m_Radius * scale);
-
-                    DrawCameraPath(pos, orient, vcam);
-                }
-            }
-            Gizmos.color = originalGizmoColour;
-        }
-
+        // [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CmFreeLook))]
+        // private static void DrawFreeLookGizmos(CmFreeLook vcam, GizmoType selectionType)
+        // {
+        //     // Standard frustum and logo
+        //     CinemachineBrainEditor.DrawVirtualCameraBaseGizmos(vcam, selectionType);
+        //
+        //     Color originalGizmoColour = Gizmos.color;
+        //     bool isActiveVirtualCam = CinemachineCore.Instance.IsLive(vcam);
+        //     Gizmos.color = isActiveVirtualCam
+        //         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
+        //         : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+        //
+        //     if (vcam.Follow != null)
+        //     {
+        //         Vector3 pos = vcam.Follow.position;
+        //         Vector3 up = Vector3.up;
+        //         CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
+        //         if (brain != null)
+        //             up = brain.DefaultWorldUp;
+        //
+        //         var middleRig = vcam.GetComponent<CmTransposer>();
+        //         if (middleRig != null)
+        //         {
+        //             float scale = vcam.m_RadialAxis.Value;
+        //             Quaternion orient = middleRig.GetReferenceOrientation(up);
+        //             up = orient * Vector3.up;
+        //             var orbital = middleRig as CmOrbitalTransposer;
+        //             if (orbital != null)
+        //             {
+        //                 float rotation = orbital.m_XAxis.Value + orbital.m_Heading.m_Bias;
+        //                 orient = Quaternion.AngleAxis(rotation, up) * orient;
+        //             }
+        //             // CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+        //             //     pos + up * vcam.m_Orbits[0].m_Height * scale,
+        //             //     orient, vcam.m_Orbits[0].m_Radius * scale);
+        //             // CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+        //             //     pos + up * vcam.m_Orbits[1].m_Height * scale,
+        //             //     orient, vcam.m_Orbits[1].m_Radius * scale);
+        //             // CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
+        //             //     pos + up * vcam.m_Orbits[2].m_Height * scale,
+        //             //     orient, vcam.m_Orbits[2].m_Radius * scale);
+        //
+        //             DrawCameraPath(pos, orient, vcam);
+        //         }
+        //     }
+        //     Gizmos.color = originalGizmoColour;
+        // }
+        
         private static void DrawCameraPath(
-            Vector3 atPos, Quaternion orient, CinemachineNewFreeLook vcam)
+            Vector3 atPos, Quaternion orient, CmFreeLook vcam)
         {
             Matrix4x4 prevMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(atPos, orient, Vector3.one);

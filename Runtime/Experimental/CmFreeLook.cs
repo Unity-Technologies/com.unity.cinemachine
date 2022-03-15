@@ -23,7 +23,7 @@ namespace Cinemachine
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CinemachineNewFreeLook")]
     [SaveDuringPlay]
-    public class CinemachineNewFreeLook : CmCamera
+    public class CmFreeLook : CmCamera
     {
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Tooltip("The Vertical axis.  Value is 0..1.  0.5 is the middle rig.  Chooses how to blend the child rigs")]
@@ -303,9 +303,9 @@ namespace Cinemachine
                 var cameraPos = fromCam.State.RawPosition;
 
                 // Special handling for FreeLook: get an undamped outgoing position
-                if (fromCam is CinemachineNewFreeLook)
+                if (fromCam is CmFreeLook)
                 {
-                    var orbital = (fromCam as CinemachineNewFreeLook).Transposer;
+                    var orbital = (fromCam as CmFreeLook).Transposer;
                     if (orbital != null)
                         cameraPos = orbital.GetTargetCameraPosition(worldUp);
                 }
@@ -505,9 +505,9 @@ namespace Cinemachine
 
             public int OtherRig;
             public float BlendAmount;
-            CinemachineNewFreeLook mFreeLook;
+            CmFreeLook mFreeLook;
 
-            public ComponentBlender(CinemachineNewFreeLook freeLook) { mFreeLook = freeLook; }
+            public ComponentBlender(CmFreeLook freeLook) { mFreeLook = freeLook; }
 
             public void Blend(float y)
             {

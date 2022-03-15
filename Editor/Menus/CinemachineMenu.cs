@@ -42,7 +42,7 @@ namespace Cinemachine.Editor
         static void CreateFreeLookCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
-            CreateCinemachineObject<CinemachineNewFreeLook>("FreeLook Camera", command.context as GameObject, true);
+            CreateCinemachineObject<CmFreeLook>("FreeLook Camera", command.context as GameObject, true);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]

@@ -46,11 +46,12 @@ namespace Cinemachine
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
-            DrawRemainingPropertiesInInspector();
-            
+
             var vcam = Target;
             CmProceduralBehaviourEditorUtility.DrawAddPopups(vcam, vcam.m_Components);
+            // DrawPropertyInInspector(FindProperty(x => x.m_Components));
             
+            DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
         }
 
