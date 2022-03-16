@@ -18,11 +18,6 @@
             "displayName": "Cinemachine Example Scenes",
             "description": "Sample scenes illustrating various ways to use Cinemachine",
             "path": "Samples~/Cinemachine Example Scenes"
-        },
-        {
-            "displayName": "Scrubbable support for Nested Timelines (experimental)",
-            "description": "Experimental feature. Adds a Timeline extension to support scrubbable nested timelines.  This extension will become obsolete when Timeline adds native support for the missing API",
-            "path": "Samples~/Nested Timeline Scrub Bubble"
         }
     ]
 }
