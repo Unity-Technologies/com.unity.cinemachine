@@ -4,15 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.6.13] - 
-- Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
-
 
 ## [2.6.12] - 2022-02-15
 - Bugfix: Standalone profiler no longer crashes with CM.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
+- Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
 
 
 ## [2.6.11] - 2021-10-05
