@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
+- Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
 
 
 ## [2.6.11] - 2021-10-05
