@@ -322,36 +322,47 @@ namespace Cinemachine.PostFX
             if (layer != null)
                 return layer;   // layer is valid and in our lookup
 
-            if (found)
+            // If the layer in the lookup table is a deleted object, we must remove
+            // the brain's callback for it
+            if (found && !ReferenceEquals(layer, null))
             {
-                if (layer) // note: this is not the same check as (layer == null)
-                {
-                    // layer is a deleted object
-                    brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
-                    mBrainToLayer.Remove(brain);
-                    layer = null;
-                }
+                // layer is a deleted object
+                brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+                mBrainToLayer.Remove(brain);
+                layer = null;
+                found = false;
             }
-            else
-            {
-                // Brain is not in our lookup - add it
+
+            // Brain is not in our lookup - add it.
 #if UNITY_2019_2_OR_NEWER
-                brain.TryGetComponent(out layer);
+            brain.TryGetComponent(out layer);
+            if (layer != null)
+            {
+                brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
+                mBrainToLayer[brain] = layer;
+            }
 #else
+            // In order to avoid calling GetComponent() every frame in the case
+            // where there is legitimately no layer on the brain, we will add
+            // null to the lookup table if no layer is present.
+            if (!found)
+            {
                 layer = brain.GetComponent<PostProcessLayer>();
-#endif
                 if (layer != null)
                     brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
-#if UNITY_EDITOR
-                // Never add null in edit mode in case user adds a layer dynamically
-                if (Application.isPlaying || layer != null)  
-#endif
+
+                // Exception: never add null in the case where user adds a layer while
+                // in the editor.  If we were to add null in this case, then the new
+                // layer would not be detected.  We are willing to live with
+                // calling GetComponent() every frame while in edit mode.
+                if (Application.isPlaying || layer != null)
                     mBrainToLayer[brain] = layer;
             }
+#endif
             return layer;
         }
 
-        static void OnSceneUnloaded(Scene scene)
+        static void CleanupLookupTable()
         {
             var iter = mBrainToLayer.GetEnumerator();
             while (iter.MoveNext())
@@ -365,17 +376,24 @@ namespace Cinemachine.PostFX
 
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoad]
-        class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
+        class EditorInitialize 
+        { 
+            static EditorInitialize() 
+            { 
+                UnityEditor.EditorApplication.playModeStateChanged += (pmsc) => CleanupLookupTable();
+                InitializeModule(); 
+            } 
+        }
 #endif
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule()
         {
-            // Afetr the brain pushes the state to the camera, hook in to the PostFX
+            // After the brain pushes the state to the camera, hook in to the PostFX
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
 
             // Clean up our resources
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
+            SceneManager.sceneUnloaded += (scene) => CleanupLookupTable();
         }
     }
 #endif

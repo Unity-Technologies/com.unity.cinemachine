@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Timeline guards added to scripts that rely on it.
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
 - Removed Nested Timeline Scrub Bubble example, because it is no longer needed in 2019 LTS.
+- Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
 
 
 ## [2.6.11] - 2021-10-05
