@@ -15,8 +15,6 @@ namespace Cinemachine
     [SaveDuringPlay]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
     {
-        CmThirdPersonFollow m_ThirdPersonFollow;
-        
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 
         /// can have its own setting.  Value is the approximate time it takes the camera 
         /// to catch up to the target's new position.  Smaller values give a more rigid 
@@ -110,20 +108,6 @@ namespace Cinemachine
             DampingIntoCollision = Mathf.Max(0, DampingIntoCollision);
             DampingFromCollision = Mathf.Max(0, DampingFromCollision);
 #endif
-
-            m_ThirdPersonFollow = new CmThirdPersonFollow
-            {
-                Damping = Damping,
-                CameraDistance = CameraDistance,
-                CameraRadius = CameraRadius,
-                CameraSide = CameraSide,
-                IgnoreTag = IgnoreTag,
-                ShoulderOffset = ShoulderOffset,
-                CameraCollisionFilter = CameraCollisionFilter,
-                DampingFromCollision = DampingFromCollision,
-                DampingIntoCollision = DampingIntoCollision,
-                VerticalArmLength = VerticalArmLength,
-            };
         }
 
         void Reset()

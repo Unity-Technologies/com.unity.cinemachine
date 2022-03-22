@@ -20,12 +20,12 @@ namespace Cinemachine.Editor
                     new GUIContent(sStageData[i].Name), selected, sStageData[i].PopupOptions);
                 if (selected != newSelection)
                 {
-                    if (newSelection == 0)
+                    if (vcam.m_Components[i] != null)
                     {
                         Undo.DestroyObjectImmediate(vcam.m_Components[i]);
                         vcam.m_Components[i] = null;
                     }
-                    else
+                    if (newSelection != 0)
                     {
                         var component = (CinemachineComponentBase) Undo.AddComponent(vcam.gameObject, sStageData[i].types[newSelection]);
                         vcam.m_Components[i] = component;
