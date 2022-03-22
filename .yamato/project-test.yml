@@ -3,8 +3,9 @@
 {% for test in all_tests %}
 {% for platform in all_platforms %}
 {% for editor in test.editors %}
-test_package_{{ test.name }}_{{ platform.name }}_{{ editor }}:
-  name : Test {{ test.name }} on {{ platform.name }} with {{ editor }}
+{% for test_project in all_testprojects %}
+test_{{ test.name }}_{{ platform.name }}_{{ editor }}_{{test_project.name}}:
+  name : {{ test.name }} {{ platform.name }} {{ editor }} {{test_project.name}}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -20,13 +21,19 @@ test_package_{{ test.name }}_{{ platform.name }}_{{ editor }}:
   {% endif %}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor }} {{ test.packageTestArgs }}
+    {% for project in test.projects %}
+    {% if test_project.name == project %}
+    - upm-ci project pack --project-path {{ test_project.path }}
+    - upm-ci project test -u {{ editor }} {{ test.args }} --project-path {{ test_project.path }}
+    {% endif %}
+    {% endfor %}
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/package-pack.yml#pack
+{% endfor %}
 {% endfor %}
 {% endfor %}
 {% endfor %}
