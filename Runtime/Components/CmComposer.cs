@@ -17,6 +17,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CmComposer : CinemachineComponentBase
     {
         /// <summary>Target offset from the object's center in LOCAL space which

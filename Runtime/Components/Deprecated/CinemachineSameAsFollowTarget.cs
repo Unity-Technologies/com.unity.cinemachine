@@ -1,3 +1,4 @@
+using System;
 using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,6 +12,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [Obsolete]
     public class CinemachineSameAsFollowTarget : CinemachineComponentBase
     {
         /// <summary>

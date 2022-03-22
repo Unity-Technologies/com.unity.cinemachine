@@ -16,6 +16,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CmTransposer : CinemachineComponentBase
     {
         /// <summary>

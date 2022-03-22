@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Cinemachine
 {
@@ -16,6 +18,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [Obsolete]
     public class CinemachineBasicMultiChannelPerlin : CinemachineComponentBase
     {
         /// <summary>

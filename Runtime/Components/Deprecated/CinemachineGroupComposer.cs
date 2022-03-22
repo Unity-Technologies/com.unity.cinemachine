@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Cinemachine.Utility;
 
@@ -15,6 +16,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [Obsolete]
     public class CinemachineGroupComposer : CinemachineComposer
     {
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>

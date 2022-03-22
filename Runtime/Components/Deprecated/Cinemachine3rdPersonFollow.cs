@@ -2,6 +2,7 @@
 #define CINEMACHINE_PHYSICS
 #endif
 
+using System;
 using UnityEngine;
 using Cinemachine.Utility;
 
@@ -13,6 +14,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [Obsolete]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
     {
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 

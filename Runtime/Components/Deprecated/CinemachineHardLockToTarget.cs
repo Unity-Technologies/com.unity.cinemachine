@@ -1,4 +1,5 @@
-﻿using Cinemachine.Utility;
+﻿using System;
+using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
@@ -10,6 +11,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [Obsolete]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
     {
         /// <summary>

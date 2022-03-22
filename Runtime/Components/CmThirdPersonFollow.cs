@@ -14,6 +14,8 @@ namespace Cinemachine
     /// </summary>
     //[AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay, Serializable]
+    [AddComponentMenu("")]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CmThirdPersonFollow : CinemachineComponentBase
     {
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 

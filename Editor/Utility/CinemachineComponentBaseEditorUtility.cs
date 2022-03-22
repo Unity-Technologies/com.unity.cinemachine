@@ -2,6 +2,7 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Cinemachine.Utility;
 using NUnit.Framework;
 
@@ -61,13 +62,14 @@ namespace Cinemachine.Editor
 
                 // Get all ICinemachineComponents
                 var allTypes
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
+                    = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
+                        typeof(CinemachineComponentBase).IsAssignableFrom(t) 
+                        && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
                 foreach (var t in allTypes)
                 {
-                    var componentBase = (CinemachineComponentBase) Activator.CreateInstance(t);
-                    stageTypes[(int)componentBase.Stage].Add(t);
+                    var pipelineAttribute = t.GetCustomAttribute<CameraPipelineAttribute>();
+                    stageTypes[(int)pipelineAttribute.Stage].Add(t);
                 }
 
                 // Create the static lists
