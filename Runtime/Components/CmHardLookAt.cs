@@ -9,7 +9,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CmHardLookAt : CmProceduralBehaviour
+    public class CmHardLookAt : CmProceduralMotion
     {
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled && LookAtTarget != null; } }

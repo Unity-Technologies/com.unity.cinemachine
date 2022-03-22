@@ -76,7 +76,7 @@ namespace Cinemachine.Utility
         {
             List<Type> foundTypes = new List<Type>(100);
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            string definedIn = typeof(CmProceduralBehaviour).Assembly.GetName().Name;
+            string definedIn = typeof(CmProceduralMotion).Assembly.GetName().Name;
             foreach (Assembly assembly in assemblies)
             {
                 // Note that we have to call GetName().Name.  Just GetName() will not work.  

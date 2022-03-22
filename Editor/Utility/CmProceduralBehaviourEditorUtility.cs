@@ -9,7 +9,7 @@ namespace Cinemachine.Editor
 {
     static class CmProceduralBehaviourEditorUtility
     {
-        public static void DrawAddPopups(CmCamera vcam, CmProceduralBehaviour[] components)
+        public static void DrawAddPopups(CmCamera vcam, CmProceduralMotion[] components)
         {
             Assert.IsTrue(components.Length == sStageData.Length);
             
@@ -25,7 +25,7 @@ namespace Cinemachine.Editor
                 else if (selected != newSelection)
                 {
                     vcam.AddCinemachineComponent(
-                        (CmProceduralBehaviour)Activator.CreateInstance(sStageData[i].types[newSelection]));
+                        (CmProceduralMotion)Activator.CreateInstance(sStageData[i].types[newSelection]));
                 }
             }
         }
@@ -58,11 +58,11 @@ namespace Cinemachine.Editor
                 // Get all ICinemachineComponents
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CmProceduralBehaviour).IsAssignableFrom(t) && !t.IsAbstract);
+                            (Type t) => typeof(CmProceduralMotion).IsAssignableFrom(t) && !t.IsAbstract);
 
                 foreach (var t in allTypes)
                 {
-                    var componentBase = (CmProceduralBehaviour) Activator.CreateInstance(t);
+                    var componentBase = (CmProceduralMotion) Activator.CreateInstance(t);
                     stageTypes[(int)componentBase.Stage].Add(t);
                 }
 
@@ -89,7 +89,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        static int GetSelectedComponent(int i, CmProceduralBehaviour[] components)
+        static int GetSelectedComponent(int i, CmProceduralMotion[] components)
         {
             if (components[i] != null)
             {

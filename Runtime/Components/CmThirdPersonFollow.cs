@@ -14,7 +14,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay, Serializable]
-    public class CmThirdPersonFollow : CmProceduralBehaviour
+    public class CmThirdPersonFollow : CmProceduralMotion
     {
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 
         /// can have its own setting.  Value is the approximate time it takes the camera 

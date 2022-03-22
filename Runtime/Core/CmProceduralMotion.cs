@@ -8,7 +8,7 @@ namespace Cinemachine
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     [Serializable]
-    public abstract class CmProceduralBehaviour
+    public abstract class CmProceduralMotion : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;

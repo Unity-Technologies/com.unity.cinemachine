@@ -580,7 +580,7 @@ namespace Cinemachine.Editor
         }
 
         public static void TrackedObjectOffsetTool(
-            CmProceduralBehaviour cmComponent, SerializedProperty trackedObjectOffset)
+            CmProceduralMotion cmComponent, SerializedProperty trackedObjectOffset)
         {
             var originalColor = Handles.color;
             

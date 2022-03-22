@@ -16,7 +16,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CmBasicMultiChannelPerlin : CmProceduralBehaviour
+    public class CmBasicMultiChannelPerlin : CmProceduralMotion
     {
         /// <summary>
         /// Serialized property for referencing a NoiseSettings asset

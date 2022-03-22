@@ -242,7 +242,7 @@ namespace Cinemachine
                 if (c != null)
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
-            CmProceduralBehaviour postAimBody = null;
+            CmProceduralMotion postAimBody = null;
             for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
@@ -275,10 +275,10 @@ namespace Cinemachine
 
         // Component Cache - serialized only for copy/paste
         [SerializeReference, NoSaveDuringPlay]
-        internal CmProceduralBehaviour[] m_Components = new CmProceduralBehaviour[(int)CinemachineCore.Stage.Finalize + 1];
+        internal CmProceduralMotion[] m_Components = new CmProceduralMotion[(int)CinemachineCore.Stage.Finalize + 1];
 
         /// For inspector
-        internal CmProceduralBehaviour[] ComponentCache => m_Components; // TODO: no need for cache
+        internal CmProceduralMotion[] ComponentCache => m_Components; // TODO: no need for cache
 
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>
@@ -298,7 +298,7 @@ namespace Cinemachine
         /// <summary>Get the component set for a specific stage.</summary>
         /// <param name="stage">The stage for which we want the component</param>
         /// <returns>The Cinemachine component for that stage, or null if not defined</returns>
-        public CmProceduralBehaviour GetCinemachineComponent(CinemachineCore.Stage stage)
+        public CmProceduralMotion GetCinemachineComponent(CinemachineCore.Stage stage)
         {
             var cache = ComponentCache;
             var i = (int)stage;
@@ -306,7 +306,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get an existing component of a specific type from the cinemachine pipeline.</summary>
-        public T GetCinemachineComponent<T>() where T : CmProceduralBehaviour
+        public T GetCinemachineComponent<T>() where T : CmProceduralMotion
         {
             var components = ComponentCache;
             foreach (var c in components)
@@ -316,7 +316,7 @@ namespace Cinemachine
         }
 
         /// <summary>Add a component to the cinemachine pipeline.</summary>
-        public T AddCinemachineComponent<T>() where T : CmProceduralBehaviour, new()
+        public T AddCinemachineComponent<T>() where T : CmProceduralMotion, new()
         {
             var component = new T { vcamOwner = this };
             m_Components[(int)component.Stage] = component;
@@ -325,7 +325,7 @@ namespace Cinemachine
         }
 
         /// <summary>Add a component to the cinemachine pipeline.</summary>
-        public CmProceduralBehaviour AddCinemachineComponent(CmProceduralBehaviour component)
+        public CmProceduralMotion AddCinemachineComponent(CmProceduralMotion component)
         {
             component.vcamOwner = this;
             Debug.Log(component.vcamOwner);
@@ -342,7 +342,7 @@ namespace Cinemachine
         }
 
         /// <summary>Remove a component from the cinemachine pipeline.</summary>
-        public void DestroyCinemachineComponent(CmProceduralBehaviour component)
+        public void DestroyCinemachineComponent(CmProceduralMotion component)
         {
             if (component == null) return;
             
