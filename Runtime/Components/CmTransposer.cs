@@ -16,7 +16,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CmTransposer : CmProceduralMotion
+    public class CmTransposer : CinemachineComponentBase
     {
         /// <summary>
         /// The coordinate space to use when interpreting the offset from the target

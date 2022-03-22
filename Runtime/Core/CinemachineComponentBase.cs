@@ -6,7 +6,6 @@ namespace Cinemachine
     /// <summary>
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
-    [Obsolete("Use CmProceduralBehaviour instead.")]
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     public abstract class CinemachineComponentBase : MonoBehaviour
     {

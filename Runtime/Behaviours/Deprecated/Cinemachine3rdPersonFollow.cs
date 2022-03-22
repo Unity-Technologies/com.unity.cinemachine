@@ -123,7 +123,6 @@ namespace Cinemachine
                 DampingFromCollision = DampingFromCollision,
                 DampingIntoCollision = DampingIntoCollision,
                 VerticalArmLength = VerticalArmLength,
-                vcamOwner = VirtualCamera
             };
         }
 

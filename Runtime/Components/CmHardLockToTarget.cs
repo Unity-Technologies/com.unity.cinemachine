@@ -10,7 +10,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CmHardLockToTarget : CmProceduralMotion
+    public class CmHardLockToTarget : CinemachineComponentBase
     {
         /// <summary>
         /// How much time it takes for the position to catch up to the target's position

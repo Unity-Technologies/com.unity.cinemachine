@@ -204,7 +204,7 @@ namespace Cinemachine.Editor
                 mode_overwrite = lens.ModeOverride.ToString();
             }
 
-            public void SetComponents(CmProceduralMotion[] cmComps)
+            public void SetComponents(CinemachineComponentBase[] cmComps)
             {
                 custom_component_count = 0;
                 body_component = aim_component = noise_component = "";

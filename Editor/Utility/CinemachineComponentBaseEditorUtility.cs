@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace Cinemachine.Editor
 {
-    static class CmProceduralMotionEditorUtility
+    static class CinemachineComponentBaseEditorUtility
     {
         public static void DrawPopups(CmCamera vcam)
         {
@@ -27,8 +27,7 @@ namespace Cinemachine.Editor
                     }
                     else
                     {
-                        var component = (CmProceduralMotion) Undo.AddComponent(vcam.gameObject, sStageData[i].types[newSelection]);
-                        component.vcamOwner = vcam;
+                        var component = (CinemachineComponentBase) Undo.AddComponent(vcam.gameObject, sStageData[i].types[newSelection]);
                         vcam.m_Components[i] = component;
                     }
                 }
@@ -63,11 +62,11 @@ namespace Cinemachine.Editor
                 // Get all ICinemachineComponents
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CmProceduralMotion).IsAssignableFrom(t) && !t.IsAbstract);
+                            (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
 
                 foreach (var t in allTypes)
                 {
-                    var componentBase = (CmProceduralMotion) Activator.CreateInstance(t);
+                    var componentBase = (CinemachineComponentBase) Activator.CreateInstance(t);
                     stageTypes[(int)componentBase.Stage].Add(t);
                 }
 
@@ -94,7 +93,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        static int GetSelectedComponent(int i, CmProceduralMotion[] components)
+        static int GetSelectedComponent(int i, CinemachineComponentBase[] components)
         {
             if (components[i] != null)
             {

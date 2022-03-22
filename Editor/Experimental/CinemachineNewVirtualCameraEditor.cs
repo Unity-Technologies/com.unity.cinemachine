@@ -49,7 +49,7 @@ namespace Cinemachine
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
 
             var vcam = Target;
-            CmProceduralMotionEditorUtility.DrawPopups(vcam);
+            CinemachineComponentBaseEditorUtility.DrawPopups(vcam);
             
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
