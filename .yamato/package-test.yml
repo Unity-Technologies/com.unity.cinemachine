@@ -4,7 +4,7 @@
 {% for platform in all_platforms %}
 {% for editor in test.editors %}
 test_package_{{ test.name }}_{{ platform.name }}_{{ editor }}:
-  name : Test {{ test.name }} on {{ platform.name }} with {{ editor }}
+  name : test package {{ test.name }} on {{ platform.name }} with {{ editor }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
