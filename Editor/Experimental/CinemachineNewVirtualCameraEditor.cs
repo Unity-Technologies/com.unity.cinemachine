@@ -1,4 +1,5 @@
 ﻿#if CINEMACHINE_EXPERIMENTAL_VCAM
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
@@ -48,8 +49,7 @@ namespace Cinemachine
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
 
             var vcam = Target;
-            CmProceduralBehaviourEditorUtility.DrawAddPopups(vcam, vcam.m_Components);
-            // DrawPropertyInInspector(FindProperty(x => x.m_Components));
+            CmProceduralMotionEditorUtility.DrawPopups(vcam, vcam.m_Components);
             
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();

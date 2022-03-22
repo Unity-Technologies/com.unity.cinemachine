@@ -12,7 +12,7 @@ namespace Cinemachine
     /// Third-person follower, with complex pivoting: horizontal about the origin, 
     /// vertical about the shoulder.  
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    //[AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay, Serializable]
     public class CmThirdPersonFollow : CmProceduralMotion
     {

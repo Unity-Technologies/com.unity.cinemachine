@@ -274,7 +274,7 @@ namespace Cinemachine
         }
 
         // Component Cache - serialized only for copy/paste
-        [SerializeReference, NoSaveDuringPlay]
+        [SerializeReference, NoSaveDuringPlay/*, HideInInspector*/]
         internal CmProceduralMotion[] m_Components = new CmProceduralMotion[(int)CinemachineCore.Stage.Finalize + 1];
 
         /// For inspector
@@ -283,15 +283,6 @@ namespace Cinemachine
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>
         protected virtual void OnComponentCacheUpdated() {}
-
-        /// <summary>Destroy all the CinmachineComponentBase components</summary>
-        protected void DestroyComponents()
-        {
-            for (int i = 0; i < m_Components.Length; ++i)
-            {
-                m_Components[i] = null;
-            }
-        }
 
         /// Legacy support for an old API.  GML todo: deprecate these methods
 
@@ -318,35 +309,30 @@ namespace Cinemachine
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public T AddCinemachineComponent<T>() where T : CmProceduralMotion, new()
         {
-            var component = new T { vcamOwner = this };
+            var component = VirtualCameraGameObject.AddComponent<T>();
+            component.vcamOwner = this;
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();
             return component;
         }
 
-        /// <summary>Add a component to the cinemachine pipeline.</summary>
-        public CmProceduralMotion AddCinemachineComponent(CmProceduralMotion component)
-        {
-            component.vcamOwner = this;
-            Debug.Log(component.vcamOwner);
-            m_Components[(int)component.Stage] = component;
-            OnComponentCacheUpdated();
-            return component;
-        }
-        
         /// <summary>Remove a component from the cinemachine pipeline.</summary>
         public void DestroyCinemachineComponent(CinemachineCore.Stage stage)
         {
+            if (m_Components[(int)stage] == null) return;
+            Destroy(m_Components[(int) stage]);
             m_Components[(int) stage] = null;
             OnComponentCacheUpdated();
         }
-
-        /// <summary>Remove a component from the cinemachine pipeline.</summary>
-        public void DestroyCinemachineComponent(CmProceduralMotion component)
+        
+        /// <summary>Destroy all the CinmachineComponentBase components</summary>
+        protected void DestroyComponents()
         {
-            if (component == null) return;
-            
-            m_Components[(int)component.Stage] = null;
+            for (int i = 0; i < m_Components.Length; ++i)
+            {
+                Destroy(m_Components[i]);
+                m_Components[i] = null;
+            }
             OnComponentCacheUpdated();
         }
     }

@@ -7,9 +7,9 @@ using NUnit.Framework;
 
 namespace Cinemachine.Editor
 {
-    static class CmProceduralBehaviourEditorUtility
+    static class CmProceduralMotionEditorUtility
     {
-        public static void DrawAddPopups(CmCamera vcam, CmProceduralMotion[] components)
+        public static void DrawPopups(CmCamera vcam, CmProceduralMotion[] components)
         {
             Assert.IsTrue(components.Length == sStageData.Length);
             
@@ -18,14 +18,18 @@ namespace Cinemachine.Editor
                 int selected = GetSelectedComponent(i, components);
                 int newSelection = EditorGUILayout.Popup(
                     new GUIContent(sStageData[i].Name), selected, sStageData[i].PopupOptions);
-                if (newSelection == 0)
+                if (selected != newSelection)
                 {
-                    vcam.DestroyCinemachineComponent((CinemachineCore.Stage) i);
-                }
-                else if (selected != newSelection)
-                {
-                    vcam.AddCinemachineComponent(
-                        (CmProceduralMotion)Activator.CreateInstance(sStageData[i].types[newSelection]));
+                    if (newSelection == 0)
+                    {
+                        Undo.DestroyObjectImmediate(vcam.m_Components[i]);
+                        vcam.m_Components[i] = null;
+                    }
+                    else
+                    {
+                        var component = Undo.AddComponent(vcam.gameObject, sStageData[i].types[newSelection]);
+                        components[i] = (CmProceduralMotion) component;
+                    }
                 }
             }
         }

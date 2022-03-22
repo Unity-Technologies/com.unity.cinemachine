@@ -68,7 +68,7 @@ namespace Cinemachine
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             
             var vcam = Target;
-            CmProceduralBehaviourEditorUtility.DrawAddPopups(vcam, vcam.m_Components);
+            CmProceduralMotionEditorUtility.DrawPopups(vcam, vcam.m_Components);
             DrawRemainingPropertiesInInspector();
             //
             // // Orbits
