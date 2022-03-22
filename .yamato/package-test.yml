@@ -23,6 +23,9 @@ test_package_{{ test.name }}_{{ platform.name }}_{{ editor }}:
     - upm-ci package pack --package-path com.unity.cinemachine
     - upm-ci package test -u {{ editor }} {{ test.packageTestArgs }}
   artifacts:
+      packages:
+      paths:
+        - "upm-ci~/packages/**/*"
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
