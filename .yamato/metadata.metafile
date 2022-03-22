@@ -32,7 +32,7 @@ all_tests:
   - name: promotion_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type promotion-audit --platform editmode
-    projects: [Standalone]
+    packageTestArgs: --type promotion-audit --platform editmode
     variables:
       - "UPMCI_PROMOTION: 1"
 
