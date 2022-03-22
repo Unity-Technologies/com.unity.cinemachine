@@ -9,13 +9,13 @@ namespace Cinemachine.Editor
 {
     static class CmProceduralMotionEditorUtility
     {
-        public static void DrawPopups(CmCamera vcam, CmProceduralMotion[] components)
+        public static void DrawPopups(CmCamera vcam)
         {
-            Assert.IsTrue(components.Length == sStageData.Length);
+            Assert.IsTrue(vcam.m_Components.Length == sStageData.Length);
             
             for (int i = 0; i < sStageData.Length; ++i)
             {
-                int selected = GetSelectedComponent(i, components);
+                int selected = GetSelectedComponent(i, vcam.m_Components);
                 int newSelection = EditorGUILayout.Popup(
                     new GUIContent(sStageData[i].Name), selected, sStageData[i].PopupOptions);
                 if (selected != newSelection)
@@ -27,8 +27,9 @@ namespace Cinemachine.Editor
                     }
                     else
                     {
-                        var component = Undo.AddComponent(vcam.gameObject, sStageData[i].types[newSelection]);
-                        components[i] = (CmProceduralMotion) component;
+                        var component = (CmProceduralMotion) Undo.AddComponent(vcam.gameObject, sStageData[i].types[newSelection]);
+                        component.vcamOwner = vcam;
+                        vcam.m_Components[i] = component;
                     }
                 }
             }
@@ -86,7 +87,7 @@ namespace Cinemachine.Editor
                             names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
                         }
                         else
-                            names[n] = new GUIContent(InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
+                            names[n] = new GUIContent(NicifyClassName(sStageData[i].types[n].Name));
                     }
                     sStageData[i].PopupOptions = names;
                 }
@@ -99,7 +100,7 @@ namespace Cinemachine.Editor
             {
                 for (int j = 0; j < sStageData[i].PopupOptions.Length; ++j)
                 {
-                    if (sStageData[i].PopupOptions[j].text == InspectorUtility.NicifyClassName(components[i].GetType().Name))
+                    if (sStageData[i].PopupOptions[j].text == NicifyClassName(components[i].GetType().Name))
                     {
                         return j;
                     }
@@ -107,6 +108,13 @@ namespace Cinemachine.Editor
             }
 
             return 0;
+        }
+        
+        public static string NicifyClassName(string name)
+        {
+            if (name.StartsWith("Cm"))
+                name = name.Substring(2); // Trim the prefix
+            return ObjectNames.NicifyVariableName(name);
         }
     }
 }

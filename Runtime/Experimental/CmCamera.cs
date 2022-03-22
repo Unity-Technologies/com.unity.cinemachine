@@ -274,7 +274,7 @@ namespace Cinemachine
         }
 
         // Component Cache - serialized only for copy/paste
-        [SerializeReference, NoSaveDuringPlay/*, HideInInspector*/]
+        [SerializeReference, NoSaveDuringPlay, HideInInspector]
         internal CmProceduralMotion[] m_Components = new CmProceduralMotion[(int)CinemachineCore.Stage.Finalize + 1];
 
         /// For inspector
