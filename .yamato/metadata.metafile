@@ -18,11 +18,6 @@ all_tests:
     args: --type project-tests
     projects: [HDRP, URP, Standalone]
     variables:
-  - name: isolation_tests
-    editors: [2020.3, 2021.2, 2022.1, trunk]
-    args: --type isolation-tests --enable-load-and-test-isolation
-    projects: [Standalone]
-    variables:
   - name: vetting_tests
     editors: [2020.3, 2021.2, 2022.1, trunk]
     args: --type vetting-tests --platform editmode
@@ -45,10 +40,10 @@ all_testprojects:
 
 all_configurations:
   ci:
-    test_names: [integration_tests, isolation_tests, promotion_tests]
+    test_names: [integration_tests, promotion_tests]
     platform_names: [ubuntu]
   publish:
-    test_names: [integration_tests, isolation_tests, vetting_tests]
+    test_names: [integration_tests, vetting_tests]
     platform_names: [windows, macOS, ubuntu]
   promote:
     test_names: [promotion_tests, vetting_tests]

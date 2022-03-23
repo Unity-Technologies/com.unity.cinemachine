@@ -13,6 +13,8 @@ ci_trigger:
     cancel_old_ci: true
   dependencies:
     - .yamato/package-test.yml#test_package_isolation
+    - .yamato/package-test.yml#test_package_promotion_audit
+    - .yamato/package-coverage.yml#coverage_ubuntu_trunk
     {% for test_name in all_configurations.ci.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
@@ -32,4 +34,3 @@ ci_trigger:
     {% endif %}
     {% endfor %}
     {% endfor %}
-    - .yamato/package-coverage.yml#coverage_ubuntu_trunk
