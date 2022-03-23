@@ -6,7 +6,6 @@ using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
-    [Obsolete]
     class VcamStageEditor
     {
         // Static state and caches - Call UpdateStaticData() to refresh this
