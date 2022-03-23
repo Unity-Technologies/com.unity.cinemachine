@@ -21,20 +21,14 @@ publish:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/package-pack.yml#pack
-    {% for test_name in all_configurations.ci.test_names %}
+    {% for test_name in all_configurations.publish.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
-    {% for platform_name in all_configurations.ci.platform_names %}
+    {% for platform_name in all_configurations.publish.platform_names %}
     {% for platform in all_platforms %}
     {% if platform.name == platform_name %}
     {% for editor in test.editors %}
-    {% for project in test.projects %}
-    {% for test_project in all_testprojects %}
-    {% if test_project.name == project %}
-    - .yamato/package-test.yml#test_{{test.name}}_{{platform.name}}_{{editor}}_{{test_project.name}}
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
+    - .yamato/package-test.yml#test_{{test.name}}_{{platform.name}}_{{editor}}
     {% endfor %}
     {% endif %}
     {% endfor %}

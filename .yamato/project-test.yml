@@ -1,38 +1,16 @@
-{% metadata_file .yamato/metadata.metafile %}
 ---
-{% for test in all_tests %}
-{% for platform in all_platforms %}
-{% for editor in test.editors %}
-{% for test_project in all_testprojects %}
-test_{{ test.name }}_{{ platform.name }}_{{ editor }}_{{test_project.name}}:
-  name : {{ test.name }} {{ platform.name }} {{ editor }} {{test_project.name}}
+test_ubuntu_trunk:
+  name : test_ubuntu_trunk
   agent:
-    type: {{ platform.type }}
-    image: {{ platform.image }}
-    flavor: {{ platform.flavor }}
-  {% if platform.name == "centos" or test.variables %}
-  variables:
-    {% if platform.name == "centos" %}
-    DISPLAY: ":0"
-    {% endif %}
-    {% for variable in test.variables %}
-    {{ variable }}
-    {% endfor %}
-  {% endif %}
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    {% for project in test.projects %}
-    {% if test_project.name == project %}
-    - upm-ci project test -u {{ editor }} {{ test.args }} --project-path {{ test_project.path }}
-    {% endif %}
-    {% endfor %}
+    - upm-ci project test -u trunk --project-path Projects/URP
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/project-pack.yml#pack
-{% endfor %}
-{% endfor %}
-{% endfor %}
-{% endfor %}

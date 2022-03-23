@@ -1,31 +1,32 @@
-test_package_isolation:
-  name : test package isolation
+{% metadata_file .yamato/metadata.metafile %}
+---
+{% for test in all_tests %}
+{% for platform in all_platforms %}
+{% for editor in test.editors %}
+test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
+  name : Test {{ test.name }} on {{ platform.name }} with {{ editor }}
   agent:
-    type: Unity::VM
-    image: package-ci/ubuntu:stable
-    flavor: b1.large
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor }}
+  {% if platform.name == "centos" or test.variables %}
+  variables:
+    {% if platform.name == "centos" %}
+    DISPLAY: ":0"
+    {% endif %}
+    {% for variable in test.variables %}
+    {{ variable }}
+    {% endfor %}
+  {% endif %}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test --package-path com.unity.cinemachine --unity-version 2022.1 --isolation-tests
+    - upm-ci package test -u {{ editor }} {{ test.args }}
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/package-pack.yml#pack
-
-test_package_promotion_audit:
-  name : test package promotion audit
-  agent:
-    type: Unity::VM
-    image: package-ci/ubuntu:stable
-    flavor: b1.large
-  commands:
-    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test --package-path com.unity.cinemachine --unity-version 2022.1 --promotion-audit
-  artifacts:
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"
-  dependencies:
-    - .yamato/package-pack.yml#pack
+{% endfor %}
+{% endfor %}
+{% endfor %}
