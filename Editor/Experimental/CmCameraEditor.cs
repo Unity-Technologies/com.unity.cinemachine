@@ -74,9 +74,13 @@ namespace Cinemachine
         }
 
         // TODO: LensSettingsInspectorHelper does much more than we need!
-        LensSettingsInspectorHelper m_LensSettingsInspectorHelper = new LensSettingsInspectorHelper();
-        bool IsHorizontalFOVUsed() => 
-            m_LensSettingsInspectorHelper != null && m_LensSettingsInspectorHelper.UseHorizontalFOV;
+        LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
+        bool IsHorizontalFOVUsed()
+        {
+            if (m_LensSettingsInspectorHelper == null)
+                m_LensSettingsInspectorHelper = new LensSettingsInspectorHelper();
+            return m_LensSettingsInspectorHelper != null && m_LensSettingsInspectorHelper.UseHorizontalFOV;
+        }
 #endif
     }
 }
