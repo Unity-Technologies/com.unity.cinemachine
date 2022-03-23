@@ -14,7 +14,7 @@ test_package_isolation:
   dependencies:
     - .yamato/package-pack.yml#pack
 
-test_package_isolation:
+test_package_promotion_audit:
   name : test package promotion audit
   agent:
     type: Unity::VM
