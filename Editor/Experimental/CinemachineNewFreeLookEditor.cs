@@ -68,7 +68,7 @@ namespace Cinemachine
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             
             var vcam = Target;
-            CinemachineComponentBaseEditorUtility.DrawPopups(vcam);
+            // CinemachineComponentBaseEditorUtility.DrawPopups(vcam);
             DrawRemainingPropertiesInInspector();
             //
             // // Orbits
