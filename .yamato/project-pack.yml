@@ -1,5 +1,6 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
+{% for test_project in all_testprojects %}
 pack:
   name: Pack projects 
   agent:
@@ -8,11 +9,10 @@ pack:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project pack --project-path Projects/URP
-    - upm-ci project pack --project-path Projects/HDRP
-    - upm-ci project pack --project-path Projects/Standalone
+    - upm-ci project pack --project-path {{ test_project.path }}
   artifacts:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
+{% endfor %}
 

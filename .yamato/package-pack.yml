@@ -1,7 +1,7 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
 pack:
-  name: Pack
+  name: Pack package
   agent:
     type: Unity::VM
     image: package-ci/ubuntu:stable
