@@ -187,38 +187,38 @@ namespace Cinemachine
             }
 
             int index = (int)CinemachineCore.Stage.Body;
-            if (components[index] is CmTransposer)
+            if (components[index] is CinemachineTransposer)
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomBody),
                     rig.FindPropertyRelative(() => def.m_Body)))
                 {
                     Target.m_Rigs[rigIndex].m_Body.PullFrom(
-                        components[index] as CmTransposer);
+                        components[index] as CinemachineTransposer);
                 }
             }
 
             index = (int)CinemachineCore.Stage.Aim;
-            if (components[index] is CmComposer)
+            if (components[index] is CinemachineComposer)
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomAim),
                     rig.FindPropertyRelative(() => def.m_Aim)))
                 {
                     Target.m_Rigs[rigIndex].m_Aim.PullFrom(
-                        components[index] as CmComposer);
+                        components[index] as CinemachineComposer);
                 }
             }
 
             index = (int)CinemachineCore.Stage.Noise;
-            if (components[index] is CmBasicMultiChannelPerlin)
+            if (components[index] is CinemachineBasicMultiChannelPerlin)
             {
                 if (DrawFoldoutPropertyWithEnabledCheckbox(
                     rig.FindPropertyRelative(() => def.m_CustomNoise),
                     rig.FindPropertyRelative(() => def.m_Noise)))
                 {
                     Target.m_Rigs[rigIndex].m_Noise.PullFrom(
-                        components[index] as CmBasicMultiChannelPerlin);
+                        components[index] as CinemachineBasicMultiChannelPerlin);
                 }
             }
             --EditorGUI.indentLevel;

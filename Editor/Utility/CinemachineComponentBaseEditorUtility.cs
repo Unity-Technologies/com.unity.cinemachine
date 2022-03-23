@@ -53,6 +53,7 @@ namespace Cinemachine.Editor
             {
                 sStageData = new StageData[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
 
+                
                 var stageTypes = new List<Type>[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
                 for (int i = 0; i < stageTypes.Length; ++i)
                 {
@@ -88,7 +89,7 @@ namespace Cinemachine.Editor
                             names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
                         }
                         else
-                            names[n] = new GUIContent(NicifyClassName(sStageData[i].types[n].Name));
+                            names[n] = new GUIContent(InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
                     }
                     sStageData[i].PopupOptions = names;
                 }
@@ -101,7 +102,7 @@ namespace Cinemachine.Editor
             {
                 for (int j = 0; j < sStageData[i].PopupOptions.Length; ++j)
                 {
-                    if (sStageData[i].PopupOptions[j].text == NicifyClassName(components[i].GetType().Name))
+                    if (sStageData[i].PopupOptions[j].text == InspectorUtility.NicifyClassName(components[i].GetType().Name))
                     {
                         return j;
                     }
@@ -109,13 +110,6 @@ namespace Cinemachine.Editor
             }
 
             return 0;
-        }
-        
-        public static string NicifyClassName(string name)
-        {
-            if (name.StartsWith("Cm"))
-                name = name.Substring(2); // Trim the prefix
-            return ObjectNames.NicifyVariableName(name);
         }
     }
 }

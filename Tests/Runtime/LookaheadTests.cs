@@ -10,8 +10,8 @@ namespace Tests.Runtime
     public class LookaheadTests : CinemachineFixtureBase
     {
         CmCamera m_VCam;
-        CmComposer m_Composer;
-        CmFramingTransposer m_FramingTransposer;
+        CinemachineComposer m_Composer;
+        CinemachineFramingTransposer m_FramingTransposer;
         Transform m_Target;
 
         [SetUp]
@@ -25,10 +25,10 @@ namespace Tests.Runtime
             m_VCam = CreateGameObject("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
-            m_VCam.AddCinemachineComponent<CmFramingTransposer>();
-            m_VCam.AddCinemachineComponent<CmComposer>();
-            m_FramingTransposer = m_VCam.GetCinemachineComponent<CmFramingTransposer>();
-            m_Composer = m_VCam.GetCinemachineComponent<CmComposer>();
+            m_VCam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            m_VCam.AddCinemachineComponent<CinemachineComposer>();
+            m_FramingTransposer = m_VCam.GetCinemachineComponent<CinemachineFramingTransposer>();
+            m_Composer = m_VCam.GetCinemachineComponent<CinemachineComposer>();
             m_FramingTransposer.m_LookaheadSmoothing = m_Composer.m_LookaheadSmoothing = 0.3f;
             m_FramingTransposer.m_LookaheadTime = m_Composer.m_LookaheadTime = 10;
 

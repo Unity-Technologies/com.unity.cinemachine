@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
     {
         const int vSpace = 2;
         bool mExpanded = true;
-        CmOrbitalTransposer.Heading def = new CmOrbitalTransposer.Heading(); // to access name strings
+        CinemachineOrbitalTransposer.Heading def = new CinemachineOrbitalTransposer.Heading(); // to access name strings
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
@@ -46,10 +46,10 @@ namespace Cinemachine.Editor
         bool IsVelocityMode(SerializedProperty property)
         {
             var mode = property.FindPropertyRelative(() => def.m_Definition);
-            var value = (CmOrbitalTransposer.Heading.HeadingDefinition)
-                (System.Enum.GetValues(typeof(CmOrbitalTransposer.Heading.HeadingDefinition))).GetValue(mode.enumValueIndex);
-            return value == CmOrbitalTransposer.Heading.HeadingDefinition.Velocity
-                || value == CmOrbitalTransposer.Heading.HeadingDefinition.PositionDelta;
+            var value = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)
+                (System.Enum.GetValues(typeof(CinemachineOrbitalTransposer.Heading.HeadingDefinition))).GetValue(mode.enumValueIndex);
+            return value == CinemachineOrbitalTransposer.Heading.HeadingDefinition.Velocity
+                || value == CinemachineOrbitalTransposer.Heading.HeadingDefinition.PositionDelta;
         }
     }
 }
