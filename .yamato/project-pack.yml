@@ -1,7 +1,7 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
 pack:
-  name: Pack URP 
+  name: Pack projects 
   agent:
     type: Unity::VM
     image: package-ci/ubuntu:stable
