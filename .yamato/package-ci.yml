@@ -12,6 +12,7 @@ ci_trigger:
             - "/.*/"
     cancel_old_ci: true
   dependencies:
+    - .yamato/package-test.yml#test_package_isolation
     {% for test_name in all_configurations.ci.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
