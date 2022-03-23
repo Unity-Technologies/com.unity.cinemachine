@@ -329,7 +329,11 @@ namespace Cinemachine
         {
             for (int i = 0; i < m_Components.Length; ++i)
             {
+#if UNITY_EDITOR
+                DestroyImmediate(m_Components[i]);
+#else
                 Destroy(m_Components[i]);
+#endif
                 m_Components[i] = null;
             }
             OnComponentCacheUpdated();
