@@ -9,7 +9,7 @@ namespace Cinemachine
 {
     [CustomEditor(typeof(CmCamera))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineNewVirtualCameraEditor
+    internal sealed class CmCameraEditor
         : CinemachineVirtualCameraBaseEditor<CmCamera>
     {
         protected override void OnEnable()
