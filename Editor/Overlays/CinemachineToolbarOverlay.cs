@@ -391,9 +391,9 @@ namespace Cinemachine.Editor
 
         void ShadowSelectedRigName()
         {
-            // var index = Mathf.Clamp(SelectedRig, 0, CinemachineNewFreeLookEditor.m_OrbitNames.Length - 1);
-            // icon = m_Icons[index];
-            // text = CinemachineNewFreeLookEditor.m_OrbitNames[index].text;
+            var index = Mathf.Clamp(SelectedRig, 0, CinemachineNewFreeLookEditor.m_OrbitNames.Length - 1);
+            icon = m_Icons[index];
+            text = CinemachineNewFreeLookEditor.m_OrbitNames[index].text;
         }
         
         void FreelookRigSelectionMenu()
