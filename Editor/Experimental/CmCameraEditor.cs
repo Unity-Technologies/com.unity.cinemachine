@@ -14,6 +14,14 @@ namespace Cinemachine
         /// </summary>
         CmCamera Target => target as CmCamera;
 
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+        
+            var vcam = Target;
+            CinemachineComponentBaseEditorUtility.DrawPopups(vcam);
+        }
+        
         void OnEnable()
         {
             Undo.undoRedoPerformed += ResetTarget;
@@ -32,13 +40,6 @@ namespace Cinemachine
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
 #endif
-        }
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-        
-            var vcam = Target;
-            CinemachineComponentBaseEditorUtility.DrawPopups(vcam);
         }
 
         void OnSceneGUI()
