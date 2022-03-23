@@ -204,8 +204,8 @@ namespace Cinemachine
                 m_Components != null && m_Components.Any(t => t != null && t.RequiresUserInput);
         }
 
-        private Transform mCachedLookAtTarget;
-        private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
+        Transform mCachedLookAtTarget;
+        CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
 
         /// <summary>Set the state's refeenceLookAt target to our lookAt, with some smarts
         /// in case our LookAt points to a vcam</summary>
