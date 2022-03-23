@@ -13,6 +13,7 @@ ci_trigger:
     cancel_old_ci: true
   dependencies:
     - .yamato/package-pack.yml#pack
+    - .yamato/project-pack.yml#pack
     {% for test_name in all_configurations.ci.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
@@ -22,9 +23,7 @@ ci_trigger:
     {% for editor in test.editors %}
     {% for project in test.projects %}
     {% for test_project in all_testprojects %}
-    {% if test_project.name == project %}
     - .yamato/project-test.yml#test_{{test.name}}_{{platform.name}}_{{editor}}_{{test_project.name}}
-    {% endif %}
     {% endfor %}
     {% endfor %}
     {% endfor %}

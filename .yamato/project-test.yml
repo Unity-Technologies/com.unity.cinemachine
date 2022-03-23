@@ -23,7 +23,6 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}_{{test_project.name}}:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     {% for project in test.projects %}
     {% if test_project.name == project %}
-    - upm-ci project pack --project-path {{ test_project.path }}
     - upm-ci project test -u {{ editor }} {{ test.args }} --project-path {{ test_project.path }}
     {% endif %}
     {% endfor %}
