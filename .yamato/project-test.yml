@@ -43,7 +43,7 @@ test_windows_{{editor}}_{{test_project.name}}:
 {% for test_project in all_testprojects %}
   {% for editor in test_project.editors %}
 test_macos_{{editor}}_{{test_project.name}}:
-  name : test macos {{editor}} {{test_project.name}}
+  name : test_macos_{{editor}}_{{test_project.name}}
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:stable
