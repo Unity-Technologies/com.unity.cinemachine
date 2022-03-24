@@ -3,7 +3,7 @@
 {% for test_project in all_testprojects %}
   {% for editor in test_project.editors %}
 test_ubuntu_{{editor}}_{{test_project.name}}:
-  name : test_ubuntu_{{editor}}_{{test_project.name}}
+  name : test ubuntu {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM
     image: package-ci/ubuntu:stable
