@@ -24,14 +24,13 @@ namespace Cinemachine
         int m_StageSelection;
         public override VisualElement CreateInspectorGUI()
         {
-            Debug.Log("CreateInspectorGUI");
             // Create a new VisualElement to be the root of our inspector UI
             var myInspector = new VisualElement();
             // Load from default reference
             inspectorXML.CloneTree(myInspector);
 
             // Inject procedural behaviours into myInspector
-            var dropdowns = myInspector.Q("ProceduralMotionDropdowns");
+            var dropdownBlock = myInspector.Q("ProceduralMotionBlock");
             
             var cmCamera = Target;
             FindStages(cmCamera);
@@ -45,10 +44,11 @@ namespace Cinemachine
                     choices = s_StageTypeNames[stage],
                     index = s_SelectionCache[stage],
                 };
+                dropdown.AddToClassList("unity-base-field__aligned");
                 
                 dropdown.RegisterValueChangedCallback(
                     evt => HandleDropdownSelection(evt.newValue, evt.previousValue, stage, cmCamera));
-                dropdowns.Add(dropdown);
+                dropdownBlock.Add(dropdown);
             }
             
             // Return the finished inspector UI
