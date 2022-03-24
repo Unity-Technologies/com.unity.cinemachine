@@ -12,9 +12,13 @@ ci_trigger:
             - "/.*/"
     cancel_old_ci: true
   dependencies:
-    - .yamato/package-pack.yml#pack
     - .yamato/project-pack.yml#pack
-    - .yamato/project-test.yml#test_ubuntu_trunk
+    - .yamato/package-pack.yml#pack
+    {% for test_project in test_project %}
+      {% for editor in test_project.editors %}
+    - .yamato/project-test.yml#test_ubuntu_{{editor}}_{{test_project.name}}
+      {% endfor %}
+    {% endfor %}
 
     {% for test_name in all_configurations.ci.test_names %}
     {% for test in all_tests %}
