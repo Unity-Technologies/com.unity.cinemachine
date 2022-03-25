@@ -86,10 +86,15 @@ namespace Cinemachine
                     m_cachedActions[axis] = user.actions.First(x => x.id == actionRef.action.id);
                 }
             }
-            // Auto-enable it if disabled
-            if (m_cachedActions[axis] != null && !m_cachedActions[axis].enabled)
-                m_cachedActions[axis].Enable();
 
+            // Update enabled status
+            if (m_cachedActions[axis] != null && m_cachedActions[axis].enabled != actionRef.action.enabled)
+            {
+                if (actionRef.action.enabled)
+                    m_cachedActions[axis].Enable();
+                else
+                    m_cachedActions[axis].Disable();
+            }
             return m_cachedActions[axis];
         }
 
