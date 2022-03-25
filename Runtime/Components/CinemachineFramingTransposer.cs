@@ -158,7 +158,7 @@ namespace Cinemachine
         [Tooltip("How to adjust the camera to get the desired framing.  You can zoom, dolly in/out, or do both.")]
         public AdjustmentMode m_AdjustmentMode = AdjustmentMode.ZoomOnly;
 
-        // TODO: GroupFraming should be within one struct -> GroupFramingState
+        // TODO: GroupFraming should be within one struct -> GroupFramingState - GroupComposer could reuse it
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
         [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  "
             + "1 means fill the whole screen.  0.5 means fill half the screen, etc.")]
