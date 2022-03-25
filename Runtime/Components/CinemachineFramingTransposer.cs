@@ -233,8 +233,8 @@ namespace Cinemachine
         {
             m_CameraDistance = Mathf.Max(m_CameraDistance, kMinimumCameraDistance);
             m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
-            m_Damping.y = Mathf.Clamp(m_Damping.x, 0, 20);
-            m_Damping.z = Mathf.Clamp(m_Damping.x, 0, 20);
+            m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
+            m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
             m_Screen.x = Mathf.Clamp(m_Screen.x, -0.5f, 1.5f);
             m_Screen.y = Mathf.Clamp(m_Screen.y, -0.5f, 1.5f);
             m_DeadZone.x = Mathf.Clamp(m_DeadZone.x, 0, 2);

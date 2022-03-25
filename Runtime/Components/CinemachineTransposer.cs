@@ -59,38 +59,14 @@ namespace Cinemachine
         [Tooltip("The distance vector that the transposer will attempt to maintain from the Follow target")]
         public Vector3 m_FollowOffset = Vector3.back * 10f;
 
-        /// <summary>How aggressively the camera tries to maintain the offset in the X-axis.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the target's
-        /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
+        /// <summary>How aggressively the camera tries to maintain the offset in the X, Y, and Z axes.
+        /// Small numbers are more responsive. Larger numbers give a more heavy slowly responding camera.
+        /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
         [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the X-axis.  Small numbers "
-            + "are more responsive, rapidly translating the camera to keep the target's x-axis offset.  "
-            + "Larger numbers give a more heavy slowly responding camera. Using different settings per "
-            + "axis can yield a wide range of camera behaviors.")]
-        public float m_XDamping = 1f;
-
-        /// <summary>How aggressively the camera tries to maintain the offset in the Y-axis.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the target's
-        /// y-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the Y-axis.  Small numbers "
-            + "are more responsive, rapidly translating the camera to keep the target's y-axis offset.  "
-            + "Larger numbers give a more heavy slowly responding camera. Using different settings per "
-            + "axis can yield a wide range of camera behaviors.")]
-        public float m_YDamping = 1f;
-
-        /// <summary>How aggressively the camera tries to maintain the offset in the Z-axis.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the
-        /// target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the Z-axis.  "
-            + "Small numbers are more responsive, rapidly translating the camera to keep the "
-            + "target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. "
+        [Tooltip("How aggressively the camera tries to maintain the offset in the X, Y, and Z axes.  "
+            + "Small numbers are more responsive. Larger numbers give a more heavy slowly responding camera.  "
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public float m_ZDamping = 1f;
+        public Vector3 m_Damping = Vector3.one;
 
         /// <summary>How to calculate the angular damping for the target orientation</summary>
         public enum AngularDampingMode
@@ -141,6 +117,10 @@ namespace Cinemachine
         protected virtual void OnValidate()
         {
             m_FollowOffset = EffectiveOffset;
+            
+            m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
+            m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
+            m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
         }
 
         /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
@@ -372,9 +352,9 @@ namespace Cinemachine
                 switch (m_BindingMode)
                 {
                     case BindingMode.SimpleFollowWithWorldUp:
-                        return new Vector3(0, m_YDamping, m_ZDamping);
+                        return new Vector3(0, m_Damping.y, m_Damping.z);
                     default:
-                        return new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+                        return new Vector3(m_Damping.x, m_Damping.y, m_Damping.z);
                 }
             }
         }

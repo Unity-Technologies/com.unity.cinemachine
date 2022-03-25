@@ -79,18 +79,14 @@ namespace Cinemachine
             /// <summary>Blendable settings for Transposer Transposer</summary>
             [Serializable] public class TransposerSettings
             {
-                [Range(0f, 20f)] public float m_XDamping;
-                [Range(0f, 20f)] public float m_YDamping;
-                [Range(0f, 20f)] public float m_ZDamping;
+                public Vector3 m_Damping;
                 [Range(0f, 20f)] public float m_PitchDamping;
                 [Range(0f, 20f)] public float m_YawDamping;
                 [Range(0f, 20f)] public float m_RollDamping;
 
                 internal void Lerp(CinemachineTransposer o, float t)
                 {
-                    o.m_XDamping = Mathf.Lerp(o.m_XDamping, m_XDamping, t);
-                    o.m_YDamping = Mathf.Lerp(o.m_YDamping, m_YDamping, t);
-                    o.m_ZDamping = Mathf.Lerp(o.m_ZDamping, m_ZDamping, t);
+                    o.m_Damping = Vector3.Lerp(o.m_Damping, m_Damping, t);
                     o.m_PitchDamping = Mathf.Lerp(o.m_PitchDamping, m_PitchDamping, t);
                     o.m_YawDamping = Mathf.Lerp(o.m_YawDamping, m_YawDamping, t);
                     o.m_RollDamping = Mathf.Lerp(o.m_RollDamping, m_RollDamping, t);
@@ -98,9 +94,7 @@ namespace Cinemachine
 
                 internal void PullFrom(CinemachineTransposer o)
                 {
-                    m_XDamping = o.m_XDamping;
-                    m_YDamping = o.m_YDamping;
-                    m_ZDamping = o.m_ZDamping;
+                    m_Damping = o.m_Damping;
                     m_PitchDamping = o.m_PitchDamping;
                     m_YawDamping = o.m_YawDamping;
                     m_RollDamping = o.m_RollDamping;
@@ -108,9 +102,7 @@ namespace Cinemachine
 
                 internal void PushTo(CinemachineTransposer o)
                 {
-                    o.m_XDamping = m_XDamping;
-                    o.m_YDamping = m_YDamping;
-                    o.m_ZDamping = m_ZDamping;
+                    o.m_Damping = m_Damping;
                     o.m_PitchDamping =m_PitchDamping;
                     o.m_YawDamping = m_YawDamping;
                     o.m_RollDamping = m_RollDamping;

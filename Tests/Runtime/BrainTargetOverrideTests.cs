@@ -108,9 +108,7 @@ namespace Tests.Runtime
         public IEnumerator OrbTransposer()
         {
             var orbitalTransposer = m_Vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
-            orbitalTransposer.m_XDamping = 0;
-            orbitalTransposer.m_YDamping = 0;
-            orbitalTransposer.m_ZDamping = 0;
+            orbitalTransposer.m_Damping = Vector3.zero;
             orbitalTransposer.m_FollowOffset = Vector3.zero;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
@@ -121,9 +119,7 @@ namespace Tests.Runtime
         public IEnumerator Transposer()
         {
             var transposer = m_Vcam.AddCinemachineComponent<CinemachineTransposer>();
-            transposer.m_XDamping = 0;
-            transposer.m_YDamping = 0;
-            transposer.m_ZDamping = 0;
+            transposer.m_Damping = Vector3.zero;
             transposer.m_FollowOffset = Vector3.zero;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
