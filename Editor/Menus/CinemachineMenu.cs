@@ -45,6 +45,16 @@ namespace Cinemachine.Editor
             CreateCinemachineObject<CinemachineFreeLook>("FreeLook Camera", command.context as GameObject, true);
         }
 
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Orbital Camera", false, m_GameObjectMenuPriority)]
+        static void CreateOrbitalCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
+            var vcam = CreatePassiveVirtualCamera("Orbital Camera", command.context as GameObject, true);
+            AddCinemachineComponent<CinemachineOrbitalFollow>(vcam);
+            AddCinemachineComponent<CinemachineComposer>(vcam);
+            Undo.AddComponent<InputAxisController>(vcam.gameObject);
+        }
+
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]
         static void CreateBlendListCamera(MenuCommand command)
         {
