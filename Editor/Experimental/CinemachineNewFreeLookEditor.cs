@@ -324,18 +324,15 @@ namespace Cinemachine
                 if (brain != null)
                     up = brain.DefaultWorldUp;
 
-                var middleRig = vcam.GetComponent<CinemachineTransposer>();
-                if (middleRig != null)
+                var orbital = vcam.GetComponent<CinemachineOrbitalTransposer>();
+                if (orbital != null)
                 {
                     float scale = vcam.m_RadialAxis.Value;
-                    Quaternion orient = middleRig.GetReferenceOrientation(up);
+                    Quaternion orient = orbital.GetReferenceOrientation(up);
                     up = orient * Vector3.up;
-                    var orbital = middleRig as CinemachineOrbitalTransposer;
-                    if (orbital != null)
-                    {
-                        float rotation = orbital.m_XAxis.Value + orbital.m_Heading.m_Bias;
-                        orient = Quaternion.AngleAxis(rotation, up) * orient;
-                    }
+                    float rotation = orbital.m_XAxis.Value + orbital.m_Heading.m_Bias;
+                    orient = Quaternion.AngleAxis(rotation, up) * orient;
+
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
                         pos + up * vcam.m_Orbits[0].m_Height * scale,
                         orient, vcam.m_Orbits[0].m_Radius * scale);

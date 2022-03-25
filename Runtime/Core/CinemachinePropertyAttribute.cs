@@ -8,6 +8,11 @@ namespace Cinemachine
     public sealed class AxisStatePropertyAttribute : PropertyAttribute {}
 
     /// <summary>
+    /// Property applied to legacy input axis name specification.  Used for custom drawing in the inspector.
+    /// </summary>
+    public sealed class InputAxisNamePropertyAttribute : PropertyAttribute {}
+
+    /// <summary>
     /// Property applied to OrbitalTransposer.Heading.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute {}
@@ -17,6 +22,11 @@ namespace Cinemachine
     /// </summary>
     public sealed class LensSettingsPropertyAttribute : PropertyAttribute {}
 
+    /// <summary>
+    /// Suppresses the top-level foldout on a complex property
+    /// </summary>
+    public sealed class HideFoldoutAttribute : PropertyAttribute {}
+    
     /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
@@ -62,6 +72,12 @@ namespace Cinemachine
             WarnIfNull = warnIfNull;
         }
     }
+    
+    /// <summary>
+    /// Property applied to Vector2 to treat (x, y) as (min, max).
+    /// Used for custom drawing in the inspector.
+    /// </summary>
+    public sealed class Vector2AsRangePropertyAttribute : PropertyAttribute {}
     
     /// <summary>
     /// Atrtribute to control the automatic generation of documentation.  This attribute is obsolete and not used.

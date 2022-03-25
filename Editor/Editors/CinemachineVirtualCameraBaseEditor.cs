@@ -183,30 +183,27 @@ namespace Cinemachine.Editor
                 return;
 
             EditorGUILayout.Space();
-            EditorGUILayout.HelpBox(
+            InspectorUtility.HelpBoxWithButton(
                 "The InputSystem package is installed, but it is not used to control this vcam.", 
-                MessageType.Info);
-            var rect = EditorGUILayout.GetControlRect(true);
-            rect.x += EditorGUIUtility.labelWidth; 
-            rect.width -= EditorGUIUtility.labelWidth;
-            if (GUI.Button(rect, s_InputProviderAddLabel))
-            {
-                if (s_InputActionReference == null)
+                MessageType.Info,
+                new GUIContent("Add Input\nProvider"), () =>
                 {
-                    s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
-                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
-                        FirstOrDefault(x => x.name == "Player/Look");
-                }
-                Undo.SetCurrentGroupName("Add CinemachineInputProvider");
-                for (int i = 0; i < targets.Length; ++i)
-                {
-                    var vcam = targets[i] as CinemachineVirtualCameraBase;
-                    if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
-                        continue;
-                    var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
-                    inputProvider.XYAxis = s_InputActionReference;
-                }
-            }
+                    if (s_InputActionReference == null)
+                    {
+                        s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                                "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                            FirstOrDefault(x => x.name == "Player/Look");
+                    }
+                    Undo.SetCurrentGroupName("Add CinemachineInputProvider");
+                    for (int i = 0; i < targets.Length; ++i)
+                    {
+                        var vcam = targets[i] as CinemachineVirtualCameraBase;
+                        if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
+                            continue;
+                        var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
+                        inputProvider.XYAxis = s_InputActionReference;
+                    }
+                });
             EditorGUILayout.Space();
         }
 #endif
