@@ -158,44 +158,27 @@ namespace Cinemachine
         [Tooltip("How to adjust the camera to get the desired framing.  You can zoom, dolly in/out, or do both.")]
         public AdjustmentMode m_AdjustmentMode = AdjustmentMode.ZoomOnly;
 
+        // TODO: GroupFraming should be within one struct -> GroupFramingState
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
         [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  "
             + "1 means fill the whole screen.  0.5 means fill half the screen, etc.")]
+        [Range(0.01f, 2f)]
         public float m_GroupFramingSize = 0.8f;
 
-        /// <summary>How much closer to the target can the camera go?</summary>
-        [Tooltip("The maximum distance toward the target that this behaviour is allowed to move the camera.")]
-        public float m_MaxDollyIn = 5000f;
+        /// <summary>The maximum distance the camera can move towards the target and away from the target.</summary>
+        [Tooltip("The maximum distance the camera can move towards the target and away from the target.")]
+        public Vector2 m_MaxDolly = new Vector2(50f, 50f);
 
-        /// <summary>How much farther from the target can the camera go?</summary>
-        [Tooltip("The maximum distance away the target that this behaviour is allowed to move the camera.")]
-        public float m_MaxDollyOut = 5000f;
+        /// <summary>The minimum and maximum distance to the target the camera can get.</summary>
+        [Tooltip("The minimum and maximum distance to the target the camera can get.")]
+        public Vector2 m_DistanceRange = new Vector2(1f, 50f);
 
-        /// <summary>Set this to limit how close to the target the camera can get</summary>
-        [Tooltip("Set this to limit how close to the target the camera can get.")]
-        public float m_MinimumDistance = 1;
+        /// <summary>When zooming, the fov will stay within this range.</summary>
+        [Tooltip("When zooming, the fov will stay within this range.")]
+        public Vector2 m_FOVRange = new Vector2(20, 80);
 
-        /// <summary>Set this to limit how far from the taregt the camera can get</summary>
-        [Tooltip("Set this to limit how far from the target the camera can get.")]
-        public float m_MaximumDistance = 5000f;
-
-        /// <summary>If adjusting FOV, will not set the FOV lower than this</summary>
-        [Range(1, 179)]
-        [Tooltip("If adjusting FOV, will not set the FOV lower than this.")]
-        public float m_MinimumFOV = 3;
-
-        /// <summary>If adjusting FOV, will not set the FOV higher than this</summary>
-        [Range(1, 179)]
-        [Tooltip("If adjusting FOV, will not set the FOV higher than this.")]
-        public float m_MaximumFOV = 60;
-
-        /// <summary>If adjusting Orthographic Size, will not set it lower than this</summary>
-        [Tooltip("If adjusting Orthographic Size, will not set it lower than this.")]
-        public float m_MinimumOrthoSize = 1;
-
-        /// <summary>If adjusting Orthographic Size, will not set it higher than this</summary>
-        [Tooltip("If adjusting Orthographic Size, will not set it higher than this.")]
-        public float m_MaximumOrthoSize = 5000;
+        [Tooltip("When zooming, the orthographic will stay within this range.")]
+        public Vector2 m_OrthoSizeRange = new Vector2(1, 100f);
 
         /// <summary>Internal API for the inspector editor</summary>
         internal Rect SoftGuideRect
@@ -263,14 +246,14 @@ namespace Cinemachine
             m_SoftZoneBias.y = Mathf.Clamp(m_SoftZoneBias.x, -0.5f, 0.5f);
 
             m_GroupFramingSize = Mathf.Max(0.001f, m_GroupFramingSize);
-            m_MaxDollyIn = Mathf.Max(0, m_MaxDollyIn);
-            m_MaxDollyOut = Mathf.Max(0, m_MaxDollyOut);
-            m_MinimumDistance = Mathf.Max(0, m_MinimumDistance);
-            m_MaximumDistance = Mathf.Max(m_MinimumDistance, m_MaximumDistance);
-            m_MinimumFOV = Mathf.Max(1, m_MinimumFOV);
-            m_MaximumFOV = Mathf.Clamp(m_MaximumFOV, m_MinimumFOV, 179);
-            m_MinimumOrthoSize = Mathf.Max(0.01f, m_MinimumOrthoSize);
-            m_MaximumOrthoSize = Mathf.Max(m_MinimumOrthoSize, m_MaximumOrthoSize);
+            m_MaxDolly.x = Mathf.Max(0, m_MaxDolly.x);
+            m_MaxDolly.y = Mathf.Max(0, m_MaxDolly.y);
+            m_DistanceRange.x = Mathf.Max(0, m_DistanceRange.x);
+            m_DistanceRange.y = Mathf.Max(m_DistanceRange.x, m_DistanceRange.y);
+            m_FOVRange.x = Mathf.Max(1, m_FOVRange.x);
+            m_FOVRange.y = Mathf.Clamp(m_FOVRange.y, m_FOVRange.x, 179);
+            m_OrthoSizeRange.x = Mathf.Max(0.01f, m_OrthoSizeRange.x);
+            m_OrthoSizeRange.y = Mathf.Max(m_OrthoSizeRange.x, m_OrthoSizeRange.y);
         }
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
@@ -465,11 +448,11 @@ namespace Cinemachine
                     targetDistance = targetHeight / (2f * Mathf.Tan(verticalFOV * Mathf.Deg2Rad / 2f));
 
                     // Clamp to respect min/max distance settings to the near surface of the bounds
-                    targetDistance = Mathf.Clamp(targetDistance, m_MinimumDistance, m_MaximumDistance);
+                    targetDistance = Mathf.Clamp(targetDistance, m_DistanceRange.x, m_DistanceRange.y);
 
                     // Clamp to respect min/max camera movement
                     float targetDelta = targetDistance - m_CameraDistance;
-                    targetDelta = Mathf.Clamp(targetDelta, -m_MaxDollyIn, m_MaxDollyOut);
+                    targetDelta = Mathf.Clamp(targetDelta, -m_MaxDolly.x, m_MaxDolly.y);
                     targetDistance = m_CameraDistance + targetDelta;
                 }
             }
@@ -538,7 +521,7 @@ namespace Cinemachine
             {
                 if (isOrthographic)
                 {
-                    targetHeight = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
+                    targetHeight = Mathf.Clamp(targetHeight / 2, m_OrthoSizeRange.x, m_OrthoSizeRange.y);
 
                     // Apply Damping
                     if (previousStateIsValid)
@@ -546,7 +529,7 @@ namespace Cinemachine
                             targetHeight - m_prevFOV, m_Damping.z, deltaTime);
                     m_prevFOV = targetHeight;
 
-                    lens.OrthographicSize = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
+                    lens.OrthographicSize = Mathf.Clamp(targetHeight, m_OrthoSizeRange.x, m_OrthoSizeRange.y);
                     curState.Lens = lens;
                 }
                 else if (m_AdjustmentMode != AdjustmentMode.DollyOnly)
@@ -557,7 +540,7 @@ namespace Cinemachine
                     float targetFOV = 179;
                     if (nearBoundsDistance > Epsilon)
                         targetFOV = 2f * Mathf.Atan(targetHeight / (2 * nearBoundsDistance)) * Mathf.Rad2Deg;
-                    targetFOV = Mathf.Clamp(targetFOV, m_MinimumFOV, m_MaximumFOV);
+                    targetFOV = Mathf.Clamp(targetFOV, m_FOVRange.x, m_FOVRange.y);
 
                     // ApplyDamping
                     if (previousStateIsValid)
