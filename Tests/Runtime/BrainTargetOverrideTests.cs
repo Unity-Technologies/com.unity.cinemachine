@@ -88,9 +88,7 @@ namespace Tests.Runtime
         public IEnumerator FramingTransposer()
         {
             var framingTransposer = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
-            framingTransposer.m_XDamping = 0;
-            framingTransposer.m_YDamping = 0;
-            framingTransposer.m_ZDamping = 0;
+            framingTransposer.m_Damping = Vector3.zero;
             framingTransposer.m_CameraDistance = 1f;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();

@@ -48,9 +48,7 @@ namespace Tests.Runtime
         {
             var cameraDistance = 1f;
             var framingTransposer = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
-            framingTransposer.m_XDamping = 0;
-            framingTransposer.m_YDamping = 0;
-            framingTransposer.m_ZDamping = 0;
+            framingTransposer.m_Damping = Vector3.zero;
             framingTransposer.m_CameraDistance = cameraDistance;
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);

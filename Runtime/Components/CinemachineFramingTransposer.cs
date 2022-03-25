@@ -15,7 +15,7 @@ namespace Cinemachine
     /// be moved in its XY plane until the Follow target is at the desired point on
     /// the camera's screen.
     ///
-    /// The FramingTansposer will only change the camera's position in space.  It will not
+    /// The FramingTransposer will only change the camera's position in space.  It will not
     /// re-orient or otherwise aim the camera.
     ///
     /// For this component to work properly, the vcam's LookAt target must be null.
@@ -25,7 +25,7 @@ namespace Cinemachine
     /// be available to dynamically adjust the camera's view in order to frame the entire group.
     ///
     /// Although this component was designed for orthographic cameras, it works equally
-    /// well with persective cameras and can be used in 3D environments.
+    /// well with perspective cameras and can be used in 3D environments.
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
@@ -71,40 +71,15 @@ namespace Cinemachine
         [Tooltip("If checked, movement along the Y axis will be ignored for lookahead calculations")]
         public bool m_LookaheadIgnoreY;
 
-        /// <summary>How aggressively the camera tries to maintain the offset in the X-axis.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the target's
-        /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
+        /// <summary>How aggressively the camera tries to maintain the offset in the X, Y, and Z axes.
+        /// Small numbers are more responsive. Larger numbers give a more heavy slowly responding camera.
+        /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
         [Space]
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the X-axis.  "
-            + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
-            + "x-axis offset.  Larger numbers give a more heavy slowly responding camera.  "
+        [Tooltip("How aggressively the camera tries to maintain the offset in the X, Y, and Z axes.  "
+            + "Small numbers are more responsive. Larger numbers give a more heavy slowly responding camera.  "
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public float m_XDamping = 1f;
-
-        /// <summary>How aggressively the camera tries to maintain the offset in the Y-axis.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the target's
-        /// y-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the Y-axis.  "
-            + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
-            + "y-axis offset.  Larger numbers give a more heavy slowly responding camera.  "
-            + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public float m_YDamping = 1f;
-
-        /// <summary>How aggressively the camera tries to maintain the offset in the Z-axis.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the
-        /// target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to maintain the offset in the Z-axis.  "
-            + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
-            + "z-axis offset.  Larger numbers give a more heavy slowly responding camera.  "
-            + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public float m_ZDamping = 1f;
-
+        public Vector3 m_Damping = Vector3.one;
+        
         /// <summary>If set, damping will apply only to target motion, and not when 
         /// the camera rotation changes.  Turn this on to get an instant response when 
         /// the rotation changes</summary>
@@ -112,38 +87,19 @@ namespace Cinemachine
             + "rotation changes.  Turn this on to get an instant response when the rotation changes.  ")]
         public bool m_TargetMovementOnly = true;
 
-        /// <summary>Horizontal screen position for target. The camera will move to position the tracked object here</summary>
+        /// <summary>Horizontal and Vertical screen position for target. The camera will move to position the tracked object here.</summary>
         [Space]
-        [Range(-0.5f, 1.5f)]
-        [Tooltip("Horizontal screen position for target. The camera will move to position the tracked object here.")]
-        public float m_ScreenX = 0.5f;
-
-        /// <summary>Vertical screen position for target, The camera will move to to position the tracked object here</summary>
-        [Range(-0.5f, 1.5f)]
-        [Tooltip("Vertical screen position for target, The camera will move to position the tracked object here.")]
-        public float m_ScreenY = 0.5f;
+        [Tooltip("Horizontal and Vertical screen position for target. The camera will move to position the tracked object here.")]
+        public Vector2 m_Screen = new Vector2(0.5f, 0.5f);
 
         /// <summary>The distance along the camera axis that will be maintained from the Follow target</summary>
         [Tooltip("The distance along the camera axis that will be maintained from the Follow target")]
         public float m_CameraDistance = 10f;
 
-        /// <summary>Camera will not move horizontally if the target is within this range of the position</summary>
+        /// <summary>Camera will not move if the target is within the dead zone.</summary>
         [Space]
-        [Range(0f, 2f)]
-        [Tooltip("Camera will not move horizontally if the target is within this range of the position.")]
-        public float m_DeadZoneWidth = 0f;
-
-        /// <summary>Camera will not move vertically if the target is within this range of the position</summary>
-        [Range(0f, 2f)]
-        [Tooltip("Camera will not move vertically if the target is within this range of the position.")]
-        public float m_DeadZoneHeight = 0f;
-
-        /// <summary>The camera will not move along its z-axis if the Follow target is within
-        /// this distance of the specified camera distance</summary>
-        [Tooltip("The camera will not move along its z-axis if the Follow target is within "
-            + "this distance of the specified camera distance")]
-        [FormerlySerializedAs("m_DistanceDeadZoneSize")]
-        public float m_DeadZoneDepth = 0;
+        [Tooltip("Camera will not move if the target is within the dead zone.")]
+        public Vector3 m_DeadZone;
 
         /// <summary>If checked, then then soft zone will be unlimited in size</summary>
         [Space]
@@ -152,27 +108,13 @@ namespace Cinemachine
 
         /// <summary>When target is within this region, camera will gradually move to re-align
         /// towards the desired position, depending onm the damping speed</summary>
-        [Range(0f, 2f)]
         [Tooltip("When target is within this region, camera will gradually move horizontally to "
             + "re-align towards the desired position, depending on the damping speed.")]
-        public float m_SoftZoneWidth = 0.8f;
-
-        /// <summary>When target is within this region, camera will gradually move to re-align
-        /// towards the desired position, depending onm the damping speed</summary>
-        [Range(0f, 2f)]
-        [Tooltip("When target is within this region, camera will gradually move vertically to "
-            + "re-align towards the desired position, depending on the damping speed.")]
-        public float m_SoftZoneHeight = 0.8f;
+        public Vector2 m_SoftZoneSize = new Vector2(0.8f, 0.8f);
 
         /// <summary>A non-zero bias will move the targt position away from the center of the soft zone</summary>
-        [Range(-0.5f, 0.5f)]
-        [Tooltip("A non-zero bias will move the target position horizontally away from the center of the soft zone.")]
-        public float m_BiasX = 0f;
-
-        /// <summary>A non-zero bias will move the targt position away from the center of the soft zone</summary>
-        [Range(-0.5f, 0.5f)]
-        [Tooltip("A non-zero bias will move the target position vertically away from the center of the soft zone.")]
-        public float m_BiasY = 0f;
+        [Tooltip("A non-zero bias will move the target position away from the center of the soft zone.")]
+        public Vector2 m_SoftZoneBias;
 
         /// <summary>Force target to center of screen when this camera activates.
         /// If false, will clamp target to the edges of the dead zone</summary>
@@ -261,17 +203,17 @@ namespace Cinemachine
             get
             {
                 return new Rect(
-                    m_ScreenX - m_DeadZoneWidth / 2, m_ScreenY - m_DeadZoneHeight / 2,
-                    m_DeadZoneWidth, m_DeadZoneHeight);
+                    m_Screen.x - m_DeadZone.x / 2, m_Screen.y - m_DeadZone.y / 2,
+                    m_DeadZone.x, m_DeadZone.y);
             }
             set
             {
-                m_DeadZoneWidth = Mathf.Clamp(value.width, 0, 2);
-                m_DeadZoneHeight = Mathf.Clamp(value.height, 0, 2);
-                m_ScreenX = Mathf.Clamp(value.x + m_DeadZoneWidth / 2, -0.5f,  1.5f);
-                m_ScreenY = Mathf.Clamp(value.y + m_DeadZoneHeight / 2, -0.5f,  1.5f);
-                m_SoftZoneWidth = Mathf.Max(m_SoftZoneWidth, m_DeadZoneWidth);
-                m_SoftZoneHeight = Mathf.Max(m_SoftZoneHeight, m_DeadZoneHeight);
+                m_DeadZone.x = Mathf.Clamp(value.width, 0, 2);
+                m_DeadZone.y = Mathf.Clamp(value.height, 0, 2);
+                m_Screen.x = Mathf.Clamp(value.x + m_DeadZone.x / 2, -0.5f,  1.5f);
+                m_Screen.y = Mathf.Clamp(value.y + m_DeadZone.y / 2, -0.5f,  1.5f);
+                m_SoftZoneSize.x = Mathf.Max(m_SoftZoneSize.x, m_DeadZone.x);
+                m_SoftZoneSize.y = Mathf.Max(m_SoftZoneSize.y, m_DeadZone.y);
             }
         }
 
@@ -281,33 +223,44 @@ namespace Cinemachine
             get
             {
                 Rect r = new Rect(
-                        m_ScreenX - m_SoftZoneWidth / 2, m_ScreenY - m_SoftZoneHeight / 2,
-                        m_SoftZoneWidth, m_SoftZoneHeight);
+                        m_Screen.x - m_SoftZoneSize.x / 2, m_Screen.y - m_SoftZoneSize.y / 2,
+                        m_SoftZoneSize.x, m_SoftZoneSize.y);
                 r.position += new Vector2(
-                        m_BiasX * (m_SoftZoneWidth - m_DeadZoneWidth),
-                        m_BiasY * (m_SoftZoneHeight - m_DeadZoneHeight));
+                        m_SoftZoneBias.x * (m_SoftZoneSize.x - m_DeadZone.x),
+                        m_SoftZoneBias.y * (m_SoftZoneSize.y - m_DeadZone.y));
                 return r;
             }
             set
             {
-                m_SoftZoneWidth = Mathf.Clamp(value.width, 0, 2f);
-                m_SoftZoneHeight = Mathf.Clamp(value.height, 0, 2f);
-                m_DeadZoneWidth = Mathf.Min(m_DeadZoneWidth, m_SoftZoneWidth);
-                m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
+                m_SoftZoneSize.x = Mathf.Clamp(value.width, 0, 2f);
+                m_SoftZoneSize.y = Mathf.Clamp(value.height, 0, 2f);
+                m_DeadZone.x = Mathf.Min(m_DeadZone.x, m_SoftZoneSize.x);
+                m_DeadZone.y = Mathf.Min(m_DeadZone.y, m_SoftZoneSize.y);
 
                 Vector2 center = value.center;
-                Vector2 bias = center - new Vector2(m_ScreenX, m_ScreenY);
-                float biasWidth = Mathf.Max(0, m_SoftZoneWidth - m_DeadZoneWidth);
-                float biasHeight = Mathf.Max(0, m_SoftZoneHeight - m_DeadZoneHeight);
-                m_BiasX = biasWidth < Epsilon ? 0 : Mathf.Clamp(bias.x / biasWidth, -0.5f, 0.5f);
-                m_BiasY = biasHeight < Epsilon ? 0 : Mathf.Clamp(bias.y / biasHeight, -0.5f, 0.5f);
+                Vector2 bias = center - new Vector2(m_Screen.x, m_Screen.y);
+                float biasWidth = Mathf.Max(0, m_SoftZoneSize.x - m_DeadZone.x);
+                float biasHeight = Mathf.Max(0, m_SoftZoneSize.y - m_DeadZone.y);
+                m_SoftZoneBias.x = biasWidth < Epsilon ? 0 : Mathf.Clamp(bias.x / biasWidth, -0.5f, 0.5f);
+                m_SoftZoneBias.y = biasHeight < Epsilon ? 0 : Mathf.Clamp(bias.y / biasHeight, -0.5f, 0.5f);
             }
         }
 
         void OnValidate()
         {
             m_CameraDistance = Mathf.Max(m_CameraDistance, kMinimumCameraDistance);
-            m_DeadZoneDepth = Mathf.Max(m_DeadZoneDepth, 0);
+            m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
+            m_Damping.y = Mathf.Clamp(m_Damping.x, 0, 20);
+            m_Damping.z = Mathf.Clamp(m_Damping.x, 0, 20);
+            m_Screen.x = Mathf.Clamp(m_Screen.x, -0.5f, 1.5f);
+            m_Screen.y = Mathf.Clamp(m_Screen.y, -0.5f, 1.5f);
+            m_DeadZone.x = Mathf.Clamp(m_DeadZone.x, 0, 2);
+            m_DeadZone.y = Mathf.Clamp(m_DeadZone.y, 0, 2);
+            m_DeadZone.z = Mathf.Clamp(m_DeadZone.z, 0, 2);
+            m_SoftZoneSize.x = Mathf.Clamp(m_SoftZoneSize.x, 0, 2f);
+            m_SoftZoneSize.y = Mathf.Clamp(m_SoftZoneSize.y, 0, 2f);
+            m_SoftZoneBias.x = Mathf.Clamp(m_SoftZoneBias.x, -0.5f, 0.5f);
+            m_SoftZoneBias.y = Mathf.Clamp(m_SoftZoneBias.x, -0.5f, 0.5f);
 
             m_GroupFramingSize = Mathf.Max(0.001f, m_GroupFramingSize);
             m_MaxDollyIn = Mathf.Max(0, m_MaxDollyIn);
@@ -374,7 +327,7 @@ namespace Cinemachine
         /// <returns>Highest damping setting in this component</returns>
         public override float GetMaxDampTime() 
         { 
-            return Mathf.Max(m_XDamping, Mathf.Max(m_YDamping, m_ZDamping)); 
+            return Mathf.Max(m_Damping.x, Mathf.Max(m_Damping.y, m_Damping.z)); 
         }
 
         /// <summary>Notification that this virtual camera is going live.
@@ -539,8 +492,8 @@ namespace Cinemachine
 
             // Move along camera z
             Vector3 cameraOffset = Vector3.zero;
-            float cameraMin = Mathf.Max(kMinimumCameraDistance, targetDistance - m_DeadZoneDepth/2);
-            float cameraMax = Mathf.Max(cameraMin, targetDistance + m_DeadZoneDepth/2);
+            float cameraMin = Mathf.Max(kMinimumCameraDistance, targetDistance - m_DeadZone.z/2f);
+            float cameraMax = Mathf.Max(cameraMin, targetDistance + m_DeadZone.z/2f);
             float targetZ = Mathf.Min(targetPos.z, lookAtPos.z);
             if (targetZ < cameraMin)
                 cameraOffset.z = targetZ - cameraMin;
@@ -565,7 +518,7 @@ namespace Cinemachine
                 // Move it through the soft zone, with damping
                 cameraOffset += OrthoOffsetToScreenBounds(targetPos, softGuideOrtho);
                 cameraOffset = VirtualCamera.DetachedFollowTargetDamp(
-                    cameraOffset, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
+                    cameraOffset, m_Damping, deltaTime);
 
                 // Make sure the real target (not the lookahead one) is still in the frame
                 if (!m_UnlimitedSoftZone 
@@ -590,7 +543,7 @@ namespace Cinemachine
                     // Apply Damping
                     if (previousStateIsValid)
                         targetHeight = m_prevFOV + VirtualCamera.DetachedFollowTargetDamp(
-                            targetHeight - m_prevFOV, m_ZDamping, deltaTime);
+                            targetHeight - m_prevFOV, m_Damping.z, deltaTime);
                     m_prevFOV = targetHeight;
 
                     lens.OrthographicSize = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
@@ -609,7 +562,7 @@ namespace Cinemachine
                     // ApplyDamping
                     if (previousStateIsValid)
                         targetFOV = m_prevFOV + VirtualCamera.DetachedFollowTargetDamp(
-                            targetFOV - m_prevFOV, m_ZDamping, deltaTime);
+                            targetFOV - m_prevFOV, m_Damping.z, deltaTime);
                     m_prevFOV = targetFOV;
 
                     lens.FieldOfView = targetFOV;
