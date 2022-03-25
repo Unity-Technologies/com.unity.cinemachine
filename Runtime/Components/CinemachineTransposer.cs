@@ -62,7 +62,6 @@ namespace Cinemachine
         /// <summary>How aggressively the camera tries to maintain the offset in the X, Y, and Z axes.
         /// Small numbers are more responsive. Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
-        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain the offset in the X, Y, and Z axes.  "
             + "Small numbers are more responsive. Larger numbers give a more heavy slowly responding camera.  "
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
