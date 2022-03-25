@@ -81,9 +81,6 @@ namespace Cinemachine
             {
                 public Vector3 m_PositionalDamping;
                 public Vector2 m_RotationalDamping;
-                [Range(0f, 20f)] public float m_PitchDamping;
-                [Range(0f, 20f)] public float m_YawDamping;
-                [Range(0f, 20f)] public float m_RollDamping;
 
                 internal void Lerp(CinemachineTransposer o, float t)
                 {
@@ -109,61 +106,41 @@ namespace Cinemachine
             {
                 public Vector3 m_LookAtOffset;
                 [Space]
-                [Range(0f, 20)] public float m_HorizontalDamping;
-                [Range(0f, 20)] public float m_VerticalDamping;
+                public Vector2 m_Damping;
                 [Space]
-                [Range(0f, 1f)] public float m_ScreenX;
-                [Range(0f, 1f)] public float m_ScreenY;
-                [Range(0f, 1f)] public float m_DeadZoneWidth;
-                [Range(0f, 1f)] public float m_DeadZoneHeight;
-                [Range(0f, 2f)] public float m_SoftZoneWidth;
-                [Range(0f, 2f)] public float m_SoftZoneHeight;
-                [Range(-0.5f, 0.5f)] public float m_BiasX;
-                [Range(-0.5f, 0.5f)] public float m_BiasY;
+                public Vector2 m_Screen;
+                public Vector2 m_DeadZone;
+                public Vector2 m_SoftZone;
+                public Vector2 m_SoftZoneBias;
 
                 internal void Lerp(CinemachineComposer c, float t)
                 {
                     c.m_TrackedObjectOffset = Vector3.Lerp(c.m_TrackedObjectOffset, m_LookAtOffset, t);
-                    c.m_HorizontalDamping = Mathf.Lerp(c.m_HorizontalDamping, m_HorizontalDamping, t);
-                    c.m_VerticalDamping = Mathf.Lerp(c.m_VerticalDamping, m_VerticalDamping, t);
-                    c.m_ScreenX = Mathf.Lerp(c.m_ScreenX, m_ScreenX, t);
-                    c.m_ScreenY = Mathf.Lerp(c.m_ScreenY, m_ScreenY, t);
-                    c.m_DeadZoneWidth = Mathf.Lerp(c.m_DeadZoneWidth, m_DeadZoneWidth, t);
-                    c.m_DeadZoneHeight = Mathf.Lerp(c.m_DeadZoneHeight, m_DeadZoneHeight, t);
-                    c.m_SoftZoneWidth = Mathf.Lerp(c.m_SoftZoneWidth, m_SoftZoneWidth, t);
-                    c.m_SoftZoneHeight = Mathf.Lerp(c.m_SoftZoneHeight, m_SoftZoneHeight, t);
-                    c.m_BiasX = Mathf.Lerp(c.m_BiasX, m_BiasX, t);
-                    c.m_BiasY = Mathf.Lerp(c.m_BiasY, m_BiasY, t);
+                    c.m_Damping = Vector3.Lerp(c.m_Damping, m_Damping, t);
+                    c.m_Screen = Vector2.Lerp(c.m_Screen, m_Screen, t);
+                    c.m_DeadZone = Vector2.Lerp(c.m_DeadZone, m_DeadZone, t);
+                    c.m_SoftZone = Vector2.Lerp(c.m_SoftZone, m_SoftZone, t);
+                    c.m_SoftZoneBias = Vector2.Lerp(c.m_SoftZoneBias, m_SoftZoneBias, t);
                 }
 
                 internal void PullFrom(CinemachineComposer c)
                 {
                     m_LookAtOffset = c.m_TrackedObjectOffset;
-                    m_HorizontalDamping = c.m_HorizontalDamping;
-                    m_VerticalDamping = c.m_VerticalDamping;
-                    m_ScreenX = c.m_ScreenX;
-                    m_ScreenY = c.m_ScreenY;
-                    m_DeadZoneWidth = c.m_DeadZoneWidth;
-                    m_DeadZoneHeight = c.m_DeadZoneHeight;
-                    m_SoftZoneWidth = c.m_SoftZoneWidth;
-                    m_SoftZoneHeight = c.m_SoftZoneHeight;
-                    m_BiasX = c.m_BiasX;
-                    m_BiasY = c.m_BiasY;
+                    m_Damping = c.m_Damping;
+                    m_Screen = c.m_Screen;
+                    m_DeadZone = c.m_DeadZone;
+                    m_SoftZone = c.m_SoftZone;
+                    m_SoftZoneBias = c.m_SoftZoneBias;
                 }
 
                 internal void PushTo(CinemachineComposer c)
                 {
                     c.m_TrackedObjectOffset = m_LookAtOffset;
-                    c.m_HorizontalDamping = m_HorizontalDamping;
-                    c.m_VerticalDamping = m_VerticalDamping;
-                    c.m_ScreenX = m_ScreenX;
-                    c.m_ScreenY = m_ScreenY;
-                    c.m_DeadZoneWidth = m_DeadZoneWidth;
-                    c.m_DeadZoneHeight = m_DeadZoneHeight;
-                    c.m_SoftZoneWidth = m_SoftZoneWidth;
-                    c.m_SoftZoneHeight = m_SoftZoneHeight;
-                    c.m_BiasX = m_BiasX;
-                    c.m_BiasY = m_BiasY;
+                    c.m_Damping = m_Damping;
+                    c.m_Screen = m_Screen;
+                    c.m_DeadZone = m_DeadZone;
+                    c.m_SoftZone = m_SoftZone;
+                    c.m_SoftZoneBias = m_SoftZoneBias;
                 }
             }
 

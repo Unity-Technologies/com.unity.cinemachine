@@ -110,7 +110,7 @@ namespace Cinemachine
         /// towards the desired position, depending onm the damping speed</summary>
         [Tooltip("When target is within this region, camera will gradually move horizontally to "
             + "re-align towards the desired position, depending on the damping speed.")]
-        public Vector2 m_SoftZoneSize = new Vector2(0.8f, 0.8f);
+        public Vector2 m_SoftZone = new Vector2(0.8f, 0.8f);
 
         /// <summary>A non-zero bias will move the targt position away from the center of the soft zone</summary>
         [Tooltip("A non-zero bias will move the target position away from the center of the soft zone.")]
@@ -195,8 +195,8 @@ namespace Cinemachine
                 m_DeadZone.y = Mathf.Clamp(value.height, 0, 2);
                 m_Screen.x = Mathf.Clamp(value.x + m_DeadZone.x / 2, -0.5f,  1.5f);
                 m_Screen.y = Mathf.Clamp(value.y + m_DeadZone.y / 2, -0.5f,  1.5f);
-                m_SoftZoneSize.x = Mathf.Max(m_SoftZoneSize.x, m_DeadZone.x);
-                m_SoftZoneSize.y = Mathf.Max(m_SoftZoneSize.y, m_DeadZone.y);
+                m_SoftZone.x = Mathf.Max(m_SoftZone.x, m_DeadZone.x);
+                m_SoftZone.y = Mathf.Max(m_SoftZone.y, m_DeadZone.y);
             }
         }
 
@@ -206,24 +206,24 @@ namespace Cinemachine
             get
             {
                 Rect r = new Rect(
-                        m_Screen.x - m_SoftZoneSize.x / 2, m_Screen.y - m_SoftZoneSize.y / 2,
-                        m_SoftZoneSize.x, m_SoftZoneSize.y);
+                        m_Screen.x - m_SoftZone.x / 2, m_Screen.y - m_SoftZone.y / 2,
+                        m_SoftZone.x, m_SoftZone.y);
                 r.position += new Vector2(
-                        m_SoftZoneBias.x * (m_SoftZoneSize.x - m_DeadZone.x),
-                        m_SoftZoneBias.y * (m_SoftZoneSize.y - m_DeadZone.y));
+                        m_SoftZoneBias.x * (m_SoftZone.x - m_DeadZone.x),
+                        m_SoftZoneBias.y * (m_SoftZone.y - m_DeadZone.y));
                 return r;
             }
             set
             {
-                m_SoftZoneSize.x = Mathf.Clamp(value.width, 0, 2f);
-                m_SoftZoneSize.y = Mathf.Clamp(value.height, 0, 2f);
-                m_DeadZone.x = Mathf.Min(m_DeadZone.x, m_SoftZoneSize.x);
-                m_DeadZone.y = Mathf.Min(m_DeadZone.y, m_SoftZoneSize.y);
+                m_SoftZone.x = Mathf.Clamp(value.width, 0, 2f);
+                m_SoftZone.y = Mathf.Clamp(value.height, 0, 2f);
+                m_DeadZone.x = Mathf.Min(m_DeadZone.x, m_SoftZone.x);
+                m_DeadZone.y = Mathf.Min(m_DeadZone.y, m_SoftZone.y);
 
                 Vector2 center = value.center;
                 Vector2 bias = center - new Vector2(m_Screen.x, m_Screen.y);
-                float biasWidth = Mathf.Max(0, m_SoftZoneSize.x - m_DeadZone.x);
-                float biasHeight = Mathf.Max(0, m_SoftZoneSize.y - m_DeadZone.y);
+                float biasWidth = Mathf.Max(0, m_SoftZone.x - m_DeadZone.x);
+                float biasHeight = Mathf.Max(0, m_SoftZone.y - m_DeadZone.y);
                 m_SoftZoneBias.x = biasWidth < Epsilon ? 0 : Mathf.Clamp(bias.x / biasWidth, -0.5f, 0.5f);
                 m_SoftZoneBias.y = biasHeight < Epsilon ? 0 : Mathf.Clamp(bias.y / biasHeight, -0.5f, 0.5f);
             }
@@ -240,8 +240,8 @@ namespace Cinemachine
             m_DeadZone.x = Mathf.Clamp(m_DeadZone.x, 0, 2);
             m_DeadZone.y = Mathf.Clamp(m_DeadZone.y, 0, 2);
             m_DeadZone.z = Mathf.Clamp(m_DeadZone.z, 0, 2);
-            m_SoftZoneSize.x = Mathf.Clamp(m_SoftZoneSize.x, 0, 2f);
-            m_SoftZoneSize.y = Mathf.Clamp(m_SoftZoneSize.y, 0, 2f);
+            m_SoftZone.x = Mathf.Clamp(m_SoftZone.x, 0, 2f);
+            m_SoftZone.y = Mathf.Clamp(m_SoftZone.y, 0, 2f);
             m_SoftZoneBias.x = Mathf.Clamp(m_SoftZoneBias.x, -0.5f, 0.5f);
             m_SoftZoneBias.y = Mathf.Clamp(m_SoftZoneBias.x, -0.5f, 0.5f);
 

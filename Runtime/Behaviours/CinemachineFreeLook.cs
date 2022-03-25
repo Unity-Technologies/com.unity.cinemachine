@@ -582,12 +582,12 @@ namespace Cinemachine
                     CinemachineComposer composer = newRigs[i].GetCinemachineComponent<CinemachineComposer>();
                     if (composer != null)
                     {
-                        composer.m_HorizontalDamping = composer.m_VerticalDamping = 0;
-                        composer.m_ScreenX = 0.5f;
-                        composer.m_ScreenY = softCenterDefaultsV[i];
-                        composer.m_DeadZoneWidth = composer.m_DeadZoneHeight = 0f;
-                        composer.m_SoftZoneWidth = composer.m_SoftZoneHeight = 0.8f;
-                        composer.m_BiasX = composer.m_BiasY = 0;
+                        composer.m_Damping = Vector2.zero;
+                        composer.m_Screen.x = 0.5f;
+                        composer.m_Screen.y = softCenterDefaultsV[i];
+                        composer.m_DeadZone.x = composer.m_DeadZone.y = 0f;
+                        composer.m_SoftZone.x = composer.m_SoftZone.y = 0.8f;
+                        composer.m_SoftZoneBias.x = composer.m_SoftZoneBias.y = 0;
                     }
                 }
             }
