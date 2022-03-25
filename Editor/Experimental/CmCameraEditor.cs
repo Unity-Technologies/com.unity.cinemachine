@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
 using Cinemachine.Utility;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Cinemachine
@@ -25,11 +26,21 @@ namespace Cinemachine
         {
             // Create a new VisualElement to be the root of our inspector UI
             var myInspector = new VisualElement();
-            // Load from default reference
             inspectorXML.CloneTree(myInspector);
 
-            // Inject procedural behaviours into myInspector
-            var dropdownBlock = myInspector.Q("ProceduralMotionBlock");
+            // Inject Status
+            // var propertyField = myInspector.Q<IntegerField>("unity-input-m_Priority");
+            // var statusIndex = 0;
+            // foreach (var child in propertyField.Children())
+            // {
+            //     m_ReferenceLayouts[statusIndex++] = child;
+            // }
+            
+            var status = myInspector.Q<IMGUIContainer>("Status");
+            status.onGUIHandler = DrawCameraStatusInInspector;
+
+            // Inject procedural behaviour dropdowns into myInspector
+            var dropdownBlock = myInspector.Q("ProceduralMotionDropdowns");
             
             var cmCamera = Target;
             FindStages(cmCamera);
@@ -143,8 +154,73 @@ namespace Cinemachine
         {
             if (m_LensSettingsInspectorHelper == null)
                 m_LensSettingsInspectorHelper = new LensSettingsInspectorHelper();
-            return m_LensSettingsInspectorHelper != null && m_LensSettingsInspectorHelper.UseHorizontalFOV;
+            return m_LensSettingsInspectorHelper.UseHorizontalFOV;
         }
+
+        VisualElement[] m_ReferenceLayouts = new VisualElement[2];
+        void DrawCameraStatusInInspector()
+        {
+            if (Selection.objects.Length > 1)
+                return;
+            
+            // Is the camera navel-gazing?
+            CameraState state = Target.State;
+            if (state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero())
+                EditorGUILayout.HelpBox(
+                    "The camera is positioned on the same point at which it is trying to look.",
+                    MessageType.Warning);
+
+            // TODO: No status and Solo for prefabs
+            // if (IsPrefabBase)
+            //     return;
+
+            // Active status and Solo button
+            Rect rect = EditorGUILayout.GetControlRect(true);
+            Rect rectLabel = new Rect(rect.x+1f, rect.y, EditorGUIUtility.labelWidth, rect.height);
+            rect.width -= rectLabel.width;
+            rect.x += rectLabel.width;
+
+            Color color = GUI.color;
+            bool isSolo = (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target);
+            if (isSolo)
+                GUI.color = CinemachineBrain.GetSoloGUIColor();
+
+            bool isLive = CinemachineCore.Instance.IsLive(Target);
+            GUI.enabled = isLive;
+            GUI.Label(rectLabel, isLive ? "Status: Live"
+                : (Target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled"));
+            GUI.enabled = true;
+
+            float labelWidth = 0;
+            GUIContent updateText = GUIContent.none;
+            UpdateTracker.UpdateClock updateMode = CinemachineCore.Instance.GetVcamUpdateStatus(Target);
+            if (Application.isPlaying)
+            {
+                updateText = new GUIContent(
+                    updateMode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update");
+                var textDimensions = GUI.skin.label.CalcSize(updateText);
+                labelWidth = textDimensions.x;
+            }
+            rect.width -= labelWidth;
+            if (GUI.Button(rect, "Solo", "Button"))
+            {
+                isSolo = !isSolo;
+                CinemachineBrain.SoloCamera = isSolo ? Target : null;
+                InspectorUtility.RepaintGameView();
+            }
+            GUI.color = color;
+            if (isSolo && !Application.isPlaying)
+                InspectorUtility.RepaintGameView();
+
+            if (labelWidth > 0)
+            {
+                GUI.enabled = false;
+                rect.x += rect.width; rect.width = labelWidth;
+                GUI.Label(rect, updateText);
+                GUI.enabled = true;
+            }
+        }
+
 #endif
 
         struct StageData
