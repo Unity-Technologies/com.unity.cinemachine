@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
 using Cinemachine.Utility;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Cinemachine
@@ -34,15 +33,17 @@ namespace Cinemachine
             
             var cmCamera = Target;
             FindStages(cmCamera);
-            for (var i = 0; i < s_Stages.Length; ++i)
+            for (var i = 0; i < s_StageData.Length; ++i)
             {
+                if (s_StageData[i].type.Count <= 1) continue;
+                
                 var stage = i; // need local copy for lambda expression
                 var dropdown = new DropdownField
                 {
-                    name = s_Stages[stage] + " Component Selection list",
-                    label = s_Stages[stage],
-                    choices = s_StageTypeNames[stage],
-                    index = s_SelectionCache[stage],
+                    name = s_StageData[stage].name + " Component Selection list",
+                    label = s_StageData[stage].name,
+                    choices = s_StageData[stage].typeName,
+                    index = s_StageData[stage].selection,
                 };
                 dropdown.AddToClassList("unity-base-field__aligned");
                 
@@ -61,7 +62,7 @@ namespace Cinemachine
             
             int index = GetTypeIndexFromSelection(selection, stage);
             // set vcam according to selected component
-            var type = s_StageTypes[stage][index];
+            var type = s_StageData[stage].type[index];
 
             if (cmCam.m_Components[stage] != null)
             {
@@ -77,8 +78,8 @@ namespace Cinemachine
             
             static int GetTypeIndexFromSelection(string selection, int stage)
             {
-                for (var j = 0; j < s_StageTypeNames[stage].Count; ++j)
-                    if (s_StageTypeNames[stage][j].Equals(selection))
+                for (var j = 0; j < s_StageData[stage].typeName.Count; ++j)
+                    if (s_StageData[stage].typeName[j].Equals(selection))
                         return j;
                 return 0;
             }
@@ -145,22 +146,26 @@ namespace Cinemachine
             return m_LensSettingsInspectorHelper != null && m_LensSettingsInspectorHelper.UseHorizontalFOV;
         }
 #endif
-        
-        static string[] s_Stages;
-        static List<string>[] s_StageTypeNames;
-        static List<Type>[] s_StageTypes;
-        static List<int> s_SelectionCache;
+
+        struct StageData
+        {
+            public string name;
+            public List<string> typeName;
+            public List<Type> type;
+            public int selection;
+        }
+
+        static StageData[] s_StageData;
         static void FindStages(CmCamera cmCamera)
         {
-            s_Stages = Enum.GetNames(typeof(CinemachineCore.Stage));
-            s_StageTypeNames = new List<string>[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
-            s_StageTypes = new List<Type>[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
-            s_SelectionCache = new List<int>(s_Stages.Length);
-            for (int i = 0; i < s_StageTypeNames.Length; ++i)
+            var names = Enum.GetNames(typeof(CinemachineCore.Stage));
+            s_StageData = new StageData[names.Length];
+            for (int stage = 0; stage < s_StageData.Length; ++stage)
             {
-                s_StageTypeNames[i] = new List<string> { "Do Nothing" };
-                s_StageTypes[i] = new List<Type>{null};
-                s_SelectionCache.Add(0);
+                s_StageData[stage].name = names[stage];
+                s_StageData[stage].typeName = new List<string> { "None" };
+                s_StageData[stage].type = new List<Type> { null };
+                s_StageData[stage].selection = 0;
             }
 
             // Get all ICinemachineComponents
@@ -173,20 +178,20 @@ namespace Cinemachine
             {
                 var pipelineAttribute = t.GetCustomAttribute<CameraPipelineAttribute>();
                 var stage = (int)pipelineAttribute.Stage;
-                s_StageTypes[stage].Add(t);
-                s_StageTypeNames[stage].Add(InspectorUtility.NicifyClassName(t.Name));
+                s_StageData[stage].type.Add(t);
+                s_StageData[stage].typeName.Add(InspectorUtility.NicifyClassName(t.Name));
             }
 
-            for (int i = 0; i < s_SelectionCache.Count; ++i)
+            for (int stage = 0; stage < s_StageData.Length; ++stage)
             {
-                var component = cmCamera.GetCinemachineComponent((CinemachineCore.Stage)i);
-                s_SelectionCache[i] = component == null ? 0 : GetTypeIndexFromSelection(component.GetType(), i);
+                var component = cmCamera.GetCinemachineComponent((CinemachineCore.Stage)stage);
+                s_StageData[stage].selection = component == null ? 0 : GetTypeIndexFromSelection(component.GetType(), stage);
             }
             
             static int GetTypeIndexFromSelection(Type type, int stage)
             {
-                for (var j = 0; j < s_StageTypes[stage].Count; ++j)
-                    if (s_StageTypes[stage][j] == type)
+                for (var j = 0; j < s_StageData[stage].type.Count; ++j)
+                    if (s_StageData[stage].type[j] == type)
                         return j;
                 return 0;
             }

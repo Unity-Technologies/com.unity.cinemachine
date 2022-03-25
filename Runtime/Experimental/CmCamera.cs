@@ -20,14 +20,12 @@ namespace Cinemachine
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
-        [NoSaveDuringPlay]
-        [VcamTargetProperty]
+        [NoSaveDuringPlay, HideInInspector]
         public Transform m_LookAt = null;
 
         /// <summary>Object for the camera children wants to move with (the body target)</summary>
         [Tooltip("Object for the camera children wants to move with (the body target).")]
-        [NoSaveDuringPlay]
-        [VcamTargetProperty]
+        [NoSaveDuringPlay, HideInInspector]
         public Transform m_Follow = null;
 
         /// <summary>Specifies the LensSettings of this Virtual Camera.
