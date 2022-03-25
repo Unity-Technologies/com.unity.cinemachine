@@ -65,7 +65,7 @@ namespace Cinemachine
         [Tooltip("How aggressively the camera tries to maintain the offset in the X, Y, and Z axes.  "
             + "Small numbers are more responsive. Larger numbers give a more heavy slowly responding camera.  "
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public Vector3 m_Damping = Vector3.one;
+        public Vector3 m_PositionalDamping = Vector3.one;
 
         /// <summary>How to calculate the angular damping for the target orientation</summary>
         public enum AngularDampingMode
@@ -86,24 +86,9 @@ namespace Cinemachine
 
         /// <summary>How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  "
+        [Tooltip("How aggressively the camera tries to track the target rotation's (Pitch, Yaw, Roll).  "
             + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float m_PitchDamping = 0;
-
-        /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  "
-            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float m_YawDamping = 0;
-
-        /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  "
-            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float m_RollDamping = 0f;
+        public Vector3 m_RotationalDamping = Vector3.zero;
 
         /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
@@ -117,9 +102,12 @@ namespace Cinemachine
         {
             m_FollowOffset = EffectiveOffset;
             
-            m_Damping.x = Mathf.Clamp(m_Damping.x, 0, 20);
-            m_Damping.y = Mathf.Clamp(m_Damping.y, 0, 20);
-            m_Damping.z = Mathf.Clamp(m_Damping.z, 0, 20);
+            m_PositionalDamping.x = Mathf.Clamp(m_PositionalDamping.x, 0, 20);
+            m_PositionalDamping.y = Mathf.Clamp(m_PositionalDamping.y, 0, 20);
+            m_PositionalDamping.z = Mathf.Clamp(m_PositionalDamping.z, 0, 20);
+            m_RotationalDamping.x = Mathf.Clamp(m_RotationalDamping.x, 0, 20);
+            m_RotationalDamping.y = Mathf.Clamp(m_RotationalDamping.y, 0, 20);
+            m_RotationalDamping.z = Mathf.Clamp(m_RotationalDamping.z, 0, 20);
         }
 
         /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
@@ -351,9 +339,9 @@ namespace Cinemachine
                 switch (m_BindingMode)
                 {
                     case BindingMode.SimpleFollowWithWorldUp:
-                        return new Vector3(0, m_Damping.y, m_Damping.z);
+                        return new Vector3(0, m_PositionalDamping.y, m_PositionalDamping.z);
                     default:
-                        return new Vector3(m_Damping.x, m_Damping.y, m_Damping.z);
+                        return new Vector3(m_PositionalDamping.x, m_PositionalDamping.y, m_PositionalDamping.z);
                 }
             }
         }
@@ -368,15 +356,15 @@ namespace Cinemachine
                 switch (m_BindingMode)
                 {
                     case BindingMode.LockToTargetNoRoll:
-                        return new Vector3(m_PitchDamping, m_YawDamping, 0);
+                        return new Vector3(m_RotationalDamping.x, m_RotationalDamping.y, 0);
                     case BindingMode.LockToTargetWithWorldUp:
-                        return new Vector3(0, m_YawDamping, 0);
+                        return new Vector3(0, m_RotationalDamping.y, 0);
                     case BindingMode.LockToTargetOnAssign:
                     case BindingMode.WorldSpace:
                     case BindingMode.SimpleFollowWithWorldUp:
                         return Vector3.zero;
                     default:
-                        return new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping);
+                        return new Vector3(m_RotationalDamping.x, m_RotationalDamping.y, m_RotationalDamping.z);
                 }
             }
         }

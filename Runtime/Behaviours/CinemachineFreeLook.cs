@@ -578,7 +578,7 @@ namespace Cinemachine
                 if (src == null)
                 {
                     // Only set defaults if not copying
-                    orbital.m_YawDamping = 0;
+                    orbital.m_RotationalDamping.y = 0;
                     CinemachineComposer composer = newRigs[i].GetCinemachineComponent<CinemachineComposer>();
                     if (composer != null)
                     {

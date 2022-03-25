@@ -79,33 +79,28 @@ namespace Cinemachine
             /// <summary>Blendable settings for Transposer Transposer</summary>
             [Serializable] public class TransposerSettings
             {
-                public Vector3 m_Damping;
+                public Vector3 m_PositionalDamping;
+                public Vector2 m_RotationalDamping;
                 [Range(0f, 20f)] public float m_PitchDamping;
                 [Range(0f, 20f)] public float m_YawDamping;
                 [Range(0f, 20f)] public float m_RollDamping;
 
                 internal void Lerp(CinemachineTransposer o, float t)
                 {
-                    o.m_Damping = Vector3.Lerp(o.m_Damping, m_Damping, t);
-                    o.m_PitchDamping = Mathf.Lerp(o.m_PitchDamping, m_PitchDamping, t);
-                    o.m_YawDamping = Mathf.Lerp(o.m_YawDamping, m_YawDamping, t);
-                    o.m_RollDamping = Mathf.Lerp(o.m_RollDamping, m_RollDamping, t);
+                    o.m_PositionalDamping = Vector3.Lerp(o.m_PositionalDamping, m_PositionalDamping, t);
+                    o.m_RotationalDamping = Vector3.Lerp(o.m_RotationalDamping, m_RotationalDamping, t);
                 }
 
                 internal void PullFrom(CinemachineTransposer o)
                 {
-                    m_Damping = o.m_Damping;
-                    m_PitchDamping = o.m_PitchDamping;
-                    m_YawDamping = o.m_YawDamping;
-                    m_RollDamping = o.m_RollDamping;
+                    m_PositionalDamping = o.m_PositionalDamping;
+                    m_RotationalDamping = o.m_RotationalDamping;
                 }
 
                 internal void PushTo(CinemachineTransposer o)
                 {
-                    o.m_Damping = m_Damping;
-                    o.m_PitchDamping =m_PitchDamping;
-                    o.m_YawDamping = m_YawDamping;
-                    o.m_RollDamping = m_RollDamping;
+                    o.m_PositionalDamping = m_PositionalDamping;
+                    o.m_RotationalDamping = m_RotationalDamping;
                 }
             }
 
