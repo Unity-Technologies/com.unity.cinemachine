@@ -1,6 +1,7 @@
 ﻿#if CINEMACHINE_EXPERIMENTAL_VCAM
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
@@ -28,14 +29,9 @@ namespace Cinemachine
             var myInspector = new VisualElement();
             inspectorXML.CloneTree(myInspector);
 
-            // Inject Status
-            // var propertyField = myInspector.Q<IntegerField>("unity-input-m_Priority");
-            // var statusIndex = 0;
-            // foreach (var child in propertyField.Children())
-            // {
-            //     m_ReferenceLayouts[statusIndex++] = child;
-            // }
+            m_SoloButtonCorrectionReference = myInspector.Q("Follow").Children().ToArray()[1];
             
+            // Inject Status
             var status = myInspector.Q<IMGUIContainer>("Status");
             status.onGUIHandler = DrawCameraStatusInInspector;
 
@@ -157,7 +153,7 @@ namespace Cinemachine
             return m_LensSettingsInspectorHelper.UseHorizontalFOV;
         }
 
-        VisualElement[] m_ReferenceLayouts = new VisualElement[2];
+        VisualElement m_SoloButtonCorrectionReference;
         void DrawCameraStatusInInspector()
         {
             if (Selection.objects.Length > 1)
@@ -202,6 +198,8 @@ namespace Cinemachine
                 labelWidth = textDimensions.x;
             }
             rect.width -= labelWidth;
+            rect.width -= (m_SoloButtonCorrectionReference.layout.x - rect.x);
+            rect.x = m_SoloButtonCorrectionReference.layout.x + 3;
             if (GUI.Button(rect, "Solo", "Button"))
             {
                 isSolo = !isSolo;
