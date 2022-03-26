@@ -255,6 +255,7 @@ namespace Cinemachine.Editor
                     {
                         ++EditorGUI.indentLevel;
                         m_ComponentEditor.OnInspectorGUI();
+                        EditorGUILayout.Space();
                         --EditorGUI.indentLevel;
                     }
                 }

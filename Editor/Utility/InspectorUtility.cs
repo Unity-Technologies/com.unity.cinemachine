@@ -248,5 +248,49 @@ namespace Cinemachine.Editor
             if (GUI.Button(rect, buttonContent))
                 onClicked();
         }
+
+        internal static float EnabledFoldoutHeight(SerializedProperty property, string enabledName)
+        {
+            var enabledProp = property.FindPropertyRelative(enabledName);
+            if (enabledProp == null)
+                return EditorGUI.GetPropertyHeight(property);
+            if (!enabledProp.boolValue)
+                return EditorGUIUtility.singleLineHeight;
+            return PropertyHeightOfChidren(property);
+        }
+
+        internal static bool EnabledFoldout(Rect rect, SerializedProperty property, string enabledName)
+        {
+            var enabledProp = property.FindPropertyRelative(enabledName);
+            if (enabledProp == null)
+            {
+                EditorGUI.PropertyField(rect, property, true);
+                rect.x += EditorGUIUtility.labelWidth;
+                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledName}`"));
+                return property.isExpanded;
+            }
+            rect.height = EditorGUIUtility.singleLineHeight;
+            EditorGUI.PropertyField(rect, enabledProp, new GUIContent(property.displayName, enabledProp.tooltip));
+            rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            if (enabledProp.boolValue)
+            {
+                ++EditorGUI.indentLevel;
+                var childProperty = property.Copy();
+                var endProperty = childProperty.GetEndProperty();
+                childProperty.NextVisible(true);
+                while (!SerializedProperty.EqualContents(childProperty, endProperty))
+                {
+                    if (!SerializedProperty.EqualContents(childProperty, enabledProp))
+                    {
+                        rect.height = EditorGUI.GetPropertyHeight(childProperty);
+                        EditorGUI.PropertyField(rect, childProperty, true);
+                        rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
+                    }
+                    childProperty.NextVisible(false);
+                }
+                --EditorGUI.indentLevel;
+            }
+            return enabledProp.boolValue;
+        }
     }
 }

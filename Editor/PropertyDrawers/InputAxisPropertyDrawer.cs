@@ -38,35 +38,23 @@ namespace Cinemachine.Editor
 
                 rect.y += height + EditorGUIUtility.standardVerticalSpacing;
                 var recenter = property.FindPropertyRelative(() => def.Recentering);
-                var enabledProp = recenter.FindPropertyRelative(() => def.Recentering.Enabled);
-                EditorGUI.PropertyField(rect, enabledProp, new GUIContent(recenter.displayName, enabledProp.tooltip));
-                if (enabledProp.boolValue)
-                {
-                    ++EditorGUI.indentLevel;
-                    rect.y += height + EditorGUIUtility.standardVerticalSpacing;
-                    EditorGUI.PropertyField(rect, recenter.FindPropertyRelative(() => def.Recentering.Wait));
-                    rect.y += height + EditorGUIUtility.standardVerticalSpacing;
-                    EditorGUI.PropertyField(rect, recenter.FindPropertyRelative(() => def.Recentering.Time));
-                    --EditorGUI.indentLevel;
-                }
+                EditorGUI.PropertyField(rect, recenter);
                 --EditorGUI.indentLevel;
             }
             else
             {
-                rect.x += EditorGUIUtility.labelWidth;
-                rect.width -= EditorGUIUtility.labelWidth;
-    
                 // Draw the input value on the same line as the foldout, for convenience
                 var valueProp = property.FindPropertyRelative(() => def.Value);
-                var valueLabel = new GUIContent(valueProp.displayName, valueProp.tooltip);
 
                 int oldIndent = EditorGUI.indentLevel;
                 float oldLabelWidth = EditorGUIUtility.labelWidth;
 
-                EditorGUI.indentLevel = 0;
-                EditorGUIUtility.labelWidth = GUI.skin.label.CalcSize(valueLabel).x;
-                EditorGUI.PropertyField(rect, valueProp, valueLabel);
+                rect.x += EditorGUIUtility.labelWidth - EditorGUIUtility.singleLineHeight;
+                rect.width -= EditorGUIUtility.labelWidth - EditorGUIUtility.singleLineHeight;
 
+                EditorGUI.indentLevel = 0;
+                EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight;
+                EditorGUI.PropertyField(rect, valueProp, new GUIContent(" ", valueProp.tooltip));
                 EditorGUI.indentLevel = oldIndent;
                 EditorGUIUtility.labelWidth = oldLabelWidth;
             }
@@ -74,15 +62,15 @@ namespace Cinemachine.Editor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            int lines = 1;
+            var lineHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            var height = lineHeight;
             if (property != null && property.isExpanded)
             {
-                lines += 4;
-                var recenter = property.FindPropertyRelative(() => def.Recentering);
-                if (recenter.FindPropertyRelative(() => def.Recentering.Enabled).boolValue)
-                    lines += 2;
+                height += 3 * lineHeight;
+                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative(() => def.Recentering)) 
+                    + EditorGUIUtility.standardVerticalSpacing;
             }
-            return lines * (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
+            return height - EditorGUIUtility.standardVerticalSpacing;
         }
     }
 }

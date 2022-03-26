@@ -28,6 +28,24 @@ namespace Cinemachine
     public sealed class HideFoldoutAttribute : PropertyAttribute {}
     
     /// <summary>
+    /// Draw a foldout with an Enabled toggle that shadows a field inside the foldout
+    /// </summary>
+    public sealed class FoldoutWithEnabledButtonAttribute : PropertyAttribute 
+    { 
+        /// <summary>The name of the field controlling the enabled state</summary>
+        public string EnabledPropertyName; 
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
+        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled") 
+        { 
+            EnabledPropertyName = enabledProperty; 
+        }
+    }
+
+    /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }

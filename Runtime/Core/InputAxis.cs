@@ -73,7 +73,7 @@ namespace Cinemachine
         public bool Wrap;
 
         /// <summary>Defines the settings for automatic recentering</summary>
-        [Serializable]
+        [Serializable] 
         public struct RecenteringSettings
         {
             /// <summary>If set, will enable automatic recentering of the axis</summary>
@@ -95,6 +95,7 @@ namespace Cinemachine
         }
 
         /// <summary>Controls automatic recentering of axis value.</summary>
+        [FoldoutWithEnabledButton]
         public RecenteringSettings Recentering;
 
         /// <summary>Clamp the value to range, taking wrap into account</summary>
