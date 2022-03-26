@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
@@ -8,24 +7,25 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     internal class InputAxisControllerEditor : UnityEditor.Editor
     {
-        SerializedProperty m_controllers;
-
-        void OnEnable()
-        {
-            m_controllers = serializedObject.FindProperty("Controllers");
-        }
-
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+            var controllers = serializedObject.FindProperty("Controllers");
+
             EditorGUI.BeginChangeCheck();
 
-            int numElements = m_controllers.arraySize;
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("PlayerIndex"));
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("AutoEnableInputs"));
+#endif
+
+            int numElements = controllers.arraySize;
             if (numElements == 0)
                 EditorGUILayout.HelpBox("No InputAxis objects found in components.", MessageType.Info);
             else for (int i = 0; i < numElements; ++i)
             {
-                var element = m_controllers.GetArrayElementAtIndex(i);
+                var element = controllers.GetArrayElementAtIndex(i);
 
                 var rect = EditorGUILayout.GetControlRect();
                 float height = EditorGUIUtility.singleLineHeight;
@@ -44,26 +44,44 @@ namespace Cinemachine.Editor
                 }
                 else
                 {
-                    rect.x += EditorGUIUtility.labelWidth - height;
-                    rect.width -= EditorGUIUtility.labelWidth - height;
-    
                     // Draw the input value on the same line as the foldout, for convenience
-                    var valueProp = element.FindPropertyRelative("InputName");
-                    var valueLabel = new GUIContent(" ", valueProp.tooltip);
+                    SerializedProperty property = null;
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+                    property = element.FindPropertyRelative("InputAction");
+#elif ENABLE_LEGACY_INPUT_MANAGER
+                    property = element.FindPropertyRelative("InputName");
+#endif
+                    if (property != null)
+                    {
+                        rect.x += EditorGUIUtility.labelWidth - height;
+                        rect.width -= EditorGUIUtility.labelWidth - height;
 
-                    int oldIndent = EditorGUI.indentLevel;
-                    float oldLabelWidth = EditorGUIUtility.labelWidth;
+                        int oldIndent = EditorGUI.indentLevel;
+                        float oldLabelWidth = EditorGUIUtility.labelWidth;
 
-                    EditorGUI.indentLevel = 0;
-                    EditorGUIUtility.labelWidth = height;
-                    EditorGUI.PropertyField(rect, valueProp, valueLabel);
+                        EditorGUI.indentLevel = 0;
+                        EditorGUIUtility.labelWidth = height;
+                        EditorGUI.PropertyField(rect, property, new GUIContent(" ", property.tooltip));
 
-                    EditorGUI.indentLevel = oldIndent;
-                    EditorGUIUtility.labelWidth = oldLabelWidth;
+                        EditorGUI.indentLevel = oldIndent;
+                        EditorGUIUtility.labelWidth = oldLabelWidth;
+                    }
                 }
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
         }
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+        [InitializeOnLoad]
+        class DefaultInputActionGetter
+        {
+            static DefaultInputActionGetter()
+            {
+                InputAxisController.GetDefaultInputAction = (axis) => 
+                    (axis == 0 || axis == 1) ? ScriptableObjectUtility.DefaultLookAction : null;
+            }
+        }
+#endif
     }
 }

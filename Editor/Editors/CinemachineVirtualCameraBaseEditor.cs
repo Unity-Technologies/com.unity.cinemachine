@@ -168,8 +168,6 @@ namespace Cinemachine.Editor
             + "if it does not have one, enabling the vcam to read input from Input Actions. "
             + "By default, a simple mouse XY input action is added.");
 
-        static InputActionReference s_InputActionReference = null;
-
         void DrawInputProviderButtonInInspector()
         {
             bool needsButton = false;
@@ -188,12 +186,6 @@ namespace Cinemachine.Editor
                 MessageType.Info,
                 new GUIContent("Add Input\nProvider"), () =>
                 {
-                    if (s_InputActionReference == null)
-                    {
-                        s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
-                                "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
-                            FirstOrDefault(x => x.name == "Player/Look");
-                    }
                     Undo.SetCurrentGroupName("Add CinemachineInputProvider");
                     for (int i = 0; i < targets.Length; ++i)
                     {
@@ -201,7 +193,7 @@ namespace Cinemachine.Editor
                         if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
                             continue;
                         var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
-                        inputProvider.XYAxis = s_InputActionReference;
+                        inputProvider.XYAxis = ScriptableObjectUtility.DefaultLookAction;
                     }
                 });
             EditorGUILayout.Space();
