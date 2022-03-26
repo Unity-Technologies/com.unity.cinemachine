@@ -19,14 +19,9 @@ namespace Cinemachine
             + "used to set the camera's Up vector, which will be maintained when aiming the camera.")]
         public CinemachineTransposer.BindingMode BindingMode;
         
-        /// <summary>The camera will be placed at this distance from the Follow target</summary>
-        [Tooltip("The camera will be placed at this distance from the Follow target.")]
-        public float CameraDistance;
-
         /// <summary>How to calculate the angular damping for the target orientation.
         /// Use Quaternion if you expect the target to take on very steep pitches, which would
         /// be subject to gimbal lock if Eulers are used.</summary>
-        [Space]
         public CinemachineTransposer.AngularDampingMode RotationDampingMode;
         
         /// <summary>How aggressively the camera tries to track the target's orientation.
@@ -50,6 +45,11 @@ namespace Cinemachine
             + "target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. "
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
         public Vector3 PositionDamping;
+
+        /// <summary>The camera will be placed at this distance from the Follow target</summary>
+        [Space]
+        [Tooltip("The camera will be placed at this distance from the Follow target.")]
+        public float CameraDistance;
 
         /// <summary>Axis representing the current horizontal rotation.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
