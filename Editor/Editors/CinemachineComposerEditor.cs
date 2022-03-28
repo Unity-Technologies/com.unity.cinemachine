@@ -72,9 +72,8 @@ namespace Cinemachine.Editor
                 return;
 
             // If inspector is collapsed in the vcam editor, don't draw the guides
-            // TODO: collapse check
-            // if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
-            //     return;
+            if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
+                return;
 
             // Don't draw the guides if rendering to texture
             var vcam = Target.VirtualCamera;
