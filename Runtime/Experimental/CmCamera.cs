@@ -277,9 +277,6 @@ namespace Cinemachine
         [SerializeReference, NoSaveDuringPlay, HideInInspector]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
-        /// For inspector
-        internal CinemachineComponentBase[] ComponentCache => m_Components; // TODO: no need for cache
-
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>
         protected virtual void OnComponentCacheUpdated() {}
@@ -291,7 +288,7 @@ namespace Cinemachine
         /// <returns>The Cinemachine component for that stage, or null if not defined</returns>
         public CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
         {
-            var cache = ComponentCache;
+            var cache = m_Components;
             var i = (int)stage;
             return i >= 0 && i < cache.Length ? cache[i] : null;
         }
@@ -299,7 +296,7 @@ namespace Cinemachine
         /// <summary>Get an existing component of a specific type from the cinemachine pipeline.</summary>
         public T GetCinemachineComponent<T>() where T : CinemachineComponentBase
         {
-            var components = ComponentCache;
+            var components = m_Components;
             foreach (var c in components)
                 if (c is T)
                     return c as T;
