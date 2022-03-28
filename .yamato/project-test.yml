@@ -10,7 +10,7 @@ test_ubuntu_{{editor}}_{{test_project.name}}:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{editor}} --project-path {{test_project.path}}
+    - upm-ci project test -u {{editor}} --project-path {{test_project.path}} --type project-test
   artifacts:
     logs:
       paths:
@@ -26,7 +26,7 @@ test_windows_{{editor}}_{{test_project.name}}:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{editor}} --project-path {{test_project.path}}
+    - upm-ci project test -u {{editor}} --project-path {{test_project.path}} --type project-test
   artifacts:
     logs:
       paths:
@@ -42,7 +42,7 @@ test_macos_{{editor}}_{{test_project.name}}:
     flavor: m1.mac
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{editor}} --project-path {{test_project.path}}
+    - upm-ci project test -u {{editor}} --project-path {{test_project.path}} --type project-test
   artifacts:
     logs:
       paths:

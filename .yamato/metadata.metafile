@@ -13,10 +13,6 @@ all_platforms:
     flavor: b1.large
 
 all_tests:
-  - name: integration_tests
-    editors: [2019.4]
-    args: --type package-tests
-    variables:
   - name: isolation_tests
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type isolation-tests --enable-load-and-test-isolation
@@ -35,21 +31,21 @@ all_tests:
 all_testprojects:
     - name: URP
       path: Projects/URP
-      editors: [2020.3, 2021.2, 2022.1, trunk]
+      editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     - name: Standalone
       path: Projects/Standalone
-      editors: [2020.3, 2021.2, 2022.1, trunk]
+      editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     - name: HDRP
       path: Projects/HDRP
-      editors: [2020.3, 2021.2, 2022.1, trunk]
+      editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
 
 
 all_configurations:
   ci:
-    test_names: [isolation_tests, integration_tests, promotion_tests]
+    test_names: [isolation_tests, promotion_tests]
     platform_names: [windows]
   publish:
-    test_names: [isolation_tests, vetting_tests, integration_tests]
+    test_names: [isolation_tests, vetting_tests]
     platform_names: [windows, macOS, ubuntu]
   promote:
     test_names: [promotion_tests, vetting_tests]
