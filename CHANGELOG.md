@@ -10,9 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
-- Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
-- Removed Nested Timeline Scrub Bubble example, because it is no longer needed in 2019 LTS.
-- Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
+- Bugfix: POV orientation was incorrect with World Up override
 
 
 ## [2.6.11] - 2021-10-05
