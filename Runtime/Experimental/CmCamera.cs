@@ -87,6 +87,7 @@ namespace Cinemachine
                 m_State.RawPosition += positionDelta;
             }
             
+            // TODO: m_Components
             for (int i = 0; i < m_Components.Length; ++i)
             {
                 if (m_Components[i] != null)
@@ -231,6 +232,9 @@ namespace Cinemachine
         protected CameraState InvokeComponentPipeline(
             ref CameraState state, Vector3 worldUp, float deltaTime)
         {
+            // TODO: Try to get "m_Components" every frame from all components. 
+            // TODO: Performance is critical -> find fastest way, performance test to ensure it is really performant. No allocs.
+
             // Extensions first
             InvokePrePipelineMutateCameraStateCallback(this, ref state, deltaTime);
 
@@ -273,10 +277,13 @@ namespace Cinemachine
             return state;
         }
 
-        // Component Cache - serialized only for copy/paste
-        [SerializeReference, NoSaveDuringPlay, HideInInspector]
+        // TODO: No need for m_Components cache and all the related stuff like (OnComponentCacheUpdated, Gets, Adds, destroys)
+        // TODO: however, we may want to store it for the frame, because a lot of things may use it same frame? depends on cost of getting the most up-to-date from components
+        [NoSaveDuringPlay]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
+        
+        
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>
         protected virtual void OnComponentCacheUpdated() {}
