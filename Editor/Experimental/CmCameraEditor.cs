@@ -21,22 +21,28 @@ namespace Cinemachine
         /// </summary>
         CmCamera Target => target as CmCamera;
 
-        public VisualTreeAsset inspectorXML;
         int m_StageSelection;
         public override VisualElement CreateInspectorGUI()
         {
             // Create a new VisualElement to be the root of our inspector UI
             var myInspector = new VisualElement();
-            inspectorXML.CloneTree(myInspector);
-
-            m_SoloButtonCorrectionReference = myInspector.Q("Follow").Children().ToArray()[1];
+            // inspectorXML.CloneTree(myInspector);
+            var soloHolder = new IMGUIContainer();
+            myInspector.Add(soloHolder);
             
-            // Inject Status
-            var status = myInspector.Q<IMGUIContainer>("Status");
-            status.onGUIHandler = DrawCameraStatusInInspector;
+            var serializedTarget = new SerializedObject(Target);
+            m_PriorityField = new PropertyField(serializedTarget.FindProperty(() => Target.m_Priority));
+            myInspector.Add(m_PriorityField);
+            myInspector.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Follow)));
+            myInspector.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_LookAt)));
+            myInspector.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_StandbyUpdate)));
+            myInspector.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Lens)));
+            myInspector.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Transitions)));
+
+            // // Inject Status
+            soloHolder.onGUIHandler = DrawCameraStatusInInspector;
 
             // Inject procedural behaviour dropdowns into myInspector
-            var dropdownBlock = myInspector.Q("ProceduralMotionDropdowns");
             
             var cmCamera = Target;
             FindStages(cmCamera);
@@ -56,7 +62,7 @@ namespace Cinemachine
                 
                 dropdown.RegisterValueChangedCallback(
                     evt => HandleDropdownSelection(evt.newValue, evt.previousValue, stage, cmCamera));
-                dropdownBlock.Add(dropdown);
+                myInspector.Add(dropdown);
             }
             
             // Return the finished inspector UI
@@ -153,7 +159,7 @@ namespace Cinemachine
             return m_LensSettingsInspectorHelper.UseHorizontalFOV;
         }
 
-        VisualElement m_SoloButtonCorrectionReference;
+        VisualElement m_PriorityField;
         void DrawCameraStatusInInspector()
         {
             if (Selection.objects.Length > 1)
@@ -198,8 +204,14 @@ namespace Cinemachine
                 labelWidth = textDimensions.x;
             }
             rect.width -= labelWidth;
-            rect.width -= (m_SoloButtonCorrectionReference.layout.x - rect.x);
-            rect.x = m_SoloButtonCorrectionReference.layout.x + 3;
+            if (m_PriorityField.Children() != null)
+            {
+                // correcting the rect so it is aligned correctly with UI toolkit standard
+                var correction = m_PriorityField.Children().ToArray()[0].Children().ToArray()[1];
+                rect.width -= (correction.layout.x - rect.x);
+                rect.x = correction.layout.x + 3;
+            }
+
             if (GUI.Button(rect, "Solo", "Button"))
             {
                 isSolo = !isSolo;
