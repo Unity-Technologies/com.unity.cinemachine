@@ -30,6 +30,7 @@ namespace Cinemachine
     [SaveDuringPlay]
     public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
+        // TODO: remove m_ExcludedPropertiesInInspector
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         public string[] m_ExcludedPropertiesInInspector = new string[] { "m_Script" };

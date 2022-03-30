@@ -100,7 +100,7 @@ namespace Cinemachine.Editor
             if (vcam != null)
             {
                 vcamData.SetTransitionsAndLens(vcam.m_Transitions, vcam.m_Lens);
-                vcamData.SetComponents(vcam.ComponentCache);
+                vcamData.SetComponents(vcam.m_Components);
                 
                 vcamDatas.Add(vcamData);
                 return;
@@ -112,7 +112,7 @@ namespace Cinemachine.Editor
             if (vcamNew != null)
             {
                 vcamData.SetTransitionsAndLens(vcamNew.m_Transitions, vcamNew.m_Lens);
-                vcamData.SetComponents(vcamNew.ComponentCache);
+                vcamData.SetComponents(vcamNew.m_Components);
                 
                 vcamDatas.Add(vcamData);
                 return;

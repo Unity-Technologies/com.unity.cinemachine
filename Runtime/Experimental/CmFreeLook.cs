@@ -215,7 +215,7 @@ namespace Cinemachine
         /// Easy access to the transposer (may be null)
         CinemachineTransposer Transposer
         {
-            get { return ComponentCache[(int)CinemachineCore.Stage.Body] as CinemachineTransposer; }
+            get { return m_Components[(int)CinemachineCore.Stage.Body] as CinemachineTransposer; }
         }
 
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
@@ -531,7 +531,7 @@ namespace Cinemachine
                 if (orbital != null)
                     orbital.m_FollowOffset = mFreeLook.GetLocalPositionForCameraFromInput(y);
 
-                var components = mFreeLook.ComponentCache;
+                var components = mFreeLook.m_Components;
                 var composer = components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                 {
@@ -555,7 +555,7 @@ namespace Cinemachine
                 if (orbital != null)
                     orbital.m_FollowOffset = new Vector3(
                         0, mFreeLook.m_Orbits[1].m_Height, -mFreeLook.m_Orbits[1].m_Radius);
-                var components = mFreeLook.ComponentCache;
+                var components = mFreeLook.m_Components;
                 var composer = components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
                     composerSaved.PushTo(composer);

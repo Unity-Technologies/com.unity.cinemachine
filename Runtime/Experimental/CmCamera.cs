@@ -275,45 +275,41 @@ namespace Cinemachine
         [SerializeReference, NoSaveDuringPlay, HideInInspector]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
-        /// For inspector
-        internal CinemachineComponentBase[] ComponentCache => m_Components; // TODO: no need for cache
-
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>
         protected virtual void OnComponentCacheUpdated() {}
-
-        /// Legacy support for an old API.  GML todo: deprecate these methods
 
         /// <summary>Get the component set for a specific stage.</summary>
         /// <param name="stage">The stage for which we want the component</param>
         /// <returns>The Cinemachine component for that stage, or null if not defined</returns>
         public CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
         {
-            var cache = ComponentCache;
             var i = (int)stage;
-            return i >= 0 && i < cache.Length ? cache[i] : null;
+            return i >= 0 && i < m_Components.Length ? m_Components[i] : null;
         }
 
         /// <summary>Get an existing component of a specific type from the cinemachine pipeline.</summary>
-        public T GetCinemachineComponent<T>() where T : CinemachineComponentBase
-        {
-            var components = ComponentCache;
-            foreach (var c in components)
-                if (c is T)
-                    return c as T;
-            return null;
-        }
+        public T GetCinemachineComponent<T>() where T : CinemachineComponentBase => 
+            m_Components.OfType<T>().Select(c => c).FirstOrDefault();
 
         /// <summary>Add a component to the cinemachine pipeline.</summary>
         public T AddCinemachineComponent<T>() where T : CinemachineComponentBase, new()
         {
             var component = VirtualCameraGameObject.AddComponent<T>();
+            if (m_Components[(int)component.Stage] != null)
+            {
+#if UNITY_EDITOR
+                DestroyImmediate(m_Components[(int)component.Stage]);
+#else
+                Destroy(m_Components[(int)component.Stage]);
+#endif
+            }
             m_Components[(int)component.Stage] = component;
             OnComponentCacheUpdated();
             return component;
         }
 
-        /// <summary>Remove a component from the cinemachine pipeline.</summary>
+        /// <summary>Remove a component at the specified stage from the cinemachine pipeline.</summary>
         public void DestroyCinemachineComponent(CinemachineCore.Stage stage)
         {
             if (m_Components[(int)stage] == null) return;

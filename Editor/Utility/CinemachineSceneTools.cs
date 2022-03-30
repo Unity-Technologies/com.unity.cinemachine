@@ -748,45 +748,45 @@ namespace Cinemachine.Editor
             Handles.color = originalColor;
         }
 
-        // public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
-        // {
-        //     var originalColor = Handles.color;
-        //     
-        //     var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
-        //     var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
-        //     var camPos = cmComponent.GetTargetCameraPosition(up);
-        //     var camRot = cmComponent.GetReferenceOrientation(up);
-        //
-        //     EditorGUI.BeginChangeCheck();
-        //     var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-        //     var newPos = Handles.PositionHandle(camPos, camRot);
-        //     var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
-        //     if (EditorGUI.EndChangeCheck())
-        //     {
-        //         var so = new SerializedObject(cmComponent);
-        //         var followOffset = so.FindProperty(() => cmComponent.m_FollowOffset);
-        //         followOffset.vector3Value += PositionHandleDelta(camRot, newPos, camPos);
-        //         so.ApplyModifiedProperties();
-        //         followOffset.vector3Value = cmComponent.EffectiveOffset;
-        //         so.ApplyModifiedProperties();
-        //     }
-        //
-        //     var followOffsetHandleIsDragged = 
-        //         foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
-        //     var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
-        //         foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
-        //     if (followOffsetHandleIsDraggedOrHovered)
-        //     {
-        //         DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
-        //     }
-        //
-        //     Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
-        //     Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
-        //     
-        //     SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
-        //     
-        //     Handles.color = originalColor;
-        // }
+        public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
+        {
+            var originalColor = Handles.color;
+            
+            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
+            var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
+            var camPos = cmComponent.GetTargetCameraPosition(up);
+            var camRot = cmComponent.GetReferenceOrientation(up);
+        
+            EditorGUI.BeginChangeCheck();
+            var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            var newPos = Handles.PositionHandle(camPos, camRot);
+            var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            if (EditorGUI.EndChangeCheck())
+            {
+                var so = new SerializedObject(cmComponent);
+                var followOffset = so.FindProperty(() => cmComponent.m_FollowOffset);
+                followOffset.vector3Value += PositionHandleDelta(camRot, newPos, camPos);
+                so.ApplyModifiedProperties();
+                followOffset.vector3Value = cmComponent.EffectiveOffset;
+                so.ApplyModifiedProperties();
+            }
+        
+            var followOffsetHandleIsDragged = 
+                foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
+            var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
+                foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
+            if (followOffsetHandleIsDraggedOrHovered)
+            {
+                DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
+            }
+        
+            Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
+            Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
+            
+            SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
+            
+            Handles.color = originalColor;
+        }
         
         /// <summary>
         /// Draws Orbit handles (e.g. for freelook)

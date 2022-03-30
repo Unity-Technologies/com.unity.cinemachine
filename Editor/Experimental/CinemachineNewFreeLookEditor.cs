@@ -178,7 +178,7 @@ namespace Cinemachine
             EditorGUIUtility.labelWidth -= kBoxMargin;
 
             ++EditorGUI.indentLevel;
-            var components = Target.ComponentCache;
+            var components = Target.m_Components;
             if (DrawFoldoutPropertyWithEnabledCheckbox(
                 rig.FindPropertyRelative(() => def.m_CustomLens),
                 rig.FindPropertyRelative(() => def.m_Lens)))
