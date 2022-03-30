@@ -90,9 +90,14 @@ namespace Cinemachine
                     m_cachedActions[axis] = GetFirstMatch(InputUser.all[PlayerIndex], actionRef);
                 }
             }
-            // Auto-enable it if disabled
-            if (m_cachedActions[axis] != null && !m_cachedActions[axis].enabled)
-                m_cachedActions[axis].Enable();
+            // Update enabled status
+            if (m_cachedActions[axis] != null && m_cachedActions[axis].enabled != actionRef.action.enabled)
+            {
+                if (actionRef.action.enabled)
+                    m_cachedActions[axis].Enable();
+                else
+                    m_cachedActions[axis].Disable();
+            }
             
             return m_cachedActions[axis];
             
