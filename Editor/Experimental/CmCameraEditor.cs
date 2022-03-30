@@ -21,7 +21,6 @@ namespace Cinemachine
         /// </summary>
         CmCamera Target => target as CmCamera;
 
-        int m_StageSelection;
         public override VisualElement CreateInspectorGUI()
         {
             // Create a new VisualElement to be the root of our inspector UI
