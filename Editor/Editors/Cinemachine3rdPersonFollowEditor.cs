@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -7,6 +9,29 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
     {
+        public override VisualElement CreateInspectorGUI()
+        {
+            BeginInspector();
+            var inspector = new VisualElement();
+
+            var serializedTarget = new SerializedObject(Target);
+            DrawPropertyInInspector(inspector, serializedTarget.FindProperty(() => Target.ShoulderOffset));
+            DrawPropertyInInspector(inspector, serializedTarget.FindProperty(() => Target.VerticalArmLength));
+            DrawPropertyInInspector(inspector, serializedTarget.FindProperty(() => Target.CameraSide));
+            DrawPropertyInInspector(inspector, serializedTarget.FindProperty(() => Target.CameraDistance));
+            DrawPropertyInInspector(inspector, serializedTarget.FindProperty(() => Target.Damping));
+
+            var foldout = new Foldout
+            {
+                text = "Obstacles"
+            };
+            
+            inspector.Add(foldout);
+            DrawRemainingPropertiesInInspector(foldout);
+
+            return inspector;
+        }
+
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(Cinemachine3rdPersonFollow))]
         static void Draw3rdPersonGizmos(Cinemachine3rdPersonFollow target, GizmoType selectionType)
         {

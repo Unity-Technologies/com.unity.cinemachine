@@ -14,13 +14,8 @@ namespace Cinemachine
 {
     [CustomEditor(typeof(CmCamera))]
     [CanEditMultipleObjects]
-    sealed class CmCameraEditor : UnityEditor.Editor 
+    sealed class CmCameraEditor : BaseEditor<CmCamera>
     {
-        /// <summary>
-        /// The target object, cast as the same class as the object being edited
-        /// </summary>
-        CmCamera Target => target as CmCamera;
-
         public override VisualElement CreateInspectorGUI()
         {
             // Create a new VisualElement to be the root of our inspector UI

@@ -1,8 +1,11 @@
 ﻿using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine.Utility;
 using System.Linq.Expressions;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -83,13 +86,13 @@ namespace Cinemachine.Editor
             return mExcluded.Contains(propertyName);
         }
 
-        /// <summary>
-        /// Draw the inspector
-        /// </summary>
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
+            var inspector = new VisualElement();
             BeginInspector();
-            DrawRemainingPropertiesInInspector();
+            DrawRemainingPropertiesInInspector(inspector);
+
+            return inspector;
         }
 
         List<string> mExcluded = new List<string>();
@@ -122,6 +125,15 @@ namespace Cinemachine.Editor
                 ExcludeProperty(p.name);
             }
         }
+        
+        protected virtual void DrawPropertyInInspector(VisualElement inspector, SerializedProperty p)
+        {
+            if (!IsPropertyExcluded(p.name))
+            {
+                inspector.Add(new PropertyField(p));
+                ExcludeProperty(p.name);
+            }
+        }
 
         /// <summary>
         /// Draw all remaining unexcluded undrawn properties in the inspector.
@@ -132,6 +144,18 @@ namespace Cinemachine.Editor
             DrawPropertiesExcluding(serializedObject, mExcluded.ToArray());
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
+        }
+        
+        protected void DrawRemainingPropertiesInInspector(VisualElement inspector)
+        {
+            SerializedProperty iterator = serializedObject.GetIterator();
+            bool enterChildren = true;
+            while (iterator.NextVisible(enterChildren))
+            {
+                enterChildren = false;
+                if (!((IEnumerable<string>) mExcluded).Contains<string>(iterator.name))
+                    inspector.Add(new PropertyField((iterator)));
+            }
         }
     }
 }
