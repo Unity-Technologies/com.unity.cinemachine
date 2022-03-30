@@ -10,6 +10,10 @@ using Cinemachine.Utility;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
+// TODO: think about property drawers ([attributes] that will format our stuff automatically)
+// TODO: or do we want to write simple editors all the time, is it easier
+// TODO: or baseEditor like solution?
+
 namespace Cinemachine
 {
     [CustomEditor(typeof(CmCamera))]
