@@ -38,6 +38,9 @@ all_testprojects:
     - name: HDRP
       path: Projects/HDRP
       editors: [2020.3, 2021.2, 2022.1, trunk]
+    - name: HDRP2019.4
+      path: Projects/HDRP2019.4
+      editors: [2019.4]
 
 
 all_configurations:
