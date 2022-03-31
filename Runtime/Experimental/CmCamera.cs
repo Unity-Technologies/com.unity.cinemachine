@@ -171,6 +171,7 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
+            UpdateComponents();
             UpdateTargetCache();
 
             FollowTargetAttachment = 1;
@@ -282,7 +283,28 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
-        
+        void UpdateComponents()
+        {
+            // TODO: option to disable auto update -> user has to call it
+            var components = GetComponents<CinemachineComponentBase>();
+            for (int i = 0; i < components.Length; ++i)
+            {
+                var stage = (int) components[i].Stage;
+                if (!m_Components[stage] == (components[i]))
+                {
+                    if (m_Components[stage] != null)
+                    {
+#if UNITY_EDITOR
+                        DestroyImmediate(m_Components[stage]);
+#else
+                        Destroy(m_Components[stage]);
+#endif
+                    }
+
+                    m_Components[stage] = components[i];
+                }
+            }
+        }
         
         /// <summary>Notification that the component cache has just been update,
         /// in case a subclass needs to do something extra</summary>
