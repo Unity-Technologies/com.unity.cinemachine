@@ -29,7 +29,7 @@ namespace Cinemachine
 
         /// <summary>Position of the shoulder pivot relative to the Follow target origin.  
         /// This offset is in target-local space.</summary>
-        [Header("Rig")]
+        [CmHeader("Rig")]
         [Tooltip("Position of the shoulder pivot relative to the Follow target origin.  "
             + "This offset is in target-local space")]
         public Vector3 ShoulderOffset;
@@ -53,7 +53,7 @@ namespace Cinemachine
 
 #if CINEMACHINE_PHYSICS
         /// <summary>Camera will avoid obstacles on these layers.</summary>
-        [Header("Obstacles")]
+        [CmHeader("Obstacles")]
         [Tooltip("Camera will avoid obstacles on these layers")]
         public LayerMask CameraCollisionFilter;
 

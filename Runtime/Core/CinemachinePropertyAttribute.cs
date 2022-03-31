@@ -6,6 +6,25 @@ namespace Cinemachine
     /// Property applied to AxisState.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class AxisStatePropertyAttribute : PropertyAttribute {}
+    
+    /// <summary>
+    /// Adds a header.  Used for custom drawing in the inspector.
+    /// </summary>
+    public sealed class CmHeaderAttribute : PropertyAttribute
+    {
+        /// <summary>
+        ///   <para>The header text.</para>
+        /// </summary>
+        /// <footer><a href="https://docs.unity3d.com/2021.2/Documentation/ScriptReference/30_search.html?q=HeaderAttribute.header">`HeaderAttribute.header` on docs.unity3d.com</a></footer>
+        public readonly string header;
+
+        /// <summary>
+        ///   <para>Add a header above some fields in the Inspector.</para>
+        /// </summary>
+        /// <param name="header">The header text.</param>
+        /// <footer><a href="https://docs.unity3d.com/2021.2/Documentation/ScriptReference/30_search.html?q=HeaderAttribute">`HeaderAttribute` on docs.unity3d.com</a></footer>
+        public CmHeaderAttribute(string header) => this.header = header;
+    }
 
     /// <summary>
     /// Property applied to OrbitalTransposer.Heading.  Used for custom drawing in the inspector.
