@@ -4,9 +4,9 @@ This Virtual Camera __Body__ algorithm moves the Unity camera in a variable rela
 
 The __Orbital Transposer__ introduces the concept of __heading__, which is the direction in which the target is moving or facing. Orbital Transposer attempts to position the camera so that it points in the same direction as the heading direction. By default, this position is directly behind the target. Control this relationship by adjusting the __Heading Bias__ property.
 
-If you attach an input controller to the __Orbital Transposer__, then the player can also control the camera. This allows the player to move the camera to any spot on an orbit around the target.  Configure the __Orbital Transposer__ to take its input from any axis that you set up in the [Input Manager](https://docs.unity3d.com/Manual/class-InputManager.html). Or control the value directly using a custom input system.
+If you attach an input controller to the __Orbital Transposer__, then the player can also control the camera. This allows the player to move the camera to any spot on an orbit around the target. Configure the __Orbital Transposer__ to take its input from any axis that you set up in the [Input Manager](https://docs.unity3d.com/Manual/class-InputManager.html). Or control the value directly using a custom input system.
 
-__Orbital Transposer__ optionally re-centers the camera automatically.  When __Recenter To Target Heading__ is checked, Orbital Transposer automatically moves the camera back to the target heading. You can specify the length of time to wait after it has detected no user input and the speed of the recentering.
+__Orbital Transposer__ optionally re-centers the camera automatically. When __Recenter To Target Heading__ is checked, Orbital Transposer automatically moves the camera back to the target heading. You can specify the length of time to wait after it has detected no user input and the speed of the recentering.
 
 ![Orbital Transposer](images/CinemachineOrbitalTransposer.png)
 
@@ -15,13 +15,13 @@ __Orbital Transposer__ optionally re-centers the camera automatically.  When __R
 | **Property:** || **Function:** |
 |:---|:---|:---|
 | __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use to interpret the offset from the target. |
-| | _Lock To Target On Assign_ | Makes the orientation of the virtual camera match the local frame of the Follow target, at the moment when the virtual camera is activated or when the target is assigned. This offset remains constant in world space. The camera does not rotate along with the target. |
+| | _Lock To Target On Assign_ | Makes the orientation of the virtual camera match the local frame of the Follow target, at the moment when the virtual camera is activated or when the target is assigned. This offset remains constant in world space. The camera doesn't rotate along with the target. |
 | | _Lock To Target With World Up_ | Makes the virtual camera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |
 | | _Lock To Target No Roll_ | Makes the virtual camera use the local frame of the Follow target, with roll set to 0. |
 | | _Lock To Target_ | Makes the virtual camera use the local frame of the Follow target. When the target rotates, the camera moves with it to maintain the offset and to maintain the same view of the target. |
 | | _World Space_ | The offset is interpreted in world space relative to the origin of the Follow target. The camera will not change position when the target rotates. |
 | | _Simple Follow With World Up_ | Simple follow with world up interprets the offset and damping values in camera-local space. This mode emulates the action a human camera operator would take when instructed to follow a target. The camera attempts to move as little as possible to maintain the same distance from the target; the direction of the camera with regard to the target does not matter. Regardless of the orientation of the target, the camera tries to preserve the same distance and height from it. |
-| __Follow Offset__ || The position offset to attempt to maintain from the Follow target. You can also use handles to modify this property. For more information see, [Cinemachine Handle toolbar](handles.md).|
+| __Follow Offset__ || The position offset to attempt to maintain from the Follow target. You can also use [Scene Handles](handles.md) to modify this property.|
 | __X Damping__ || How responsively the camera tries to maintain the offset in the x-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. Using different settings per axis can yield a wide range of camera behaviors. Not available when Binding Mode is Simple Follow With World Up. |
 | __Y Damping__ || How responsively the camera tries to maintain the offset in the y-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.   |
 | __Z Damping__ || How responsively the camera tries to maintain the offset in the z-axis. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.   |
