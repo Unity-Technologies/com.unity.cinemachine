@@ -87,7 +87,6 @@ namespace Cinemachine
                 m_State.RawPosition += positionDelta;
             }
             
-            // TODO: m_Components
             for (int i = 0; i < m_Components.Length; ++i)
             {
                 if (m_Components[i] != null)
@@ -232,9 +231,6 @@ namespace Cinemachine
         protected CameraState InvokeComponentPipeline(
             ref CameraState state, Vector3 worldUp, float deltaTime)
         {
-            // TODO: Try to get "m_Components" every frame from all components. 
-            // TODO: Performance is critical -> find fastest way, performance test to ensure it is really performant. No allocs.
-
             // Extensions first
             InvokePrePipelineMutateCameraStateCallback(this, ref state, deltaTime);
 
@@ -243,7 +239,7 @@ namespace Cinemachine
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
-                if (c != null)
+                if (c != null && c.IsValid)
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
             CinemachineComponentBase postAimBody = null;
@@ -251,7 +247,7 @@ namespace Cinemachine
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
-                if (c != null)
+                if (c != null && c.IsValid)
                 {
                     if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
                     {
