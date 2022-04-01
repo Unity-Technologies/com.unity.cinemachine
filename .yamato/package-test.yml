@@ -4,7 +4,7 @@
 {% for platform in all_platforms %}
 {% for editor in test.editors %}
 test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
-  name : Test {{ test.name }} on {{ platform.name }} with {{ editor }}
+  name : Test package {{ test.name }} on {{ platform.name }} with {{ editor }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -20,7 +20,7 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
   {% endif %}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor }} {{ test.args }}
+    - upm-ci package test -u {{ editor }} {{ test.args }} --package-path com.unity.cinemachine
   artifacts:
     logs:
       paths:
