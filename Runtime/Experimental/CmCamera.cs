@@ -296,10 +296,11 @@ namespace Cinemachine
                     m_Components[stage] = components[i];
                 }
             }
+
+            OnComponentCacheUpdated();
         }
         
-        /// <summary>Notification that the component cache has just been update,
-        /// in case a subclass needs to do something extra</summary>
+        /// <summary>Notification that the component cache has been updated, if a subclass needs to do something extra</summary>
         protected virtual void OnComponentCacheUpdated() {}
 
         /// <summary>Get the component set for a specific stage.</summary>
