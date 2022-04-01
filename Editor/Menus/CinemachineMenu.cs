@@ -103,8 +103,8 @@ namespace Cinemachine.Editor
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.AddCinemachineComponent<CinemachineComposer>();
-            var trackedDolly = vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
+            vcam.gameObject.AddComponent<CinemachineComposer>();
+            var trackedDolly = vcam.gameObject.AddComponent<CinemachineTrackedDolly>();
             trackedDolly.m_Path = path;
         }
 
@@ -126,8 +126,8 @@ namespace Cinemachine.Editor
                 "Virtual Camera", command.context as GameObject, false);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.AddCinemachineComponent<CinemachineGroupComposer>();
-            vcam.AddCinemachineComponent<CinemachineTransposer>();
+            vcam.gameObject.AddComponent<CinemachineGroupComposer>();
+            vcam.gameObject.AddComponent<CinemachineTransposer>();
 
             var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
                 "Target Group", command.context as GameObject, true);
@@ -155,7 +155,7 @@ namespace Cinemachine.Editor
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
         }
 
         /// <summary>

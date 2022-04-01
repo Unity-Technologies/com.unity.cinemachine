@@ -51,14 +51,14 @@ namespace Cinemachine
         }
 
         /// <summary>The camera state, which will be a blend of the child rig states</summary>
-        override public CameraState State { get { return m_State; } }
+        public override CameraState State { get { return m_State; } }
 
         /// <summary>The camera state, which will be a blend of the child rig states</summary>
         protected CameraState m_State = CameraState.Default;
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
-        override public Transform LookAt
+        public override Transform LookAt
         {
             get { return ResolveLookAt(m_LookAt); }
             set { m_LookAt = value; }
@@ -66,7 +66,7 @@ namespace Cinemachine
 
         /// <summary>Get the current Follow target.  Returns parent's Follow if parent
         /// is non-null and no specific Follow defined for this camera</summary>
-        override public Transform Follow
+        public override Transform Follow
         {
             get { return ResolveFollow(m_Follow); }
             set { m_Follow = value; }
@@ -166,7 +166,7 @@ namespace Cinemachine
         /// and a blend calculated, depending on the value of the Y axis.</summary>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
+        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             UpdateTargetCache();
 
@@ -237,7 +237,7 @@ namespace Cinemachine
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
-                if (c != null)
+                if (c != null && c.IsValid)
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
             CinemachineComponentBase postAimBody = null;
@@ -245,7 +245,7 @@ namespace Cinemachine
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Components[(int)stage];
-                if (c != null)
+                if (c != null && c.IsValid)
                 {
                     if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
                     {
@@ -271,12 +271,34 @@ namespace Cinemachine
             return state;
         }
 
-        // Component Cache - serialized only for copy/paste
-        [SerializeReference, NoSaveDuringPlay, HideInInspector]
+        [NoSaveDuringPlay]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
-        /// <summary>Notification that the component cache has just been update,
-        /// in case a subclass needs to do something extra</summary>
+        public override void UpdateComponentCache()
+        {
+            var components = GetComponents<CinemachineComponentBase>();
+            for (int i = 0; i < components.Length; ++i)
+            {
+                var stage = (int) components[i].Stage;
+                if (m_Components[stage] != (components[i]))
+                {
+                    if (m_Components[stage] != null)
+                    {
+#if UNITY_EDITOR
+                        DestroyImmediate(m_Components[stage]);
+#else
+                        Destroy(m_Components[stage]);
+#endif
+                    }
+
+                    m_Components[stage] = components[i];
+                }
+            }
+
+            OnComponentCacheUpdated();
+        }
+        
+        /// <summary>Notification that the component cache has been updated, if a subclass needs to do something extra</summary>
         protected virtual void OnComponentCacheUpdated() {}
 
         /// <summary>Get the component set for a specific stage.</summary>
@@ -292,32 +314,6 @@ namespace Cinemachine
         public T GetCinemachineComponent<T>() where T : CinemachineComponentBase => 
             m_Components.OfType<T>().Select(c => c).FirstOrDefault();
 
-        /// <summary>Add a component to the cinemachine pipeline.</summary>
-        public T AddCinemachineComponent<T>() where T : CinemachineComponentBase, new()
-        {
-            var component = VirtualCameraGameObject.AddComponent<T>();
-            if (m_Components[(int)component.Stage] != null)
-            {
-#if UNITY_EDITOR
-                DestroyImmediate(m_Components[(int)component.Stage]);
-#else
-                Destroy(m_Components[(int)component.Stage]);
-#endif
-            }
-            m_Components[(int)component.Stage] = component;
-            OnComponentCacheUpdated();
-            return component;
-        }
-
-        /// <summary>Remove a component at the specified stage from the cinemachine pipeline.</summary>
-        public void DestroyCinemachineComponent(CinemachineCore.Stage stage)
-        {
-            if (m_Components[(int)stage] == null) return;
-            Destroy(m_Components[(int) stage]);
-            m_Components[(int) stage] = null;
-            OnComponentCacheUpdated();
-        }
-        
         /// <summary>Destroy all the CinmachineComponentBase components</summary>
         protected void DestroyComponents()
         {
@@ -330,7 +326,6 @@ namespace Cinemachine
 #endif
                 m_Components[i] = null;
             }
-            OnComponentCacheUpdated();
         }
     }
 }
