@@ -277,8 +277,6 @@ namespace Cinemachine
             return state;
         }
 
-        // TODO: No need for m_Components cache and all the related stuff like (OnComponentCacheUpdated, Gets, Adds, destroys)
-        // TODO: however, we may want to store it for the frame, because a lot of things may use it same frame? depends on cost of getting the most up-to-date from components
         [NoSaveDuringPlay]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
@@ -333,7 +331,6 @@ namespace Cinemachine
 #endif
                 m_Components[i] = null;
             }
-            UpdateComponentCache();
         }
     }
 }
