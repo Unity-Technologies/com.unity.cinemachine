@@ -53,14 +53,14 @@ namespace Cinemachine
         }
 
         /// <summary>The camera state, which will be a blend of the child rig states</summary>
-        override public CameraState State { get { return m_State; } }
+        public override CameraState State { get { return m_State; } }
 
         /// <summary>The camera state, which will be a blend of the child rig states</summary>
         protected CameraState m_State = CameraState.Default;
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
-        override public Transform LookAt
+        public override Transform LookAt
         {
             get { return ResolveLookAt(m_LookAt); }
             set { m_LookAt = value; }
@@ -68,7 +68,7 @@ namespace Cinemachine
 
         /// <summary>Get the current Follow target.  Returns parent's Follow if parent
         /// is non-null and no specific Follow defined for this camera</summary>
-        override public Transform Follow
+        public override Transform Follow
         {
             get { return ResolveFollow(m_Follow); }
             set { m_Follow = value; }
