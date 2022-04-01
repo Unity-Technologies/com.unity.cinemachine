@@ -290,7 +290,7 @@ namespace Cinemachine
             for (int i = 0; i < components.Length; ++i)
             {
                 var stage = (int) components[i].Stage;
-                if (!m_Components[stage] == (components[i]))
+                if (m_Components[stage] != (components[i]))
                 {
                     if (m_Components[stage] != null)
                     {
