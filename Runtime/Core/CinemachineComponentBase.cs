@@ -7,6 +7,7 @@ namespace Cinemachine
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
+    [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>
@@ -25,6 +26,13 @@ namespace Cinemachine
             }
         }
         CinemachineVirtualCameraBase m_vcamOwner;
+
+        protected virtual void OnEnable()
+        {
+            var vcam = VirtualCamera;
+            if (vcam != null)
+                vcam.UpdateComponentCache();
+        }
 
         /// <summary>Returns the owner vcam's Follow target.</summary>
         public Transform FollowTarget

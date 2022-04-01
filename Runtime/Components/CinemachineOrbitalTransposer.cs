@@ -236,8 +236,10 @@ namespace Cinemachine
             return axis.Value;
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             // GML todo: do we really need this?
             m_PreviousTarget = null;
             m_LastTargetPosition = Vector3.zero;

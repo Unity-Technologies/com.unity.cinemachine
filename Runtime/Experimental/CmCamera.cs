@@ -169,9 +169,8 @@ namespace Cinemachine
         /// and a blend calculated, depending on the value of the Y axis.</summary>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        override public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
+        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            UpdateComponents();
             UpdateTargetCache();
 
             FollowTargetAttachment = 1;
@@ -283,9 +282,8 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         internal CinemachineComponentBase[] m_Components = new CinemachineComponentBase[(int)CinemachineCore.Stage.Finalize + 1];
 
-        void UpdateComponents()
+        public override void UpdateComponentCache()
         {
-            // TODO: option to disable auto update -> user has to call it
             var components = GetComponents<CinemachineComponentBase>();
             for (int i = 0; i < components.Length; ++i)
             {
@@ -323,32 +321,6 @@ namespace Cinemachine
         public T GetCinemachineComponent<T>() where T : CinemachineComponentBase => 
             m_Components.OfType<T>().Select(c => c).FirstOrDefault();
 
-        /// <summary>Add a component to the cinemachine pipeline.</summary>
-        public T AddCinemachineComponent<T>() where T : CinemachineComponentBase, new()
-        {
-            var component = VirtualCameraGameObject.AddComponent<T>();
-            if (m_Components[(int)component.Stage] != null)
-            {
-#if UNITY_EDITOR
-                DestroyImmediate(m_Components[(int)component.Stage]);
-#else
-                Destroy(m_Components[(int)component.Stage]);
-#endif
-            }
-            m_Components[(int)component.Stage] = component;
-            OnComponentCacheUpdated();
-            return component;
-        }
-
-        /// <summary>Remove a component at the specified stage from the cinemachine pipeline.</summary>
-        public void DestroyCinemachineComponent(CinemachineCore.Stage stage)
-        {
-            if (m_Components[(int)stage] == null) return;
-            Destroy(m_Components[(int) stage]);
-            m_Components[(int) stage] = null;
-            OnComponentCacheUpdated();
-        }
-        
         /// <summary>Destroy all the CinmachineComponentBase components</summary>
         protected void DestroyComponents()
         {
@@ -361,7 +333,7 @@ namespace Cinemachine
 #endif
                 m_Components[i] = null;
             }
-            OnComponentCacheUpdated();
+            UpdateComponentCache();
         }
     }
 }
