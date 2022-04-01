@@ -11,6 +11,11 @@ namespace Cinemachine.Editor
     /// </summary>
     public class InspectorUtility
     {
+        /// <summary>
+        /// Aligns fields create by UI toolkit the unity standard way.
+        /// </summary>
+        internal const string alignFieldClass = "unity-base-field__aligned";
+        
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
         /// cause the property's displayName to be used as a label.  For no label at all,

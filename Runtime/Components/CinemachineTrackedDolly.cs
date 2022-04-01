@@ -51,7 +51,7 @@ namespace Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
+        [CmRange(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in a direction "
             + "perpendicular to the path.  Small numbers are more responsive, rapidly translating "
             + "the camera to keep the target's x-axis offset.  Larger numbers give a more heavy "
@@ -63,7 +63,7 @@ namespace Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// y-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
+        [CmRange(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in the path-local up direction.  "
             + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
             + "y-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different "
@@ -74,7 +74,7 @@ namespace Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the
         /// target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
+        [CmRange(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in a direction parallel to the path.  "
             + "Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  "
             + "Larger numbers give a more heavy slowly responding camera. Using different settings per axis "
@@ -104,21 +104,21 @@ namespace Cinemachine
 
         /// <summary>"How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
+        [CmRange(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are "
             + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_PitchDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
+        [CmRange(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are "
             + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_YawDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
+        [CmRange(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers "
             + "are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;

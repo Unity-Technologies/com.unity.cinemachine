@@ -56,7 +56,7 @@ namespace Cinemachine
                     choices = s_StageData[stage].typeName,
                     index = s_StageData[stage].selection,
                 };
-                dropdown.AddToClassList("unity-base-field__aligned");
+                dropdown.AddToClassList(InspectorUtility.alignFieldClass);
                 
                 dropdown.RegisterValueChangedCallback(
                     evt => HandleDropdownSelection(evt.newValue, evt.previousValue, stage, cmCamera));

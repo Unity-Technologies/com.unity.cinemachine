@@ -15,15 +15,33 @@ namespace Cinemachine
         /// <summary>
         ///   <para>The header text.</para>
         /// </summary>
-        /// <footer><a href="https://docs.unity3d.com/2021.2/Documentation/ScriptReference/30_search.html?q=HeaderAttribute.header">`HeaderAttribute.header` on docs.unity3d.com</a></footer>
         public readonly string header;
 
         /// <summary>
         ///   <para>Add a header above some fields in the Inspector.</para>
         /// </summary>
         /// <param name="header">The header text.</param>
-        /// <footer><a href="https://docs.unity3d.com/2021.2/Documentation/ScriptReference/30_search.html?q=HeaderAttribute">`HeaderAttribute` on docs.unity3d.com</a></footer>
         public CmHeaderAttribute(string header) => this.header = header;
+    }
+    
+    /// <summary>
+    ///   <para>Attribute used to make a float or int variable in a script be restricted to a specific range.</para>
+    /// </summary>
+    public sealed class CmRangeAttribute : PropertyAttribute
+    {
+        public readonly float min;
+        public readonly float max;
+
+        /// <summary>
+        ///   <para>Attribute used to make a float or int variable in a script be restricted to a specific range.</para>
+        /// </summary>
+        /// <param name="min">The minimum allowed value.</param>
+        /// <param name="max">The maximum allowed value.</param>
+        public CmRangeAttribute(float min, float max)
+        {
+            this.min = min;
+            this.max = max;
+        }
     }
 
     /// <summary>

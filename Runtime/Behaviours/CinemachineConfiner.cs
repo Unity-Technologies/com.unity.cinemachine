@@ -59,7 +59,7 @@ namespace Cinemachine
         /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
             + "Higher numbers are more gradual.")]
-        [Range(0, 10)]
+        [CmRange(0, 10)]
         public float m_Damping = 0;
         
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>

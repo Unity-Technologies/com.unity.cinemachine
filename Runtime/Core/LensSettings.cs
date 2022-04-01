@@ -30,7 +30,7 @@ namespace Cinemachine
         /// This is the camera view in degrees. For cinematic people, a 50mm lens
         /// on a super-35mm sensor would equal a 19.6 degree FOV
         /// </summary>
-        [Range(1f, 179f)]
+        [CmRange(1f, 179f)]
         [Tooltip("This is the camera view in degrees. Display will be in vertical degress, unless the "
             + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
             + "be in horizontal degress.  Internally, it is always vertical degrees.  "
@@ -63,7 +63,7 @@ namespace Cinemachine
         /// <summary>
         /// The dutch (tilt) to be applied to the camera. In degrees
         /// </summary>
-        [Range(-180f, 180f)]
+        [CmRange(-180f, 180f)]
         [Tooltip("Camera Z roll, or tilt, in degrees.")]
         public float Dutch;
 
@@ -155,14 +155,14 @@ namespace Cinemachine
 #if CINEMACHINE_HDRP
         public int Iso;
         public float ShutterSpeed;
-        [Range(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
+        [CmRange(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
         public float Aperture;
-        [Range(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
+        [CmRange(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
         public int BladeCount;
         public Vector2 Curvature;
-        [Range(0, 1)]
+        [CmRange(0, 1)]
         public float BarrelClipping;
-        [Range(-1, 1)]
+        [CmRange(-1, 1)]
         public float Anamorphism;
 #endif
 

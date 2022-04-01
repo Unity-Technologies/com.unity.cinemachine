@@ -50,7 +50,7 @@ namespace Cinemachine
 
         /// <summary></summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
-        [Range(0f, 1f)]
+        [CmRange(0f, 1f)]
         public float m_SplineCurvature;
 
         /// <summary>Identifiers for accessing override settings for top and bottom rigs</summary>
@@ -79,12 +79,12 @@ namespace Cinemachine
             /// <summary>Blendable settings for Transposer Transposer</summary>
             [Serializable] public class TransposerSettings
             {
-                [Range(0f, 20f)] public float m_XDamping;
-                [Range(0f, 20f)] public float m_YDamping;
-                [Range(0f, 20f)] public float m_ZDamping;
-                [Range(0f, 20f)] public float m_PitchDamping;
-                [Range(0f, 20f)] public float m_YawDamping;
-                [Range(0f, 20f)] public float m_RollDamping;
+                [CmRange(0f, 20f)] public float m_XDamping;
+                [CmRange(0f, 20f)] public float m_YDamping;
+                [CmRange(0f, 20f)] public float m_ZDamping;
+                [CmRange(0f, 20f)] public float m_PitchDamping;
+                [CmRange(0f, 20f)] public float m_YawDamping;
+                [CmRange(0f, 20f)] public float m_RollDamping;
 
                 internal void Lerp(CinemachineTransposer o, float t)
                 {
@@ -122,17 +122,17 @@ namespace Cinemachine
             {
                 public Vector3 m_LookAtOffset;
                 [Space]
-                [Range(0f, 20)] public float m_HorizontalDamping;
-                [Range(0f, 20)] public float m_VerticalDamping;
+                [CmRange(0f, 20)] public float m_HorizontalDamping;
+                [CmRange(0f, 20)] public float m_VerticalDamping;
                 [Space]
-                [Range(0f, 1f)] public float m_ScreenX;
-                [Range(0f, 1f)] public float m_ScreenY;
-                [Range(0f, 1f)] public float m_DeadZoneWidth;
-                [Range(0f, 1f)] public float m_DeadZoneHeight;
-                [Range(0f, 2f)] public float m_SoftZoneWidth;
-                [Range(0f, 2f)] public float m_SoftZoneHeight;
-                [Range(-0.5f, 0.5f)] public float m_BiasX;
-                [Range(-0.5f, 0.5f)] public float m_BiasY;
+                [CmRange(0f, 1f)] public float m_ScreenX;
+                [CmRange(0f, 1f)] public float m_ScreenY;
+                [CmRange(0f, 1f)] public float m_DeadZoneWidth;
+                [CmRange(0f, 1f)] public float m_DeadZoneHeight;
+                [CmRange(0f, 2f)] public float m_SoftZoneWidth;
+                [CmRange(0f, 2f)] public float m_SoftZoneHeight;
+                [CmRange(-0.5f, 0.5f)] public float m_BiasX;
+                [CmRange(-0.5f, 0.5f)] public float m_BiasY;
 
                 internal void Lerp(CinemachineComposer c, float t)
                 {

@@ -23,7 +23,7 @@ namespace Cinemachine.Editor
             m_Label.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             
             var propertyField = new PropertyField(property);
-            propertyField.AddToClassList("unity-base-field__aligned");
+            propertyField.AddToClassList(InspectorUtility.alignFieldClass);
             
             inspector.Add(m_Label);
             inspector.Add(propertyField);

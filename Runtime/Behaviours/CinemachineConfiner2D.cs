@@ -71,7 +71,7 @@ namespace Cinemachine
 
         /// <summary>Damping applied automatically around corners to avoid jumps.</summary>
         [Tooltip("Damping applied around corners to avoid jumps.  Higher numbers are more gradual.")]
-        [Range(0, 5)]
+        [CmRange(0, 5)]
         public float m_Damping;
 
         /// <summary>

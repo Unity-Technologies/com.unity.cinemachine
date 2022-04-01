@@ -101,7 +101,7 @@ namespace Cinemachine
         /// Upper limit on how many obstacle hits to process.  Higher numbers may impact performance.
         /// In most environments, 4 is enough.
         /// </summary>
-        [Range(1, 10)]
+        [CmRange(1, 10)]
         [Tooltip("Upper limit on how many obstacle hits to process.  Higher numbers may impact performance.  "
             + "In most environments, 4 is enough.")]
         public int m_MaximumEffort = 4;
@@ -109,7 +109,7 @@ namespace Cinemachine
         /// <summary>
         /// Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long.
         /// </summary>
-        [Range(0, 2)]
+        [CmRange(0, 2)]
         [Tooltip("Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long")]
         public float m_SmoothingTime;
 
@@ -117,7 +117,7 @@ namespace Cinemachine
         /// How gradually the camera returns to its normal position after having been corrected.
         /// Higher numbers will move the camera more gradually back to normal.
         /// </summary>
-        [Range(0, 10)]
+        [CmRange(0, 10)]
         [Tooltip("How gradually the camera returns to its normal position after having been corrected.  "
             + "Higher numbers will move the camera more gradually back to normal.")]
         [FormerlySerializedAs("m_Smoothing")]
@@ -127,7 +127,7 @@ namespace Cinemachine
         /// How gradually the camera moves to resolve an occlusion.
         /// Higher numbers will move the camera more gradually.
         /// </summary>
-        [Range(0, 10)]
+        [CmRange(0, 10)]
         [Tooltip("How gradually the camera moves to resolve an occlusion.  "
             + "Higher numbers will move the camera more gradually.")]
         public float m_DampingWhenOccluded;

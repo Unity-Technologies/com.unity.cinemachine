@@ -42,7 +42,7 @@ namespace Cinemachine
 
         /// <summary>How aggressively the camera tries to frame the group.
         /// Small numbers are more responsive</summary>
-        [Range(0, 20)]
+        [CmRange(0, 20)]
         [Tooltip("How aggressively the camera tries to frame the group. Small numbers are more responsive, rapidly adjusting the camera to keep the group in the frame.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_FrameDamping = 2f;
 
@@ -79,12 +79,12 @@ namespace Cinemachine
         public float m_MaximumDistance = 5000f;
 
         /// <summary>If adjusting FOV, will not set the FOV lower than this</summary>
-        [Range(1, 179)]
+        [CmRange(1, 179)]
         [Tooltip("If adjusting FOV, will not set the FOV lower than this.")]
         public float m_MinimumFOV = 3;
 
         /// <summary>If adjusting FOV, will not set the FOV higher than this</summary>
-        [Range(1, 179)]
+        [CmRange(1, 179)]
         [Tooltip("If adjusting FOV, will not set the FOV higher than this.")]
         public float m_MaximumFOV = 60;
 
