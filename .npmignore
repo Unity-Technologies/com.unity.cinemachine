@@ -12,6 +12,7 @@ node_modules.meta
 node_modules/**
 
 upm-ci~/**
+Projects/**
 .Editor/**
 .yamato/**
 *.zip*

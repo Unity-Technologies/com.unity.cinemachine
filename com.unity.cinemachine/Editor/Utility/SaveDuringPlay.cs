@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SaveDuringPlay
 {
@@ -138,7 +140,6 @@ namespace SaveDuringPlay
                 && !typeof(ScriptableObject).IsAssignableFrom(type)
                 && !typeof(GameObject).IsAssignableFrom(type))
             {
-                // Is it an array?
                 if (type.IsArray)
                 {
                     isLeaf = false;
@@ -164,6 +165,43 @@ namespace SaveDuringPlay
                     }
                     if (doneSomething)
                         obj = array;
+                }
+                else if (typeof(IList).IsAssignableFrom(type))
+                {
+                    isLeaf = false;
+                    var list = obj as IList;
+                    object length = list.Count;
+                    
+                    // restore list size
+                    if (OnLeafField != null && OnLeafField(
+                        fullName + ".Length", length.GetType(), ref length))
+                    {
+                        var newLength = (int)length;
+                        var currentLength = list.Count;
+                        for (int i = 0; i < currentLength - newLength; ++i)
+                        {
+                            list.RemoveAt(currentLength - i - 1); // make list shorter if needed
+                        }
+                        for (int i = 0;  i < newLength - currentLength; ++i)
+                        {
+                            list.Add(GetValue(type.GetGenericArguments()[0])); // make list longer if needed
+                        }
+                        doneSomething = true;
+                    }
+
+                    // restore values
+                    for (int i = 0; i < list.Count; ++i)
+                    {
+                        var c = list[i];
+                        if (ScanFields(fullName + "[" + i + "]", c.GetType(), ref c))
+                        {
+                            list[i] = c;
+                            doneSomething = true;
+                        }
+                    }
+                    
+                    if (doneSomething)
+                        obj = list;
                 }
                 else
                 {
@@ -195,6 +233,12 @@ namespace SaveDuringPlay
                     doneSomething = true;
 
             return doneSomething;
+        }
+
+        static object GetValue(Type type)
+        {
+            Assert.IsNotNull(type);
+            return Activator.CreateInstance(type);
         }
 
         bool ScanFields(string fullName, MonoBehaviour b)
@@ -247,8 +291,6 @@ namespace SaveDuringPlay
             return doneSomething;
         }
     };
-    
-
 
     /// <summary>
     /// Using reflection, this class scans a GameObject (and optionally its children)
