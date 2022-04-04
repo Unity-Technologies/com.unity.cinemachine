@@ -202,7 +202,9 @@ namespace Cinemachine
                 labelWidth = textDimensions.x;
             }
             rect.width -= labelWidth;
-            if (m_PriorityField.Children() != null)
+            // TODO: HACK - rewrite "DrawCameraStatusInInspector" with UIToolkit 
+            if (m_PriorityField.Children() != null && 
+                m_PriorityField.Children().Any() && m_PriorityField.Children().ToArray()[0].Children().Count() > 1)
             {
                 // correcting the rect so it is aligned correctly with UI toolkit standard
                 var correction = m_PriorityField.Children().ToArray()[0].Children().ToArray()[1];
