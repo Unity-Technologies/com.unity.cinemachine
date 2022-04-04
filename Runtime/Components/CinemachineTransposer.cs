@@ -430,9 +430,7 @@ namespace Cinemachine
                 var offsetDelta = desiredCameraOffset - previousOffset;
                 if (offsetDelta.sqrMagnitude > 0.01f)
                 {
-                    var q = UnityVectorExtensions.SafeFromToRotation(
-                        m_PreviousOffset.ProjectOntoPlane(up), 
-                        desiredCameraOffset.ProjectOntoPlane(up), up);
+                    var q = UnityVectorExtensions.SafeFromToRotation(m_PreviousOffset, desiredCameraOffset, up);
                     currentPosition = targetPosition + q * (PreviousTargetPosition - targetPosition);
                 }
                 m_PreviousOffset = desiredCameraOffset;

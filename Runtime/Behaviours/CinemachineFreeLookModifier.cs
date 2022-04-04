@@ -11,11 +11,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     [Tooltip("Defines how the camera distance scales as a function of vertical camera angle.  "
         + "X axis of graph goes from 0 to 1, Y axis is the multiplier that will be "
         + "applied to the base distance.")]
-    public AnimationCurve DistanceScale;
+    public AnimationCurve DistanceScale = AnimationCurve.EaseInOut(0, 0.5f, 1, 2);
 
     [Tooltip("Defines the vertical offset for the Conposer.ScreenY as a function of vertical camera angle.  "
         + "X axis of graph goes from 0 to 1, Y axis is the Screen Y adjustment that will be applied.")]
-    public AnimationCurve VerticalOffset;
+    public AnimationCurve VerticalOffset = AnimationCurve.EaseInOut(0, 0f, 1, 0.3f);
 
     CinemachineOrbitalFollow m_Orbital;
 
@@ -62,7 +62,6 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
             if (m_Composer != null)
             {
-                // GML TODO: damping seems to interfere with this.  Need new damping algo.  I have an idea for one.
                 m_BaseOffset = m_Composer.m_ScreenY;
                 m_Composer.m_ScreenY = m_BaseOffset + VerticalOffset.Evaluate(t);
             }

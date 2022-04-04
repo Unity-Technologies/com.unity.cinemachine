@@ -17,24 +17,24 @@ namespace Cinemachine
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
             + "used to set the camera's Up vector, which will be maintained when aiming the camera.")]
-        public CinemachineTransposer.BindingMode BindingMode;
-        
+        public CinemachineTransposer.BindingMode BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
+
         /// <summary>How to calculate the angular damping for the target orientation.
         /// Use Quaternion if you expect the target to take on very steep pitches, which would
         /// be subject to gimbal lock if Eulers are used.</summary>
-        public CinemachineTransposer.AngularDampingMode RotationDampingMode;
+        public CinemachineTransposer.AngularDampingMode RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
         
         /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Tooltip("How aggressively the camera tries to track the target's orientation.  "
             + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public Vector3 RotationDamping;
+        public Vector3 RotationDamping = new Vector3(1, 1, 1);
 
         /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
         [Tooltip("How aggressively the camera tries to track the target's orientation.  "
             + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float QuaternionDamping;
+        public float QuaternionDamping = 1;
 
         /// <summary>How aggressively the camera tries to maintain the offset.
         /// Small numbers are more responsive, rapidly translating the camera to keep the
@@ -44,31 +44,31 @@ namespace Cinemachine
             + "Small numbers are more responsive, rapidly translating the camera to keep the "
             + "target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. "
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public Vector3 PositionDamping;
+        public Vector3 PositionDamping = new Vector3(1, 1, 1);
 
         /// <summary>The camera will be placed at this distance from the Follow target</summary>
         [Space]
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
-        public float CameraDistance;
+        public float CameraDistance = 10;
 
         /// <summary>Axis representing the current horizontal rotation.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
         [Space]
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
             + "and represents a rotation about the up vector.")]
-        public InputAxis HorizontalAxis;
+        public InputAxis HorizontalAxis= DefaultHorizontal;
 
         /// <summary>Axis representing the current vertical rotation.  Value is in degrees
         /// and represents a rotation about the right vector</summary>
         [Tooltip("Axis representing the current vertical rotation.  Value is in degrees "
             + "and represents a rotation about the right vector.")]
-        public InputAxis VerticalAxis;
+        public InputAxis VerticalAxis = DefaultVertical;
 
         /// <summary>Axis controlling the scale of the current distance.  Value is a scalar
         /// multiplier and is applied to the specified camera distance</summary>
         [Tooltip("Axis controlling the scale of the current distance.  Value is a scalar "
             + "multiplier and is applied to the specified camera distance.")]
-        public InputAxis RadialAxis;
+        public InputAxis RadialAxis = DefaultRadial;
 
         /// <summary>
         /// PositionDamping speeds for each of the 3 axes of the offset from target
@@ -107,6 +107,31 @@ namespace Cinemachine
         // Helper object to track the Follow target
         CinemachineTransposer.TargetTracker m_TargetTracker;
 
+        static InputAxis DefaultHorizontal => new InputAxis 
+        { 
+            Value = 0, 
+            Range = new Vector2(-180, 180), 
+            Wrap = true, 
+            Center = 0, 
+            Recentering = InputAxis.RecenteringSettings.Default 
+        };
+        static InputAxis DefaultVertical => new InputAxis 
+        { 
+            Value = 0, 
+            Range = new Vector2(-10, 45), 
+            Wrap = false, 
+            Center = 10, 
+            Recentering = InputAxis.RecenteringSettings.Default 
+        };
+        static InputAxis DefaultRadial => new InputAxis 
+        { 
+            Value = 1, 
+            Range = new Vector2(1, 5), 
+            Wrap = false, 
+            Center = 1, 
+            Recentering = InputAxis.RecenteringSettings.Default 
+        };
+            
         Vector3 PositiveVector3(Vector3 v) => new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
 
         void OnValidate()
@@ -122,38 +147,15 @@ namespace Cinemachine
 
         void Reset()
         {
-            BindingMode = CinemachineTransposer.BindingMode.LockToTargetWithWorldUp;
+            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
             RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
             PositionDamping = new Vector3(1, 1, 1);
             RotationDamping = new Vector3(1, 1, 1);
             QuaternionDamping = 1f;
-
-            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
             CameraDistance = 10;
-            HorizontalAxis = new InputAxis 
-            { 
-                Value = 0, 
-                Range = new Vector2(-180, 180), 
-                Wrap = true, 
-                Center = 0, 
-                Recentering = InputAxis.RecenteringSettings.Default 
-            };
-            VerticalAxis = new InputAxis 
-            { 
-                Value = 0, 
-                Range = new Vector2(-10, 45), 
-                Wrap = false, 
-                Center = 10, 
-                Recentering = InputAxis.RecenteringSettings.Default 
-            };
-            RadialAxis = new InputAxis 
-            { 
-                Value = 1, 
-                Range = new Vector2(1, 5), 
-                Wrap = false, 
-                Center = 1, 
-                Recentering = InputAxis.RecenteringSettings.Default 
-            };
+            HorizontalAxis = DefaultHorizontal;
+            VerticalAxis = DefaultVertical;
+            RadialAxis = DefaultRadial;
         }
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
