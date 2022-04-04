@@ -24,6 +24,10 @@ namespace Cinemachine
             + "be read from that player's controls")]
         public int PlayerIndex = -1;
 
+        /// <summary>If set, Input Actions will be auto-enabled at start</summary>
+        [Tooltip("If set, Input Actions will be auto-enabled at start")]
+        public bool AutoEnableInputs = true;
+
         /// <summary>Vector2 action for XY movement</summary>
         [Tooltip("Vector2 action for XY movement")]
         public InputActionReference XYAxis;
@@ -81,10 +85,10 @@ namespace Cinemachine
             {
                 m_cachedActions[axis] = actionRef.action;
                 if (PlayerIndex != -1)
-                {
-                    var user = InputUser.all[PlayerIndex];
-                    m_cachedActions[axis] = user.actions.First(x => x.id == actionRef.action.id);
-                }
+                    m_cachedActions[axis] = GetFirstMatch(InputUser.all[PlayerIndex], actionRef);
+        
+                if (AutoEnableInputs && actionRef != null && actionRef.action != null)
+                    actionRef.action.Enable();
             }
 
             // Update enabled status
