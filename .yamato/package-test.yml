@@ -1,22 +1,26 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-
-{% for config in all_configurations %}
-{% for editor in config.editors %}
+{% for test in all_tests %}
 {% for platform in all_platforms %}
-test_{{ config.name }}_{{ platform.name }}_{{ editor }}:
-  name : Test {{ config.name }} on {{ platform.name }} with {{ editor }}
+{% for editor in test.editors %}
+test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
+  name : Test package {{ test.name }} on {{ platform.name }} with {{ editor }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor }}
-  {% if platform.name == "centos" %}
+  {% if platform.name == "centos" or test.variables %}
   variables:
+    {% if platform.name == "centos" %}
     DISPLAY: ":0"
+    {% endif %}
+    {% for variable in test.variables %}
+    {{ variable }}
+    {% endfor %}
   {% endif %}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor }} {{ config.args }}
+    - upm-ci package test -u {{ editor }} {{ test.args }} --package-path com.unity.cinemachine
   artifacts:
     logs:
       paths:
@@ -26,32 +30,3 @@ test_{{ config.name }}_{{ platform.name }}_{{ editor }}:
 {% endfor %}
 {% endfor %}
 {% endfor %}
-
-test_trigger:
-  name: Package Tests Trigger
-  triggers:
-    branches:
-      only:
-      - "/^(master)|(release[/]\\d+[.]\\d+)$/"
-    pull_requests:
-      - targets:
-          only:
-            - "/.*/"
-    cancel_old_ci: true
-  dependencies:
-    - .yamato/package-pack.yml#pack
-    {% for config_name in test_configurations %}
-    {% for config in all_configurations %}
-    {% if config.name == config_name %}
-    {% for platform_name in test_platforms %}
-    {% for platform in all_platforms %}
-    {% if platform.name == platform_name %}
-    {% for editor in config.editors %}
-    - .yamato/package-test.yml#test_{{config.name}}_{{platform.name}}_{{editor}}
-    {% endfor %}
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
-    {% endif %}
-    {% endfor %}
-    {% endfor %}

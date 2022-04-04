@@ -12,6 +12,7 @@ node_modules.meta
 node_modules/**
 
 upm-ci~/**
+Projects/**
 .Editor/**
 .yamato/**
 *.zip*
@@ -22,3 +23,5 @@ upm-ci.log
 .github/**
 appcollector.yaml
 appcollector.yaml.meta
+codecov.yaml
+codecov.yaml.meta

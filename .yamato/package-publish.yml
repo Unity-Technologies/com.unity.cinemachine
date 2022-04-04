@@ -1,6 +1,5 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-
 publish:
   name: Publish to Internal Registry
   agent:
@@ -11,7 +10,7 @@ publish:
     UPMCI_ENABLE_PACKAGE_SIGNING: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package publish
+    - upm-ci package publish --package-path com.unity.cinemachine 
   triggers:
     tags:
       only:
@@ -22,14 +21,22 @@ publish:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/package-pack.yml#pack
-    {% for config_name in publish_configurations %}
-    {% for config in all_configurations %}
-    {% if config.name == config_name %}
-    {% for platform_name in publish_platforms %}
+    - .yamato/project-pack.yml#pack
+    {% for test_project in all_testprojects %}
+      {% for editor in test_project.editors %}
+    - .yamato/project-test.yml#test_ubuntu_{{editor}}_{{test_project.name}}
+    - .yamato/project-test.yml#test_windows_{{editor}}_{{test_project.name}}
+    - .yamato/project-test.yml#test_macos_{{editor}}_{{test_project.name}}
+      {% endfor %}
+    {% endfor %}
+    {% for test_name in all_configurations.publish.test_names %}
+    {% for test in all_tests %}
+    {% if test.name == test_name %}
+    {% for platform_name in all_configurations.publish.platform_names %}
     {% for platform in all_platforms %}
     {% if platform.name == platform_name %}
-    {% for editor in config.editors %}
-    - .yamato/package-test.yml#test_{{config.name}}_{{platform.name}}_{{editor}}
+    {% for editor in test.editors %}
+    - .yamato/package-test.yml#test_{{test.name}}_{{platform.name}}_{{editor}}
     {% endfor %}
     {% endif %}
     {% endfor %}
