@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: SaveDuringPlay works with ILists now.
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
 - Bugfix: POV orientation was incorrect with World Up override
+- Added AutoEnable option to CinemachineInputHandler
 
 
 ## [2.9.0-pre.6] - 2022-01-12
