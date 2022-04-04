@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
 - Regression fix: Axis input was ignoring CM's IgnoreTimeScale setting.
 - Bugfix: POV orientation was incorrect with World Up override
+- Added AutoEnable option to CinemachineInputHandler
 
 
 ## [2.8.4] - 2021-12-10
