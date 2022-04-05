@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.6.13] - 2022-02-15
+## [2.6.14] - 2022-03-05
 - Bugfix: Standalone profiler no longer crashes with CM.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
