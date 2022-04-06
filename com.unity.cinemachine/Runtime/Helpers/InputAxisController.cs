@@ -200,7 +200,7 @@ namespace Cinemachine
                 {
                     case 0: return "Mouse X";
                     case 1: return "Mouse Y";
-                    case 2: return "Mouse ScrollWheel";
+                    case 2: return ""; // "Mouse ScrollWheel"
                     default: return "";
                 }
             }

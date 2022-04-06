@@ -39,9 +39,11 @@ namespace Cinemachine
         public struct Orbit
         {
             /// <summary>Height relative to target</summary>
+            [Tooltip("Height of the horizontal orbit circle, relative to the target position")]
             public float m_Height;
 
             /// <summary>Radius of orbit</summary>
+            [Tooltip("Horizontal radius of the orbit")]
             public float m_Radius;
         }
 
@@ -491,7 +493,7 @@ namespace Cinemachine
                 m_CachedKnots[1] = new Vector4(0, m_Orbits[2].m_Height, -m_Orbits[2].m_Radius, 0);
                 m_CachedKnots[2] = new Vector4(0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius, 0);
                 m_CachedKnots[3] = new Vector4(0, m_Orbits[0].m_Height, -m_Orbits[0].m_Radius, 0);
-                m_CachedKnots[0] = Vector4.Lerp(m_CachedKnots[0], Vector4.zero, t);
+                m_CachedKnots[0] = Vector4.Lerp(m_CachedKnots[1], Vector4.zero, t);
                 m_CachedKnots[4] = Vector4.Lerp(m_CachedKnots[3], Vector4.zero, t);
                 SplineHelpers.ComputeSmoothControlPoints(
                     ref m_CachedKnots, ref m_CachedCtrl1, ref m_CachedCtrl2);

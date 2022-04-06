@@ -319,5 +319,8 @@ namespace Cinemachine
             }
             m_PreviousWorldOffset = offset;
         }
+
+        /// For the inspector
+        internal Quaternion GetReferenceOrientation() => m_TargetTracker.PreviousReferenceOrientation;
     }
 }

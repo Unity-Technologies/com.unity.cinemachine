@@ -123,15 +123,8 @@ namespace Cinemachine
             SerializedProperty orbits = FindProperty(x => x.m_Orbits);
             EditorGUI.BeginChangeCheck();
             for (int i = 0; i < 3; ++i)
-            {
-                var o = orbits.GetArrayElementAtIndex(i);
-                Rect rect = EditorGUILayout.GetControlRect(true);
-                InspectorUtility.MultiPropertyOnLine(
-                    rect, m_OrbitNames[i],
-                    new [] { o.FindPropertyRelative(() => Target.m_Orbits[i].m_Height),
-                            o.FindPropertyRelative(() => Target.m_Orbits[i].m_Radius) },
-                    null);
-            }
+                EditorGUILayout.PropertyField(orbits.GetArrayElementAtIndex(i), m_OrbitNames[i]);
+
             EditorGUILayout.PropertyField(FindProperty(x => x.m_SplineCurvature));
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();

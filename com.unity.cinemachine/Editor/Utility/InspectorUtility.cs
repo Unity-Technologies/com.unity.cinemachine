@@ -78,13 +78,16 @@ namespace Cinemachine.Editor
                 {
                     rect.x += hSpace;
                     rect.width = EditorGUIUtility.labelWidth + rect.height;
+                    EditorGUI.BeginProperty(rect, actualLabels[i], props[i]);
                     props[i].boolValue = EditorGUI.ToggleLeft(rect, actualLabels[i], props[i].boolValue);
                 }
                 else
                 {
                     rect.width = EditorGUIUtility.labelWidth + colWidth;
+                    EditorGUI.BeginProperty(rect, actualLabels[i], props[i]);
                     EditorGUI.PropertyField(rect, props[i], actualLabels[i]);
                 }
+                EditorGUI.EndProperty();
                 rect.x += rect.width + hSpace;
             }
 
