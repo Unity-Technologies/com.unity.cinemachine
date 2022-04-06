@@ -646,9 +646,16 @@ namespace Cinemachine.Editor
             var camRot = cmComponent.GetReferenceOrientation(up);
 
             EditorGUI.BeginChangeCheck();
-            var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+#if UNITY_2022_2_OR_NEWER
+            var foHandleIds = Handles.PositionHandleIds.@default;
+            var newPos = Handles.PositionHandle(foHandleIds, camPos, camRot);
+            var foHandleMinId = foHandleIds.x - 1;
+            var foHandleMaxId = foHandleIds.xyz + 1;
+#else
+            var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
             var newPos = Handles.PositionHandle(camPos, camRot);
-            var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+#endif
             if (EditorGUI.EndChangeCheck())
             {
                 var so = new SerializedObject(cmComponent);
