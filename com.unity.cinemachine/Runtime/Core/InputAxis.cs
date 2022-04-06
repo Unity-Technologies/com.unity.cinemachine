@@ -72,6 +72,21 @@ namespace Cinemachine
         [Tooltip("If set, then the axis will wrap around at the min/max values, forming a loop")]
         public bool Wrap;
 
+        /// <summary>Flags controlling inspector display.  Used only in the editor.</summary>
+        public enum Flags 
+        { 
+            /// <summary>No flags</summary>
+            None = 0, 
+            /// <summary>Range and center are not editable by the user</summary>
+            RangeIsDriven = 1, 
+            /// <summary>Recentering is not available</summary>
+            HideRecentering = 2 
+        };
+
+        /// <summary>Flags controlling inspector display.  Used only in the editor.</summary>
+        [HideInInspector]
+        public Flags InspectorFlags;
+
         /// <summary>Defines the settings for automatic recentering</summary>
         [Serializable] 
         public struct RecenteringSettings
@@ -218,7 +233,9 @@ namespace Cinemachine
         /// <param name="recentering"></param>
         public void DoRecentering(float deltaTime, InputAxis axis)
         {
-            if (!axis.Recentering.Enabled || CurrentTime - m_LastUpdateTime < axis.Recentering.Wait)
+            if (!axis.Recentering.Enabled 
+                    || (axis.InspectorFlags & InputAxis.Flags.HideRecentering) != 0 
+                    || CurrentTime - m_LastUpdateTime < axis.Recentering.Wait)
                 return;
 
             var v = axis.ClampValue(axis.Value);

@@ -25,6 +25,11 @@ namespace Cinemachine.Editor
                 rect.y += height + EditorGUIUtility.standardVerticalSpacing;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Value));
 
+                var flags = property.FindPropertyRelative(() => def.InspectorFlags).intValue;
+
+                var enabled = GUI.enabled;
+                GUI.enabled = (flags & (int)InputAxis.Flags.RangeIsDriven) == 0;
+
                 rect.y += height + EditorGUIUtility.standardVerticalSpacing;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Center));
 
@@ -36,9 +41,14 @@ namespace Cinemachine.Editor
                             property.FindPropertyRelative(() => def.Wrap)}, 
                     new [] { GUIContent.none, null });
 
-                rect.y += height + EditorGUIUtility.standardVerticalSpacing;
-                var recenter = property.FindPropertyRelative(() => def.Recentering);
-                EditorGUI.PropertyField(rect, recenter);
+                GUI.enabled = enabled;
+
+                if ((flags & (int)InputAxis.Flags.HideRecentering) == 0)
+                {
+                    rect.y += height + EditorGUIUtility.standardVerticalSpacing;
+                    var recenter = property.FindPropertyRelative(() => def.Recentering);
+                    EditorGUI.PropertyField(rect, recenter);
+                }
                 --EditorGUI.indentLevel;
             }
             else
@@ -66,9 +76,11 @@ namespace Cinemachine.Editor
             var height = lineHeight;
             if (property != null && property.isExpanded)
             {
+                var flags = property.FindPropertyRelative(() => def.InspectorFlags).intValue;
                 height += 3 * lineHeight;
-                height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative(() => def.Recentering)) 
-                    + EditorGUIUtility.standardVerticalSpacing;
+                if ((flags & (int)InputAxis.Flags.HideRecentering) == 0)
+                    height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative(() => def.Recentering)) 
+                        + EditorGUIUtility.standardVerticalSpacing;
             }
             return height - EditorGUIUtility.standardVerticalSpacing;
         }

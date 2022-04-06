@@ -31,9 +31,12 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.RotationDampingMode));
                     excluded.Add(FieldPath(x => x.RotationDamping));
                     excluded.Add(FieldPath(x => x.QuaternionDamping));
-//GML TODO                    excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
                     break;
             }
+            if (Target.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.Sphere)
+                excluded.Add(FieldPath(x => x.Orbits));
+            else
+                excluded.Add(FieldPath(x => x.CameraDistance));
         }
 
         public override void OnInspectorGUI()
@@ -78,6 +81,27 @@ namespace Cinemachine.Editor
                         }
                     });
             }
+
+            int flags = 0;
+            if (Target.BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                flags |= (int)InputAxis.Flags.HideRecentering | (int)InputAxis.Flags.RangeIsDriven;
+            var flagsProp = FindProperty(x => x.HorizontalAxis).FindPropertyRelative("InspectorFlags");
+            if (flagsProp.intValue != flags)
+            {
+                flagsProp.intValue = flags;
+                serializedObject.ApplyModifiedProperties();
+            }
+
+            flags = 0;
+            if (Target.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRingRig)
+                flags |= (int)InputAxis.Flags.RangeIsDriven;
+            flagsProp = FindProperty(x => x.VerticalAxis).FindPropertyRelative("InspectorFlags");
+            if (flagsProp.intValue != flags)
+            {
+                flagsProp.intValue = flags;
+                serializedObject.ApplyModifiedProperties();
+            }
+
             DrawRemainingPropertiesInInspector();
         }
     }

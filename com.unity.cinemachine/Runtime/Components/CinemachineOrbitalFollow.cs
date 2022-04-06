@@ -47,10 +47,27 @@ namespace Cinemachine
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
         public Vector3 PositionDamping = new Vector3(1, 1, 1);
 
-        /// <summary>The camera will be placed at this distance from the Follow target</summary>
+        /// <summary>How to construct the surface on which the camera will travel</summary>
+        public enum OrbitMode
+        {
+            /// <summary>Camera is at a fixed distance from the target, defining a sphere</summary>
+            Sphere,
+            /// <summary>Camera surface is built by extruding a line connecting 3 circular orbits around the target</summary>
+            ThreeRingRig
+        }
+
+        /// <summary>How to construct the surface on which the camera will travel</summary>
         [Space]
+        [Tooltip("Defines the madder in which the orbit surface is constructed." )]
+        public OrbitMode OrbitStyle;
+
+        /// <summary>The camera will be placed at this distance from the Follow target</summary>
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
         public float CameraDistance = 10;
+
+        [Tooltip("Defines a complex surface rig from 3 horizontal rings.")]
+        [HideFoldout]
+        public Cinemachine3OrbitRig.Settings Orbits = Cinemachine3OrbitRig.Settings.Default;
 
         /// <summary>Axis representing the current horizontal rotation.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
@@ -206,10 +223,7 @@ namespace Cinemachine
             var rot = Quaternion.Euler(VerticalAxis.Value, HorizontalAxis.Value, 0);
             var offset = rot * new Vector3(0, 0, -CameraDistance * RadialAxis.Value);
             if (BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-            {
-                offset.x = 0;
                 offset.z = -Mathf.Abs(offset.z);
-            }
             return offset;
         }
         
@@ -379,7 +393,7 @@ namespace Cinemachine
         internal struct OrbitSplineCache
         {
             /// <summary>Resolution of the orbit cache.  Increase if the orbits are too coarse</summary>
-            internal const int kResolution = 32;
+            internal const int kResolution = 64;
 
             /// <summary>
             /// InptAxis range and center required to implement the 3 orbit rig specified buy the Settings.
@@ -490,7 +504,7 @@ namespace Cinemachine
             {
                 if (SplineLookup == null)
                     return Vector4.zero;
-                t *= Mathf.Clamp01(t) * kResolution;
+                t = Mathf.Clamp01(t) * kResolution;
                 var a = Mathf.Floor(t);
                 var b = Mathf.Ceil(t);
                 return Vector4.Lerp(SplineLookup[(int)a], SplineLookup[(int)b], t - a);

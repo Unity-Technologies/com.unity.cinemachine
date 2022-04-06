@@ -131,7 +131,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     public override void PrePipelineMutateCameraStateCallback(
         CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) 
     {
-         // Can't do anything without the vertical axis
+        // Can't do anything without the vertical axis
         if (m_Orbital == null)
             return;
 
