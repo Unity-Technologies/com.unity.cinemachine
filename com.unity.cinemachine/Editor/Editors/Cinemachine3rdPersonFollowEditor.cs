@@ -73,9 +73,14 @@ namespace Cinemachine.Editor
 
                 EditorGUI.BeginChangeCheck();
                 // shoulder handle
-                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+#if UNITY_2022_2_OR_NEWER
+                var sHandleIds = Handles.PositionHandleIds.@default;
+                var newShoulderPosition = Handles.PositionHandle(sHandleIds, shoulderPosition, heading);
+#else
+                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
-                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+#endif
 
                 Handles.color = Handles.preselectionColor;
                 // arm handle
@@ -108,6 +113,16 @@ namespace Cinemachine.Editor
                     so.ApplyModifiedProperties();
                 }
 
+#if UNITY_2022_2_OR_NEWER
+                var isDragged = IsHandleDragged(sHandleIds.x, sHandleIds.xyz, shoulderPosition, "Shoulder Offset " 
+                    + thirdPerson.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
+                isDragged |= IsHandleDragged(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 
+                    + thirdPerson.VerticalArmLength.ToString("F1") + ")", shoulderPosition, armPosition);
+                isDragged |= IsHandleDragged(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
+                    + camDistance.ToString("F1") + ")", armPosition, camPos);
+
+                CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleIds.xyz);
+#else
                 var isDragged = IsHandleDragged(sHandleMinId, sHandleMaxId, shoulderPosition, "Shoulder Offset " 
                     + thirdPerson.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
                 isDragged |= IsHandleDragged(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 
@@ -116,6 +131,7 @@ namespace Cinemachine.Editor
                     + camDistance.ToString("F1") + ")", armPosition, camPos);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleMaxId);
+#endif
                 
                 Handles.color = originalColor;
             }
