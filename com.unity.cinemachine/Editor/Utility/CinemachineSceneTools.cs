@@ -359,10 +359,15 @@ namespace Cinemachine.Editor
             var camForward = camRot * Vector3.forward;
                 
             EditorGUI.BeginChangeCheck();
-            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-            var newFov = Handles.ScaleSlider(
-                s_FOVAfterLastToolModification, 
+#if UNITY_2022_2_OR_NEWER
+            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive);
+            var newFov = Handles.ScaleSlider(fovHandleId, s_FOVAfterLastToolModification, 
                 camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+#else
+            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1;
+            var newFov = Handles.ScaleSlider(
+                s_FOVAfterLastToolModification, camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+#endif
             if (EditorGUI.EndChangeCheck())
             {
                 if (orthographic)
