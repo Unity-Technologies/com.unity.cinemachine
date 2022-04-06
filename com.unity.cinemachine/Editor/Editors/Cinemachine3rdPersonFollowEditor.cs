@@ -76,6 +76,8 @@ namespace Cinemachine.Editor
 #if UNITY_2022_2_OR_NEWER
                 var sHandleIds = Handles.PositionHandleIds.@default;
                 var newShoulderPosition = Handles.PositionHandle(sHandleIds, shoulderPosition, heading);
+                var sHandleMinId = sHandleIds.x - 1;
+                var sHandleMaxId = sHandleIds.xyz + 1;
 #else
                 var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
@@ -112,17 +114,7 @@ namespace Cinemachine.Editor
                     
                     so.ApplyModifiedProperties();
                 }
-
-#if UNITY_2022_2_OR_NEWER
-                var isDragged = IsHandleDragged(sHandleIds.x, sHandleIds.xyz, shoulderPosition, "Shoulder Offset " 
-                    + thirdPerson.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
-                isDragged |= IsHandleDragged(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 
-                    + thirdPerson.VerticalArmLength.ToString("F1") + ")", shoulderPosition, armPosition);
-                isDragged |= IsHandleDragged(cdHandleId, cdHandleId, camPos, "Camera Distance (" 
-                    + camDistance.ToString("F1") + ")", armPosition, camPos);
-
-                CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleIds.xyz);
-#else
+                
                 var isDragged = IsHandleDragged(sHandleMinId, sHandleMaxId, shoulderPosition, "Shoulder Offset " 
                     + thirdPerson.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
                 isDragged |= IsHandleDragged(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 
@@ -131,8 +123,7 @@ namespace Cinemachine.Editor
                     + camDistance.ToString("F1") + ")", armPosition, camPos);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleMaxId);
-#endif
-                
+
                 Handles.color = originalColor;
             }
             

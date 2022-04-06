@@ -5,6 +5,7 @@ using Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 
 namespace Cinemachine.Editor
 {
@@ -598,9 +599,16 @@ namespace Cinemachine.Editor
             var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset.vector3Value;
 
             EditorGUI.BeginChangeCheck();
-            var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+#if UNITY_2022_2_OR_NEWER
+            var tooHandleIds = Handles.PositionHandleIds.@default;
+            var newTrackedObjectPos = Handles.PositionHandle(tooHandleIds, trackedObjectPos, lookAtRot);
+            var tooHandleMinId = tooHandleIds.x - 1;
+            var tooHandleMaxId = tooHandleIds.xyz + 1;
+#else
+            var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
             var newTrackedObjectPos = Handles.PositionHandle(trackedObjectPos, lookAtRot);
-            var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+#endif
             if (EditorGUI.EndChangeCheck())
             {
                 trackedObjectOffset.vector3Value += 
