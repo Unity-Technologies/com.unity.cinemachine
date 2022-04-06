@@ -327,14 +327,14 @@ namespace Cinemachine
                     orient = Quaternion.AngleAxis(rotation, up) * orient;
 
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[0].m_Height * scale,
-                        orient, vcam.m_Orbits[0].m_Radius * scale);
+                        pos + up * vcam.m_Orbits[0].Height * scale,
+                        orient, vcam.m_Orbits[0].Radius * scale);
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[1].m_Height * scale,
-                        orient, vcam.m_Orbits[1].m_Radius * scale);
+                        pos + up * vcam.m_Orbits[1].Height * scale,
+                        orient, vcam.m_Orbits[1].Radius * scale);
                     CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[2].m_Height * scale,
-                        orient, vcam.m_Orbits[2].m_Radius * scale);
+                        pos + up * vcam.m_Orbits[2].Height * scale,
+                        orient, vcam.m_Orbits[2].Radius * scale);
 
                     DrawCameraPath(pos, orient, vcam);
                 }

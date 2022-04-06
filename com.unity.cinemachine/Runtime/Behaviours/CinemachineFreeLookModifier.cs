@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Cinemachine;
 using System;
-using Cinemachine.Utility;
 
 /// <summary>
 /// This is an add-on for Cinemachine virtual cameras containing the OrbitalFollow component.
@@ -39,29 +38,9 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         public static NoiseSettings Default => new NoiseSettings { Amplitude = 1, Frequency = 1 };
     }
 
-    // GML TODO: move Orbit out of CinemachineNewFreeLook
-    [Serializable]
-    public struct OrbitSettings
-    {
-        [Tooltip("Value to take at the top of the axis range")]
-        public CinemachineNewFreeLook.Orbit Top;
-
-        [Tooltip("Value to take at the center of the axis range")]
-        public CinemachineNewFreeLook.Orbit Center;
-
-        [Tooltip("Value to take at the bottom of the axis range")]
-        public CinemachineNewFreeLook.Orbit Bottom;
-
-        /// <summary></summary>
-        [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
-        [Range(0f, 1f)]
-        public float SplineCurvature;
-    }
-
-
     [Tooltip("Defines how the camera distance changes as a function of vertical camera angle.")]
     [HideFoldout]
-    public OrbitSettings Orbits; // GML TODO: move Orbit out of CinemachineNewFreeLook
+    public Cinemachine3OrbitRig.Settings Orbits = Cinemachine3OrbitRig.Settings.Default;
 
     [Tooltip("Screen space vertical adustment for the target position.  "
         + "0 is screen center, +-1 is top/bottom of screen")]
@@ -82,115 +61,15 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
     // For storing and restoring the original orbitalFollow settings
     float m_SourceDistance;
+    public Vector3 m_SourceRange; // x = min, y = max, z = center
     NoiseSettings m_SourceNoise;
     LensSettings m_SourceLens;
-    struct OrbitCache
-    {
-        public Vector3 SourceRange; // x = min, y = max, z = center
-        public Vector3 InferredRange; // x = min, y = max, z = center
-        public OrbitSettings Orbits;
 
-        public bool OrbitsChanged(ref OrbitSettings other)
-        {
-            return Orbits.SplineCurvature != other.SplineCurvature
-                || Orbits.Top.m_Height != other.Top.m_Height || Orbits.Top.m_Radius != other.Top.m_Radius
-                || Orbits.Center.m_Height != other.Center.m_Height || Orbits.Center.m_Radius != other.Center.m_Radius
-                || Orbits.Bottom.m_Height != other.Bottom.m_Height || Orbits.Bottom.m_Radius != other.Bottom.m_Radius;
-        }
-
-        public Vector4[] CachedKnots;
-        public Vector4[] CachedCtrl1;
-        public Vector4[] CachedCtrl2;
-
-        public Vector4[] SplineLookup;
-
-        // 0 >= t >= 1
-        public Vector4 RawSplineValue(float t)
-        {
-            int n = 1;
-            if (t > 0.5f)
-            {
-                t -= 0.5f;
-                n = 2;
-            }
-            Vector4 pos = SplineHelpers.Bezier3(
-                t * 2f, CachedKnots[n], CachedCtrl1[n], CachedCtrl2[n], CachedKnots[n+1]);
-
-            // 0 <= w <= 2, where 1 == center
-            pos.w = SplineHelpers.Bezier1(
-                t * 2f, CachedKnots[n].w, CachedCtrl1[n].w, CachedCtrl2[n].w, CachedKnots[n+1].w);
-            return pos;
-        }
-    }
-    OrbitCache m_OrbitCache;
-    
-    internal const int kPositionLookupSize = 32;
-
-    void UpdateOrbitCache()
-    {
-        m_OrbitCache.InferredRange = new Vector3(
-            Mathf.Atan2(Orbits.Bottom.m_Height, Orbits.Bottom.m_Radius) * Mathf.Rad2Deg,
-            Mathf.Atan2(Orbits.Top.m_Height, Orbits.Top.m_Radius) * Mathf.Rad2Deg,
-            Mathf.Atan2(Orbits.Center.m_Height, Orbits.Center.m_Radius) * Mathf.Rad2Deg);
-        m_OrbitCache.Orbits = Orbits;
-
-        float t = Orbits.SplineCurvature;
-        m_OrbitCache.CachedKnots = new Vector4[5];
-        m_OrbitCache.CachedCtrl1 = new Vector4[5];
-        m_OrbitCache.CachedCtrl2 = new Vector4[5];
-        m_OrbitCache.CachedKnots[1] = new Vector4(0, Orbits.Bottom.m_Height, -Orbits.Bottom.m_Radius, 0);
-        m_OrbitCache.CachedKnots[2] = new Vector4(0, Orbits.Center.m_Height, -Orbits.Center.m_Radius, 1);
-        m_OrbitCache.CachedKnots[3] = new Vector4(0, Orbits.Top.m_Height, -Orbits.Top.m_Radius, 2);
-        m_OrbitCache.CachedKnots[0] = Vector4.Lerp(m_OrbitCache.CachedKnots[1], Vector4.zero, t);
-        m_OrbitCache.CachedKnots[4] = Vector4.Lerp(m_OrbitCache.CachedKnots[3], Vector4.zero, t);
-        SplineHelpers.ComputeSmoothControlPoints(
-            ref m_OrbitCache.CachedKnots, ref m_OrbitCache.CachedCtrl1, ref m_OrbitCache.CachedCtrl2);
-
-        // We have to sample the spline at even angular steps because the input
-        // is angle, not spline position
-        var stepSize = 1.0f / kPositionLookupSize;
-        var range = m_OrbitCache.InferredRange.y - m_OrbitCache.InferredRange.x;
-        m_OrbitCache.SplineLookup = new Vector4[kPositionLookupSize + 1];
-        m_OrbitCache.SplineLookup[0] = m_OrbitCache.RawSplineValue(0);
-        float tSpline = 0;
-        var lastAngle = m_OrbitCache.InferredRange.x;
-        var lastSplinePoint = m_OrbitCache.SplineLookup[0];
-        for (int i = 1; i < kPositionLookupSize; ++i)
-        {
-            t = i * stepSize;
-            var splinePoint = lastSplinePoint;
-            var targetAngle = m_OrbitCache.InferredRange.x + t * range;
-            float a = lastAngle;
-            while (a < targetAngle && tSpline < 1)
-            {
-                tSpline += stepSize * 0.5f;
-                splinePoint = m_OrbitCache.RawSplineValue(tSpline);
-                a = UnityVectorExtensions.SignedAngle(Vector3.back, splinePoint, Vector3.right);
-            }
-            m_OrbitCache.SplineLookup[i] = Vector4.Lerp(
-                lastSplinePoint, splinePoint, (targetAngle - lastAngle) / (a - lastAngle));
-
-            if (a < targetAngle + stepSize * range)
-            {
-                lastSplinePoint = splinePoint;
-                lastAngle = a;
-            }
-        }
-        m_OrbitCache.SplineLookup[kPositionLookupSize] = m_OrbitCache.RawSplineValue(1);
-    }
+    Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
 
     /// Needed by inspector
-    internal Vector3 GetCameraOffsetForNormalizedAxisValue(float t) => SplineValue(Mathf.Clamp01(t));
+    internal Vector3 GetCameraOffsetForNormalizedAxisValue(float t) => m_OrbitCache.CachedSplineValue(t);
 
-    // 0 >= t >= 1
-    Vector4 SplineValue(float t) 
-    {
-        t *= kPositionLookupSize;
-        var a = Mathf.Floor(t);
-        var b = Mathf.Ceil(t);
-        return Vector4.Lerp(m_OrbitCache.SplineLookup[(int)a], m_OrbitCache.SplineLookup[(int)b], t - a);
-    }
-    
     void OnValidate()
     {
         Tilt.Top = Mathf.Clamp(Tilt.Top, -30, 30);
@@ -203,13 +82,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
     void Reset()
     {
-        Orbits = new OrbitSettings
-        { 
-            SplineCurvature = 0,
-            Top = new CinemachineNewFreeLook.Orbit { m_Height = 15, m_Radius = 3 },
-            Center = new CinemachineNewFreeLook.Orbit { m_Height = 3, m_Radius = 10 },
-            Bottom= new CinemachineNewFreeLook.Orbit { m_Height = -0.75f, m_Radius = 5 }
-        };
+        Orbits = Cinemachine3OrbitRig.Settings.Default;
         Tilt = new TopCenterBottom<float>() { Enabled = true, Top = -3, Bottom = 3 };
         Noise = new TopCenterBottom<NoiseSettings>
         {
@@ -235,9 +108,9 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
             if (m_Orbital != null)
             {
-                m_OrbitCache.SourceRange = m_Orbital.VerticalAxis.Range;
-                m_OrbitCache.SourceRange.z = m_Orbital.VerticalAxis.Center;
-                UpdateOrbitCache();
+                m_SourceRange = m_Orbital.VerticalAxis.Range;
+                m_SourceRange.z = m_Orbital.VerticalAxis.Center;
+                m_OrbitCache.UpdateOrbitCache(Orbits);
                 m_Orbital.VerticalAxis.Range = m_OrbitCache.InferredRange;
                 m_Orbital.VerticalAxis.Center = m_OrbitCache.InferredRange.z;
             }
@@ -246,8 +119,8 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
     void OnDisable()
     {
-        m_Orbital.VerticalAxis.Range = m_OrbitCache.SourceRange;
-        m_Orbital.VerticalAxis.Center = m_OrbitCache.SourceRange.z;
+        m_Orbital.VerticalAxis.Range = m_SourceRange;
+        m_Orbital.VerticalAxis.Center = m_SourceRange.z;
     }
 
     /// <summary>Override this to do such things as offset the RefereceLookAt.
@@ -263,10 +136,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             return;
 
         m_SourceDistance = m_Orbital.CameraDistance;
-        if (m_OrbitCache.OrbitsChanged(ref Orbits))
-            UpdateOrbitCache();
+        if (m_OrbitCache.SettingsChanged(Orbits))
+            m_OrbitCache.UpdateOrbitCache(Orbits);
 
-        m_LastSplineValue = SplineValue(m_Orbital.VerticalAxis.GetNormalizedValue());
+        m_LastSplineValue = m_OrbitCache.CachedSplineValue(m_Orbital.VerticalAxis.GetNormalizedValue());
 
         m_Orbital.VerticalAxis.Range = m_OrbitCache.InferredRange;
         m_Orbital.VerticalAxis.Center = m_OrbitCache.InferredRange.z;

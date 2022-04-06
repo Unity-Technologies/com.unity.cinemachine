@@ -34,21 +34,8 @@ namespace Cinemachine
         [AxisStateProperty]
         public AxisState m_RadialAxis = new AxisState(1, 1, false, false, 100, 0f, 0f, "Mouse ScrollWheel", false);
 
-        /// <summary>Defines the height and radius for an orbit</summary>
-        [Serializable]
-        public struct Orbit
-        {
-            /// <summary>Height relative to target</summary>
-            [Tooltip("Height of the horizontal orbit circle, relative to the target position")]
-            public float m_Height;
-
-            /// <summary>Radius of orbit</summary>
-            [Tooltip("Horizontal radius of the orbit")]
-            public float m_Radius;
-        }
-
         /// <summary>Order is Top, Middle, Bottom</summary>
-        public Orbit[] m_Orbits = new Orbit[3];
+        public Cinemachine3OrbitRig.Orbit[] m_Orbits = new Cinemachine3OrbitRig.Orbit[3];
 
         /// <summary></summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
@@ -273,10 +260,10 @@ namespace Cinemachine
             m_Rigs = new Rig[2] { new Rig(), new Rig() };
 
             // Default orbits
-            m_Orbits = new Orbit[3];
-            m_Orbits[0].m_Height = 10;  m_Orbits[0].m_Radius = 4;
-            m_Orbits[1].m_Height = 2.5f;  m_Orbits[1].m_Radius = 8;
-            m_Orbits[2].m_Height = -0.5f; m_Orbits[2].m_Radius = 5;
+            m_Orbits = new Cinemachine3OrbitRig.Orbit[3];
+            m_Orbits[0].Height = 10;  m_Orbits[0].Radius = 4;
+            m_Orbits[1].Height = 2.5f;  m_Orbits[1].Radius = 8;
+            m_Orbits[2].Height = -0.5f; m_Orbits[2].Radius = 5;
 
             m_SplineCurvature = 0.5f;
         }
@@ -439,7 +426,7 @@ namespace Cinemachine
             {
                 transposer.HideOffsetInInspector = true;
                 transposer.m_FollowOffset = new Vector3(
-                    0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius);
+                    0, m_Orbits[1].Height, -m_Orbits[1].Radius);
             }
         }
 
@@ -482,24 +469,24 @@ namespace Cinemachine
         {
             bool cacheIsValid = (m_CachedOrbits != null && m_CachedTension == m_SplineCurvature);
             for (int i = 0; i < 3 && cacheIsValid; ++i)
-                cacheIsValid = (m_CachedOrbits[i].y == m_Orbits[i].m_Height
-                    && m_CachedOrbits[i].x == m_Orbits[i].m_Radius);
+                cacheIsValid = (m_CachedOrbits[i].y == m_Orbits[i].Height
+                    && m_CachedOrbits[i].x == m_Orbits[i].Radius);
             if (!cacheIsValid)
             {
                 float t = m_SplineCurvature;
                 m_CachedKnots = new Vector4[5];
                 m_CachedCtrl1 = new Vector4[5];
                 m_CachedCtrl2 = new Vector4[5];
-                m_CachedKnots[1] = new Vector4(0, m_Orbits[2].m_Height, -m_Orbits[2].m_Radius, 0);
-                m_CachedKnots[2] = new Vector4(0, m_Orbits[1].m_Height, -m_Orbits[1].m_Radius, 0);
-                m_CachedKnots[3] = new Vector4(0, m_Orbits[0].m_Height, -m_Orbits[0].m_Radius, 0);
+                m_CachedKnots[1] = new Vector4(0, m_Orbits[2].Height, -m_Orbits[2].Radius, 0);
+                m_CachedKnots[2] = new Vector4(0, m_Orbits[1].Height, -m_Orbits[1].Radius, 0);
+                m_CachedKnots[3] = new Vector4(0, m_Orbits[0].Height, -m_Orbits[0].Radius, 0);
                 m_CachedKnots[0] = Vector4.Lerp(m_CachedKnots[1], Vector4.zero, t);
                 m_CachedKnots[4] = Vector4.Lerp(m_CachedKnots[3], Vector4.zero, t);
                 SplineHelpers.ComputeSmoothControlPoints(
                     ref m_CachedKnots, ref m_CachedCtrl1, ref m_CachedCtrl2);
                 m_CachedOrbits = new Vector2[3];
                 for (int i = 0; i < 3; ++i)
-                    m_CachedOrbits[i] = new Vector2(m_Orbits[i].m_Radius, m_Orbits[i].m_Height);
+                    m_CachedOrbits[i] = new Vector2(m_Orbits[i].Radius, m_Orbits[i].Height);
                 m_CachedTension = m_SplineCurvature;
             }
         }
@@ -562,7 +549,7 @@ namespace Cinemachine
                     orbitalSaved.PushTo(orbital);
                 if (orbital != null)
                     orbital.m_FollowOffset = new Vector3(
-                        0, mFreeLook.m_Orbits[1].m_Height, -mFreeLook.m_Orbits[1].m_Radius);
+                        0, mFreeLook.m_Orbits[1].Height, -mFreeLook.m_Orbits[1].Radius);
                 var components = mFreeLook.ComponentCache;
                 var composer = components[(int)CinemachineCore.Stage.Aim] as CinemachineComposer;
                 if (composer != null && mFreeLook.m_Rigs[OtherRig].m_CustomAim)
