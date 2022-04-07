@@ -155,9 +155,10 @@ namespace Cinemachine.Editor
             var prevMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(pos, orient, scale * Vector3.one);
 
-            const float stepSize = 0.01f;
+            const float stepSize = 0.1f;
             var lastPos = freelook.GetCameraOffsetForNormalizedAxisValue(-1);
-            for (float t = -1 + stepSize; t <= 1; t += stepSize)
+            var max = 1 + stepSize/2;
+            for (float t = -1 + stepSize; t < max; t += stepSize)
             {
                 var p = freelook.GetCameraOffsetForNormalizedAxisValue(t);
                 Gizmos.DrawLine(lastPos, p);

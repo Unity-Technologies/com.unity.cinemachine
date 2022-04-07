@@ -462,8 +462,8 @@ namespace Cinemachine
                 CachedKnots[1] = new Vector4(0, orbits.Bottom.Height, -orbits.Bottom.Radius, -1);
                 CachedKnots[2] = new Vector4(0, orbits.Center.Height, -orbits.Center.Radius, 0);
                 CachedKnots[3] = new Vector4(0, orbits.Top.Height, -orbits.Top.Radius, 1);
-                CachedKnots[0] = Vector4.Lerp(CachedKnots[1], Vector4.zero, t);
-                CachedKnots[4] = Vector4.Lerp(CachedKnots[3], Vector4.zero, t);
+                CachedKnots[0] = Vector4.Lerp(CachedKnots[1] + (CachedKnots[1] - CachedKnots[2]) * 0.5f, Vector4.zero, t);
+                CachedKnots[4] = Vector4.Lerp(CachedKnots[3] + (CachedKnots[3] - CachedKnots[2]) * 0.5f, Vector4.zero, t);
                 SplineHelpers.ComputeSmoothControlPoints(ref CachedKnots, ref CachedCtrl1, ref CachedCtrl2);
             }
 
