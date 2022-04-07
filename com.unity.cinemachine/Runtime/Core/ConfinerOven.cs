@@ -290,7 +290,7 @@ namespace Cinemachine
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
             if (solution.Count == 0)
             {
-                solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
+                solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } }; // TODO: we need this when window is huge, bigger both ways
             }
 
             // Add in the skeleton
