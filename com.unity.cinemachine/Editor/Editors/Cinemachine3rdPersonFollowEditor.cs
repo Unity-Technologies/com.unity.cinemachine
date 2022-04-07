@@ -114,7 +114,7 @@ namespace Cinemachine.Editor
                     
                     so.ApplyModifiedProperties();
                 }
-                
+
                 var isDragged = IsHandleDragged(sHandleMinId, sHandleMaxId, shoulderPosition, "Shoulder Offset " 
                     + thirdPerson.ShoulderOffset.ToString("F1"), followTargetPosition, shoulderPosition);
                 isDragged |= IsHandleDragged(aHandleId, aHandleId, armPosition, "Vertical Arm Length (" 

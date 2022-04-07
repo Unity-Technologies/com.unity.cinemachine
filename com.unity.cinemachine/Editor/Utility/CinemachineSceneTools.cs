@@ -5,7 +5,6 @@ using Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
 
 namespace Cinemachine.Editor
 {
