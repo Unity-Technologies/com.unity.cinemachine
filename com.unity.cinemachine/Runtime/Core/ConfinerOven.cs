@@ -281,12 +281,14 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
+            frustumHeight = Mathf.Min(m_Cache.maxFrustumHeight, frustumHeight);
+            
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
             offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
             var solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
-            if (frustumHeight >= m_Cache.maxFrustumHeight && solution.Count == 0)
+            if (solution.Count == 0)
             {
                 solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
             }
@@ -348,7 +350,7 @@ namespace Cinemachine
             public PolygonSolution leftCandidate;
             public List<List<IntPoint>> maxCandidate;
             public float stepSize;
-            public float maxFrustumHeight;
+            public float maxFrustumHeight; // either set by the user, or the theoretical maximum
             public float currentFrustumHeight;
 
             public IntPoint midPoint;
