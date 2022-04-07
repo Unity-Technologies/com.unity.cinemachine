@@ -290,7 +290,14 @@ namespace Cinemachine
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
             if (solution.Count == 0)
             {
-                solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } }; // TODO: we need this when window is huge, bigger both ways
+                solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
+            }
+
+            if (frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
+            {
+                // TODO: lerp from solution i-2 to i-1.
+                
+                // m_Cache.solutions
             }
 
             // Add in the skeleton
@@ -351,6 +358,7 @@ namespace Cinemachine
             public List<List<IntPoint>> maxCandidate;
             public float stepSize;
             public float maxFrustumHeight; // either set by the user, or the theoretical maximum
+            public float theoriticalMaxFrustumHeight;
             public float currentFrustumHeight;
 
             public IntPoint midPoint;
@@ -385,10 +393,7 @@ namespace Cinemachine
             }
             
             // calculate mid point and use it as the most shrank down version
-            var axisAlignedBoundingRect = ClipperBase.GetBounds(m_OriginalPolygon);
-            m_Cache.midPoint = new IntPoint(
-                (axisAlignedBoundingRect.left + axisAlignedBoundingRect.right) / 2,
-                (axisAlignedBoundingRect.top + axisAlignedBoundingRect.bottom) / 2);
+            m_Cache.midPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
             
             // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.maxFrustumHeight  < 0)
@@ -398,12 +403,12 @@ namespace Cinemachine
             }
 
             // Don't compute further than what is the theoretical max
-            float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
-            
+            m_Cache.theoriticalMaxFrustumHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
+
             // exact comparison to 0 is intentional!
-            if (m_Cache.maxFrustumHeight  == 0 || m_Cache.maxFrustumHeight  > polygonHalfHeight) 
+            if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
             {
-                m_Cache.maxFrustumHeight = polygonHalfHeight; 
+                m_Cache.maxFrustumHeight = m_Cache.theoriticalMaxFrustumHeight; 
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
 
@@ -430,10 +435,6 @@ namespace Cinemachine
             m_Cache.currentFrustumHeight = 0;
             m_Cache.maxCandidate = new List<List<IntPoint>>();
             m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.maxFrustumHeight * k_FloatToIntScaler);
-            // if (m_Cache.maxCandidate == null || m_Cache.maxCandidate.Count == 0)
-            // {
-            //     m_Cache.maxCandidate = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
-            // }
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
@@ -542,10 +543,31 @@ namespace Cinemachine
             }
 
             ComputeSkeleton(in m_Cache.solutions);
+
+            var lastSolution = m_Cache.solutions[m_Cache.solutions.Count - 1];
+            var lastSolutionCount = lastSolution.m_Polygons.Count;
+            var pointSolution = new PolygonSolution();
+            for (int i = 0; i < lastSolutionCount; ++i)
+            {
+                var axisAlignedBoundingRect = ClipperBase.GetBounds(lastSolution.m_Polygons);
+                var width = Math.Abs(axisAlignedBoundingRect.left - axisAlignedBoundingRect.right);
+                var height = Math.Abs(axisAlignedBoundingRect.top - axisAlignedBoundingRect.bottom);
+
+                pointSolution.m_FrustumHeight = lastSolution.m_FrustumHeight + height;
+                pointSolution.m_Polygons = new List<List<IntPoint>>
+                {
+                    // TODO: create this point for each point so we can lerp to them
+                    new List<IntPoint> { MidPointOfIntRect(axisAlignedBoundingRect) }
+                };
+            }
+            
             m_BakeProgress = 1;
             State = BakingState.BAKED;
         }
-        
+
+        static IntPoint MidPointOfIntRect(IntRect bounds) => 
+            new IntPoint((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
+
         private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
         {
             float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
