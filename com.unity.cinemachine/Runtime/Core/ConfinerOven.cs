@@ -430,10 +430,10 @@ namespace Cinemachine
             m_Cache.currentFrustumHeight = 0;
             m_Cache.maxCandidate = new List<List<IntPoint>>();
             m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.maxFrustumHeight * k_FloatToIntScaler);
-            if (m_Cache.maxCandidate == null || m_Cache.maxCandidate.Count == 0)
-            {
-                m_Cache.maxCandidate = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
-            }
+            // if (m_Cache.maxCandidate == null || m_Cache.maxCandidate.Count == 0)
+            // {
+            //     m_Cache.maxCandidate = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
+            // }
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
@@ -527,18 +527,18 @@ namespace Cinemachine
                 }
 
                 // Pause after max time per iteration reached
-                var elapsedTime = Time.realtimeSinceStartup - startTime;
-                if (elapsedTime > maxComputationTimePerFrameInSeconds)
-                {
-                    m_Cache.bakeTime += elapsedTime;
-                    if (m_Cache.bakeTime > m_maxComputationTimeForFullSkeletonBakeInSeconds)
-                    {
-                        State = BakingState.TIMEOUT; 
-                    }
-
-                    m_BakeProgress = m_Cache.leftCandidate.m_FrustumHeight / m_Cache.maxFrustumHeight;
-                    return;
-                }
+                // var elapsedTime = Time.realtimeSinceStartup - startTime;
+                // if (elapsedTime > maxComputationTimePerFrameInSeconds)
+                // {
+                //     m_Cache.bakeTime += elapsedTime;
+                //     if (m_Cache.bakeTime > m_maxComputationTimeForFullSkeletonBakeInSeconds)
+                //     {
+                //         State = BakingState.TIMEOUT; 
+                //     }
+                //
+                //     m_BakeProgress = m_Cache.leftCandidate.m_FrustumHeight / m_Cache.maxFrustumHeight;
+                //     return;
+                // }
             }
 
             ComputeSkeleton(in m_Cache.solutions);
