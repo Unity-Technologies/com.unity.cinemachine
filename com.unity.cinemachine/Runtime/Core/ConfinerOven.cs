@@ -56,7 +56,7 @@ namespace Cinemachine
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
                 if (m_Solution.Count <= 0) return pointToConfine; // empty confiner -> no need to confine
-                
+
                 Vector2 pInConfinerSpace = m_AspectStretcher.Stretch(pointToConfine);
                 IntPoint p =
                     new IntPoint(pInConfinerSpace.x * k_FloatToIntScaler, pInConfinerSpace.y * k_FloatToIntScaler);
@@ -286,7 +286,11 @@ namespace Cinemachine
             offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
             var solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
-            
+            if (frustumHeight >= m_Cache.maxFrustumHeight && solution.Count == 0)
+            {
+                solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
+            }
+
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
             if (State == BakingState.BAKING || m_Skeleton.Count == 0)
@@ -295,7 +299,7 @@ namespace Cinemachine
             }
             else
             {
-                Clipper c = new Clipper();
+                var c = new Clipper();
                 c.AddPaths(solution, PolyType.ptSubject, true);
                 c.AddPaths(m_Skeleton, PolyType.ptClip, true);
                 c.Execute(ClipType.ctUnion, bakedSolution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
@@ -347,6 +351,8 @@ namespace Cinemachine
             public float maxFrustumHeight;
             public float currentFrustumHeight;
 
+            public IntPoint midPoint;
+
             public float bakeTime;
         }
         private BakingStateCache m_Cache;
@@ -375,6 +381,12 @@ namespace Cinemachine
                 }
                 m_OriginalPolygon.Add(path);
             }
+            
+            // calculate mid point and use it as the most shrank down version
+            var axisAlignedBoundingRect = ClipperBase.GetBounds(m_OriginalPolygon);
+            m_Cache.midPoint = new IntPoint(
+                (axisAlignedBoundingRect.left + axisAlignedBoundingRect.right) / 2,
+                (axisAlignedBoundingRect.top + axisAlignedBoundingRect.bottom) / 2);
             
             // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.maxFrustumHeight  < 0)
@@ -416,6 +428,10 @@ namespace Cinemachine
             m_Cache.currentFrustumHeight = 0;
             m_Cache.maxCandidate = new List<List<IntPoint>>();
             m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.maxFrustumHeight * k_FloatToIntScaler);
+            if (m_Cache.maxCandidate == null || m_Cache.maxCandidate.Count == 0)
+            {
+                m_Cache.maxCandidate = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
+            }
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
