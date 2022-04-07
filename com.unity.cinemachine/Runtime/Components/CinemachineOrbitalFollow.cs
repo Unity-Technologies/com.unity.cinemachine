@@ -50,10 +50,12 @@ namespace Cinemachine
         /// <summary>How to construct the surface on which the camera will travel</summary>
         public enum OrbitMode
         {
-            /// <summary>Camera is at a fixed distance from the target, defining a sphere</summary>
+            /// <summary>Camera is at a fixed distance from the target, 
+            /// defining a sphere</summary>
             Sphere,
-            /// <summary>Camera surface is built by extruding a line connecting 3 circular orbits around the target</summary>
-            ThreeRingRig
+            /// <summary>Camera surface is built by extruding a line connecting 3 circular 
+            /// orbits around the target</summary>
+            ThreeRing
         }
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
@@ -63,7 +65,7 @@ namespace Cinemachine
 
         /// <summary>The camera will be placed at this distance from the Follow target</summary>
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
-        public float CameraDistance = 10;
+        public float Radius = 10;
 
         [Tooltip("Defines a complex surface rig from 3 horizontal rings.")]
         [HideFoldout]
@@ -125,6 +127,9 @@ namespace Cinemachine
         // Helper object to track the Follow target
         CinemachineTransposer.TargetTracker m_TargetTracker;
 
+        // 3-rig orbit implementation
+        Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
+
         static InputAxis DefaultHorizontal => new InputAxis 
         { 
             Value = 0, 
@@ -154,7 +159,7 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            CameraDistance = Mathf.Max(0, CameraDistance);
+            Radius = Mathf.Max(0, Radius);
             PositionDamping = PositiveVector3(PositionDamping);
             RotationDamping = PositiveVector3(PositionDamping);
             QuaternionDamping = Mathf.Max(0, QuaternionDamping);
@@ -170,7 +175,8 @@ namespace Cinemachine
             PositionDamping = new Vector3(1, 1, 1);
             RotationDamping = new Vector3(1, 1, 1);
             QuaternionDamping = 1f;
-            CameraDistance = 10;
+            Radius = 10;
+            Orbits = Cinemachine3OrbitRig.Settings.Default;
             HorizontalAxis = DefaultHorizontal;
             VerticalAxis = DefaultVertical;
             RadialAxis = DefaultRadial;
@@ -217,14 +223,44 @@ namespace Cinemachine
         /// <summary>Inspector checks this and displays warnng if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;
 
-        /// <summary>Get the localspace offset from the target at which to place the camera</summary>
-        Vector3 ComputeCameraOffset()
+
+        /// <summary>
+        /// Get a value that represents the current position along the vertical axis.  
+        /// </summary>
+        /// <returns>Ranges from -1...1.  
+        /// If OrbitStyle is ThreeRing, then 0 represents the middle orbit position.</returns>
+        public float GetVerticalAxisNormalizedValue() => GetCameraPoint().w;
+
+        /// <summary>
+        /// For inspector.
+        /// Get the camera offset corresponding to the normalized position, which ranges from -1...1.
+        /// </summary>
+        /// <returns>Camera position in target local space</returns>
+        internal Vector3 GetCameraOffsetForNormalizedAxisValue(float t) 
+            => m_OrbitCache.SplineValue(Mathf.Clamp01((t + 1) * 0.5f));
+
+        Vector4 GetCameraPoint()
         {
-            var rot = Quaternion.Euler(VerticalAxis.Value, HorizontalAxis.Value, 0);
-            var offset = rot * new Vector3(0, 0, -CameraDistance * RadialAxis.Value);
+            Vector3 pos;
+            float t;
+            if (OrbitStyle == OrbitMode.ThreeRing)
+            {
+                if (m_OrbitCache.SettingsChanged(Orbits))
+                    m_OrbitCache.UpdateOrbitCache(Orbits);
+                var v = m_OrbitCache.SplineValue(VerticalAxis.GetNormalizedValue());
+                pos = Quaternion.AngleAxis(HorizontalAxis.Value, Vector3.up) * v;
+                t = v.w;
+            }
+            else
+            {
+                var rot = Quaternion.Euler(VerticalAxis.Value, HorizontalAxis.Value, 0);
+                pos = rot * new Vector3(0, 0, -Radius * RadialAxis.Value);
+                t = VerticalAxis.GetNormalizedValue() * 2 - 1;
+            }
             if (BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                offset.z = -Mathf.Abs(offset.z);
-            return offset;
+                pos.z = -Mathf.Abs(pos.z);
+
+            return new Vector4(pos.x, pos.y, pos.z, t);
         }
         
         /// <summary>Notification that this virtual camera is going live.
@@ -257,7 +293,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
-            m_TargetTracker.ForceCameraPosition(this, BindingMode, pos, rot, ComputeCameraOffset());
+            m_TargetTracker.ForceCameraPosition(this, BindingMode, pos, rot, GetCameraPoint());
 
             m_ResetHandler?.Invoke();
 
@@ -266,6 +302,7 @@ namespace Cinemachine
             var distance = dir.magnitude;
             if (distance > 0.001f)
             {
+                // GML TODO: handle ThreeRing mode
                 var up = VirtualCamera.State.ReferenceUp;
                 var orient = m_TargetTracker.GetReferenceOrientation(this, BindingMode, up);
                 dir /= distance;
@@ -274,7 +311,7 @@ namespace Cinemachine
                 VerticalAxis.Value = BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
                 HorizontalAxis.Value = r.y;
             }
-            RadialAxis.Value = distance / CameraDistance;
+            RadialAxis.Value = distance / Radius;
         }
 
         /// <summary>This is called to notify the us that a target got warped,
@@ -301,7 +338,7 @@ namespace Cinemachine
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera))
                 m_ResetHandler?.Invoke();
 
-            Vector3 offset = ComputeCameraOffset();
+            Vector3 offset = GetCameraPoint();
             if (BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                 HorizontalAxis.Value = 0;
 
@@ -392,40 +429,11 @@ namespace Cinemachine
         /// </summary>
         internal struct OrbitSplineCache
         {
-            /// <summary>Resolution of the orbit cache.  Increase if the orbits are too coarse</summary>
-            internal const int kResolution = 64;
-
-            /// <summary>
-            /// InptAxis range and center required to implement the 3 orbit rig specified buy the Settings.
-            /// x = min, y = max, z = center
-            /// </summary>
-            public Vector3 InferredRange { get; private set; }
-
             Settings OrbitSettings;
 
             Vector4[] CachedKnots;
             Vector4[] CachedCtrl1;
             Vector4[] CachedCtrl2;
-
-            Vector4[] SplineLookup;
-
-            // 0 >= t >= 1
-            Vector4 RawSplineValue(float t)
-            {
-                int n = 1;
-                if (t > 0.5f)
-                {
-                    t -= 0.5f;
-                    n = 2;
-                }
-                Vector4 pos = SplineHelpers.Bezier3(
-                    t * 2f, CachedKnots[n], CachedCtrl1[n], CachedCtrl2[n], CachedKnots[n+1]);
-
-                // 0 <= w <= 2, where 1 == center
-                pos.w = SplineHelpers.Bezier1(
-                    t * 2f, CachedKnots[n].w, CachedCtrl1[n].w, CachedCtrl2[n].w, CachedKnots[n+1].w);
-                return pos;
-            }
 
             /// <summary>Test to see if the cache needs to be updated because the orbit settings have changed</summary>
             /// <param name="other">The current orbit settings, will be compared against the cached settings</param>
@@ -445,69 +453,44 @@ namespace Cinemachine
             /// <param name="orbits"></param>
             public void UpdateOrbitCache(in Settings orbits)
             {
-                InferredRange = new Vector3(
-                    Mathf.Atan2(orbits.Bottom.Height, orbits.Bottom.Radius) * Mathf.Rad2Deg,
-                    Mathf.Atan2(orbits.Top.Height, orbits.Top.Radius) * Mathf.Rad2Deg,
-                    Mathf.Atan2(orbits.Center.Height, orbits.Center.Radius) * Mathf.Rad2Deg);
                 OrbitSettings = orbits;
 
                 float t = orbits.SplineCurvature;
                 CachedKnots = new Vector4[5];
                 CachedCtrl1 = new Vector4[5];
                 CachedCtrl2 = new Vector4[5];
-                CachedKnots[1] = new Vector4(0, orbits.Bottom.Height, -orbits.Bottom.Radius, 0);
-                CachedKnots[2] = new Vector4(0, orbits.Center.Height, -orbits.Center.Radius, 1);
-                CachedKnots[3] = new Vector4(0, orbits.Top.Height, -orbits.Top.Radius, 2);
+                CachedKnots[1] = new Vector4(0, orbits.Bottom.Height, -orbits.Bottom.Radius, -1);
+                CachedKnots[2] = new Vector4(0, orbits.Center.Height, -orbits.Center.Radius, 0);
+                CachedKnots[3] = new Vector4(0, orbits.Top.Height, -orbits.Top.Radius, 1);
                 CachedKnots[0] = Vector4.Lerp(CachedKnots[1], Vector4.zero, t);
                 CachedKnots[4] = Vector4.Lerp(CachedKnots[3], Vector4.zero, t);
                 SplineHelpers.ComputeSmoothControlPoints(ref CachedKnots, ref CachedCtrl1, ref CachedCtrl2);
-
-                // We have to sample the spline at even angular steps because the input
-                // is angle, not spline position
-                var stepSize = 1.0f / kResolution;
-                var range = InferredRange.y - InferredRange.x;
-                SplineLookup = new Vector4[kResolution + 1];
-                SplineLookup[0] = RawSplineValue(0);
-                float tSpline = 0;
-                var lastAngle = InferredRange.x;
-                var lastSplinePoint = SplineLookup[0];
-                for (int i = 1; i < kResolution; ++i)
-                {
-                    t = i * stepSize;
-                    var splinePoint = lastSplinePoint;
-                    var targetAngle = InferredRange.x + t * range;
-                    float a = lastAngle;
-                    while (a < targetAngle && tSpline < 1)
-                    {
-                        tSpline += stepSize * 0.5f;
-                        splinePoint = RawSplineValue(tSpline);
-                        a = UnityVectorExtensions.SignedAngle(Vector3.back, splinePoint, Vector3.right);
-                    }
-                    SplineLookup[i] = Vector4.Lerp(
-                        lastSplinePoint, splinePoint, (targetAngle - lastAngle) / (a - lastAngle));
-
-                    if (a < targetAngle + stepSize * range)
-                    {
-                        lastSplinePoint = splinePoint;
-                        lastAngle = a;
-                    }
-                }
-                SplineLookup[kResolution] = RawSplineValue(1);
             }
 
-            /// <summary>Get the value of a point on the spline</summary>
-            /// <param name="t">Where on the spline.  Clamped to 0...1</param>
-            /// <returns>Point on the spline along the surface define by the orbits.  
+            /// <summary>Get the value of a point on the spline curve</summary>
+            /// <param name="t">Where on the spline arc, with 0...1 t==0.5 being the center orbit./param>
+            /// <returns>Point on the spline along the surface defined by the orbits.  
             /// XYZ is the point itself, and W ranges from 0 on the bottom to 2 on the top, 
             /// with 1 being the center.</returns>
-            public Vector4 CachedSplineValue(float t) 
+            public Vector4 SplineValue(float t)
             {
-                if (SplineLookup == null)
+                if (CachedKnots == null)
                     return Vector4.zero;
-                t = Mathf.Clamp01(t) * kResolution;
-                var a = Mathf.Floor(t);
-                var b = Mathf.Ceil(t);
-                return Vector4.Lerp(SplineLookup[(int)a], SplineLookup[(int)b], t - a);
+
+                int n = 1;
+                if (t > 0.5f)
+                {
+                    t -= 0.5f;
+                    n = 2;
+                }
+                Vector4 pos = SplineHelpers.Bezier3(
+                    t * 2f, CachedKnots[n], CachedCtrl1[n], CachedCtrl2[n], CachedKnots[n+1]);
+
+                // -1 <= w <= 1, where 0 == center
+                pos.w = SplineHelpers.Bezier1(
+                    t * 2f, CachedKnots[n].w, CachedCtrl1[n].w, CachedCtrl2[n].w, CachedKnots[n+1].w);
+
+                return pos;
             }
         }
     }

@@ -38,10 +38,6 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         public static NoiseSettings Default => new NoiseSettings { Amplitude = 1, Frequency = 1 };
     }
 
-    [Tooltip("Defines how the camera distance changes as a function of vertical camera angle.")]
-    [HideFoldout]
-    public Cinemachine3OrbitRig.Settings Orbits = Cinemachine3OrbitRig.Settings.Default;
-
     [Tooltip("Screen space vertical adustment for the target position.  "
         + "0 is screen center, +-1 is top/bottom of screen")]
     [FoldoutWithEnabledButton]
@@ -57,18 +53,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
     CinemachineOrbitalFollow m_Orbital;
     CinemachineBasicMultiChannelPerlin m_NoiseComponent;
-    Vector4 m_LastSplineValue;
+    float m_LastSplineValue;
 
-    // For storing and restoring the original orbitalFollow settings
-    float m_SourceDistance;
-    public Vector3 m_SourceRange; // x = min, y = max, z = center
+    // For storing and restoring the original settings
     NoiseSettings m_SourceNoise;
     LensSettings m_SourceLens;
-
-    Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
-
-    /// Needed by inspector
-    internal Vector3 GetCameraOffsetForNormalizedAxisValue(float t) => m_OrbitCache.CachedSplineValue(t);
 
     void OnValidate()
     {
@@ -82,7 +71,6 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
     void Reset()
     {
-        Orbits = Cinemachine3OrbitRig.Settings.Default;
         Tilt = new TopCenterBottom<float>() { Enabled = true, Top = -3, Bottom = 3 };
         Noise = new TopCenterBottom<NoiseSettings>
         {
@@ -105,22 +93,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             m_Orbital = vcam.GetCinemachineComponent<CinemachineOrbitalFollow>();
             m_NoiseComponent = vcam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-
-            if (m_Orbital != null)
-            {
-                m_SourceRange = m_Orbital.VerticalAxis.Range;
-                m_SourceRange.z = m_Orbital.VerticalAxis.Center;
-                m_OrbitCache.UpdateOrbitCache(Orbits);
-                m_Orbital.VerticalAxis.Range = m_OrbitCache.InferredRange;
-                m_Orbital.VerticalAxis.Center = m_OrbitCache.InferredRange.z;
-            }
         }
-    }
-
-    void OnDisable()
-    {
-        m_Orbital.VerticalAxis.Range = m_SourceRange;
-        m_Orbital.VerticalAxis.Center = m_SourceRange.z;
     }
 
     /// <summary>Override this to do such things as offset the RefereceLookAt.
@@ -135,41 +108,30 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         if (m_Orbital == null)
             return;
 
-        m_SourceDistance = m_Orbital.CameraDistance;
-        if (m_OrbitCache.SettingsChanged(Orbits))
-            m_OrbitCache.UpdateOrbitCache(Orbits);
-
-        m_LastSplineValue = m_OrbitCache.CachedSplineValue(m_Orbital.VerticalAxis.GetNormalizedValue());
-
-        m_Orbital.VerticalAxis.Range = m_OrbitCache.InferredRange;
-        m_Orbital.VerticalAxis.Center = m_OrbitCache.InferredRange.z;
-        Vector3 pos = m_LastSplineValue;
-        m_Orbital.CameraDistance = pos.magnitude;
-
-        var t = m_LastSplineValue.w;
+        var t = m_LastSplineValue = m_Orbital.GetVerticalAxisNormalizedValue();
         if (m_NoiseComponent != null && Noise.Enabled)
         {
             m_SourceNoise.Amplitude = m_NoiseComponent.m_AmplitudeGain;
             m_SourceNoise.Frequency = m_NoiseComponent.m_FrequencyGain;
-            if (t > 1)
+            if (t >= 0)
             {
-                m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Center.Amplitude, Noise.Top.Amplitude, t - 1);
-                m_SourceNoise.Frequency = Mathf.Lerp(Noise.Center.Frequency, Noise.Top.Frequency, t - 1);
+                m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Center.Amplitude, Noise.Top.Amplitude, t);
+                m_SourceNoise.Frequency = Mathf.Lerp(Noise.Center.Frequency, Noise.Top.Frequency, t);
             }
             else
             {
-                m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Bottom.Amplitude, Noise.Center.Amplitude, t);
-                m_SourceNoise.Frequency = Mathf.Lerp(Noise.Bottom.Frequency, Noise.Center.Frequency, t);
+                m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Bottom.Amplitude, Noise.Center.Amplitude, t + 1);
+                m_SourceNoise.Frequency = Mathf.Lerp(Noise.Bottom.Frequency, Noise.Center.Frequency, t + 1);
             }
         }
 
         if (Lens.Enabled && vcam is CinemachineVirtualCamera)
         {
             m_SourceLens = (vcam as CinemachineVirtualCamera).m_Lens;
-            if (t > 1)
-                curState.Lens = LensSettings.Lerp(Lens.Center, Lens.Top, t - 1);
+            if (t >= 0)
+                curState.Lens = LensSettings.Lerp(Lens.Center, Lens.Top, t);
             else
-                curState.Lens = LensSettings.Lerp(Lens.Bottom, Lens.Center, t);
+                curState.Lens = LensSettings.Lerp(Lens.Bottom, Lens.Center, t + 1);
         }
     }
             
@@ -180,7 +142,6 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         if (stage == CinemachineCore.Stage.Finalize && m_Orbital != null)
         {
             // Restore the settings
-            m_Orbital.CameraDistance = m_SourceDistance;
             if (m_NoiseComponent != null && Noise.Enabled)
             {
                 m_NoiseComponent.m_AmplitudeGain = m_SourceNoise.Amplitude;
@@ -192,10 +153,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             // Apply the tilt
             if (Tilt.Enabled)
             {
-                var t = m_LastSplineValue.w;
-                float tilt = t > 1 
-                    ? Mathf.Lerp(Tilt.Center, Tilt.Top, t - 1) 
-                    : Mathf.Lerp(Tilt.Bottom, Tilt.Center, t);
+                var t = m_LastSplineValue;
+                float tilt = t > 0 
+                    ? Mathf.Lerp(Tilt.Center, Tilt.Top, t) 
+                    : Mathf.Lerp(Tilt.Bottom, Tilt.Center, t + 1);
 
                 // Tilt in local X
                 var qTilted = state.RawOrientation * Quaternion.AngleAxis(tilt, Vector3.right);
