@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
 using ClipperLib;
+using UnityEngine.Assertions;
 
 namespace Cinemachine
 {
@@ -281,7 +282,7 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
-            frustumHeight = Mathf.Min(m_Cache.maxFrustumHeight, frustumHeight);
+            //frustumHeight = Mathf.Min(m_Cache.maxFrustumHeight, frustumHeight); // TODO: need to have a user set max to check here!
             
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
@@ -293,11 +294,19 @@ namespace Cinemachine
                 solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
             }
 
-            if (frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
+            if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
             {
                 // TODO: lerp from solution i-2 to i-1.
                 
                 // m_Cache.solutions
+                int count = m_Cache.solutions.Count;
+                var s1 = m_Cache.solutions[count - 2];
+                var s2 = m_Cache.solutions[count - 1];
+                var s = PolygonSolution.Lerp(s1, s2, frustumHeight);
+                return new BakedSolution(
+                    m_AspectStretcher.Aspect, frustumHeight,
+                    m_MinFrustumHeightWithBones < frustumHeight,
+                    m_PolygonRect, m_OriginalPolygon, s.m_Polygons);
             }
 
             // Add in the skeleton
@@ -339,6 +348,39 @@ namespace Cinemachine
             }
 
             public bool IsEmpty => m_Polygons == null;
+
+            public static PolygonSolution Lerp(PolygonSolution s1, PolygonSolution s2, float frustumHeight)
+            {
+                var s = new PolygonSolution();
+                if (s1.m_Polygons.Count != s2.m_Polygons.Count)
+                {
+                    return s;
+                }
+
+                var t = Mathf.Clamp01((frustumHeight - s1.m_FrustumHeight) / (s2.m_FrustumHeight - s1.m_FrustumHeight));
+                s.m_FrustumHeight = Mathf.Lerp(s1.m_FrustumHeight, s2.m_FrustumHeight, t);
+                s.m_Polygons = new List<List<IntPoint>>();
+                for (var i = 0; i < s1.m_Polygons.Count; ++i)
+                {
+                    var polygon = new List<IntPoint>();
+                    for (var j = 0; j < s1.m_Polygons[i].Count; ++j)
+                    {
+                        polygon.Add(Lerp(s1.m_Polygons[i][j], s2.m_Polygons[i][j], t));
+                    }
+                    s.m_Polygons.Add(polygon);
+                }
+
+                return s;
+
+                static IntPoint Lerp(IntPoint p1, IntPoint p2, double t)
+                {
+                    return new IntPoint
+                    {
+                        X = p1.X + (long)((p2.X - p1.X) * t),
+                        Y = p1.Y + (long)((p2.Y - p1.Y) * t)
+                    };
+                }
+            }
         }
 
         public enum BakingState 
@@ -544,22 +586,39 @@ namespace Cinemachine
 
             ComputeSkeleton(in m_Cache.solutions);
 
+            // Remove useless results
+            for (int i = m_Cache.solutions.Count - 1; i >= 0; --i)
+            {
+                if (m_Cache.solutions[i].m_Polygons.Count == 0)
+                {
+                    m_Cache.solutions.RemoveAt(i);
+                }
+            }
+
             var lastSolution = m_Cache.solutions[m_Cache.solutions.Count - 1];
             var lastSolutionCount = lastSolution.m_Polygons.Count;
             var pointSolution = new PolygonSolution();
+            pointSolution.m_Polygons = new List<List<IntPoint>>();
+            long maxHeight = 0;
             for (int i = 0; i < lastSolutionCount; ++i)
             {
-                var axisAlignedBoundingRect = ClipperBase.GetBounds(lastSolution.m_Polygons);
+                var polygon = lastSolution.m_Polygons[i];
+                var axisAlignedBoundingRect = GetBounds(polygon);
                 var width = Math.Abs(axisAlignedBoundingRect.left - axisAlignedBoundingRect.right);
                 var height = Math.Abs(axisAlignedBoundingRect.top - axisAlignedBoundingRect.bottom);
-
-                pointSolution.m_FrustumHeight = lastSolution.m_FrustumHeight + height;
-                pointSolution.m_Polygons = new List<List<IntPoint>>
+                maxHeight = Math.Max(height, maxHeight);
+                
+                var midPoint = MidPointOfIntRect(axisAlignedBoundingRect);
+                var midPoints = new List<IntPoint>(polygon.Count);
+                for (var index = 0; index < polygon.Count; index++)
                 {
-                    // TODO: create this point for each point so we can lerp to them
-                    new List<IntPoint> { MidPointOfIntRect(axisAlignedBoundingRect) }
-                };
+                    midPoints.Add(midPoint);
+                }
+
+                pointSolution.m_Polygons.Add(midPoints);
             }
+            pointSolution.m_FrustumHeight = lastSolution.m_FrustumHeight + maxHeight * k_IntToFloatScaler;
+            m_Cache.solutions.Add(pointSolution);
             
             m_BakeProgress = 1;
             State = BakingState.BAKED;
@@ -567,6 +626,24 @@ namespace Cinemachine
 
         static IntPoint MidPointOfIntRect(IntRect bounds) => 
             new IntPoint((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
+
+        static IntRect GetBounds(List<IntPoint> polygon)
+        {
+            var polygons = new List<List<IntPoint>> { polygon };
+            return ClipperBase.GetBounds(polygons);
+
+            // long minX = long.MaxValue, maxX = long.MinValue;
+            // long minY = long.MaxValue, maxY = long.MinValue;
+            // for (int i = 0; i < polygon.Count; ++i)
+            // {
+            //     var p = polygon[i];
+            //     minX = Math.Min(minX, p.X);
+            //     maxX = Math.Max(maxX, p.X);
+            //     minY = Math.Min(minY, p.Y);
+            //     maxY = Math.Max(maxY, p.Y);
+            // }
+            // return new IntRect();
+        }
 
         private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
         {
