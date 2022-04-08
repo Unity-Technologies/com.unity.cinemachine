@@ -14,9 +14,17 @@ namespace Cinemachine
         {
             var def = Target;
 
+            if (!def.HasOrbital())
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.HelpBox("An Orbital Follow component is required.", MessageType.Warning);
+                return;
+            }
+
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(serializedObject.FindProperty(() => def.Tilt));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => def.Noise));
+            if (def.HasNoise())
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => def.Noise));
             EditorGUILayout.PropertyField(serializedObject.FindProperty(() => def.Lens));
 
             if (EditorGUI.EndChangeCheck())

@@ -57,7 +57,6 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
     // For storing and restoring the original settings
     NoiseSettings m_SourceNoise;
-    LensSettings m_SourceLens;
 
     void OnValidate()
     {
@@ -79,22 +78,36 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             Bottom = NoiseSettings.Default 
         };
 
-        var vcam = VirtualCamera as CinemachineVirtualCamera;
-        var defaultLens = vcam == null ? LensSettings.Default : vcam.m_Lens;
+        var vcam = VirtualCamera;
+        var defaultLens = vcam == null ? LensSettings.Default : vcam.State.Lens;
         Lens = new TopCenterBottom<LensSettings> { Top = defaultLens, Center = defaultLens, Bottom = defaultLens };
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        RefreshComponentCache();
+    }
 
+    void RefreshComponentCache()
+    {
+        // GML todo: clean this up
         var vcam = VirtualCamera as CinemachineVirtualCamera;
         if (vcam != null)
         {
             m_Orbital = vcam.GetCinemachineComponent<CinemachineOrbitalFollow>();
             m_NoiseComponent = vcam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         }
+        else
+        {
+            TryGetComponent(out m_Orbital);
+            TryGetComponent(out m_NoiseComponent);
+        }
     }
+
+    // Needed by inspector
+    internal bool HasOrbital() { RefreshComponentCache(); return m_Orbital != null; }
+    internal bool HasNoise() { RefreshComponentCache(); return m_NoiseComponent != null; }
 
     /// <summary>Override this to do such things as offset the RefereceLookAt.
     /// Base class implementation does nothing.</summary>
@@ -125,9 +138,8 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
-        if (Lens.Enabled && vcam is CinemachineVirtualCamera)
+        if (Lens.Enabled)
         {
-            m_SourceLens = (vcam as CinemachineVirtualCamera).m_Lens;
             if (t >= 0)
                 curState.Lens = LensSettings.Lerp(Lens.Center, Lens.Top, t);
             else
@@ -147,8 +159,6 @@ public class CinemachineFreeLookModifier : CinemachineExtension
                 m_NoiseComponent.m_AmplitudeGain = m_SourceNoise.Amplitude;
                 m_NoiseComponent.m_FrequencyGain = m_SourceNoise.Frequency;
             }
-            if (Lens.Enabled && vcam is CinemachineVirtualCamera)
-                (vcam as CinemachineVirtualCamera).m_Lens = m_SourceLens;
 
             // Apply the tilt
             if (Tilt.Enabled)

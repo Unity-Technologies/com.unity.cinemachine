@@ -18,30 +18,8 @@ namespace Cinemachine
     [ExecuteAlways]
     public class InputAxisController : MonoBehaviour
     {
-        /// <summary>This list is dynamically populated based Controller the discovered axes</summary>
-        public List<Controller> Controllers = new List<Controller>();
-
         /// <summary>
-        /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisTarget"/>
-        /// </summary>
-        List<IInputAxisTarget.AxisDescriptor> m_Axes = new List<IInputAxisTarget.AxisDescriptor>();
-
-        /// <summary>
-        /// Leave this at -1 for single-player games.
-        /// For multi-player games, set this to be the player index, and the actions will
-        /// be read from that player's controls
-        /// </summary>
-        [Tooltip("Leave this at -1 for single-player games.  "
-            + "For multi-player games, set this to be the player index, and the actions will "
-            + "be read from that player's controls")]
-        public int PlayerIndex = -1;
-
-        /// <summary>If set, Input Actions will be auto-enabled at start</summary>
-        [Tooltip("If set, Input Actions will be auto-enabled at start")]
-        public bool AutoEnableInputs;
-
-        /// <summary>
-        /// Each discovered axis will get an Controller to drive it in Update().
+        /// Each discovered axis will get a Controller to drive it in Update().
         /// </summary>
         [Serializable]
         public class Controller
@@ -80,6 +58,29 @@ namespace Cinemachine
             /// and recentering settings</summary>
             internal InputAxisDriver Driver;
         }
+        
+        /// <summary>
+        /// Leave this at -1 for single-player games.
+        /// For multi-player games, set this to be the player index, and the actions will
+        /// be read from that player's controls
+        /// </summary>
+        [Tooltip("Leave this at -1 for single-player games.  "
+            + "For multi-player games, set this to be the player index, and the actions will "
+            + "be read from that player's controls")]
+        public int PlayerIndex = -1;
+
+        /// <summary>If set, Input Actions will be auto-enabled at start</summary>
+        [Tooltip("If set, Input Actions will be auto-enabled at start")]
+        public bool AutoEnableInputs;
+
+        /// <summary>This list is dynamically populated based on the discovered axes</summary>
+        public List<Controller> Controllers = new List<Controller>();
+
+        /// <summary>
+        /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisTarget"/>
+        /// </summary>
+        List<IInputAxisTarget.AxisDescriptor> m_Axes = new List<IInputAxisTarget.AxisDescriptor>();
+        List<IInputAxisTarget> m_AxisTargets = new List<IInputAxisTarget>();
 
         void OnValidate()
         {
@@ -113,19 +114,36 @@ namespace Cinemachine
 #endif
         }
 
+#if UNITY_EDITOR
+        static List<IInputAxisTarget> s_AxisTargetsCache = new List<IInputAxisTarget>();
+        internal bool ConrollersAreValid()
+        {
+            s_AxisTargetsCache.Clear();
+            GetComponentsInChildren(s_AxisTargetsCache);
+            var count = s_AxisTargetsCache.Count;
+            bool isValid = count == m_AxisTargets.Count;
+            for (int i = 0; isValid && i < count; ++i)
+                if (s_AxisTargetsCache[i] != m_AxisTargets[i])
+                    isValid = false;
+            return isValid;
+        }
+        internal void SynchronizeControllers() => CreateControllers();
+#endif
+
         void OnDisable()
         {
             m_Axes.Clear();
-            var targets = GetComponentsInChildren<IInputAxisTarget>();
-            foreach (var t in targets)
-                t.UnregisterResetHandler(OnResetInput);
+            foreach (var t in m_AxisTargets)
+                if ((t as UnityEngine.Object) != null)
+                    t.UnregisterResetHandler(OnResetInput);
         }
 
         void CreateControllers()
         {
             m_Axes.Clear();
-            var targets = GetComponentsInChildren<IInputAxisTarget>();
-            foreach (var t in targets)
+            m_AxisTargets.Clear();
+            GetComponentsInChildren(m_AxisTargets);
+            foreach (var t in m_AxisTargets)
             {
                 t.GetInputAxes(m_Axes);
                 t.UnregisterResetHandler(OnResetInput);

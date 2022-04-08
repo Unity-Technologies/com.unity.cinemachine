@@ -4,11 +4,17 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(InputAxisController))]
-    [CanEditMultipleObjects]
     internal class InputAxisControllerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
+            var Target = target as InputAxisController;
+            if (Target != null && !Target.ConrollersAreValid())
+            {
+                Undo.RecordObject(Target, "SynchronizeControllers");
+                Target.SynchronizeControllers();
+            }
+
             serializedObject.Update();
             var controllers = serializedObject.FindProperty("Controllers");
 
@@ -22,7 +28,7 @@ namespace Cinemachine.Editor
 
             int numElements = controllers.arraySize;
             if (numElements == 0)
-                EditorGUILayout.HelpBox("No InputAxis objects found in components.", MessageType.Info);
+                EditorGUILayout.HelpBox("No InputAxis objects found in components.", MessageType.Warning);
             else for (int i = 0; i < numElements; ++i)
             {
                 var element = controllers.GetArrayElementAtIndex(i);
