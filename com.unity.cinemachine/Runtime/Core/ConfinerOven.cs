@@ -263,10 +263,6 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
-            frustumHeight = m_Cache.userSetMaxFrustumHeight < 0
-                ? frustumHeight
-                : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
-            
             // Special case, when we want to shrink to a point
             if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight && 
                 m_Cache.userSetMaxFrustumHeight >= 0)
@@ -278,6 +274,10 @@ namespace Cinemachine
                     m_AspectStretcher.Aspect, frustumHeight, m_MinFrustumHeightWithBones < frustumHeight,
                     m_PolygonRect, m_OriginalPolygon, PolygonSolution.Lerp(s1, s2, frustumHeight).polygons);
             }
+            
+            frustumHeight = m_Cache.userSetMaxFrustumHeight < 0
+                ? frustumHeight
+                : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
 
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
