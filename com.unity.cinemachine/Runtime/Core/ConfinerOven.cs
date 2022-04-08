@@ -282,7 +282,7 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
-            //frustumHeight = Mathf.Min(m_Cache.maxFrustumHeight, frustumHeight); // TODO: need to have a user set max to check here!
+            frustumHeight = Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight); // TODO: need to have a user set max to check here!
             
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
@@ -294,7 +294,7 @@ namespace Cinemachine
                 solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
             }
 
-            if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
+            if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight && m_Cache.userSetMaxFrustumHeight >= 0)
             {
                 // TODO: lerp from solution i-2 to i-1.
                 
@@ -399,7 +399,7 @@ namespace Cinemachine
             public PolygonSolution leftCandidate;
             public List<List<IntPoint>> maxCandidate;
             public float stepSize;
-            public float maxFrustumHeight; // either set by the user, or the theoretical maximum
+            public float userSetMaxFrustumHeight;
             public float theoriticalMaxFrustumHeight;
             public float currentFrustumHeight;
 
@@ -412,7 +412,7 @@ namespace Cinemachine
         private void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             m_Skeleton.Clear();
-            m_Cache.maxFrustumHeight = maxFrustumHeight;
+            m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
@@ -438,7 +438,7 @@ namespace Cinemachine
             m_Cache.midPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
             
             // Skip the expensive skeleton calculation if it's not wanted
-            if (m_Cache.maxFrustumHeight  < 0)
+            if (m_Cache.userSetMaxFrustumHeight  < 0)
             {
                 State = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
                 return;
@@ -448,11 +448,11 @@ namespace Cinemachine
             m_Cache.theoriticalMaxFrustumHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
             // exact comparison to 0 is intentional!
-            if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
+            if (m_Cache.userSetMaxFrustumHeight == 0 || m_Cache.userSetMaxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
             {
-                m_Cache.maxFrustumHeight = m_Cache.theoriticalMaxFrustumHeight; 
+                m_Cache.userSetMaxFrustumHeight = m_Cache.theoriticalMaxFrustumHeight; 
             }
-            m_Cache.stepSize = m_Cache.maxFrustumHeight;
+            m_Cache.stepSize = m_Cache.userSetMaxFrustumHeight;
 
             // Binary search for state changes so we can compute the skeleton
             m_Cache.offsetter = new ClipperOffset();
@@ -476,7 +476,7 @@ namespace Cinemachine
             };
             m_Cache.currentFrustumHeight = 0;
             m_Cache.maxCandidate = new List<List<IntPoint>>();
-            m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.maxFrustumHeight * k_FloatToIntScaler);
+            m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.theoriticalMaxFrustumHeight * k_FloatToIntScaler);
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
@@ -505,14 +505,14 @@ namespace Cinemachine
                 var candidate = new List<List<IntPoint>>(numPaths);
 
                 m_Cache.stepSize = Mathf.Min(m_Cache.stepSize, 
-                    m_Cache.maxFrustumHeight - m_Cache.leftCandidate.m_FrustumHeight);
+                    m_Cache.userSetMaxFrustumHeight - m_Cache.leftCandidate.m_FrustumHeight);
 #if false
                 Debug.Log($"States = {solutions.Count}, "
                           + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
 #endif
                 m_Cache.currentFrustumHeight = 
                     m_Cache.leftCandidate.m_FrustumHeight + m_Cache.stepSize;
-                if (Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < 
+                if (Math.Abs(m_Cache.currentFrustumHeight - m_Cache.userSetMaxFrustumHeight) < 
                     UnityVectorExtensions.Epsilon)
                 {
                     candidate = m_Cache.maxCandidate;
@@ -560,10 +560,10 @@ namespace Cinemachine
                     m_Cache.rightCandidate = new PolygonSolution();
                     
                     // Back to max step
-                    m_Cache.stepSize = m_Cache.maxFrustumHeight;
+                    m_Cache.stepSize = m_Cache.userSetMaxFrustumHeight;
                 }
                 else if (m_Cache.rightCandidate.IsEmpty || 
-                         m_Cache.leftCandidate.m_FrustumHeight >= m_Cache.maxFrustumHeight)
+                         m_Cache.leftCandidate.m_FrustumHeight >= m_Cache.userSetMaxFrustumHeight)
                 {
                     m_Cache.solutions.Add(m_Cache.leftCandidate);
                     break; // stop searching, because we are at the bound
