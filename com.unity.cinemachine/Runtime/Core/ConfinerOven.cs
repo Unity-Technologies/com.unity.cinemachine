@@ -282,7 +282,7 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
-            frustumHeight = Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight); // TODO: need to have a user set max to check here!
+            frustumHeight = m_Cache.userSetMaxFrustumHeight < 0 ? frustumHeight : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight); // TODO: need to have a user set max to check here!
             
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
