@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Projects/Standalone/Assets/Scenes/SampleScene.unity.meta
+guid: 9fc0d4010bbf28b4594072e72b8655ab
+DefaultImporter:
+=======
 guid: 195e01425a0893e41a929a8b5597c223
 PrefabImporter:
+>>>>>>> master:Projects/HDRP2019.4/Assets/HDRPDefaultResources/DefaultSceneRoot.prefab.meta
   externalObjects: {}
   userData: 
   assetBundleName: 

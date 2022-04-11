@@ -46,7 +46,7 @@ namespace Cinemachine.Editor
                 // Special handling for toggles, or it looks stupid
                 if (props[i].propertyType == SerializedPropertyType.Boolean)
                 {
-                    totalSubLabelWidth += rect.height;
+                    totalSubLabelWidth += rect.height + hSpace;
                     ++numBoolColumns;
                 }
             }
@@ -76,14 +76,18 @@ namespace Cinemachine.Editor
                 EditorGUIUtility.labelWidth = GUI.skin.label.CalcSize(actualLabels[i]).x;
                 if (props[i].propertyType == SerializedPropertyType.Boolean)
                 {
+                    rect.x += hSpace;
                     rect.width = EditorGUIUtility.labelWidth + rect.height;
+                    EditorGUI.BeginProperty(rect, actualLabels[i], props[i]);
                     props[i].boolValue = EditorGUI.ToggleLeft(rect, actualLabels[i], props[i].boolValue);
                 }
                 else
                 {
                     rect.width = EditorGUIUtility.labelWidth + colWidth;
+                    EditorGUI.BeginProperty(rect, actualLabels[i], props[i]);
                     EditorGUI.PropertyField(rect, props[i], actualLabels[i]);
                 }
+                EditorGUI.EndProperty();
                 rect.x += rect.width + hSpace;
             }
 
@@ -191,6 +195,109 @@ namespace Cinemachine.Editor
                 return go.name;
             }
             return obj.name;
+        }
+
+        internal static float PropertyHeightOfChidren(SerializedProperty property)
+        {
+            float height = 0;
+            var childProperty = property.Copy();
+            var endProperty = childProperty.GetEndProperty();
+            childProperty.NextVisible(true);
+            while (!SerializedProperty.EqualContents(childProperty, endProperty))
+            {
+                height += EditorGUI.GetPropertyHeight(childProperty)
+                    + EditorGUIUtility.standardVerticalSpacing;
+                childProperty.NextVisible(false);
+            }
+            return height - EditorGUIUtility.standardVerticalSpacing;
+        }
+
+        internal static void DrawChildProperties(Rect position, SerializedProperty property)
+        {
+            var childProperty = property.Copy();
+            var endProperty = childProperty.GetEndProperty();
+            childProperty.NextVisible(true);
+            while (!SerializedProperty.EqualContents(childProperty, endProperty))
+            {
+                position.height = EditorGUI.GetPropertyHeight(childProperty);
+                EditorGUI.PropertyField(position, childProperty, true);
+                position.y += position.height + EditorGUIUtility.standardVerticalSpacing;
+                childProperty.NextVisible(false);
+            }
+        }
+
+        internal static void HelpBoxWithButton(
+            string message, MessageType messageType, 
+            GUIContent buttonContent, Action onClicked)
+        {
+            float verticalPadding = 3 * EditorGUIUtility.standardVerticalSpacing;
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+            var buttonSize = GUI.skin.label.CalcSize(buttonContent);
+            buttonSize.x += + lineHeight;
+
+            var rect = EditorGUILayout.GetControlRect(false, verticalPadding);
+            rect = EditorGUI.IndentedRect(rect);
+
+            var boxContent = new GUIContent(message);
+            var boxWidth = rect.width - buttonSize.x;
+            var boxHeight = GUI.skin.GetStyle("helpbox").CalcHeight(boxContent, boxWidth - 3 * lineHeight) + verticalPadding;
+
+            var height = Mathf.Max(Mathf.Max(buttonSize.y, lineHeight * 1.5f), boxHeight);
+            rect = EditorGUILayout.GetControlRect(false, height + verticalPadding);
+            rect = EditorGUI.IndentedRect(rect);
+            rect.width = boxWidth; rect.height = height;
+            EditorGUI.HelpBox(rect, message, messageType);
+            rect.x += rect.width; rect.width = buttonSize.x;
+            if (GUI.Button(rect, buttonContent))
+                onClicked();
+        }
+
+        internal static float EnabledFoldoutHeight(SerializedProperty property, string enabledPropertyName)
+        {
+            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
+            if (enabledProp == null)
+                return EditorGUI.GetPropertyHeight(property);
+            if (!enabledProp.boolValue)
+                return EditorGUIUtility.singleLineHeight;
+            return PropertyHeightOfChidren(property);
+        }
+
+        internal static bool EnabledFoldout(
+            Rect rect, SerializedProperty property, string enabledPropertyName,
+            GUIContent label = null)
+        {
+            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
+            if (enabledProp == null)
+            {
+                EditorGUI.PropertyField(rect, property, true);
+                rect.x += EditorGUIUtility.labelWidth;
+                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledPropertyName}`"));
+                return property.isExpanded;
+            }
+            rect.height = EditorGUIUtility.singleLineHeight;
+            if (label == null)
+                label = new GUIContent(property.displayName, enabledProp.tooltip);
+            EditorGUI.PropertyField(rect, enabledProp, label);
+            rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            if (enabledProp.boolValue)
+            {
+                ++EditorGUI.indentLevel;
+                var childProperty = property.Copy();
+                var endProperty = childProperty.GetEndProperty();
+                childProperty.NextVisible(true);
+                while (!SerializedProperty.EqualContents(childProperty, endProperty))
+                {
+                    if (!SerializedProperty.EqualContents(childProperty, enabledProp))
+                    {
+                        rect.height = EditorGUI.GetPropertyHeight(childProperty);
+                        EditorGUI.PropertyField(rect, childProperty, true);
+                        rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
+                    }
+                    childProperty.NextVisible(false);
+                }
+                --EditorGUI.indentLevel;
+            }
+            return enabledProp.boolValue;
         }
     }
 }

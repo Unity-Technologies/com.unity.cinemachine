@@ -70,6 +70,7 @@ namespace Cinemachine
             var vcam = Target;
             CinemachineComponentBaseEditorUtility.DrawPopups(vcam);
             DrawRemainingPropertiesInInspector();
+
             //
             // // Orbits
             // EditorGUILayout.Space();
@@ -306,7 +307,7 @@ namespace Cinemachine
         //     }
         //     Gizmos.color = originalGizmoColour;
         // }
-        
+
         private static void DrawCameraPath(
             Vector3 atPos, Quaternion orient, CmFreeLook vcam)
         {
