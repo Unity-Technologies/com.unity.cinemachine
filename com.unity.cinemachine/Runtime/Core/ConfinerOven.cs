@@ -252,7 +252,7 @@ namespace Cinemachine
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
             // If the user has set a max frustum height, respect it
-            frustumHeight = m_Cache.userSetMaxFrustumHeight == 0
+            frustumHeight = m_Cache.userSetMaxFrustumHeight <= 0
                 ? frustumHeight
                 : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
             
@@ -346,6 +346,9 @@ namespace Cinemachine
             // calculate mid point and use it as the most shrank down version
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
+            
+            // Don't compute further than what is the theoretical max
+            m_Cache.theoriticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
             // Initialize clipper
             m_OriginalPolygon = new List<List<IntPoint>>(inputPath.Count);
@@ -363,7 +366,7 @@ namespace Cinemachine
                 m_OriginalPolygon.Add(path);
             }
             m_MidPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
-        
+
             // Skip the expensive skeleton calculation if it's not wanted (oversized window off)
             if (m_Cache.userSetMaxFrustumHeight < 0)
             {
@@ -371,9 +374,6 @@ namespace Cinemachine
                 return;
             }
 
-            // Don't compute further than what is the theoretical max
-            m_Cache.theoriticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
- 
             // exact comparison to 0 is intentional!
             m_Cache.maxFrustumHeight = m_Cache.userSetMaxFrustumHeight;
             if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
