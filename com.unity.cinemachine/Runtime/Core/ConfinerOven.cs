@@ -409,6 +409,7 @@ namespace Cinemachine
             State = BakingState.BAKING;
             bakeProgress = 0;
             
+            // local functions
             static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
             {
                 float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
