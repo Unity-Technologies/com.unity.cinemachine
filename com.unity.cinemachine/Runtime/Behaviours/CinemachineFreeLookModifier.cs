@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Cinemachine;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// This is an add-on for Cinemachine virtual cameras containing the OrbitalFollow component.
@@ -10,77 +11,235 @@ using System;
 [ExecuteAlways]
 public class CinemachineFreeLookModifier : CinemachineExtension
 {
+    /// <summary>
+    /// Interface for an object that will modify some aspect of a FreeLook camera
+    /// based on the vertical axis value. 
+    /// </summary>
+    public interface IModifier
+    {
+        /// <summary>Called from OnValidate in the editor.  Validate and sanitize the fields.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
+        void Validate(CinemachineVirtualCameraBase vcam);
+
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
+        void Reset(CinemachineVirtualCameraBase vcam);
+
+        /// <summary>Called from OnEnable and from the inspector.  Refresh any internal component caches.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
+        void RefreshCache(CinemachineVirtualCameraBase vcam);
+
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modofied in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="orbitalSplineValue">The value of the orbital Follow's vertical axis.  
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
+        void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, 
+            float orbitalSplineValue);
+
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera paramters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modofied in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="orbitalSplineValue">The value of the orbital Follow's vertical axis.  
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
+        void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float orbitalSplineValue);
+    }
+
+    /// <summary>
+    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
+    /// at the end of the camera pipeline.
+    /// </summary>
+    public struct TiltModifier : IModifier
+    {
+        [HideFoldout]
+        public TopCenterBottom<float> Tilt;
+
+        public void Validate(CinemachineVirtualCameraBase vcam)
+        {
+            Tilt.Top = Mathf.Clamp(Tilt.Top, -30, 30);
+            Tilt.Center = Mathf.Clamp(Tilt.Center, -30, 30);
+            Tilt.Bottom = Mathf.Clamp(Tilt.Bottom, -30, 30);
+        }
+
+        public void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            Tilt = new TopCenterBottom<float>() { Top = -3, Bottom = 3 };
+        }
+
+        public void RefreshCache(CinemachineVirtualCameraBase vcam) {}
+
+        public void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float orbitalSplineValue) {}
+
+        public void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float orbitalSplineValue)
+        {
+            float tilt = orbitalSplineValue > 0 
+                ? Mathf.Lerp(Tilt.Center, Tilt.Top, orbitalSplineValue) 
+                : Mathf.Lerp(Tilt.Bottom, Tilt.Center, orbitalSplineValue + 1);
+
+            // Tilt in local X
+            var qTilted = state.RawOrientation * Quaternion.AngleAxis(tilt, Vector3.right);
+            state.OrientationCorrection = Quaternion.Inverse(state.CorrectedOrientation) * qTilted;
+        }
+    }
+
+    /// <summary>
+    /// Builtin modifier for camera lens.  Applies the lens at the start of the camera pipeline.
+    /// </summary>
+    public struct LensModifier : IModifier
+    {
+        [HideFoldout]
+        public TopCenterBottom<LensSettings> Lens;
+
+        public void Validate(CinemachineVirtualCameraBase vcam) 
+        {
+            Lens.Top.Validate();
+            Lens.Center.Validate();
+            Lens.Bottom.Validate();
+        }
+
+        public void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            var defaultLens = vcam == null ? LensSettings.Default : vcam.State.Lens;
+            Lens = new TopCenterBottom<LensSettings> { Top = defaultLens, Center = defaultLens, Bottom = defaultLens };
+        }
+
+        public void RefreshCache(CinemachineVirtualCameraBase vcam) {}
+
+        public void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float orbitalSplineValue) 
+        {
+            if (orbitalSplineValue >= 0)
+                state.Lens = LensSettings.Lerp(Lens.Center, Lens.Top, orbitalSplineValue);
+            else
+                state.Lens = LensSettings.Lerp(Lens.Bottom, Lens.Center, orbitalSplineValue + 1);
+        }
+
+        public void AfterPipeline(CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime, float orbitalSplineValue) {}
+    }
+
+    /// <summary>
+    /// Builtin modifier for <see cref="CinemachineBasicMultiChannelPerlin"/>.  Applies scaling to
+    /// amplitude and frequency.
+    /// </summary>
+    public struct NoiseModifier : IModifier
+    {
+        [Serializable]
+        public struct NoiseSettings
+        {
+            [Tooltip("Multiplier for the noise amplitude")]
+            public float Amplitude;
+
+            [Tooltip("Multiplier for the noise frequency")]
+            public float Frequency;
+
+            public static NoiseSettings Default => new NoiseSettings { Amplitude = 1, Frequency = 1 };
+        }
+    
+        [HideFoldout]
+        public TopCenterBottom<NoiseSettings> Noise;
+
+        CinemachineBasicMultiChannelPerlin m_NoiseComponent;
+        NoiseSettings m_SourceNoise; // For storing and restoring the original settings
+
+        public void Validate(CinemachineVirtualCameraBase vcam) {}
+
+        public void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            Noise = new TopCenterBottom<NoiseSettings>
+            {
+                Top = NoiseSettings.Default, 
+                Center = NoiseSettings.Default, 
+                Bottom = NoiseSettings.Default 
+            };
+        }
+
+        public void RefreshCache(CinemachineVirtualCameraBase vcam) => TryGetVcamComponent(vcam, out m_NoiseComponent);
+
+        public void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float orbitalSplineValue) 
+        {
+            if (m_NoiseComponent != null)
+            {
+                m_SourceNoise.Amplitude = m_NoiseComponent.m_AmplitudeGain;
+                m_SourceNoise.Frequency = m_NoiseComponent.m_FrequencyGain;
+                if (orbitalSplineValue >= 0)
+                {
+                    m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Center.Amplitude, Noise.Top.Amplitude, orbitalSplineValue);
+                    m_SourceNoise.Frequency = Mathf.Lerp(Noise.Center.Frequency, Noise.Top.Frequency, orbitalSplineValue);
+                }
+                else
+                {
+                    m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Bottom.Amplitude, Noise.Center.Amplitude, orbitalSplineValue + 1);
+                    m_SourceNoise.Frequency = Mathf.Lerp(Noise.Bottom.Frequency, Noise.Center.Frequency, orbitalSplineValue + 1);
+                }
+            }
+        }
+
+        public void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float orbitalSplineValue) 
+        {
+            // Restore the settings
+            if (m_NoiseComponent != null)
+            {
+                m_NoiseComponent.m_AmplitudeGain = m_SourceNoise.Amplitude;
+                m_NoiseComponent.m_FrequencyGain = m_SourceNoise.Frequency;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Helper struct to hold settings for Top, Middle, and Bottom orbits.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [Serializable]
     public struct TopCenterBottom<T>
     {
-        [Tooltip("If set, then this value can be varied as a function of the Vertical Axis value")]
-        public bool Enabled;
-
+        /// <summary>Settings for top orbit</summary>
         [Tooltip("Value to take at the top of the axis range")]
         public T Top;
 
+        /// <summary>Settings for center orbit</summary>
         [Tooltip("Value to take at the center of the axis range")]
         public T Center;
 
+        /// <summary>Settings for bottom orbit</summary>
         [Tooltip("Value to take at the bottom of the axis range")]
         public T Bottom;
     }
 
-    [Serializable]
-    public struct NoiseSettings
-    {
-        [Tooltip("Multiplier for the noise amplitude")]
-        public float Amplitude;
-
-        [Tooltip("Multiplier for the noise frequency")]
-        public float Frequency;
-
-        public static NoiseSettings Default => new NoiseSettings { Amplitude = 1, Frequency = 1 };
-    }
-
-    [Tooltip("Screen space vertical adustment for the target position.  "
-        + "0 is screen center, +-1 is top/bottom of screen")]
-    [FoldoutWithEnabledButton]
-    public TopCenterBottom<float> Tilt;
-
-    [Tooltip("Multipliers for the noise settings (if any).  The valuse will be used to scale the camera noise")]
-    [FoldoutWithEnabledButton]
-    public TopCenterBottom<NoiseSettings> Noise;
-
-    [Tooltip("Multiplier for the lens FOV.  The value will be multiplied to the lens FOV")]
-    [FoldoutWithEnabledButton]
-    public TopCenterBottom<LensSettings> Lens;
+    [SerializeReference] public List<IModifier> Modifiers;
 
     CinemachineOrbitalFollow m_Orbital;
-    CinemachineBasicMultiChannelPerlin m_NoiseComponent;
-    float m_LastSplineValue;
-
-    // For storing and restoring the original settings
-    NoiseSettings m_SourceNoise;
+    float m_CurrentSplineValue;
 
     void OnValidate()
     {
-        Tilt.Top = Mathf.Clamp(Tilt.Top, -30, 30);
-        Tilt.Center = Mathf.Clamp(Tilt.Center, -30, 30);
-        Tilt.Bottom = Mathf.Clamp(Tilt.Bottom, -30, 30);
-        Lens.Top.Validate();
-        Lens.Center.Validate();
-        Lens.Bottom.Validate();
-    }
-
-    void Reset()
-    {
-        Tilt = new TopCenterBottom<float>() { Enabled = true, Top = -3, Bottom = 3 };
-        Noise = new TopCenterBottom<NoiseSettings>
-        {
-            Top = NoiseSettings.Default, 
-            Center = NoiseSettings.Default, 
-            Bottom = NoiseSettings.Default 
-        };
-
         var vcam = VirtualCamera;
-        var defaultLens = vcam == null ? LensSettings.Default : vcam.State.Lens;
-        Lens = new TopCenterBottom<LensSettings> { Top = defaultLens, Center = defaultLens, Bottom = defaultLens };
+        for (int i = 0; i < Modifiers.Count; ++i)
+            Modifiers[i].Validate(vcam);
     }
 
     protected override void OnEnable()
@@ -89,25 +248,29 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         RefreshComponentCache();
     }
 
+    // GML todo: clean this up
+    internal static void TryGetVcamComponent<T>(
+        CinemachineVirtualCameraBase vcamBase, out T component) where T : CinemachineComponentBase
+    {
+        var vcam = vcamBase as CinemachineVirtualCamera;
+        if (vcam != null)
+            component = vcam.GetCinemachineComponent<T>();
+        else if (vcamBase != null)
+            vcamBase.TryGetComponent(out component);
+        else
+            component = null;
+    }
+
     void RefreshComponentCache()
     {
-        // GML todo: clean this up
-        var vcam = VirtualCamera as CinemachineVirtualCamera;
-        if (vcam != null)
-        {
-            m_Orbital = vcam.GetCinemachineComponent<CinemachineOrbitalFollow>();
-            m_NoiseComponent = vcam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        }
-        else
-        {
-            TryGetComponent(out m_Orbital);
-            TryGetComponent(out m_NoiseComponent);
-        }
+        var vcam = VirtualCamera;
+        TryGetVcamComponent(vcam, out m_Orbital);
+        for (int i = 0; i < Modifiers.Count; ++i)
+            Modifiers[i].RefreshCache(vcam);
     }
 
     // Needed by inspector
     internal bool HasOrbital() { RefreshComponentCache(); return m_Orbital != null; }
-    internal bool HasNoise() { RefreshComponentCache(); return m_NoiseComponent != null; }
 
     /// <summary>Override this to do such things as offset the RefereceLookAt.
     /// Base class implementation does nothing.</summary>
@@ -117,33 +280,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     public override void PrePipelineMutateCameraStateCallback(
         CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) 
     {
-        // Can't do anything without the vertical axis
-        if (m_Orbital == null)
-            return;
-
-        var t = m_LastSplineValue = m_Orbital.GetVerticalAxisNormalizedValue();
-        if (m_NoiseComponent != null && Noise.Enabled)
+        if (m_Orbital != null)
         {
-            m_SourceNoise.Amplitude = m_NoiseComponent.m_AmplitudeGain;
-            m_SourceNoise.Frequency = m_NoiseComponent.m_FrequencyGain;
-            if (t >= 0)
-            {
-                m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Center.Amplitude, Noise.Top.Amplitude, t);
-                m_SourceNoise.Frequency = Mathf.Lerp(Noise.Center.Frequency, Noise.Top.Frequency, t);
-            }
-            else
-            {
-                m_SourceNoise.Amplitude = Mathf.Lerp(Noise.Bottom.Amplitude, Noise.Center.Amplitude, t + 1);
-                m_SourceNoise.Frequency = Mathf.Lerp(Noise.Bottom.Frequency, Noise.Center.Frequency, t + 1);
-            }
-        }
-
-        if (Lens.Enabled)
-        {
-            if (t >= 0)
-                curState.Lens = LensSettings.Lerp(Lens.Center, Lens.Top, t);
-            else
-                curState.Lens = LensSettings.Lerp(Lens.Bottom, Lens.Center, t + 1);
+            m_CurrentSplineValue = m_Orbital.GetVerticalAxisNormalizedValue();
+            for (int i = 0; i < Modifiers.Count; ++i)
+                Modifiers[i].BeforePipeline(vcam, ref curState, deltaTime, m_CurrentSplineValue);
         }
     }
             
@@ -151,27 +292,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         CinemachineVirtualCameraBase vcam,
         CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
     {
-        if (stage == CinemachineCore.Stage.Finalize && m_Orbital != null)
+        if (m_Orbital != null && stage == CinemachineCore.Stage.Finalize)
         {
-            // Restore the settings
-            if (m_NoiseComponent != null && Noise.Enabled)
-            {
-                m_NoiseComponent.m_AmplitudeGain = m_SourceNoise.Amplitude;
-                m_NoiseComponent.m_FrequencyGain = m_SourceNoise.Frequency;
-            }
-
-            // Apply the tilt
-            if (Tilt.Enabled)
-            {
-                var t = m_LastSplineValue;
-                float tilt = t > 0 
-                    ? Mathf.Lerp(Tilt.Center, Tilt.Top, t) 
-                    : Mathf.Lerp(Tilt.Bottom, Tilt.Center, t + 1);
-
-                // Tilt in local X
-                var qTilted = state.RawOrientation * Quaternion.AngleAxis(tilt, Vector3.right);
-                state.OrientationCorrection = Quaternion.Inverse(state.CorrectedOrientation) * qTilted;
-            }
+            for (int i = 0; i < Modifiers.Count; ++i)
+                Modifiers[i].AfterPipeline(vcam, ref state, deltaTime, m_CurrentSplineValue);
         }
     }
 }

@@ -252,9 +252,9 @@ namespace Cinemachine.Editor
                 onClicked();
         }
 
-        internal static float EnabledFoldoutHeight(SerializedProperty property, string enabledName)
+        internal static float EnabledFoldoutHeight(SerializedProperty property, string enabledPropertyName)
         {
-            var enabledProp = property.FindPropertyRelative(enabledName);
+            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
             if (enabledProp == null)
                 return EditorGUI.GetPropertyHeight(property);
             if (!enabledProp.boolValue)
@@ -262,18 +262,22 @@ namespace Cinemachine.Editor
             return PropertyHeightOfChidren(property);
         }
 
-        internal static bool EnabledFoldout(Rect rect, SerializedProperty property, string enabledName)
+        internal static bool EnabledFoldout(
+            Rect rect, SerializedProperty property, string enabledPropertyName,
+            GUIContent label = null)
         {
-            var enabledProp = property.FindPropertyRelative(enabledName);
+            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
             if (enabledProp == null)
             {
                 EditorGUI.PropertyField(rect, property, true);
                 rect.x += EditorGUIUtility.labelWidth;
-                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledName}`"));
+                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledPropertyName}`"));
                 return property.isExpanded;
             }
             rect.height = EditorGUIUtility.singleLineHeight;
-            EditorGUI.PropertyField(rect, enabledProp, new GUIContent(property.displayName, enabledProp.tooltip));
+            if (label == null)
+                label = new GUIContent(property.displayName, enabledProp.tooltip);
+            EditorGUI.PropertyField(rect, enabledProp, label);
             rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             if (enabledProp.boolValue)
             {

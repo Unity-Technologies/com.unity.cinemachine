@@ -19,7 +19,7 @@ namespace Cinemachine.Editor
         static StageData[] sStageData = null;
 
         [InitializeOnLoad]
-        class EditorInitialize
+        static class EditorInitialize
         {
             // This code dynamically discovers eligible classes and builds the menu
             // data for the various component pipeline stages.
