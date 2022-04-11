@@ -14,7 +14,6 @@ namespace Cinemachine
     {
         public class BakedSolution
         {
-            float m_FrustumHeight;
             float m_FrustumSizeIntSpace;
 
             readonly AspectStretcher m_AspectStretcher;
@@ -31,7 +30,6 @@ namespace Cinemachine
                 List<List<IntPoint>> originalPolygon, List<List<IntPoint>> solution)
             {
                 m_AspectStretcher = new AspectStretcher(aspectRatio, polygonBounds.center.x);
-                m_FrustumHeight = frustumHeight;
                 m_FrustumSizeIntSpace = frustumHeight * k_FloatToIntScaler;
                 m_HasBones = hasBones;
                 m_OriginalPolygon = originalPolygon;
@@ -42,10 +40,7 @@ namespace Cinemachine
                 m_SqrPolygonDiagonal = polygonSizeX * polygonSizeX + polygonSizeY * polygonSizeY;
             }
 
-            public bool IsValid(float frustumHeight)
-            {
-                return m_Solution != null && Mathf.Abs(frustumHeight - m_FrustumHeight) < k_MinStepSize;
-            }
+            public bool IsValid() => m_Solution != null;
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
@@ -276,16 +271,7 @@ namespace Cinemachine
             offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
             var solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
-            
-            // If solution failed, then use mid point as last resort
-            if (solution.Count == 0)
-            {
-                return new BakedSolution(
-                    m_AspectStretcher.Aspect, frustumHeight, false,
-                    m_PolygonRect, m_OriginalPolygon, 
-                    new List<List<IntPoint>>{new List<IntPoint> { m_MidPoint }});
-            }
-            
+
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
             if (State == BakingState.BAKING || m_Skeleton.Count == 0)
@@ -357,6 +343,7 @@ namespace Cinemachine
             m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
 
+            // calculate mid point and use it as the most shrank down version
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
 
@@ -375,10 +362,8 @@ namespace Cinemachine
                 }
                 m_OriginalPolygon.Add(path);
             }
-            
-            // calculate mid point and use it as the most shrank down version
             m_MidPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
-            
+        
             // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.userSetMaxFrustumHeight < 0)
             {
@@ -388,7 +373,7 @@ namespace Cinemachine
 
             // Don't compute further than what is the theoretical max
             m_Cache.theoriticalMaxFrustumHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
-
+ 
             // exact comparison to 0 is intentional!
             if (m_Cache.userSetMaxFrustumHeight == 0 || m_Cache.userSetMaxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
             {
@@ -441,6 +426,9 @@ namespace Cinemachine
                 }
                 return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
             }
+
+            static IntPoint MidPointOfIntRect(IntRect bounds) => 
+                new IntPoint((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
         }
         
         /// <summary>
@@ -599,8 +587,5 @@ namespace Cinemachine
                 }
             }
         }
-        
-        static IntPoint MidPointOfIntRect(IntRect bounds) => 
-            new IntPoint((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
     }
 }

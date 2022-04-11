@@ -138,7 +138,7 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.m_vcam = vcam;
                 if (confinerStateChanged || extra.m_BakedSolution == null 
-                    || !extra.m_BakedSolution.IsValid(bakedSpaceFrustumHeight))
+                    || !extra.m_BakedSolution.IsValid())
                 {
                     extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
                 }
