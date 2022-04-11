@@ -24,7 +24,7 @@ namespace Cinemachine
             readonly double m_SqrPolygonDiagonal;
 
             List<List<IntPoint>> m_OriginalPolygon;
-            public List<List<IntPoint>> m_Solution;
+            List<List<IntPoint>> m_Solution;
 
             const double k_ClipperEpsilon = 0.01f * k_FloatToIntScaler;
 
@@ -242,6 +242,7 @@ namespace Cinemachine
         float m_MinFrustumHeightWithBones;
 
         List<List<IntPoint>> m_OriginalPolygon;
+        IntPoint m_MidPoint;
         List<List<IntPoint>> m_Skeleton = new List<List<IntPoint>>();
 
         const long k_FloatToIntScaler = 100000;
@@ -263,16 +264,14 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
-            // Special case, when we want to shrink to a point
+            // Special case, when we are shrank to a point
             if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight && 
                 m_Cache.userSetMaxFrustumHeight >= 0)
             {
-                var count = m_Cache.solutions.Count;
-                var s1 = m_Cache.solutions[count - 2];
-                var s2 = m_Cache.solutions[count - 1];
                 return new BakedSolution(
-                    m_AspectStretcher.Aspect, frustumHeight, m_MinFrustumHeightWithBones < frustumHeight,
-                    m_PolygonRect, m_OriginalPolygon, PolygonSolution.Lerp(s1, s2, frustumHeight).polygons);
+                    m_AspectStretcher.Aspect, frustumHeight, false,
+                    m_PolygonRect, m_OriginalPolygon, 
+                    new List<List<IntPoint>>{new List<IntPoint> { m_MidPoint }});
             }
             
             frustumHeight = m_Cache.userSetMaxFrustumHeight < 0
@@ -286,7 +285,7 @@ namespace Cinemachine
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
             if (solution.Count == 0)
             {
-                solution = new List<List<IntPoint>> { new List<IntPoint> { m_Cache.midPoint } };
+                solution = new List<List<IntPoint>> {new List<IntPoint> { m_MidPoint }};
             }
             
             // Add in the skeleton
@@ -383,8 +382,6 @@ namespace Cinemachine
             public float theoriticalMaxFrustumHeight;
             public float currentFrustumHeight;
 
-            public IntPoint midPoint;
-
             public float bakeTime;
         }
 
@@ -416,7 +413,7 @@ namespace Cinemachine
             }
             
             // calculate mid point and use it as the most shrank down version
-            m_Cache.midPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
+            m_MidPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
             
             // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.userSetMaxFrustumHeight < 0)
@@ -594,42 +591,9 @@ namespace Cinemachine
                 }
             }
 
-            // Add an approximate solution to the end that shrinks every polygon to its mid point
-            var lastSolution = m_Cache.solutions.Last();
-            var lastSolutionCount = lastSolution.polygons.Count;
-            var shrankToPointSolution = new PolygonSolution();
-            shrankToPointSolution.polygons = new List<List<IntPoint>>();
-            long maxHeight = 0;
-            for (int i = 0; i < lastSolutionCount; ++i)
-            {
-                var polygon = lastSolution.polygons[i];
-                var axisAlignedBoundingRect = GetBounds(polygon);
-                var width = Math.Abs(axisAlignedBoundingRect.left - axisAlignedBoundingRect.right);
-                var height = Math.Abs(axisAlignedBoundingRect.top - axisAlignedBoundingRect.bottom);
-                maxHeight = Math.Max(height, maxHeight);
-                
-                var midPoint = MidPointOfIntRect(axisAlignedBoundingRect);
-                var midPoints = new List<IntPoint>(polygon.Count);
-                for (var index = 0; index < polygon.Count; index++)
-                {
-                    midPoints.Add(midPoint);
-                }
-
-                shrankToPointSolution.polygons.Add(midPoints);
-            }
-            shrankToPointSolution.frustumHeight = lastSolution.frustumHeight + maxHeight * k_IntToFloatScaler;
-            m_Cache.solutions.Add(shrankToPointSolution);
-            
             m_BakeProgress = 1;
             State = BakingState.BAKED;
-            
-            // local functions
-            static IntRect GetBounds(List<IntPoint> polygon)
-            {
-                var polygons = new List<List<IntPoint>> { polygon };
-                return ClipperBase.GetBounds(polygons);
-            }
-            
+
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
                 // At each state change point, collect geometry that gets lost over the transition
@@ -666,6 +630,7 @@ namespace Cinemachine
                     if (solution.Count > 0 && solution[0].Count > 0)
                     {
                         m_Skeleton.AddRange(solution);
+                        // Exact comparison is intentional
                         if (m_MinFrustumHeightWithBones == float.MaxValue)
                             m_MinFrustumHeightWithBones = next.frustumHeight;
                     }
