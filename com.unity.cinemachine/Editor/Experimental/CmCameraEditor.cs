@@ -1,5 +1,4 @@
-﻿#if CINEMACHINE_EXPERIMENTAL_VCAM
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
 
@@ -84,4 +83,3 @@ namespace Cinemachine
 #endif
     }
 }
-#endif

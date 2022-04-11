@@ -105,27 +105,6 @@ namespace Cinemachine.Editor
                 vcamDatas.Add(vcamData);
                 return;
             }     
-            
-#if CINEMACHINE_EXPERIMENTAL_VCAM
-            // NewVirtualCamera or NewFreeLook
-            var vcamNew = vcamBase as CmCamera;
-            if (vcamNew != null)
-            {
-                vcamData.SetTransitionsAndLens(vcamNew.m_Transitions, vcamNew.m_Lens);
-                vcamData.SetComponents(vcamNew.m_Components);
-                
-                vcamDatas.Add(vcamData);
-                return;
-            }
-#endif
-            
-            // Composite vcam (Freelook, Mixing, StateDriven, ClearShot...):
-            var freeLook = vcamBase as CmFreeLook;
-            if (freeLook != null)
-            {
-                vcamData.SetTransitionsAndLens(freeLook.m_Transitions, freeLook.m_Lens);
-            }
-            vcamDatas.Add(vcamData);
 
             var vcamChildren = 
                 vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
@@ -212,9 +191,8 @@ namespace Cinemachine.Editor
                 {
                     for (var i = 0; i < cmComps.Length; i++)
                     {
-#if CINEMACHINE_EXPERIMENTAL_VCAM
-                        if (cmComps[i] == null) continue;
-#endif
+                        if (cmComps[i] == null) 
+                            continue;
                         var componentName = GetTypeName(cmComps[i].GetType(), ref custom_component_count);
                         switch (cmComps[i].Stage)
                         {

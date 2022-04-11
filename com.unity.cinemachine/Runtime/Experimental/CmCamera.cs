@@ -1,4 +1,3 @@
-#if CINEMACHINE_EXPERIMENTAL_VCAM
 using UnityEngine;
 using System;
 using System.Linq;
@@ -285,14 +284,7 @@ namespace Cinemachine
                 if (m_Components[stage] != (components[i]))
                 {
                     if (m_Components[stage] != null)
-                    {
-#if UNITY_EDITOR
-                        DestroyImmediate(m_Components[stage]);
-#else
-                        Destroy(m_Components[stage]);
-#endif
-                    }
-
+                        RuntimeUtility.DestroyObject(m_Components[stage]);
                     m_Components[stage] = components[i];
                 }
             }
@@ -321,14 +313,9 @@ namespace Cinemachine
         {
             for (int i = 0; i < m_Components.Length; ++i)
             {
-#if UNITY_EDITOR
-                DestroyImmediate(m_Components[i]);
-#else
-                Destroy(m_Components[i]);
-#endif
+                RuntimeUtility.DestroyObject(m_Components[i]);
                 m_Components[i] = null;
             }
         }
     }
 }
-#endif

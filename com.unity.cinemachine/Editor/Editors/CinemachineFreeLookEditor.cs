@@ -9,6 +9,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Cinemachine
 {
+
+#pragma warning disable 618 // CinemachineFreeLook obsolete
+
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor

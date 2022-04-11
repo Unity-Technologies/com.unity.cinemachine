@@ -278,7 +278,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// <summary>
     /// Collection of modifiers that will be pplied to the camera every frame.
     /// </summary>
-    [SerializeReference] public List<Modifier> Modifiers = new List<Modifier>();
+    [SerializeReference] [NoSaveDuringPlay] public List<Modifier> Modifiers = new List<Modifier>();
 
     CinemachineOrbitalFollow m_Orbital;
     float m_CurrentSplineValue;
@@ -300,7 +300,9 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     internal static void TryGetVcamComponent<T>(
         CinemachineVirtualCameraBase vcamBase, out T component) where T : CinemachineComponentBase
     {
+#pragma warning disable 618
         var vcam = vcamBase as CinemachineVirtualCamera;
+#pragma warning restore 618
         if (vcam != null)
             component = vcam.GetCinemachineComponent<T>();
         else if (vcamBase != null)

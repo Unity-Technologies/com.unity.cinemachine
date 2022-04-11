@@ -95,13 +95,12 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalFollow))]
-        static void DrawFreeLookGizmos(CinemachineOrbitalFollow freelook, GizmoType selectionType)
+        static void DrawOrbitalGizmos(CinemachineOrbitalFollow orbital, GizmoType selectionType)
         {
-            var vcam = freelook.VirtualCamera as CinemachineVirtualCamera;
+            var vcam = orbital.VirtualCamera;
             if (vcam != null && vcam.Follow != null)
             {
-                var orbital = vcam.GetCinemachineComponent<CinemachineOrbitalFollow>();
-                if (orbital != null && orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRing)
+                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRing)
                 {
                     var prevColor = Gizmos.color;
                     Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
@@ -116,16 +115,16 @@ namespace Cinemachine.Editor
                     var scale = orbital.RadialAxis.Value;
 
                     DrawCircleAtPointWithRadius(
-                        pos + up * freelook.Orbits.Top.Height * scale, 
-                        orient, freelook.Orbits.Top.Radius * scale);
+                        pos + up * orbital.Orbits.Top.Height * scale, 
+                        orient, orbital.Orbits.Top.Radius * scale);
                     DrawCircleAtPointWithRadius(
-                        pos + up * freelook.Orbits.Center.Height * scale, orient, 
-                        freelook.Orbits.Center.Radius * scale);
+                        pos + up * orbital.Orbits.Center.Height * scale, orient, 
+                        orbital.Orbits.Center.Radius * scale);
                     DrawCircleAtPointWithRadius(
-                        pos + up * freelook.Orbits.Bottom.Height * scale, 
-                        orient, freelook.Orbits.Bottom.Radius * scale);
+                        pos + up * orbital.Orbits.Bottom.Height * scale, 
+                        orient, orbital.Orbits.Bottom.Radius * scale);
 
-                    DrawCameraPath(pos, orient, scale, freelook);
+                    DrawCameraPath(pos, orient, scale, orbital);
 
                     Gizmos.color = prevColor;
                 }

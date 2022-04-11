@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        // Static state and caches - Call UpdateStaticData() to refresh this
+        // Static state and caches
         struct StageData
         {
             public string Name;
@@ -65,7 +65,8 @@ namespace Cinemachine.Editor
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
                         typeof(CinemachineComponentBase).IsAssignableFrom(t) 
-                        && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                        && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null
+                        && t.GetCustomAttribute<CameraPipelineAttribute>() != null);
 
                 foreach (var t in allTypes)
                 {

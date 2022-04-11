@@ -82,8 +82,9 @@ namespace Cinemachine
             m_HorizontalRecentering.Validate();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             UpdateInputAxisProvider();
         }
         
