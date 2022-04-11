@@ -200,6 +200,7 @@ namespace Cinemachine
                 double t2 = ((p3.X - p1.X) * dy12 + (p1.Y - p3.Y) * dx12) / -denominator;
                 return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
                 
+                // local function
                 static double IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
                 {
                     double x = p1.X - p2.X;
