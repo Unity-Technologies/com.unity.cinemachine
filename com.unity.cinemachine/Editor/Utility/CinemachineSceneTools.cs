@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEditor;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 namespace Cinemachine.Editor
@@ -42,7 +43,7 @@ namespace Cinemachine.Editor
                 s_RequiredTools.Add(tool, 1);
             }
 
-            s_TriggerRefresh = true;
+            s_TriggerToolBarRefresh = true;
         }
         
         /// <summary>
@@ -61,7 +62,7 @@ namespace Cinemachine.Editor
                 }
             }
 
-            s_TriggerRefresh = true;
+            s_TriggerToolBarRefresh = true;
         }
 
         internal static bool IsToolRequired(Type tool)
@@ -81,21 +82,24 @@ namespace Cinemachine.Editor
                 s_ActiveExclusiveTool = s_ActiveExclusiveTool == tool ? null : s_ActiveExclusiveTool;
             }
             
-            s_TriggerRefresh = true;
+            s_TriggerToolBarRefresh = true;
         }
 
         static CinemachineSceneToolUtility()
         {
             s_RequiredTools = new Dictionary<Type, int>();
-            EditorApplication.update += RefreshToolbarHack;
+            EditorApplication.update += RefreshToolbar;
         }
 
-        // TODO: remove RefreshToolbarHack hack, when the Tools expose a public API to refresh it!
-        static bool s_TriggerRefresh;
-        static void RefreshToolbarHack()
+        static bool s_TriggerToolBarRefresh;
+        static void RefreshToolbar()
         {
-            if (s_TriggerRefresh)
+            if (s_TriggerToolBarRefresh)
             {
+#if UNITY_2022_2_OR_NEWER
+                ToolManager.RefreshAvailableTools();
+#else
+                // The following is a hack to refresh the toolbars
                 foreach (var scene in SceneView.sceneViews)
                 {
                     if (((SceneView)scene).TryGetOverlay("unity-transform-toolbar", out var tools))
@@ -108,8 +112,8 @@ namespace Cinemachine.Editor
                         }
                     }
                 }
-                
-                s_TriggerRefresh = false;
+#endif
+                s_TriggerToolBarRefresh = false;
             }
         }
 #else

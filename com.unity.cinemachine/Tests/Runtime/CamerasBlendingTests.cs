@@ -42,7 +42,7 @@ namespace Tests.Runtime
             base.SetUp();
         }
 
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
         public IEnumerator BlendingBetweenCameras()
         {
             m_TargetVCam.Priority = 3;
@@ -52,7 +52,7 @@ namespace Tests.Runtime
             Assert.That(m_Brain.IsBlending, Is.False);
         }
 
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
         public IEnumerator InterruptedBlendingBetweenCameras()
         {
             // Start blending
@@ -110,7 +110,7 @@ namespace Tests.Runtime
             Assert.That(m_Brain.IsBlending, Is.False);
         }
 
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
         public IEnumerator DoesInterruptedBlendingBetweenCamerasTakesDoubleTime()
         {
             // Start blending

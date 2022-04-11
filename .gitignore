@@ -7,3 +7,14 @@ npm-debug.log.meta
 .DS_Store
 .idea
 .yamato/expectations/*
+
+/projects/**/.idea
+/projects/**/.vs
+/projects/**/Builds
+/projects/**/Library
+/projects/**/Logs
+/projects/**/obj
+/projects/**/Tests_ProRes
+/projects/**/Temp
+*.csproj
+*.sln
