@@ -14,6 +14,7 @@ namespace Cinemachine
         CinemachineFreeLookModifier Target => target as CinemachineFreeLookModifier;
 
         GUIContent m_AddModifierLabel = new GUIContent("Add Modifier");
+        GUIContent m_DeleteModifierLabel = new GUIContent("X", "Delete this modifier");
 
         public override void OnInspectorGUI()
         {
@@ -45,8 +46,8 @@ namespace Cinemachine
                             gotIt = true;
                     if (!gotIt)
                     {
-                        Undo.RecordObject(t, "add morpher");
-                        var m = (CinemachineFreeLookModifier.IModifier)Activator.CreateInstance(type);
+                        Undo.RecordObject(t, "add modofier");
+                        var m = (CinemachineFreeLookModifier.Modifier)Activator.CreateInstance(type);
                         m.Reset(Target.VirtualCamera);
                         t.Modifiers.Add(m);
                     }
@@ -54,10 +55,10 @@ namespace Cinemachine
             }
 
             int indexToDelete = -1;
-            var morphers = serializedObject.FindProperty(() => Target.Modifiers);
-            for (int i = 0; i < morphers.arraySize; ++i)
+            var modifiers = serializedObject.FindProperty(() => Target.Modifiers);
+            for (int i = 0; i < modifiers.arraySize; ++i)
             {
-                var e = morphers.GetArrayElementAtIndex(i);
+                var e = modifiers.GetArrayElementAtIndex(i);
                 var v = e.managedReferenceValue;
                 if (v == null)
                     continue;
@@ -71,11 +72,11 @@ namespace Cinemachine
                     --EditorGUI.indentLevel;
                 }
                 r.x += r.width; r.width = EditorGUIUtility.singleLineHeight;
-                if (GUI.Button(r, new GUIContent("X", "Delete this modifier")))
+                if (GUI.Button(r, m_DeleteModifierLabel))
                     indexToDelete = i;
             }
             if (indexToDelete != -1)
-                morphers.DeleteArrayElementAtIndex(indexToDelete);
+                modifiers.DeleteArrayElementAtIndex(indexToDelete);
 
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
@@ -102,7 +103,7 @@ namespace Cinemachine
                 // Get all ICinemachineComponents
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                        (Type t) => typeof(CinemachineFreeLookModifier.IModifier).IsAssignableFrom(t) && !t.IsAbstract);
+                        (Type t) => typeof(CinemachineFreeLookModifier.Modifier).IsAssignableFrom(t) && !t.IsAbstract);
 
                 s_AllModifiers.Clear();
                 s_AllModifiers.Add(null);

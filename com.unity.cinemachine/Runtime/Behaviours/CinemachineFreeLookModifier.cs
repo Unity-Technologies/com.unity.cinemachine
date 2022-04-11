@@ -15,19 +15,20 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// Interface for an object that will modify some aspect of a FreeLook camera
     /// based on the vertical axis value. 
     /// </summary>
-    public interface IModifier
+    [Serializable]
+    public abstract class Modifier
     {
         /// <summary>Called from OnValidate in the editor.  Validate and sanitize the fields.</summary>
         /// <param name="vcam">the virtual camera owner</param>
-        void Validate(CinemachineVirtualCameraBase vcam);
+        public virtual void Validate(CinemachineVirtualCameraBase vcam) {}
 
         /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
         /// <param name="vcam">the virtual camera owner</param>
-        void Reset(CinemachineVirtualCameraBase vcam);
+        public virtual void Reset(CinemachineVirtualCameraBase vcam) {}
 
         /// <summary>Called from OnEnable and from the inspector.  Refresh any internal component caches.</summary>
         /// <param name="vcam">the virtual camera owner</param>
-        void RefreshCache(CinemachineVirtualCameraBase vcam);
+        public virtual void RefreshCache(CinemachineVirtualCameraBase vcam) {}
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
@@ -38,10 +39,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         /// <param name="deltaTime">current applicable deltaTime</param>
         /// <param name="orbitalSplineValue">The value of the orbital Follow's vertical axis.  
         /// Ranges from -1 to 1, where 0 is center rig.</param>
-        void BeforePipeline(
+        public virtual void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, 
-            float orbitalSplineValue);
+            float orbitalSplineValue) {}
 
         /// <summary>
         /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
@@ -52,40 +53,32 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         /// <param name="deltaTime">current applicable deltaTime</param>
         /// <param name="orbitalSplineValue">The value of the orbital Follow's vertical axis.  
         /// Ranges from -1 to 1, where 0 is center rig.</param>
-        void AfterPipeline(
+        public virtual void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
-            float orbitalSplineValue);
+            float orbitalSplineValue) {}
     }
 
     /// <summary>
     /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
     /// at the end of the camera pipeline.
     /// </summary>
-    public struct TiltModifier : IModifier
+    public class TiltModifier : Modifier
     {
         [HideFoldout]
         public TopCenterBottom<float> Tilt;
 
-        public void Validate(CinemachineVirtualCameraBase vcam)
+        public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Tilt.Top = Mathf.Clamp(Tilt.Top, -30, 30);
             Tilt.Center = Mathf.Clamp(Tilt.Center, -30, 30);
             Tilt.Bottom = Mathf.Clamp(Tilt.Bottom, -30, 30);
         }
 
-        public void Reset(CinemachineVirtualCameraBase vcam) 
-        {
-            Tilt = new TopCenterBottom<float>() { Top = -3, Bottom = 3 };
-        }
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
+            => Tilt = new TopCenterBottom<float>() { Top = -3, Bottom = 3 };
 
-        public void RefreshCache(CinemachineVirtualCameraBase vcam) {}
-
-        public void BeforePipeline(
-            CinemachineVirtualCameraBase vcam, 
-            ref CameraState state, float deltaTime, float orbitalSplineValue) {}
-
-        public void AfterPipeline(
+        public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
             float orbitalSplineValue)
@@ -101,29 +94,86 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
 
     /// <summary>
+    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
+    /// at the end of the camera pipeline.
+    /// </summary>
+    public class PositionDampingModifier : Modifier
+    {
+        [HideFoldout]
+        public TopCenterBottom<Vector3> Damping;
+
+        public override void Validate(CinemachineVirtualCameraBase vcam)
+        {
+            Damping.Top = new Vector3(Mathf.Max(0, Damping.Top.x), Mathf.Max(0, Damping.Top.y), Mathf.Max(0, Damping.Top.z));
+            Damping.Center = new Vector3(Mathf.Max(0, Damping.Center.x), Mathf.Max(0, Damping.Center.y), Mathf.Max(0, Damping.Center.z));
+            Damping.Bottom = new Vector3(Mathf.Max(0, Damping.Bottom.x), Mathf.Max(0, Damping.Bottom.y), Mathf.Max(0, Damping.Bottom.z));
+        }
+
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            TryGetVcamComponent<CinemachineOrbitalFollow>(vcam, out var orbital);
+            if (orbital != null)
+            {
+                Damping = new TopCenterBottom<Vector3>
+                {
+                    Top = orbital.PositionDamping,
+                    Center = orbital.PositionDamping,
+                    Bottom = orbital.PositionDamping,
+                };
+            }
+        }
+
+        public override void RefreshCache(CinemachineVirtualCameraBase vcam) => TryGetVcamComponent(vcam, out m_Orbital);
+
+        CinemachineOrbitalFollow m_Orbital;
+        Vector3 m_SourceDamping;
+
+        public override void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float orbitalSplineValue) 
+        {
+            if (m_Orbital != null)
+            {
+                m_SourceDamping = m_Orbital.PositionDamping;
+                m_Orbital.PositionDamping = orbitalSplineValue >= 0 
+                    ? Vector3.Lerp(Damping.Center, Damping.Top, orbitalSplineValue)
+                    : Vector3.Lerp(Damping.Bottom, Damping.Center, orbitalSplineValue + 1);
+            }
+        }
+
+        public override void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float orbitalSplineValue)
+        {
+            // Restore the settings
+            if (m_Orbital != null)
+                m_Orbital.PositionDamping = m_SourceDamping;
+        }
+    }
+    
+    /// <summary>
     /// Builtin modifier for camera lens.  Applies the lens at the start of the camera pipeline.
     /// </summary>
-    public struct LensModifier : IModifier
+    public class LensModifier : Modifier
     {
         [HideFoldout]
         public TopCenterBottom<LensSettings> Lens;
 
-        public void Validate(CinemachineVirtualCameraBase vcam) 
+        public override void Validate(CinemachineVirtualCameraBase vcam) 
         {
             Lens.Top.Validate();
             Lens.Center.Validate();
             Lens.Bottom.Validate();
         }
 
-        public void Reset(CinemachineVirtualCameraBase vcam) 
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             var defaultLens = vcam == null ? LensSettings.Default : vcam.State.Lens;
             Lens = new TopCenterBottom<LensSettings> { Top = defaultLens, Center = defaultLens, Bottom = defaultLens };
         }
 
-        public void RefreshCache(CinemachineVirtualCameraBase vcam) {}
-
-        public void BeforePipeline(
+        public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float orbitalSplineValue) 
         {
@@ -132,16 +182,13 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             else
                 state.Lens = LensSettings.Lerp(Lens.Bottom, Lens.Center, orbitalSplineValue + 1);
         }
-
-        public void AfterPipeline(CinemachineVirtualCameraBase vcam,
-            ref CameraState state, float deltaTime, float orbitalSplineValue) {}
     }
 
     /// <summary>
     /// Builtin modifier for <see cref="CinemachineBasicMultiChannelPerlin"/>.  Applies scaling to
     /// amplitude and frequency.
     /// </summary>
-    public struct NoiseModifier : IModifier
+    public class NoiseModifier : Modifier
     {
         [Serializable]
         public struct NoiseSettings
@@ -161,9 +208,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         CinemachineBasicMultiChannelPerlin m_NoiseComponent;
         NoiseSettings m_SourceNoise; // For storing and restoring the original settings
 
-        public void Validate(CinemachineVirtualCameraBase vcam) {}
-
-        public void Reset(CinemachineVirtualCameraBase vcam) 
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             Noise = new TopCenterBottom<NoiseSettings>
             {
@@ -173,9 +218,9 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             };
         }
 
-        public void RefreshCache(CinemachineVirtualCameraBase vcam) => TryGetVcamComponent(vcam, out m_NoiseComponent);
+        public override void RefreshCache(CinemachineVirtualCameraBase vcam) => TryGetVcamComponent(vcam, out m_NoiseComponent);
 
-        public void BeforePipeline(
+        public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float orbitalSplineValue) 
         {
@@ -196,7 +241,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
-        public void AfterPipeline(
+        public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
             float orbitalSplineValue) 
@@ -230,7 +275,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         public T Bottom;
     }
 
-    [SerializeReference] public List<IModifier> Modifiers;
+    /// <summary>
+    /// Collection of modifiers that will be pplied to the camera every frame.
+    /// </summary>
+    [SerializeReference] public List<Modifier> Modifiers = new List<Modifier>();
 
     CinemachineOrbitalFollow m_Orbital;
     float m_CurrentSplineValue;

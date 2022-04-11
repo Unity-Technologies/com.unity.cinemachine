@@ -61,7 +61,7 @@ namespace Cinemachine
         /// <summary>How to construct the surface on which the camera will travel</summary>
         [Space]
         [Tooltip("Defines the madder in which the orbit surface is constructed." )]
-        public OrbitMode OrbitStyle;
+        public OrbitMode OrbitStyle = OrbitMode.ThreeRing;
 
         /// <summary>The camera will be placed at this distance from the Follow target</summary>
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
@@ -140,10 +140,10 @@ namespace Cinemachine
         };
         static InputAxis DefaultVertical => new InputAxis 
         { 
-            Value = 0, 
+            Value = 17.5f, 
             Range = new Vector2(-10, 45), 
             Wrap = false, 
-            Center = 10, 
+            Center = 17.5f, 
             Recentering = InputAxis.RecenteringSettings.Default 
         };
         static InputAxis DefaultRadial => new InputAxis 
