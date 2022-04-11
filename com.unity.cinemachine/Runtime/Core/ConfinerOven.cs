@@ -4,7 +4,6 @@ using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine;
 using ClipperLib;
-using UnityEngine.Assertions;
 
 namespace Cinemachine
 {
@@ -15,9 +14,8 @@ namespace Cinemachine
     {
         public class BakedSolution
         {
-            public float FrustumHeight { get; }
-
-            float m_frustumSizeIntSpace;
+            float m_FrustumHeight;
+            float m_FrustumSizeIntSpace;
 
             readonly AspectStretcher m_AspectStretcher;
             readonly bool m_HasBones;
@@ -33,8 +31,8 @@ namespace Cinemachine
                 List<List<IntPoint>> originalPolygon, List<List<IntPoint>> solution)
             {
                 m_AspectStretcher = new AspectStretcher(aspectRatio, polygonBounds.center.x);
-                FrustumHeight = frustumHeight;
-                m_frustumSizeIntSpace = frustumHeight * k_FloatToIntScaler;
+                m_FrustumHeight = frustumHeight;
+                m_FrustumSizeIntSpace = frustumHeight * k_FloatToIntScaler;
                 m_HasBones = hasBones;
                 m_OriginalPolygon = originalPolygon;
                 m_Solution = solution;
@@ -44,15 +42,9 @@ namespace Cinemachine
                 m_SqrPolygonDiagonal = polygonSizeX * polygonSizeX + polygonSizeY * polygonSizeY;
             }
 
-            public void Clear()
-            {
-                m_Solution = null;
-                m_OriginalPolygon = null;
-            }
-
             public bool IsValid(float frustumHeight)
             {
-                return m_Solution != null && Mathf.Abs(frustumHeight - FrustumHeight) < k_MinStepSize;
+                return m_Solution != null && Mathf.Abs(frustumHeight - m_FrustumHeight) < k_MinStepSize;
             }
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
@@ -94,7 +86,7 @@ namespace Cinemachine
                         double distance = diffX * diffX + diffY * diffY;
 
                         // penalty for points from which the target is not visible, preferring visibility over proximity
-                        if (diffX > m_frustumSizeIntSpace || diffY > m_frustumSizeIntSpace)
+                        if (diffX > m_FrustumSizeIntSpace || diffY > m_FrustumSizeIntSpace)
                         {
                             distance += m_SqrPolygonDiagonal; // penalty is the biggest distance between any two points
                         }
@@ -264,7 +256,7 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
-            // Special case, when we are shrank to a point
+            // Special case: we are shrank to the mid point of the original input confiner area.
             if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight && 
                 m_Cache.userSetMaxFrustumHeight >= 0)
             {
@@ -274,6 +266,7 @@ namespace Cinemachine
                     new List<List<IntPoint>>{new List<IntPoint> { m_MidPoint }});
             }
             
+            // If the user has set a max frustum height, respect it
             frustumHeight = m_Cache.userSetMaxFrustumHeight < 0
                 ? frustumHeight
                 : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
@@ -283,9 +276,14 @@ namespace Cinemachine
             offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
             var solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
+            
+            // If solution failed, then use mid point as last resort
             if (solution.Count == 0)
             {
-                solution = new List<List<IntPoint>> {new List<IntPoint> { m_MidPoint }};
+                return new BakedSolution(
+                    m_AspectStretcher.Aspect, frustumHeight, false,
+                    m_PolygonRect, m_OriginalPolygon, 
+                    new List<List<IntPoint>>{new List<IntPoint> { m_MidPoint }});
             }
             
             // Add in the skeleton
@@ -325,41 +323,7 @@ namespace Cinemachine
 
                 return false;
             }
-
             public bool IsNull => polygons == null;
-
-            public static PolygonSolution Lerp(PolygonSolution s1, PolygonSolution s2, float frustumHeight)
-            {
-                var s = new PolygonSolution();
-                if (s1.polygons.Count != s2.polygons.Count)
-                {
-                    return s;
-                }
-
-                var t = Mathf.Clamp01((frustumHeight - s1.frustumHeight) / (s2.frustumHeight - s1.frustumHeight));
-                s.frustumHeight = Mathf.Lerp(s1.frustumHeight, s2.frustumHeight, t);
-                s.polygons = new List<List<IntPoint>>();
-                for (var i = 0; i < s1.polygons.Count; ++i)
-                {
-                    var polygon = new List<IntPoint>();
-                    for (var j = 0; j < s1.polygons[i].Count; ++j)
-                    {
-                        polygon.Add(IntPointLerp(s1.polygons[i][j], s2.polygons[i][j], t));
-                    }
-                    s.polygons.Add(polygon);
-                }
-
-                return s;
-
-                static IntPoint IntPointLerp(IntPoint p1, IntPoint p2, double t)
-                {
-                    return new IntPoint
-                    {
-                        X = p1.X + (long)((p2.X - p1.X) * t),
-                        Y = p1.Y + (long)((p2.Y - p1.Y) * t)
-                    };
-                }
-            }
         }
 
         public enum BakingState 
@@ -368,7 +332,7 @@ namespace Cinemachine
         }
         public BakingState State { get; private set; }
 
-        public float m_BakeProgress;
+        public float bakeProgress;
 
         struct BakingStateCache
         {
@@ -401,9 +365,9 @@ namespace Cinemachine
             for (var i = 0; i < inputPath.Count; ++i)
             {
                 var srcPath = inputPath[i];
-                int numPoints = srcPath.Count;
+                var numPoints = srcPath.Count;
                 var path = new List<IntPoint>(numPoints);
-                for (int j = 0; j < numPoints; ++j)
+                for (var j = 0; j < numPoints; ++j)
                 {
                     // Neutralize the aspect ratio
                     var p = m_AspectStretcher.Stretch(srcPath[j]);
@@ -436,7 +400,7 @@ namespace Cinemachine
             m_Cache.offsetter = new ClipperOffset();
             m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
 
-            List<List<IntPoint>> solution = new List<List<IntPoint>>();
+            var solution = new List<List<IntPoint>>();
             m_Cache.offsetter.Execute(ref solution, 0);
             
             m_Cache.solutions = new List<PolygonSolution>();
@@ -458,7 +422,7 @@ namespace Cinemachine
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
-            m_BakeProgress = 0;
+            bakeProgress = 0;
             
             static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
             {
@@ -496,7 +460,6 @@ namespace Cinemachine
             
             while (m_Cache.solutions.Count < 1000)
             {
-                bool stateChangeFound = false;
                 var numPaths = m_Cache.leftCandidate.polygons.Count;
                 var candidate = new List<List<IntPoint>>(numPaths);
 
@@ -518,9 +481,8 @@ namespace Cinemachine
                     m_Cache.offsetter.Execute(
                         ref candidate, -1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
                 }
-                stateChangeFound = m_Cache.leftCandidate.StateChanged(in candidate);
-
-                if (stateChangeFound)
+                
+                if (m_Cache.leftCandidate.StateChanged(in candidate))
                 {
                     m_Cache.rightCandidate = new PolygonSolution
                     {
@@ -575,14 +537,14 @@ namespace Cinemachine
                         State = BakingState.TIMEOUT; 
                     }
                 
-                    m_BakeProgress = m_Cache.leftCandidate.frustumHeight / m_Cache.userSetMaxFrustumHeight;
+                    bakeProgress = m_Cache.leftCandidate.frustumHeight / m_Cache.userSetMaxFrustumHeight;
                     return;
                 }
             }
 
             ComputeSkeleton(in m_Cache.solutions);
 
-            // Remove useless results
+            // Remove useless/empty results
             for (var i = m_Cache.solutions.Count - 1; i >= 0; --i)
             {
                 if (m_Cache.solutions[i].polygons.Count == 0)
@@ -591,7 +553,7 @@ namespace Cinemachine
                 }
             }
 
-            m_BakeProgress = 1;
+            bakeProgress = 1;
             State = BakingState.BAKED;
 
             void ComputeSkeleton(in List<PolygonSolution> solutions)

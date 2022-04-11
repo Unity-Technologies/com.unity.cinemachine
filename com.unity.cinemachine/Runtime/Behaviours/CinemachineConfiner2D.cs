@@ -89,7 +89,7 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
-        private float m_MaxComputationTimePerFrameInSeconds = 1f / 120f;
+        float m_MaxComputationTimePerFrameInSeconds = 1f / 120f;
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
@@ -105,7 +105,7 @@ namespace Cinemachine
             return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, out _);
         }
 
-        private const float k_cornerAngleTreshold = 10f;
+        const float k_cornerAngleTreshold = 10f;
         
         /// <summary>
         /// Callback to do the camera confining
@@ -178,7 +178,7 @@ namespace Cinemachine
         /// <param name="state">CameraState for checking if Orthographic or Perspective</param>
         /// <param name="vcam">vcam, to check its position</param>
         /// <returns>Frustum height of the camera</returns>
-        private float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
+        float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
         {
             float frustumHeight;
             if (state.Lens.Orthographic)
@@ -194,21 +194,21 @@ namespace Cinemachine
 
             return Mathf.Abs(frustumHeight);
         }
-        
-        private class VcamExtraState
+
+        class VcamExtraState
         {
             public Vector3 m_PreviousDisplacement;
             public Vector3 m_DampedDisplacement;
             public ConfinerOven.BakedSolution m_BakedSolution;
             public CinemachineVirtualCameraBase m_vcam;
         };
-        
-        private ShapeCache m_shapeCache; 
+
+        ShapeCache m_shapeCache; 
 
         /// <summary>
         /// ShapeCache: contains all states that dependent only on the settings in the confiner.
         /// </summary>
-        private struct ShapeCache
+        struct ShapeCache
         {
             public ConfinerOven m_confinerOven;
             public List<List<Vector2>> m_OriginalPath;  // in baked space, not including offset
@@ -217,12 +217,12 @@ namespace Cinemachine
             public Matrix4x4 m_DeltaWorldToBaked; 
             public Matrix4x4 m_DeltaBakedToWorld;
 
-            private float m_aspectRatio;
-            private float m_maxWindowSize;
+            float m_aspectRatio;
+            float m_maxWindowSize;
             internal float m_maxComputationTimePerFrameInSeconds;
 
-            private Matrix4x4 m_bakedToWorld; // defines baked space
-            private Collider2D m_boundingShape2D;
+            Matrix4x4 m_bakedToWorld; // defines baked space
+            Collider2D m_boundingShape2D;
 
             /// <summary>
             /// Invalidates shapeCache
@@ -281,7 +281,7 @@ namespace Cinemachine
                 Type colliderType = boundingShape2D == null ? null:  boundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
                 {
-                    PolygonCollider2D poly = boundingShape2D as PolygonCollider2D;
+                    var poly = boundingShape2D as PolygonCollider2D;
                     m_OriginalPath = new List<List<Vector2>>();
 
                     // Cache the current worldspace shape
@@ -297,12 +297,12 @@ namespace Cinemachine
                 }
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
-                    CompositeCollider2D poly = boundingShape2D as CompositeCollider2D;
+                    var poly = boundingShape2D as CompositeCollider2D;
                     m_OriginalPath = new List<List<Vector2>>();
 
                     // Cache the current worldspace shape
                     m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
-                    Vector2[] path = new Vector2[poly.pointCount];
+                    var path = new Vector2[poly.pointCount];
                     for (int i = 0; i < poly.pathCount; ++i)
                     {
                         int numPoints = poly.GetPath(i, path);
@@ -326,8 +326,8 @@ namespace Cinemachine
 
                 return true;
             }
-            
-            private bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
+
+            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
             {
                 return boundingShape2D != null && m_boundingShape2D != null && 
                        m_boundingShape2D == boundingShape2D && // same boundingShape?
@@ -337,7 +337,7 @@ namespace Cinemachine
                        Mathf.Abs(m_maxWindowSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
 
-            private void CalculateDeltaTransformationMatrix()
+            void CalculateDeltaTransformationMatrix()
             {
                 // Account for current collider offset (in local space) and 
                 // incorporate the worldspace delta that the confiner has moved since baking
@@ -359,7 +359,7 @@ namespace Cinemachine
             pathLocalToWorld = m_shapeCache.m_DeltaBakedToWorld;
             currentPath.Clear();
             var allExtraStates = GetAllExtraStates<VcamExtraState>();
-            for (int i = 0; i < allExtraStates.Count; ++i)
+            for (var i = 0; i < allExtraStates.Count; ++i)
             {
                 var e = allExtraStates[i];
                 if (e.m_BakedSolution != null)
@@ -370,27 +370,17 @@ namespace Cinemachine
             return originalPath != null;
         }
 
-        internal float BakeProgress()
-        {
-            if (m_shapeCache.m_confinerOven != null)
-                return m_shapeCache.m_confinerOven.m_BakeProgress;
-            return 0f;
-        }
+        internal float BakeProgress() => m_shapeCache.m_confinerOven != null ? m_shapeCache.m_confinerOven.bakeProgress : 0f;
+        internal bool ConfinerOvenTimedOut() => m_shapeCache.m_confinerOven is { State: ConfinerOven.BakingState.TIMEOUT };
+#endif
 
-        internal bool ConfinerOvenTimedOut()
-        {
-            return m_shapeCache.m_confinerOven != null 
-                && m_shapeCache.m_confinerOven.State == ConfinerOven.BakingState.TIMEOUT;
-        }
-    #endif
-
-        private void OnValidate()
+        void OnValidate()
         {
             m_Damping = Mathf.Max(0, m_Damping);
             m_shapeCache.m_maxComputationTimePerFrameInSeconds = m_MaxComputationTimePerFrameInSeconds;
         }
 
-        private void Reset()
+        void Reset()
         {
             m_Damping = 0.5f;
             m_MaxWindowSize = -1;
