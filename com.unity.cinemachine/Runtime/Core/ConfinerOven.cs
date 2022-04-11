@@ -372,7 +372,7 @@ namespace Cinemachine
             }
 
             // Don't compute further than what is the theoretical max
-            m_Cache.theoriticalMaxFrustumHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
+            m_Cache.theoriticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
  
             // exact comparison to 0 is intentional!
             if (m_Cache.userSetMaxFrustumHeight == 0 || m_Cache.userSetMaxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
