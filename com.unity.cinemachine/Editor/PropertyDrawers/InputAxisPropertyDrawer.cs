@@ -63,7 +63,7 @@ namespace Cinemachine.Editor
                 rect.width -= EditorGUIUtility.labelWidth - 2 * EditorGUIUtility.singleLineHeight;
 
                 EditorGUI.indentLevel = 0;
-                EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight;
+                EditorGUIUtility.labelWidth = 2 * EditorGUIUtility.singleLineHeight;
                 EditorGUI.PropertyField(rect, valueProp, new GUIContent(" ", valueProp.tooltip));
                 EditorGUI.indentLevel = oldIndent;
                 EditorGUIUtility.labelWidth = oldLabelWidth;
