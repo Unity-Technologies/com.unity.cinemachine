@@ -385,7 +385,7 @@ namespace Cinemachine
             /// <param name="positionDamping">Positional damping amount</param>
             /// <param name="eulerDamping">Damping amount for euler rotation damping</param>
             /// <param name="quatDamping">Damping amount for quaternion rotation damping</param>
-            /// <param name=rotationDampingMode">Damping mode: euler or quaternion</param>
+            /// <param name="rotationDampingMode">Damping mode: euler or quaternion</param>
             /// <param name="outTargetPosition">Resulting camera position</param>
             /// <param name="outTargetOrient">Damped target orientation</param>
             public void TrackTarget(
@@ -440,11 +440,9 @@ namespace Cinemachine
                 var positionDelta = targetPosition - currentPosition;
                 if (prevStateValid)
                 {
-                    Quaternion dampingSpace;
-                    if (desiredCameraOffset.AlmostZero())
-                        dampingSpace = component.VcamState.RawOrientation;
-                    else
-                        dampingSpace = Quaternion.LookRotation(dampedOrientation * desiredCameraOffset, up);
+                    Quaternion dampingSpace = desiredCameraOffset.AlmostZero() 
+                        ? component.VcamState.RawOrientation 
+                        : Quaternion.LookRotation(dampedOrientation * desiredCameraOffset, up);
                     var localDelta = Quaternion.Inverse(dampingSpace) * positionDelta;
                     localDelta = component.VirtualCamera.DetachedFollowTargetDamp(localDelta, positionDamping, deltaTime);
                     positionDelta = dampingSpace * localDelta;

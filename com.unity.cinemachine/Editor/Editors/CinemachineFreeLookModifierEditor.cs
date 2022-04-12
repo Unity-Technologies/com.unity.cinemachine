@@ -46,7 +46,7 @@ namespace Cinemachine
                             gotIt = true;
                     if (!gotIt)
                     {
-                        Undo.RecordObject(t, "add modofier");
+                        Undo.RecordObject(t, "add modifier");
                         var m = (CinemachineFreeLookModifier.Modifier)Activator.CreateInstance(type);
                         m.Reset(Target.VirtualCamera);
                         t.Modifiers.Add(m);
@@ -91,7 +91,7 @@ namespace Cinemachine
         }
 
         static List<Type> s_AllModifiers = new List<Type>();
-        static GUIContent[] s_ModifierNames = new GUIContent[0];
+        static GUIContent[] s_ModifierNames = Array.Empty<GUIContent>();
 
         [InitializeOnLoad]
         static class EditorInitialize

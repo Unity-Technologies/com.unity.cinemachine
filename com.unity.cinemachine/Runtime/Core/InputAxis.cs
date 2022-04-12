@@ -63,8 +63,8 @@ namespace Cinemachine
         [Tooltip("The centered, or at-rest value of this axis.")]
         public float Center;
 
-        /// <summary>The valid range for the axis value.  Value will be clapmed to this range.</summary>
-        [Tooltip("The valid range for the axis value.  Value will be clapmed to this range.")]
+        /// <summary>The valid range for the axis value.  Value will be clamped to this range.</summary>
+        [Tooltip("The valid range for the axis value.  Value will be clamped to this range.")]
         [Vector2AsRangeProperty]
         public Vector2 Range;
 
@@ -258,7 +258,7 @@ namespace Cinemachine
             axis.Value = axis.ClampValue(v);
         }
 
-        /// <summary>Cancel any current recenting in progress, and reset the wait time</summary>
+        /// <summary>Cancel any current recentering in progress, and reset the wait time</summary>
         public void CancelRecentering()
         {
             m_LastUpdateTime = CurrentTime;
