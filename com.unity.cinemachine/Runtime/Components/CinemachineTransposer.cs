@@ -440,8 +440,7 @@ namespace Cinemachine
                 var positionDelta = targetPosition - currentPosition;
                 if (prevStateValid)
                 {
-                    Quaternion dampingSpace;
-                    dampingSpace = desiredCameraOffset.AlmostZero() 
+                    Quaternion dampingSpace = desiredCameraOffset.AlmostZero() 
                         ? component.VcamState.RawOrientation 
                         : Quaternion.LookRotation(dampedOrientation * desiredCameraOffset, up);
                     var localDelta = Quaternion.Inverse(dampingSpace) * positionDelta;
