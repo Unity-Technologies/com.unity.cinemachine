@@ -94,11 +94,9 @@ namespace Cinemachine
         /// <summary>
         /// PositionDamping speeds for each of the 3 axes of the offset from target
         /// </summary>
-        Vector3 EffectivePositionDamping
-        {
-            get => BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp 
+        Vector3 EffectivePositionDamping =>
+            BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp 
                 ? new Vector3(0, PositionDamping.y, PositionDamping.z) : PositionDamping;
-        }
 
         /// <summary>
         /// PositionDamping speeds for each of the 3 axes of the target's rotation
