@@ -2,10 +2,12 @@
 #define CINEMACHINE_UNITY_ANIMATION
 #endif
 
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Animations;
+using Object = UnityEngine.Object;
 
 namespace Cinemachine.Editor
 {
@@ -137,7 +139,7 @@ namespace Cinemachine.Editor
             mStateIndexLookup = collector.mStateIndexLookup;
 
             if (ac == null)
-                mLayerNames = new string[0];
+                mLayerNames = Array.Empty<string>();
             else
             {
                 mLayerNames = new string[ac.layers.Length];
