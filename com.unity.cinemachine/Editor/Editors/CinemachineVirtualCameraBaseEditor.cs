@@ -172,7 +172,7 @@ namespace Cinemachine.Editor
             bool needsButton = false;
             for (int i = 0; !needsButton && i < targets.Length; ++i)
             {
-                var vcam = targets[i] as CinemachineVirtualCameraBase;
+                var vcam = (CinemachineVirtualCameraBase)targets[i];
                 if (vcam.RequiresUserInput() && vcam.GetComponent<AxisState.IInputAxisProvider>() == null)
                     needsButton = true;
             }
@@ -188,7 +188,7 @@ namespace Cinemachine.Editor
                     Undo.SetCurrentGroupName("Add CinemachineInputProvider");
                     for (int i = 0; i < targets.Length; ++i)
                     {
-                        var vcam = targets[i] as CinemachineVirtualCameraBase;
+                        var vcam = (CinemachineVirtualCameraBase)targets[i];
                         if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
                             continue;
                         var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);

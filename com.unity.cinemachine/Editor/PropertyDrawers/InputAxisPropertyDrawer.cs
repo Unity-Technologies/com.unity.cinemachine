@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
             rect.height = height;
 
             property.isExpanded = EditorGUI.Foldout(
-                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth, rect.height),
+                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth - 2 * height, rect.height),
                 property.isExpanded, label, true);
 
             if (property.isExpanded)
@@ -59,8 +59,8 @@ namespace Cinemachine.Editor
                 int oldIndent = EditorGUI.indentLevel;
                 float oldLabelWidth = EditorGUIUtility.labelWidth;
 
-                rect.x += EditorGUIUtility.labelWidth - EditorGUIUtility.singleLineHeight;
-                rect.width -= EditorGUIUtility.labelWidth - EditorGUIUtility.singleLineHeight;
+                rect.x += EditorGUIUtility.labelWidth - 2 * EditorGUIUtility.singleLineHeight;
+                rect.width -= EditorGUIUtility.labelWidth - 2 * EditorGUIUtility.singleLineHeight;
 
                 EditorGUI.indentLevel = 0;
                 EditorGUIUtility.labelWidth = EditorGUIUtility.singleLineHeight;

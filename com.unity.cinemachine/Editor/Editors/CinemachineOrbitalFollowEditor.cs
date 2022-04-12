@@ -22,10 +22,6 @@ namespace Cinemachine.Editor
                         : FieldPath(x => x.RotationDamping));
                     break;
                 case CinemachineTransposer.BindingMode.WorldSpace:
-                    excluded.Add(FieldPath(x => x.RotationDampingMode));
-                    excluded.Add(FieldPath(x => x.RotationDamping));
-                    excluded.Add(FieldPath(x => x.QuaternionDamping));
-                    break;
                 case CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp:
                     excluded.Add(FieldPath(x => x.RotationDampingMode));
                     excluded.Add(FieldPath(x => x.RotationDamping));
@@ -45,8 +41,9 @@ namespace Cinemachine.Editor
             bool noHandler = false;
             for (int i = 0; i < targets.Length; ++i)
             {
-                noFollow |= (targets[i] as CinemachineOrbitalFollow).FollowTarget == null;
-                noHandler |= !(targets[i] as CinemachineOrbitalFollow).HasInputHandler;
+                var t = (CinemachineOrbitalFollow)targets[i];
+                noFollow |= t.FollowTarget == null;
+                noHandler |= !t.HasInputHandler;
             }
 
             if (noFollow)
@@ -65,7 +62,7 @@ namespace Cinemachine.Editor
                         Undo.SetCurrentGroupName("Add Input Axis Controller");
                         for (int i = 0; i < targets.Length; ++i)
                         {
-                            var t = targets[i] as CinemachineOrbitalFollow;
+                            var t = (CinemachineOrbitalFollow)targets[i];
                             if (!t.HasInputHandler)
                             {
                                 var controller = t.VirtualCamera.GetComponent<InputAxisController>();

@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
     {
         public override void OnInspectorGUI()
         {
-            var Target = target as InputAxisController;
+            var Target = (InputAxisController)target;
             if (Target != null && !Target.ConrollersAreValid())
             {
                 Undo.RecordObject(Target, "SynchronizeControllers");

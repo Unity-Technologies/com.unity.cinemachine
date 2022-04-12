@@ -14,6 +14,7 @@ namespace Cinemachine
 
         GUIContent m_AddModifierLabel = new GUIContent("Add Modifier");
         GUIContent m_DeleteModifierLabel = new GUIContent("X", "Delete this modifier");
+        GUIContent m_ResetModifierLabel = new GUIContent("R", "Reset this modifier");
 
         public override void OnInspectorGUI()
         {
@@ -55,23 +56,36 @@ namespace Cinemachine
             for (int i = 0; i < modifiers.arraySize; ++i)
             {
                 var e = modifiers.GetArrayElementAtIndex(i);
-                var v = e.managedReferenceValue as CinemachineFreeLookModifier.Modifier;
-                if (v == null)
+                var m = e.managedReferenceValue as CinemachineFreeLookModifier.Modifier;
+                if (m == null)
                     continue;
+                bool needsWarning = !m.HasRequiredComponent;
                 var r = EditorGUILayout.GetControlRect();
-                r.width -= EditorGUIUtility.singleLineHeight; 
-                if (e.isExpanded = EditorGUI.Foldout(r, e.isExpanded, GetModifierName(v.GetType()), true))
+                r.width -= 2 * EditorGUIUtility.singleLineHeight; 
+                if (e.isExpanded = EditorGUI.Foldout(r, e.isExpanded, GetModifierName(m.GetType()), true))
                 {
                     ++EditorGUI.indentLevel;
-                    if (!v.HasRequiredComponent)
+                    if (needsWarning)
                         EditorGUILayout.HelpBox("No appropriate CM components found.  "
-                            + $"Must have one of {GetAssignableTypes(v.CachedComponentType)}.", 
+                            + $"Must have one of {GetAssignableTypes(m.CachedComponentType)}.", 
                             MessageType.Warning);
                     InspectorUtility.DrawChildProperties(
                         EditorGUILayout.GetControlRect(true, InspectorUtility.PropertyHeightOfChidren(e)), e);
                     --EditorGUI.indentLevel;
                 }
+
                 r.x += r.width; r.width = EditorGUIUtility.singleLineHeight;
+                if (needsWarning)
+                {
+                    EditorGUI.LabelField(new Rect(r.x - r.width, r.y, r.width, r.height), 
+                        new GUIContent(EditorGUIUtility.IconContent("console.warnicon.sml").image));
+                }
+                if (GUI.Button(r, m_ResetModifierLabel))
+                {
+                    Undo.RecordObject(Target, "reset modifier");
+                    m.Reset(Target.VirtualCamera);
+                }
+                r.x += r.width;
                 if (GUI.Button(r, m_DeleteModifierLabel))
                     indexToDelete = i;
             }

@@ -8,13 +8,13 @@ namespace Cinemachine.Editor
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            var a = attribute as FoldoutWithEnabledButtonAttribute;
+            var a = (FoldoutWithEnabledButtonAttribute)attribute;
             return InspectorUtility.EnabledFoldoutHeight(property, a.EnabledPropertyName);
         }
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
-            var a = attribute as FoldoutWithEnabledButtonAttribute;
+            var a = (FoldoutWithEnabledButtonAttribute)attribute;
             InspectorUtility.EnabledFoldout(rect, property, a.EnabledPropertyName);
         }
     }
