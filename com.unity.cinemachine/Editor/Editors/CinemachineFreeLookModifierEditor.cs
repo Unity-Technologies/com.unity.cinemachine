@@ -46,7 +46,7 @@ namespace Cinemachine
                             gotIt = true;
                     if (!gotIt)
                     {
-                        Undo.RecordObject(t, "add modofier");
+                        Undo.RecordObject(t, "add modifier");
                         var m = (CinemachineFreeLookModifier.Modifier)Activator.CreateInstance(type);
                         m.Reset(Target.VirtualCamera);
                         t.Modifiers.Add(m);
