@@ -91,7 +91,7 @@ namespace Cinemachine
         }
 
         static List<Type> s_AllModifiers = new List<Type>();
-        static GUIContent[] s_ModifierNames = new GUIContent[0];
+        static GUIContent[] s_ModifierNames = Array.Empty<GUIContent>();
 
         [InitializeOnLoad]
         static class EditorInitialize
