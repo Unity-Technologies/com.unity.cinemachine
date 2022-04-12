@@ -275,7 +275,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
 
     /// <summary>
-    /// Collection of modifiers that will be pplied to the camera every frame.
+    /// Collection of modifiers that will be applied to the camera every frame.
     /// </summary>
     [SerializeReference] [NoSaveDuringPlay] public List<Modifier> Modifiers = new List<Modifier>();
 
@@ -321,7 +321,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     // Needed by inspector
     internal bool HasOrbital() { RefreshComponentCache(); return m_Orbital != null; }
 
-    /// <summary>Override this to do such things as offset the RefereceLookAt.
+    /// <summary>Override this to do such things as offset the ReferenceLookAt.
     /// Base class implementation does nothing.</summary>
     /// <param name="vcam">The virtual camera being processed</param>
     /// <param name="curState">Input state that must be mutated</param>
