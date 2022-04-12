@@ -17,10 +17,9 @@ namespace Cinemachine.Editor
             {
                 default:
                 case CinemachineTransposer.BindingMode.LockToTarget:
-                    if (Target.RotationDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
-                        excluded.Add(FieldPath(x => x.QuaternionDamping));
-                    else
-                        excluded.Add(FieldPath(x => x.RotationDamping));
+                    excluded.Add(Target.RotationDampingMode == CinemachineTransposer.AngularDampingMode.Euler 
+                        ? FieldPath(x => x.QuaternionDamping) 
+                        : FieldPath(x => x.RotationDamping));
                     break;
                 case CinemachineTransposer.BindingMode.WorldSpace:
                     excluded.Add(FieldPath(x => x.RotationDampingMode));
