@@ -153,8 +153,8 @@ namespace Cinemachine
             Center = 1, 
             Recentering = InputAxis.RecenteringSettings.Default 
         };
-            
-        Vector3 PositiveVector3(Vector3 v) => new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
+
+        static Vector3 PositiveVector3(Vector3 v) => new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
 
         void OnValidate()
         {
@@ -182,12 +182,12 @@ namespace Cinemachine
         }
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
-        public override bool IsValid { get => enabled && FollowTarget != null; }
+        public override bool IsValid => enabled && FollowTarget != null;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get => CinemachineCore.Stage.Body; }
-       
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
+
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
@@ -467,7 +467,7 @@ namespace Cinemachine
             }
 
             /// <summary>Get the value of a point on the spline curve</summary>
-            /// <param name="t">Where on the spline arc, with 0...1 t==0.5 being the center orbit./param>
+            /// <param name="t">Where on the spline arc, with 0...1 t==0.5 being the center orbit.</param>
             /// <returns>Point on the spline along the surface defined by the orbits.  
             /// XYZ is the point itself, and W ranges from 0 on the bottom to 2 on the top, 
             /// with 1 being the center.</returns>
