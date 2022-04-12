@@ -32,6 +32,8 @@ namespace Cinemachine
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
     public class CinemachineFramingTransposer : CinemachineComponentBase
+        , CinemachineFreeLookModifier.IModifiablePositionDamping
+        , CinemachineFreeLookModifier.IModifiableDistance
     {
         /// <summary>
         /// Offset from the Follow Target object (in target-local co-ordinates).  The camera will attempt to
@@ -255,6 +257,18 @@ namespace Cinemachine
         [Tooltip("If adjusting Orthographic Size, will not set it higher than this.")]
         public float m_MaximumOrthoSize = 5000;
 
+        Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
+        {
+            get => new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            set { m_XDamping = value.x; m_YDamping = value.y; m_ZDamping = value.z; }
+        }
+
+        float CinemachineFreeLookModifier.IModifiableDistance.Distance
+        {
+            get => m_CameraDistance;
+            set => m_CameraDistance = value;
+        }
+        
         /// <summary>Internal API for the inspector editor</summary>
         internal Rect SoftGuideRect
         {

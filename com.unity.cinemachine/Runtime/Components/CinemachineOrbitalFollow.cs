@@ -14,7 +14,10 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
-    public class CinemachineOrbitalFollow : CinemachineComponentBase, IInputAxisTarget
+    public class CinemachineOrbitalFollow 
+        : CinemachineComponentBase, IInputAxisTarget
+        , CinemachineFreeLookModifier.IModifierValueSource
+        , CinemachineFreeLookModifier.IModifiablePositionDamping
     {
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
@@ -222,13 +225,13 @@ namespace Cinemachine
         /// <summary>Inspector checks this and displays warnng if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;
 
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue => GetCameraPoint().w;
 
-        /// <summary>
-        /// Get a value that represents the current position along the vertical axis.  
-        /// </summary>
-        /// <returns>Ranges from -1...1.  
-        /// If OrbitStyle is ThreeRing, then 0 represents the middle orbit position.</returns>
-        public float GetVerticalAxisNormalizedValue() => GetCameraPoint().w;
+        Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
+        {
+            get => PositionDamping;
+            set => PositionDamping = value;
+        }
 
         /// <summary>
         /// For inspector.

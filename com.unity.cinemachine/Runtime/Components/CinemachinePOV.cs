@@ -16,7 +16,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
-    public class CinemachinePOV : CinemachineComponentBase
+    public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>
         /// Defines the recentering target: Recentering goes here
@@ -66,6 +66,15 @@ namespace Cinemachine
         [HideInInspector]
         [Tooltip("Obsolete - no longer used")]
         public bool m_ApplyBeforeBody;
+
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
+        {
+            get
+            {
+                var r = m_VerticalAxis.m_MaxValue - m_VerticalAxis.m_MinValue;
+                return (m_VerticalAxis.Value - m_VerticalAxis.m_MinValue) / (r > 0.001f ? r : 1) * 2 - 1;
+            }
+        }
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled; } }

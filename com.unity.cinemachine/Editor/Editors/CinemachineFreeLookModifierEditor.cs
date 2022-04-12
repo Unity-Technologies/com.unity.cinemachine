@@ -8,7 +8,6 @@ using System;
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineFreeLookModifier))]
-    [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookModifierEditor : UnityEditor.Editor
     {
         CinemachineFreeLookModifier Target => target as CinemachineFreeLookModifier;
@@ -18,10 +17,12 @@ namespace Cinemachine
 
         public override void OnInspectorGUI()
         {
-            if (!Target.HasOrbital())
+            if (!Target.HasValueSource())
             {
                 EditorGUILayout.Space();
-                EditorGUILayout.HelpBox("An Orbital Follow component is required.", MessageType.Warning);
+                EditorGUILayout.HelpBox("No appropriate CM components found.  "
+                    + $"Must have one of {GetAssignableTypes(typeof(CinemachineFreeLookModifier.IModifierValueSource))}.", 
+                    MessageType.Warning);
                 return;
             }
 
@@ -35,22 +36,17 @@ namespace Cinemachine
                 Type type = s_AllModifiers[selection];
 
                 // For each inspected object, add selected item if not already present
-                for (int i = 0; i < targets.Length; i++)
+                bool gotIt = false;
+                for (int m = 0; !gotIt && m < Target.Modifiers.Count; ++m)
+                    if (Target.Modifiers[m].GetType() == type)
+                        gotIt = true;
+                if (!gotIt)
                 {
-                    var t = targets[i] as CinemachineFreeLookModifier;
-                    if (t == null)
-                        continue;
-                    bool gotIt = false;
-                    for (int m = 0; !gotIt && m < t.Modifiers.Count; ++m)
-                        if (t.Modifiers[m].GetType() == type)
-                            gotIt = true;
-                    if (!gotIt)
-                    {
-                        Undo.RecordObject(t, "add modifier");
-                        var m = (CinemachineFreeLookModifier.Modifier)Activator.CreateInstance(type);
-                        m.Reset(Target.VirtualCamera);
-                        t.Modifiers.Add(m);
-                    }
+                    Undo.RecordObject(Target, "add modifier");
+                    var m = (CinemachineFreeLookModifier.Modifier)Activator.CreateInstance(type);
+                    m.RefreshCache(Target.VirtualCamera);
+                    m.Reset(Target.VirtualCamera);
+                    Target.Modifiers.Add(m);
                 }
             }
 
@@ -59,7 +55,7 @@ namespace Cinemachine
             for (int i = 0; i < modifiers.arraySize; ++i)
             {
                 var e = modifiers.GetArrayElementAtIndex(i);
-                var v = e.managedReferenceValue;
+                var v = e.managedReferenceValue as CinemachineFreeLookModifier.Modifier;
                 if (v == null)
                     continue;
                 var r = EditorGUILayout.GetControlRect();
@@ -67,6 +63,10 @@ namespace Cinemachine
                 if (e.isExpanded = EditorGUI.Foldout(r, e.isExpanded, GetModifierName(v.GetType()), true))
                 {
                     ++EditorGUI.indentLevel;
+                    if (!v.HasRequiredComponent)
+                        EditorGUILayout.HelpBox("No appropriate CM components found.  "
+                            + $"Must have one of {GetAssignableTypes(v.CachedComponentType)}.", 
+                            MessageType.Warning);
                     InspectorUtility.DrawChildProperties(
                         EditorGUILayout.GetControlRect(true, InspectorUtility.PropertyHeightOfChidren(e)), e);
                     --EditorGUI.indentLevel;
@@ -92,6 +92,27 @@ namespace Cinemachine
 
         static List<Type> s_AllModifiers = new List<Type>();
         static GUIContent[] s_ModifierNames = Array.Empty<GUIContent>();
+        static Dictionary<Type, string> s_AsignableTypes = new Dictionary<Type, string>();
+
+        static string GetAssignableTypes(Type inputType)
+        {
+            if (!s_AsignableTypes.ContainsKey(inputType))
+            {
+                var allSources
+                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                        (Type t) => inputType.IsAssignableFrom(t) && !t.IsAbstract);
+                var s = string.Empty;
+                foreach (var t in allSources)
+                {
+                    var sep = (s.Length == 0) ? string.Empty : ", ";
+                    s += sep + t.Name;
+                }
+                if (s.Length == 0)
+                    s = "(none)";
+                s_AsignableTypes[inputType] = s;
+            }
+            return s_AsignableTypes[inputType];
+        }
 
         [InitializeOnLoad]
         static class EditorInitialize
@@ -100,7 +121,7 @@ namespace Cinemachine
             // data for the various component pipeline stages.
             static EditorInitialize()
             {
-                // Get all ICinemachineComponents
+                // Get all Modifiers
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                         (Type t) => typeof(CinemachineFreeLookModifier.Modifier).IsAssignableFrom(t) && !t.IsAbstract);
@@ -121,6 +142,5 @@ namespace Cinemachine
                 }
             }
         }
-
     }
 }
