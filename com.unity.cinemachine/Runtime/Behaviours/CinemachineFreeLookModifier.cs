@@ -46,7 +46,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
-        /// and restore any camera paramters changed in <see cref="BeforePipeline"/>.
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modofied in this function</param>
