@@ -32,10 +32,10 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.QuaternionDamping));
                     break;
             }
-            if (Target.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.Sphere)
-                excluded.Add(FieldPath(x => x.Orbits));
-            else
-                excluded.Add(FieldPath(x => x.Radius));
+
+            excluded.Add(Target.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.Sphere 
+                ? FieldPath(x => x.Orbits) 
+                : FieldPath(x => x.Radius));
         }
 
         public override void OnInspectorGUI()
