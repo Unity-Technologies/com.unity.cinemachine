@@ -35,7 +35,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         /// modify relevant camera settings.  Original camera settings should be restored in .
         /// </summary>
         /// <param name="vcam">vcam owner</param>
-        /// <param name="state">current vcam state.  May be modofied in this function</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
         /// <param name="deltaTime">current applicable deltaTime</param>
         /// <param name="orbitalSplineValue">The value of the orbital Follow's vertical axis.  
         /// Ranges from -1 to 1, where 0 is center rig.</param>
