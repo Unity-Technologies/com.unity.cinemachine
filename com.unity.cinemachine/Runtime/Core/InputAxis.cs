@@ -258,7 +258,7 @@ namespace Cinemachine
             axis.Value = axis.ClampValue(v);
         }
 
-        /// <summary>Cancel any current recenting in progress, and reset the wait time</summary>
+        /// <summary>Cancel any current recentering in progress, and reset the wait time</summary>
         public void CancelRecentering()
         {
             m_LastUpdateTime = CurrentTime;
