@@ -49,7 +49,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
-        /// <param name="state">current vcam state.  May be modofied in this function</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
         /// <param name="deltaTime">current applicable deltaTime</param>
         /// <param name="orbitalSplineValue">The value of the orbital Follow's vertical axis.  
         /// Ranges from -1 to 1, where 0 is center rig.</param>
@@ -76,7 +76,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         }
 
         public override void Reset(CinemachineVirtualCameraBase vcam) 
-            => Tilt = new TopCenterBottom<float>() { Top = -3, Bottom = 3 };
+            => Tilt = new TopCenterBottom<float> { Top = -3, Bottom = 3 };
 
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
@@ -175,12 +175,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
-            ref CameraState state, float deltaTime, float orbitalSplineValue) 
+            ref CameraState state, float deltaTime, float orbitalSplineValue)
         {
-            if (orbitalSplineValue >= 0)
-                state.Lens = LensSettings.Lerp(Lens.Center, Lens.Top, orbitalSplineValue);
-            else
-                state.Lens = LensSettings.Lerp(Lens.Bottom, Lens.Center, orbitalSplineValue + 1);
+            state.Lens = orbitalSplineValue >= 0 
+                ? LensSettings.Lerp(Lens.Center, Lens.Top, orbitalSplineValue) 
+                : LensSettings.Lerp(Lens.Bottom, Lens.Center, orbitalSplineValue + 1);
         }
     }
 
