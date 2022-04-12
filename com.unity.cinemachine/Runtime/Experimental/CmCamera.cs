@@ -190,7 +190,6 @@ namespace Cinemachine
                 transform.rotation = State.RawOrientation;
             
             // Signal that it's all done
-            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
             PreviousStateIsValid = true;
         }
         
@@ -260,7 +259,7 @@ namespace Cinemachine
                 {
                     if (c == null)
                         state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
-                     // If we have saved a Body for after Aim, do it now
+                    // If we have saved a Body for after Aim, do it now
                     if (postAimBody != null)
                     {
                         postAimBody.MutateCameraState(ref state, deltaTime);
