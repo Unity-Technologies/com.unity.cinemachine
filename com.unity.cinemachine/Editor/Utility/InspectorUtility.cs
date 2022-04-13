@@ -3,6 +3,7 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
@@ -176,6 +177,7 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
+        // GML TODO: get rid of this
         internal static string GetVirtualCameraObjectName(SerializedProperty property)
         {
             // A little hacky here, as we favour virtual cameras...
@@ -299,5 +301,27 @@ namespace Cinemachine.Editor
             }
             return enabledProp.boolValue;
         }
+
+        static Dictionary<Type, string> s_AssignableTypes = new Dictionary<Type, string>();
+        internal static string GetAssignableBehaviourNames(Type inputType)
+        {
+            if (!s_AssignableTypes.ContainsKey(inputType))
+            {
+                var allSources = ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                    (Type t) => inputType.IsAssignableFrom(t) && !t.IsAbstract 
+                        && typeof(MonoBehaviour).IsAssignableFrom(t));
+                var s = string.Empty;
+                foreach (var t in allSources)
+                {
+                    var sep = (s.Length == 0) ? string.Empty : ", ";
+                    s += sep + t.Name;
+                }
+                if (s.Length == 0)
+                    s = "(none)";
+                s_AssignableTypes[inputType] = s;
+            }
+            return s_AssignableTypes[inputType];
+        }
+
     }
 }

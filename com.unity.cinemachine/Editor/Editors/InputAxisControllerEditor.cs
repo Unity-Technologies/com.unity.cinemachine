@@ -28,7 +28,9 @@ namespace Cinemachine.Editor
 
             int numElements = controllers.arraySize;
             if (numElements == 0)
-                EditorGUILayout.HelpBox("No InputAxis objects found in components.", MessageType.Warning);
+                EditorGUILayout.HelpBox("No applicable CM components found.  Must have one of: "
+                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisTarget)), 
+                    MessageType.Warning);
             else for (int i = 0; i < numElements; ++i)
             {
                 var element = controllers.GetArrayElementAtIndex(i);

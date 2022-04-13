@@ -21,8 +21,9 @@ namespace Cinemachine
             if (!Target.HasValueSource())
             {
                 EditorGUILayout.Space();
-                EditorGUILayout.HelpBox("No applicable CM components found.  "
-                    + $"Must have one of: {GetAssignableTypes(typeof(CinemachineFreeLookModifier.IModifierValueSource))}.", 
+                EditorGUILayout.HelpBox("No applicable CM components found.  Must have one of: "
+                    + InspectorUtility.GetAssignableBehaviourNames(
+                        typeof(CinemachineFreeLookModifier.IModifierValueSource)), 
                     MessageType.Warning);
                 return;
             }
@@ -31,10 +32,10 @@ namespace Cinemachine
 
             Rect rect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             rect = EditorGUI.PrefixLabel(rect, m_AddModifierLabel);
-            int selection = EditorGUI.Popup(rect, 0, s_ModifierNames);
+            int selection = EditorGUI.Popup(rect, 0, ModifierMenuItems.s_ModifierNames);
             if (selection > 0)
             {
-                Type type = s_AllModifiers[selection];
+                Type type = ModifierMenuItems.s_AllModifiers[selection];
 
                 // For each inspected object, add selected item if not already present
                 bool gotIt = false;
@@ -62,12 +63,13 @@ namespace Cinemachine
                 bool needsWarning = !m.HasRequiredComponent;
                 var r = EditorGUILayout.GetControlRect();
                 r.width -= 2 * EditorGUIUtility.singleLineHeight; 
-                if (e.isExpanded = EditorGUI.Foldout(r, e.isExpanded, GetModifierName(m.GetType()), true))
+                if (e.isExpanded = EditorGUI.Foldout(
+                    r, e.isExpanded, ModifierMenuItems.GetModifierName(m.GetType()), true))
                 {
                     ++EditorGUI.indentLevel;
                     if (needsWarning)
-                        EditorGUILayout.HelpBox("No applicable CM components found.  "
-                            + $"Must have one of: {GetAssignableTypes(m.CachedComponentType)}.", 
+                        EditorGUILayout.HelpBox("No applicable CM components found.  Must have one of: "
+                            + InspectorUtility.GetAssignableBehaviourNames(m.CachedComponentType), 
                             MessageType.Warning);
                     InspectorUtility.DrawChildProperties(
                         EditorGUILayout.GetControlRect(true, InspectorUtility.PropertyHeightOfChidren(e)), e);
@@ -96,46 +98,26 @@ namespace Cinemachine
                 serializedObject.ApplyModifiedProperties();
         }
 
-        static GUIContent GetModifierName(Type type)
-        {
-            for (int j = 0; j < s_AllModifiers.Count; ++j)
-                if (s_AllModifiers[j] == type)
-                    return s_ModifierNames[j];
-            return new GUIContent(type.Name); // should never get here
-        }
-
-        static List<Type> s_AllModifiers = new List<Type>();
-        static GUIContent[] s_ModifierNames = Array.Empty<GUIContent>();
-        static Dictionary<Type, string> s_AssignableTypes = new Dictionary<Type, string>();
-
-        static string GetAssignableTypes(Type inputType)
-        {
-            if (!s_AssignableTypes.ContainsKey(inputType))
-            {
-                var allSources
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                        (Type t) => inputType.IsAssignableFrom(t) && !t.IsAbstract);
-                var s = string.Empty;
-                foreach (var t in allSources)
-                {
-                    var sep = (s.Length == 0) ? string.Empty : ", ";
-                    s += sep + t.Name;
-                }
-                if (s.Length == 0)
-                    s = "(none)";
-                s_AssignableTypes[inputType] = s;
-            }
-            return s_AssignableTypes[inputType];
-        }
 
         [InitializeOnLoad]
-        static class EditorInitialize
+        static class ModifierMenuItems
         {
-            // This code dynamically discovers eligible classes and builds the menu
-            // data for the various component pipeline stages.
-            static EditorInitialize()
+            public static GUIContent GetModifierName(Type type)
             {
-                // Get all Modifiers
+                for (int j = 0; j < s_AllModifiers.Count; ++j)
+                    if (s_AllModifiers[j] == type)
+                        return s_ModifierNames[j];
+                return new GUIContent(type.Name); // should never get here
+            }
+        
+            // These lists are synchronized
+            public static List<Type> s_AllModifiers = new List<Type>();
+            public static GUIContent[] s_ModifierNames = Array.Empty<GUIContent>();
+
+            // This code dynamically discovers eligible classes and builds the menu data 
+            static ModifierMenuItems()
+            {
+                // Get all Modifier types
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                         (Type t) => typeof(CinemachineFreeLookModifier.Modifier).IsAssignableFrom(t) && !t.IsAbstract);
