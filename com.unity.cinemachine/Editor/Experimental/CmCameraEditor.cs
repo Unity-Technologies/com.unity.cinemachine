@@ -10,13 +10,11 @@ namespace Cinemachine
 {
     [CustomEditor(typeof(CmCamera))]
     [CanEditMultipleObjects]
-    sealed class CmCameraEditor : UnityEditor.Editor 
+    sealed class CmCameraEditor : CinemachineVirtualCameraBaseEditor<CmCamera> 
     {
-        /// <summary>The target object, cast as the same class as the object being edited</summary>
-        CmCamera Target => target as CmCamera;
-
-        void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             Undo.undoRedoPerformed += ResetTarget;
 
 #if UNITY_2021_2_OR_NEWER
@@ -25,7 +23,7 @@ namespace Cinemachine
 #endif
         }
 
-        void OnDisable()
+        protected override void OnDisable()
         {
             Undo.undoRedoPerformed -= ResetTarget;
             
@@ -33,11 +31,15 @@ namespace Cinemachine
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
 #endif
+            base.OnDisable();
         }
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            BeginInspector();
+            DrawHeaderInInspector();
+            DrawRemainingPropertiesInInspector();
             DrawPipelinePopups();
+            DrawExtensionsWidgetInInspector();
         }
 
         void DrawPipelinePopups()
