@@ -167,8 +167,6 @@ namespace Cinemachine
             PreviousStateIsValid = true;
         }
 
-        public override void UpdateComponentCache() {}
-
         /// <summary>Make sure that the pipeline cache is up-to-date.</summary>
         override protected void OnEnable()
         {

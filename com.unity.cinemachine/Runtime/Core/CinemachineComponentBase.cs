@@ -6,6 +6,7 @@ namespace Cinemachine
     /// <summary>
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
+    // GML todo: rename this to CinemachinePipelineComponent ?
     [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
@@ -29,9 +30,16 @@ namespace Cinemachine
 
         protected virtual void OnEnable()
         {
-            var vcam = VirtualCamera;
+            var vcam = VirtualCamera as CmCamera;
             if (vcam != null)
-                vcam.UpdateComponentCache();
+                vcam.PipelineChanged();
+        }
+
+        protected virtual void OnDisable()
+        {
+            var vcam = VirtualCamera as CmCamera;
+            if (vcam != null)
+                vcam.PipelineChanged();
         }
 
         /// <summary>Returns the owner vcam's Follow target.</summary>
@@ -147,9 +155,11 @@ namespace Cinemachine
         /// Base class implementation does nothing.</summary>
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">Current effective deltaTime</param>
+        // GML todo: should this just be another stage in the pipeline?
         public virtual void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime) {}
 
         /// <summary>What part of the pipeline this fits into</summary>
+        // GML todo: remove this - use attribute
         public abstract CinemachineCore.Stage Stage { get; }
 
         /// <summary>Special for Body Stage compoments that want to be applied after Aim 
@@ -196,6 +206,7 @@ namespace Cinemachine
         public virtual float GetMaxDampTime() { return 0; }
 
         /// <summary>Components that require user input should implement this and return true.</summary>
+        // GML todo: remove this
         public virtual bool RequiresUserInput => false;
     }
 }

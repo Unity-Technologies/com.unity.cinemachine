@@ -463,10 +463,6 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public abstract void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
 
-        /// <summary>Notification that the component cache has just been update,
-        /// in case a subclass needs to do something extra</summary>
-        public abstract void UpdateComponentCache();
-
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
         [Serializable]
@@ -829,8 +825,8 @@ namespace Cinemachine
                 m_CachedFollowTargetGroup = null;
                 if (m_CachedFollowTarget != null)
                 {
-                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedFollowTargetVcam);
-                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedFollowTargetGroup);
+                    target.TryGetComponent(out m_CachedFollowTargetVcam);
+                    target.TryGetComponent(out m_CachedFollowTargetGroup);
                 }
             }
             target = ResolveLookAt(LookAt);
@@ -842,8 +838,8 @@ namespace Cinemachine
                 m_CachedLookAtTargetGroup = null;
                 if (target != null)
                 {
-                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedLookAtTargetVcam);
-                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedLookAtTargetGroup);
+                    target.TryGetComponent(out m_CachedLookAtTargetVcam);
+                    target.TryGetComponent(out m_CachedLookAtTargetGroup);
                 }
             }
         }

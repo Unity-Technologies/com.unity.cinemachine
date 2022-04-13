@@ -384,8 +384,6 @@ namespace Cinemachine
                 m_XAxis.Value = 0;
         }
 
-        public override void UpdateComponentCache() {}
-
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
