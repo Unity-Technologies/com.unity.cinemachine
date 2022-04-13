@@ -12,6 +12,26 @@ namespace Cinemachine
     [CanEditMultipleObjects]
     sealed class CmCameraEditor : CinemachineVirtualCameraBaseEditor<CmCamera> 
     {
+        [MenuItem("CONTEXT/CmCamera/Adopt Game View Camera Settings")]
+        static void AdoptGameViewCameraSettings(MenuCommand command)
+        {
+            var vcam = command.context as CmCamera;
+            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
+            if (brain != null)
+            {
+                vcam.m_Lens = brain.CurrentCameraState.Lens;
+                vcam.transform.position = brain.transform.position;
+                vcam.transform.rotation = brain.transform.rotation;
+            }
+        }
+
+        [MenuItem("CONTEXT/CmCamera/Adopt Scene View Camera Settings")]
+        static void AdoptSceneViewCameraSettings(MenuCommand command)
+        {
+            var vcam = command.context as CmCamera;
+            vcam.m_Lens = CinemachineMenu.MatchSceneViewCamera(vcam.transform);
+        }
+        
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -54,6 +74,8 @@ namespace Cinemachine
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPipelinePopups();
             DrawExtensionsWidgetInInspector();
+
+            SortComponents();
         }
 
         void DrawPipelinePopups()
@@ -80,7 +102,67 @@ namespace Cinemachine
             }
         }
         
-#if UNITY_2021_2_OR_NEWER
+        List<MonoBehaviour> s_componentCache = new List<MonoBehaviour>();
+        enum SortOrder { None, Camera, Pipeline, Extensions = CinemachineCore.Stage.Finalize + 1, Other };
+
+        void SortComponents()
+        {
+            // This is only for aesthetics, sort order does not affect camera logic.
+            // Behaviours should be sorted like this:
+            // CmCamera, Body, Aim, Noise, Finalize, Extensions, everything else
+            SortOrder lastItem = SortOrder.None;
+            bool sortNeeded = false;
+            Target.gameObject.GetComponents(s_componentCache);
+            for (int i = 0; i < s_componentCache.Count && !sortNeeded; ++i)
+            {
+                var current = GetSortOrderForComponent(s_componentCache[i]);
+                if (current < lastItem)
+                    sortNeeded = true;
+                lastItem = current;
+            }
+            if (sortNeeded)
+            {
+                // This is painful, but it won't happen too often
+                var pos = 0;
+                if (MoveComponentToPosition(pos, SortOrder.Camera, s_componentCache)) ++pos;
+                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Body, s_componentCache)) ++pos;
+                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Aim, s_componentCache)) ++pos;
+                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Noise, s_componentCache)) ++pos;
+                MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Finalize, s_componentCache);
+                // leave everything else where it is
+            }
+        }
+
+        static SortOrder GetSortOrderForComponent(MonoBehaviour component)
+        {
+            if (component is CinemachineVirtualCameraBase)
+                return SortOrder.Camera;
+            if (component is CinemachineExtension)
+                return SortOrder.Extensions;
+            if (component is CinemachineComponentBase)
+                return SortOrder.Pipeline + (int)(component as CinemachineComponentBase).Stage;
+            return SortOrder.Other;
+        }
+        
+        // Returns true if item exists.  Will re-sort components if something changed.
+        static bool MoveComponentToPosition(int pos, SortOrder item, List<MonoBehaviour> components)
+        {
+            for (int i = pos; i < components.Count; ++i)
+            {
+                var component = components[i];
+                if (GetSortOrderForComponent(component) == item)
+                {
+                    for (int j = i; j > pos; --j)
+                        UnityEditorInternal.ComponentUtility.MoveComponentUp(component);
+                    if (i > pos)
+                        component.gameObject.GetComponents(components);
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        #if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
         {
             DrawSceneTools();
