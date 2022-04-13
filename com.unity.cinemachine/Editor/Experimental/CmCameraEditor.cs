@@ -33,15 +33,25 @@ namespace Cinemachine
 #endif
             base.OnDisable();
         }
+
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            DrawHeaderInInspector();
+
+            DrawCameraStatusInInspector();
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
+            DrawPropertyInInspector(FindProperty(x => x.m_Transitions));
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Camera", EditorStyles.boldLabel);
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
-            DrawRemainingPropertiesInInspector();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Procedural Motion", EditorStyles.boldLabel);
+            DrawGlobalControlsInInspector();
+            DrawInputProviderButtonInInspector();
+            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPipelinePopups();
             DrawExtensionsWidgetInInspector();
         }

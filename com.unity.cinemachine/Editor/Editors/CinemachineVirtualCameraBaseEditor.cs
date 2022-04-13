@@ -139,35 +139,20 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            DrawHeaderInInspector();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
+            DrawInputProviderButtonInInspector();
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
         }
 
-        /// <summary>
-        /// Draw the virtual camera header in the inspector.  
-        /// This includes Solo button, Live status, and global settings
-        /// </summary>
-        protected void DrawHeaderInInspector()
-        {
-            if (!IsPropertyExcluded("Header"))
-            {
-                DrawCameraStatusInInspector();
-                DrawGlobalControlsInInspector();
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-                DrawInputProviderButtonInInspector();
-#endif
-                ExcludeProperty("Header");
-            }
-        }
-        
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         static GUIContent s_InputProviderAddLabel = new GUIContent("Add Input Provider", 
             "Adds CinemachineInputProvider component to this vcam, "
             + "if it does not have one, enabling the vcam to read input from Input Actions. "
             + "By default, a simple mouse XY input action is added.");
 
-        void DrawInputProviderButtonInInspector()
+        protected void DrawInputProviderButtonInInspector()
         {
             bool needsButton = false;
             for (int i = 0; !needsButton && i < targets.Length; ++i)
@@ -197,6 +182,8 @@ namespace Cinemachine.Editor
                 });
             EditorGUILayout.Space();
         }
+#else
+        protected void DrawInputProviderButtonInInspector() {}
 #endif
 
         /// <summary>

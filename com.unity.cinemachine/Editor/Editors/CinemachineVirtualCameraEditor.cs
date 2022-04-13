@@ -158,6 +158,17 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
+        void DrawHeaderInInspector()
+        {
+            if (!IsPropertyExcluded("Header"))
+            {
+                DrawCameraStatusInInspector();
+                DrawGlobalControlsInInspector();
+                DrawInputProviderButtonInInspector();
+                ExcludeProperty("Header");
+            }
+        }
+        
         void ResetTargetOnUndo() 
         {
             ResetTarget();

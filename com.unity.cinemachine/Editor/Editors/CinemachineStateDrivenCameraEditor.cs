@@ -68,7 +68,8 @@ namespace Cinemachine.Editor
                 EditorGUILayout.HelpBox("An Animated Target is required", MessageType.Warning);
 
             // Ordinary properties
-            DrawHeaderInInspector();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_AnimatedTarget));
