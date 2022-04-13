@@ -37,6 +37,10 @@ namespace Cinemachine
         {
             BeginInspector();
             DrawHeaderInInspector();
+            DrawPropertyInInspector(FindProperty(x => x.m_Priority));
+            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
+            DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
+            DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
             DrawPipelinePopups();
             DrawExtensionsWidgetInInspector();
@@ -94,15 +98,6 @@ namespace Cinemachine
                     new SerializedObject(cmCam).FindProperty(() => cmCam.m_Lens));
             }
             Handles.color = originalColor;
-        }
-
-        // TODO: LensSettingsInspectorHelper does much more than we need!
-        LensSettingsInspectorHelper m_LensSettingsInspectorHelper;
-        bool IsHorizontalFOVUsed()
-        {
-            if (m_LensSettingsInspectorHelper == null)
-                m_LensSettingsInspectorHelper = new LensSettingsInspectorHelper();
-            return m_LensSettingsInspectorHelper != null && m_LensSettingsInspectorHelper.UseHorizontalFOV;
         }
 #endif
 
