@@ -21,8 +21,8 @@ namespace Cinemachine
             if (!Target.HasValueSource())
             {
                 EditorGUILayout.Space();
-                EditorGUILayout.HelpBox("No appropriate CM components found.  "
-                    + $"Must have one of {GetAssignableTypes(typeof(CinemachineFreeLookModifier.IModifierValueSource))}.", 
+                EditorGUILayout.HelpBox("No applicable CM components found.  "
+                    + $"Must have one of: {GetAssignableTypes(typeof(CinemachineFreeLookModifier.IModifierValueSource))}.", 
                     MessageType.Warning);
                 return;
             }
@@ -66,8 +66,8 @@ namespace Cinemachine
                 {
                     ++EditorGUI.indentLevel;
                     if (needsWarning)
-                        EditorGUILayout.HelpBox("No appropriate CM components found.  "
-                            + $"Must have one of {GetAssignableTypes(m.CachedComponentType)}.", 
+                        EditorGUILayout.HelpBox("No applicable CM components found.  "
+                            + $"Must have one of: {GetAssignableTypes(m.CachedComponentType)}.", 
                             MessageType.Warning);
                     InspectorUtility.DrawChildProperties(
                         EditorGUILayout.GetControlRect(true, InspectorUtility.PropertyHeightOfChidren(e)), e);
@@ -106,11 +106,11 @@ namespace Cinemachine
 
         static List<Type> s_AllModifiers = new List<Type>();
         static GUIContent[] s_ModifierNames = Array.Empty<GUIContent>();
-        static Dictionary<Type, string> s_AsignableTypes = new Dictionary<Type, string>();
+        static Dictionary<Type, string> s_AssignableTypes = new Dictionary<Type, string>();
 
         static string GetAssignableTypes(Type inputType)
         {
-            if (!s_AsignableTypes.ContainsKey(inputType))
+            if (!s_AssignableTypes.ContainsKey(inputType))
             {
                 var allSources
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
@@ -123,9 +123,9 @@ namespace Cinemachine
                 }
                 if (s.Length == 0)
                     s = "(none)";
-                s_AsignableTypes[inputType] = s;
+                s_AssignableTypes[inputType] = s;
             }
-            return s_AsignableTypes[inputType];
+            return s_AssignableTypes[inputType];
         }
 
         [InitializeOnLoad]
