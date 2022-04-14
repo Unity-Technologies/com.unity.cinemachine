@@ -76,7 +76,5 @@ namespace Cinemachine
             ApplyPositionBlendMethod(ref m_State, m_BlendHint);
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
-
-        public override void UpdateComponentCache() {}
     }
 }

@@ -73,7 +73,8 @@ namespace Cinemachine.Editor
                     break;
             }
 
-            DrawHeaderInInspector();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawRemainingPropertiesInInspector();

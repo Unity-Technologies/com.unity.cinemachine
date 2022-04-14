@@ -16,7 +16,6 @@ namespace Cinemachine.Editor
         : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
-        Vector3 m_PreviousPosition;
 
         [MenuItem("CONTEXT/CinemachineVirtualCamera/Adopt Game View Camera Settings")]
         static void AdoptGameViewCameraSettings(MenuCommand command)
@@ -158,6 +157,17 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
+        void DrawHeaderInInspector()
+        {
+            if (!IsPropertyExcluded("Header"))
+            {
+                DrawCameraStatusInInspector();
+                DrawGlobalControlsInInspector();
+                DrawInputProviderButtonInInspector();
+                ExcludeProperty("Header");
+            }
+        }
+        
         void ResetTargetOnUndo() 
         {
             ResetTarget();
