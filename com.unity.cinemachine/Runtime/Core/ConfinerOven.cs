@@ -98,7 +98,7 @@ namespace Cinemachine
                 return m_AspectStretcher.Unstretch(result);
                 
                 // local functions
-                static IntPoint IntPointLerp(IntPoint a, IntPoint b, float lerp)
+                IntPoint IntPointLerp(IntPoint a, IntPoint b, float lerp)
                 {
                     return new IntPoint
                     {
@@ -110,7 +110,7 @@ namespace Cinemachine
                 bool IsInsideOriginal(IntPoint p) => 
                     m_OriginalPolygon.Any(t => Clipper.PointInPolygon(p, t) != 0);
 
-                static float ClosestPointOnSegment(IntPoint p, IntPoint s0, IntPoint s1)
+                float ClosestPointOnSegment(IntPoint p, IntPoint s0, IntPoint s1)
                 {
                     double sX = s1.X - s0.X;
                     double sY = s1.Y - s0.Y;
@@ -123,6 +123,7 @@ namespace Cinemachine
                     var dot = s0pX * sX + s0pY * sY;
                     return Mathf.Clamp01((float) (dot / len2));
                 }
+                
                 bool DoesIntersectOriginal(IntPoint l1, IntPoint l2)
                 {
                     foreach (var original in m_OriginalPolygon)
@@ -201,7 +202,7 @@ namespace Cinemachine
                 return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
                 
                 // local function
-                static double IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
+                double IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
                 {
                     double x = p1.X - p2.X;
                     double y = p1.Y - p2.Y;
@@ -412,7 +413,7 @@ namespace Cinemachine
             bakeProgress = 0;
             
             // local functions
-            static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
+            Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
             {
                 float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
                 float minY = float.PositiveInfinity, maxY = float.NegativeInfinity;
@@ -430,7 +431,7 @@ namespace Cinemachine
                 return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
             }
 
-            static IntPoint MidPointOfIntRect(IntRect bounds) => 
+            IntPoint MidPointOfIntRect(IntRect bounds) => 
                 new IntPoint((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
         }
         
