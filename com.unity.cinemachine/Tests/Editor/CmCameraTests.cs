@@ -5,7 +5,6 @@ using System.Reflection;
 using Cinemachine;
 using Cinemachine.Utility;
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -13,15 +12,16 @@ namespace Tests.Editor
 {
     public class CmCameraTests
     {
+        GameObject m_MainCamera;
         CmCamera m_CmCamera;
         static IEnumerable<Type> s_AllCinemachineComponents;
 
         [SetUp]
         public void SetUp()
         {
-            var mainCameraGo = new GameObject("MainCamera");
-            mainCameraGo.AddComponent<Camera>();
-            mainCameraGo.AddComponent<CinemachineBrain>();
+            m_MainCamera = new GameObject("MainCamera");
+            m_MainCamera.AddComponent<Camera>();
+            m_MainCamera.AddComponent<CinemachineBrain>();
             var cmCameraGo = new GameObject("CmCamera");
             m_CmCamera = cmCameraGo.AddComponent<CmCamera>();
             m_CmCamera.Priority = 100;
@@ -30,6 +30,13 @@ namespace Tests.Editor
                 typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
                 && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                 && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            RuntimeUtility.DestroyObject(m_CmCamera.gameObject);
+            RuntimeUtility.DestroyObject(m_MainCamera);
         }
 
         [UnityTest]
