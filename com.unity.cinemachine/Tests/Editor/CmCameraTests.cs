@@ -33,42 +33,62 @@ namespace Tests.Editor
         }
 
         [UnityTest]
-        public IEnumerator TestProceduralBehaviourCache_Adds()
+        public IEnumerator TestProceduralBehaviourCache_AddAllOneByOne()
         {
-            foreach (var testType in s_AllCinemachineComponents)
+            foreach (var cmComponent in s_AllCinemachineComponents)
             {
-                var stage = (int) testType.GetCustomAttribute<CameraPipelineAttribute>().Stage;
-                Assert.True(m_CmCamera.m_Pipeline[stage] == null || m_CmCamera.m_Pipeline[stage].GetType() != testType);
-                m_CmCamera.gameObject.AddComponent(testType);
-                Assert.True(m_CmCamera.m_Pipeline == null);
+                var stage = (int) cmComponent.GetCustomAttribute<CameraPipelineAttribute>().Stage;
+                Assert.True(m_CmCamera.m_Pipeline[stage] == null || m_CmCamera.m_Pipeline[stage].GetType() != cmComponent);
+                m_CmCamera.gameObject.AddComponent(cmComponent);
+                Assert.True(m_CmCamera.m_Pipeline == null); // invalid pipeline after add
             
                 yield return null;
             
-                Assert.True(m_CmCamera.m_Pipeline[stage].GetType() == testType);
+                Assert.True(m_CmCamera.m_Pipeline[stage].GetType() == cmComponent); // pipeline is rebuilt correctly
             }
         }
         
         [UnityTest]
-        public IEnumerator TestProceduralBehaviourCache_AddAndDestroy()
+        public IEnumerator TestProceduralBehaviourCache_AddAndDestroyAllOneByOne()
         {
-            foreach (var testType in s_AllCinemachineComponents)
+            foreach (var cmComponent in s_AllCinemachineComponents)
             {
-                var stage = (int) testType.GetCustomAttribute<CameraPipelineAttribute>().Stage;
-                Assert.True(m_CmCamera.m_Pipeline[stage] == null || m_CmCamera.m_Pipeline[stage].GetType() != testType);
-                m_CmCamera.gameObject.AddComponent(testType);
-                Assert.True(m_CmCamera.m_Pipeline == null);
+                var stage = (int) cmComponent.GetCustomAttribute<CameraPipelineAttribute>().Stage;
+                Assert.True(m_CmCamera.m_Pipeline[stage] == null || m_CmCamera.m_Pipeline[stage].GetType() != cmComponent);
+                m_CmCamera.gameObject.AddComponent(cmComponent);
+                Assert.True(m_CmCamera.m_Pipeline == null); // invalid pipeline after add
             
                 yield return null;
             
-                Assert.True(m_CmCamera.m_Pipeline[stage].GetType() == testType);
+                Assert.True(m_CmCamera.m_Pipeline[stage].GetType() == cmComponent); // pipeline is rebuilt correctly
                 
-                var component = m_CmCamera.gameObject.GetComponent(testType);
+                var component = m_CmCamera.gameObject.GetComponent(cmComponent);
                 RuntimeUtility.DestroyObject(component);
-                Assert.True(m_CmCamera.m_Pipeline == null);
+                Assert.True(m_CmCamera.m_Pipeline == null); // invalid pipeline after add
             
                 yield return null;
                 
-                Assert.True(m_CmCamera.m_Pipeline[stage] == null);
+                Assert.True(m_CmCamera.m_Pipeline[stage] == null); // pipeline is rebuilt correctly
+            }
+        }
+        
+        [UnityTest]
+        public IEnumerator TestProceduralBehaviourCache_AddAllAtTheSameTime()
+        {
+            var finalComponentsAdded = new Type[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+            foreach (var cmComponent in s_AllCinemachineComponents)
+            {
+                var stage = (int) cmComponent.GetCustomAttribute<CameraPipelineAttribute>().Stage;
+                finalComponentsAdded[stage] = cmComponent;
+                m_CmCamera.gameObject.AddComponent(cmComponent);
+            }
+            
+            yield return null;
+            
+            for (var i = 0; i < finalComponentsAdded.Length; ++i)
+            {
+                Assert.True((m_CmCamera.m_Pipeline[i] == null && finalComponentsAdded[i] == null) ||
+                    m_CmCamera.m_Pipeline[i].GetType() == finalComponentsAdded[i]);
             }
         }
     }
