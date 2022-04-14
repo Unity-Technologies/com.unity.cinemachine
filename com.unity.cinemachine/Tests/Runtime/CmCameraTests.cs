@@ -40,7 +40,7 @@ namespace Tests.Runtime
         }
 
         [UnityTest]
-        public IEnumerator TestProceduralBehaviourCache_AddAllOneByOne()
+        public IEnumerator ProceduralBehaviourCache_AddAllOneByOne()
         {
             foreach (var cmComponent in s_AllCinemachineComponents)
             {
@@ -56,7 +56,7 @@ namespace Tests.Runtime
         }
         
         [UnityTest]
-        public IEnumerator TestProceduralBehaviourCache_AddAndDestroyAllOneByOne()
+        public IEnumerator ProceduralBehaviourCache_AddAndDestroyAllOneByOne()
         {
             foreach (var cmComponent in s_AllCinemachineComponents)
             {
@@ -80,7 +80,7 @@ namespace Tests.Runtime
         }
         
         [UnityTest]
-        public IEnumerator TestProceduralBehaviourCache_AddAllAtTheSameTime()
+        public IEnumerator ProceduralBehaviourCache_AddAllAtTheSameTimeThenRemoveAllAtTheSameTime()
         {
             var finalComponentsAdded = new Type[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
             foreach (var cmComponent in s_AllCinemachineComponents)
@@ -96,6 +96,21 @@ namespace Tests.Runtime
             {
                 Assert.True((m_CmCamera.m_Pipeline[i] == null && finalComponentsAdded[i] == null) ||
                     m_CmCamera.m_Pipeline[i].GetType() == finalComponentsAdded[i]);
+            }
+
+            foreach (var toRemove in finalComponentsAdded)
+            {
+                if (toRemove == null) 
+                    continue;
+                
+                RuntimeUtility.DestroyObject(m_CmCamera.gameObject.GetComponent(toRemove));
+            }
+            
+            yield return null;
+            
+            for (var i = 0; i < finalComponentsAdded.Length; ++i)
+            {
+                Assert.True(m_CmCamera.m_Pipeline[i] == null);
             }
         }
     }
