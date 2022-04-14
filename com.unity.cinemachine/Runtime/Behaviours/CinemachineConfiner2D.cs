@@ -371,7 +371,8 @@ namespace Cinemachine
         }
 
         internal float BakeProgress() => m_shapeCache.m_confinerOven != null ? m_shapeCache.m_confinerOven.bakeProgress : 0f;
-        internal bool ConfinerOvenTimedOut() => m_shapeCache.m_confinerOven is { State: ConfinerOven.BakingState.TIMEOUT };
+        internal bool ConfinerOvenTimedOut() => m_shapeCache.m_confinerOven != null && 
+            m_shapeCache.m_confinerOven.State == ConfinerOven.BakingState.TIMEOUT;
 #endif
 
         void OnValidate()
