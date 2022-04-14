@@ -291,7 +291,7 @@ namespace Cinemachine
         /// <summary>A CinemachineComponentBase has just been added or removed.  Pipeline cache will be rebuilt</summary>
         internal void PipelineChanged() => m_Pipeline = null;
 
-        CinemachineComponentBase[] m_Pipeline;
+        internal CinemachineComponentBase[] m_Pipeline;
 
         void UpdatePipelineCache()
         {
