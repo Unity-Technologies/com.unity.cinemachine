@@ -107,10 +107,10 @@ namespace Cinemachine
                     };
                 }
                 
-                bool IsInsideOriginal(IntPoint p) => 
-                    m_OriginalPolygon.Any(t => Clipper.PointInPolygon(p, t) != 0);
+                bool IsInsideOriginal(IntPoint point) => 
+                    m_OriginalPolygon.Any(t => Clipper.PointInPolygon(point, t) != 0);
 
-                float ClosestPointOnSegment(IntPoint p, IntPoint s0, IntPoint s1)
+                float ClosestPointOnSegment(IntPoint point, IntPoint s0, IntPoint s1)
                 {
                     double sX = s1.X - s0.X;
                     double sY = s1.Y - s0.Y;
@@ -118,8 +118,8 @@ namespace Cinemachine
                     if (len2 < k_ClipperEpsilon)
                         return 0; // degenerate segment
 
-                    double s0pX = p.X - s0.X;
-                    double s0pY = p.Y - s0.Y;
+                    double s0pX = point.X - s0.X;
+                    double s0pY = point.Y - s0.Y;
                     var dot = s0pX * sX + s0pY * sY;
                     return Mathf.Clamp01((float) (dot / len2));
                 }
@@ -202,10 +202,10 @@ namespace Cinemachine
                 return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
                 
                 // local function
-                double IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
+                double IntPointDiffSqrMagnitude(IntPoint point1, IntPoint point2)
                 {
-                    double x = p1.X - p2.X;
-                    double y = p1.Y - p2.Y;
+                    double x = point1.X - point2.X;
+                    double y = point1.Y - point2.Y;
                     return x * x + y * y;
                 }
             }
