@@ -297,17 +297,30 @@ namespace Cinemachine
         {
             if (m_Pipeline == null)
             {
-                m_Pipeline = new CinemachineComponentBase[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+                // first clean up components
                 var components = GetComponents<CinemachineComponentBase>();
+                for (int i = components.Length - 1; i > 0; --i)
+                {
+                    for (int j = i - 1; j >= 0; --j)
+                    {
+                        if (components[j] == null) 
+                            continue;
+                        
+                        if (components[i].Stage == components[j].Stage)
+                        {
+                            RuntimeUtility.DestroyObject(components[j]);
+                        }
+                    }
+                }
+                
+                // build pipeline
+                m_Pipeline = new CinemachineComponentBase[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
                 for (int i = 0; i < components.Length; ++i)
                 {
-                    var stage = (int)components[i].Stage;
-                    if (m_Pipeline[stage] != components[i])
-                    {
-                        if (m_Pipeline[stage] != null)
-                            RuntimeUtility.DestroyObject(m_Pipeline[stage]);
-                        m_Pipeline[stage] = components[i];
-                    }
+                    if (components[i] == null) 
+                        continue;
+                    
+                    m_Pipeline[(int)components[i].Stage] = components[i];
                 }
             }
         }

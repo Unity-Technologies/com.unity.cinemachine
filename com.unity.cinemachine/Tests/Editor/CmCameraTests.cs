@@ -8,9 +8,8 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.TestTools.Utils;
 
-namespace Tests.Runtime
+namespace Tests.Editor
 {
     public class CmCameraTests
     {
@@ -33,25 +32,44 @@ namespace Tests.Runtime
                 && t.GetCustomAttribute<ObsoleteAttribute>() == null);
         }
 
-        private static IEnumerable CacheTestCases
+        [UnityTest]
+        public IEnumerator TestProceduralBehaviourCache_Adds()
         {
-            get
+            foreach (var testType in s_AllCinemachineComponents)
             {
-                yield return new TestCaseData(s_AllCinemachineComponents).SetName("AllCinemachineComponents").Returns(null);
+                var stage = (int) testType.GetCustomAttribute<CameraPipelineAttribute>().Stage;
+                Assert.True(m_CmCamera.m_Pipeline[stage] == null || m_CmCamera.m_Pipeline[stage].GetType() != testType);
+                m_CmCamera.gameObject.AddComponent(testType);
+                Assert.True(m_CmCamera.m_Pipeline == null);
+            
+                yield return null;
+            
+                Assert.True(m_CmCamera.m_Pipeline[stage].GetType() == testType);
             }
         }
-
-        [UnityTest, TestCaseSource(nameof(CacheTestCases))]
-        public IEnumerator TestCacheValidity(Type testType)
+        
+        [UnityTest]
+        public IEnumerator TestProceduralBehaviourCache_AddAndDestroy()
         {
-            var stage = (int) testType.GetCustomAttribute<CameraPipelineAttribute>().Stage;
-            Assert.True(m_CmCamera.m_Pipeline[stage] is null);
-            Undo.AddComponent(m_CmCamera.gameObject, typeof(Cinemachine3rdPersonFollow));
-            Assert.True(m_CmCamera.m_Pipeline[stage] is null);
+            foreach (var testType in s_AllCinemachineComponents)
+            {
+                var stage = (int) testType.GetCustomAttribute<CameraPipelineAttribute>().Stage;
+                Assert.True(m_CmCamera.m_Pipeline[stage] == null || m_CmCamera.m_Pipeline[stage].GetType() != testType);
+                m_CmCamera.gameObject.AddComponent(testType);
+                Assert.True(m_CmCamera.m_Pipeline == null);
             
-            yield return null;
+                yield return null;
             
-            Assert.True(m_CmCamera.m_Pipeline[stage] is Cinemachine3rdPersonFollow);
+                Assert.True(m_CmCamera.m_Pipeline[stage].GetType() == testType);
+                
+                var component = m_CmCamera.gameObject.GetComponent(testType);
+                RuntimeUtility.DestroyObject(component);
+                Assert.True(m_CmCamera.m_Pipeline == null);
+            
+                yield return null;
+                
+                Assert.True(m_CmCamera.m_Pipeline[stage] == null);
+            }
         }
     }
 }
