@@ -23,7 +23,8 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            DrawHeaderInInspector();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
             DrawRemainingPropertiesInInspector();
 
             float totalWeight = 0;

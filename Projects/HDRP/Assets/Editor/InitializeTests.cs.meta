@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:com.unity.cinemachine/Editor/Experimental/CmCameraEditor.cs.meta
+guid: 044eefcf244b249618f7860249c6a4d4
+=======
+guid: d7baa460a45e23e48924b86427a77253
+>>>>>>> dev/cinemachine-3.0:Projects/HDRP/Assets/Editor/InitializeTests.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - inspectorXML: {fileID: 9197481963319205126, guid: de53eea88cd7d40358b91cd6b8d9316f, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

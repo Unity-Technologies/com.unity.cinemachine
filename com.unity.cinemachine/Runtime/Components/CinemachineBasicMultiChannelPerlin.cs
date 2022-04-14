@@ -19,7 +19,8 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.Noise)]
-    public class CinemachineBasicMultiChannelPerlin : CinemachineComponentBase
+    public class CinemachineBasicMultiChannelPerlin 
+        : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableNoise
     {
         /// <summary>
         /// Serialized property for referencing a NoiseSettings asset
@@ -49,6 +50,12 @@ namespace Cinemachine
         [Tooltip("Scale factor to apply to the frequencies defined in the NoiseSettings asset.  1 is normal.  "
             + "Larger magnitudes will make the noise shake more rapidly.")]
         public float m_FrequencyGain = 1f;
+
+        (float, float) CinemachineFreeLookModifier.IModifiableNoise.NoiseAmplitudeFrequency 
+        { 
+            get => (m_AmplitudeGain, m_FrequencyGain);
+            set { m_AmplitudeGain = value.Item1; m_FrequencyGain = value.Item2; }
+        }
 
         /// <summary>True if the component is valid, i.e. it has a noise definition and is enabled.</summary>
         public override bool IsValid { get { return enabled && m_NoiseProfile != null; } }

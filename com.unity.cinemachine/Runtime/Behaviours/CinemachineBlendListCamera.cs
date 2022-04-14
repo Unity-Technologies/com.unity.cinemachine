@@ -259,8 +259,6 @@ namespace Cinemachine
             PreviousStateIsValid = true;
         }
 
-        public override void UpdateComponentCache() {}
-
         /// <summary>Makes sure the internal child cache is up to date</summary>
         protected override void OnEnable()
         {

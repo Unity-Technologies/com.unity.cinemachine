@@ -9,6 +9,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Cinemachine
 {
+
+#pragma warning disable 618 // CinemachineFreeLook obsolete
+
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor
@@ -65,7 +68,9 @@ namespace Cinemachine
 
             // Ordinary properties
             BeginInspector();
-            DrawHeaderInInspector();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
+            DrawInputProviderButtonInInspector();
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));

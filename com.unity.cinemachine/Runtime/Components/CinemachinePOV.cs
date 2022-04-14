@@ -16,7 +16,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
-    public class CinemachinePOV : CinemachineComponentBase
+    public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>
         /// Defines the recentering target: Recentering goes here
@@ -67,6 +67,15 @@ namespace Cinemachine
         [Tooltip("Obsolete - no longer used")]
         public bool m_ApplyBeforeBody;
 
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
+        {
+            get
+            {
+                var r = m_VerticalAxis.m_MaxValue - m_VerticalAxis.m_MinValue;
+                return (m_VerticalAxis.Value - m_VerticalAxis.m_MinValue) / (r > 0.001f ? r : 1) * 2 - 1;
+            }
+        }
+
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled; } }
 
@@ -82,8 +91,9 @@ namespace Cinemachine
             m_HorizontalRecentering.Validate();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             UpdateInputAxisProvider();
         }
         
@@ -134,9 +144,13 @@ namespace Cinemachine
             // If we have a transform parent, then apply POV in the local space of the parent
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
             Transform parent = VirtualCamera.transform.parent;
+            var up = Vector3.up;
             if (parent != null)
+            {
                 rot = parent.rotation * rot;
-            rot = Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp) * rot;
+                up = parent.up;
+            }
+            rot = Quaternion.FromToRotation(up, curState.ReferenceUp) * rot;
             curState.RawOrientation = rot;
         }
 

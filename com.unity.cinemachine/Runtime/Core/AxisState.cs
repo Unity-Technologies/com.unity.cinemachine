@@ -57,6 +57,7 @@ namespace Cinemachine
 
         /// <summary>The name of this axis as specified in Unity Input manager.
         /// Setting to an empty string will disable the automatic updating of this axis</summary>
+        [InputAxisNameProperty]
         [FormerlySerializedAs("m_AxisName")]
         [Tooltip("The name of this axis as specified in Unity Input manager. "
             + "Setting to an empty string will disable the automatic updating of this axis")]

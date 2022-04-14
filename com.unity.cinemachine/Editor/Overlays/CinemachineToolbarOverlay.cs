@@ -391,13 +391,16 @@ namespace Cinemachine.Editor
 
         void ShadowSelectedRigName()
         {
+#if GML_FIXME
             var index = Mathf.Clamp(SelectedRig, 0, CinemachineNewFreeLookEditor.m_OrbitNames.Length - 1);
             icon = m_Icons[index];
             text = CinemachineNewFreeLookEditor.m_OrbitNames[index].text;
+#endif
         }
         
         void FreelookRigSelectionMenu()
         {
+#if GML_FIXME
             var menu = new GenericMenu();
             for (var i = 0; i < CinemachineNewFreeLookEditor.m_OrbitNames.Length; ++i)
             {
@@ -415,6 +418,7 @@ namespace Cinemachine.Editor
                 });
             }
             menu.DropDown(worldBound);
+#endif
         }
     }
 #endif

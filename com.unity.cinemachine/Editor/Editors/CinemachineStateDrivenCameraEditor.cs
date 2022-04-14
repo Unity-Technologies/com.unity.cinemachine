@@ -2,10 +2,12 @@
 #define CINEMACHINE_UNITY_ANIMATION
 #endif
 
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Animations;
+using Object = UnityEngine.Object;
 
 namespace Cinemachine.Editor
 {
@@ -66,7 +68,8 @@ namespace Cinemachine.Editor
                 EditorGUILayout.HelpBox("An Animated Target is required", MessageType.Warning);
 
             // Ordinary properties
-            DrawHeaderInInspector();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
             DrawPropertyInInspector(FindProperty(x => x.m_Priority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_AnimatedTarget));
@@ -137,7 +140,7 @@ namespace Cinemachine.Editor
             mStateIndexLookup = collector.mStateIndexLookup;
 
             if (ac == null)
-                mLayerNames = new string[0];
+                mLayerNames = Array.Empty<string>();
             else
             {
                 mLayerNames = new string[ac.layers.Length];

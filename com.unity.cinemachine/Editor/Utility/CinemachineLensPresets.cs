@@ -96,7 +96,7 @@ namespace Cinemachine.Editor
         }
         /// <summary>The array containing Preset definitions for nonphysical cameras</summary>
         [Tooltip("The array containing Preset definitions, for nonphysical cameras")]
-        public Preset[] m_Presets = new Preset[0];
+        public Preset[] m_Presets = Array.Empty<Preset>();
 
         /// <summary>Physical Lens Preset</summary>
         [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
@@ -135,7 +135,7 @@ namespace Cinemachine.Editor
 
         /// <summary>The array containing Preset definitions, for physical cameras</summary>
         [Tooltip("The array containing Preset definitions, for physical cameras")]
-        public PhysicalPreset[] m_PhysicalPresets = new PhysicalPreset[0];
+        public PhysicalPreset[] m_PhysicalPresets = Array.Empty<PhysicalPreset>();
 
         /// <summary>Get the index of the preset that matches the lens settings</summary>
         /// <param name="verticalFOV">Vertical field of view</param>

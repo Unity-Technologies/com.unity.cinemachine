@@ -1,6 +1,16 @@
 fileFormatVersion: 2
-guid: 7d93e7b7399fbe64790358e67fc94b18
-TextScriptImporter:
+<<<<<<< HEAD
+guid: 59c2c42fe600447d09be0bdf9cc46096
+DefaultImporter:
+=======
+<<<<<<< HEAD
+guid: 76627ff283e004f0c9767a82df89beb7
+DefaultImporter:
+=======
+guid: 7a97571b2775aab4e8bf63d9ceb96743
+PackageManifestImporter:
+>>>>>>> master
+>>>>>>> dev/cinemachine-3.0
   externalObjects: {}
   userData: 
   assetBundleName: 

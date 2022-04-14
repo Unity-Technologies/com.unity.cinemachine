@@ -296,7 +296,5 @@ namespace Cinemachine
             InvokePostPipelineStageCallback(
                 this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
-
-        public override void UpdateComponentCache() {}
     }
 }

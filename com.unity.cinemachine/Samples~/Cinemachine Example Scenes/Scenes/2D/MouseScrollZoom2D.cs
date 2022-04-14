@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Cinemachine.Examples
 {
-    [RequireComponent(typeof(CinemachineVirtualCamera))]
+    [RequireComponent(typeof(CmCamera))]
     [SaveDuringPlay] // Enable SaveDuringPlay for this class
     public class MouseScrollZoom2D : MonoBehaviour
     {
@@ -14,12 +14,12 @@ namespace Cinemachine.Examples
         [Range(0, 100)]
         public float MaxZoom = 50f;
 
-        CinemachineVirtualCamera m_VirtualCamera;
+        CmCamera m_VirtualCamera;
         float m_OriginalOrthoSize;
 
         void Awake()
         {
-            m_VirtualCamera = GetComponent<CinemachineVirtualCamera>();
+            m_VirtualCamera = GetComponent<CmCamera>();
             m_OriginalOrthoSize = m_VirtualCamera.m_Lens.OrthographicSize;
 
 #if UNITY_EDITOR
