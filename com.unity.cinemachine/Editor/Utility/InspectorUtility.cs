@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Cinemachine.Utility;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
     /// <summary>
     /// Collection of tools and helpers for drawing inspectors
     /// </summary>
-    public class InspectorUtility
+    public static class InspectorUtility
     {
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
@@ -323,5 +324,21 @@ namespace Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
+        /// <summary>Aligns fields created by UI toolkit the unity standard way.</summary>
+        /// GML todo: sort this out
+        internal const string kAlignFieldClass = "unity-base-field__aligned";
+
+        internal static void AddHeader(VisualElement ux, string text)
+        {
+            const float k_PaddingLeft = 4f; // GML wtf is this?  isn't there a constant somewhere?
+            var label = new Label
+            {
+                //enableRichText = true,
+                text = $"<b>{text}</b>",
+                style = { paddingLeft = k_PaddingLeft },
+            };
+            label.RegisterCallback<GeometryChangedEvent>((evt) => label.style.paddingTop = label.contentRect.height / 2f);
+            ux.Add(label);
+        }
     }
 }

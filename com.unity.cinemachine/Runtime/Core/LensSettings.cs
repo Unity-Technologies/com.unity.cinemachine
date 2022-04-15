@@ -105,7 +105,7 @@ namespace Cinemachine
             get => ModeOverride == OverrideModes.Orthographic || ModeOverride == OverrideModes.None && m_OrthoFromCamera;
 
             /// Obsolete: do not use
-            set { m_OrthoFromCamera = value; ModeOverride = value 
+            private set { m_OrthoFromCamera = value; ModeOverride = value 
                 ? OverrideModes.Orthographic : OverrideModes.Perspective; } 
         }
 
@@ -139,6 +139,10 @@ namespace Cinemachine
                 ? OverrideModes.Physical : OverrideModes.Perspective; } 
         }
 
+#if UNITY_EDITOR
+        internal bool UseHorizontalFOV { get; private set; }
+#endif
+
         /// <summary>For physical cameras only: position of the gate relative to 
         /// the film back</summary>
         public Vector2 LensShift;
@@ -147,10 +151,11 @@ namespace Cinemachine
         /// if the aspect ratios differ</summary>
         public Camera.GateFitMode GateFit;
 
-        [SerializeField]
-        Vector2 m_SensorSize;
+        [SerializeField] Vector2 m_SensorSize;
+
         bool m_OrthoFromCamera;
         bool m_PhysicalFromCamera;
+
 
 #if CINEMACHINE_HDRP
         public int Iso;
@@ -218,6 +223,7 @@ namespace Cinemachine
         {
             m_OrthoFromCamera = false;
             m_PhysicalFromCamera = false;
+            UseHorizontalFOV = false;
             if (camera != null && ModeOverride == OverrideModes.None)
             {
                 m_OrthoFromCamera = camera.orthographic;
@@ -240,6 +246,11 @@ namespace Cinemachine
                     m_SensorSize = new Vector2(camera.aspect, 1f);
                 LensShift = Vector2.zero;
             }
+#if UNITY_EDITOR && UNITY_2019_1_OR_NEWER
+            // This should really be a global setting, but for now there is no better way than this!
+            var p = new UnityEditor.SerializedObject(camera).FindProperty("m_FOVAxisMode");
+            UseHorizontalFOV = (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
+#endif
         }
 
         /// <summary>
