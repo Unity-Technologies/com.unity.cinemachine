@@ -90,12 +90,19 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             float modifierValue) {}
     }
 
+    /// <summary>
+    /// Modifier for things inside a single CinemachineComponentBase.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class ComponentModifier<T> : Modifier
     {
+        /// <summary>The CinemachineComponentBase that will be modified.  Cached here for efficiency.</summary>
         protected T CachedComponent;
 
+        /// <summary>True if the CmCamera has the component we intend to modify</summary>
         public override bool HasRequiredComponent => CachedComponent != null;
 
+        /// <summary>The type of the component being modified</summary>
         public override Type CachedComponentType => typeof(T);
 
         /// <summary>Called from OnEnable and from the inspector.  Refreshes CachedComponent.</summary>
@@ -111,17 +118,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     public class TiltModifier : Modifier
     {
         [HideFoldout]
-        public TopCenterBottom<float> Tilt;
+        public TopBottomRigs<float> Tilt;
 
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Tilt.Top = Mathf.Clamp(Tilt.Top, -30, 30);
-            Tilt.Center = Mathf.Clamp(Tilt.Center, -30, 30);
             Tilt.Bottom = Mathf.Clamp(Tilt.Bottom, -30, 30);
         }
 
         public override void Reset(CinemachineVirtualCameraBase vcam) 
-            => Tilt = new TopCenterBottom<float>() { Top = -5, Bottom = 5 };
+            => Tilt = new TopBottomRigs<float>() { Top = -5, Bottom = 5 };
 
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
@@ -129,8 +135,8 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             float modifierValue)
         {
             float tilt = modifierValue > 0 
-                ? Mathf.Lerp(Tilt.Center, Tilt.Top, modifierValue) 
-                : Mathf.Lerp(Tilt.Bottom, Tilt.Center, modifierValue + 1);
+                ? Mathf.Lerp(0, Tilt.Top, modifierValue) 
+                : Mathf.Lerp(Tilt.Bottom, 0, modifierValue + 1);
 
             // Tilt in local X
             var qTilted = state.RawOrientation * Quaternion.AngleAxis(tilt, Vector3.right);
@@ -144,18 +150,17 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     public class LensModifier : Modifier
     {
         [HideFoldout]
-        public TopCenterBottom<LensSettings> Lens;
+        public TopBottomRigs<LensSettings> Lens;
 
         public override void Validate(CinemachineVirtualCameraBase vcam) 
         {
             Lens.Top.Validate();
-            Lens.Center.Validate();
             Lens.Bottom.Validate();
         }
 
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
-            Lens.Top = Lens.Center = Lens.Bottom = vcam == null ? LensSettings.Default : vcam.State.Lens;
+            Lens.Top = Lens.Bottom = vcam == null ? LensSettings.Default : vcam.State.Lens;
         }
 
         public override void BeforePipeline(
@@ -163,8 +168,8 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             ref CameraState state, float deltaTime, float modifierValue) 
         {
             state.Lens = (modifierValue >= 0)
-                ? LensSettings.Lerp(Lens.Center, Lens.Top, modifierValue)
-                : LensSettings.Lerp(Lens.Bottom, Lens.Center, modifierValue + 1);
+                ? LensSettings.Lerp(state.Lens, Lens.Top, modifierValue)
+                : LensSettings.Lerp(Lens.Bottom, state.Lens, modifierValue + 1);
         }
     }
     
@@ -175,22 +180,21 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     public class PositionDampingModifier : ComponentModifier<IModifiablePositionDamping>
     {
         [HideFoldout]
-        public TopCenterBottom<Vector3> Damping;
+        public TopBottomRigs<Vector3> Damping;
 
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Damping.Top = new Vector3(Mathf.Max(0, Damping.Top.x), Mathf.Max(0, Damping.Top.y), Mathf.Max(0, Damping.Top.z));
-            Damping.Center = new Vector3(Mathf.Max(0, Damping.Center.x), Mathf.Max(0, Damping.Center.y), Mathf.Max(0, Damping.Center.z));
             Damping.Bottom = new Vector3(Mathf.Max(0, Damping.Bottom.x), Mathf.Max(0, Damping.Bottom.y), Mathf.Max(0, Damping.Bottom.z));
         }
 
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
-                Damping.Top = Damping.Center = Damping.Bottom = CachedComponent.PositionDamping;
+                Damping.Top = Damping.Bottom = CachedComponent.PositionDamping;
         }
 
-        Vector3 m_SourceDamping;
+        Vector3 m_CenterDamping;
 
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
@@ -198,10 +202,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             if (CachedComponent != null)
             {
-                m_SourceDamping = CachedComponent.PositionDamping;
+                m_CenterDamping = CachedComponent.PositionDamping;
                 CachedComponent.PositionDamping = modifierValue >= 0 
-                    ? Vector3.Lerp(Damping.Center, Damping.Top, modifierValue)
-                    : Vector3.Lerp(Damping.Bottom, Damping.Center, modifierValue + 1);
+                    ? Vector3.Lerp(m_CenterDamping, Damping.Top, modifierValue)
+                    : Vector3.Lerp(Damping.Bottom, m_CenterDamping, modifierValue + 1);
             }
         }
 
@@ -212,7 +216,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             // Restore the settings
             if (CachedComponent != null)
-                CachedComponent.PositionDamping = m_SourceDamping;
+                CachedComponent.PositionDamping = m_CenterDamping;
         }
     }
 
@@ -223,22 +227,21 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     public class DistanceModifier : ComponentModifier<IModifiableDistance>
     {
         [HideFoldout]
-        public TopCenterBottom<float> Distance;
+        public TopBottomRigs<float> Distance;
 
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Distance.Top = Mathf.Max(0, Distance.Top);
-            Distance.Center = Mathf.Max(0, Distance.Center);
             Distance.Bottom = Mathf.Max(0, Distance.Bottom);
         }
 
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
-                Distance.Top = Distance.Center = Distance.Bottom = CachedComponent.Distance;
+                Distance.Top = Distance.Bottom = CachedComponent.Distance;
         }
 
-        float m_SourceDistance;
+        float m_CenterDistance;
 
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
@@ -246,10 +249,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             if (CachedComponent != null)
             {
-                m_SourceDistance = CachedComponent.Distance;
+                m_CenterDistance = CachedComponent.Distance;
                 CachedComponent.Distance = modifierValue >= 0 
-                    ? Mathf.Lerp(Distance.Center, Distance.Top, modifierValue)
-                    : Mathf.Lerp(Distance.Bottom, Distance.Center, modifierValue + 1);
+                    ? Mathf.Lerp(m_CenterDistance, Distance.Top, modifierValue)
+                    : Mathf.Lerp(Distance.Bottom, m_CenterDistance, modifierValue + 1);
             }
         }
 
@@ -260,7 +263,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             // Restore the settings
             if (CachedComponent != null)
-                CachedComponent.Distance = m_SourceDistance;
+                CachedComponent.Distance = m_CenterDistance;
         }
     }
     
@@ -281,17 +284,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         }
     
         [HideFoldout]
-        public TopCenterBottom<NoiseSettings> Noise;
+        public TopBottomRigs<NoiseSettings> Noise;
 
-        (float, float) m_SourceNoise; // For storing and restoring the original settings
+        (float, float) m_CenterNoise;
 
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
             {
                 var value = CachedComponent.NoiseAmplitudeFrequency;
-                Noise.Top = Noise.Center = Noise.Bottom 
-                    = new NoiseSettings { Amplitude = value.Item1, Frequency = value.Item2 };
+                Noise.Top = Noise.Bottom = new NoiseSettings { Amplitude = value.Item1, Frequency = value.Item2 };
             }
         }
 
@@ -301,15 +303,15 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             if (CachedComponent != null)
             {
-                m_SourceNoise = CachedComponent.NoiseAmplitudeFrequency;
+                m_CenterNoise = CachedComponent.NoiseAmplitudeFrequency;
                 if (modifierValue >= 0)
                     CachedComponent.NoiseAmplitudeFrequency = (
-                        Mathf.Lerp(Noise.Center.Amplitude, Noise.Top.Amplitude, modifierValue),
-                        Mathf.Lerp(Noise.Center.Frequency, Noise.Top.Frequency, modifierValue));
+                        Mathf.Lerp(m_CenterNoise.Item1, Noise.Top.Amplitude, modifierValue),
+                        Mathf.Lerp(m_CenterNoise.Item2, Noise.Top.Frequency, modifierValue));
                 else
                     CachedComponent.NoiseAmplitudeFrequency = (
-                        Mathf.Lerp(Noise.Bottom.Amplitude, Noise.Center.Amplitude, modifierValue + 1),
-                        Mathf.Lerp(Noise.Bottom.Frequency, Noise.Center.Frequency, modifierValue + 1));
+                        Mathf.Lerp(Noise.Bottom.Amplitude, m_CenterNoise.Item1, modifierValue + 1),
+                        Mathf.Lerp(Noise.Bottom.Frequency, m_CenterNoise.Item2, modifierValue + 1));
             }
         }
 
@@ -320,7 +322,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             // Restore the settings
             if (CachedComponent != null)
-                CachedComponent.NoiseAmplitudeFrequency = m_SourceNoise;
+                CachedComponent.NoiseAmplitudeFrequency = m_CenterNoise;
         }
     }
 
@@ -329,15 +331,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public struct TopCenterBottom<T>
+    public struct TopBottomRigs<T>
     {
         /// <summary>Settings for top orbit</summary>
         [Tooltip("Value to take at the top of the axis range")]
         public T Top;
-
-        /// <summary>Settings for center orbit</summary>
-        [Tooltip("Value to take at the center of the axis range")]
-        public T Center;
 
         /// <summary>Settings for bottom orbit</summary>
         [Tooltip("Value to take at the bottom of the axis range")]
