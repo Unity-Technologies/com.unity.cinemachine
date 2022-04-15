@@ -57,8 +57,8 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var ux = new VisualElement();
             var serializedTarget = new SerializedObject(Target);
+            var ux = new VisualElement();
 
             m_CameraUtility.AddCameraStatus(ux);
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Priority)));

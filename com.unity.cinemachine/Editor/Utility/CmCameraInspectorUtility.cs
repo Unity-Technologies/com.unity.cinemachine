@@ -39,7 +39,6 @@ namespace Cinemachine.Editor
         
         void UpdateCameraState() { if (Target != null) Target.InternalUpdateCameraState(Vector3.up, -1); }
 
-
         public void AddCameraStatus(VisualElement ux)
         {
 #if false
@@ -151,6 +150,7 @@ namespace Cinemachine.Editor
                     choices = PipelineStageMenu.s_StageData[stage].Choices,
                     index = currentSelection
                 };
+                dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
                 dropdown.RegisterValueChangedCallback((evt) => 
                 {
                     var newType = PipelineStageMenu.s_StageData[stage].Types[GetTypeIndexFromSelection(evt.newValue, stage)];
@@ -193,6 +193,7 @@ namespace Cinemachine.Editor
                 choices = PipelineStageMenu.s_ExtentionNames,
                 index = 0
             };
+            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
             dropdown.RegisterValueChangedCallback((evt) => 
             {
                 Type extType = PipelineStageMenu.s_ExtentionTypes[GetTypeIndexFromSelection(evt.newValue)];
@@ -362,6 +363,8 @@ namespace Cinemachine.Editor
                 ? DisplayStyle.Flex : DisplayStyle.None;
 
             var toggle = new Toggle("Save During Play");
+            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
+
             toggle.tooltip = "If checked, Virtual Camera settings changes made during Play Mode "
                 + "will be propagated back to the scene when Play Mode is exited.";
             toggle.value = SaveDuringPlay.SaveDuringPlay.Enabled;
@@ -381,6 +384,7 @@ namespace Cinemachine.Editor
         public void AddGameViewGuidesToggle(VisualElement ux)
         {
             var toggle = new Toggle("Game View Guides");
+            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
             toggle.tooltip = "Enable the display of overlays in the Game window.  "
                 + "You can adjust colours and opacity in Cinemachine Preferences.";
             toggle.value = CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides;
