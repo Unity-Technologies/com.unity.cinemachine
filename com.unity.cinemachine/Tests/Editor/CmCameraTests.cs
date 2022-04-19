@@ -91,15 +91,21 @@ namespace Tests.Editor
             }
             
             yield return null;
-            
+
+            var componentCount = 0;
             for (var i = 0; i < finalComponentsAdded.Length; ++i)
             {
                 Assert.True((m_CmCamera.m_Pipeline[i] == null && finalComponentsAdded[i] == null) ||
                     m_CmCamera.m_Pipeline[i].GetType() == finalComponentsAdded[i]);
+
+                if (finalComponentsAdded[i] != null)
+                {
+                    ++componentCount;
+                }
             }
 
             var components = m_CmCamera.gameObject.GetComponents<CinemachineComponentBase>();
-            Assert.True(components.Length == 3);
+            Assert.True(components.Length == componentCount);
 
             foreach (var toRemove in finalComponentsAdded)
             {
