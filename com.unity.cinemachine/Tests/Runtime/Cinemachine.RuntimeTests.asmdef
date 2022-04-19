@@ -1,8 +1,7 @@
 {
     "name": "Cinemachine.Tests",
     "references": [
-        "Cinemachine",
-        "com.unity.cinemachine.editor"
+        "Cinemachine"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
