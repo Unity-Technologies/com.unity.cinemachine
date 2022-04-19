@@ -1,6 +1,5 @@
 {
     "name": "Cinemachine",
-    "rootNamespace": "",
     "references": [
         "Unity.Timeline",
         "Unity.Postprocessing.Runtime",
