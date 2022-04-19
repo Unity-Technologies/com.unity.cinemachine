@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Tests.Editor
 {
-    public class CmCameraTests
+    public class CmCameraProceduralBehaviourCacheTests
     {
         GameObject m_MainCamera;
         CmCamera m_CmCamera;
@@ -40,7 +40,7 @@ namespace Tests.Editor
         }
 
         [UnityTest]
-        public IEnumerator ProceduralBehaviourCache_AddAllOneByOne()
+        public IEnumerator AddAllOneByOne()
         {
             foreach (var cmComponent in s_AllCinemachineComponents)
             {
@@ -56,7 +56,7 @@ namespace Tests.Editor
         }
         
         [UnityTest]
-        public IEnumerator ProceduralBehaviourCache_AddAndDestroyAllOneByOne()
+        public IEnumerator AddAndDestroyAllOneByOne()
         {
             foreach (var cmComponent in s_AllCinemachineComponents)
             {
@@ -80,7 +80,7 @@ namespace Tests.Editor
         }
         
         [UnityTest]
-        public IEnumerator ProceduralBehaviourCache_AddAllAtTheSameTimeThenRemoveAllAtTheSameTime()
+        public IEnumerator AddAllAtTheSameTimeThenRemoveAllAtTheSameTime()
         {
             var finalComponentsAdded = new Type[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
             foreach (var cmComponent in s_AllCinemachineComponents)
