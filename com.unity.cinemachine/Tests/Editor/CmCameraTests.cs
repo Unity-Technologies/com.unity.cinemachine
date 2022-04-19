@@ -97,7 +97,10 @@ namespace Tests.Editor
                 Assert.True((m_CmCamera.m_Pipeline[i] == null && finalComponentsAdded[i] == null) ||
                     m_CmCamera.m_Pipeline[i].GetType() == finalComponentsAdded[i]);
             }
-            
+
+            var components = m_CmCamera.gameObject.GetComponents<CinemachineComponentBase>();
+            Assert.True(components.Length == 3);
+
             foreach (var toRemove in finalComponentsAdded)
             {
                 if (toRemove == null) 
