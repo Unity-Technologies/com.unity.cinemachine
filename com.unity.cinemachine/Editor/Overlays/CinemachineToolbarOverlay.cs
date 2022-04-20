@@ -177,94 +177,6 @@ namespace Cinemachine.Editor
             }
         }
     }
-    
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class OrbitalFollowOrbitSelection : EditorToolbarDropdown
-    {
-        public const string id = "OrbitalFollowOrbitSelection/Dropdown";
-        static int s_SelectedOrbit;
-        Texture2D[] m_Icons;
-
-        public OrbitalFollowOrbitSelection()
-        {
-            tooltip = "OrbitalFollow Orbit Selection";
-            clicked += OrbitalFollowOrbitSelectionMenu;
-            EditorApplication.update += DisplayAndUpdateOrbitIfRequired;
-            
-            m_Icons = new Texture2D[]
-            {
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
-            };
-        }
-
-        ~OrbitalFollowOrbitSelection()
-        {
-            clicked -= OrbitalFollowOrbitSelectionMenu;
-            EditorApplication.update -= DisplayAndUpdateOrbitIfRequired;
-        }
-
-        Type m_OrbitalFollowSelectionType = typeof(OrbitalFollowOrbitSelection);
-        void DisplayAndUpdateOrbitIfRequired()
-        {
-            var active = Selection.activeObject as GameObject;
-            if (active != null)
-            {
-                var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
-                if (orbitalFollow != null && 
-                    CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) &&
-                    orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRing)
-                {
-                    style.display = DisplayStyle.Flex; // display menu
-                   
-                    var verticalAxis = orbitalFollow.VerticalAxis;
-                    var centerToleranceRange = Mathf.Min(Mathf.Abs(verticalAxis.Range.x - verticalAxis.Center), 
-                        Mathf.Abs(verticalAxis.Range.y - verticalAxis.Center)) / 2f;
-                    s_SelectedOrbit = (Math.Abs(verticalAxis.Value - verticalAxis.Center) < centerToleranceRange) 
-                        ? 1 
-                        : (verticalAxis.Value > verticalAxis.Center ? 0 : 2);
-                    
-                    text = CinemachineOrbitalFollowEditor.orbitNames[s_SelectedOrbit].text;
-                    icon = m_Icons[s_SelectedOrbit];
-                    
-                    return;
-                }
-            }
-            style.display = DisplayStyle.None; // hide menu
-        }
-
-        void OrbitalFollowOrbitSelectionMenu()
-        {
-            var menu = new GenericMenu();
-            for (var i = 0; i < CinemachineOrbitalFollowEditor.orbitNames.Length; ++i)
-            {
-                var rigIndex = i; // need to capture index for the lambda below
-                menu.AddItem(CinemachineOrbitalFollowEditor.orbitNames[i], false, () =>
-                {
-                    s_SelectedOrbit = rigIndex;
-                    var active = Selection.activeObject as GameObject;
-                    if (active != null)
-                    {
-                        var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
-                        if (orbitalFollow != null)
-                        {
-                            orbitalFollow.VerticalAxis.Value = s_SelectedOrbit switch
-                            {
-                                0 => orbitalFollow.VerticalAxis.Range.y,
-                                2 => orbitalFollow.VerticalAxis.Range.x,
-                                _ => orbitalFollow.VerticalAxis.Center
-                            };
-                        }
-                    }
-                });
-            }
-            menu.DropDown(worldBound);
-        }
-    }
 #else
     /// <summary>
     /// To display a CinemachineExclusiveEditorToolbarToggle in the Cinemachine Toolbar.
@@ -276,6 +188,7 @@ namespace Cinemachine.Editor
         public CinemachineToolbarOverlay()
             : base(
                 FreelookRigSelection.id,
+                OrbitalFollowOrbitSelection.id,
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
@@ -449,6 +362,98 @@ namespace Cinemachine.Editor
 #pragma warning restore CS0618
                         if (freelook != null)
                             CinemachineFreeLookEditor.SetSelectedRig(freelook, rigIndex);
+                    }
+                });
+            }
+            menu.DropDown(worldBound);
+        }
+    }
+    
+    [EditorToolbarElement(id, typeof(SceneView))]
+    class OrbitalFollowOrbitSelection : EditorToolbarDropdown
+    {
+        public const string id = "OrbitalFollowOrbitSelection/Dropdown";
+        static int s_SelectedOrbit;
+        Texture2D[] m_Icons;
+
+        public OrbitalFollowOrbitSelection()
+        {
+            tooltip = "OrbitalFollow Orbit Selection";
+            clicked += OrbitalFollowOrbitSelectionMenu;
+            EditorApplication.update += DisplayAndUpdateOrbitIfRequired;
+            
+            m_Icons = new Texture2D[]
+            {
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
+            };
+        }
+
+        ~OrbitalFollowOrbitSelection()
+        {
+            clicked -= OrbitalFollowOrbitSelectionMenu;
+            EditorApplication.update -= DisplayAndUpdateOrbitIfRequired;
+        }
+        
+#if UNITY_2022_1_OR_NEWER
+        Type m_OrbitalFollowSelectionType = typeof(OrbitalFollowOrbitSelection);
+#endif
+        void DisplayAndUpdateOrbitIfRequired()
+        {
+            var active = Selection.activeObject as GameObject;
+            if (active != null)
+            {
+                var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
+                if (orbitalFollow != null && 
+#if UNITY_2022_1_OR_NEWER
+                    CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) &&
+#endif
+                    orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRing)
+                {
+                    style.display = DisplayStyle.Flex; // display menu
+                   
+                    var verticalAxis = orbitalFollow.VerticalAxis;
+                    var centerToleranceRange = Mathf.Min(Mathf.Abs(verticalAxis.Range.x - verticalAxis.Center), 
+                        Mathf.Abs(verticalAxis.Range.y - verticalAxis.Center)) / 2f;
+                    s_SelectedOrbit = (Math.Abs(verticalAxis.Value - verticalAxis.Center) < centerToleranceRange) 
+                        ? 1 
+                        : (verticalAxis.Value > verticalAxis.Center ? 0 : 2);
+                    
+                    text = CinemachineOrbitalFollowEditor.orbitNames[s_SelectedOrbit].text;
+                    icon = m_Icons[s_SelectedOrbit];
+                    
+                    return;
+                }
+            }
+            style.display = DisplayStyle.None; // hide menu
+        }
+
+        void OrbitalFollowOrbitSelectionMenu()
+        {
+            var menu = new GenericMenu();
+            for (var i = 0; i < CinemachineOrbitalFollowEditor.orbitNames.Length; ++i)
+            {
+                var rigIndex = i; // need to capture index for the lambda below
+                menu.AddItem(CinemachineOrbitalFollowEditor.orbitNames[i], false, () =>
+                {
+                    s_SelectedOrbit = rigIndex;
+                    var active = Selection.activeObject as GameObject;
+                    if (active != null)
+                    {
+                        var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
+                        if (orbitalFollow != null)
+                        {
+                            orbitalFollow.VerticalAxis.Value = s_SelectedOrbit switch
+                            {
+                                0 => orbitalFollow.VerticalAxis.Range.y,
+                                2 => orbitalFollow.VerticalAxis.Range.x,
+                                _ => orbitalFollow.VerticalAxis.Center
+                            };
+                        }
                     }
                 });
             }
