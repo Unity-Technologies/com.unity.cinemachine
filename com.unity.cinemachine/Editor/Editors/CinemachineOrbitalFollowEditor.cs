@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -172,7 +171,7 @@ namespace Cinemachine.Editor
                         break;
                     default:
                         Debug.LogError("OrbitStyle has no associated handle");
-                        throw new ArgumentOutOfRangeException();
+                        throw new System.ArgumentOutOfRangeException();
                 }
                 
             }
