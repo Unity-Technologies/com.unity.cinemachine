@@ -102,6 +102,8 @@ namespace Cinemachine.Editor
         {
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+#endif
+#if UNITY_2022_1_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
 #endif
         }
@@ -110,6 +112,8 @@ namespace Cinemachine.Editor
         {
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+#endif
+#if UNITY_2022_1_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
 #endif
         }

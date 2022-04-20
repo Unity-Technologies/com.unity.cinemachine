@@ -179,75 +179,6 @@ namespace Cinemachine.Editor
     }
     
     [EditorToolbarElement(id, typeof(SceneView))]
-    class FreelookRigSelection : EditorToolbarDropdown
-    {
-        public const string id = "FreelookRigSelection/Dropdown";
-        public static int SelectedRig;
-        Texture2D[] m_Icons;
-
-        public FreelookRigSelection()
-        {
-            tooltip = "Freelook Rig Selection";
-            clicked += FreelookRigSelectionMenu;
-            EditorApplication.update += ShadowSelectedRigName;
-            EditorApplication.update += DisplayIfRequired;
-            
-            m_Icons = new Texture2D[]
-            {
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
-            };
-        }
-
-        ~FreelookRigSelection()
-        {
-            clicked -= FreelookRigSelectionMenu;
-            EditorApplication.update -= ShadowSelectedRigName;
-            EditorApplication.update -= DisplayIfRequired;
-        }
-
-        Type m_FreelookRigSelectionType = typeof(FreelookRigSelection);
-        void DisplayIfRequired() => style.display = 
-            CinemachineSceneToolUtility.IsToolRequired(m_FreelookRigSelectionType) 
-                ? DisplayStyle.Flex : DisplayStyle.None;
-
-        // text is currently only visibly in Panel mode due to this bug: https://jira.unity3d.com/browse/STO-2278
-        void ShadowSelectedRigName()
-        {
-            var index = Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1);
-            text = CinemachineFreeLookEditor.RigNames[index].text;
-            icon = m_Icons[index];
-        }
-
-        void FreelookRigSelectionMenu()
-        {
-            var menu = new GenericMenu();
-            for (var i = 0; i < CinemachineFreeLookEditor.RigNames.Length; ++i)
-            {
-                var rigIndex = i; // vital to capture the index here for the lambda below
-                menu.AddItem(CinemachineFreeLookEditor.RigNames[i], false, () =>
-                {
-                    SelectedRig = rigIndex;
-                    var active = Selection.activeObject as GameObject;
-                    if (active != null)
-                    {
-#pragma warning disable CS0618
-                        var freelook = active.GetComponent<CinemachineFreeLook>();
-#pragma warning restore CS0618
-                        if (freelook != null)
-                            CinemachineFreeLookEditor.SetSelectedRig(freelook, rigIndex);
-                    }
-                });
-            }
-            menu.DropDown(worldBound);
-        }
-    }
-    
-    [EditorToolbarElement(id, typeof(SceneView))]
     class OrbitalFollowOrbitSelection : EditorToolbarDropdown
     {
         public const string id = "OrbitalFollowOrbitSelection/Dropdown";
@@ -447,6 +378,7 @@ namespace Cinemachine.Editor
         }
     }
     
+#endif
     [EditorToolbarElement(id, typeof(SceneView))]
     class FreelookRigSelection : EditorToolbarDropdown
     {
@@ -458,8 +390,12 @@ namespace Cinemachine.Editor
         {
             tooltip = "Freelook Rig Selection";
             clicked += FreelookRigSelectionMenu;
+#if UNITY_2022_1_OR_NEWER
+            EditorApplication.update += DisplayIfRequired;
+#else
             CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
                 display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
+#endif
             EditorApplication.update += ShadowSelectedRigName;
             
             m_Icons = new Texture2D[]
@@ -477,15 +413,25 @@ namespace Cinemachine.Editor
         {
             clicked -= FreelookRigSelectionMenu;
             EditorApplication.update -= ShadowSelectedRigName;
+#if UNITY_2022_1_OR_NEWER
+            EditorApplication.update -= DisplayIfRequired;
+#endif
         }
+
+#if UNITY_2022_1_OR_NEWER
+        Type m_FreelookRigSelectionType = typeof(FreelookRigSelection);
+        void DisplayIfRequired() => style.display = 
+            CinemachineSceneToolUtility.IsToolRequired(m_FreelookRigSelectionType) 
+                ? DisplayStyle.Flex : DisplayStyle.None;
+#endif
 
         void ShadowSelectedRigName()
         {
             var index = Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1);
-            icon = m_Icons[index];
             text = CinemachineFreeLookEditor.RigNames[index].text;
+            icon = m_Icons[index];
         }
-        
+
         void FreelookRigSelectionMenu()
         {
             var menu = new GenericMenu();
@@ -498,7 +444,9 @@ namespace Cinemachine.Editor
                     var active = Selection.activeObject as GameObject;
                     if (active != null)
                     {
+#pragma warning disable CS0618
                         var freelook = active.GetComponent<CinemachineFreeLook>();
+#pragma warning restore CS0618
                         if (freelook != null)
                             CinemachineFreeLookEditor.SetSelectedRig(freelook, rigIndex);
                     }
@@ -507,6 +455,5 @@ namespace Cinemachine.Editor
             menu.DropDown(worldBound);
         }
     }
-#endif
 }
 #endif
