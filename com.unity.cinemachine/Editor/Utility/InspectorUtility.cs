@@ -324,21 +324,54 @@ namespace Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
-        /// <summary>Aligns fields created by UI toolkit the unity standard way.</summary>
-        /// GML todo: sort this out
-        internal const string kAlignFieldClass = "unity-base-field__aligned";
+        /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
+        internal static string kAlignFieldClass => BaseField<bool>.alignedFieldUssClassName;
 
-        internal static void AddHeader(VisualElement ux, string text)
+        // this is a hack to get around some vertical alignment issues in UITK
+        internal static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
+
+        // Draw a bold header in the inspector - hack to get around missing UITK functionality
+        internal static void AddHeader(VisualElement ux, string text, string tooltip = "")
         {
-            const float k_PaddingLeft = 4f; // GML wtf is this?  isn't there a constant somewhere?
-            var label = new Label
+            var verticalPad = SingleLineHeight / 2;
+            var row = new FieldRow($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} });
+            row.labelElement.style.flexGrow = 1;
+            row.labelElement.style.paddingTop = verticalPad;
+            row.labelElement.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
+            ux.Add(row);
+        }
+
+        // This is a hack to get proper layout.  Add methods here as needed.
+        internal class FieldRow : BaseField<bool> // bool is just a dummy because it has to be something
+        {
+            public VisualElement Input { get; }
+
+            public FieldRow(string label) : this (label, string.Empty) {}
+            public FieldRow(string label, string tooltip) : this (label, tooltip, new VisualElement()) 
             {
-                //enableRichText = true,
-                text = $"<b>{text}</b>",
-                style = { paddingLeft = k_PaddingLeft },
-            };
-            label.RegisterCallback<GeometryChangedEvent>((evt) => label.style.paddingTop = label.contentRect.height / 2f);
-            ux.Add(label);
+                Input.style.flexDirection = FlexDirection.Row;
+            }
+
+            public FieldRow(string label, string tooltip, VisualElement input) : base(label, input)
+            {
+                Input = input;
+                AddToClassList(alignedFieldUssClassName);
+                labelElement.tooltip = tooltip;
+            }
+
+            public Label AddLabel(string text)
+            {
+                 var e = new Label(text) { style = {flexGrow = 0} };
+                 e.RegisterCallback<GeometryChangedEvent>((evt) => e.style.paddingTop = labelElement.resolvedStyle.paddingTop);
+                 Input.Add(e);
+                 return e;
+            }
+
+            public T AddInput<T>(T input) where T : VisualElement
+            {
+                Input.Add(input);
+                return input;
+            }
         }
     }
 }
