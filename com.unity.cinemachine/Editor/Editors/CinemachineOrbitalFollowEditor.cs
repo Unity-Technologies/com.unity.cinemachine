@@ -131,7 +131,6 @@ namespace Cinemachine.Editor
                             var camPos = orbitalFollow.VcamState.RawPosition;
                             var camTransform = orbitalFollow.VirtualCamera.transform;
                             var camRight = camTransform.right;
-                            var camUp = camTransform.up;
                             var followPos = orbitalFollow.FollowTargetPosition;
                             var handlePos = followPos + camRight * orbitalFollow.Radius;
                             var rHandleId = GUIUtility.GetControlID(FocusType.Passive);
@@ -159,7 +158,7 @@ namespace Cinemachine.Editor
                             Handles.color = orbitRadiusHandleIsUsedOrHovered ? 
                                 Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
                             Handles.DrawLine(camPos, followPos);
-                            Handles.DrawWireDisc(followPos, camUp, orbitalFollow.Radius);
+                            Handles.DrawWireDisc(followPos, camTransform.up, orbitalFollow.Radius);
                             
                             CinemachineSceneToolHelpers.SoloOnDrag(
                                 orbitRadiusHandleIsDragged, orbitalFollow.VirtualCamera, rHandleId);

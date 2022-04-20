@@ -809,7 +809,7 @@ namespace Cinemachine.Editor
                 var orbitHeight = orbit.FindPropertyRelative("m_Height");
                 var orbitRadius = orbit.FindPropertyRelative("m_Radius");
                 
-                if (RigHandles(orbits.serializedObject, orbitHeight, orbitRadius, followPos, 
+                if (OrbitHandles(orbits.serializedObject, orbitHeight, orbitRadius, followPos, 
                         out var heightHandleId, out var radiusHandleId))
                 {
                     draggedRig = rigIndex;
@@ -848,7 +848,7 @@ namespace Cinemachine.Editor
                 var orbitRadius = 
                     orbit.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Top.Radius);
                 
-                if (RigHandles(orbitSetting.serializedObject, orbitHeight, orbitRadius, followPos, 
+                if (OrbitHandles(orbitSetting.serializedObject, orbitHeight, orbitRadius, followPos, 
                         out var heightHandleId, out var radiusHandleId))
                 {
                     draggedRig = rigIndex;
@@ -861,7 +861,7 @@ namespace Cinemachine.Editor
             return draggedRig;
         }
 
-        static bool RigHandles(SerializedObject orbit, 
+        static bool OrbitHandles(SerializedObject orbit, 
             SerializedProperty orbitHeight, SerializedProperty orbitRadius, Vector3 followPos,
             out int heightHandleId, out int radiusHandleId)
         {
