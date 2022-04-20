@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -122,8 +123,59 @@ namespace Cinemachine.Editor
             Handles.color = Handles.preselectionColor;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.OrbitControlHandleOrbitalFollow(orbitalFollow.VirtualCamera,
-                    new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits));
+                switch (orbitalFollow.OrbitStyle)
+                {
+                    case CinemachineOrbitalFollow.OrbitMode.Sphere:
+                        {
+                            EditorGUI.BeginChangeCheck();
+                            var camPos = orbitalFollow.VcamState.RawPosition;
+                            var camTransform = orbitalFollow.VirtualCamera.transform;
+                            var camRight = camTransform.right;
+                            var camUp = camTransform.up;
+                            var followPos = orbitalFollow.FollowTargetPosition;
+                            var handlePos = followPos + camRight * orbitalFollow.Radius;
+                            var rHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                            var newHandlePosition = Handles.Slider(rHandleId, handlePos, -camRight,
+                                CinemachineSceneToolHelpers.CubeHandleCapSize(camPos), Handles.CubeHandleCap, 0.5f);
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
+                                var so = new SerializedObject(orbitalFollow);
+                                var prop = so.FindProperty(() => orbitalFollow.Radius);
+                                prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(
+                                    newHandlePosition, handlePos, -camRight);
+                                so.ApplyModifiedProperties();
+                            }
+
+                            var orbitRadiusHandleIsDragged = GUIUtility.hotControl == rHandleId;
+                            var orbitRadiusHandleIsUsedOrHovered = orbitRadiusHandleIsDragged ||
+                                HandleUtility.nearestControl == rHandleId;
+                            if (orbitRadiusHandleIsUsedOrHovered)
+                            {
+                                CinemachineSceneToolHelpers.DrawLabel(camPos,
+                                    "Radius (" + orbitalFollow.Radius.ToString("F1") + ")");
+                            }
+                            
+                            Handles.color = orbitRadiusHandleIsUsedOrHovered ? 
+                                Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
+                            Handles.DrawLine(camPos, followPos);
+                            Handles.DrawWireDisc(followPos, camUp, orbitalFollow.Radius);
+                            
+                            CinemachineSceneToolHelpers.SoloOnDrag(
+                                orbitRadiusHandleIsDragged, orbitalFollow.VirtualCamera, rHandleId);
+
+                            Handles.color = originalColor;
+                        }
+                        break;
+                    case CinemachineOrbitalFollow.OrbitMode.ThreeRing:
+                        CinemachineSceneToolHelpers.OrbitControlHandleOrbitalFollow(orbitalFollow.VirtualCamera, 
+                            new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits));
+                        break;
+                    default:
+                        Debug.LogError("OrbitStyle has no associated handle");
+                        throw new ArgumentOutOfRangeException();
+                }
+                
             }
             Handles.color = originalColor;
         }
