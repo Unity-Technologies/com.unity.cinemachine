@@ -150,7 +150,7 @@ namespace Cinemachine
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandle(freelook,
+                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleFreelook(freelook,
                     new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits));
                 if (draggedRig >= 0)
                     SetSelectedRig(Target, draggedRig);

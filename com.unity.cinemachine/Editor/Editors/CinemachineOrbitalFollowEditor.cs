@@ -89,6 +89,45 @@ namespace Cinemachine.Editor
             }
             DrawRemainingPropertiesInInspector();
         }
+        
+        protected virtual void OnEnable()
+        {
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+#endif
+        }
+        
+        protected virtual void OnDisable()
+        {
+#if UNITY_2021_2_OR_NEWER
+            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+#endif
+        }
+   
+#if UNITY_2021_2_OR_NEWER     
+        void OnSceneGUI()
+        {
+            DrawSceneTools();
+        }
+        
+        void DrawSceneTools()
+        {
+            var orbitalFollow = Target;
+            if (orbitalFollow == null || !orbitalFollow.IsValid)
+            {
+                return;
+            }
+            
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            {
+                CinemachineSceneToolHelpers.OrbitControlHandleOrbitalFollow(orbitalFollow.VirtualCamera,
+                    new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits));
+            }
+            Handles.color = originalColor;
+        }
+#endif
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalFollow))]
         static void DrawOrbitalGizmos(CinemachineOrbitalFollow orbital, GizmoType selectionType)
