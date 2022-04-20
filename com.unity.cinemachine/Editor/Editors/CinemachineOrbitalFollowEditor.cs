@@ -93,7 +93,7 @@ namespace Cinemachine.Editor
         static GUIContent[] s_OrbitNames = 
         {
             new GUIContent("Top"), 
-            new GUIContent("Middle"), 
+            new GUIContent("Center"), 
             new GUIContent("Bottom")
         };
         internal static GUIContent[] orbitNames => s_OrbitNames;
