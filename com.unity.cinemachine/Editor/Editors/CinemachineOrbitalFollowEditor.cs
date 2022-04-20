@@ -119,7 +119,9 @@ namespace Cinemachine.Editor
         {
             DrawSceneTools();
         }
-        
+
+        bool m_UpdateCache = true;
+        float m_VerticalAxisCache;
         void DrawSceneTools()
         {
             var orbitalFollow = Target;
@@ -130,8 +132,7 @@ namespace Cinemachine.Editor
             
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-            {
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool))) {
                 switch (orbitalFollow.OrbitStyle)
                 {
                     case CinemachineOrbitalFollow.OrbitMode.Sphere:
@@ -176,8 +177,19 @@ namespace Cinemachine.Editor
                         }
                         break;
                     case CinemachineOrbitalFollow.OrbitMode.ThreeRing:
-                        CinemachineSceneToolHelpers.OrbitControlHandleOrbitalFollow(orbitalFollow.VirtualCamera, 
+                        if (m_UpdateCache)
+                            m_VerticalAxisCache = orbitalFollow.VerticalAxis.Value;
+                        
+                        var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleOrbitalFollow(orbitalFollow.VirtualCamera, 
                             new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits));
+                        m_UpdateCache = draggedRig < 0 || draggedRig > 2;
+                        orbitalFollow.VerticalAxis.Value = draggedRig switch
+                        {
+                            0 => orbitalFollow.VerticalAxis.Range.y,
+                            1 => orbitalFollow.VerticalAxis.Center,
+                            2 => orbitalFollow.VerticalAxis.Range.x,
+                            _ => m_VerticalAxisCache
+                        };
                         break;
                     default:
                         Debug.LogError("OrbitStyle has no associated handle");
