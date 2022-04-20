@@ -1,23 +1,19 @@
 {
-    "name": "Cinemachine.SharedTests",
-    "rootNamespace": "",
+    "name": "Cinemachine.Shared.Tests",
     "references": [
         "Cinemachine",
-        "com.unity.cinemachine.editor",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "com.unity.cinemachine.editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
-    "precompiledReferences": [
-        "nunit.framework.dll"
-    ],
-    "autoReferenced": false,
-    "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
-    ],
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
     "versionDefines": [
         {
             "name": "com.unity.modules.physics2d",
@@ -34,6 +30,5 @@
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_ANIMATION"
         }
-    ],
-    "noEngineReferences": false
+    ]
 }
