@@ -90,10 +90,19 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
         
+        static GUIContent[] s_OrbitNames = 
+        {
+            new GUIContent("Top"), 
+            new GUIContent("Middle"), 
+            new GUIContent("Bottom")
+        };
+        internal static GUIContent[] orbitNames => s_OrbitNames;
+        
         protected virtual void OnEnable()
         {
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
 #endif
         }
         
@@ -101,6 +110,7 @@ namespace Cinemachine.Editor
         {
 #if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
+            CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
 #endif
         }
    
