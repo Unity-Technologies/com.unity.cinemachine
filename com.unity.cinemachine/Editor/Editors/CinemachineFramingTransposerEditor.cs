@@ -254,7 +254,7 @@ namespace Cinemachine.Editor
                 Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 Handles.DrawLine(camPos, 
-                    framingTransposer.FollowTarget.position + framingTransposer.m_TrackedObjectOffset);
+                    framingTransposer.FollowTargetPosition + framingTransposer.m_TrackedObjectOffset);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
                     cdHandleId);
