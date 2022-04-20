@@ -43,6 +43,40 @@ namespace Cinemachine.Editor
             }
         }
         
+        public void AddCameraStatus(VisualElement ux)
+        {
+            // No status and Solo for prefabs or multi-select
+            if (Selection.objects.Length > 1 || IsPrefab)
+                return;
+
+            EditorApplication.update -= UpdateCameraStatus;
+            EditorApplication.update += UpdateCameraStatus;
+
+            m_NavelGazeMessage = new HelpBox("The camera is trying to look at itself.", HelpBoxMessageType.Warning);
+            ux.Add(m_NavelGazeMessage);
+
+            var row = new InspectorUtility.FieldRow("Status");
+            m_StatusText = row.labelElement;
+            m_SoloButton = row.AddInput(new Button() 
+            { 
+                text = "Solo", 
+                style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
+                    marginLeft = 0, marginRight = 0, borderLeftWidth = 0, borderRightWidth = 0 } 
+            });
+            m_UpdateMode = row.AddLabel("(Update Mode)");
+            m_UpdateMode.SetEnabled(false);
+            m_UpdateMode.style.display = DisplayStyle.None;
+            ux.Add(row);
+
+            var target = Target; // capture for lambda
+            m_SoloButton.RegisterCallback<ClickEvent>((evt) => 
+            {
+                var isSolo = CinemachineBrain.SoloCamera != (ICinemachineCamera)target;
+                CinemachineBrain.SoloCamera = isSolo ? Target : null;
+                InspectorUtility.RepaintGameView();
+            });
+        }
+
         void UpdateCameraState() { if (Target != null) Target.InternalUpdateCameraState(Vector3.up, -1); }
 
         void UpdateCameraStatus() 
@@ -77,7 +111,7 @@ namespace Cinemachine.Editor
                 else
                 {
                     UpdateTracker.UpdateClock updateMode = CinemachineCore.Instance.GetVcamUpdateStatus(Target);
-                    m_UpdateMode.text = updateMode == UpdateTracker.UpdateClock.Fixed ? "Fixed Update" : "Late Update";
+                    m_UpdateMode.text = updateMode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update";
                     m_UpdateMode.style.display = DisplayStyle.Flex;
                 }
             }
@@ -89,36 +123,7 @@ namespace Cinemachine.Editor
             if (isSolo && !Application.isPlaying)
                 InspectorUtility.RepaintGameView();
         }
-
-        public void AddCameraStatus(VisualElement ux)
-        {
-            // No status and Solo for prefabs or multi-select
-            if (Selection.objects.Length > 1 || IsPrefab)
-                return;
-
-            EditorApplication.update -= UpdateCameraStatus;
-            EditorApplication.update += UpdateCameraStatus;
-
-            m_NavelGazeMessage = new HelpBox("The camera is trying to look at itself.", HelpBoxMessageType.Warning);
-            ux.Add(m_NavelGazeMessage);
-
-            var row = new InspectorUtility.FieldRow("Status");
-            m_StatusText = row.labelElement;
-            m_SoloButton = row.AddInput(new Button() { text = "Solo", style = {flexGrow = 1} });
-            m_UpdateMode = row.AddLabel("(Update Mode)");
-            m_UpdateMode.SetEnabled(false);
-            m_UpdateMode.style.display = DisplayStyle.None;
-            ux.Add(row);
-
-            var target = Target; // capture for lambda
-            m_SoloButton.RegisterCallback<ClickEvent>((evt) => 
-            {
-                var isSolo = CinemachineBrain.SoloCamera != (ICinemachineCamera)target;
-                CinemachineBrain.SoloCamera = isSolo ? Target : null;
-                InspectorUtility.RepaintGameView();
-            });
-        }
-
+        
         public void AddPipelineDropdowns(VisualElement ux)
         {
             var cmCam = Target as CmCamera;
