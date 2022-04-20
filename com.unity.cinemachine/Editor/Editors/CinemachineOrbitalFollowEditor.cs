@@ -180,6 +180,8 @@ namespace Cinemachine.Editor
         }
 #endif
 
+        // TODO: ask swap's opinion on this. Do we want to always draw this or only when follow offset handle is not selected
+        // TODO: what color? when follow offset handle is selected, do we want to draw CameraPath.
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalFollow))]
         static void DrawOrbitalGizmos(CinemachineOrbitalFollow orbital, GizmoType selectionType)
         {
