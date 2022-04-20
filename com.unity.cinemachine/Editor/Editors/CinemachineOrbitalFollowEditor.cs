@@ -132,7 +132,8 @@ namespace Cinemachine.Editor
             
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool))) {
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool))) 
+            {
                 switch (orbitalFollow.OrbitStyle)
                 {
                     case CinemachineOrbitalFollow.OrbitMode.Sphere:
