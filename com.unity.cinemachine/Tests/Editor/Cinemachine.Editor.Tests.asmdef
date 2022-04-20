@@ -3,7 +3,7 @@
     "references": [
         "Cinemachine",
         "com.unity.cinemachine.editor",
-        "Cinemachine.Runtime.Tests"
+        "Cinemachine.SharedTests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
