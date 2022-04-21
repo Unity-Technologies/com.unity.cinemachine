@@ -62,8 +62,6 @@ namespace Cinemachine.Editor
             button.AddToClassList("unity-button");
             row.Add(button);
 
-            var target = property.objectReferenceValue as Transform;
-            var disableTargetGroup = target == null || target.TryGetComponent<CinemachineTargetGroup>(out var _);
             var manipulator = new ContextualMenuManipulator((evt) => 
             {
                 evt.menu.AppendAction("Convert to TargetGroup", 
@@ -71,13 +69,19 @@ namespace Cinemachine.Editor
                     {
                         var go = ObjectFactory.CreateGameObject("Target Group", typeof(CinemachineTargetGroup));
                         var group = go.GetComponent<CinemachineTargetGroup>();
+                        var target = property.objectReferenceValue as Transform;
                    
                         group.m_RotationMode = CinemachineTargetGroup.RotationMode.GroupAverage;
                         group.AddMember(target, 1, 1);
                         property.objectReferenceValue = group.Transform;
                         property.serializedObject.ApplyModifiedProperties();
                     }, 
-                    (status) => disableTargetGroup ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal
+                    (status) => 
+                    {
+                        var target = property.objectReferenceValue as Transform;
+                        var disable = target == null || target.TryGetComponent<CinemachineTargetGroup>(out var _);
+                        return disable ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
+                    }
                 );                
             });
             manipulator.activators.Clear();
