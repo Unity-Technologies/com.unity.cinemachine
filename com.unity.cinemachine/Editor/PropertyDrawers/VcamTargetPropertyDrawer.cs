@@ -42,10 +42,7 @@ namespace Cinemachine.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            VisualElement prop = new PropertyField(property);
-            row.Add(prop);
-            prop.style.flexGrow = 1;
-
+            row.Add(new PropertyField(property) { style = { flexGrow = 1 }});
             var button = new VisualElement 
             { 
                 style = 
