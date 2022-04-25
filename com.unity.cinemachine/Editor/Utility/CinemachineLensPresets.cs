@@ -148,6 +148,17 @@ namespace Cinemachine.Editor
             return -1;
         }
 
+        /// <summary>Get the index of the first preset that matches the preset name</summary>
+        /// <param name="presetName">Name of the preset</param>
+        /// <returns>the preset index, or -1 if no matching preset</returns>
+        public int GetPresetIndex(string presetName)
+        {
+            for (int i = 0; i < m_Presets.Length; ++i)
+                if (m_Presets[i].m_Name == presetName)
+                    return i;
+            return -1;
+        }
+
         /// <summary>Get the index of the physical preset that matches the lens settings</summary>
         /// <param name="focalLength">Focal length to match</param>
         /// <returns>the preset index, or -1 if no matching preset</returns>
@@ -155,6 +166,17 @@ namespace Cinemachine.Editor
         {
             for (int i = 0; i < m_PhysicalPresets.Length; ++i)
                 if (Mathf.Approximately(m_PhysicalPresets[i].m_FocalLength, focalLength))
+                    return i;
+            return -1;
+        }
+
+        /// <summary>Get the index of the first physical preset that matches the preset name</summary>
+        /// <param name="presetName">Name of the preset</param>
+        /// <returns>the preset index, or -1 if no matching preset</returns>
+        public int GetPhysicalPresetIndex(string presetName)
+        {
+            for (int i = 0; i < m_PhysicalPresets.Length; ++i)
+                if (m_PhysicalPresets[i].m_Name == presetName)
                     return i;
             return -1;
         }

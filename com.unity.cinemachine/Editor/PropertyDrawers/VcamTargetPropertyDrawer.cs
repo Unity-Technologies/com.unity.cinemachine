@@ -9,6 +9,7 @@ namespace Cinemachine.Editor
     [CustomPropertyDrawer(typeof(VcamTargetPropertyAttribute))]
     internal sealed class VcamTargetPropertyDrawer : PropertyDrawer
     {
+        // old IMGUI implementation must remain until no more IMGUI inspectors are using it
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             const float hSpace = 2;
@@ -43,20 +44,13 @@ namespace Cinemachine.Editor
         {
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
             row.Add(new PropertyField(property) { style = { flexGrow = 1 }});
-            var button = new VisualElement 
+            var button = new Button { style = 
             { 
-                style = 
-                { 
-                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
-                    width = InspectorUtility.SingleLineHeight,
-                    height = InspectorUtility.SingleLineHeight,
-                    alignSelf = Align.Center,
-                    paddingRight = 0,
-                    borderRightWidth = 0,
-                    marginRight = 0
-                }
-            };
-            button.AddToClassList("unity-button");
+                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
+                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                alignSelf = Align.Center,
+                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+            }};
             row.Add(button);
 
             var manipulator = new ContextualMenuManipulator((evt) => 

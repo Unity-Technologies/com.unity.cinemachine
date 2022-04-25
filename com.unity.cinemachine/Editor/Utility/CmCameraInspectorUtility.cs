@@ -55,7 +55,7 @@ namespace Cinemachine.Editor
             m_NavelGazeMessage = new HelpBox("The camera is trying to look at itself.", HelpBoxMessageType.Warning);
             ux.Add(m_NavelGazeMessage);
 
-            var row = new InspectorUtility.FieldRow("Status");
+            var row = new InspectorUtility.LabeledContainer("Status");
             m_StatusText = row.labelElement;
             m_SoloButton = row.AddInput(new Button() 
             { 
@@ -63,7 +63,7 @@ namespace Cinemachine.Editor
                 style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
                     marginLeft = 0, marginRight = 0, borderLeftWidth = 0, borderRightWidth = 0 } 
             });
-            m_UpdateMode = row.AddLabel("(Update Mode)");
+            m_UpdateMode = row.AddInput(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
             m_UpdateMode.SetEnabled(false);
             m_UpdateMode.style.display = DisplayStyle.None;
             ux.Add(row);

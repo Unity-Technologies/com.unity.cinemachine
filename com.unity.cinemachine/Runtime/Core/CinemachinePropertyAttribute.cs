@@ -46,6 +46,16 @@ namespace Cinemachine
     }
 
     /// <summary>
+    /// Property applied to int or float fields to generate a slider in the inspector.
+    /// </summary>
+    public sealed class RangeSliderAttribute : PropertyAttribute 
+    { 
+        public float Min;
+        public float Max;
+        public RangeSliderAttribute(float min, float max) { Min = min; Max = max; }
+    }
+    
+    /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }

@@ -324,47 +324,57 @@ namespace Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
+
+        ///==============================================================================================
+        ///==============================================================================================
+        /// UI Elements utilities
+        ///==============================================================================================
+        ///==============================================================================================
+
+
         /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
         internal static string kAlignFieldClass => BaseField<bool>.alignedFieldUssClassName;
 
         // this is a hack to get around some vertical alignment issues in UITK
         internal static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
 
-        // Draw a bold header in the inspector - hack to get around missing UITK functionality
+        /// <summary>
+        /// Draw a bold header in the inspector - hack to get around missing UITK functionality
+        /// </summary>
+        /// <param name="ux"></param>
+        /// <param name="text"></param>
+        /// <param name="tooltip"></param>
         internal static void AddHeader(VisualElement ux, string text, string tooltip = "")
         {
             var verticalPad = SingleLineHeight / 2;
-            var row = new FieldRow($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} });
+            var row = new LabeledContainer($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} });
+            row.focusable = false;
             row.labelElement.style.flexGrow = 1;
             row.labelElement.style.paddingTop = verticalPad;
             row.labelElement.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
             ux.Add(row);
         }
 
-        // This is a hack to get proper layout.  Add methods here as needed.
-        internal class FieldRow : BaseField<bool> // bool is just a dummy because it has to be something
+        /// <summary>
+        /// This is a hack to get proper layout.  There seeme to be no sanctioned way to 
+        /// get the current inspector label width.
+        /// </summary>
+        internal class LabeledContainer : BaseField<bool> // bool is just a dummy because it has to be something
         {
+            public Label Label => labelElement;
             public VisualElement Input { get; }
 
-            public FieldRow(string label) : this (label, string.Empty) {}
-            public FieldRow(string label, string tooltip) : this (label, tooltip, new VisualElement()) 
+            public LabeledContainer(string label, string tooltip = "") : this (label, tooltip, new VisualElement()) 
             {
                 Input.style.flexDirection = FlexDirection.Row;
             }
 
-            public FieldRow(string label, string tooltip, VisualElement input) : base(label, input)
+            public LabeledContainer(string label, string tooltip, VisualElement input) : base(label, input)
             {
                 Input = input;
                 AddToClassList(alignedFieldUssClassName);
-                labelElement.tooltip = tooltip;
-            }
-
-            public Label AddLabel(string text)
-            {
-                 var e = new Label(text) { style = {flexGrow = 0} };
-                 e.RegisterCallback<GeometryChangedEvent>((evt) => e.style.paddingTop = labelElement.resolvedStyle.paddingTop);
-                 Input.Add(e);
-                 return e;
+                this.tooltip = tooltip;
+                Label.tooltip = tooltip;
             }
 
             public T AddInput<T>(T input) where T : VisualElement
@@ -373,5 +383,100 @@ namespace Cinemachine.Editor
                 return input;
             }
         }
+
+        /// <summary>
+        /// This is an inspector container with 2 side-by-side rows. The Left row's width is 
+        /// locked to the inspector field label size, for proper alignment.
+        /// </summary>
+        internal class LeftRightContainer : VisualElement
+        {
+            public VisualElement Left;
+            public VisualElement Right;
+
+            public float DivisionOffset = 0;
+
+            public LeftRightContainer()
+            {
+                // This is to grab the label width
+                var hack = new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }};
+                Add(hack);
+
+                var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
+                Add(row);
+
+                Left = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }};
+                hack.Label.RegisterCallback<GeometryChangedEvent>(
+                    (evt) => Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset);
+                row.Add(Left);
+
+                Right = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
+                row.Add(Right);
+            }
+        }
+
+        /// <summary>A foldout that displays an overlay in the right-hand colum when closed</summary>
+        internal class FoldoutWithOverlay : VisualElement
+        {
+            public readonly Foldout OpenFoldout;
+            public readonly Foldout ClosedFoldout;
+            public readonly VisualElement Overlay;
+            public readonly Label OverlayLabel;
+
+            public FoldoutWithOverlay(Foldout foldout, VisualElement overlay, Label overlayLabel)
+            {
+                OpenFoldout = foldout;
+                Overlay = overlay;
+                OverlayLabel = overlayLabel;
+
+                // There are 2 modes for this element: foldout closed and foldout open.
+                // When closed, we cheat the layout system, and to implement this we do a switcheroo
+                var closedContainer = new LeftRightContainer() { style = { flexGrow = 1 }};
+                Add(closedContainer);
+                Add(foldout);
+
+                var closedFoldout = new Foldout { text = foldout.text, tooltip = foldout.tooltip, value = false };
+                ClosedFoldout = closedFoldout;
+                closedContainer.Left.Add(ClosedFoldout);
+                if (overlayLabel != null)
+                    closedContainer.Right.Add(overlayLabel);
+                closedContainer.Right.Add(overlay);
+
+                // Outdent the label
+                if (overlayLabel != null)
+                    closedContainer.Right.RegisterCallback<GeometryChangedEvent>(
+                        (evt) => closedContainer.Right.style.marginLeft = -overlayLabel.resolvedStyle.width);
+
+                // Swap the open and closed foldouts when the foldout is opened or closed
+                closedContainer.SetVisible(!foldout.value);
+                closedFoldout.RegisterValueChangedCallback((evt) =>
+                {
+                    if (evt.newValue)
+                    {
+                        closedContainer.SetVisible(false);
+                        foldout.SetVisible(true);
+                        foldout.value = true;
+                        closedFoldout.SetValueWithoutNotify(false);
+                        foldout.Focus(); // GML why doesn't this work?
+                        evt.StopPropagation();
+                    }
+                });
+                foldout.SetVisible(foldout.value);
+                foldout.RegisterValueChangedCallback((evt) =>
+                {
+                    if (!evt.newValue)
+                    {
+                        closedContainer.SetVisible(true);
+                        foldout.SetVisible(false);
+                        closedFoldout.SetValueWithoutNotify(false);
+                        foldout.value = false;
+                        closedFoldout.Focus(); // GML why doesn't this work?
+                        evt.StopPropagation();
+                    }
+                });
+            }
+        }
+
+        public static void SetVisible(this VisualElement e, bool show) => e.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+        public static bool IsVisible(this VisualElement e) => e.style.display == DisplayStyle.Flex;
     }
 }
