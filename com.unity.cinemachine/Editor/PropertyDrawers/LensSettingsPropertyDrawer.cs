@@ -532,7 +532,6 @@ namespace Cinemachine.Editor
         ///===========================================================================
 
         static readonly GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");
-        static readonly GUIContent LensLabel = new GUIContent("Lens", "Lens settings to apply to the camera");
         static readonly GUIContent HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
         static readonly GUIContent VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
         static readonly GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
@@ -540,7 +539,7 @@ namespace Cinemachine.Editor
             + "this defines the half-height, in world coordinates, of the camera view.");
         static readonly GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
             "Actual size of the image sensor (in mm), used to "
-            + "convert between focal length and field of vue.");
+            + "convert between focal length and field of view.");
 
         struct Snapshot
         {
