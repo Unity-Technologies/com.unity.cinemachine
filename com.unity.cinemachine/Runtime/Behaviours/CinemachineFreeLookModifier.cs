@@ -167,9 +167,10 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
         {
-            state.Lens = (modifierValue >= 0)
-                ? LensSettings.Lerp(state.Lens, Lens.Top, modifierValue)
-                : LensSettings.Lerp(Lens.Bottom, state.Lens, modifierValue + 1);
+            if (modifierValue >= 0)
+                state.Lens.Lerp(Lens.Top, modifierValue);
+            else
+                state.Lens.Lerp(Lens.Bottom, -modifierValue);
         }
     }
     

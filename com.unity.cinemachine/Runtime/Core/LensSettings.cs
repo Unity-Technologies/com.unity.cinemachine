@@ -310,25 +310,45 @@ namespace Cinemachine
         public static LensSettings Lerp(LensSettings lensA, LensSettings lensB, float t)
         {
             t = Mathf.Clamp01(t);
-            LensSettings blendedLens = t < 0.5f ? lensA : lensB; // non-lerpable settings taken care of here
-            blendedLens.FarClipPlane = Mathf.Lerp(lensA.FarClipPlane, lensB.FarClipPlane, t);
-            blendedLens.NearClipPlane = Mathf.Lerp(lensA.NearClipPlane, lensB.NearClipPlane, t);
-            blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
-            blendedLens.OrthographicSize = Mathf.Lerp(lensA.OrthographicSize, lensB.OrthographicSize, t);
-            blendedLens.Dutch = Mathf.Lerp(lensA.Dutch, lensB.Dutch, t);
-            blendedLens.m_SensorSize = Vector2.Lerp(lensA.m_SensorSize, lensB.m_SensorSize, t);
-            blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
+            // non-lerpable settings taken care of here
+            if (t < 0.5f)
+            {
+                var blendedLens = lensA; 
+                blendedLens.Lerp(lensB, t);
+                return blendedLens;
+            }
+            else
+            {
+                var blendedLens = lensB; 
+                blendedLens.Lerp(lensA, t);
+                return blendedLens;
+            }
+        }
+
+        /// <summary>
+        /// Lerp the lerpable values.  Nonlerpable values remain intact.
+        /// </summary>
+        /// <param name="lensB">The lens containing the values to compine with this one</param>
+        /// <param name="t">The weight of LensB's values.</param>
+        public void Lerp(in LensSettings lensB, float t)
+        {
+            FarClipPlane = Mathf.Lerp(FarClipPlane, lensB.FarClipPlane, t);
+            NearClipPlane = Mathf.Lerp(NearClipPlane, lensB.NearClipPlane, t);
+            FieldOfView = Mathf.Lerp(FieldOfView, lensB.FieldOfView, t);
+            OrthographicSize = Mathf.Lerp(OrthographicSize, lensB.OrthographicSize, t);
+            Dutch = Mathf.Lerp(Dutch, lensB.Dutch, t);
+            m_SensorSize = Vector2.Lerp(m_SensorSize, lensB.m_SensorSize, t);
+            LensShift = Vector2.Lerp(LensShift, lensB.LensShift, t);
 
 #if CINEMACHINE_HDRP
-            blendedLens.Iso = Mathf.RoundToInt(Mathf.Lerp((float)lensA.Iso, (float)lensB.Iso, t));
-            blendedLens.ShutterSpeed = Mathf.Lerp(lensA.ShutterSpeed, lensB.ShutterSpeed, t);
-            blendedLens.Aperture = Mathf.Lerp(lensA.Aperture, lensB.Aperture, t);
-            blendedLens.BladeCount = Mathf.RoundToInt(Mathf.Lerp(lensA.BladeCount, lensB.BladeCount, t));;
-            blendedLens.Curvature = Vector2.Lerp(lensA.Curvature, lensB.Curvature, t);
-            blendedLens.BarrelClipping = Mathf.Lerp(lensA.BarrelClipping, lensB.BarrelClipping, t);
-            blendedLens.Anamorphism = Mathf.Lerp(lensA.Anamorphism, lensB.Anamorphism, t);
+            Iso = Mathf.RoundToInt(Mathf.Lerp((float)Iso, (float)lensB.Iso, t));
+            ShutterSpeed = Mathf.Lerp(ShutterSpeed, lensB.ShutterSpeed, t);
+            Aperture = Mathf.Lerp(Aperture, lensB.Aperture, t);
+            BladeCount = Mathf.RoundToInt(Mathf.Lerp(BladeCount, lensB.BladeCount, t));;
+            Curvature = Vector2.Lerp(Curvature, lensB.Curvature, t);
+            BarrelClipping = Mathf.Lerp(BarrelClipping, lensB.BarrelClipping, t);
+            Anamorphism = Mathf.Lerp(Anamorphism, lensB.Anamorphism, t);
 #endif
-            return blendedLens;
         }
 
         /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>
