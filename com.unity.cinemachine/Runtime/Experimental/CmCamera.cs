@@ -289,39 +289,25 @@ namespace Cinemachine
         }
 
         /// <summary>A CinemachineComponentBase has just been added or removed.  Pipeline cache will be rebuilt</summary>
-        internal void PipelineChanged() => m_Pipeline = null;
+        internal void InvalidatePipelineCache() => m_Pipeline = null;
 
-        internal CinemachineComponentBase[] m_Pipeline;
+        /// For unit tests
+        internal bool PipelineCacheInvalidated => m_Pipeline == null;
+
+        /// For unit tests
+        internal Type PeekPipelineCacheType(CinemachineCore.Stage stage) 
+            => m_Pipeline[(int)stage] == null ? null : m_Pipeline[(int)stage].GetType();
+
+        CinemachineComponentBase[] m_Pipeline;
 
         void UpdatePipelineCache()
         {
             if (m_Pipeline == null)
             {
-                // first clean up components
-                var components = GetComponents<CinemachineComponentBase>();
-                for (int i = components.Length - 1; i > 0; --i)
-                {
-                    for (int j = i - 1; j >= 0; --j)
-                    {
-                        if (components[j] == null) 
-                            continue;
-                        
-                        if (components[i].Stage == components[j].Stage)
-                        {
-                            RuntimeUtility.DestroyObject(components[j]);
-                        }
-                    }
-                }
-                
-                // build pipeline
                 m_Pipeline = new CinemachineComponentBase[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+                var components = GetComponents<CinemachineComponentBase>();
                 for (int i = 0; i < components.Length; ++i)
-                {
-                    if (components[i] == null) 
-                        continue;
-                    
                     m_Pipeline[(int)components[i].Stage] = components[i];
-                }
             }
         }
 
