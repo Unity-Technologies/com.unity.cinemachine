@@ -37,8 +37,6 @@ namespace Cinemachine.Editor
         static bool UseHorizontalFOV(SerializedProperty property) => AccessProperty<bool>(
             typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "UseHorizontalFOV");
 
-        static bool s_AdvancedExpanded;
-
     #if CINEMACHINE_HDRP
         static bool s_PhysicalExapnded;
     #endif
@@ -198,21 +196,6 @@ namespace Cinemachine.Editor
             });
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit)));
 
-            foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch)));
-            var advanced = new Foldout() { text = "Advanced", value = s_AdvancedExpanded };
-            foldout.Add(advanced);
-            advanced.RegisterValueChangedCallback((evt) => 
-            {
-                s_AdvancedExpanded = evt.newValue;
-                evt.StopPropagation();
-            });
-
-            advanced.Add(new HelpBox("Setting a mode override here implies changes to the Camera component when "
-                + "Cinemachine activates this CM Camera, and the changes will remain after the CM "
-                + "Camera deactivation. If you set a mode override in any CM Camera, you should set "
-                + "one in all CM Cameras.", HelpBoxMessageType.Info));
-            advanced.Add(new PropertyField(modeOverrideProperty));
-
             // GML: This is rather evil.  Is there a better (event-driven) way?
             ux.schedule.Execute(() => 
             {
@@ -246,6 +229,7 @@ namespace Cinemachine.Editor
             {
                 m_Property = property;
                 ShortLabel = new Label("(fov)") { style = { alignSelf = Align.Center }};
+                ShortLabel.AddToClassList("unity-base-field__label--with-dragger");
 
                 var orthoProp = property.FindPropertyRelative(() => m_LensSettingsDef.OrthographicSize);
                 OrthoControl = new PropertyField(orthoProp, hideLabel ? "" : orthoProp.displayName)
