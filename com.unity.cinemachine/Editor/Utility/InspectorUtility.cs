@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using Cinemachine.Utility;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -443,8 +444,10 @@ namespace Cinemachine.Editor
 
                 // Outdent the label
                 if (overlayLabel != null)
+                {
                     closedContainer.Right.RegisterCallback<GeometryChangedEvent>(
                         (evt) => closedContainer.Right.style.marginLeft = -overlayLabel.resolvedStyle.width);
+                }
 
                 // Swap the open and closed foldouts when the foldout is opened or closed
                 closedContainer.SetVisible(!foldout.value);
