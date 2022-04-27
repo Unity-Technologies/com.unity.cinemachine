@@ -217,7 +217,7 @@ namespace Cinemachine.Editor
                 { 
                     label = hideLabel ? "" : fovProperty.displayName, 
                     tooltip = fovProperty.tooltip, 
-                    style = { flexGrow = 1 },
+                    style = { flexGrow = 2, flexBasis = 0 },
                     value = GetDisplayFOV(fovProperty.floatValue)
                 };
                 fovField.AddToClassList(InspectorUtility.kAlignFieldClass);
@@ -246,12 +246,14 @@ namespace Cinemachine.Editor
                 var initialIndex = GetMatchingPreset(fovProperty);
                 var fovPresets = new PopupField<string>(
                     m_PresetOptions, initialIndex < 0 ? "" : CinemachineLensPresets.InstanceIfExists.m_Presets[initialIndex].m_Name) 
-                    { tooltip = "Custom Lens Presets", style = 
-                { 
-                    height = InspectorUtility.SingleLineHeight,
-                    alignSelf = Align.Center, flexGrow = 2, flexBasis = 0,
-                    marginLeft = 5, paddingRight = 0, borderRightWidth = 0, marginRight = 0
-                }};
+                    { 
+                        tooltip = "Custom Lens Presets", style = 
+                        { 
+                            height = InspectorUtility.SingleLineHeight,
+                            alignSelf = Align.Center, flexGrow = 1, flexBasis = 0, minWidth = 0,
+                            marginLeft = 5, paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                        }
+                    };
                 fovPresets.RegisterValueChangedCallback((evt) => 
                 {
                     // Edit the presets assets if desired
@@ -300,7 +302,7 @@ namespace Cinemachine.Editor
                 { 
                     label = hideLabel ? "" : focalProperty.displayName, 
                     tooltip = focalProperty.tooltip, 
-                    style = { flexGrow = 1 },
+                    style = { flexGrow = 2, flexBasis = 0 },
                     value = GetDisplayFocalLength(focalProperty.floatValue)
                 };
                 focalField.AddToClassList(InspectorUtility.kAlignFieldClass);
@@ -326,12 +328,14 @@ namespace Cinemachine.Editor
                 var initialIndex = GetMatchingPhysicalPreset(focalProperty);
                 var focalPresets = new PopupField<string>(m_PhysicalPresetOptions, 
                     initialIndex < 0 ? "" : CinemachineLensPresets.InstanceIfExists.m_PhysicalPresets[initialIndex].m_Name) 
-                    { tooltip = "Custom Lens Presets", style = 
-                { 
-                    height = InspectorUtility.SingleLineHeight,
-                    alignSelf = Align.Center, flexGrow = 2, flexBasis = 0,
-                    marginLeft = 5, paddingRight = 0, borderRightWidth = 0, marginRight = 0
-                }};
+                    { 
+                        tooltip = "Custom Lens Presets", style = 
+                        { 
+                            height = InspectorUtility.SingleLineHeight,
+                            alignSelf = Align.Center, flexGrow = 1, flexBasis = 0, minWidth = 0,
+                            marginLeft = 5, paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                        }
+                    };
                 focalPresets.RegisterValueChangedCallback((evt) => 
                 {
                     // Edit the presets assets if desired
@@ -503,6 +507,7 @@ namespace Cinemachine.Editor
         static readonly GUIContent SensorSizeLabel = new GUIContent("Sensor Size", 
             "Actual size of the image sensor (in mm), used to "
             + "convert between focal length and field of view.");
+        static readonly GUIContent s_EmptyContent = new GUIContent(" ");
 
         struct Snapshot
         {
@@ -547,8 +552,7 @@ namespace Cinemachine.Editor
             m_Snapshot.SensorSize = SensorSize(property);
         }
 
-        static float ExtraSpaceHackWTF => EditorGUI.indentLevel * (EditorGUIUtility.singleLineHeight - 3); 
-        static float FoldoutHackWTF => 13; 
+        static float FoldoutHackWTF => EditorGUI.indentLevel == 0 ? 13 : 0; 
 
         GUIContent GetFOVLabel()
         {
@@ -569,7 +573,7 @@ namespace Cinemachine.Editor
                 var FOVProperty = property.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
                 float aspect = m_Snapshot.SensorSize.x / m_Snapshot.SensorSize.y;
 
-                float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 4;
+                float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 3;
                 rect.width -= dropdownWidth + hSpace;
 
                 float f = FOVProperty.floatValue;
@@ -586,8 +590,11 @@ namespace Cinemachine.Editor
 
                 CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
                 int preset = (presets == null) ? -1 : presets.GetMatchingPreset(FOVProperty.floatValue);
-                rect.x -= ExtraSpaceHackWTF; rect.width += ExtraSpaceHackWTF;
-                int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_Snapshot.m_PresetOptions);
+
+                var oldLabelWidth = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = 1;
+                int selection = EditorGUI.Popup(rect, s_EmptyContent, preset, m_Snapshot.m_PresetOptions);
+                EditorGUIUtility.labelWidth = oldLabelWidth;
                 if (selection == m_Snapshot.m_PresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
                     Selection.activeObject = presets = CinemachineLensPresets.Instance;
                 else if (selection >= 0 && selection < m_Snapshot.m_PresetOptions.Length-1)
@@ -635,8 +642,11 @@ namespace Cinemachine.Editor
                     focalLength, iso, shutterSpeed, aperture, bladeCount,
                     curvature, barrelClipping, anamprphism, lensShift);
             }
-            rect.x -= ExtraSpaceHackWTF; rect.width += ExtraSpaceHackWTF;
-            int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_Snapshot.m_PhysicalPresetOptions);
+
+            var oldLabelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 1;
+            int selection = EditorGUI.Popup(rect, s_EmptyContent, preset, m_Snapshot.m_PhysicalPresetOptions);
+            EditorGUIUtility.labelWidth = oldLabelWidth;
             if (selection == m_Snapshot.m_PhysicalPresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
                 Selection.activeObject = presets = CinemachineLensPresets.Instance;
             else if (selection >= 0 && selection < m_Snapshot.m_PhysicalPresetOptions.Length-1)
