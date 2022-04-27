@@ -163,6 +163,7 @@ namespace Cinemachine
         public float Aperture;
         [RangeSlider(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
         public int BladeCount;
+        [MinMaxRangeSlider(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
         public Vector2 Curvature;
         [RangeSlider(0, 1)]
         public float BarrelClipping;

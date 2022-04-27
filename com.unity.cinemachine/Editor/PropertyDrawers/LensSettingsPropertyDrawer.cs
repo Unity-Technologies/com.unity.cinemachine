@@ -84,7 +84,6 @@ namespace Cinemachine.Editor
             m_PhysicalPresetOptions.Add(m_EditPresetsLabel);
         }
 
-        
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             InitPresetOptions();
@@ -124,63 +123,6 @@ namespace Cinemachine.Editor
 
             var modeOverrideProperty = property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride);
             var physical = new VisualElement();
-            foldout.Add(physical);
-
-#if CINEMACHINE_HDRP
-            var physicalFoldout = new Foldout() 
-                { text = "Physical Properties", tooltip = "Physical properties of the lens", value = s_PhysicalExapnded };
-            physical.Add(physicalFoldout);
-            physicalFoldout.RegisterValueChangedCallback((evt) => 
-            {
-                s_PhysicalExapnded = evt.newValue;
-                evt.StopPropagation();
-            });
-
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Aperture)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Iso)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount)));
-
-            var curveProp = property.FindPropertyRelative(() => m_LensSettingsDef.Curvature); 
-            var curveMin = new FloatField { value = curveProp.vector2Value.x, style = { flexGrow = 1, flexBasis = 0 }};
-            curveMin.AddToClassList(InspectorUtility.kAlignFieldClass);
-            curveMin.TrackPropertyValue(curveProp, (evt) => curveMin.value = evt.vector2Value.x);
-            curveMin.RegisterValueChangedCallback((evt) =>
-            {
-                var v = curveProp.vector2Value;
-                v.x = Mathf.Max(evt.newValue, HDPhysicalCamera.kMinAperture);
-                curveProp.vector2Value = v;
-                curveProp.serializedObject.ApplyModifiedProperties();
-            });
-
-            var slider = new MinMaxSlider()
-            { 
-                lowLimit = HDPhysicalCamera.kMinAperture, highLimit = HDPhysicalCamera.kMaxAperture,
-                style = { flexGrow = 3, flexBasis = 0, paddingLeft = 5, paddingRight = 5 }
-            };
-            slider.BindProperty(curveProp);
-
-            var curveMax = new FloatField() { value = curveProp.vector2Value.y, style = { flexGrow = 1, flexBasis = 0 } };
-            curveMax.TrackPropertyValue(curveProp, (evt) => curveMax.value = evt.vector2Value.y);
-            curveMax.RegisterValueChangedCallback((evt) =>
-            {
-                var v = curveProp.vector2Value;
-                v.y = Mathf.Min(evt.newValue, HDPhysicalCamera.kMaxAperture);
-                curveProp.vector2Value = v;
-                curveProp.serializedObject.ApplyModifiedProperties();
-            });
-
-            var curveContainer = new InspectorUtility.LeftRightContainer { style = { flexGrow = 1 }};
-            physicalFoldout.Add(curveContainer);
-            curveContainer.Left.Add(new Label 
-                { text = curveProp.displayName, tooltip = curveProp.tooltip, style = { alignSelf = Align.Center }});
-            curveContainer.Right.Add(curveMin);
-            curveContainer.Right.Add(slider);
-            curveContainer.Right.Add(curveMax);
-
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism)));
-#endif
 
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift)));
             var ssProp = property.FindPropertyRelative("m_SensorSize");
@@ -195,15 +137,36 @@ namespace Cinemachine.Editor
                 property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
                 evt.StopPropagation();
             });
-            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit)));
+            var gateFitField = new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
+            physical.Add(gateFitField);
 
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch)));
+
+#if CINEMACHINE_HDRP
+            var physicalFoldout = new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded };
+            physical.Add(physicalFoldout);
+            physicalFoldout.RegisterValueChangedCallback((evt) => 
+            {
+                s_PhysicalExapnded = evt.newValue;
+                evt.StopPropagation();
+            });
+
+            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Aperture)));
+            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Iso)));
+            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed)));
+            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount)));
+            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Curvature)));
+            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping)));
+            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism)));
+#endif
+            foldout.Add(physical);
 
             // GML: This is rather evil.  Is there a better (event-driven) way?
             ux.schedule.Execute(() => 
             {
                 physical.SetVisible(IsPhysical(property));
                 sensorSizeField.SetVisible(modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
+                gateFitField.SetVisible(modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
                 fovControl.Update(true);
                 fovControl2.Update(false);
             }).Every(250);
@@ -749,59 +712,14 @@ namespace Cinemachine.Editor
                 rect.y += rect.height + vSpace;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane));
 
-                var modeOverrideProperty = property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride);
+                rect.y += rect.height + vSpace;
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Dutch));
+
                 if (m_Snapshot.IsPhysical)
                 {
-#if CINEMACHINE_HDRP
-                    s_PhysicalExapnded = EditorGUILayout.Foldout(s_PhysicalExapnded, PhysicalPropertiesLabel, true);
-                    if (s_PhysicalExapnded)
-                    {
-                        ++EditorGUI.indentLevel;
-                        rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Aperture));
-                        rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Iso));
-                        rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed));
-                        rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount));
-
-                        rect.y += rect.height + vSpace;
-                        var curvature = property.FindPropertyRelative(() => m_LensSettingsDef.Curvature);
-                        using (var propertyScope = new EditorGUI.PropertyScope(rect, new GUIContent("Curvature"), curvature))
-                        {
-                            var v = curvature.vector2Value;
-
-                            // The layout system breaks alignment when mixing inspector fields with custom layout'd
-                            // fields as soon as a scrollbar is needed in the inspector, so we'll do the layout
-                            // manually instead
-                            const int kFloatFieldWidth = 50;
-                            const int kSeparatorWidth = 5;
-                            float indentOffset = EditorGUI.indentLevel * 15f;
-                            var labelRect = new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth - indentOffset, rect.height);
-                            var floatFieldLeft = new Rect(labelRect.xMax, rect.y, kFloatFieldWidth + indentOffset, rect.height);
-                            var sliderRect = new Rect(floatFieldLeft.xMax + kSeparatorWidth - indentOffset, rect.y, rect.width - labelRect.width - kFloatFieldWidth * 2 - kSeparatorWidth * 2, rect.height);
-                            var floatFieldRight = new Rect(sliderRect.xMax + kSeparatorWidth - indentOffset, rect.y, kFloatFieldWidth + indentOffset, rect.height);
-
-                            EditorGUI.PrefixLabel(labelRect, propertyScope.content);
-                            v.x = EditorGUI.FloatField(floatFieldLeft, v.x);
-                            EditorGUI.MinMaxSlider(sliderRect, ref v.x, ref v.y, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
-                            v.y = EditorGUI.FloatField(floatFieldRight, v.y);
-
-                            curvature.vector2Value = v;
-                        }
-
-                        rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping));
-                        rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism));
-
-                        --EditorGUI.indentLevel;
-                    }
-#endif
                     rect.y += rect.height + vSpace;
                     EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
-                    if (modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
+                    if (property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride).intValue != (int)LensSettings.OverrideModes.None)
                     {
                         rect.y += rect.height + vSpace;
 
@@ -816,9 +734,31 @@ namespace Cinemachine.Editor
                         rect.y += rect.height + vSpace;
                         EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
                     }
+#if CINEMACHINE_HDRP
+                    rect.y += rect.height + vSpace; rect.x -= 13; // GML hack for foldout wtf
+                    s_PhysicalExapnded = EditorGUI.Foldout(rect, s_PhysicalExapnded, PhysicalPropertiesLabel, true);
+                    rect.x += 13; // GML hack for foldout
+                    if (s_PhysicalExapnded)
+                    {
+                        ++EditorGUI.indentLevel;
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Aperture));
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Iso));
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed));
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount));
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Curvature));
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping));
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism));
+                        --EditorGUI.indentLevel;
+                    }
+#endif
                 }
-                rect.y += rect.height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Dutch));
                 --EditorGUI.indentLevel;
             }
             property.serializedObject.ApplyModifiedProperties();
@@ -838,8 +778,10 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_HDRP
                 if (s_PhysicalExapnded)
                     numLines += 7;
+                if (property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride).intValue != (int)LensSettings.OverrideModes.None)
+                    numLines += 2;
 #endif
-                numLines += 1;
+                numLines += 2;
             }
             return lineHeight + numLines * (lineHeight + vSpace);
         }

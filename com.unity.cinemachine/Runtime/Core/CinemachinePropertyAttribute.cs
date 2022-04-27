@@ -56,6 +56,16 @@ namespace Cinemachine
     }
     
     /// <summary>
+    /// Property applied to int or float fields to generate a minmax range slider in the inspector.
+    /// </summary>
+    public sealed class MinMaxRangeSliderAttribute : PropertyAttribute 
+    { 
+        public float Min;
+        public float Max;
+        public MinMaxRangeSliderAttribute(float min, float max) { Min = min; Max = max; }
+    }
+
+    /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
@@ -105,7 +115,7 @@ namespace Cinemachine
     /// Property applied to Vector2 to treat (x, y) as (min, max).
     /// Used for custom drawing in the inspector.
     /// </summary>
-    public sealed class Vector2AsRangePropertyAttribute : PropertyAttribute {}
+    public sealed class Vector2AsRangeAttribute : PropertyAttribute {}
     
     /// <summary>
     /// Atrtribute to control the automatic generation of documentation.  This attribute is obsolete and not used.

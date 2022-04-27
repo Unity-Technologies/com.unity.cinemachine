@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
-    [CustomPropertyDrawer(typeof(Vector2AsRangePropertyAttribute))]
+    [CustomPropertyDrawer(typeof(Vector2AsRangeAttribute))]
     internal sealed class Vector2AsRangePropertyDrawer : PropertyDrawer
     {
         const int hSpace = 2;
