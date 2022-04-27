@@ -547,7 +547,8 @@ namespace Cinemachine.Editor
             m_Snapshot.SensorSize = SensorSize(property);
         }
 
-        static float ExtraSpaceHackWTF() { return EditorGUI.indentLevel * (EditorGUIUtility.singleLineHeight - 3); }
+        static float ExtraSpaceHackWTF => EditorGUI.indentLevel * (EditorGUIUtility.singleLineHeight - 3); 
+        static float FoldoutHackWTF => 13; 
 
         GUIContent GetFOVLabel()
         {
@@ -585,7 +586,7 @@ namespace Cinemachine.Editor
 
                 CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
                 int preset = (presets == null) ? -1 : presets.GetMatchingPreset(FOVProperty.floatValue);
-                rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
+                rect.x -= ExtraSpaceHackWTF; rect.width += ExtraSpaceHackWTF;
                 int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_Snapshot.m_PresetOptions);
                 if (selection == m_Snapshot.m_PresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
                     Selection.activeObject = presets = CinemachineLensPresets.Instance;
@@ -634,7 +635,7 @@ namespace Cinemachine.Editor
                     focalLength, iso, shutterSpeed, aperture, bladeCount,
                     curvature, barrelClipping, anamprphism, lensShift);
             }
-            rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
+            rect.x -= ExtraSpaceHackWTF; rect.width += ExtraSpaceHackWTF;
             int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_Snapshot.m_PhysicalPresetOptions);
             if (selection == m_Snapshot.m_PhysicalPresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
                 Selection.activeObject = presets = CinemachineLensPresets.Instance;
@@ -677,7 +678,7 @@ namespace Cinemachine.Editor
             var fovLabelWidth = GUI.skin.label.CalcSize(fovLabel).x;
 
             property.isExpanded = EditorGUI.Foldout(
-                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth - fovLabelWidth, rect.height),
+                new Rect(rect.x - FoldoutHackWTF, rect.y, EditorGUIUtility.labelWidth - fovLabelWidth + FoldoutHackWTF, rect.height),
                 property.isExpanded, label, true);
 
             if (!property.isExpanded)
@@ -735,9 +736,9 @@ namespace Cinemachine.Editor
                         EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
                     }
 #if CINEMACHINE_HDRP
-                    rect.y += rect.height + vSpace; rect.x -= 13; // GML hack for foldout wtf
+                    rect.y += rect.height + vSpace; rect.x -= FoldoutHackWTF;
                     s_PhysicalExapnded = EditorGUI.Foldout(rect, s_PhysicalExapnded, PhysicalPropertiesLabel, true);
-                    rect.x += 13; // GML hack for foldout
+                    rect.x += FoldoutHackWTF;
                     if (s_PhysicalExapnded)
                     {
                         ++EditorGUI.indentLevel;
