@@ -657,7 +657,7 @@ namespace Cinemachine.Editor
             int preset = -1;
             if (presets != null)
             {
-                var focalLength = CameraExtensions.FieldOfViewToFocalLength(FOVProperty.floatValue, SensorSize.y);
+                var focalLength = Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, m_Snapshot.SensorSize.y);
                 var aperture = property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue;
                 var iso = property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue;
                 var shutterSpeed = property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue;
@@ -678,7 +678,7 @@ namespace Cinemachine.Editor
             else if (selection >= 0 && selection < m_Snapshot.m_PhysicalPresetOptions.Length-1)
             {
                 var v = presets.m_PhysicalPresets[selection];
-                FOVProperty.floatValue = CameraExtensions.FocalLengthToFieldOfView(v.m_FocalLength, SensorSize.y);
+                FOVProperty.floatValue = Camera.FocalLengthToFieldOfView(v.m_FocalLength, m_Snapshot.SensorSize.y);
                 property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue = v.Aperture;
                 property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue = v.Iso;
                 property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue = v.ShutterSpeed;
@@ -753,8 +753,8 @@ namespace Cinemachine.Editor
                 if (m_Snapshot.IsPhysical)
                 {
 #if CINEMACHINE_HDRP
-                    m_PhysicalExapnded = EditorGUILayout.Foldout(m_PhysicalExapnded, PhysicalPropertiesLabel, true);
-                    if (m_PhysicalExapnded)
+                    s_PhysicalExapnded = EditorGUILayout.Foldout(s_PhysicalExapnded, PhysicalPropertiesLabel, true);
+                    if (s_PhysicalExapnded)
                     {
                         ++EditorGUI.indentLevel;
                         rect.y += rect.height + vSpace;
@@ -836,7 +836,7 @@ namespace Cinemachine.Editor
             if (m_Snapshot.IsPhysical)
             {
 #if CINEMACHINE_HDRP
-                if (m_PhysicalExapnded)
+                if (s_PhysicalExapnded)
                     numLines += 7;
 #endif
                 numLines += 1;
