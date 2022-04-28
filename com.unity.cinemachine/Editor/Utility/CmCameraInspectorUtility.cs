@@ -52,8 +52,7 @@ namespace Cinemachine.Editor
             EditorApplication.update -= UpdateCameraStatus;
             EditorApplication.update += UpdateCameraStatus;
 
-            m_NavelGazeMessage = new HelpBox("The camera is trying to look at itself.", HelpBoxMessageType.Warning);
-            ux.Add(m_NavelGazeMessage);
+            m_NavelGazeMessage = ux.AddChild(new HelpBox("The camera is trying to look at itself.", HelpBoxMessageType.Warning));
 
             var row = new InspectorUtility.LabeledContainer("Status");
             m_StatusText = row.labelElement;
@@ -75,6 +74,8 @@ namespace Cinemachine.Editor
                 CinemachineBrain.SoloCamera = isSolo ? Target : null;
                 InspectorUtility.RepaintGameView();
             });
+
+            UpdateCameraStatus(); // avoid initial flicker
         }
 
         void UpdateCameraState() { if (Target != null) Target.InternalUpdateCameraState(Vector3.up, -1); }
@@ -188,7 +189,7 @@ namespace Cinemachine.Editor
             var dropdown = new DropdownField
             {
                 name = "extensions selector",
-                label = "Extensions",
+                label = "Add Extension",
                 choices = PipelineStageMenu.s_ExtentionNames,
                 index = 0,
             };

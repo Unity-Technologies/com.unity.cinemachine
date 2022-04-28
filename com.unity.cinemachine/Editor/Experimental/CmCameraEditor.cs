@@ -67,13 +67,12 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_StandbyUpdate)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Transitions)));
             
-            InspectorUtility.AddHeader(ux, "Camera");
+            ux.AddHeader("Camera");
             var lensProperty = serializedTarget.FindProperty(() => Target.m_Lens);
             ux.Add(new PropertyField(lensProperty));
 
             var modeOverrideProperty = lensProperty.FindPropertyRelative("ModeOverride");
-            var advanced = new Foldout() { text = "Advanced", value = s_AdvancedLensExpanded };
-            ux.Add(advanced);
+            var advanced = ux.AddChild(new Foldout() { text = "Advanced", value = s_AdvancedLensExpanded });
             advanced.RegisterValueChangedCallback((evt) => 
             {
                 s_AdvancedLensExpanded = evt.newValue;
@@ -85,14 +84,14 @@ namespace Cinemachine.Editor
                 + "one in all CM Cameras.", HelpBoxMessageType.Info));
             advanced.Add(new PropertyField(modeOverrideProperty));
 
-            InspectorUtility.AddHeader(ux, "Procedural Motion");
+            ux.AddHeader("Procedural Motion");
             m_CameraUtility.AddSaveDuringPlayToggle(ux);
             m_CameraUtility.AddGameViewGuidesToggle(ux);
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Follow)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_LookAt)));
             m_CameraUtility.AddPipelineDropdowns(ux);
 
-            InspectorUtility.AddHeader(ux, "Extensions");
+            //ux.AddHeader("Extensions");
             m_CameraUtility.AddExtensionsDropdown(ux);
 
             return ux;

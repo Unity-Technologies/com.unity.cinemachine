@@ -104,13 +104,10 @@ namespace Cinemachine.Editor
                 foldout, fovControl, fovControl.ShortLabel) { style = { flexGrow = 1 }});
 
             // Populate the foldout
-            var fovControl2 = new FovPropertyControl(property, false) { style = { flexGrow = 1 }};
-            foldout.Add(fovControl2);
+            var fovControl2 = foldout.AddChild(new FovPropertyControl(property, false) { style = { flexGrow = 1 }});
 
             var nearClip = property.FindPropertyRelative(() => m_LensSettingsDef.NearClipPlane);
-            var nearClipField = new PropertyField(nearClip);
-            foldout.Add(nearClipField);
-            nearClipField.RegisterValueChangeCallback((evt) =>
+            foldout.AddChild(new PropertyField(nearClip)).RegisterValueChangeCallback((evt) =>
             {
                 if (!IsOrtho(property) && nearClip.floatValue < 0.01f)
                 {
@@ -120,14 +117,13 @@ namespace Cinemachine.Editor
                 evt.StopPropagation();
             });
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane)));
+            foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch)));
 
-            var modeOverrideProperty = property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride);
-            var physical = new VisualElement();
+            var physical = foldout.AddChild(new VisualElement());
 
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift)));
             var ssProp = property.FindPropertyRelative("m_SensorSize");
-            var sensorSizeField = new PropertyField(ssProp);
-            physical.Add(sensorSizeField);
+            var sensorSizeField = physical.AddChild(new PropertyField(ssProp));
             sensorSizeField.RegisterValueChangeCallback((evt) =>
             {
                 var v = ssProp.vector2Value;
@@ -137,14 +133,10 @@ namespace Cinemachine.Editor
                 property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
                 evt.StopPropagation();
             });
-            var gateFitField = new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
-            physical.Add(gateFitField);
-
-            foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch)));
+            var gateFitField = physical.AddChild(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit)));
 
 #if CINEMACHINE_HDRP
-            var physicalFoldout = new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded };
-            physical.Add(physicalFoldout);
+            var physicalFoldout = physical.AddChild(new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded });
             physicalFoldout.RegisterValueChangedCallback((evt) => 
             {
                 s_PhysicalExapnded = evt.newValue;
@@ -159,9 +151,10 @@ namespace Cinemachine.Editor
             physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping)));
             physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism)));
 #endif
-            foldout.Add(physical);
+            
 
             // GML: This is rather evil.  Is there a better (event-driven) way?
+            var modeOverrideProperty = property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride);
             ux.schedule.Execute(() => 
             {
                 physical.SetVisible(IsPhysical(property));
