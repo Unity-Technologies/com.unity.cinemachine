@@ -667,8 +667,10 @@ namespace Cinemachine.Editor
             CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
             int preset = (presets == null) ? -1 : presets.GetMatchingPhysicalPreset(
                 Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, m_Snapshot.SensorSize.y));
-            rect.x -= ExtraSpaceHackWTF(); rect.width += ExtraSpaceHackWTF();
-            int selection = EditorGUI.Popup(rect, GUIContent.none, preset, m_Snapshot.m_PhysicalPresetOptions);
+            var oldLabelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 1;
+            int selection = EditorGUI.Popup(rect, s_EmptyContent, preset, m_Snapshot.m_PhysicalPresetOptions);
+            EditorGUIUtility.labelWidth = oldLabelWidth;
             if (selection == m_Snapshot.m_PhysicalPresetOptions.Length-1 && CinemachineLensPresets.Instance != null)
                 Selection.activeObject = presets = CinemachineLensPresets.Instance;
             else if (selection >= 0 && selection < m_Snapshot.m_PhysicalPresetOptions.Length-1)
