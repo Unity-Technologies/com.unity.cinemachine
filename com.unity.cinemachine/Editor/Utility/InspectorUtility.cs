@@ -174,7 +174,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Try to get the name of the owning virtual camera oibject.  If none then use
+        /// Try to get the name of the owning virtual camera object.  If none then use
         /// the object's name
         /// </summary>
         /// <param name="property"></param>
@@ -368,7 +368,7 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>
-        /// This is a hack to get proper layout.  There seeme to be no sanctioned way to 
+        /// This is a hack to get proper layout.  There seems to be no sanctioned way to 
         /// get the current inspector label width.
         /// </summary>
         internal class LabeledContainer : BaseField<bool> // bool is just a dummy because it has to be something
@@ -410,19 +410,14 @@ namespace Cinemachine.Editor
             public LeftRightContainer()
             {
                 // This is to grab the label width
-                var hack = new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }};
-                Add(hack);
+                var hack = AddChild(this,  new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }});
 
-                var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-                Add(row);
+                var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
+                Left = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }});
+                Right = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
 
-                Left = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }};
                 hack.Label.RegisterCallback<GeometryChangedEvent>(
                     (evt) => Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset);
-                row.Add(Left);
-
-                Right = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-                row.Add(Right);
             }
         }
 
@@ -494,28 +489,35 @@ namespace Cinemachine.Editor
             public Label Label;
             public PropertyField Field;
 
-            public CompactPropertyField(SerializedProperty property)
+            public CompactPropertyField(SerializedProperty property) : this(property, property.displayName) {}
+
+            public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
             {
                 style.flexDirection = FlexDirection.Row;
-                Label = AddChild(this, new Label(property.displayName) { tooltip = property.tooltip });
+                Label = AddChild(this, new Label(label) 
+                    { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 0 } });
+                Label.AddPropertyDragger(property, Field);
+            }
+        }
 
-                if (property.propertyType == SerializedPropertyType.Float 
-                    || property.propertyType == SerializedPropertyType.Integer)
-                {
-                    Label.RegisterCallback<GeometryChangedEvent>(AddDragger);
-                    Label.AddToClassList("unity-base-field__label--with-dragger");
+        internal static void AddPropertyDragger(this Label e, SerializedProperty p, VisualElement field)
+        {
+            if (p.propertyType == SerializedPropertyType.Float 
+                || p.propertyType == SerializedPropertyType.Integer)
+            {
+                e.RegisterCallback<GeometryChangedEvent>(AddDragger);
+                e.AddToClassList("unity-base-field__label--with-dragger");
+            }
 
-                    void AddDragger(GeometryChangedEvent evt) 
-                    {
-                        Label.UnregisterCallback<GeometryChangedEvent>(AddDragger);
+            void AddDragger(GeometryChangedEvent evt) 
+            {
+                e.UnregisterCallback<GeometryChangedEvent>(AddDragger);
 
-                        if (property.propertyType == SerializedPropertyType.Float)
-                            new FieldMouseDragger<float>(Field.Q<FloatField>()).SetDragZone(Label);
-                        else if (property.propertyType == SerializedPropertyType.Integer)
-                            new FieldMouseDragger<int>(Field.Q<IntegerField>()).SetDragZone(Label);
-                    }
-                }
+                if (p.propertyType == SerializedPropertyType.Float)
+                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(e);
+                else if (p.propertyType == SerializedPropertyType.Integer)
+                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(e);
             }
         }
 
@@ -530,9 +532,9 @@ namespace Cinemachine.Editor
         }
 
         internal static void SetVisible(this VisualElement e, bool show) 
-            => e.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+            => e.style.display = show ? StyleKeyword.Null : DisplayStyle.None;
 
-        internal static bool IsVisible(this VisualElement e) => e.style.display == DisplayStyle.Flex;
+        internal static bool IsVisible(this VisualElement e) => e.style.display != DisplayStyle.None;
 
         internal static T AddChild<T>(this VisualElement e, T child) where T : VisualElement
         {

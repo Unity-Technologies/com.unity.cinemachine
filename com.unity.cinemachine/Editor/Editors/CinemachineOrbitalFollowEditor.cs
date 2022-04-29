@@ -8,7 +8,6 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalFollow))]
     [CanEditMultipleObjects]
-#if true
     internal class CinemachineOrbitalFollowEditor : UnityEditor.Editor
     {
         CinemachineOrbitalFollow Target => target as CinemachineOrbitalFollow;
@@ -117,143 +116,38 @@ namespace Cinemachine.Editor
                 m_NoControllerHelp.SetVisible(noHandler);
         }
 
-        void TrackBindingMode(SerializedProperty property)
+        void TrackBindingMode(SerializedProperty modeProp)
         {
-            var mode = (CinemachineTransposer.BindingMode)property.intValue;
+            var mode = (CinemachineTransposer.BindingMode)modeProp.intValue;
             bool hideRot = mode == CinemachineTransposer.BindingMode.WorldSpace 
                 || mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
             m_RotDampingContainer.SetVisible(!hideRot);
 
-            // GML todo: hide Horiz range if SimpleFollow
-/*
+            // Hide Horiz range if SimpleFollow
             int flags = 0;
-            if (Target.BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                 flags |= (int)InputAxis.Flags.HideRecentering | (int)InputAxis.Flags.RangeIsDriven;
-            var flagsProp = FindProperty(x => x.HorizontalAxis).FindPropertyRelative("InspectorFlags");
+            var flagsProp = modeProp.serializedObject.FindProperty("HorizontalAxis").FindPropertyRelative("InspectorFlags");
             if (flagsProp.intValue != flags)
             {
                 flagsProp.intValue = flags;
-                serializedObject.ApplyModifiedProperties();
+                modeProp.serializedObject.ApplyModifiedProperties();
             }
-*/
         }
 
-        void TrackRotDampingMode(SerializedProperty property)
+        void TrackRotDampingMode(SerializedProperty modeProp)
         {
-            var mode = (CinemachineTransposer.AngularDampingMode)property.intValue;
+            var mode = (CinemachineTransposer.AngularDampingMode)modeProp.intValue;
             m_QuatDamping.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Quaternion);
             m_RotDamping.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Euler);
         }
 
-        void TrackOrbitMode(SerializedProperty property)
+        void TrackOrbitMode(SerializedProperty modeProp)
         {
-            var mode = (CinemachineOrbitalFollow.OrbitMode)property.intValue;
+            var mode = (CinemachineOrbitalFollow.OrbitMode)modeProp.intValue;
             m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitMode.Sphere);
             m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitMode.ThreeRing);
         }
-
-
-#else
-    internal class CinemachineOrbitalFollowEditor : BaseEditor<CinemachineOrbitalFollow>
-    {
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            switch (Target.BindingMode)
-            {
-                default:
-                case CinemachineTransposer.BindingMode.LockToTarget:
-                    excluded.Add(Target.RotationDampingMode == CinemachineTransposer.AngularDampingMode.Euler 
-                        ? FieldPath(x => x.QuaternionDamping) 
-                        : FieldPath(x => x.RotationDamping));
-                    break;
-                case CinemachineTransposer.BindingMode.WorldSpace:
-                case CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp:
-                    excluded.Add(FieldPath(x => x.RotationDampingMode));
-                    excluded.Add(FieldPath(x => x.RotationDamping));
-                    excluded.Add(FieldPath(x => x.QuaternionDamping));
-                    break;
-            }
-
-            excluded.Add(Target.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.Sphere 
-                ? FieldPath(x => x.Orbits) 
-                : FieldPath(x => x.Radius));
-        }
-
-        public override void OnInspectorGUI()
-        {
-            BeginInspector();
-            bool noFollow = false;
-            bool noHandler = false;
-            for (int i = 0; i < targets.Length; ++i)
-            {
-                var t = (CinemachineOrbitalFollow)targets[i];
-                noFollow |= t.FollowTarget == null;
-                noHandler |= !t.HasInputHandler;
-            }
-
-            if (noFollow)
-            {
-                EditorGUILayout.Space();
-                EditorGUILayout.HelpBox(
-                    "Orbital Follow requires a Follow target.",
-                    MessageType.Warning);
-            }
-            if (noHandler)
-            {
-                InspectorUtility.HelpBoxWithButton(
-                    "Orbital Follow has no input axis controller behaviour.", MessageType.Info,
-                    new GUIContent("Add Input\nController"), () =>
-                    {
-                        Undo.SetCurrentGroupName("Add Input Axis Controller");
-                        for (int i = 0; i < targets.Length; ++i)
-                        {
-                            var t = (CinemachineOrbitalFollow)targets[i];
-                            if (!t.HasInputHandler)
-                            {
-                                var controller = t.VirtualCamera.GetComponent<InputAxisController>();
-                                if (controller == null)
-                                    Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
-                                else if (!controller.enabled)
-                                {
-                                    Undo.RecordObject(controller, "enable controller");
-                                    controller.enabled = true;
-                                }
-                            }
-                        }
-                    });
-            }
-
-            int flags = 0;
-            if (Target.BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                flags |= (int)InputAxis.Flags.HideRecentering | (int)InputAxis.Flags.RangeIsDriven;
-            var flagsProp = FindProperty(x => x.HorizontalAxis).FindPropertyRelative("InspectorFlags");
-            if (flagsProp.intValue != flags)
-            {
-                flagsProp.intValue = flags;
-                serializedObject.ApplyModifiedProperties();
-            }
-            DrawRemainingPropertiesInInspector();
-        }
-
-        protected virtual void OnEnable()
-        {
-#if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
-#endif
-        }
-        
-        protected virtual void OnDisable()
-        {
-#if UNITY_2021_2_OR_NEWER
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
-#endif
-        }
-#endif
    
 #if UNITY_2021_2_OR_NEWER     
         static GUIContent[] s_OrbitNames = 
