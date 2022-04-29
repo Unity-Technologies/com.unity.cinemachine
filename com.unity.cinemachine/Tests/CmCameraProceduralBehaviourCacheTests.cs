@@ -62,6 +62,10 @@ namespace Tests
                 // We expect that the last one added should be in the pipeline
                 Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == cmComponent); // pipeline is rebuilt correctly
             }
+
+            yield return null;
+            var components = m_CmCamera.transform.GetComponents<CinemachineComponentBase>();
+            Assert.That(components.Length, Is.EqualTo(4));
         }
         
         [UnityTest]
@@ -82,7 +86,8 @@ namespace Tests
                 
                 var component = m_CmCamera.gameObject.GetComponent(cmComponent);
                 RuntimeUtility.DestroyObject(component);
-                Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after add
+                Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after destroy
+                yield return null;
             
                 Assert.True(m_CmCamera.GetCinemachineComponent(stage) == null); // pipeline is rebuilt correctly
             }
