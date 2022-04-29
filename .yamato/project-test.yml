@@ -1,0 +1,53 @@
+{% metadata_file .yamato/metadata.metafile %}
+---
+{% for test_project in all_testprojects %}
+  {% for editor in test_project.editors %}
+test_ubuntu_{{editor}}_{{test_project.name}}:
+  name : Test project ubuntu {{editor}} {{test_project.name}}
+  agent:
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci project test -u {{editor}} --project-path {{test_project.path}} --type project-tests
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/project-pack.yml#pack
+
+test_windows_{{editor}}_{{test_project.name}}:
+  name : Test project windows {{editor}} {{test_project.name}}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci project test -u {{editor}} --project-path {{test_project.path}} --type project-tests
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/project-pack.yml#pack
+
+test_macos_{{editor}}_{{test_project.name}}:
+  name : Test project macos {{editor}} {{test_project.name}}
+  agent:
+    type: Unity::VM::osx
+    image: package-ci/mac:stable
+    flavor: m1.mac
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci project test -u {{editor}} --project-path {{test_project.path}} --type project-tests
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/project-pack.yml#pack
+  {% endfor %}
+{% endfor %}
