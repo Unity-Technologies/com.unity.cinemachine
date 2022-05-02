@@ -350,6 +350,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
     IModifierValueSource m_ValueSource;
     float m_CurrentValue;
+    static AnimationCurve s_EasingCurve;
 
     void OnValidate()
     {
@@ -401,7 +402,19 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     {
         if (m_ValueSource != null)
         {
-            m_CurrentValue = m_ValueSource.NormalizedModifierValue;
+            // Apply easing
+            if (s_EasingCurve == null)
+            {
+                // Ease out, hard in
+                s_EasingCurve = AnimationCurve.Linear(0f, 0f, 1, 1f);
+                var keys = s_EasingCurve.keys;
+                keys[0].outTangent = 0;
+                keys[1].inTangent = 1.4f;
+                s_EasingCurve.keys = keys;
+            }
+            var v = m_ValueSource.NormalizedModifierValue;
+            var sign = Mathf.Sign(v);
+            m_CurrentValue = sign * s_EasingCurve.Evaluate(sign * v);
             for (int i = 0; i < Modifiers.Count; ++i)
                 Modifiers[i].BeforePipeline(vcam, ref curState, deltaTime, m_CurrentValue);
         }

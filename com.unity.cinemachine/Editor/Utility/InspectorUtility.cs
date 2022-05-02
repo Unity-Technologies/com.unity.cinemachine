@@ -502,23 +502,23 @@ namespace Cinemachine.Editor
             }
         }
 
-        internal static void AddPropertyDragger(this Label e, SerializedProperty p, VisualElement field)
+        internal static void AddPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
         {
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
             {
-                e.RegisterCallback<GeometryChangedEvent>(AddDragger);
-                e.AddToClassList("unity-base-field__label--with-dragger");
+                label.RegisterCallback<GeometryChangedEvent>(AddDragger);
+                label.AddToClassList("unity-base-field__label--with-dragger");
             }
 
             void AddDragger(GeometryChangedEvent evt) 
             {
-                e.UnregisterCallback<GeometryChangedEvent>(AddDragger);
+                label.UnregisterCallback<GeometryChangedEvent>(AddDragger);
 
                 if (p.propertyType == SerializedPropertyType.Float)
-                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(e);
+                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
                 else if (p.propertyType == SerializedPropertyType.Integer)
-                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(e);
+                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
             }
         }
 
