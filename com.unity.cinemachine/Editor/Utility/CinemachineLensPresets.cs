@@ -121,9 +121,9 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_HDRP
             public int Iso;
             public float ShutterSpeed;
-            [Range(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
+            [Range(Camera.kMinAperture, Camera.kMaxAperture)]
             public float Aperture;
-            [Range(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
+            [Range(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
             public int BladeCount;
             public Vector2 Curvature;
             [Range(0, 1)]

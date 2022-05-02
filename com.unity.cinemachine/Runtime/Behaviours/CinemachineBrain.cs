@@ -965,17 +965,13 @@ namespace Cinemachine
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
 #if CINEMACHINE_HDRP
-                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
-                        if (hda != null)
-                        {
-                            hda.physicalParameters.iso = state.Lens.Iso;
-                            hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
-                            hda.physicalParameters.aperture = state.Lens.Aperture;
-                            hda.physicalParameters.bladeCount = state.Lens.BladeCount;
-                            hda.physicalParameters.curvature = state.Lens.Curvature;
-                            hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
-                            hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
-                        }
+                        cam.iso = state.Lens.Iso;
+                        cam.shutterSpeed = state.Lens.ShutterSpeed;
+                        cam.aperture = state.Lens.Aperture;
+                        cam.bladeCount = state.Lens.BladeCount;
+                        cam.curvature = state.Lens.Curvature;
+                        cam.barrelClipping = state.Lens.BarrelClipping;
+                        cam.anamorphism = state.Lens.Anamorphism;
 #endif
                     }
                 }
