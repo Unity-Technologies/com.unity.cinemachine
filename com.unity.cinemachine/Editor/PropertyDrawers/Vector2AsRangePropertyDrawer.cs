@@ -60,7 +60,7 @@ namespace Cinemachine.Editor
             ux.Left.Add(label);
             ux.Right.Add(minField);
             ux.Right.Add(new InspectorUtility.CompactPropertyField(yProp, "...") 
-                { style = { flexBasis = 10, flexGrow = 1, marginLeft = 5 }});
+                { tooltip = property.tooltip, style = { flexBasis = 10, flexGrow = 1, marginLeft = 5 }});
             return ux;
         }
     }

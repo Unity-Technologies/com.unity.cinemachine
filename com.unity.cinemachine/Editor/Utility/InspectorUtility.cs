@@ -342,9 +342,9 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
         /// </summary>
-        /// <param name="ux"></param>
-        /// <param name="text"></param>
-        /// <param name="tooltip"></param>
+        /// <param name="ux">Container in which to put the header</param>
+        /// <param name="text">The text of the header</param>
+        /// <param name="tooltip">optional tooltip for the header</param>
         internal static void AddHeader(this VisualElement ux, string text, string tooltip = "")
         {
             var verticalPad = SingleLineHeight / 2;
@@ -357,11 +357,9 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Draw a bold header in the inspector - hack to get around missing UITK functionality
+        /// Create a space between inspector sections
         /// </summary>
-        /// <param name="ux"></param>
-        /// <param name="text"></param>
-        /// <param name="tooltip"></param>
+        /// <param name="ux">Container in which to add the space</param>
         internal static void AddSpace(this VisualElement ux)
         {
             ux.Add(new VisualElement { style = { height = SingleLineHeight / 2 }});
@@ -405,11 +403,14 @@ namespace Cinemachine.Editor
             public VisualElement Left;
             public VisualElement Right;
 
+            /// <summary>
+            /// Set this to offset the Left/Right division from the inspector's Label/Content line
+            /// </summary>
             public float DivisionOffset = 0;
 
             public LeftRightContainer()
             {
-                // This is to grab the label width
+                // This is to peek at the resolved label width
                 var hack = AddChild(this,  new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }});
 
                 var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
