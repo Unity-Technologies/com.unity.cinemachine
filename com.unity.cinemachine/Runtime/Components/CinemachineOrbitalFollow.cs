@@ -18,6 +18,7 @@ namespace Cinemachine
         : CinemachineComponentBase, IInputAxisTarget
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping
+        , CinemachineFreeLookModifier.IModifiableDistance
     {
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
@@ -231,6 +232,12 @@ namespace Cinemachine
             set => PositionDamping = value;
         }
 
+        float CinemachineFreeLookModifier.IModifiableDistance.Distance
+        {
+            get => Radius;
+            set => Radius = value;
+        }
+        
         /// <summary>
         /// For inspector.
         /// Get the camera offset corresponding to the normalized position, which ranges from -1...1.

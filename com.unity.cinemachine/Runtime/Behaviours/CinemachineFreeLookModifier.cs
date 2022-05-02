@@ -405,12 +405,15 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             // Apply easing
             if (s_EasingCurve == null)
             {
-                // Ease out, hard in
                 s_EasingCurve = AnimationCurve.Linear(0f, 0f, 1, 1f);
+#if false // nah, it doesn't look so great
+// GML todo: find a nice way to amke a smooth curve.  Maybe a bezier?
+                // Ease out, hard in
                 var keys = s_EasingCurve.keys;
                 keys[0].outTangent = 0;
                 keys[1].inTangent = 1.4f;
                 s_EasingCurve.keys = keys;
+#endif
             }
             var v = m_ValueSource.NormalizedModifierValue;
             var sign = Mathf.Sign(v);
