@@ -30,7 +30,7 @@ namespace Cinemachine
         /// This is the camera view in degrees. For cinematic people, a 50mm lens
         /// on a super-35mm sensor would equal a 19.6 degree FOV
         /// </summary>
-        [Range(1f, 179f)]
+        [RangeSlider(1f, 179f)]
         [Tooltip("This is the camera view in degrees. Display will be in vertical degress, unless the "
             + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
             + "be in horizontal degress.  Internally, it is always vertical degrees.  "
@@ -63,7 +63,6 @@ namespace Cinemachine
         /// <summary>
         /// The dutch (tilt) to be applied to the camera. In degrees
         /// </summary>
-        [Range(-180f, 180f)]
         [Tooltip("Camera Z roll, or tilt, in degrees.")]
         public float Dutch;
 
@@ -105,7 +104,7 @@ namespace Cinemachine
             get => ModeOverride == OverrideModes.Orthographic || ModeOverride == OverrideModes.None && m_OrthoFromCamera;
 
             /// Obsolete: do not use
-            set { m_OrthoFromCamera = value; ModeOverride = value 
+            private set { m_OrthoFromCamera = value; ModeOverride = value 
                 ? OverrideModes.Orthographic : OverrideModes.Perspective; } 
         }
 
@@ -139,6 +138,10 @@ namespace Cinemachine
                 ? OverrideModes.Physical : OverrideModes.Perspective; } 
         }
 
+#if UNITY_EDITOR
+        internal bool UseHorizontalFOV { get; private set; }
+#endif
+
         /// <summary>For physical cameras only: position of the gate relative to 
         /// the film back</summary>
         public Vector2 LensShift;
@@ -147,22 +150,24 @@ namespace Cinemachine
         /// if the aspect ratios differ</summary>
         public Camera.GateFitMode GateFit;
 
-        [SerializeField]
-        Vector2 m_SensorSize;
+        [SerializeField] Vector2 m_SensorSize;
+
         bool m_OrthoFromCamera;
         bool m_PhysicalFromCamera;
+
 
 #if CINEMACHINE_HDRP
         public int Iso;
         public float ShutterSpeed;
-        [Range(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
+        [RangeSlider(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
         public float Aperture;
-        [Range(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
+        [RangeSlider(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
         public int BladeCount;
+        [MinMaxRangeSlider(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
         public Vector2 Curvature;
-        [Range(0, 1)]
+        [RangeSlider(0, 1)]
         public float BarrelClipping;
-        [Range(-1, 1)]
+        [RangeSlider(-1, 1)]
         public float Anamorphism;
 #endif
 
@@ -218,6 +223,7 @@ namespace Cinemachine
         {
             m_OrthoFromCamera = false;
             m_PhysicalFromCamera = false;
+            UseHorizontalFOV = false;
             if (camera != null && ModeOverride == OverrideModes.None)
             {
                 m_OrthoFromCamera = camera.orthographic;
@@ -240,6 +246,11 @@ namespace Cinemachine
                     m_SensorSize = new Vector2(camera.aspect, 1f);
                 LensShift = Vector2.zero;
             }
+#if UNITY_EDITOR && UNITY_2019_1_OR_NEWER
+            // This should really be a global setting, but for now there is no better way than this!
+            var p = new UnityEditor.SerializedObject(camera).FindProperty("m_FOVAxisMode");
+            UseHorizontalFOV = (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
+#endif
         }
 
         /// <summary>
@@ -300,25 +311,45 @@ namespace Cinemachine
         public static LensSettings Lerp(LensSettings lensA, LensSettings lensB, float t)
         {
             t = Mathf.Clamp01(t);
-            LensSettings blendedLens = t < 0.5f ? lensA : lensB; // non-lerpable settings taken care of here
-            blendedLens.FarClipPlane = Mathf.Lerp(lensA.FarClipPlane, lensB.FarClipPlane, t);
-            blendedLens.NearClipPlane = Mathf.Lerp(lensA.NearClipPlane, lensB.NearClipPlane, t);
-            blendedLens.FieldOfView = Mathf.Lerp(lensA.FieldOfView, lensB.FieldOfView, t);
-            blendedLens.OrthographicSize = Mathf.Lerp(lensA.OrthographicSize, lensB.OrthographicSize, t);
-            blendedLens.Dutch = Mathf.Lerp(lensA.Dutch, lensB.Dutch, t);
-            blendedLens.m_SensorSize = Vector2.Lerp(lensA.m_SensorSize, lensB.m_SensorSize, t);
-            blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
+            // non-lerpable settings taken care of here
+            if (t < 0.5f)
+            {
+                var blendedLens = lensA; 
+                blendedLens.Lerp(lensB, t);
+                return blendedLens;
+            }
+            else
+            {
+                var blendedLens = lensB; 
+                blendedLens.Lerp(lensA, t);
+                return blendedLens;
+            }
+        }
+
+        /// <summary>
+        /// Lerp the lerpable values.  Nonlerpable values remain intact.
+        /// </summary>
+        /// <param name="lensB">The lens containing the values to compine with this one</param>
+        /// <param name="t">The weight of LensB's values.</param>
+        public void Lerp(in LensSettings lensB, float t)
+        {
+            FarClipPlane = Mathf.Lerp(FarClipPlane, lensB.FarClipPlane, t);
+            NearClipPlane = Mathf.Lerp(NearClipPlane, lensB.NearClipPlane, t);
+            FieldOfView = Mathf.Lerp(FieldOfView, lensB.FieldOfView, t);
+            OrthographicSize = Mathf.Lerp(OrthographicSize, lensB.OrthographicSize, t);
+            Dutch = Mathf.Lerp(Dutch, lensB.Dutch, t);
+            m_SensorSize = Vector2.Lerp(m_SensorSize, lensB.m_SensorSize, t);
+            LensShift = Vector2.Lerp(LensShift, lensB.LensShift, t);
 
 #if CINEMACHINE_HDRP
-            blendedLens.Iso = Mathf.RoundToInt(Mathf.Lerp((float)lensA.Iso, (float)lensB.Iso, t));
-            blendedLens.ShutterSpeed = Mathf.Lerp(lensA.ShutterSpeed, lensB.ShutterSpeed, t);
-            blendedLens.Aperture = Mathf.Lerp(lensA.Aperture, lensB.Aperture, t);
-            blendedLens.BladeCount = Mathf.RoundToInt(Mathf.Lerp(lensA.BladeCount, lensB.BladeCount, t));;
-            blendedLens.Curvature = Vector2.Lerp(lensA.Curvature, lensB.Curvature, t);
-            blendedLens.BarrelClipping = Mathf.Lerp(lensA.BarrelClipping, lensB.BarrelClipping, t);
-            blendedLens.Anamorphism = Mathf.Lerp(lensA.Anamorphism, lensB.Anamorphism, t);
+            Iso = Mathf.RoundToInt(Mathf.Lerp((float)Iso, (float)lensB.Iso, t));
+            ShutterSpeed = Mathf.Lerp(ShutterSpeed, lensB.ShutterSpeed, t);
+            Aperture = Mathf.Lerp(Aperture, lensB.Aperture, t);
+            BladeCount = Mathf.RoundToInt(Mathf.Lerp(BladeCount, lensB.BladeCount, t));;
+            Curvature = Vector2.Lerp(Curvature, lensB.Curvature, t);
+            BarrelClipping = Mathf.Lerp(BarrelClipping, lensB.BarrelClipping, t);
+            Anamorphism = Mathf.Lerp(Anamorphism, lensB.Anamorphism, t);
 #endif
-            return blendedLens;
         }
 
         /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>

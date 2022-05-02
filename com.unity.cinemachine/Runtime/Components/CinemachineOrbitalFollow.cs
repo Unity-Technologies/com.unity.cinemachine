@@ -63,8 +63,7 @@ namespace Cinemachine
         }
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
-        [Space]
-        [Tooltip("Defines the madder in which the orbit surface is constructed." )]
+        [Tooltip("Defines the manner in which the orbit surface is constructed." )]
         public OrbitMode OrbitStyle = OrbitMode.ThreeRing;
 
         /// <summary>The camera will be placed at this distance from the Follow target</summary>
@@ -77,10 +76,9 @@ namespace Cinemachine
 
         /// <summary>Axis representing the current horizontal rotation.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
-        [Space]
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
             + "and represents a rotation about the up vector.")]
-        public InputAxis HorizontalAxis= DefaultHorizontal;
+        public InputAxis HorizontalAxis = DefaultHorizontal;
 
         /// <summary>Axis representing the current vertical rotation.  Value is in degrees
         /// and represents a rotation about the right vector</summary>
@@ -413,7 +411,7 @@ namespace Cinemachine
 
             /// <summary></summary>
             [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
-            [Range(0f, 1f)]
+            [RangeSlider(0f, 1f)]
             public float SplineCurvature;
 
             /// <summary>Default orbit rig</summary>

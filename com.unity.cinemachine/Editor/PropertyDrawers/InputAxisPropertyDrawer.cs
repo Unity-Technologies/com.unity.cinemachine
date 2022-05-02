@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
-using System;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -83,6 +84,51 @@ namespace Cinemachine.Editor
                         + EditorGUIUtility.standardVerticalSpacing;
             }
             return height - EditorGUIUtility.standardVerticalSpacing;
+        }
+
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            // When foldout is closed, we display the axis value on the same line, for convenience
+            var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip, value = property.isExpanded };
+            foldout.RegisterValueChangedCallback((evt) => 
+            {
+                property.isExpanded = evt.newValue;
+                property.serializedObject.ApplyModifiedProperties();
+                evt.StopPropagation();
+            });
+            var valueProp = property.FindPropertyRelative(() => def.Value);
+            var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
+            var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
+            valueLabel.AddPropertyDragger(valueProp, valueField);
+            var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
+
+            foldout.Add(new PropertyField(valueProp));
+            var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
+            var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
+            rangeContainer.Add(new PropertyField(property.FindPropertyRelative(() => def.Range)) { style = { flexGrow = 1 }});
+            var wrapProp = property.FindPropertyRelative(() => def.Wrap);
+            rangeContainer.Add(new PropertyField(wrapProp, "") 
+                { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5 }});
+            rangeContainer.Add(new Label(wrapProp.displayName) 
+                { tooltip = wrapProp.tooltip, style = { alignSelf = Align.Center }});
+            var recenterField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));
+
+            var flagsProp = property.FindPropertyRelative(() => def.InspectorFlags);
+            TrackFlags(flagsProp);
+            ux.TrackPropertyValue(flagsProp, TrackFlags);
+
+            void TrackFlags(SerializedProperty prop)
+            {
+                var flags = flagsProp.intValue;
+                var hideRecentering = (flags & (int)InputAxis.Flags.HideRecentering) != 0;
+                var rangeDisabled = (flags & (int)InputAxis.Flags.RangeIsDriven) != 0;
+
+                recenterField.SetVisible(!hideRecentering);
+                centerField.SetEnabled(!rangeDisabled);
+                rangeContainer.SetEnabled(!rangeDisabled);
+            }
+
+            return ux;
         }
     }
 }

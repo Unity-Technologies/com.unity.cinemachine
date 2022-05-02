@@ -4,13 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Cinemachine.Utility;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
     /// <summary>
     /// Collection of tools and helpers for drawing inspectors
     /// </summary>
-    public class InspectorUtility
+    public static class InspectorUtility
     {
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
@@ -172,7 +174,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Try to get the name of the owning virtual camera oibject.  If none then use
+        /// Try to get the name of the owning virtual camera object.  If none then use
         /// the object's name
         /// </summary>
         /// <param name="property"></param>
@@ -323,5 +325,222 @@ namespace Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
+
+        ///==============================================================================================
+        ///==============================================================================================
+        /// UI Elements utilities
+        ///==============================================================================================
+        ///==============================================================================================
+
+
+        /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
+        internal static string kAlignFieldClass => BaseField<bool>.alignedFieldUssClassName;
+
+        // this is a hack to get around some vertical alignment issues in UITK
+        internal static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
+
+        /// <summary>
+        /// Draw a bold header in the inspector - hack to get around missing UITK functionality
+        /// </summary>
+        /// <param name="ux">Container in which to put the header</param>
+        /// <param name="text">The text of the header</param>
+        /// <param name="tooltip">optional tooltip for the header</param>
+        internal static void AddHeader(this VisualElement ux, string text, string tooltip = "")
+        {
+            var verticalPad = SingleLineHeight / 2;
+            var row = new LabeledContainer($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} });
+            row.focusable = false;
+            row.labelElement.style.flexGrow = 1;
+            row.labelElement.style.paddingTop = verticalPad;
+            row.labelElement.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
+            ux.Add(row);
+        }
+
+        /// <summary>
+        /// Create a space between inspector sections
+        /// </summary>
+        /// <param name="ux">Container in which to add the space</param>
+        internal static void AddSpace(this VisualElement ux)
+        {
+            ux.Add(new VisualElement { style = { height = SingleLineHeight / 2 }});
+        }
+        
+        /// <summary>
+        /// This is a hack to get proper layout.  There seems to be no sanctioned way to 
+        /// get the current inspector label width.
+        /// </summary>
+        internal class LabeledContainer : BaseField<bool> // bool is just a dummy because it has to be something
+        {
+            public Label Label => labelElement;
+            public VisualElement Input { get; }
+
+            public LabeledContainer(string label, string tooltip = "") : this (label, tooltip, new VisualElement()) 
+            {
+                Input.style.flexDirection = FlexDirection.Row;
+            }
+
+            public LabeledContainer(string label, string tooltip, VisualElement input) : base(label, input)
+            {
+                Input = input;
+                AddToClassList(alignedFieldUssClassName);
+                this.tooltip = tooltip;
+                Label.tooltip = tooltip;
+            }
+
+            public T AddInput<T>(T input) where T : VisualElement
+            {
+                Input.Add(input);
+                return input;
+            }
+        }
+
+        /// <summary>
+        /// This is an inspector container with 2 side-by-side rows. The Left row's width is 
+        /// locked to the inspector field label size, for proper alignment.
+        /// </summary>
+        internal class LeftRightContainer : VisualElement
+        {
+            public VisualElement Left;
+            public VisualElement Right;
+
+            /// <summary>
+            /// Set this to offset the Left/Right division from the inspector's Label/Content line
+            /// </summary>
+            public float DivisionOffset = 0;
+
+            public LeftRightContainer()
+            {
+                // This is to peek at the resolved label width
+                var hack = AddChild(this,  new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }});
+
+                var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
+                Left = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }});
+                Right = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
+
+                hack.Label.RegisterCallback<GeometryChangedEvent>(
+                    (evt) => Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset);
+            }
+        }
+
+        /// <summary>A foldout that displays an overlay in the right-hand column when closed</summary>
+        internal class FoldoutWithOverlay : VisualElement
+        {
+            public readonly Foldout OpenFoldout;
+            public readonly Foldout ClosedFoldout;
+            public readonly VisualElement Overlay;
+            public readonly Label OverlayLabel;
+
+            public FoldoutWithOverlay(Foldout foldout, VisualElement overlay, Label overlayLabel)
+            {
+                OpenFoldout = foldout;
+                Overlay = overlay;
+                OverlayLabel = overlayLabel;
+
+                // There are 2 modes for this element: foldout closed and foldout open.
+                // When closed, we cheat the layout system, and to implement this we do a switcheroo
+                var closedContainer = AddChild(this, new LeftRightContainer() { style = { flexGrow = 1 }});
+                Add(foldout);
+
+                var closedFoldout = new Foldout { text = foldout.text, tooltip = foldout.tooltip, value = false };
+                ClosedFoldout = closedFoldout;
+                ClosedFoldout = closedContainer.Left.AddChild(ClosedFoldout);
+                if (overlayLabel != null)
+                    closedContainer.Right.Add(overlayLabel);
+                closedContainer.Right.Add(overlay);
+
+                // Outdent the label
+                if (overlayLabel != null)
+                {
+                    closedContainer.Right.RegisterCallback<GeometryChangedEvent>(
+                        (evt) => closedContainer.Right.style.marginLeft = -overlayLabel.resolvedStyle.width);
+                }
+
+                // Swap the open and closed foldouts when the foldout is opened or closed
+                closedContainer.SetVisible(!foldout.value);
+                closedFoldout.RegisterValueChangedCallback((evt) =>
+                {
+                    if (evt.newValue)
+                    {
+                        closedContainer.SetVisible(false);
+                        foldout.SetVisible(true);
+                        foldout.value = true;
+                        closedFoldout.SetValueWithoutNotify(false);
+                        foldout.Focus(); // GML why doesn't this work?
+                        evt.StopPropagation();
+                    }
+                });
+                foldout.SetVisible(foldout.value);
+                foldout.RegisterValueChangedCallback((evt) =>
+                {
+                    if (!evt.newValue)
+                    {
+                        closedContainer.SetVisible(true);
+                        foldout.SetVisible(false);
+                        closedFoldout.SetValueWithoutNotify(false);
+                        foldout.value = false;
+                        closedFoldout.Focus(); // GML why doesn't this work?
+                        evt.StopPropagation();
+                    }
+                });
+            }
+        }
+
+        internal class CompactPropertyField : VisualElement
+        {
+            public Label Label;
+            public PropertyField Field;
+
+            public CompactPropertyField(SerializedProperty property) : this(property, property.displayName) {}
+
+            public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
+            {
+                style.flexDirection = FlexDirection.Row;
+                Label = AddChild(this, new Label(label) 
+                    { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 0 } });
+                Label.AddPropertyDragger(property, Field);
+            }
+        }
+
+        internal static void AddPropertyDragger(this Label e, SerializedProperty p, VisualElement field)
+        {
+            if (p.propertyType == SerializedPropertyType.Float 
+                || p.propertyType == SerializedPropertyType.Integer)
+            {
+                e.RegisterCallback<GeometryChangedEvent>(AddDragger);
+                e.AddToClassList("unity-base-field__label--with-dragger");
+            }
+
+            void AddDragger(GeometryChangedEvent evt) 
+            {
+                e.UnregisterCallback<GeometryChangedEvent>(AddDragger);
+
+                if (p.propertyType == SerializedPropertyType.Float)
+                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(e);
+                else if (p.propertyType == SerializedPropertyType.Integer)
+                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(e);
+            }
+        }
+
+        internal static VisualElement CreateHelpBoxWithButton(
+            string message, HelpBoxMessageType messageType, 
+            string buttonText, Action onClicked)
+        {
+            var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
+            row.Add(new HelpBox(message, messageType) { style = { flexGrow = 1 }});
+            row.Add(new Button(onClicked) { text = buttonText, style = { marginLeft = 0 }});
+            return row;
+        }
+
+        internal static void SetVisible(this VisualElement e, bool show) 
+            => e.style.display = show ? StyleKeyword.Null : DisplayStyle.None;
+
+        internal static bool IsVisible(this VisualElement e) => e.style.display != DisplayStyle.None;
+
+        internal static T AddChild<T>(this VisualElement e, T child) where T : VisualElement
+        {
+            e.Add(child);
+            return child;
+        }
     }
 }

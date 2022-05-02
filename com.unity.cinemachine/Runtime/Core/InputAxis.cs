@@ -65,7 +65,7 @@ namespace Cinemachine
 
         /// <summary>The valid range for the axis value.  Value will be clamped to this range.</summary>
         [Tooltip("The valid range for the axis value.  Value will be clamped to this range.")]
-        [Vector2AsRangeProperty]
+        [Vector2AsRange]
         public Vector2 Range;
 
         /// <summary>If set, then the axis will wrap around at the min/max values, forming a loop</summary>
