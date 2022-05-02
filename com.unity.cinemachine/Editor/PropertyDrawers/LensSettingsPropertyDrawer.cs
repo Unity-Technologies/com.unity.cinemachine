@@ -438,15 +438,16 @@ namespace Cinemachine.Editor
                     OrthoControl.SetVisible(false);
                     FovControl.SetVisible(false);
                     FocalLengthControl.SetVisible(true);
+                    var text = "Focal Length";
                     if (!shortLabel)
                     {
                         var e = FocalLengthControl.Q<Label>();
                         if (e != null)
-                            e.text = "Focal Length";
+                            e.text = text;
                     }
-                    else if (ShortLabel.text != "Focal")
+                    else if (ShortLabel.text != text)
                     {
-                        ShortLabel.text = "Focal";
+                        ShortLabel.text = text;
                         if (m_DraggerOrtho != null)
                             m_DraggerOrtho.SetDragZone(null);
                         if (m_DraggerFov != null)
@@ -461,27 +462,23 @@ namespace Cinemachine.Editor
                     OrthoControl.SetVisible(false);
                     FovControl.SetVisible(true);
                     FocalLengthControl.SetVisible(false);
-                    var isHov = UseHorizontalFOV(m_Property);
+                    var text = UseHorizontalFOV(m_Property) ? "Horiz. FOV" : "Vertical FOV";
                     if (!shortLabel)
                     {
                         var e = FovControl.Q<Label>();
                         if (e != null)
-                            e.text = UseHorizontalFOV(m_Property) ? "Horizontal FOV" : "Vertical FOV";
+                            e.text = text;
                     }
-                    else
+                    else if (ShortLabel.text != text)
                     {
-                        var text = isHov ? "HFOV" : "FOV";
-                        if (ShortLabel.text != text)
-                        {
-                            ShortLabel.text = text;
-                            if (m_DraggerOrtho != null)
-                                m_DraggerOrtho.SetDragZone(null);
-                            if (m_DraggerFov == null)
-                                m_DraggerFov = new FieldMouseDragger<float>(FovControl.Q<FloatField>());
-                            m_DraggerFov.SetDragZone(ShortLabel);
-                            if (m_DraggerFocal != null)
-                                m_DraggerFocal.SetDragZone(null);
-                        }
+                        ShortLabel.text = text;
+                        if (m_DraggerOrtho != null)
+                            m_DraggerOrtho.SetDragZone(null);
+                        if (m_DraggerFov == null)
+                            m_DraggerFov = new FieldMouseDragger<float>(FovControl.Q<FloatField>());
+                        m_DraggerFov.SetDragZone(ShortLabel);
+                        if (m_DraggerFocal != null)
+                            m_DraggerFocal.SetDragZone(null);
                     }
                 }
             }

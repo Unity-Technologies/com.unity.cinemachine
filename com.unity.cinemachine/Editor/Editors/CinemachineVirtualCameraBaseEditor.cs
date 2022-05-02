@@ -535,7 +535,7 @@ namespace Cinemachine.Editor
 
                             EditorGUI.PrefixLabel(labelRect, propertyScope.content);
                             v.x = EditorGUI.FloatField(floatFieldLeft, v.x);
-                            EditorGUI.MinMaxSlider(sliderRect, ref v.x, ref v.y, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
+                            EditorGUI.MinMaxSlider(sliderRect, ref v.x, ref v.y, Camera.kMinAperture, Camera.kMaxAperture);
                             v.y = EditorGUI.FloatField(floatFieldRight, v.y);
 
                             curvature.vector2Value = v;
