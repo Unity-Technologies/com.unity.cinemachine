@@ -65,7 +65,7 @@ namespace Cinemachine
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
         [Tooltip("Defines the manner in which the orbit surface is constructed." )]
-        public OrbitMode OrbitStyle = OrbitMode.ThreeRing;
+        public OrbitMode OrbitStyle = OrbitMode.Sphere;
 
         /// <summary>The camera will be placed at this distance from the Follow target</summary>
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
@@ -176,6 +176,7 @@ namespace Cinemachine
             PositionDamping = new Vector3(1, 1, 1);
             RotationDamping = new Vector3(1, 1, 1);
             QuaternionDamping = 1f;
+            OrbitStyle = OrbitMode.Sphere;
             Radius = 10;
             Orbits = Cinemachine3OrbitRig.Settings.Default;
             HorizontalAxis = DefaultHorizontal;

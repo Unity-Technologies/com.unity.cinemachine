@@ -157,6 +157,8 @@ namespace Cinemachine.Editor
             var modeOverrideProperty = property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride);
             ux.schedule.Execute(() => 
             {
+                if (property.serializedObject.targetObject == null)
+                    return; // target deleted
                 physical.SetVisible(IsPhysical(property));
                 sensorSizeField.SetVisible(modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
                 gateFitField.SetVisible(modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);

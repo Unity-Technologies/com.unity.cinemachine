@@ -31,7 +31,7 @@ namespace Cinemachine.Editor
 
         // GameObject Menu
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Cm Camera", false, m_GameObjectMenuPriority)]
         static void CreateVirtualCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
@@ -43,7 +43,7 @@ namespace Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
             var vcam = CreatePassiveVirtualCamera("FreeLook Camera", command.context as GameObject, true);
-            Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject);
+            Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitMode.ThreeRing;
             Undo.AddComponent<CinemachineComposer>(vcam.gameObject);
             Undo.AddComponent<InputAxisController>(vcam.gameObject);
             Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject);
@@ -104,7 +104,7 @@ namespace Cinemachine.Editor
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
             var vcam = CreateCinemachineObject<CmCamera>(
-                "Virtual Camera", command.context as GameObject, true);
+                "Cm Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
             vcam.gameObject.AddComponent<CinemachineComposer>();
@@ -127,7 +127,7 @@ namespace Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
             var vcam = CreateCinemachineObject<CmCamera>(
-                "Virtual Camera", command.context as GameObject, false);
+                "Cm Camera", command.context as GameObject, false);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
             vcam.gameObject.AddComponent<CinemachineGroupComposer>();
@@ -156,7 +156,7 @@ namespace Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
             var vcam = CreateCinemachineObject<CmCamera>(
-                "Virtual Camera", command.context as GameObject, true);
+                "Cm Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
 
             vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
@@ -199,7 +199,7 @@ namespace Cinemachine.Editor
         /// Creates a <see cref="CinemachineVirtualCamera"/> with standard procedural components.
         /// </summary>
         public static CmCamera CreateDefaultVirtualCamera(
-            string name = "Virtual Camera", GameObject parentObject = null, bool select = false)
+            string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
             var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
@@ -211,7 +211,7 @@ namespace Cinemachine.Editor
         /// Creates a <see cref="CinemachineVirtualCamera"/> with no procedural components.
         /// </summary>
         public static CmCamera CreatePassiveVirtualCamera(
-            string name = "Virtual Camera", GameObject parentObject = null, bool select = false)
+            string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
             var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);

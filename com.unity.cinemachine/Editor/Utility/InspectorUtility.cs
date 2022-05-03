@@ -495,10 +495,12 @@ namespace Cinemachine.Editor
             public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
             {
                 style.flexDirection = FlexDirection.Row;
-                Label = AddChild(this, new Label(label) 
-                    { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                if (label.Length != 0)
+                    Label = AddChild(this, new Label(label) 
+                        { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 0 } });
-                Label.AddPropertyDragger(property, Field);
+                if (Label != null)
+                    Label.AddPropertyDragger(property, Field);
             }
         }
 

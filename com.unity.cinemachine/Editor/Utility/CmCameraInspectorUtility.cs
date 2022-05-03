@@ -340,6 +340,8 @@ namespace Cinemachine.Editor
         /// </summary>
         public void SortComponents()
         {
+            if (Target == null)
+                return; // target was deleted
             SortOrder lastItem = SortOrder.None;
             bool sortNeeded = false;
             Target.gameObject.GetComponents(s_componentCache);

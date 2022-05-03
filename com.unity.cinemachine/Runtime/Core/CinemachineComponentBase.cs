@@ -47,7 +47,7 @@ namespace Cinemachine
         {
             get
             {
-                CinemachineVirtualCameraBase vcam = VirtualCamera;
+                var vcam = VirtualCamera;
                 return vcam == null ? null : vcam.ResolveFollow(vcam.Follow);
             }
         }
