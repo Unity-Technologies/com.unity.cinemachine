@@ -299,11 +299,15 @@ namespace Cinemachine
                 ManualUpdate();
         }
         
-        private void Start()
+        void Awake()
+        {
+            ControlledObject.TryGetComponent(out m_OutputCamera);
+        }
+        
+        void Start()
         {
             m_LastFrameUpdated = -1;
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
-            ControlledObject.TryGetComponent(out m_OutputCamera);
         }
 
         private void OnGuiHandler()
