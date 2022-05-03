@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
-using Object = System.Object;
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
