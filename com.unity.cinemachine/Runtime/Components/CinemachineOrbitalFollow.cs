@@ -18,6 +18,7 @@ namespace Cinemachine
         : CinemachineComponentBase, IInputAxisTarget
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping
+        , CinemachineFreeLookModifier.IModifiableDistance
     {
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
@@ -64,7 +65,7 @@ namespace Cinemachine
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
         [Tooltip("Defines the manner in which the orbit surface is constructed." )]
-        public OrbitMode OrbitStyle = OrbitMode.ThreeRing;
+        public OrbitMode OrbitStyle = OrbitMode.Sphere;
 
         /// <summary>The camera will be placed at this distance from the Follow target</summary>
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
@@ -175,6 +176,7 @@ namespace Cinemachine
             PositionDamping = new Vector3(1, 1, 1);
             RotationDamping = new Vector3(1, 1, 1);
             QuaternionDamping = 1f;
+            OrbitStyle = OrbitMode.Sphere;
             Radius = 10;
             Orbits = Cinemachine3OrbitRig.Settings.Default;
             HorizontalAxis = DefaultHorizontal;
@@ -231,6 +233,12 @@ namespace Cinemachine
             set => PositionDamping = value;
         }
 
+        float CinemachineFreeLookModifier.IModifiableDistance.Distance
+        {
+            get => Radius;
+            set => Radius = value;
+        }
+        
         /// <summary>
         /// For inspector.
         /// Get the camera offset corresponding to the normalized position, which ranges from -1...1.

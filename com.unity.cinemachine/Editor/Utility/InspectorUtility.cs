@@ -495,30 +495,32 @@ namespace Cinemachine.Editor
             public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
             {
                 style.flexDirection = FlexDirection.Row;
-                Label = AddChild(this, new Label(label) 
-                    { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                if (label.Length != 0)
+                    Label = AddChild(this, new Label(label) 
+                        { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 0 } });
-                Label.AddPropertyDragger(property, Field);
+                if (Label != null)
+                    Label.AddPropertyDragger(property, Field);
             }
         }
 
-        internal static void AddPropertyDragger(this Label e, SerializedProperty p, VisualElement field)
+        internal static void AddPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
         {
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
             {
-                e.RegisterCallback<GeometryChangedEvent>(AddDragger);
-                e.AddToClassList("unity-base-field__label--with-dragger");
+                label.RegisterCallback<GeometryChangedEvent>(AddDragger);
+                label.AddToClassList("unity-base-field__label--with-dragger");
             }
 
             void AddDragger(GeometryChangedEvent evt) 
             {
-                e.UnregisterCallback<GeometryChangedEvent>(AddDragger);
+                label.UnregisterCallback<GeometryChangedEvent>(AddDragger);
 
                 if (p.propertyType == SerializedPropertyType.Float)
-                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(e);
+                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
                 else if (p.propertyType == SerializedPropertyType.Integer)
-                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(e);
+                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
             }
         }
 

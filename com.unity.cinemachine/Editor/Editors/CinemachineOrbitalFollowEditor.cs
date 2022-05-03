@@ -102,6 +102,8 @@ namespace Cinemachine.Editor
 
         void UpdateHelpBoxes()
         {
+            if (target == null)
+                return;  // target was deleted
             bool noFollow = false;
             bool noHandler = false;
             for (int i = 0; i < targets.Length; ++i)
