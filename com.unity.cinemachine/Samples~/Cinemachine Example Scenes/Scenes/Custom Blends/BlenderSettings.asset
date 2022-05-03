@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CustomBlends:
   - m_From: '**ANY CAMERA**'
-    m_To: TURN ME ON CM_1
+    m_To: Virtual Camera 1
     m_Blend:
       m_Style: 1
       m_Time: 0.5
@@ -25,7 +25,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
   - m_From: '**ANY CAMERA**'
-    m_To: THEN TURN ME ON CM_2
+    m_To: Virtual Camera 2
     m_Blend:
       m_Style: 0
       m_Time: 2
@@ -36,7 +36,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
   - m_From: '**ANY CAMERA**'
-    m_To: WILL YOU TURN ME ON? CM_3
+    m_To: Virtual Camera 3
     m_Blend:
       m_Style: 1
       m_Time: 0.5
@@ -47,7 +47,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
   - m_From: '**ANY CAMERA**'
-    m_To: OK TURN ME ON TOO CM_4
+    m_To: Virtual Camera 4
     m_Blend:
       m_Style: 1
       m_Time: 5
