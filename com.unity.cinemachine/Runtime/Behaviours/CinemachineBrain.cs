@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using Object = System.Object;
 
 #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     #if CINEMACHINE_HDRP_7_3_1
@@ -207,8 +208,16 @@ namespace Cinemachine
         public GameObject ControlledObject
         {
             get => m_TargetOverride == null ? gameObject : m_TargetOverride;
-            set => m_TargetOverride = value;
+            set
+            {
+                if (!ReferenceEquals(m_TargetOverride, value))
+                {
+                    m_TargetOverride = value;
+                    ControlledObject.TryGetComponent(out m_OutputCamera); // update output camera when target changes
+                }
+            }
         }
+
         private GameObject m_TargetOverride = null; // never use directly - use accessor
 
         /// <summary>Event with a CinemachineBrain parameter</summary>
