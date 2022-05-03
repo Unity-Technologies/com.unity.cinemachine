@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine;
 using ClipperLib;
@@ -9,30 +10,27 @@ namespace Cinemachine
     /// <summary>
     /// Responsible for baking confiners via BakeConfiner function.
     /// </summary>
-    internal class ConfinerOven
+    class ConfinerOven
     {
         public class BakedSolution
         {
-            public float FrustumHeight { get; }
-            
-            private float m_frustumSizeIntSpace;
+            float m_FrustumSizeIntSpace;
 
-            private readonly AspectStretcher m_AspectStretcher;
-            private readonly bool m_HasBones;
-            private readonly double m_SqrPolygonDiagonal;
+            readonly AspectStretcher m_AspectStretcher;
+            readonly bool m_HasBones;
+            readonly double m_SqrPolygonDiagonal;
 
-            private List<List<IntPoint>> m_OriginalPolygon;
-            public List<List<IntPoint>> m_Solution;
+            List<List<IntPoint>> m_OriginalPolygon;
+            List<List<IntPoint>> m_Solution;
 
-            private const double k_ClipperEpsilon = 0.01f * k_FloatToIntScaler;
+            const double k_ClipperEpsilon = 0.01f * k_FloatToIntScaler;
 
             public BakedSolution(
                 float aspectRatio, float frustumHeight, bool hasBones, Rect polygonBounds,
                 List<List<IntPoint>> originalPolygon, List<List<IntPoint>> solution)
             {
                 m_AspectStretcher = new AspectStretcher(aspectRatio, polygonBounds.center.x);
-                FrustumHeight = frustumHeight;
-                m_frustumSizeIntSpace = frustumHeight * k_FloatToIntScaler;
+                m_FrustumSizeIntSpace = frustumHeight * k_FloatToIntScaler;
                 m_HasBones = hasBones;
                 m_OriginalPolygon = originalPolygon;
                 m_Solution = solution;
@@ -42,21 +40,12 @@ namespace Cinemachine
                 m_SqrPolygonDiagonal = polygonSizeX * polygonSizeX + polygonSizeY * polygonSizeY;
             }
 
-            public void Clear()
-            {
-                m_Solution = null;
-                m_OriginalPolygon = null;
-            }
-
-            public bool IsValid(float frustumHeight)
-            {
-                return m_Solution != null && Mathf.Abs(frustumHeight - FrustumHeight) < k_MinStepSize;
-            }
+            public bool IsValid() => m_Solution != null;
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
                 if (m_Solution.Count <= 0) return pointToConfine; // empty confiner -> no need to confine
-                
+
                 Vector2 pInConfinerSpace = m_AspectStretcher.Stretch(pointToConfine);
                 IntPoint p =
                     new IntPoint(pInConfinerSpace.x * k_FloatToIntScaler, pInConfinerSpace.y * k_FloatToIntScaler);
@@ -92,7 +81,7 @@ namespace Cinemachine
                         double distance = diffX * diffX + diffY * diffY;
 
                         // penalty for points from which the target is not visible, preferring visibility over proximity
-                        if (diffX > m_frustumSizeIntSpace || diffY > m_frustumSizeIntSpace)
+                        if (diffX > m_FrustumSizeIntSpace || diffY > m_FrustumSizeIntSpace)
                         {
                             distance += m_SqrPolygonDiagonal; // penalty is the biggest distance between any two points
                         }
@@ -107,11 +96,55 @@ namespace Cinemachine
 
                 var result = new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
                 return m_AspectStretcher.Unstretch(result);
+                
+                // local functions
+                IntPoint IntPointLerp(IntPoint a, IntPoint b, float lerp)
+                {
+                    return new IntPoint
+                    {
+                        X = Mathf.RoundToInt(a.X + (b.X - a.X) * lerp),
+                        Y = Mathf.RoundToInt(a.Y + (b.Y - a.Y) * lerp),
+                    };
+                }
+                
+                bool IsInsideOriginal(IntPoint point) => 
+                    m_OriginalPolygon.Any(t => Clipper.PointInPolygon(point, t) != 0);
+
+                float ClosestPointOnSegment(IntPoint point, IntPoint s0, IntPoint s1)
+                {
+                    double sX = s1.X - s0.X;
+                    double sY = s1.Y - s0.Y;
+                    var len2 = sX * sX + sY * sY;
+                    if (len2 < k_ClipperEpsilon)
+                        return 0; // degenerate segment
+
+                    double s0pX = point.X - s0.X;
+                    double s0pY = point.Y - s0.Y;
+                    var dot = s0pX * sX + s0pY * sY;
+                    return Mathf.Clamp01((float) (dot / len2));
+                }
+                
+                bool DoesIntersectOriginal(IntPoint l1, IntPoint l2)
+                {
+                    foreach (var original in m_OriginalPolygon)
+                    {
+                        var numPoints = original.Count;
+                        for (var i = 0; i < numPoints; ++i)
+                        {
+                            if (FindIntersection(l1, l2, original[i], original[(i + 1) % numPoints]) == 2)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
+                }
             }
 
 #if UNITY_EDITOR
             // Used by inspector to draw the baked path
-            private List<List<Vector2>> m_Vector2Path;
+            List<List<Vector2>> m_Vector2Path;
             public List<List<Vector2>> GetBakedPath()
             {
                 // Convert to client space
@@ -138,61 +171,7 @@ namespace Cinemachine
                 return m_Vector2Path;
             }
 #endif
-
-            private bool IsInsideOriginal(IntPoint p)
-            {
-                for (int i = 0; i < m_OriginalPolygon.Count; ++i)
-                {
-                    if (Clipper.PointInPolygon(p, m_OriginalPolygon[i]) != 0)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            private static float ClosestPointOnSegment(IntPoint p, IntPoint s0, IntPoint s1)
-            {
-                double sX = s1.X - s0.X;
-                double sY = s1.Y - s0.Y;
-                double len2 = sX * sX + sY * sY;
-                if (len2 < k_ClipperEpsilon)
-                    return 0; // degenerate segment
-
-                double s0pX = p.X - s0.X;
-                double s0pY = p.Y - s0.Y;
-                double dot = s0pX * sX + s0pY * sY;
-                return Mathf.Clamp01((float) (dot / len2));
-            }
-
-            private static IntPoint IntPointLerp(IntPoint a, IntPoint b, float lerp)
-            {
-                return new IntPoint
-                {
-                    X = Mathf.RoundToInt(a.X + (b.X - a.X) * lerp),
-                    Y = Mathf.RoundToInt(a.Y + (b.Y - a.Y) * lerp),
-                };
-            }
-
-            private bool DoesIntersectOriginal(IntPoint l1, IntPoint l2)
-            {
-                foreach (var original in m_OriginalPolygon)
-                {
-                    int numPoints = original.Count;
-                    for (int i = 0; i < numPoints; ++i)
-                    {
-                        if (FindIntersection(l1, l2, original[i], original[(i + 1) % numPoints]) == 2)
-                        {
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            }
-
-            private static int FindIntersection(in IntPoint p1, in IntPoint p2, in IntPoint p3, in IntPoint p4)
+            static int FindIntersection(in IntPoint p1, in IntPoint p2, in IntPoint p3, in IntPoint p4)
             {
                 // Get the segments' parameters.
                 double dx12 = p2.X - p1.X;
@@ -221,21 +200,22 @@ namespace Cinemachine
 
                 double t2 = ((p3.X - p1.X) * dy12 + (p1.Y - p3.Y) * dx12) / -denominator;
                 return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
-            }
-
-            private static double IntPointDiffSqrMagnitude(IntPoint p1, IntPoint p2)
-            {
-                double X = p1.X - p2.X;
-                double Y = p1.Y - p2.Y;
-                return X * X + Y * Y;
+                
+                // local function
+                double IntPointDiffSqrMagnitude(IntPoint point1, IntPoint point2)
+                {
+                    double x = point1.X - point2.X;
+                    double y = point1.Y - point2.Y;
+                    return x * x + y * y;
+                }
             }
         }
 
-        private struct AspectStretcher
+        readonly struct AspectStretcher
         {
             public float Aspect { get; }
-            private readonly float m_InverseAspect;
-            private readonly float m_CenterX;
+            readonly float m_InverseAspect;
+            readonly float m_CenterX;
 
             public AspectStretcher(float aspect, float centerX)
             {
@@ -244,34 +224,26 @@ namespace Cinemachine
                 m_CenterX = centerX;
             }
 
-            public Vector2 Stretch(Vector2 p)
-            {
-                return new Vector2((p.x - m_CenterX) * m_InverseAspect + m_CenterX, p.y);
-            }
-
-            public Vector2 Unstretch(Vector2 p)
-            {
-                return new Vector2((p.x - m_CenterX) * Aspect + m_CenterX, p.y);
-            }
+            public Vector2 Stretch(Vector2 p) => new Vector2((p.x - m_CenterX) * m_InverseAspect + m_CenterX, p.y);
+            public Vector2 Unstretch(Vector2 p) => new Vector2((p.x - m_CenterX) * Aspect + m_CenterX, p.y);
         }
 
-        private float m_MinFrustumHeightWithBones;
+        float m_MinFrustumHeightWithBones;
 
-        private List<List<IntPoint>> m_OriginalPolygon;
-        private List<List<IntPoint>> m_Skeleton = new List<List<IntPoint>>();
+        List<List<IntPoint>> m_OriginalPolygon;
+        IntPoint m_MidPoint;
+        List<List<IntPoint>> m_Skeleton = new List<List<IntPoint>>();
 
-        private const long k_FloatToIntScaler = 100000;
-        private const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
-        private const float k_MinStepSize = 0.005f;
+        const long k_FloatToIntScaler = 100000;
+        const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
+        const float k_MinStepSize = 0.005f;
 
-        private Rect m_PolygonRect;
+        Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
 
-        private float m_maxComputationTimeForFullSkeletonBakeInSeconds = 5f;
+        float m_MaxComputationTimeForFullSkeletonBakeInSeconds = 5f;
 
-        public ConfinerOven(
-            in List<List<Vector2>> inputPath, 
-            in float aspectRatio, float maxFrustumHeight) : base()
+        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             Initialize(inputPath, aspectRatio, maxFrustumHeight);
         }
@@ -281,12 +253,26 @@ namespace Cinemachine
         /// </summary>
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
+            // If the user has set a max frustum height, respect it
+            frustumHeight = m_Cache.userSetMaxFrustumHeight <= 0
+                ? frustumHeight
+                : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
+            
+            // Special case: we are shrank to the mid point of the original input confiner area.
+            if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
+            {
+                return new BakedSolution(
+                    m_AspectStretcher.Aspect, frustumHeight, false,
+                    m_PolygonRect, m_OriginalPolygon, 
+                    new List<List<IntPoint>>{new List<IntPoint> { m_MidPoint }});
+            }
+
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset();
             offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
             var solution = new List<List<IntPoint>>();
             offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
-            
+
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
             if (State == BakingState.BAKING || m_Skeleton.Count == 0)
@@ -295,7 +281,7 @@ namespace Cinemachine
             }
             else
             {
-                Clipper c = new Clipper();
+                var c = new Clipper();
                 c.AddPaths(solution, PolyType.ptSubject, true);
                 c.AddPaths(m_Skeleton, PolyType.ptClip, true);
                 c.Execute(ClipType.ctUnion, bakedSolution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
@@ -307,25 +293,24 @@ namespace Cinemachine
                 m_PolygonRect, m_OriginalPolygon, bakedSolution);
         }
 
-        private struct PolygonSolution
+        struct PolygonSolution
         {
-            public List<List<IntPoint>> m_Polygons;
-            public float m_FrustumHeight;
+            public List<List<IntPoint>> polygons;
+            public float frustumHeight;
 
             public bool StateChanged(in List<List<IntPoint>> paths)
             {
-                if (paths.Count != m_Polygons.Count)
+                if (paths.Count != polygons.Count)
                     return true;
-                for (int i = 0; i < paths.Count; ++i)
+                for (var i = 0; i < paths.Count; ++i)
                 {
-                    if (paths[i].Count != m_Polygons[i].Count)
+                    if (paths[i].Count != polygons[i].Count)
                         return true;
                 }
 
                 return false;
             }
-
-            public bool IsEmpty => m_Polygons == null;
+            public bool IsNull => polygons == null;
         }
 
         public enum BakingState 
@@ -334,9 +319,9 @@ namespace Cinemachine
         }
         public BakingState State { get; private set; }
 
-        public float m_BakeProgress;
+        public float bakeProgress;
 
-        private struct BakingStateCache
+        struct BakingStateCache
         {
             public ClipperOffset offsetter;
             public List<PolygonSolution> solutions;
@@ -345,29 +330,36 @@ namespace Cinemachine
             public List<List<IntPoint>> maxCandidate;
             public float stepSize;
             public float maxFrustumHeight;
+            public float userSetMaxFrustumHeight;
+            public float theoriticalMaxFrustumHeight;
             public float currentFrustumHeight;
 
             public float bakeTime;
         }
-        private BakingStateCache m_Cache;
 
-        private void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        BakingStateCache m_Cache;
+
+        void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             m_Skeleton.Clear();
-            m_Cache.maxFrustumHeight = maxFrustumHeight;
+            m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
 
+            // calculate mid point and use it as the most shrank down version
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
+            
+            // Don't compute further than what is the theoretical max
+            m_Cache.theoriticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
             // Initialize clipper
             m_OriginalPolygon = new List<List<IntPoint>>(inputPath.Count);
             for (var i = 0; i < inputPath.Count; ++i)
             {
                 var srcPath = inputPath[i];
-                int numPoints = srcPath.Count;
+                var numPoints = srcPath.Count;
                 var path = new List<IntPoint>(numPoints);
-                for (int j = 0; j < numPoints; ++j)
+                for (var j = 0; j < numPoints; ++j)
                 {
                     // Neutralize the aspect ratio
                     var p = m_AspectStretcher.Stretch(srcPath[j]);
@@ -375,21 +367,20 @@ namespace Cinemachine
                 }
                 m_OriginalPolygon.Add(path);
             }
-            
-            // Skip the expensive skeleton calculation if it's not wanted
-            if (m_Cache.maxFrustumHeight  < 0)
+            m_MidPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
+
+            // Skip the expensive skeleton calculation if it's not wanted (oversized window off)
+            if (m_Cache.userSetMaxFrustumHeight < 0)
             {
                 State = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
                 return;
             }
 
-            // Don't compute further than what is the theoretical max
-            float polygonHalfHeight = Mathf.Min(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
-            
             // exact comparison to 0 is intentional!
-            if (m_Cache.maxFrustumHeight  == 0 || m_Cache.maxFrustumHeight  > polygonHalfHeight) 
+            m_Cache.maxFrustumHeight = m_Cache.userSetMaxFrustumHeight;
+            if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
             {
-                m_Cache.maxFrustumHeight = polygonHalfHeight; 
+                m_Cache.maxFrustumHeight = m_Cache.theoriticalMaxFrustumHeight;
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
 
@@ -397,29 +388,51 @@ namespace Cinemachine
             m_Cache.offsetter = new ClipperOffset();
             m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
 
-            List<List<IntPoint>> solution = new List<List<IntPoint>>();
+            var solution = new List<List<IntPoint>>();
             m_Cache.offsetter.Execute(ref solution, 0);
             
             m_Cache.solutions = new List<PolygonSolution>();
             m_Cache.solutions.Add(new PolygonSolution
             {
-                m_Polygons = solution,
-                m_FrustumHeight = 0,
+                polygons = solution,
+                frustumHeight = 0,
             });
 
             m_Cache.rightCandidate = new PolygonSolution();
             m_Cache.leftCandidate = new PolygonSolution
             {
-                m_Polygons = solution,
-                m_FrustumHeight = 0,
+                polygons = solution,
+                frustumHeight = 0,
             };
             m_Cache.currentFrustumHeight = 0;
             m_Cache.maxCandidate = new List<List<IntPoint>>();
-            m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.maxFrustumHeight * k_FloatToIntScaler);
+            m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.theoriticalMaxFrustumHeight * k_FloatToIntScaler);
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
-            m_BakeProgress = 0;
+            bakeProgress = 0;
+            
+            // local functions
+            Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
+            {
+                float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
+                float minY = float.PositiveInfinity, maxY = float.NegativeInfinity;
+                for (var i = 0; i < polygons.Count; ++i)
+                {
+                    for (var j = 0; j < polygons[i].Count; ++j)
+                    {
+                        var p = polygons[i][j];
+                        minX = Mathf.Min(minX, p.x);
+                        maxX = Mathf.Max(maxX, p.x);
+                        minY = Mathf.Min(minY, p.y);
+                        maxY = Mathf.Max(maxY, p.y);
+                    }
+                }
+                return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
+            }
+
+            IntPoint MidPointOfIntRect(IntRect bounds) => 
+                new IntPoint((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
         }
         
         /// <summary>
@@ -439,18 +452,17 @@ namespace Cinemachine
             
             while (m_Cache.solutions.Count < 1000)
             {
-                bool stateChangeFound = false;
-                var numPaths = m_Cache.leftCandidate.m_Polygons.Count;
+                var numPaths = m_Cache.leftCandidate.polygons.Count;
                 var candidate = new List<List<IntPoint>>(numPaths);
 
                 m_Cache.stepSize = Mathf.Min(m_Cache.stepSize, 
-                    m_Cache.maxFrustumHeight - m_Cache.leftCandidate.m_FrustumHeight);
+                    m_Cache.maxFrustumHeight - m_Cache.leftCandidate.frustumHeight);
 #if false
                 Debug.Log($"States = {solutions.Count}, "
                           + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
 #endif
                 m_Cache.currentFrustumHeight = 
-                    m_Cache.leftCandidate.m_FrustumHeight + m_Cache.stepSize;
+                    m_Cache.leftCandidate.frustumHeight + m_Cache.stepSize;
                 if (Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < 
                     UnityVectorExtensions.Epsilon)
                 {
@@ -461,14 +473,13 @@ namespace Cinemachine
                     m_Cache.offsetter.Execute(
                         ref candidate, -1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
                 }
-                stateChangeFound = m_Cache.leftCandidate.StateChanged(in candidate);
-
-                if (stateChangeFound)
+                
+                if (m_Cache.leftCandidate.StateChanged(in candidate))
                 {
                     m_Cache.rightCandidate = new PolygonSolution
                     {
-                        m_Polygons = candidate,
-                        m_FrustumHeight = m_Cache.currentFrustumHeight,
+                        polygons = candidate,
+                        frustumHeight = m_Cache.currentFrustumHeight,
                     };
                     m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
                 }
@@ -476,12 +487,12 @@ namespace Cinemachine
                 {
                     m_Cache.leftCandidate = new PolygonSolution
                     {
-                        m_Polygons = candidate,
-                        m_FrustumHeight = m_Cache.currentFrustumHeight,
+                        polygons = candidate,
+                        frustumHeight = m_Cache.currentFrustumHeight,
                     };
 
                     // if we have not found right yet, then we don't need to decrease stepsize
-                    if (!m_Cache.rightCandidate.IsEmpty)
+                    if (!m_Cache.rightCandidate.IsNull)
                     {
                         m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
                     }
@@ -489,7 +500,7 @@ namespace Cinemachine
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
                 // then we have located a state change point
-                if (!m_Cache.rightCandidate.IsEmpty && m_Cache.stepSize <= k_MinStepSize)
+                if (!m_Cache.rightCandidate.IsNull && m_Cache.stepSize <= k_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
                     m_Cache.solutions.Add(m_Cache.leftCandidate);
@@ -501,8 +512,8 @@ namespace Cinemachine
                     // Back to max step
                     m_Cache.stepSize = m_Cache.maxFrustumHeight;
                 }
-                else if (m_Cache.rightCandidate.IsEmpty || 
-                         m_Cache.leftCandidate.m_FrustumHeight >= m_Cache.maxFrustumHeight)
+                else if (m_Cache.rightCandidate.IsNull || 
+                         m_Cache.leftCandidate.frustumHeight >= m_Cache.maxFrustumHeight)
                 {
                     m_Cache.solutions.Add(m_Cache.leftCandidate);
                     break; // stop searching, because we are at the bound
@@ -513,78 +524,70 @@ namespace Cinemachine
                 if (elapsedTime > maxComputationTimePerFrameInSeconds)
                 {
                     m_Cache.bakeTime += elapsedTime;
-                    if (m_Cache.bakeTime > m_maxComputationTimeForFullSkeletonBakeInSeconds)
+                    if (m_Cache.bakeTime > m_MaxComputationTimeForFullSkeletonBakeInSeconds)
                     {
                         State = BakingState.TIMEOUT; 
                     }
-
-                    m_BakeProgress = m_Cache.leftCandidate.m_FrustumHeight / m_Cache.maxFrustumHeight;
+                
+                    bakeProgress = m_Cache.leftCandidate.frustumHeight / m_Cache.maxFrustumHeight;
                     return;
                 }
             }
 
             ComputeSkeleton(in m_Cache.solutions);
-            m_BakeProgress = 1;
-            State = BakingState.BAKED;
-        }
-        
-        private static Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
-        {
-            float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
-            float minY = float.PositiveInfinity, maxY = float.NegativeInfinity;
-            for (int i = 0; i < polygons.Count; ++i)
+
+            // Remove useless/empty results
+            for (var i = m_Cache.solutions.Count - 1; i >= 0; --i)
             {
-                var path = polygons[i];
-                for (int j = 0; j < path.Count; ++j)
+                if (m_Cache.solutions[i].polygons.Count == 0)
                 {
-                    var p = path[j];
-                    minX = Mathf.Min(minX, p.x);
-                    maxX = Mathf.Max(maxX, p.x);
-                    minY = Mathf.Min(minY, p.y);
-                    maxY = Mathf.Max(maxY, p.y);
+                    m_Cache.solutions.RemoveAt(i);
                 }
             }
-            return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
-        }
-        
-        private void ComputeSkeleton(in List<PolygonSolution> solutions)
-        {
-            // At each state change point, collect geometry that gets lost over the transition
-            var clipper = new Clipper();
-            var offsetter = new ClipperOffset();
-            for (int i = 1; i < solutions.Count - 1; i += 2)
+
+            bakeProgress = 1;
+            State = BakingState.BAKED;
+
+            void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
-                var prev = solutions[i];
-                var next = solutions[i+1];
-
-                const int padding = 5; // to counteract precision problems - inflates small regions
-                double step = padding * k_FloatToIntScaler * (next.m_FrustumHeight - prev.m_FrustumHeight);
-
-                // Grow the larger polygon to inflate marginal regions
-                var expandedPrev = new List<List<IntPoint>>();
-                offsetter.Clear();
-                offsetter.AddPaths(prev.m_Polygons, JoinType.jtMiter, EndType.etClosedPolygon);
-                offsetter.Execute(ref expandedPrev, step);
-
-                // Grow the smaller polygon to be a bit bigger than the expanded larger one
-                var expandedNext = new List<List<IntPoint>>();
-                offsetter.Clear();
-                offsetter.AddPaths(next.m_Polygons, JoinType.jtMiter, EndType.etClosedPolygon);
-                offsetter.Execute(ref expandedNext, step * 2);
-
-                // Compute the difference - this is the lost geometry
-                var solution = new List<List<IntPoint>>();
-                clipper.Clear();
-                clipper.AddPaths(expandedPrev, PolyType.ptSubject, true);
-                clipper.AddPaths(expandedNext, PolyType.ptClip, true);
-                clipper.Execute(ClipType.ctDifference, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-
-                // Add that lost geometry to the skeleton
-                if (solution.Count > 0 && solution[0].Count > 0)
+                // At each state change point, collect geometry that gets lost over the transition
+                var clipper = new Clipper();
+                var offsetter = new ClipperOffset();
+                for (int i = 1; i < solutions.Count - 1; i += 2)
                 {
-                    m_Skeleton.AddRange(solution);
-                    if (m_MinFrustumHeightWithBones == float.MaxValue)
-                        m_MinFrustumHeightWithBones = next.m_FrustumHeight;
+                    var prev = solutions[i];
+                    var next = solutions[i+1];
+
+                    const int padding = 5; // to counteract precision problems - inflates small regions
+                    double step = padding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
+
+                    // Grow the larger polygon to inflate marginal regions
+                    var expandedPrev = new List<List<IntPoint>>();
+                    offsetter.Clear();
+                    offsetter.AddPaths(prev.polygons, JoinType.jtMiter, EndType.etClosedPolygon);
+                    offsetter.Execute(ref expandedPrev, step);
+
+                    // Grow the smaller polygon to be a bit bigger than the expanded larger one
+                    var expandedNext = new List<List<IntPoint>>();
+                    offsetter.Clear();
+                    offsetter.AddPaths(next.polygons, JoinType.jtMiter, EndType.etClosedPolygon);
+                    offsetter.Execute(ref expandedNext, step * 2);
+
+                    // Compute the difference - this is the lost geometry
+                    var solution = new List<List<IntPoint>>();
+                    clipper.Clear();
+                    clipper.AddPaths(expandedPrev, PolyType.ptSubject, true);
+                    clipper.AddPaths(expandedNext, PolyType.ptClip, true);
+                    clipper.Execute(ClipType.ctDifference, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+
+                    // Add that lost geometry to the skeleton
+                    if (solution.Count > 0 && solution[0].Count > 0)
+                    {
+                        m_Skeleton.AddRange(solution);
+                        // Exact comparison is intentional
+                        if (m_MinFrustumHeightWithBones == float.MaxValue)
+                            m_MinFrustumHeightWithBones = next.frustumHeight;
+                    }
                 }
             }
         }
