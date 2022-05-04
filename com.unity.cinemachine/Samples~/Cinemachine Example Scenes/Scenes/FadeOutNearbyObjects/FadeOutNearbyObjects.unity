@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44476107, g: 0.4943056, b: 0.57351315, a: 1}
+  m_IndirectSpecularColor: {r: 0.44594187, g: 0.49568754, b: 0.5744092, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -740,7 +740,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LookAtTargetRadius: 1
   m_MinDistance: 0
-  m_MaxDistance: 9.307764
+  m_MaxDistance: 13.221462
   m_SetToCameraToLookAtDistance: 1
   m_FadeOutMaterial: {fileID: 2100000, guid: c43213e1494d8486881b6aa626ebee03, type: 2}
 --- !u!114 &299184969
@@ -843,13 +843,13 @@ MonoBehaviour:
   Radius: 10
   Orbits:
     Top:
-      Radius: 5
+      Radius: 8
       Height: 15.6
     Center:
-      Radius: 10
+      Radius: 14
       Height: 2.5
     Bottom:
-      Radius: 7
+      Radius: 8
       Height: 0
     SplineCurvature: 0.5
   HorizontalAxis:
@@ -925,8 +925,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 299184967}
-  m_LocalRotation: {x: 0.10667207, y: 0.48397756, z: -0.059580352, w: 0.86650854}
-  m_LocalPosition: {x: -8.514524, y: 3.5, z: -1.4443185}
+  m_LocalRotation: {x: 0.0770375, y: 0.48572895, z: -0.043028332, w: 0.8696443}
+  m_LocalPosition: {x: -11.920334, y: 3.5, z: -3.5420458}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2584,8 +2584,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.10667207, y: 0.48397756, z: -0.059580352, w: 0.86650854}
-  m_LocalPosition: {x: -8.514524, y: 3.5, z: -1.4443185}
+  m_LocalRotation: {x: 0.0770375, y: 0.48572895, z: -0.043028332, w: 0.8696443}
+  m_LocalPosition: {x: -11.920334, y: 3.5, z: -3.5420458}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2789,7 +2789,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa14cc4c274b78b4c820064214bdbb60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 20
+  Speed: 10
   VelocityDamping: 0.2
   JumpTime: 1
   InputForward: 0
