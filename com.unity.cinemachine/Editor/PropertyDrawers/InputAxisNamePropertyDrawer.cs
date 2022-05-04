@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using System;
 
 namespace Cinemachine.Editor
@@ -37,5 +39,25 @@ namespace Cinemachine.Editor
                 EditorGUIUtility.labelWidth = oldLabelWidth;
             }
         }
+#if false  // GML incomplete code.  This is not working yet in UITK - stay in IMGUI for now
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
+            row.Add(new PropertyField(property, "") { style = { flexGrow = 1 }});
+            var error = new Label 
+            { 
+                style = 
+                { 
+                    flexGrow = 0,
+                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.erroricon.sml").image,
+                    width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                    alignSelf = Align.Center,
+                    paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                }
+            };
+            row.Add(error);
+            return row;
+        }
+#endif
     }
 }
