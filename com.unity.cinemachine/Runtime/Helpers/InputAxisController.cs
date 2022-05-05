@@ -79,7 +79,7 @@ namespace Cinemachine
         /// <summary>
         /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisTarget"/>
         /// </summary>
-        List<IInputAxisTarget.AxisDescriptor> m_Axes = new List<IInputAxisTarget.AxisDescriptor>();
+        List<AxisDescriptor> m_Axes = new List<AxisDescriptor>();
         List<IInputAxisTarget> m_AxisTargets = new List<IInputAxisTarget>();
 
         void OnValidate()

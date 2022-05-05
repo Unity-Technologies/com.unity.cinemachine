@@ -206,21 +206,21 @@ namespace Cinemachine
         }
 
         /// <summary>Report the available input axes</summary>
-        public void GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
+        public void GetInputAxes(List<AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = RadialAxis, Name = "Radial", AxisIndex = 2 });
+            axes.Add(new AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
+            axes.Add(new AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
+            axes.Add(new AxisDescriptor { Axis = RadialAxis, Name = "Radial", AxisIndex = 2 });
         }
 
-        IInputAxisTarget.ResetHandler m_ResetHandler;
-        public void RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
+        ResetHandler m_ResetHandler;
+        public void RegisterResetHandler(ResetHandler handler) => m_ResetHandler += handler;
 
         /// <summary>
         /// Unregister a handler that will be called when input needs to be reset
         /// </summary>
         /// <param name="handler">Then hanlder to unregister</param>
-        public void UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
+        public void UnregisterResetHandler(ResetHandler handler) => m_ResetHandler -= handler;
 
         /// <summary>Inspector checks this and displays warnng if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;

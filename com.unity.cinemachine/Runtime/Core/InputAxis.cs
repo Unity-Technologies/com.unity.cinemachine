@@ -6,34 +6,34 @@ using System.Collections.Generic;
 namespace Cinemachine
 {
     /// <summary>
+    /// Delegate to be called when input needs to be reset and recentering cancelled.
+    /// </summary>
+    public delegate void ResetHandler();
+    
+    /// <summary>
+    /// Describes an axis for an axis driver
+    /// </summary>
+    public struct AxisDescriptor
+    {
+        /// <summary>The axis to drive</summary>
+        public InputAxis Axis;
+        /// <summary>The name to display for the axis</summary>
+        public string Name;
+        /// <summary>Indicates what axis is being driven: 0=x, 1=y, 2=z.  
+        /// Used only for setting up default values.</summary>
+        public int AxisIndex;
+    }
+    
+    /// <summary>
     /// Components that hold InputAxisValue structs
     /// </summary>
     public interface IInputAxisTarget
     {
         /// <summary>
-        /// Desscribes an axis for an axis driver
-        /// </summary>
-        public struct AxisDescriptor
-        {
-            /// <summary>The axis to drive</summary>
-            public InputAxis Axis;
-            /// <summary>The name to display for the axis</summary>
-            public string Name;
-            /// <summary>Indicates what axis is being driven: 0=x, 1=y, 2=z.  
-            /// Used only for setting up default values.</summary>
-            public int AxisIndex;
-        }
-
-        /// <summary>
         /// Report the input axis to be driven, and their names
         /// </summary>
         /// <param name="axes">Axes to drive</param>
         public void GetInputAxes(List<AxisDescriptor> axes);
-
-        /// <summary>
-        /// Delegate to be called when input needs to be reset and recentering cancelled.
-        /// </summary>
-        public delegate void ResetHandler();
 
         /// <summary>
         /// Register a handler that will be called when input needs to be reset
