@@ -62,10 +62,6 @@ namespace Tests
                 // We expect that the last one added should be in the pipeline
                 Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == cmComponent); // pipeline is rebuilt correctly
             }
-
-            yield return null;
-            var components = m_CmCamera.transform.GetComponents<CinemachineComponentBase>();
-            Assert.That(components.Length, Is.EqualTo(4));
         }
         
         [UnityTest]
