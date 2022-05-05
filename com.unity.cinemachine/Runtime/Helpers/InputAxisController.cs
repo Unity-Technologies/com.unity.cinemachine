@@ -212,9 +212,9 @@ namespace Cinemachine
             c.InputName = GetDefaultInputName(m_Axes[axisIndex].AxisIndex);
             c.Gain *= 3;
 
-            string GetDefaultInputName(int axisIndex)
+            string GetDefaultInputName(int aIndex)
             {
-                switch (axisIndex)
+                switch (aIndex)
                 {
                     case 0: return "Mouse X";
                     case 1: return "Mouse Y";
