@@ -32,14 +32,14 @@ namespace Cinemachine
         {
             var vcam = VirtualCamera as CmCamera;
             if (vcam != null)
-                vcam.PipelineChanged();
+                vcam.InvalidatePipelineCache();
         }
 
         protected virtual void OnDisable()
         {
             var vcam = VirtualCamera as CmCamera;
             if (vcam != null)
-                vcam.PipelineChanged();
+                vcam.InvalidatePipelineCache();
         }
 
         /// <summary>Returns the owner vcam's Follow target.</summary>

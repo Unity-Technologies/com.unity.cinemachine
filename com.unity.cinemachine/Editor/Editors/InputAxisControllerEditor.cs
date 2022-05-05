@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+using System;
+using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
@@ -8,7 +12,7 @@ namespace Cinemachine.Editor
     {
         public override void OnInspectorGUI()
         {
-            var Target = (InputAxisController)target;
+            var Target = target as InputAxisController;
             if (Target != null && !Target.ConrollersAreValid())
             {
                 Undo.RecordObject(Target, "SynchronizeControllers");
@@ -91,5 +95,72 @@ namespace Cinemachine.Editor
             }
         }
 #endif
+
     }
+#if false // GML incomplete code.  This is not working yet in UITK - stay in IMGUI for now
+        public override VisualElement CreateInspectorGUI()
+        {
+            var Target = target as InputAxisController;
+
+            var ux = new VisualElement();
+
+            ux.Add(new PropertyField(serializedObject.FindProperty("PlayerIndex")));
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            ux.Add(new PropertyField(serializedObject.FindProperty("AutoEnableInputs"));
+#endif
+            ux.AddSpace();
+
+            //var list = new PropertyField(serializedObject.FindProperty("Controllers"))
+            var list = new ListView()
+            {
+                reorderable = false,
+                showAddRemoveFooter = false,
+                showBorder = false,
+                showBoundCollectionSize = false,
+                showFoldoutHeader = false,
+                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
+            };
+            list.BindProperty(serializedObject.FindProperty("Controllers"));
+            ux.Add(list);
+
+            return ux;
+        }
+    }
+
+    [CustomPropertyDrawer(typeof(InputAxisController.Controller))]
+    sealed class InputAxisControllerItemPropertyDrawer : PropertyDrawer
+    {
+        InputAxisController.Controller m_def = new InputAxisController.Controller();
+
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            // Draw the input value on the same line as the foldout, for convenience
+            SerializedProperty inputProp = null;
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            inputProp = property.FindPropertyRelative(() => m_def.InputAction);
+#elif ENABLE_LEGACY_INPUT_MANAGER
+            inputProp = property.FindPropertyRelative(() => m_def.InputName);
+#endif
+            var overlay = new PropertyField(inputProp, "") { style = {flexGrow = 1}};
+
+            var foldout = new Foldout()
+            {
+                text = property.displayName,
+                tooltip = property.tooltip,
+                value = property.isExpanded
+            };
+            var childProperty = property.Copy();
+            var endProperty = childProperty.GetEndProperty();
+            childProperty.NextVisible(true);
+            while (!SerializedProperty.EqualContents(childProperty, endProperty))
+            {
+                foldout.Add(new PropertyField(childProperty));
+                childProperty.NextVisible(false);
+            }
+            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null);
+        }
+
+        //VisualElement CreateInputAxisNameControl(
+    }
+#endif
 }
