@@ -2,7 +2,8 @@
     "name": "Cinemachine.Editor.Tests",
     "references": [
         "Cinemachine",
-        "com.unity.cinemachine.editor"
+        "com.unity.cinemachine.editor",
+        "Cinemachine.Shared.Tests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
