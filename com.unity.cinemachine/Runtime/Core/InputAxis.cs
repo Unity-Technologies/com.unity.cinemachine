@@ -33,19 +33,19 @@ namespace Cinemachine
         /// Report the input axis to be driven, and their names
         /// </summary>
         /// <param name="axes">Axes to drive</param>
-        public void GetInputAxes(List<AxisDescriptor> axes);
+        void GetInputAxes(List<AxisDescriptor> axes);
 
         /// <summary>
         /// Register a handler that will be called when input needs to be reset
         /// </summary>
         /// <param name="handler">Then hanlder to register</param>
-        public void RegisterResetHandler(ResetHandler handler);
+        void RegisterResetHandler(ResetHandler handler);
 
         /// <summary>
         /// Unregister a handler that will be called when input needs to be reset
         /// </summary>
         /// <param name="handler">Then hanlder to unregister</param>
-        public void UnregisterResetHandler(ResetHandler handler);
+        void UnregisterResetHandler(ResetHandler handler);
     }
 
     /// <summary>
