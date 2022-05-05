@@ -163,7 +163,7 @@ namespace Cinemachine.Editor
                         var oldType = oldComponent == null ? null : oldComponent.GetType();
                         if (newType != oldType)
                         {
-                            t.PipelineChanged();
+                            t.InvalidatePipelineCache();
                             if (oldComponent != null)
                                 Undo.DestroyObjectImmediate(oldComponent);
                             if (newType != null)
