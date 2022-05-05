@@ -1,5 +1,6 @@
 {
     "name": "Cinemachine",
+    "rootNamespace": "",
     "references": [
         "Unity.Timeline",
         "Unity.Postprocessing.Runtime",
@@ -9,7 +10,9 @@
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.2D.PixelPerfect",
         "Unity.InputSystem",
-        "Unity.RenderPipelines.Universal.2D.Runtime"
+        "Unity.RenderPipelines.Universal.2D.Runtime",
+        "Unity.Splines",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -80,6 +83,11 @@
             "name": "com.unity.modules.imgui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_IMGUI"
+        },
+        {
+            "name": "com.unity.splines",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_SPLINES"
         }
     ],
     "noEngineReferences": false

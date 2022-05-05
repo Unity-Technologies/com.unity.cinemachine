@@ -3,6 +3,7 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -117,7 +118,22 @@ namespace Cinemachine.Editor
         {
             if (name.StartsWith("Cinemachine"))
                 name = name.Substring(11); // Trim the prefix
+            
             return ObjectNames.NicifyVariableName(name);
+        }
+        
+        public static string NicifyClassName(Type type)
+        {
+            var name = type.Name;
+            if (name.StartsWith("Cinemachine"))
+                name = name.Substring(11); // Trim the prefix
+            
+            name = ObjectNames.NicifyVariableName(name);
+            
+            if (type.GetCustomAttribute<ObsoleteAttribute>() != null) 
+                name += " (Obsolete)";
+
+            return name;
         }
 
         /// <summary>

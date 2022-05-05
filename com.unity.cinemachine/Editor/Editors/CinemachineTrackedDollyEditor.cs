@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
+#if UNITY_2022_1_OR_NEWER
+    [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
+#endif   
     internal sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
@@ -53,13 +56,13 @@ namespace Cinemachine.Editor
         {
             if (target.IsValid)
             {
-                CinemachinePathBase path = target.m_Path;
+                var path = target.m_Path;
                 if (path != null)
                 {
                     var isActive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
                     CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
-                    Vector3 pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
-                    Color oldColor = Gizmos.color;
+                    var pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
+                    var oldColor = Gizmos.color;
                     Gizmos.color = isActive
                         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                         : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
