@@ -12,6 +12,7 @@
         "Unity.InputSystem",
         "Unity.Splines",
         "Unity.Mathematics"
+        "Unity.RenderPipelines.Universal.2D.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
