@@ -40,7 +40,6 @@ namespace Cinemachine.Editor
                     typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract &&
                     t.GetCustomAttribute<CameraPipelineAttribute>() != null);
 
-                // Create a temp game object so we can instance behaviours
                 foreach (var t in allTypes)
                 {
                     var stage = (int)t.GetCustomAttribute<CameraPipelineAttribute>().Stage;
@@ -52,14 +51,13 @@ namespace Cinemachine.Editor
                 {
                     stageTypes[i].Insert(0, null);  // first item is "none"
                     sStageData[i].types = stageTypes[i].ToArray();
-                    GUIContent[] names = new GUIContent[sStageData[i].types.Length];
+                    var names = new GUIContent[sStageData[i].types.Length];
                     for (int n = 0; n < names.Length; ++n)
                     {
                         if (n == 0)
                         {
-                            bool useSimple
-                                = (i == (int)CinemachineCore.Stage.Aim)
-                                    || (i == (int)CinemachineCore.Stage.Body);
+                            bool useSimple = (i == (int)CinemachineCore.Stage.Aim) ||
+                                (i == (int)CinemachineCore.Stage.Body);
                             names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
                         }
                         else
