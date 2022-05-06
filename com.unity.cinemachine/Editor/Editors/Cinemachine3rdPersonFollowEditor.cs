@@ -35,6 +35,19 @@ namespace Cinemachine.Editor
                 Gizmos.color = originalGizmoColour;
             }
         }
+        
+        public override void OnInspectorGUI()
+        {
+            BeginInspector();
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as Cinemachine3rdPersonFollow).FollowTarget == null;
+            if (needWarning)
+                EditorGUILayout.HelpBox(
+                    "3rd Person Follow requires a Follow Target.  Change Body to Do Nothing if you don't want a Follow target.",
+                    MessageType.Warning);
+            DrawRemainingPropertiesInInspector();
+        }
 
 #if UNITY_2021_2_OR_NEWER
         protected virtual void OnEnable()
