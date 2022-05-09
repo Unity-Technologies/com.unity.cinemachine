@@ -41,7 +41,7 @@ namespace Cinemachine
             //TODO: var freelookPrefabs = allPrefabs.Where(p => p.GetComponent<CinemachineFreeLook>() != null).ToList();
 
             // Sort by no variant prefabs first
-            vcamPrefabs.Sort(delegate(GameObject a, GameObject b)
+            vcamPrefabs.Sort((a, b) =>
             {
                 var aIsVariant = PrefabUtility.IsPartOfVariantPrefab(a);
                 var bIsVariant = PrefabUtility.IsPartOfVariantPrefab(b);
@@ -53,10 +53,7 @@ namespace Cinemachine
                 return a.name.CompareTo(b.name);
             });
 
-            vcamPrefabs.ForEach(delegate(GameObject o)
-            {
-                Debug.Log(o.name);
-            });
+            vcamPrefabs.ForEach(o => Debug.Log(o.name));
 
             try
             {
