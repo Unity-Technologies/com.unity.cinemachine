@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - BugFix: InputProvider no longer causes a tiny gc alloc every frame.
 - Regression fix: CinemachineCollider smoothing time did not reset correctly, so it was working once only.
 - Bugfix: Confiner2D now displays the calculated confining area when its vcam is selected.
+- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
 
 
 ## [2.9.0-pre.1] - 2021-10-26
