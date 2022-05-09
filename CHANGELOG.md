@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
 - Bugfix: POV orientation was incorrect with World Up override
 - Added AutoEnable option to CinemachineInputHandler
+- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
 
 
 ## [2.6.11] - 2021-10-05
