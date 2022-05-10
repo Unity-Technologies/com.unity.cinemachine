@@ -36,9 +36,11 @@ namespace Cinemachine
 
             // Ignore prefabs that are not CinemachineVirtualCameras or CinemachineFreeLooks.
             var vcamPrefabs =
-                allPrefabs.Where(p => p.GetComponent<CinemachineVirtualCamera>() != null).ToList();
-
-            //TODO: var freelookPrefabs = allPrefabs.Where(p => p.GetComponent<CinemachineFreeLook>() != null).ToList();
+                allPrefabs.Where(p =>
+                        p.GetComponent<CinemachineVirtualCamera>() != null ||
+                        p.GetComponent<CinemachineFreeLook>() != null)
+                    .ToList();
+            //var freelookPrefabs = allPrefabs.Where(p => p.GetComponent<CinemachineFreeLook>() != null).ToList();
 
             // Sort by no variant prefabs first
             vcamPrefabs.Sort((a, b) =>
@@ -109,17 +111,20 @@ namespace Cinemachine
                     EditorUtility.DisplayProgressBar($"Refactoring {allScenesGuids.Count} scenes", scenePath, i / (float)allScenesCount);
 
                     var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-                    var componentsList = new List<CinemachineVirtualCamera>();
-
-                    // TODO: don't forget freelooks, and do them first
+                    var componentsList = new List<CinemachineVirtualCameraBase>();
 
                     var rootObjects = scene.GetRootGameObjects();
                     foreach (var go in rootObjects)
                     {
-                        var components = go.GetComponentsInChildren<CinemachineVirtualCamera>(true);
-                        componentsList.AddRange(components.ToList());
+                        var freelooks = go.GetComponentsInChildren<CinemachineFreeLook>(true);
+                        componentsList.AddRange(freelooks.ToList());
                     }
-
+                    foreach (var go in rootObjects)
+                    {
+                        var vcams = go.GetComponentsInChildren<CinemachineVirtualCamera>(true);
+                        componentsList.AddRange(vcams.ToList());
+                    }
+                    
                     var modified = false;
                     foreach (var component in componentsList)
                     {
@@ -143,8 +148,9 @@ namespace Cinemachine
                     EditorUtility.ClearProgressBar();
                 }
             }
-
+            
             Debug.Log("UpgradeFromCM2toCM3 end!");
+            
         }
 
         /// <summary>
@@ -155,22 +161,65 @@ namespace Cinemachine
         static bool UpgradeCmVirtualCameraToCmCamera(GameObject old)
         {
             Debug.Log("Upgrading " + old.name + " to CM3!");
+            old.TryGetComponent<CinemachineFreeLook>(out var freeLook);
+            if (freeLook != null)
+            {
+                freeLook.enabled = false;
+                return UpgradeFreelook(freeLook);
+            }
             old.TryGetComponent<CinemachineVirtualCamera>(out var vcam);
             if (vcam != null)
             {
                 vcam.enabled = false;
+                return UpgradeCmVirtualCamera(vcam);
             }
-
-            var cmCamera = old.AddComponent<CmCamera>();
-
-            // TODO: need to convert data, not just delete
-            if (cmCamera != null)
-            {
-                cmCamera.enabled = true;
-            }
-            DestroyImmediate(vcam);
 
             return true;
+        }
+
+        static bool UpgradeCmVirtualCamera(CinemachineVirtualCamera vcam)
+        {
+            var go = vcam.gameObject;
+            vcam.enabled = false;
+            
+            var cmCamera = go.AddComponent<CmCamera>();
+
+            var oldPipeline = vcam.GetComponentPipeline();
+            foreach (var oldComponent in oldPipeline)
+            {
+                if (oldComponent != null)
+                {
+                    var newComponent = (CinemachineComponentBase)go.AddComponent(oldComponent.GetType());
+                    CopyValues(oldComponent, newComponent);
+                }
+            }
+
+            var extensions = go.GetComponents<CinemachineExtension>();
+            foreach (var extension in extensions)
+            {
+                cmCamera.AddExtension(extension);
+            }
+
+            var pipelineHolder = vcam.gameObject.GetComponentInChildren<CinemachinePipeline>().gameObject;
+            DestroyImmediate(pipelineHolder);
+            
+            DestroyImmediate(vcam);
+            return true;
+        }
+
+        static bool UpgradeFreelook(CinemachineFreeLook freelook)
+        {
+            var go = freelook.gameObject;
+            freelook.enabled = false;
+            var cmCamera = go.AddComponent<CmCamera>();
+            
+            DestroyImmediate(freelook);
+            return true;
+        }
+        
+        static void CopyValues<T>(T from, T to) {
+            var json = JsonUtility.ToJson(from);
+            JsonUtility.FromJsonOverwrite(json, to);
         }
     }
 }
