@@ -183,6 +183,12 @@ namespace Cinemachine
             vcam.enabled = false;
             
             var cmCamera = go.AddComponent<CmCamera>();
+            cmCamera.Priority = vcam.Priority;
+            cmCamera.m_StandbyUpdate = vcam.m_StandbyUpdate;
+            cmCamera.Follow = vcam.Follow;
+            cmCamera.LookAt = vcam.LookAt;
+            cmCamera.m_Lens = vcam.m_Lens;
+            cmCamera.m_Transitions = vcam.m_Transitions;
 
             var oldPipeline = vcam.GetComponentPipeline();
             foreach (var oldComponent in oldPipeline)
