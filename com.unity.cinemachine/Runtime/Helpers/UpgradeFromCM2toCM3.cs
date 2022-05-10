@@ -166,13 +166,11 @@ namespace Cinemachine
             old.TryGetComponent<CinemachineFreeLook>(out var freeLook);
             if (freeLook != null)
             {
-                freeLook.enabled = false;
                 return UpgradeFreelook(freeLook);
             }
             old.TryGetComponent<CinemachineVirtualCamera>(out var vcam);
             if (vcam != null)
             {
-                vcam.enabled = false;
                 return UpgradeCmVirtualCamera(vcam);
             }
 
@@ -216,10 +214,12 @@ namespace Cinemachine
 
         static bool UpgradeFreelook(CinemachineFreeLook freelook)
         {
-            // TODO: need to rule out freelooks that are not convertible
-            // - Different noise profiles on top, mid, bottom
-            // - Different Aim components or same Aim components but different parameters
-            
+            if (!IsFreelookUpgradable(freelook))
+            {
+                Debug.LogWarning("Freelook camera (" + freelook.name + ") is not upgradable automatically. Please upgrade manually!");
+                return false;
+            }
+
             var go = freelook.gameObject;
             freelook.enabled = false;
             var oldExtensions = go.GetComponents<CinemachineExtension>();
@@ -252,6 +252,40 @@ namespace Cinemachine
         static void CopyValues<T>(T from, T to) {
             var json = JsonUtility.ToJson(from);
             JsonUtility.FromJsonOverwrite(json, to);
+        }
+
+        static bool IsFreelookUpgradable(CinemachineFreeLook freelook)
+        {
+            // - Different noise profiles on top, mid, bottom
+            // - Different Aim components or same Aim components but different parameters
+            var top = freelook.GetRig(0);
+            var mid = freelook.GetRig(1);
+            var bottom = freelook.GetRig(2);
+            var midNoise = mid.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            var midAim = mid.GetCinemachineComponent(CinemachineCore.Stage.Aim);
+
+            var result1 = IsEqualNoise(top.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>(), midNoise);
+            var result2 = IsEqualNoise(bottom.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>(), midNoise);
+            var result3 = IsEqualAim(top.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim);
+            var result4 = IsEqualAim(bottom.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim);
+
+            return result1 && result2 && result3 && result4;
+
+            static bool IsEqualNoise(CinemachineBasicMultiChannelPerlin a, CinemachineBasicMultiChannelPerlin b)
+            {
+                return a == null || b == null || 
+                    ((a.m_NoiseProfile == null || b.m_NoiseProfile == null || a.m_NoiseProfile == b.m_NoiseProfile) 
+                        && a.m_PivotOffset == b.m_PivotOffset);
+            }
+
+            static bool IsEqualAim(CinemachineComponentBase a, CinemachineComponentBase b)
+            {
+                var aType = a == null ? null : a.GetType();
+                var bType = b == null ? null : b.GetType();
+                var aeb = aType == bType;
+                //var aEb = a.Equals(b); // TODO: using reflection
+                return aeb;
+            }
         }
 
         static Cinemachine3OrbitRig.Settings ConvertFreelookSettings(CinemachineFreeLook freelook)
