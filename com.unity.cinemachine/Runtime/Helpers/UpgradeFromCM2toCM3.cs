@@ -6,6 +6,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+// suppress obsolete warnings
+#pragma warning disable CS0618 
 
 namespace Cinemachine
 {
@@ -181,10 +183,10 @@ namespace Cinemachine
         {
             var go = vcam.gameObject;
             vcam.enabled = false;
+            var oldExtensions = go.GetComponents<CinemachineExtension>();
             
             var cmCamera = go.AddComponent<CmCamera>();
-            cmCamera.Priority = vcam.Priority;
-            cmCamera.m_StandbyUpdate = vcam.m_StandbyUpdate;
+            CopyValues<CinemachineVirtualCameraBase>(vcam, cmCamera);
             cmCamera.Follow = vcam.Follow;
             cmCamera.LookAt = vcam.LookAt;
             cmCamera.m_Lens = vcam.m_Lens;
@@ -200,8 +202,7 @@ namespace Cinemachine
                 }
             }
 
-            var extensions = go.GetComponents<CinemachineExtension>();
-            foreach (var extension in extensions)
+            foreach (var extension in oldExtensions)
             {
                 cmCamera.AddExtension(extension);
             }
@@ -215,9 +216,34 @@ namespace Cinemachine
 
         static bool UpgradeFreelook(CinemachineFreeLook freelook)
         {
+            // TODO: need to rule out freelooks that are not convertible
+            // - Different noise profiles on top, mid, bottom
+            // - Different Aim components or same Aim components but different parameters
+            
             var go = freelook.gameObject;
             freelook.enabled = false;
+            var oldExtensions = go.GetComponents<CinemachineExtension>();
+            
             var cmCamera = go.AddComponent<CmCamera>();
+            CopyValues<CinemachineVirtualCameraBase>(freelook, cmCamera);
+            cmCamera.Follow = freelook.Follow;
+            cmCamera.LookAt = freelook.LookAt;
+            cmCamera.m_Lens = freelook.m_Lens;
+            cmCamera.m_Transitions = freelook.m_Transitions;
+            
+            var orbitalFollow = go.AddComponent<CinemachineOrbitalFollow>();
+            orbitalFollow.Orbits = ConvertFreelookSettings(freelook);
+            orbitalFollow.BindingMode = freelook.m_BindingMode;
+
+            var freeLookModifier = go.AddComponent<CinemachineFreeLookModifier>();
+            ConvertFreelookBody(freelook, orbitalFollow, freeLookModifier);
+            ConvertFreelookAim(freelook, go);
+            ConvertFreelookNoise(freelook, go, freeLookModifier);
+            
+            foreach (var extension in oldExtensions)
+            {
+                cmCamera.AddExtension(extension);
+            }
             
             DestroyImmediate(freelook);
             return true;
@@ -226,6 +252,93 @@ namespace Cinemachine
         static void CopyValues<T>(T from, T to) {
             var json = JsonUtility.ToJson(from);
             JsonUtility.FromJsonOverwrite(json, to);
+        }
+
+        static Cinemachine3OrbitRig.Settings ConvertFreelookSettings(CinemachineFreeLook freelook)
+        {
+            var orbits = freelook.m_Orbits;
+            return new Cinemachine3OrbitRig.Settings
+            {
+                Top = new Cinemachine3OrbitRig.Orbit
+                {
+                    Height = orbits[0].m_Height,
+                    Radius = orbits[0].m_Radius,
+                },
+                Center = new Cinemachine3OrbitRig.Orbit
+                {
+                    Height = orbits[1].m_Height,
+                    Radius = orbits[1].m_Radius,
+                },
+                Bottom = new Cinemachine3OrbitRig.Orbit
+                {
+                    Height = orbits[2].m_Height,
+                    Radius = orbits[2].m_Radius,
+                },
+                SplineCurvature = freelook.m_SplineCurvature,
+            };
+        }
+
+        static void ConvertFreelookBody(CinemachineFreeLook freelook, 
+            CinemachineOrbitalFollow orbitalFollow, CinemachineFreeLookModifier freeLookModifier)
+        {
+            var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+            var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+            var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+
+            orbitalFollow.PositionDamping = new Vector3(middle.m_XDamping, middle.m_YDamping, middle.m_ZDamping);
+            freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.PositionDampingModifier 
+            {
+                Damping = new CinemachineFreeLookModifier.TopBottomRigs<Vector3>
+                {
+                    Top = new Vector3 { x = 0, y = top.m_YDamping, z = top.m_ZDamping },
+                    Bottom = new Vector3 { x = 0, y = bottom.m_YDamping, z = bottom.m_ZDamping },
+                },
+            });
+        }
+
+        static void ConvertFreelookAim(CinemachineFreeLook freelook,
+            GameObject go)
+        {
+            var middle = freelook.GetRig(1).GetCinemachineComponent(CinemachineCore.Stage.Aim);
+            if (middle == null)
+            {
+                return;
+            }
+            var newComponent = (CinemachineComponentBase)go.AddComponent(middle.GetType());
+            CopyValues(middle, newComponent);
+        }
+
+        static void ConvertFreelookNoise(CinemachineFreeLook freelook, 
+            GameObject go, CinemachineFreeLookModifier freeLookModifier)
+        {
+            var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            if (middle == null)
+            {
+                return;
+            }
+            
+            var middleNoise = go.AddComponent<CinemachineBasicMultiChannelPerlin>();
+            CopyValues(middle, middleNoise);
+            
+            var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            
+            freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.NoiseModifier
+            {
+                Noise = new CinemachineFreeLookModifier.TopBottomRigs<CinemachineFreeLookModifier.NoiseModifier.NoiseSettings>
+                {
+                    Top = new CinemachineFreeLookModifier.NoiseModifier.NoiseSettings
+                    {
+                        Amplitude = top == null ? 0 : top.m_AmplitudeGain,
+                        Frequency = top == null ? 0 : top.m_FrequencyGain,
+                    },
+                    Bottom = new CinemachineFreeLookModifier.NoiseModifier.NoiseSettings
+                    {
+                        Amplitude = bottom == null ? 0 : bottom.m_AmplitudeGain,
+                        Frequency = bottom == null ? 0 : bottom.m_FrequencyGain,
+                    }
+                }
+            });
         }
     }
 }
