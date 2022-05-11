@@ -129,6 +129,8 @@ namespace Cinemachine
                     var modified = false;
                     foreach (var component in componentsList)
                     {
+                        if (component == null) continue;
+                        
                         var go = component.gameObject;
                         if (UpgradeCmVirtualCameraToCmCamera(go))
                         {
@@ -178,8 +180,6 @@ namespace Cinemachine
 
         static bool UpgradeCmVirtualCamera(CinemachineVirtualCamera vcam)
         {
-            return false; // TODO: remove
-            
             var go = vcam.gameObject;
             vcam.enabled = false;
             var oldExtensions = go.GetComponents<CinemachineExtension>();
@@ -208,7 +208,6 @@ namespace Cinemachine
 
             var pipelineHolder = vcam.gameObject.GetComponentInChildren<CinemachinePipeline>().gameObject;
             DestroyImmediate(pipelineHolder);
-            
             DestroyImmediate(vcam);
             return true;
         }
@@ -218,11 +217,6 @@ namespace Cinemachine
             if (!IsFreelookUpgradable(freelook))
             {
                 Debug.LogWarning("Freelook camera (" + freelook.name + ") is not upgradable automatically. Please upgrade manually!");
-                return false;
-            }
-            else
-            {
-                Debug.LogWarning("Freelook camera (" + freelook.name + ") is upgradable automatically!");
                 return false;
             }
 
@@ -250,7 +244,13 @@ namespace Cinemachine
             {
                 cmCamera.AddExtension(extension);
             }
-            
+
+            var topRig = freelook.GetRig(0).gameObject;
+            var middleRig = freelook.GetRig(1).gameObject;
+            var bottomRig = freelook.GetRig(2).gameObject;
+            DestroyImmediate(topRig);
+            DestroyImmediate(middleRig);
+            DestroyImmediate(bottomRig);
             DestroyImmediate(freelook);
             return true;
         }
