@@ -1,9 +1,12 @@
 using UnityEngine;
 using UnityEditor;
+#if CINEMACHINE_UNITY_SPLINES
+using UnityEngine.Splines;
+#endif
 
 namespace Cinemachine.Editor
 {
-    internal static class CinemachineMenu
+    static class CinemachineMenu
     {
         const string m_CinemachineAssetsRootMenu = "Assets/Create/Cinemachine/";
         const string m_CinemachineGameObjectRootMenu = "GameObject/Cinemachine/";
@@ -101,15 +104,25 @@ namespace Cinemachine.Editor
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
+            var vcam = CreateCinemachineObject<CmCamera>(
+                "Virtual Camera", command.context as GameObject, true);
+            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            vcam.gameObject.AddComponent<CinemachineComposer>();
+#if CINEMACHINE_UNITY_SPLINES
+            var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
+            splineContainer.Spline.Add(new BezierKnot(Vector3.right));
+            var splineDolly = vcam.gameObject.AddComponent<CinemachineSplineDolly>();
+            splineDolly.m_Spline = splineContainer;
+#else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);
-            var vcam = CreateCinemachineObject<CmCamera>(
-                "Cm Camera", command.context as GameObject, true);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
-
-            vcam.gameObject.AddComponent<CinemachineComposer>();
-            var trackedDolly = vcam.gameObject.AddComponent<CinemachineTrackedDolly>();
+#pragma warning disable 618 // disable obsolete warning
+            var trackedDolly = vcam.gameObject.AddComponent<CinemachineTrackedDolly>(vcam);
             trackedDolly.m_Path = path;
+#pragma warning restore 618
+#endif
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]
