@@ -102,6 +102,13 @@ namespace Cinemachine
             }
         }
 
+        
+        // TODO: Upgrade
+        // - First collect scenes
+        // - Build Timeline reference list
+        // - Convert Prefabs
+        // - Convert Scene Assets
+        // - Restore timeline reference list
         static void Upgrade()
         {
             CollectTimelineReferences();
