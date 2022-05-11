@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -259,32 +260,55 @@ namespace Cinemachine
             // - Different noise profiles on top, mid, bottom
             // - Different Aim components or same Aim components but different parameters
             var top = freelook.GetRig(0);
-            var mid = freelook.GetRig(1);
+            var middle = freelook.GetRig(1);
             var bottom = freelook.GetRig(2);
-            var midNoise = mid.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            var midAim = mid.GetCinemachineComponent(CinemachineCore.Stage.Aim);
+            var topNoise = top.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            var middleNoise = middle.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            var bottomNoise = bottom.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            var midAim = middle.GetCinemachineComponent(CinemachineCore.Stage.Aim);
+            
+            // Compare noises
+            var result1 = IsEqualNoise(topNoise, middleNoise);
+            var result2 = IsEqualNoise(middleNoise, bottomNoise);
+            var result3 = IsEqualNoise(topNoise, bottomNoise);
+            var result4 = PublicFieldsEqual(top.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim);
+            var result5 = PublicFieldsEqual(bottom.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim);
 
-            var result1 = IsEqualNoise(top.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>(), midNoise);
-            var result2 = IsEqualNoise(bottom.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>(), midNoise);
-            var result3 = IsEqualAim(top.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim);
-            var result4 = IsEqualAim(bottom.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim);
-
-            return result1 && result2 && result3 && result4;
+            return result1 && result2 && result3 && result4 && result5;
 
             static bool IsEqualNoise(CinemachineBasicMultiChannelPerlin a, CinemachineBasicMultiChannelPerlin b)
             {
+                // when a noise is null, in the new freelook it's amplitude and frequency modifier becomes 0
                 return a == null || b == null || 
                     ((a.m_NoiseProfile == null || b.m_NoiseProfile == null || a.m_NoiseProfile == b.m_NoiseProfile) 
                         && a.m_PivotOffset == b.m_PivotOffset);
             }
-
-            static bool IsEqualAim(CinemachineComponentBase a, CinemachineComponentBase b)
+            
+            static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b)
             {
+                if (a == null && b == null)
+                    return true;
+            
                 var aType = a == null ? null : a.GetType();
                 var bType = b == null ? null : b.GetType();
-                var aeb = aType == bType;
-                //var aEb = a.Equals(b); // TODO: using reflection
-                return aeb;
+                if (aType == bType)
+                    return false;
+
+                System.Diagnostics.Debug.Assert(aType != null);
+                System.Diagnostics.Debug.Assert(bType != null);
+                
+                var publicFields = aType.GetFields();
+                foreach (var pi in publicFields)
+                {
+                    var aValue = aType.GetField(pi.Name).GetValue(a);
+                    var bValue = bType.GetField(pi.Name).GetValue(b);
+
+                    if (aValue != bValue)
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
 
@@ -336,7 +360,7 @@ namespace Cinemachine
             var middle = freelook.GetRig(1).GetCinemachineComponent(CinemachineCore.Stage.Aim);
             if (middle == null)
             {
-                return;
+                return; // no need to return because all aims are null on this freelook - see IsFreelookUpgradable why
             }
             var newComponent = (CinemachineComponentBase)go.AddComponent(middle.GetType());
             CopyValues(middle, newComponent);
@@ -348,14 +372,32 @@ namespace Cinemachine
             var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             if (middle == null)
             {
-                return;
+                // if middle is null, then we need to get the NoiseProfile from a valid noise and set frequency and amplitude to 0
+                bool allNull = true;
+                for (int i = 0; i <= 2; i+=2)
+                {
+                    middle = freelook.GetRig(i).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+                    if (middle != null && middle.m_NoiseProfile != null)
+                    {
+                        var middleNoise = go.AddComponent<CinemachineBasicMultiChannelPerlin>();
+                        middleNoise.m_AmplitudeGain = 0;
+                        middleNoise.m_FrequencyGain = 0;
+                        allNull = false;
+                        break;
+                    }
+                }
+
+                if (allNull)
+                {
+                    return; // no need to convert
+                }
             }
-            
-            var middleNoise = go.AddComponent<CinemachineBasicMultiChannelPerlin>();
-            CopyValues(middle, middleNoise);
-            
-            var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            else
+            {
+                var middleNoise = go.AddComponent<CinemachineBasicMultiChannelPerlin>();
+                CopyValues(middle, middleNoise);
+            }
+
             
             freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.NoiseModifier
             {
