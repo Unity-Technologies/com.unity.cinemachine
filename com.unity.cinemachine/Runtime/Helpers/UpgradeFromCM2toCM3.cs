@@ -6,6 +6,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+
 // suppress obsolete warnings
 #pragma warning disable CS0618 
 
@@ -28,8 +31,81 @@ namespace Cinemachine
             }
         }
 
+        static List<KeyValuePair<GameObject, ExposedReference<CinemachineVirtualCameraBase>>> m_TimelineReferences = 
+            new List<KeyValuePair<GameObject, ExposedReference<CinemachineVirtualCameraBase>>>();
+        static void CollectTimelineReferences()
+        {
+            // Get all scenes under the Assets folder (to avoid touching scenes in packages)
+            var allScenesGuids = new List<string>();
+            allScenesGuids.AddRange(AssetDatabase.FindAssets("t:scene", new[]
+            {
+                "Assets"
+            }));
+
+            EditorUtility.DisplayProgressBar($"Refactoring {allScenesGuids.Count} scenes", "Starting...", 0);
+
+            var allScenesCount = allScenesGuids.Count;
+            for (var i = 0; i < allScenesCount; ++i)
+            {
+                var sceneGuid = allScenesGuids[i];
+                var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
+
+                try
+                {
+                    EditorUtility.DisplayProgressBar($"Refactoring {allScenesGuids.Count} scenes", scenePath, i / (float)allScenesCount);
+
+                    var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+                    var playableDirectors = new List<PlayableDirector>();
+
+                    var rootObjects = scene.GetRootGameObjects();
+                    foreach (var go in rootObjects)
+                    {
+                        playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
+                    }
+                    
+                    foreach (var playableDirector in playableDirectors)
+                    {
+                        if (playableDirector == null) continue;
+                        
+                        var playableAsset = playableDirector.playableAsset;
+                        if (playableAsset is TimelineAsset timelineAsset)
+                        {
+                            var tracks = timelineAsset.GetOutputTracks();
+                            foreach (var track in tracks)
+                            {
+                                if (track is CinemachineTrack cmTrack)
+                                {
+                                    var clips = cmTrack.GetClips();
+                                    foreach (var clip in clips)
+                                    {
+                                        if (clip.asset is CinemachineShot cmShot)
+                                        {
+                                            var vcam = cmShot.VirtualCamera.Resolve(playableDirector);
+                                            if (vcam == null) continue;
+                                            m_TimelineReferences.Add(
+                                                new KeyValuePair<GameObject,
+                                                    ExposedReference<CinemachineVirtualCameraBase>>(
+                                                    vcam.gameObject,
+                                                    cmShot.VirtualCamera));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                finally
+                {
+                    EditorUtility.ClearProgressBar();
+                }
+            }
+        }
+
         static void Upgrade()
         {
+            CollectTimelineReferences();
+            
             // TODO: What to do with DollyCart? 
             Debug.Log("UpgradeFromCM2toCM3 started!");
 
