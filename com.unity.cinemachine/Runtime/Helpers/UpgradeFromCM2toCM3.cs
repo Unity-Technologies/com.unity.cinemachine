@@ -75,8 +75,9 @@ namespace Cinemachine
 
                     var contents = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(prefab));
 
-                    var result = UpgradeCmVirtualCameraToCmCamera(contents);
+                    var result = UpgradeToCmCamera(contents);
 
+                    // TODO: do we need to break here?
                     // Just to break the loop if something is wrong...
                     if (!result)
                     {
@@ -133,7 +134,7 @@ namespace Cinemachine
                         if (component == null) continue;
                         
                         var go = component.gameObject;
-                        if (UpgradeCmVirtualCameraToCmCamera(go))
+                        if (UpgradeToCmCamera(go))
                         {
                             modified = true;
                             EditorUtility.SetDirty(go);
@@ -162,7 +163,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="old">Gameobject that needs to be upgraded</param>
         /// <returns>True, if upgrade was successful. False, otherwise.</returns>
-        static bool UpgradeCmVirtualCameraToCmCamera(GameObject old)
+        static bool UpgradeToCmCamera(GameObject old)
         {
             Debug.Log("Upgrading " + old.name + " to CM3!");
             old.TryGetComponent<CinemachineFreeLook>(out var freeLook);
