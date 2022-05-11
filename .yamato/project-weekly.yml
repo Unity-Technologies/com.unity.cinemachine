@@ -1,6 +1,6 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-{% for test_project in all_weeklytestproject %}
+{% for test_project in all_weeklytestprojects %}
   {% for editor in test_project.editors %}
 test_weekly_ubuntu_{{editor}}_{{test_project.name}}:
   name : Test project ubuntu {{editor}} {{test_project.name}}

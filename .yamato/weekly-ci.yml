@@ -3,15 +3,15 @@
 ci_trigger:
   name: Package CI Trigger
   triggers:
-    recuring:
-      - frequency: weekly
-      branch: ci/weekly
+    recurring:
+    - branch: ci/weekly
+      frequency: weekly
   dependencies:
-    {% for test_project in allweeklytestprojects %}
+    {% for test_project in all_weeklytestprojects %}
       {% for editor in test_project.editors %}
         - .yamato/project-weekly.yml#test_weekly_ubuntu_{{editor}}_{{test_project.name}}
-        - .yamato/project-weekly.yml#test_weekly_windows{{editor}}_{{test_project.name}}
-        - .yamato/project-weekly.yml#test_weekly_macos{{editor}}_{{test_project.name}}
+        - .yamato/project-weekly.yml#test_weekly_windows_{{editor}}_{{test_project.name}}
+        - .yamato/project-weekly.yml#test_weekly_macos_{{editor}}_{{test_project.name}}
       {% endfor %}
     {% endfor %}
 
