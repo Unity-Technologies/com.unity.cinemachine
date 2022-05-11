@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using Cinemachine.Utility;
+using UnityEngine.Splines;
 
 namespace Cinemachine
 {
@@ -75,6 +76,27 @@ namespace Cinemachine
         /// <summary>When calculating the distance cache, sample the path this many 
         /// times between points</summary>
         public override int DistanceCacheSampleStepsPerSegment { get { return m_Resolution; } }
+
+        internal override void UpgradeTo(out SplineContainer spline)
+        {
+            spline = gameObject.AddComponent<SplineContainer>();
+            var waypoints = m_Waypoints;
+            spline.Spline = new Spline(waypoints.Length, Looped);
+            
+            var splineRoll = gameObject.AddComponent<CinemachineSplineRoll>();
+            splineRoll.Roll = new SplineData<float>();
+            for (var i = 0; i < waypoints.Length; i++)
+            {
+                spline.Spline.Add(new BezierKnot
+                {
+                    Position = waypoints[i].position,
+                    Rotation = Quaternion.identity,
+                    TangentIn = -waypoints[i].tangent,
+                    TangentOut = waypoints[i].tangent,
+                });
+                splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
+            }
+        }
 
         /// <summary>Returns normalized position</summary>
         float GetBoundingIndices(float pos, out int indexA, out int indexB)

@@ -34,8 +34,8 @@ namespace Cinemachine
             Debug.Log("UpgradeFromCM2toCM3 started!");
 
             var prefabGuids = AssetDatabase.FindAssets($"t:prefab");
-            var allPrefabs = prefabGuids.Select(g => AssetDatabase.LoadAssetAtPath<GameObject>(
-                AssetDatabase.GUIDToAssetPath(g))).ToList();
+            var allPrefabs = prefabGuids.Select(
+                g => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(g))).ToList();
 
             // Ignore prefabs that are not CinemachineVirtualCameras or CinemachineFreeLooks.
             var vcamPrefabs =
@@ -152,7 +152,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Upgrades gameobject using cm2 to use cm3.
+        /// Upgrades gameobjects using cm2 to use cm3. It
         /// </summary>
         /// <param name="old">Gameobject that needs to be upgraded</param>
         /// <returns>True, if upgrade was successful. False, otherwise.</returns>
@@ -189,11 +189,7 @@ namespace Cinemachine
             var oldPipeline = vcam.GetComponentPipeline();
             foreach (var oldComponent in oldPipeline)
             {
-                if (oldComponent != null)
-                {
-                    var newComponent = (CinemachineComponentBase)go.AddComponent(oldComponent.GetType());
-                    CopyValues(oldComponent, newComponent);
-                }
+                UpgradeComponent(oldComponent, go);
             }
 
             foreach (var extension in oldExtensions)
@@ -205,6 +201,27 @@ namespace Cinemachine
             DestroyImmediate(pipelineHolder);
             DestroyImmediate(vcam);
             return true;
+        }
+
+        static void UpgradeComponent(CinemachineComponentBase oldComponent, GameObject go)
+        {
+            if (oldComponent != null)
+            {
+                if (oldComponent.GetType() == typeof(CinemachineTrackedDolly))
+                {
+                    var trackedDolly = (CinemachineTrackedDolly) oldComponent;
+                    if (trackedDolly.Convertable())
+                    {
+                        var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
+                        trackedDolly.CopyTo(splineDolly);
+                        DestroyImmediate(trackedDolly);
+                        return;
+                    }
+                    Debug.LogWarning("CinemachineTrackedDolly (" + go.name + ") is not upgradable automatically. Please upgrade manually!");
+                }
+                var newComponent = (CinemachineComponentBase)go.AddComponent(oldComponent.GetType());
+                CopyValues(oldComponent, newComponent);
+            }
         }
 
         static bool UpgradeFreelook(CinemachineFreeLook freelook)

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cinemachine.Utility;
 using System;
+using UnityEngine.Splines;
 
 namespace Cinemachine
 {
@@ -376,5 +377,7 @@ namespace Cinemachine
                 }
             }
         }
+
+        internal abstract void UpgradeTo(out SplineContainer spline);
     }
 }
