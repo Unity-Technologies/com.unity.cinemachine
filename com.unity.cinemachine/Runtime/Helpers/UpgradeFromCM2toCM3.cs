@@ -42,7 +42,6 @@ namespace Cinemachine
                         p.GetComponent<CinemachineVirtualCamera>() != null ||
                         p.GetComponent<CinemachineFreeLook>() != null)
                     .ToList();
-            //var freelookPrefabs = allPrefabs.Where(p => p.GetComponent<CinemachineFreeLook>() != null).ToList();
 
             // Sort by no variant prefabs first
             vcamPrefabs.Sort((a, b) =>
@@ -179,6 +178,8 @@ namespace Cinemachine
 
         static bool UpgradeCmVirtualCamera(CinemachineVirtualCamera vcam)
         {
+            return false; // TODO: remove
+            
             var go = vcam.gameObject;
             vcam.enabled = false;
             var oldExtensions = go.GetComponents<CinemachineExtension>();
@@ -217,6 +218,11 @@ namespace Cinemachine
             if (!IsFreelookUpgradable(freelook))
             {
                 Debug.LogWarning("Freelook camera (" + freelook.name + ") is not upgradable automatically. Please upgrade manually!");
+                return false;
+            }
+            else
+            {
+                Debug.LogWarning("Freelook camera (" + freelook.name + ") is upgradable automatically!");
                 return false;
             }
 
@@ -267,7 +273,7 @@ namespace Cinemachine
             var middleNoise = middle.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var bottomNoise = bottom.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var midAim = middle.GetCinemachineComponent(CinemachineCore.Stage.Aim);
-
+            
             return IsEqualNoise(topNoise, middleNoise) && 
                 IsEqualNoise(middleNoise, bottomNoise) &&
                 IsEqualNoise(topNoise, bottomNoise) &&
@@ -298,7 +304,7 @@ namespace Cinemachine
                 foreach (var pi in publicFields)
                 {
                     var field = aType.GetField(pi.Name);
-                    if (field.GetValue(a) != field.GetValue(b))
+                    if (!field.GetValue(a).Equals(field.GetValue(b)))
                         return false;
                 }
                 return true;
