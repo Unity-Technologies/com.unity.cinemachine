@@ -3,17 +3,15 @@
 ci_trigger:
   name: Package CI Trigger
   triggers:
-    branches:
-      only:
-      - "/^(master)|(release[/]\\d+[.]\\d+)$/"
-    pull_requests:
-      - targets:
-          only:
-            - "/.*/"
+    recuring:
+      - frequency: weekly
+      branch: ci/weekly
   dependencies:
-    {% for test_project in all_testprojects %}
+    {% for test_project in allweeklytestprojects %}
       {% for editor in test_project.editors %}
-    - .yamato/project-test.yml#test_ubuntu_{{editor}}_{{test_project.name}}
+        - .yamato/project-weekly.yml#test_weekly_ubuntu_{{editor}}_{{test_project.name}}
+        - .yamato/project-weekly.yml#test_weekly_windows{{editor}}_{{test_project.name}}
+        - .yamato/project-weekly.yml#test_weekly_macos{{editor}}_{{test_project.name}}
       {% endfor %}
     {% endfor %}
 

@@ -1,8 +1,8 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-{% for test_project in all_testprojects %}
+{% for test_project in all_weeklytestproject %}
   {% for editor in test_project.editors %}
-test_ubuntu_{{editor}}_{{test_project.name}}:
+test_weekly_ubuntu_{{editor}}_{{test_project.name}}:
   name : Test project ubuntu {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM
@@ -18,7 +18,7 @@ test_ubuntu_{{editor}}_{{test_project.name}}:
   dependencies:
     - .yamato/project-pack.yml#pack
 
-test_windows_{{editor}}_{{test_project.name}}:
+test_weekly_windows_{{editor}}_{{test_project.name}}:
   name : Test project windows {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM
@@ -34,7 +34,7 @@ test_windows_{{editor}}_{{test_project.name}}:
   dependencies:
     - .yamato/project-pack.yml#pack
 
-test_macos_{{editor}}_{{test_project.name}}:
+test_weekly_macos_{{editor}}_{{test_project.name}}:
   name : Test project macos {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM::osx

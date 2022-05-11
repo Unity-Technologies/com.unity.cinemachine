@@ -42,6 +42,11 @@ all_testprojects:
       path: Projects/HDRP2019.4
       editors: [2019.4]
 
+all_weeklytestprojects:
+    - name: InputSystem
+      path: Projects/InputSystem
+      editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+
 
 all_configurations:
   ci:
