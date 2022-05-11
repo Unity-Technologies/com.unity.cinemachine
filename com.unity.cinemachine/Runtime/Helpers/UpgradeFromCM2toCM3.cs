@@ -30,6 +30,7 @@ namespace Cinemachine
 
         static void Upgrade()
         {
+            // TODO: upgrade splines too (tracked dolly, CinemachinePath)
             Debug.Log("UpgradeFromCM2toCM3 started!");
 
             var prefabGuids = AssetDatabase.FindAssets($"t:prefab");
