@@ -75,17 +75,10 @@ namespace Cinemachine
 
                     var contents = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(prefab));
 
-                    var result = UpgradeToCmCamera(contents);
-
-                    // TODO: do we need to break here?
-                    // Just to break the loop if something is wrong...
-                    if (!result)
+                    if (UpgradeToCmCamera(contents))
                     {
-                        PrefabUtility.UnloadPrefabContents(contents);
-                        break;
+                        PrefabUtility.SaveAsPrefabAsset(contents, AssetDatabase.GetAssetPath(prefab));
                     }
-
-                    PrefabUtility.SaveAsPrefabAsset(contents, AssetDatabase.GetAssetPath(prefab));
                     PrefabUtility.UnloadPrefabContents(contents);
                 }
             }
