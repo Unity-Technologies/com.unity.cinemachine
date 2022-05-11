@@ -338,7 +338,7 @@ namespace Cinemachine
 
         internal bool Convertable()
         {
-            return m_YawDamping == m_RollDamping && m_RollDamping == m_PitchDamping && m_AutoDolly.m_SearchRadius == 0;
+            return m_YawDamping == m_RollDamping && m_RollDamping == m_PitchDamping;
         }
 
         internal void CopyTo(CinemachineSplineDolly splineDolly)
