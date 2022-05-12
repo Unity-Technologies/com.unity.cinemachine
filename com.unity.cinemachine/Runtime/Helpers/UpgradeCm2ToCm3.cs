@@ -328,14 +328,6 @@ namespace Cinemachine.Upgrader
                 UpgradeInScenes();
             }
 
-            struct CmShotRebuild
-            {
-                public string targetName;
-                public GameObject targetGo;
-                public CinemachineShot shot;
-                public string scene;
-            }
-            List<CmShotRebuild> m_TimelineReferences = new();
             void UpdateTimelineReference(Scene scene, GameObject upgraded)
             {
                 var playableDirectors = new List<PlayableDirector>();
@@ -396,6 +388,7 @@ namespace Cinemachine.Upgrader
                 for (int i = 0; i < sceneCount; ++i)
                 {
                     var scene = m_SceneManager.LoadScene(i);
+                    var timelineManager = new TimelineManager(scene);
                     
                     var componentsList = new List<CinemachineVirtualCameraBase>();
                     var rootObjects = scene.GetRootGameObjects();
@@ -419,7 +412,7 @@ namespace Cinemachine.Upgrader
                         if (Upgrade(go))
                         {
                             modified = true;
-                            UpdateTimelineReference(scene, go);
+                            timelineManager.UpdateTimelineReference(go);
                             EditorUtility.SetDirty(go);
                         }
                     }
@@ -507,6 +500,57 @@ namespace Cinemachine.Upgrader
                     Debug.Log("**** All prefabs ****");
                     m_prefabVcams.ForEach(prefab => Debug.Log(prefab.name));
 #endif
+                }
+            }
+
+            class TimelineManager
+            {
+                List<PlayableDirector> m_PlayableDirectors;
+                public TimelineManager(Scene scene)
+                {
+                    m_PlayableDirectors = new List<PlayableDirector>();
+
+                    var rootObjects = scene.GetRootGameObjects();
+                    foreach (var go in rootObjects)
+                    {
+                        m_PlayableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
+                    }
+                }
+
+                public void UpdateTimelineReference(GameObject upgraded)
+                {
+                    // TODO: currently I use null check to check if I need to fill a vcam
+                    // but user might have cmshot's that are null before upgrade, we don't want to fill them
+                    foreach (var playableDirector in m_PlayableDirectors)
+                    {
+                        if (playableDirector == null) continue;
+
+                        var playableAsset = playableDirector.playableAsset;
+                        if (playableAsset is TimelineAsset timelineAsset)
+                        {
+                            var tracks = timelineAsset.GetOutputTracks();
+                            foreach (var track in tracks)
+                            {
+                                if (track is CinemachineTrack cmTrack)
+                                {
+                                    var clips = cmTrack.GetClips();
+                                    foreach (var clip in clips)
+                                    {
+                                        if (clip.asset is CinemachineShot cmShot)
+                                        {
+                                            var exposedRef = cmShot.VirtualCamera;
+                                            var vcam = exposedRef.Resolve(playableDirector);
+                                            if (vcam == null)
+                                            {
+                                                var vcamToAdd = upgraded.GetComponent<CinemachineVirtualCameraBase>();
+                                                playableDirector.SetReferenceValue(exposedRef.exposedName, vcamToAdd);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
