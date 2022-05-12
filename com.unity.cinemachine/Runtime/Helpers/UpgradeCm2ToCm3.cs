@@ -324,76 +324,51 @@ namespace Cinemachine.Upgrader
             
             public void UpgradeAll()
             {
-                CollectTimelineReferences();
                 UpgradePrefabs();
                 UpgradeInScenes();
-                RestoreTimelineReferences();
             }
 
             struct CmShotRebuild
             {
                 public string targetName;
+                public GameObject targetGo;
                 public CinemachineShot shot;
                 public string scene;
             }
             List<CmShotRebuild> m_TimelineReferences = new();
-            void CollectTimelineReferences()
+            void UpdateTimelineReference(Scene scene, GameObject upgraded)
             {
-                var allScenesCount = m_SceneManager.sceneCount;
-                for (var i = 0; i < allScenesCount; ++i)
+                var playableDirectors = new List<PlayableDirector>();
+
+                var rootObjects = scene.GetRootGameObjects();
+                foreach (var go in rootObjects)
                 {
-                    var scene = m_SceneManager.LoadScene(i);
-                    var playableDirectors = new List<PlayableDirector>();
+                    playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
+                }
 
-                    var rootObjects = scene.GetRootGameObjects();
-                    foreach (var go in rootObjects)
+                foreach (var playableDirector in playableDirectors)
+                {
+                    if (playableDirector == null) continue;
+
+                    var playableAsset = playableDirector.playableAsset;
+                    if (playableAsset is TimelineAsset timelineAsset)
                     {
-                        playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
-                    }
-
-                    foreach (var playableDirector in playableDirectors)
-                    {
-                        if (playableDirector == null) continue;
-
-                        var playableAsset = playableDirector.playableAsset;
-                        if (playableAsset is TimelineAsset timelineAsset)
+                        var tracks = timelineAsset.GetOutputTracks();
+                        foreach (var track in tracks)
                         {
-                            var tracks = timelineAsset.GetOutputTracks();
-                            foreach (var track in tracks)
+                            if (track is CinemachineTrack cmTrack)
                             {
-                                if (track is CinemachineTrack cmTrack)
+                                var clips = cmTrack.GetClips();
+                                foreach (var clip in clips)
                                 {
-                                    var clips = cmTrack.GetClips();
-                                    foreach (var clip in clips)
+                                    if (clip.asset is CinemachineShot cmShot)
                                     {
-                                        if (clip.asset is CinemachineShot cmShot)
+                                        var exposedRef = cmShot.VirtualCamera;
+                                        var vcam = exposedRef.Resolve(playableDirector);
+                                        if (vcam == null)
                                         {
-                                            var vcam = cmShot.VirtualCamera.Resolve(playableDirector);
-                                            if (vcam == null)
-                                            {
-                                                // terrible hack, there must be a better way
-                                                foreach (var timelineReference in m_TimelineReferences)
-                                                {
-                                                    if (timelineReference.scene == scene.name && timelineReference.shot == cmShot)
-                                                    {
-                                                        var target = GameObject.Find(timelineReference.targetName);
-                                                        CinemachineVirtualCameraBase vcamToAssign = target.GetComponent<CinemachineVirtualCameraBase>();
-                                                        cmShot.VirtualCamera = new ExposedReference<CinemachineVirtualCameraBase>()
-                                                        {
-                                                            defaultValue = vcamToAssign,
-                                                            exposedName = null,
-                                                        };
-                                                    }
-                                                }
-                                                continue;
-                                            };
-
-                                            m_TimelineReferences.Add(new CmShotRebuild
-                                            {
-                                                shot = cmShot,
-                                                scene = scene.name,
-                                                targetName = vcam.gameObject.name,
-                                            });
+                                            var vcamToAdd = upgraded.GetComponent<CinemachineVirtualCameraBase>();
+                                            playableDirector.SetReferenceValue(exposedRef.exposedName, vcamToAdd);
                                         }
                                     }
                                 }
@@ -441,11 +416,10 @@ namespace Cinemachine.Upgrader
                         if (component == null) continue;
                         
                         var go = component.gameObject;
-                        SerializedObject so = new SerializedObject(go);
                         if (Upgrade(go))
                         {
                             modified = true;
-                            so.ApplyModifiedPropertiesWithoutUndo();
+                            UpdateTimelineReference(scene, go);
                             EditorUtility.SetDirty(go);
                         }
                     }
@@ -455,12 +429,6 @@ namespace Cinemachine.Upgrader
                         m_SceneManager.UpdateScene(scene);
                     }
                 }
-            }
-            
-            
-            void RestoreTimelineReferences()
-            {
-                CollectTimelineReferences();
             }
 
             class SceneManager
