@@ -89,10 +89,10 @@ namespace Cinemachine.Upgrader
                 var topRig = freelook.GetRig(0).gameObject;
                 var middleRig = freelook.GetRig(1).gameObject;
                 var bottomRig = freelook.GetRig(2).gameObject;
-                Object.DestroyImmediate(topRig);
-                Object.DestroyImmediate(middleRig);
-                Object.DestroyImmediate(bottomRig);
-                Object.DestroyImmediate(freelook);
+                DestroyImmediate(topRig);
+                DestroyImmediate(middleRig);
+                DestroyImmediate(bottomRig);
+                DestroyImmediate(freelook);
                 return true;
                 
                 // local functions
@@ -271,8 +271,8 @@ namespace Cinemachine.Upgrader
                 }
 
                 var pipelineHolder = vcam.gameObject.GetComponentInChildren<CinemachinePipeline>().gameObject;
-                Object.DestroyImmediate(pipelineHolder);
-                Object.DestroyImmediate(vcam);
+                DestroyImmediate(pipelineHolder);
+                DestroyImmediate(vcam);
                 return true;
                 
                 // local functions
@@ -286,7 +286,7 @@ namespace Cinemachine.Upgrader
                             {
                                 var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
                                 trackedDolly.CopyTo(splineDolly);
-                                Object.DestroyImmediate(trackedDolly);
+                                DestroyImmediate(trackedDolly);
                                 return;
                             }
                             Debug.LogWarning("CinemachineTrackedDolly (" + go.name + ") is not upgradable automatically. Please upgrade manually!");
