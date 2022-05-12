@@ -108,7 +108,7 @@ namespace Cinemachine
         // - Build Timeline reference list
         // - Convert Prefabs
         // - Convert Scene Assets
-        // - Restore timeline reference list
+        // - Restore timeline reference list - gameobjects are the same, except that VirtualCamera or Freelook became a CmCamera
         static void Upgrade()
         {
             CollectTimelineReferences();
