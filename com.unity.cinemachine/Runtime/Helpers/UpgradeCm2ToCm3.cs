@@ -363,7 +363,18 @@ namespace Cinemachine.Upgrader
                                         if (clip.asset is CinemachineShot cmShot)
                                         {
                                             var vcam = cmShot.VirtualCamera.Resolve(playableDirector);
-                                            if (vcam == null) continue;
+                                            if (vcam == null)
+                                            {
+                                                var target = GameObject.Find("A");
+                                                CinemachineVirtualCameraBase vcamToAssign = target.GetComponent<CinemachineVirtualCameraBase>();
+                                                cmShot.VirtualCamera = new ExposedReference<CinemachineVirtualCameraBase>()
+                                                {
+                                                    defaultValue = vcamToAssign,
+                                                    exposedName = null,
+                                                };
+                                                continue;
+                                            }
+                                            var instanceID = vcam.GetInstanceID();
                                             m_TimelineReferences.Add(
                                                 new KeyValuePair<GameObject,
                                                     ExposedReference<CinemachineVirtualCameraBase>>(
@@ -433,11 +444,13 @@ namespace Cinemachine.Upgrader
             
             void RestoreTimelineReferences()
             {
+                CollectTimelineReferences();
                 // TODO: restore references
                 for (var i = 0; i < m_TimelineReferences.Count; i++)
                 {
+                    
                     var reference = m_TimelineReferences[i].Value;
-                    reference.defaultValue = m_TimelineReferences[i].Key.GetComponent<CinemachineVirtualCameraBase>();
+                    // reference.defaultValue = m_TimelineReferences[i].Key.GetComponent<CinemachineVirtualCameraBase>();
                 }
             }
 
