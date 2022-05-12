@@ -330,7 +330,13 @@ namespace Cinemachine.Upgrader
                 RestoreTimelineReferences();
             }
 
-            List<KeyValuePair<GameObject, ExposedReference<CinemachineVirtualCameraBase>>> m_TimelineReferences = new();
+            struct CmShotRebuild
+            {
+                public string targetName;
+                public CinemachineShot shot;
+                public string scene;
+            }
+            List<CmShotRebuild> m_TimelineReferences = new();
             void CollectTimelineReferences()
             {
                 var allScenesCount = m_SceneManager.sceneCount;
@@ -365,21 +371,29 @@ namespace Cinemachine.Upgrader
                                             var vcam = cmShot.VirtualCamera.Resolve(playableDirector);
                                             if (vcam == null)
                                             {
-                                                var target = GameObject.Find("A");
-                                                CinemachineVirtualCameraBase vcamToAssign = target.GetComponent<CinemachineVirtualCameraBase>();
-                                                cmShot.VirtualCamera = new ExposedReference<CinemachineVirtualCameraBase>()
+                                                // terrible hack, there must be a better way
+                                                foreach (var timelineReference in m_TimelineReferences)
                                                 {
-                                                    defaultValue = vcamToAssign,
-                                                    exposedName = null,
-                                                };
+                                                    if (timelineReference.scene == scene.name && timelineReference.shot == cmShot)
+                                                    {
+                                                        var target = GameObject.Find(timelineReference.targetName);
+                                                        CinemachineVirtualCameraBase vcamToAssign = target.GetComponent<CinemachineVirtualCameraBase>();
+                                                        cmShot.VirtualCamera = new ExposedReference<CinemachineVirtualCameraBase>()
+                                                        {
+                                                            defaultValue = vcamToAssign,
+                                                            exposedName = null,
+                                                        };
+                                                    }
+                                                }
                                                 continue;
-                                            }
-                                            var instanceID = vcam.GetInstanceID();
-                                            m_TimelineReferences.Add(
-                                                new KeyValuePair<GameObject,
-                                                    ExposedReference<CinemachineVirtualCameraBase>>(
-                                                    vcam.gameObject,
-                                                    cmShot.VirtualCamera));
+                                            };
+
+                                            m_TimelineReferences.Add(new CmShotRebuild
+                                            {
+                                                shot = cmShot,
+                                                scene = scene.name,
+                                                targetName = vcam.gameObject.name,
+                                            });
                                         }
                                     }
                                 }
@@ -427,9 +441,11 @@ namespace Cinemachine.Upgrader
                         if (component == null) continue;
                         
                         var go = component.gameObject;
+                        SerializedObject so = new SerializedObject(go);
                         if (Upgrade(go))
                         {
                             modified = true;
+                            so.ApplyModifiedPropertiesWithoutUndo();
                             EditorUtility.SetDirty(go);
                         }
                     }
@@ -445,13 +461,6 @@ namespace Cinemachine.Upgrader
             void RestoreTimelineReferences()
             {
                 CollectTimelineReferences();
-                // TODO: restore references
-                for (var i = 0; i < m_TimelineReferences.Count; i++)
-                {
-                    
-                    var reference = m_TimelineReferences[i].Value;
-                    // reference.defaultValue = m_TimelineReferences[i].Key.GetComponent<CinemachineVirtualCameraBase>();
-                }
             }
 
             class SceneManager
