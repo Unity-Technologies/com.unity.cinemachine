@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: POV orientation was incorrect with World Up override
 - Added AutoEnable option to CinemachineInputHandler
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
+- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
 
 
 ## [2.8.4] - 2021-12-10
