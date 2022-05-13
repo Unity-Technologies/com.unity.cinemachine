@@ -495,10 +495,10 @@ namespace Cinemachine.Upgrader
 
         class TimelineManager
         {
-            Dictionary<PlayableDirector, CinemachineShot> m_cmShotsToUpdate;
+            Dictionary<PlayableDirector, List<CinemachineShot>> m_CmShotsToUpdate;
             public TimelineManager(Scene scene)
             {
-                m_cmShotsToUpdate = new Dictionary<PlayableDirector, CinemachineShot>();
+                m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
                 var playableDirectors = new List<PlayableDirector>();
 
                 var rootObjects = scene.GetRootGameObjects();
@@ -529,7 +529,11 @@ namespace Cinemachine.Upgrader
                                         var vcam = exposedRef.Resolve(playableDirector);
                                         if (vcam != null)
                                         {
-                                            m_cmShotsToUpdate.Add(playableDirector, cmShot);
+                                            if (!m_CmShotsToUpdate.ContainsKey(playableDirector))
+                                            {
+                                                m_CmShotsToUpdate.Add(playableDirector, new List<CinemachineShot>());
+                                            }
+                                            m_CmShotsToUpdate[playableDirector].Add(cmShot);
                                         }
                                     }
                                 }
@@ -550,16 +554,19 @@ namespace Cinemachine.Upgrader
                 if (upgraded == null)
                     return;
 
-                foreach (var (director, shot) in m_cmShotsToUpdate)
+                foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
-                    var exposedRef = shot.VirtualCamera;
-                    var vcam = exposedRef.Resolve(director);
-                    if (vcam == null && exposedRef.exposedName != 0)
+                    foreach (var cmShot in cmShots)
                     {
-                        director.SetReferenceValue(exposedRef.exposedName, upgraded);
+                        var exposedRef = cmShot.VirtualCamera;
+                        var vcam = exposedRef.Resolve(director);
+                        if (vcam == null && exposedRef.exposedName != 0)
+                        {
+                            director.SetReferenceValue(exposedRef.exposedName, upgraded);
 #if DEBUG_HELPERS
                     Debug.Log("Updated Timeline reference " + timelineAsset.name + ":" + upgraded.name);
 #endif
+                        }
                     }
                 }
             }
