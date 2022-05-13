@@ -336,12 +336,12 @@ namespace Cinemachine
         Quaternion m_PreviousOrientation = Quaternion.identity;
         private Vector3 m_PreviousCameraPosition = Vector3.zero;
 
-        internal bool Convertable()
+        internal bool IsUpgradable()
         {
             return m_YawDamping == m_RollDamping && m_RollDamping == m_PitchDamping;
         }
 
-        internal void CopyTo(CinemachineSplineDolly splineDolly)
+        internal void Upgrade(CinemachineSplineDolly splineDolly)
         {
             splineDolly.m_Damping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             splineDolly.m_AngularDamping = m_RollDamping;
