@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-#define DEBUG_HELPERS
+// #define DEBUG_HELPERS
 // suppress obsolete warnings
 #pragma warning disable CS0618 
 
@@ -24,12 +24,11 @@ namespace Cinemachine.Upgrader
         {
             m_SceneManager = new SceneManager();
             m_PrefabManager = new PrefabManager();
-            m_Cm2ToCm3 = new Cm2ToCm3Upgrader();
         }
             
         bool Upgrade(GameObject go)
         {
-            return m_Cm2ToCm3.Upgrade(go);
+            return Cm2ToCm3Upgrader.Upgrade(go);
         }
             
         public void UpgradeAll()
@@ -127,7 +126,7 @@ namespace Cinemachine.Upgrader
             
         class Cm2ToCm3Upgrader
         {
-            public bool Upgrade(GameObject old)
+            public static bool Upgrade(GameObject old)
             {
 #if DEBUG_HELPERS
                 Debug.Log("Upgrading " + old.name + " to CM3!");
@@ -174,8 +173,8 @@ namespace Cinemachine.Upgrader
                         Debug.LogWarning("Freelook camera (" + m_Freelook.name + ") is not upgradable automatically. Please upgrade manually!");
                         return false;
                     }
-
                     m_Freelook.enabled = false;
+
                     var go = m_Freelook.gameObject;
                     var oldExtensions = go.GetComponents<CinemachineExtension>();
 
@@ -388,6 +387,8 @@ namespace Cinemachine.Upgrader
                 {
                     if (m_Vcam == null)
                         return false;
+
+                    m_Vcam.enabled = false;
                     
                     var go = m_Vcam.gameObject;
                     var oldExtensions = go.GetComponents<CinemachineExtension>();
@@ -446,7 +447,6 @@ namespace Cinemachine.Upgrader
             }
         }
 
-
         class PrefabManager
         {
             public GameObject LoadPrefabContents(int index)
@@ -495,30 +495,20 @@ namespace Cinemachine.Upgrader
 
         class TimelineManager
         {
-            List<PlayableDirector> m_PlayableDirectors;
+            Dictionary<PlayableDirector, CinemachineShot> m_cmShotsToUpdate;
             public TimelineManager(Scene scene)
             {
-                m_PlayableDirectors = new List<PlayableDirector>();
+                m_cmShotsToUpdate = new Dictionary<PlayableDirector, CinemachineShot>();
+                var playableDirectors = new List<PlayableDirector>();
 
                 var rootObjects = scene.GetRootGameObjects();
                 foreach (var go in rootObjects)
                 {
-                    m_PlayableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
+                    playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
                 }
-            }
-
-            /// <summary>
-            /// Updates timeline reference with the upgraded vcam. This is called after each vcam is upgraded,
-            /// because then it is easy to find the corresponding timeline reference; it is the one whose
-            /// ExposedReference resolves to null and its exposedName is not 0.
-            /// </summary>
-            /// <param name="upgraded"></param>
-            public void UpdateTimelineReference(CinemachineVirtualCameraBase upgraded)
-            {
-                if (upgraded == null)
-                    return;
-                    
-                foreach (var playableDirector in m_PlayableDirectors)
+                
+                // collect all cmShots that may require a reference update
+                foreach (var playableDirector in playableDirectors)
                 {
                     if (playableDirector == null) continue;
 
@@ -537,19 +527,39 @@ namespace Cinemachine.Upgrader
                                     {
                                         var exposedRef = cmShot.VirtualCamera;
                                         var vcam = exposedRef.Resolve(playableDirector);
-                                        // If exposed name is 0, then that means it was set to null by the user, not by us.
-                                        if (vcam == null && exposedRef.exposedName != 0)
+                                        if (vcam != null)
                                         {
-                                            playableDirector.SetReferenceValue(exposedRef.exposedName, upgraded);
-#if DEBUG_HELPERS
-                                            Debug.Log("Updated Timeline reference " 
-                                                + timelineAsset.name + ":" + upgraded.name);
-#endif
+                                            m_cmShotsToUpdate.Add(playableDirector, cmShot);
                                         }
                                     }
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Updates timeline reference with the upgraded vcam. This is called after each vcam is upgraded,
+            /// because then it is easy to find the corresponding timeline reference; it is the one whose
+            /// ExposedReference resolves to null.
+            /// </summary>
+            /// <param name="upgraded"></param>
+            public void UpdateTimelineReference(CinemachineVirtualCameraBase upgraded)
+            {
+                if (upgraded == null)
+                    return;
+
+                foreach (var (director, shot) in m_cmShotsToUpdate)
+                {
+                    var exposedRef = shot.VirtualCamera;
+                    var vcam = exposedRef.Resolve(director);
+                    if (vcam == null && exposedRef.exposedName != 0)
+                    {
+                        director.SetReferenceValue(exposedRef.exposedName, upgraded);
+#if DEBUG_HELPERS
+                    Debug.Log("Updated Timeline reference " + timelineAsset.name + ":" + upgraded.name);
+#endif
                     }
                 }
             }
