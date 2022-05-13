@@ -142,7 +142,8 @@ namespace Cinemachine.Upgrader
                 old.TryGetComponent<CinemachineVirtualCamera>(out var vcam);
                 if (vcam != null)
                 {
-                    return UpgradeCmVirtualCamera(vcam);
+                    var virtualCameraUpgrader = new VirtualCameraUpgrader(vcam);
+                    return virtualCameraUpgrader.Upgrade();
                 }
 
                 return true;
@@ -374,56 +375,66 @@ namespace Cinemachine.Upgrader
                     });
                 }
             }
-            
-            bool UpgradeCmVirtualCamera(CinemachineVirtualCamera vcam)
+
+            class VirtualCameraUpgrader
             {
-                var go = vcam.gameObject;
-                vcam.enabled = false;
-                var oldExtensions = go.GetComponents<CinemachineExtension>();
-
-                var cmCamera = go.AddComponent<CmCamera>();
-                CopyValues<CinemachineVirtualCameraBase>(vcam, cmCamera);
-                cmCamera.Follow = vcam.Follow;
-                cmCamera.LookAt = vcam.LookAt;
-                cmCamera.m_Lens = vcam.m_Lens;
-                cmCamera.m_Transitions = vcam.m_Transitions;
-
-                var oldPipeline = vcam.GetComponentPipeline();
-                foreach (var oldComponent in oldPipeline)
+                CinemachineVirtualCamera m_Vcam;
+                public VirtualCameraUpgrader(CinemachineVirtualCamera vcam)
                 {
-                    UpgradeComponent(oldComponent, go);
+                    m_Vcam = vcam;
                 }
-
-                foreach (var extension in oldExtensions)
+                
+                public bool Upgrade()
                 {
-                    cmCamera.AddExtension(extension);
-                }
+                    if (m_Vcam == null)
+                        return false;
+                    
+                    var go = m_Vcam.gameObject;
+                    var oldExtensions = go.GetComponents<CinemachineExtension>();
 
-                var pipelineHolder = vcam.gameObject.GetComponentInChildren<CinemachinePipeline>().gameObject;
-                Object.DestroyImmediate(pipelineHolder);
-                Object.DestroyImmediate(vcam);
-                return true;
+                    var cmCamera = go.AddComponent<CmCamera>();
+                    CopyValues<CinemachineVirtualCameraBase>(m_Vcam, cmCamera);
+                    cmCamera.Follow = m_Vcam.Follow;
+                    cmCamera.LookAt = m_Vcam.LookAt;
+                    cmCamera.m_Lens = m_Vcam.m_Lens;
+                    cmCamera.m_Transitions = m_Vcam.m_Transitions;
 
-                // local functions
-                static void UpgradeComponent(CinemachineComponentBase oldComponent, GameObject go)
-                {
-                    if (oldComponent != null)
+                    var oldPipeline = m_Vcam.GetComponentPipeline();
+                    foreach (var oldComponent in oldPipeline)
                     {
-                        if (oldComponent is CinemachineTrackedDolly trackedDolly)
+                        UpgradeComponent(oldComponent, go);
+                    }
+
+                    foreach (var extension in oldExtensions)
+                    {
+                        cmCamera.AddExtension(extension);
+                    }
+
+                    var pipelineHolder = go.GetComponentInChildren<CinemachinePipeline>().gameObject;
+                    Object.DestroyImmediate(pipelineHolder);
+                    Object.DestroyImmediate(m_Vcam);
+                    return true;
+
+                    static void UpgradeComponent(CinemachineComponentBase oldComponent, GameObject go)
+                    {
+                        if (oldComponent != null)
                         {
-                            if (trackedDolly.IsUpgradable())
+                            if (oldComponent is CinemachineTrackedDolly trackedDolly)
                             {
-                                var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
-                                trackedDolly.Upgrade(splineDolly);
-                                Object.DestroyImmediate(trackedDolly);
-                                return;
+                                if (trackedDolly.IsUpgradable())
+                                {
+                                    var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
+                                    trackedDolly.Upgrade(splineDolly);
+                                    Object.DestroyImmediate(trackedDolly);
+                                    return;
+                                }
+
+                                Debug.LogWarning("CinemachineTrackedDolly (" + go.name + ") is not upgradable automatically. Please upgrade manually!");
                             }
 
-                            Debug.LogWarning("CinemachineTrackedDolly (" + go.name + ") is not upgradable automatically. Please upgrade manually!");
+                            var newComponent = (CinemachineComponentBase)go.AddComponent(oldComponent.GetType());
+                            CopyValues(oldComponent, newComponent);
                         }
-
-                        var newComponent = (CinemachineComponentBase)go.AddComponent(oldComponent.GetType());
-                        CopyValues(oldComponent, newComponent);
                     }
                 }
             }
