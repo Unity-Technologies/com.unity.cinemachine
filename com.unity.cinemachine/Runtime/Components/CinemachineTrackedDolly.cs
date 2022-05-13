@@ -356,6 +356,7 @@ namespace Cinemachine
             splineDolly.m_CameraPosition = m_PathPosition;
             splineDolly.m_SplineOffset = m_PathOffset;
             m_Path.UpgradeTo(out splineDolly.m_Spline);
+            DestroyImmediate(m_Path);
         }
     }
 }
