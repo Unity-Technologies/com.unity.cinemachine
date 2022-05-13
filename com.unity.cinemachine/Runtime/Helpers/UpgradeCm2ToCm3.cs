@@ -55,6 +55,7 @@ namespace Cinemachine.Upgrader
             
             bool UpgradeFreelook(CinemachineFreeLook freelook)
             {
+                // TODO: common lens or not
                 if (!IsFreelookUpgradable(freelook))
                 {
                     Debug.LogWarning("Freelook camera (" + freelook.name + ") is not upgradable automatically. Please upgrade manually!");
@@ -412,7 +413,7 @@ namespace Cinemachine.Upgrader
                         if (Upgrade(go))
                         {
                             modified = true;
-                            timelineManager.UpdateTimelineReference(go);
+                            timelineManager.UpdateTimelineReference(go.GetComponent<CinemachineVirtualCameraBase>());
                             EditorUtility.SetDirty(go);
                         }
                     }
@@ -517,10 +518,17 @@ namespace Cinemachine.Upgrader
                     }
                 }
 
-                public void UpdateTimelineReference(GameObject upgraded)
+                /// <summary>
+                /// Updates timeline reference with the upgraded vcam. This is called after each vcam is upgraded,
+                /// because then it is easy to find the corresponding timeline reference; it is the one whose
+                /// ExposedReference resolves to null and its exposedName is not 0.
+                /// </summary>
+                /// <param name="upgraded"></param>
+                public void UpdateTimelineReference(CinemachineVirtualCameraBase upgraded)
                 {
-                    // TODO: currently I use null check to check if I need to fill a vcam
-                    // but user might have cmshot's that are null before upgrade, we don't want to fill them
+                    if (upgraded == null)
+                        return;
+                    
                     foreach (var playableDirector in m_PlayableDirectors)
                     {
                         if (playableDirector == null) continue;
@@ -540,10 +548,14 @@ namespace Cinemachine.Upgrader
                                         {
                                             var exposedRef = cmShot.VirtualCamera;
                                             var vcam = exposedRef.Resolve(playableDirector);
-                                            if (vcam == null)
+                                            // If exposed name is 0, then that means it was set to null by the user, not by us.
+                                            if (vcam == null && exposedRef.exposedName != 0)
                                             {
-                                                var vcamToAdd = upgraded.GetComponent<CinemachineVirtualCameraBase>();
-                                                playableDirector.SetReferenceValue(exposedRef.exposedName, vcamToAdd);
+                                                playableDirector.SetReferenceValue(exposedRef.exposedName, upgraded);
+#if DEBUG_HELPERS
+                                                Debug.Log("Updated Timeline reference " 
+                                                    + timelineAsset.name + ":" + upgraded.name);
+#endif
                                             }
                                         }
                                     }
