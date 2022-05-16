@@ -36,14 +36,6 @@ namespace Tests.Runtime
             base.SetUp();
         }
 
-        GameObject CreateObstacle(Vector3 position)
-        {
-            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            obstacle.transform.position = position; // put obstacle in the way
-            m_GameObjectsToDestroy.Add(obstacle);
-            return obstacle;
-        }
-
         [UnityTest]
         public IEnumerator CheckSmoothingTime()
         {
@@ -53,59 +45,68 @@ namespace Tests.Runtime
             m_Collider.m_DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
-            yield return WaitOneFrame(CinemachineCore.DeltaTime);
+            CinemachineCore.CurrentTimeOverride += CinemachineCore.DeltaTime;
+            yield return null; 
+            
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             // place obstacle so that camera needs to move
-            var obstacle = CreateObstacle(originalCamPosition);
-
-            yield return WaitOneFrame(CinemachineCore.DeltaTime);
-            yield return WaitOneFrame(CinemachineCore.DeltaTime);
+            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            obstacle.transform.position = originalCamPosition; // put obstacle in the way
+            
+            CinemachineCore.CurrentTimeOverride += CinemachineCore.DeltaTime;
+            yield return new WaitForFixedUpdate();
+            yield return null;
             // camera moved check
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             // remove obstacle
-            obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
-
+            UnityEngine.Object.Destroy(obstacle);
+            
             // wait smoothing time and a frame so that camera move back to its original position
-            yield return WaitOneFrame(m_Collider.m_SmoothingTime);
-            yield return WaitOneFrame(CinemachineCore.DeltaTime);
-            yield return WaitOneFrame(CinemachineCore.DeltaTime);
+            CinemachineCore.CurrentTimeOverride += m_Collider.m_SmoothingTime;
+            yield return new WaitForFixedUpdate();
+            yield return null;
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
         [UnityTest]
         public IEnumerator CheckDampingWhenOccluded()
         {
+            CinemachineCore.CurrentTimeOverride = 0;
             m_Collider.m_SmoothingTime = 0;
             m_Collider.m_Damping = 0;
             m_Collider.m_DampingWhenOccluded = 1;
             var originalCamPosition = m_Vcam.State.FinalPosition;
-
-            yield return null;
+            
+            CinemachineCore.CurrentTimeOverride += CinemachineCore.DeltaTime;
+            yield return null; 
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
-            var obstacle = CreateObstacle(originalCamPosition);
+            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            obstacle.transform.position = originalCamPosition; // put obstacle in the way
 
-            yield return null;
+            CinemachineCore.CurrentTimeOverride += CinemachineCore.DeltaTime;
+            yield return new WaitForFixedUpdate();
             yield return null;
             
             // we are pulling away from obstacle
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             var pos1 = m_Vcam.State.FinalPosition;
-            
-            yield return new WaitForSeconds(0.5f);
+
+            CinemachineCore.CurrentTimeOverride += 0.5f;
+            yield return null;
             
             // we should have finished pulling away by now
             Assert.That(pos1, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             Assert.True((m_Vcam.State.FinalPosition - new Vector3(0, 0, -4.40f)).sqrMagnitude < 0.2f);
             
-            obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
+            // remove obstacle
+            UnityEngine.Object.Destroy(obstacle);
 
-            yield return null;
-            yield return null;
-            yield return null;
+            CinemachineCore.CurrentTimeOverride += CinemachineCore.DeltaTime;
+            yield return new WaitForFixedUpdate();
             yield return null;
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
@@ -114,36 +115,34 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckDamping()
         {
+            CinemachineCore.CurrentTimeOverride = 0;
             m_Collider.m_SmoothingTime = 0;
             m_Collider.m_Damping = 1;
             m_Collider.m_DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
-            yield return null;
+            CinemachineCore.CurrentTimeOverride += CinemachineCore.DeltaTime;
+            yield return null; 
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
-            var obstacle = CreateObstacle(originalCamPosition);
-            
-            yield return new WaitForSeconds(0.1f);
+            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            obstacle.transform.position = originalCamPosition; // put obstacle in the way
+
+            CinemachineCore.CurrentTimeOverride += 0.1f;
+            yield return new WaitForFixedUpdate();
+            yield return null;
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
-            obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
+            // remove obstacle
+            UnityEngine.Object.Destroy(obstacle);
             var pos1 = m_Vcam.State.FinalPosition;
             
-            yield return null;
-            yield return null;
+            CinemachineCore.CurrentTimeOverride += CinemachineCore.DeltaTime;
+            yield return new WaitForFixedUpdate();
+            yield return null; 
             
             Assert.That(pos1, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
-        }
-
-        /// <summary>
-        /// Wait one frame and advances cinemachine internal time by frameTime.
-        /// </summary>
-        static IEnumerator WaitOneFrame(float frameTime)
-        {
-            yield return null; 
-            CinemachineCore.CurrentTimeOverride += frameTime;
         }
     }
 }
