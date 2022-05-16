@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -46,84 +47,103 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckSmoothingTime()
         {
+            CinemachineCore.CurrentTimeOverride = 0;
             m_Collider.m_SmoothingTime = 1;
+            m_Collider.m_Damping = 0;
+            m_Collider.m_DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
-            yield return WaitForXFullFrames(1);
+            yield return WaitOneFrame(CinemachineCore.DeltaTime);
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
+            // place obstacle so that camera needs to move
             var obstacle = CreateObstacle(originalCamPosition);
 
-            yield return WaitForSeconds(0.1f);
+            yield return WaitOneFrame(CinemachineCore.DeltaTime);
+            yield return WaitOneFrame(CinemachineCore.DeltaTime);
+            // camera moved check
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
+            // remove obstacle
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
 
-            yield return WaitForSeconds(m_Collider.m_SmoothingTime);
+            // wait smoothing time and a frame so that camera move back to its original position
+            yield return WaitOneFrame(m_Collider.m_SmoothingTime);
+            yield return WaitOneFrame(CinemachineCore.DeltaTime);
+            yield return WaitOneFrame(CinemachineCore.DeltaTime);
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
         [UnityTest]
         public IEnumerator CheckDampingWhenOccluded()
         {
-            m_Collider.m_DampingWhenOccluded = 5;
+            m_Collider.m_SmoothingTime = 0;
+            m_Collider.m_Damping = 0;
+            m_Collider.m_DampingWhenOccluded = 1;
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
-            yield return WaitForXFullFrames(1);
+            yield return null;
+            
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             var obstacle = CreateObstacle(originalCamPosition);
 
-            yield return WaitForSeconds(0.1f);
+            yield return null;
+            yield return null;
+            
+            // we are pulling away from obstacle
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             var pos1 = m_Vcam.State.FinalPosition;
             
-            yield return WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.5f);
+            
+            // we should have finished pulling away by now
             Assert.That(pos1, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
+            Assert.True((m_Vcam.State.FinalPosition - new Vector3(0, 0, -4.40f)).sqrMagnitude < 0.2f);
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
 
-            yield return WaitForXFullFrames(2);
-            Debug.Log("m_Vcam.State.FinalPosition:"+m_Vcam.State.FinalPosition+" vs "+originalCamPosition);
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
+            
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
         [UnityTest]
         public IEnumerator CheckDamping()
         {
-            m_Collider.m_Damping = 5;
+            m_Collider.m_SmoothingTime = 0;
+            m_Collider.m_Damping = 1;
+            m_Collider.m_DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.FinalPosition;
 
-            yield return WaitForXFullFrames(1);
+            yield return null;
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             var obstacle = CreateObstacle(originalCamPosition);
             
-            yield return WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.1f);
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             obstacle.transform.position = originalCamPosition + Vector3.left * 100f; // move obstacle out of the way
             var pos1 = m_Vcam.State.FinalPosition;
             
-            yield return WaitForXFullFrames(2);
+            yield return null;
+            yield return null;
+            
             Assert.That(pos1, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
-        
-        internal IEnumerator WaitForXFullFrames(int x)
-        {
-            for (var i = 0; i <= x; ++i) // wait 1 + x frames, because we need to finish current frame
-            {
-                yield return new WaitForEndOfFrame();
-            }
-        }
 
-        internal IEnumerator WaitForSeconds(float time)
+        /// <summary>
+        /// Wait one frame and advances cinemachine internal time by frameTime.
+        /// </summary>
+        static IEnumerator WaitOneFrame(float frameTime)
         {
-            yield return new WaitForEndOfFrame(); // wait for this frame to end
-            yield return new WaitForEndOfFrame(); // wait for next frame to end
-            yield return new WaitForSeconds(time); // wait for time seconds
-            yield return new WaitForEndOfFrame(); // wait for this frame to end
+            yield return null; 
+            CinemachineCore.CurrentTimeOverride += frameTime;
         }
     }
 }
