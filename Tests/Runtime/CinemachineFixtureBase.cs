@@ -8,7 +8,7 @@ namespace Tests.Runtime
 {
     public class CinemachineFixtureBase
     {
-        protected readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
+        readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
         
         internal GameObject CreateGameObject(string name, params System.Type[] components)
         {
