@@ -9,6 +9,7 @@ namespace Tests.Runtime
     public class CinemachineFixtureBase
     {
         readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
+        protected float m_DeltaTime = 0.1f;
         
         internal GameObject CreateGameObject(string name, params System.Type[] components)
         {

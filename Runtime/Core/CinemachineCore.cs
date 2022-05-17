@@ -346,6 +346,8 @@ namespace Cinemachine
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
                 ? Time.frameCount - status.lastUpdateFrame
                 : s_FixedFrameCount - status.lastUpdateFixedFrame;
+            
+            // TODO: The frameDelta causes instabilities in our tests. Should this be used when manual update is used?
             if (deltaTime >= 0)
             {
                 if (frameDelta == 0 && status.lastUpdateMode == updateClock
