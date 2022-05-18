@@ -374,6 +374,8 @@ namespace Cinemachine
 
                 Vector3 rawOffset = EffectiveOffset;
                 Vector3 offset = headingRot * rawOffset;
+                // Freelook jitter is caused by heading being 0 on the first frame.
+                // This can causes a slight jitter (I don't see it with my eyes, the user claims that it is noticable)
 
                 // Track the target, with damping
                 TrackTarget(deltaTime, curState.ReferenceUp, offset, out Vector3 pos, out Quaternion orient);
