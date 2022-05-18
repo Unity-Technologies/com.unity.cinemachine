@@ -20,7 +20,6 @@ namespace Tests.Runtime
         {
             var camera = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_Brain = camera.GetComponent<CinemachineBrain>();
-            m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate;
 
             m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera), typeof(CinemachineCollider)).GetComponent<CinemachineVirtualCamera>();
             m_Vcam.Priority = 100;
@@ -37,6 +36,10 @@ namespace Tests.Runtime
             m_Vcam.AddExtension(m_Collider);
             
             base.SetUp();
+            
+            // Manual update is needed because when waiting for physics frame, we may pass 1-3 frames. Without manual
+            // update the test won't be deterministic, because we would update 1-3 times, instead of just once.
+            m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate; 
         }
 
         [UnityTest]
