@@ -9,7 +9,7 @@ Shader "Custom/FadeOut" {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
  
     Pass {
-        ZWrite On
+        ZWrite Off
         ColorMask 0
     }
    
