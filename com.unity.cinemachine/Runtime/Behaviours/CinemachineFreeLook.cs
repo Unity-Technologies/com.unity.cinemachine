@@ -698,8 +698,9 @@ namespace Cinemachine
                 // Allow externally-driven values to work in this mode
                 if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                     m_XAxis.Value = oldValue;
+                return m_CachedXAxisHeading;
             }
-            return m_CachedXAxisHeading;
+            return m_XAxis.Value;
         }
 
         void PushSettingsToRigs()
