@@ -335,28 +335,5 @@ namespace Cinemachine
         private float m_PreviousPathPosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         private Vector3 m_PreviousCameraPosition = Vector3.zero;
-
-        internal bool IsUpgradable()
-        {
-            return m_YawDamping == m_RollDamping && m_RollDamping == m_PitchDamping;
-        }
-
-        internal void Upgrade(CinemachineSplineDolly splineDolly)
-        {
-            splineDolly.m_Damping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
-            splineDolly.m_AngularDamping = m_RollDamping;
-            splineDolly.m_CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp;
-            splineDolly.m_DampingEnabled = true;
-            splineDolly.m_AutoDolly = new CinemachineSplineDolly.AutoDolly
-            {
-                m_Enabled = m_AutoDolly.m_Enabled,
-                m_PositionOffset = m_AutoDolly.m_PositionOffset,
-                m_SearchResolution = m_AutoDolly.m_SearchResolution,
-            };
-            splineDolly.m_CameraPosition = m_PathPosition;
-            splineDolly.m_SplineOffset = m_PathOffset;
-            m_Path.UpgradeTo(out splineDolly.m_Spline);
-            DestroyImmediate(m_Path);
-        }
     }
 }

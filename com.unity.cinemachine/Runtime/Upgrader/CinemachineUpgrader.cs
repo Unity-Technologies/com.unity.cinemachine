@@ -422,15 +422,26 @@ namespace Cinemachine.Upgrader
                         {
                             if (oldComponent is CinemachineTrackedDolly trackedDolly)
                             {
-                                if (trackedDolly.IsUpgradable())
+                                var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
+                                splineDolly.m_Damping = new Vector3(
+                                    trackedDolly.m_XDamping, trackedDolly.m_YDamping, trackedDolly.m_ZDamping);
+                                splineDolly.m_AngularDamping = Mathf.Max(trackedDolly.m_YawDamping,
+                                    Mathf.Max(trackedDolly.m_RollDamping, trackedDolly.m_PitchDamping));
+                                splineDolly.m_CameraUp = (CinemachineSplineDolly.CameraUpMode)trackedDolly.m_CameraUp;
+                                splineDolly.m_DampingEnabled = true;
+                                splineDolly.m_AutoDolly = new CinemachineSplineDolly.AutoDolly
                                 {
-                                    var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
-                                    trackedDolly.Upgrade(splineDolly);
-                                    Object.DestroyImmediate(trackedDolly);
-                                    return;
-                                }
-
-                                Debug.LogWarning("CinemachineTrackedDolly (" + go.name + ") is not upgradable automatically. Please upgrade manually!");
+                                    m_Enabled = trackedDolly.m_AutoDolly.m_Enabled,
+                                    m_PositionOffset = trackedDolly.m_AutoDolly.m_PositionOffset,
+                                    m_SearchResolution = trackedDolly.m_AutoDolly.m_SearchResolution,
+                                };
+                                splineDolly.m_CameraPosition = trackedDolly.m_PathPosition;
+                                splineDolly.m_SplineOffset = trackedDolly.m_PathOffset;
+                                var path = trackedDolly.m_Path;
+                                path.UpgradeTo(out splineDolly.m_Spline);
+                                Object.DestroyImmediate(path);
+                                Object.DestroyImmediate(trackedDolly);
+                                return;
                             }
 
                             var newComponent = (CinemachineComponentBase)go.AddComponent(oldComponent.GetType());
