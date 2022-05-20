@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Codice.CM.SemanticMerge.Gui;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -167,15 +168,16 @@ namespace Cinemachine.Upgrader
                 {
                     if (m_Freelook == null) 
                         return false;
-                    
-                    if (!IsFreelookUpgradable())
-                    {
-                        Debug.LogWarning("Freelook camera (" + m_Freelook.name + ") is not upgradable automatically. Please upgrade manually!");
-                        return false;
-                    }
+
+                    var isUpgradable = IsFreelookUpgradable();
                     m_Freelook.enabled = false;
 
                     var go = m_Freelook.gameObject;
+                    if (!isUpgradable)
+                    {
+                        var clone = Object.Instantiate(m_Freelook.gameObject);
+                        clone.name = clone.name.Substring(0, go.name.Length - "(Clone)".Length) + "(Not fully upgradable)";
+                    }
                     var oldExtensions = go.GetComponents<CinemachineExtension>();
 
                     var cmCamera = go.AddComponent<CmCamera>();
@@ -199,10 +201,19 @@ namespace Cinemachine.Upgrader
                     var topRig = m_TopRig.gameObject;
                     var middleRig = m_MiddleRig.gameObject;
                     var bottomRig = m_BottomRig.gameObject;
-                    Object.DestroyImmediate(topRig);
-                    Object.DestroyImmediate(middleRig);
-                    Object.DestroyImmediate(bottomRig);
-                    Object.DestroyImmediate(m_Freelook);
+                    if (isUpgradable)
+                    {
+                        Object.DestroyImmediate(topRig);
+                        Object.DestroyImmediate(middleRig);
+                        Object.DestroyImmediate(bottomRig);
+                        Object.DestroyImmediate(m_Freelook);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Freelook camera \"" + m_Freelook.name + "\" was not fully upgradable " +
+                            "automatically! It was partially upgraded. You need to manually adjust some parameters.");
+                    }
+
                     return true;
                 }
                 
