@@ -32,7 +32,7 @@ public class ScriptingExample : MonoBehaviour
         freelook.gameObject.AddComponent<CinemachineOrbitalFollow>();
         freelook.gameObject.AddComponent<CinemachineComposer>();
         freelook.gameObject.AddComponent<InputAxisController>();
-        vcam.Follow = GameObject.Find("Cylinder").transform;
+        freelook.Follow = GameObject.Find("Cylinder").transform;
         freelook.LookAt = GameObject.Find("Cylinder/Sphere").transform;
         freelook.m_Priority = 11;
     }
