@@ -17,7 +17,7 @@ public class ScriptingExample : MonoBehaviour
 
         // Create a virtual camera that looks at object "Cube", and set some settings
         vcam = new GameObject("VirtualCamera").AddComponent<CmCamera>();
-        vcam.m_LookAt = GameObject.Find("Cube").transform;
+        vcam.Follow = GameObject.Find("Cube").transform;
         vcam.m_Priority = 10;
         vcam.gameObject.transform.position = new Vector3(0, 1, 0);
 
@@ -32,8 +32,8 @@ public class ScriptingExample : MonoBehaviour
         freelook.gameObject.AddComponent<CinemachineOrbitalFollow>();
         freelook.gameObject.AddComponent<CinemachineComposer>();
         freelook.gameObject.AddComponent<InputAxisController>();
-        freelook.m_LookAt = GameObject.Find("Cylinder/Sphere").transform;
-        freelook.m_Follow = GameObject.Find("Cylinder").transform;
+        vcam.Follow = GameObject.Find("Cylinder").transform;
+        freelook.LookAt = GameObject.Find("Cylinder/Sphere").transform;
         freelook.m_Priority = 11;
     }
 

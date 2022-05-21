@@ -31,7 +31,7 @@ namespace Cinemachine.Editor
                 var stageTypes = new List<Type>[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
                 for (int i = 0; i < stageTypes.Length; ++i)
                 {
-                    sStageData[i].Name = ((CinemachineCore.Stage)i).ToString();
+                    sStageData[i].Name = ObjectNames.NicifyVariableName(((CinemachineCore.Stage)i).ToString());
                     stageTypes[i] = new List<Type>();
                 }
 
@@ -53,16 +53,8 @@ namespace Cinemachine.Editor
                     sStageData[i].types = stageTypes[i].ToArray();
                     var names = new GUIContent[sStageData[i].types.Length];
                     for (int n = 0; n < names.Length; ++n)
-                    {
-                        if (n == 0)
-                        {
-                            bool useSimple = (i == (int)CinemachineCore.Stage.Aim) ||
-                                (i == (int)CinemachineCore.Stage.Body);
-                            names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
-                        }
-                        else
-                            names[n] = new GUIContent(InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
-                    }
+                        names[n] = new GUIContent(
+                            n == 0 ? "none" : InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
                     sStageData[i].PopupOptions = names;
                 }
             }
@@ -281,7 +273,7 @@ namespace Cinemachine.Editor
             VcamStageEditor.SetComponentDelegate setComponent)
         {
             m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var ed = new VcamStageEditor(stage);

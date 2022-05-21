@@ -272,7 +272,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == CinemachineCore.Stage.Body)
+            if (stage == CinemachineCore.Stage.PositionControl)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = false;
@@ -340,7 +340,7 @@ namespace Cinemachine
                 }
             }
             // Rate the shot after the aim was set
-            if (stage == CinemachineCore.Stage.Aim)
+            if (stage == CinemachineCore.Stage.RotationControl)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);

@@ -59,7 +59,7 @@ namespace Cinemachine.Editor
             // We give the camera a couple of children as an example of setup
             var childVcam1 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
             var childVcam2 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
-            childVcam2.m_Lens.FieldOfView = 10;
+            childVcam2.Lens.FieldOfView = 10;
 
             // Set up initial instruction set
             blendListCamera.m_Instructions = new CinemachineBlendListCamera.Instruction[2];
@@ -105,7 +105,7 @@ namespace Cinemachine.Editor
                 "Dolly Track", command.context as GameObject, false);
             var vcam = CreateCinemachineObject<CmCamera>(
                 "Cm Camera", command.context as GameObject, true);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             vcam.gameObject.AddComponent<CinemachineComposer>();
             var trackedDolly = vcam.gameObject.AddComponent<CinemachineTrackedDolly>();
@@ -128,7 +128,7 @@ namespace Cinemachine.Editor
             CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
             var vcam = CreateCinemachineObject<CmCamera>(
                 "Cm Camera", command.context as GameObject, false);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             vcam.gameObject.AddComponent<CinemachineGroupComposer>();
             vcam.gameObject.AddComponent<CinemachineTransposer>();
@@ -157,7 +157,7 @@ namespace Cinemachine.Editor
             CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
             var vcam = CreateCinemachineObject<CmCamera>(
                 "Cm Camera", command.context as GameObject, true);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
         }
@@ -202,7 +202,7 @@ namespace Cinemachine.Editor
             string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
             var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             return vcam;
         }
@@ -214,7 +214,7 @@ namespace Cinemachine.Editor
             string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
             var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
             return vcam;
         }
 

@@ -74,7 +74,7 @@ namespace Cinemachine
 
             // Set the zoom after the body has been positioned, but before the aim,
             // so that composer can compose using the updated fov.
-            if (stage == CinemachineCore.Stage.Body)
+            if (stage == CinemachineCore.Stage.PositionControl)
             {
                 // Try to reproduce the target width
                 float targetWidth = Mathf.Max(m_Width, 0);

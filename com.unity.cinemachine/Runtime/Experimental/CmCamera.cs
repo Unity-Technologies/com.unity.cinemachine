@@ -51,23 +51,14 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/CmCamera")]
     public class CmCamera : CinemachineVirtualCameraBase
     {
-        /// <summary>Object for the camera to look at (the aim target)</summary>
-        [Tooltip("Object for the camera to look at (the aim target).")]
         [NoSaveDuringPlay]
-        [VcamTargetProperty]
-        public Transform m_LookAt = null;
-
-        /// <summary>Object for the camera to move with (the body target)</summary>
-        [Tooltip("Object for the camera to move with (the body target).")]
-        [NoSaveDuringPlay]
-        [VcamTargetProperty]
-        public Transform m_Follow = null;
+        public CameraTarget Target;
 
         /// <summary>Specifies the LensSettings of this camera.
         /// These settings will be transferred to the Unity camera when the CM Camera is live.</summary>
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the "
             + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
-        public LensSettings m_Lens = LensSettings.Default;
+        public LensSettings Lens = LensSettings.Default;
 
         /// <summary> Collection of parameters that influence how this CM camera transitions from
         /// other CM cameras </summary>
@@ -75,20 +66,19 @@ namespace Cinemachine
 
         void Reset()
         {
-            m_LookAt = null;
-            m_Follow = null;
-            m_Lens = LensSettings.Default;
+            Target = default;
+            Lens = LensSettings.Default;
         }
 
         /// <summary>Validates the settings avter inspector edit</summary>
         protected override void OnValidate()
         {
             base.OnValidate();
-            m_Lens.Validate();
+            Lens.Validate();
         }
 
         /// <summary>The current camera state, which will applied to the Unity Camera</summary>
-        public override CameraState State { get { return m_State; } }
+        public override CameraState State { get => m_State; }
 
         /// <summary>The current camera state, which will applied to the Unity Camera</summary>
         protected CameraState m_State = CameraState.Default;
@@ -97,16 +87,16 @@ namespace Cinemachine
         /// is non-null and no specific LookAt defined for this camera</summary>
         public override Transform LookAt
         {
-            get { return ResolveLookAt(m_LookAt); }
-            set { m_LookAt = value; }
+            get { return ResolveLookAt(Target.CustomLookAtTarget ? Target.LookAtTarget : Target.TrackingTarget); }
+            set { Target.CustomLookAtTarget = true; Target.LookAtTarget = value; }
         }
 
         /// <summary>Get the current Follow target.  Returns parent's Follow if parent
         /// is non-null and no specific Follow defined for this camera</summary>
         public override Transform Follow
         {
-            get { return ResolveFollow(m_Follow); }
-            set { m_Follow = value; }
+            get { return ResolveFollow(Target.TrackingTarget); }
+            set { Target.TrackingTarget = value; }
         }
 
         /// <summary>This is called to notify the CM camera that a target got warped,
@@ -211,10 +201,10 @@ namespace Cinemachine
             LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
-            m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            m_State = PullStateFromVirtualCamera(worldUp, ref Lens);
 
             // Do our stuff
-            var lookAt = ResolveLookAt(m_LookAt);
+            var lookAt = LookAt;
             if (lookAt != null)
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.FinalPosition : TargetPositionCache.GetTargetPosition(lookAt);
@@ -250,7 +240,7 @@ namespace Cinemachine
 
             // Apply the component pipeline
             UpdatePipelineCache();
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Pipeline[(int)stage];
@@ -258,13 +248,13 @@ namespace Cinemachine
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
             CinemachineComponentBase postAimBody = null;
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Pipeline[(int)stage];
                 if (c != null && c.IsValid)
                 {
-                    if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
+                    if (stage == CinemachineCore.Stage.PositionControl && c.BodyAppliesAfterAim)
                     {
                         postAimBody = c;
                         continue; // do the body stage of the pipeline after Aim
@@ -272,7 +262,7 @@ namespace Cinemachine
                     c.MutateCameraState(ref state, deltaTime);
                 }
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
-                if (stage == CinemachineCore.Stage.Aim)
+                if (stage == CinemachineCore.Stage.RotationControl)
                 {
                     if (c == null)
                         state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
@@ -280,7 +270,7 @@ namespace Cinemachine
                     if (postAimBody != null)
                     {
                         postAimBody.MutateCameraState(ref state, deltaTime);
-                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
+                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.PositionControl, ref state, deltaTime);
                     }
                 }
             }
