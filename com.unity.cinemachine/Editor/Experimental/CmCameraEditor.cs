@@ -65,7 +65,7 @@ namespace Cinemachine.Editor
             m_CameraUtility.AddCameraStatus(ux);
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Priority)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_StandbyUpdate)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Transitions)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Transitions)));
             
             ux.AddHeader("Camera");
             var lensProperty = serializedTarget.FindProperty(() => Target.Lens);
@@ -90,7 +90,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Target)));
             m_CameraUtility.AddPipelineDropdowns(ux);
 
-            //ux.AddHeader("Extensions");
+            ux.AddSpace();
             m_CameraUtility.AddExtensionsDropdown(ux);
 
             return ux;

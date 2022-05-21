@@ -99,7 +99,7 @@ namespace Cinemachine.Editor
             var vcam = vcamBase as CmCamera;
             if (vcam != null)
             {
-                vcamData.SetTransitionsAndLens(vcam.m_Transitions, vcam.Lens);
+                vcamData.SetTransitionsAndLens(vcam.Transitions, vcam.Lens);
                 vcamData.SetComponents(vcam.GetComponents<CinemachineComponentBase>());
                 vcamDatas.Add(vcamData);
                 return;

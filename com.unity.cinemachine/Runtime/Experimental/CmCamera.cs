@@ -62,7 +62,7 @@ namespace Cinemachine
 
         /// <summary> Collection of parameters that influence how this CM camera transitions from
         /// other CM cameras </summary>
-        public TransitionParams m_Transitions;
+        public TransitionParams Transitions;
 
         void Reset()
         {
@@ -168,12 +168,12 @@ namespace Cinemachine
             bool forceUpdate = false;
 
             // Cant't inherit position if already live, because there will be a pop
-            if (m_Transitions.m_InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
+            if (Transitions.m_InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
                 ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
             
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
-                if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime, ref m_Transitions))
+                if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime, ref Transitions))
                     forceUpdate = true;
 
             if (!forceUpdate)
@@ -185,8 +185,8 @@ namespace Cinemachine
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
 
-            if (m_Transitions.m_OnCameraLive != null)
-                m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.m_OnCameraLive != null)
+                Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
@@ -209,7 +209,7 @@ namespace Cinemachine
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.FinalPosition : TargetPositionCache.GetTargetPosition(lookAt);
             InvokeComponentPipeline(ref m_State, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
+            ApplyPositionBlendMethod(ref m_State, Transitions.m_BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
