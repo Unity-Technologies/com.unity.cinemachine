@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## CM3
+- VirtualCamera refactor: CinemachineVirtualCamera is now CmCamera.
+- FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
+- Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
+
+
 ## UNRELEASED
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
 
