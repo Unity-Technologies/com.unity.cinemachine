@@ -53,7 +53,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineComposer).LookAtTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "A Tracking target is required.  Change Aim to Do Nothing if you don't want a Tracking or LookAt target.",
+                    "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.",
                     MessageType.Warning);
 
             // First snapshot some settings
