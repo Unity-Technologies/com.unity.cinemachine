@@ -180,8 +180,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
     
     /// <summary>
-    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
-    /// at the end of the camera pipeline.
+    /// Builtin Freelook modifier for positional damping. Modifies positional damping at the start of the camera pipeline.
     /// </summary>
     public class PositionDampingModifier : ComponentModifier<IModifiablePositionDamping>
     {
@@ -227,8 +226,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
     
     /// <summary>
-    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
-    /// at the end of the camera pipeline.
+    /// Builtin Freelook modifier for Composer's ScreenY. Modifies ScreenY at the start of the camera pipeline.
     /// </summary>
     public class ScreenYModifier : ComponentModifier<IModifiableScreenY>
     {
@@ -273,8 +271,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
 
     /// <summary>
-    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
-    /// at the end of the camera pipeline.
+    /// Builtin FreeLook modifier for camera distance.  Applies distance to the camera at the start of the camera pipeline.
     /// </summary>
     public class DistanceModifier : ComponentModifier<IModifiableDistance>
     {
