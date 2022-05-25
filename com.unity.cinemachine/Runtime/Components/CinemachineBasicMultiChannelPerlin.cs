@@ -18,7 +18,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Noise)]
+    [CameraPipeline(CinemachineCore.Stage.Noise)]
     public class CinemachineBasicMultiChannelPerlin 
         : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableNoise
     {
