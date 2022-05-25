@@ -8,7 +8,7 @@ namespace Tests.Runtime
 {
     public class CinemachineFixtureBase
     {
-        protected readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
+        readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
         
         internal GameObject CreateGameObject(string name, params System.Type[] components)
         {
@@ -36,6 +36,8 @@ namespace Tests.Runtime
         {
             // force a uniform deltaTime, otherwise tests will be unstable
             CinemachineCore.UniformDeltaTimeOverride = 0.1f;
+            // disable delta time compensation for deterministic test results
+            CinemachineCore.FrameDeltaCompensationEnabled = false;
         }
         
         [TearDown]
