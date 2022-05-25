@@ -18,6 +18,9 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
+#if UNITY_2022_1_OR_NEWER
+    [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
+#endif
     public class CinemachineTrackedDolly : CinemachineComponentBase
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
