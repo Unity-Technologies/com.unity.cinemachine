@@ -328,7 +328,6 @@ namespace Cinemachine
                     // Apply damping
                     if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
-                        // TODO: when delta time is 0, the displacement here is wrong Damper.Damp should return -extra.previousDisplacement
                         displacement = extra.previousDisplacement + Damper.Damp(
                             displacement - extra.previousDisplacement, 
                             displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
