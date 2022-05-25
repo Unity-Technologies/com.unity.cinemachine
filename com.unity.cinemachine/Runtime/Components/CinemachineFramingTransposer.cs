@@ -34,6 +34,7 @@ namespace Cinemachine
     public class CinemachineFramingTransposer : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
+        , CinemachineFreeLookModifier.IModifiableScreenPosition
     {
         /// <summary>
         /// Offset from the Follow Target object (in target-local co-ordinates).  The camera will attempt to
@@ -700,6 +701,16 @@ namespace Cinemachine
             return new Bounds(
                 new Vector3(0, 0, d/2),
                 new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
+        }
+
+        public (float, float) Screen
+        {
+            get => (m_ScreenX, m_ScreenY);
+            set
+            {
+                m_ScreenX = value.Item1;
+                m_ScreenY = value.Item2;
+            }
         }
     }
 }
