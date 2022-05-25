@@ -11,7 +11,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.Body)]
+    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
     {
         /// <summary>

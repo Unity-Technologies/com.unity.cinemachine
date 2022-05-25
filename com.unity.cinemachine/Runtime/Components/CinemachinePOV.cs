@@ -15,7 +15,7 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
     public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>
