@@ -2,6 +2,7 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
@@ -35,39 +36,28 @@ namespace Cinemachine.Editor
                 }
 
                 // Get all ICinemachineComponents
-                var allTypes
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
+                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) =>
+                    typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract &&
+                    t.GetCustomAttribute<CameraPipelineAttribute>() != null);
 
-                // GML todo: use class attribute instead
-                // Create a temp game object so we can instance behaviours
-                GameObject go = new GameObject("Cinemachine Temp Object");
-                go.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
-                foreach (Type t in allTypes)
+                foreach (var t in allTypes)
                 {
-                    MonoBehaviour b = go.AddComponent(t) as MonoBehaviour;
-                    CinemachineComponentBase c = b != null ? (CinemachineComponentBase)b : null;
-                    if (c != null)
-                    {
-                        CinemachineCore.Stage stage = c.Stage;
-                        stageTypes[(int)stage].Add(t);
-                    }
+                    var stage = (int)t.GetCustomAttribute<CameraPipelineAttribute>().Stage;
+                    stageTypes[stage].Add(t);
                 }
-                GameObject.DestroyImmediate(go);
 
                 // Create the static lists
                 for (int i = 0; i < stageTypes.Length; ++i)
                 {
                     stageTypes[i].Insert(0, null);  // first item is "none"
                     sStageData[i].types = stageTypes[i].ToArray();
-                    GUIContent[] names = new GUIContent[sStageData[i].types.Length];
+                    var names = new GUIContent[sStageData[i].types.Length];
                     for (int n = 0; n < names.Length; ++n)
                     {
                         if (n == 0)
                         {
-                            bool useSimple
-                                = (i == (int)CinemachineCore.Stage.Aim)
-                                    || (i == (int)CinemachineCore.Stage.Body);
+                            bool useSimple = (i == (int)CinemachineCore.Stage.Aim) ||
+                                (i == (int)CinemachineCore.Stage.Body);
                             names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
                         }
                         else
