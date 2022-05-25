@@ -359,10 +359,15 @@ namespace Cinemachine.Editor
             var camForward = camRot * Vector3.forward;
                 
             EditorGUI.BeginChangeCheck();
-            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
-            var newFov = Handles.ScaleSlider(
-                s_FOVAfterLastToolModification, 
+#if UNITY_2022_2_OR_NEWER
+            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive);
+            var newFov = Handles.ScaleSlider(fovHandleId, s_FOVAfterLastToolModification, 
                 camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+#else
+            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1;
+            var newFov = Handles.ScaleSlider(
+                s_FOVAfterLastToolModification, camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+#endif
             if (EditorGUI.EndChangeCheck())
             {
                 if (orthographic)
@@ -593,9 +598,16 @@ namespace Cinemachine.Editor
             var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset.vector3Value;
 
             EditorGUI.BeginChangeCheck();
-            var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+#if UNITY_2022_2_OR_NEWER
+            var tooHandleIds = Handles.PositionHandleIds.@default;
+            var newTrackedObjectPos = Handles.PositionHandle(tooHandleIds, trackedObjectPos, lookAtRot);
+            var tooHandleMinId = tooHandleIds.x - 1;
+            var tooHandleMaxId = tooHandleIds.xyz + 1;
+#else
+            var tooHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
             var newTrackedObjectPos = Handles.PositionHandle(trackedObjectPos, lookAtRot);
-            var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            var tooHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+#endif
             if (EditorGUI.EndChangeCheck())
             {
                 trackedObjectOffset.vector3Value += 
@@ -633,9 +645,16 @@ namespace Cinemachine.Editor
             var camRot = cmComponent.GetReferenceOrientation(up);
 
             EditorGUI.BeginChangeCheck();
-            var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+#if UNITY_2022_2_OR_NEWER
+            var foHandleIds = Handles.PositionHandleIds.@default;
+            var newPos = Handles.PositionHandle(foHandleIds, camPos, camRot);
+            var foHandleMinId = foHandleIds.x - 1;
+            var foHandleMaxId = foHandleIds.xyz + 1;
+#else
+            var foHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
             var newPos = Handles.PositionHandle(camPos, camRot);
-            var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+            var foHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+#endif
             if (EditorGUI.EndChangeCheck())
             {
                 var so = new SerializedObject(cmComponent);
