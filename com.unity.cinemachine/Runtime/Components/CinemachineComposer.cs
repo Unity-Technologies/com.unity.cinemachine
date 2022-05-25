@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System;
 using Cinemachine.Utility;
-using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -17,8 +16,8 @@ namespace Cinemachine
     [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
-    public class CinemachineComposer : CinemachineComponentBase
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
+    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenY
     {
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
@@ -516,6 +515,12 @@ namespace Cinemachine
                 }
             }
             return false;
+        }
+
+        float CinemachineFreeLookModifier.IModifiableScreenY.ScreenY
+        {
+            get => m_ScreenY;
+            set => m_ScreenY = value;
         }
     }
 }
