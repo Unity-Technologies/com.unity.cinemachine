@@ -560,7 +560,43 @@ namespace Cinemachine.Upgrader
                                     }
                                 }
                             }
+
+                            if (track is AnimationTrack animationTrack)
+                            {
+                                if (animationTrack.inClipMode)
+                                {
+                                    var clips = animationTrack.GetClips();
+                                    var animationClips = clips
+                                        .Select(c => c.asset) //animation clip is stored in the clip's asset
+                                        .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
+                                        .Select(asset => asset.clip); //finally we get an animation clip!
+
+                                    foreach (var animationClip in animationClips)
+                                        ProcessAnimationClip(animationClip);
+                                }
+                                else //uses recorded clip
+                                    ProcessAnimationClip(animationTrack.infiniteClip);
+                            }
                         }
+                    }
+                }
+            }
+            
+            static void ProcessAnimationClip(AnimationClip animationClip)
+            {
+                var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
+                foreach (var previousBinding in existingEditorBindings)
+                {
+                    var newBinding = previousBinding;
+                    var path = newBinding.path;
+                    if (path.Contains("cm"))
+                    {
+                        //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
+                        var index = Mathf.Max(0, path.IndexOf("cm") - 1);
+                        newBinding.path = path.Substring(0, index);
+                        var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
+                        AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
+                        AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
                     }
                 }
             }
@@ -586,7 +622,7 @@ namespace Cinemachine.Upgrader
                         {
                             director.SetReferenceValue(exposedRef.exposedName, upgraded);
 #if DEBUG_HELPERS
-                    Debug.Log("Updated Timeline reference " + timelineAsset.name + ":" + upgraded.name);
+                            Debug.Log("Updated Timeline reference " + timelineAsset.name + ":" + upgraded.name);
 #endif
                         }
                     }
