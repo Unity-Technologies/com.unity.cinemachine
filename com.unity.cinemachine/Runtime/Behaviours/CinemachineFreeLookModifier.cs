@@ -21,9 +21,9 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         Vector3 PositionDamping { get; set; }
     }
     
-    public interface IModifiableScreenY
+    public interface IModifiableScreenPosition
     {
-        float ScreenY { get; set; }
+        (float, float) Screen { get; set; }
     }
 
     public interface IModifiableDistance
@@ -228,34 +228,54 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// <summary>
     /// Builtin Freelook modifier for Composer's ScreenY. Modifies ScreenY at the start of the camera pipeline.
     /// </summary>
-    public class ScreenYModifier : ComponentModifier<IModifiableScreenY>
+    public class ScreenPositionModifier : ComponentModifier<IModifiableScreenPosition>
     {
+        [Serializable]
+        public struct ScreenPosition
+        {
+            [Tooltip("Multiplier for the noise amplitude")]
+            public float x;
+
+            [Tooltip("Multiplier for the noise frequency")]
+            public float y;
+        }
+    
         [HideFoldout]
-        public TopBottomRigs<float> ScreenY;
+        public TopBottomRigs<ScreenPosition> Screen;
 
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
-            ScreenY.Top = Mathf.Clamp(ScreenY.Top, -0.5f, 1.5f);
-            ScreenY.Bottom = Mathf.Clamp(ScreenY.Bottom, -0.5f, 1.5f);
+            Screen.Top.x = Mathf.Clamp(Screen.Top.x, -0.5f, 1.5f);
+            Screen.Top.y = Mathf.Clamp(Screen.Top.y, -0.5f, 1.5f);
+            Screen.Bottom.x = Mathf.Clamp(Screen.Bottom.x, -0.5f, 1.5f);
+            Screen.Bottom.y = Mathf.Clamp(Screen.Bottom.y, -0.5f, 1.5f);
         }
 
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
-                ScreenY.Top = ScreenY.Bottom = CachedComponent.ScreenY;
+            {
+                Screen.Top = Screen.Bottom = new ScreenPosition
+                {
+                    x = CachedComponent.Screen.Item1,
+                    y = CachedComponent.Screen.Item2
+                };;
+            }
         }
 
-        float m_CenterScreenY;
+        (float, float) m_CenterScreen;
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
         {
             if (CachedComponent != null)
             {
-                m_CenterScreenY = CachedComponent.ScreenY;
-                CachedComponent.ScreenY = modifierValue >= 0 
-                    ? Mathf.Lerp(m_CenterScreenY, ScreenY.Top, modifierValue)
-                    : Mathf.Lerp(ScreenY.Bottom, m_CenterScreenY, modifierValue + 1);
+                m_CenterScreen = CachedComponent.Screen;
+                CachedComponent.Screen = modifierValue >= 0 
+                    ? (Mathf.Lerp(m_CenterScreen.Item1, Screen.Top.x, modifierValue),
+                        Mathf.Lerp(m_CenterScreen.Item2, Screen.Top.y, modifierValue))
+                    : (Mathf.Lerp(Screen.Bottom.x, m_CenterScreen.Item1, modifierValue + 1),
+                        Mathf.Lerp(Screen.Bottom.y, m_CenterScreen.Item2, modifierValue + 1));
             }
         }
 
@@ -266,7 +286,9 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             // Restore the settings
             if (CachedComponent != null)
-                CachedComponent.ScreenY = m_CenterScreenY;
+            {
+                CachedComponent.Screen = m_CenterScreen;
+            }
         }
     }
 
