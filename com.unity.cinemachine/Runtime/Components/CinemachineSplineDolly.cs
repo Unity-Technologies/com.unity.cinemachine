@@ -18,7 +18,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.Body)]
+    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
     public class CinemachineSplineDolly : CinemachineComponentBase
     {
         /// <summary>The Spline container to which the camera will be constrained.  This must be non-null.</summary>
