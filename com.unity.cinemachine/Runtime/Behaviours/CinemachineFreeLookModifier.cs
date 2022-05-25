@@ -226,7 +226,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
     
     /// <summary>
-    /// Builtin Freelook modifier for Composer's ScreenY. Modifies ScreenY at the start of the camera pipeline.
+    /// Builtin Freelook modifier for Composer's Screen position. Modifies Screen position at the start of the camera pipeline.
     /// </summary>
     public class ScreenPositionModifier : ComponentModifier<IModifiableScreenPosition>
     {
