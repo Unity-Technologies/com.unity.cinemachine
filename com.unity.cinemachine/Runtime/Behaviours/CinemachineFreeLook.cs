@@ -646,7 +646,7 @@ namespace Cinemachine
 
         private int LocateExistingRigs(string[] rigNames, bool forceOrbital)
         {
-            m_CachedXAxisHeading = 0;
+            m_CachedXAxisHeading = m_XAxis.Value;
             m_LastHeadingUpdateFrame = -1;
             mOrbitals = new CinemachineOrbitalTransposer[rigNames.Length];
             m_Rigs = new CinemachineVirtualCamera[rigNames.Length];
@@ -690,8 +690,7 @@ namespace Cinemachine
         {
             if (this == null)   
                 return 0; // deleted
-            if (mOrbitals == null)
-                return m_XAxis.Value;
+
             // Update the axis only once per frame
             if (m_LastHeadingUpdateFrame != Time.frameCount)
             {
