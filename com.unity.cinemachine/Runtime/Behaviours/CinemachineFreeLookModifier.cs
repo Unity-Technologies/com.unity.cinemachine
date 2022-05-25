@@ -23,7 +23,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     
     public interface IModifiableScreenPosition
     {
-        (float, float) Screen { get; set; }
+        Vector2 Screen { get; set; }
     }
 
     public interface IModifiableDistance
@@ -230,18 +230,8 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class ScreenPositionModifier : ComponentModifier<IModifiableScreenPosition>
     {
-        [Serializable]
-        public struct ScreenPosition
-        {
-            [Tooltip("Multiplier for the noise amplitude")]
-            public float x;
-
-            [Tooltip("Multiplier for the noise frequency")]
-            public float y;
-        }
-    
         [HideFoldout]
-        public TopBottomRigs<ScreenPosition> Screen;
+        public TopBottomRigs<Vector2> Screen;
 
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
@@ -255,27 +245,21 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         {
             if (CachedComponent != null)
             {
-                Screen.Top = Screen.Bottom = new ScreenPosition
-                {
-                    x = CachedComponent.Screen.Item1,
-                    y = CachedComponent.Screen.Item2
-                };;
+                Screen.Top = Screen.Bottom = new Vector2(CachedComponent.Screen.x, CachedComponent.Screen.y);
             }
         }
 
-        (float, float) m_CenterScreen;
+        Vector2 m_CenterScreen;
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
         {
             if (CachedComponent != null)
             {
-                m_CenterScreen = CachedComponent.Screen;
-                CachedComponent.Screen = modifierValue >= 0 
-                    ? (Mathf.Lerp(m_CenterScreen.Item1, Screen.Top.x, modifierValue),
-                        Mathf.Lerp(m_CenterScreen.Item2, Screen.Top.y, modifierValue))
-                    : (Mathf.Lerp(Screen.Bottom.x, m_CenterScreen.Item1, modifierValue + 1),
-                        Mathf.Lerp(Screen.Bottom.y, m_CenterScreen.Item2, modifierValue + 1));
+                m_CenterScreen = new Vector2(CachedComponent.Screen.x, CachedComponent.Screen.y);
+                CachedComponent.Screen = modifierValue >= 0
+                    ? Vector2.Lerp(m_CenterScreen, Screen.Top, modifierValue)
+                    : Vector2.Lerp(Screen.Bottom, m_CenterScreen, modifierValue + 1);
             }
         }
 

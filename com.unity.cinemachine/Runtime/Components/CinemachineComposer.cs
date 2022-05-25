@@ -517,13 +517,13 @@ namespace Cinemachine
             return false;
         }
 
-        (float, float) CinemachineFreeLookModifier.IModifiableScreenPosition.Screen
+        Vector2 CinemachineFreeLookModifier.IModifiableScreenPosition.Screen
         {
-            get => (m_ScreenX, m_ScreenY);
+            get => new Vector2(m_ScreenX, m_ScreenY);
             set
             {
-                m_ScreenX = value.Item1;
-                m_ScreenY = value.Item2;
+                m_ScreenX = value.x;
+                m_ScreenY = value.y;
             }
         }
     }
