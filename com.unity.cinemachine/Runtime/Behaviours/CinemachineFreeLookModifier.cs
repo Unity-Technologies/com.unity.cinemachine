@@ -20,6 +20,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     {
         Vector3 PositionDamping { get; set; }
     }
+    
+    public interface IModifiableScreenY
+    {
+        float ScreenY { get; set; }
+    }
 
     public interface IModifiableDistance
     {
@@ -218,6 +223,52 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             // Restore the settings
             if (CachedComponent != null)
                 CachedComponent.PositionDamping = m_CenterDamping;
+        }
+    }
+    
+    /// <summary>
+    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
+    /// at the end of the camera pipeline.
+    /// </summary>
+    public class ScreenYModifier : ComponentModifier<IModifiableScreenY>
+    {
+        [HideFoldout]
+        public TopBottomRigs<float> ScreenY;
+
+        public override void Validate(CinemachineVirtualCameraBase vcam)
+        {
+            ScreenY.Top = Mathf.Clamp(ScreenY.Top, -0.5f, 1.5f);
+            ScreenY.Bottom = Mathf.Clamp(ScreenY.Bottom, -0.5f, 1.5f);
+        }
+
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            if (CachedComponent != null)
+                ScreenY.Top = ScreenY.Bottom = CachedComponent.ScreenY;
+        }
+
+        float m_CenterScreenY;
+        public override void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float modifierValue) 
+        {
+            if (CachedComponent != null)
+            {
+                m_CenterScreenY = CachedComponent.ScreenY;
+                CachedComponent.ScreenY = modifierValue >= 0 
+                    ? Mathf.Lerp(m_CenterScreenY, ScreenY.Top, modifierValue)
+                    : Mathf.Lerp(ScreenY.Bottom, m_CenterScreenY, modifierValue + 1);
+            }
+        }
+
+        public override void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float modifierValue)
+        {
+            // Restore the settings
+            if (CachedComponent != null)
+                CachedComponent.ScreenY = m_CenterScreenY;
         }
     }
 
