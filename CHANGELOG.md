@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## [2.8.7] - 2022-06-26
+- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
+
+
 ## [2.8.6] - 2022-03-05
 - Bugfix: A memory leak no longer occurs with PostProcessing if no PP layer is present on the camera.
 - Bugfix: Cinemachine no longer produces a compiler error in Unity Editor versions older than 2020 when an Input System package is installed.
