@@ -13,7 +13,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
+    [CameraPipelineAttribute(CinemachineCore.Stage.PositionControl)]
     public class CinemachineOrbitalFollow 
         : CinemachineComponentBase, IInputAxisTarget
         , CinemachineFreeLookModifier.IModifierValueSource
@@ -189,7 +189,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.PositionControl;
 
         /// <summary>
         /// Report maximum damping time needed for this component.

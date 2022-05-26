@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cam);
             if (brain != null)
             {
-                cam.m_Lens = brain.CurrentCameraState.Lens;
+                cam.Lens = brain.CurrentCameraState.Lens;
                 cam.transform.position = brain.transform.position;
                 cam.transform.rotation = brain.transform.rotation;
             }
@@ -30,7 +30,7 @@ namespace Cinemachine.Editor
         static void AdoptSceneViewCameraSettings(MenuCommand command)
         {
             var cam = command.context as CmCamera;
-            cam.m_Lens = CinemachineMenu.MatchSceneViewCamera(cam.transform);
+            cam.Lens = CinemachineMenu.MatchSceneViewCamera(cam.transform);
         }
 
         void OnEnable()
@@ -65,10 +65,10 @@ namespace Cinemachine.Editor
             m_CameraUtility.AddCameraStatus(ux);
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Priority)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_StandbyUpdate)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Transitions)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Transitions)));
             
             ux.AddHeader("Camera");
-            var lensProperty = serializedTarget.FindProperty(() => Target.m_Lens);
+            var lensProperty = serializedTarget.FindProperty(() => Target.Lens);
             ux.Add(new PropertyField(lensProperty));
 
             var modeOverrideProperty = lensProperty.FindPropertyRelative("ModeOverride");
@@ -87,11 +87,10 @@ namespace Cinemachine.Editor
             ux.AddHeader("Procedural Motion");
             m_CameraUtility.AddSaveDuringPlayToggle(ux);
             m_CameraUtility.AddGameViewGuidesToggle(ux);
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_Follow)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_LookAt)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Target)));
             m_CameraUtility.AddPipelineDropdowns(ux);
 
-            //ux.AddHeader("Extensions");
+            ux.AddSpace();
             m_CameraUtility.AddExtensionsDropdown(ux);
 
             return ux;
@@ -109,13 +108,13 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(cmCam, 
-                    new SerializedObject(cmCam).FindProperty(() => cmCam.m_Lens), 
-                    cmCam.m_Lens, Target.m_Lens.UseHorizontalFOV);
+                    new SerializedObject(cmCam).FindProperty(() => cmCam.Lens), 
+                    cmCam.Lens, Target.Lens.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(cmCam,
-                    new SerializedObject(cmCam).FindProperty(() => cmCam.m_Lens));
+                    new SerializedObject(cmCam).FindProperty(() => cmCam.Lens));
             }
             Handles.color = originalColor;
         }

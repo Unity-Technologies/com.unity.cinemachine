@@ -136,7 +136,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (IsValid && stage == CinemachineCore.Stage.Body)
+            if (IsValid && stage == CinemachineCore.Stage.PositionControl)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement;

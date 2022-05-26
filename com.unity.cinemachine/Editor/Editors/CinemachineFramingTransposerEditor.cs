@@ -121,8 +121,8 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineFramingTransposer).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Framing Transposer requires a Follow target.  "
-                        + "Change Body to Do Nothing if you don't want a Follow target.",
+                    "Framing Transposer requires a Tracking target.  "
+                        + "Change Position Control to None if you don't want a Tracking target.",
                     MessageType.Warning);
 
             // First snapshot some settings
