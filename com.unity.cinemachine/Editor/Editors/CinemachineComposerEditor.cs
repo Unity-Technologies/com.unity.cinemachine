@@ -68,11 +68,7 @@ namespace Cinemachine.Editor
         protected virtual void OnGUI()
         {
             // Draw the camera guides
-            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
-                return;
-
-            // If inspector is collapsed in the vcam editor, don't draw the guides
-            if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
+            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides || !Target.isActiveAndEnabled)
                 return;
 
             // Don't draw the guides if rendering to texture
