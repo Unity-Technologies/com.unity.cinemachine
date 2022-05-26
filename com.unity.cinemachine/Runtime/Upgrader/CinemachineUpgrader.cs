@@ -227,10 +227,6 @@ namespace Cinemachine.Upgrader
                     var bottomNoise = m_BottomRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var midAim = m_MiddleRig.GetCinemachineComponent(CinemachineCore.Stage.Aim);
 
-                    // TODO: aim fields don't need to be the same for composer and group composer ScreenX and Y
-                    // TODO: modify PublicFieldsEqual(aim1, aim2, ignoreField)
-                    // TODO: test! 
-                    
                     return
                         parentLookAt == m_TopRig.LookAt && parentLookAt == m_MiddleRig.LookAt && parentLookAt == m_BottomRig.LookAt &&
                         IsEqualNoise(topNoise, middleNoise) &&
