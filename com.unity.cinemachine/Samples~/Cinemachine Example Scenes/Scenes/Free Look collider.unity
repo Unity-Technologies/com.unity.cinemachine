@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -104,7 +104,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 3
+    serializedVersion: 2
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -117,7 +117,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    buildHeightMesh: 0
+    accuratePlacement: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -229,9 +229,8 @@ GameObject:
   - component: {fileID: 258689318}
   - component: {fileID: 258689317}
   - component: {fileID: 258689316}
-  - component: {fileID: 258689315}
-  - component: {fileID: 258689314}
   - component: {fileID: 258689313}
+  - component: {fileID: 258689314}
   m_Layer: 0
   m_Name: FreeLook Camera
   m_TagString: Untagged
@@ -305,22 +304,6 @@ MonoBehaviour:
       InputValue: 0
       AccelTime: 0.2
       DecelTime: 0.2
---- !u!114 &258689315
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258689312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a076c17fe76165e4f8ed21498b877bf9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Modifiers: []
-  references:
-    version: 2
-    RefIds: []
 --- !u!114 &258689316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,7 +372,7 @@ MonoBehaviour:
       Wait: 1
       Time: 2
   VerticalAxis:
-    Value: 17.5
+    Value: 19.30391
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -437,7 +420,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.5996169, y: 1}
+    m_SensorSize: {x: 0.89220405, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -451,8 +434,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 258689312}
-  m_LocalRotation: {x: -0.078001395, y: 0.000000017681897, z: 0.0000000013834274, w: 0.99695325}
-  m_LocalPosition: {x: 5, y: 2.3000002, z: -6.5}
+  m_LocalRotation: {x: -0.044953704, y: 0.000000017457038, z: 7.855528e-10, w: 0.9989891}
+  m_LocalPosition: {x: 5, y: 2.465176, z: -6.5549984}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -501,7 +484,6 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4921245023048312, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
@@ -537,8 +519,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
 --- !u!4 &1251549207 stripped
 Transform:
@@ -550,7 +530,6 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 3
     m_TransformParent: {fileID: 436401188}
     m_Modifications:
     - target: {fileID: 4519539146465710, guid: 0998cc0e377e9034c86e90787a3070b0, type: 3}
@@ -586,8 +565,6 @@ PrefabInstance:
       value: -0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0998cc0e377e9034c86e90787a3070b0, type: 3}
 --- !u!4 &1508344078 stripped
 Transform:
@@ -645,17 +622,9 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
-  m_Iso: 200
-  m_ShutterSpeed: 0.005
-  m_Aperture: 16
-  m_FocusDistance: 10
-  m_FocalLength: 50
-  m_BladeCount: 5
-  m_Curvature: {x: 2, y: 11}
-  m_BarrelClipping: 0.25
-  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -689,8 +658,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1787124812}
-  m_LocalRotation: {x: -0.078001395, y: 0.000000017681897, z: 0.0000000013834274, w: 0.99695325}
-  m_LocalPosition: {x: 5, y: 2.3000002, z: -6.5}
+  m_LocalRotation: {x: -0.044953704, y: 0.000000017457038, z: 7.855528e-10, w: 0.9989891}
+  m_LocalPosition: {x: 5, y: 2.465176, z: -6.5549984}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

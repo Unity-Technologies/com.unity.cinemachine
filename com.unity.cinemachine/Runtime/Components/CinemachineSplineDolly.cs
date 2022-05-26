@@ -221,6 +221,7 @@ namespace Cinemachine
                 SplineUtility.GetNearestPoint(spline, 
                     m_Spline.transform.InverseTransformPoint(FollowTargetPosition), out _, out normalizedSplinePosition, 
                     m_AutoDolly.m_SearchResolution, m_AutoDolly.m_SearchIteration);
+                normalizedSplinePosition = Mathf.Clamp01(normalizedSplinePosition); // GML hack because SplineUtility.GetNearestPoint is buggy
                 m_CameraPosition = spline.ConvertIndexUnit(normalizedSplinePosition, 
                     PathIndexUnit.Normalized, m_PositionUnits);
                 
@@ -436,7 +437,8 @@ namespace Cinemachine
 
         void RefreshRollCache()
         {
-            VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
+            if (VirtualCamera != null)
+                VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
 #if UNITY_EDITOR
             if (m_RollCache != null)
                 m_RollCache.SplineContainer = m_Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes

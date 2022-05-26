@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 262.33694, g: 325.04984, b: 430.2193, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -104,7 +104,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 3
+    serializedVersion: 2
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -117,7 +117,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    buildHeightMesh: 0
+    accuratePlacement: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -617,14 +617,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 659181254}
-  m_LocalRotation: {x: 0.9612819, y: -0.046307832, z: 0.22454682, w: 0.15287764}
+  m_LocalRotation: {x: 0.5922341, y: -0.18528326, z: 0.14598733, w: 0.77046525}
   m_LocalPosition: {x: 1.1, y: 9.8, z: -1.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 161.656, y: -26.096985, z: 1.2299957}
+  m_LocalEulerAnglesHint: {x: 75.17, y: -26.096985, z: 1.2299957}
 --- !u!1 &910832970
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +691,7 @@ GameObject:
   - component: {fileID: 944951861}
   - component: {fileID: 944951860}
   m_Layer: 0
-  m_Name: Boss vcam
+  m_Name: Boss camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -704,8 +704,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 944951857}
-  m_LocalRotation: {x: 0.024294823, y: -0.000000003607797, z: 8.7676665e-11, w: 0.99970484}
-  m_LocalPosition: {x: 0.000000072092035, y: 4, z: -16.138195}
+  m_LocalRotation: {x: 0.024294823, y: -0.0000000053200635, z: 1.2928818e-10, w: 0.99970484}
+  m_LocalPosition: {x: 0.00000010630704, y: 4, z: -16.138195}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -824,14 +824,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7777778, y: 1}
-    Iso: 200
-    ShutterSpeed: 0.005
-    Aperture: 16
-    BladeCount: 5
-    Curvature: {x: 2, y: 11}
-    BarrelClipping: 0.25
-    Anamorphism: 0
+    m_SensorSize: {x: 1.5043311, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1190,7 +1183,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 768ffdf2b6949054488c74579e87288b, type: 2}
+  - {fileID: 2100000, guid: 55296d1b6ee54e14e8eb4648d4b448ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1276,17 +1269,9 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
-  m_Iso: 200
-  m_ShutterSpeed: 0.005
-  m_Aperture: 16
-  m_FocusDistance: 10
-  m_FocalLength: 50
-  m_BladeCount: 5
-  m_Curvature: {x: 2, y: 11}
-  m_BarrelClipping: 0.25
-  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -1320,8 +1305,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2002235772}
-  m_LocalRotation: {x: 0.024294823, y: -0.000000003607797, z: 8.7676665e-11, w: 0.99970484}
-  m_LocalPosition: {x: 0.000000072092035, y: 4, z: -16.138195}
+  m_LocalRotation: {x: 0.024294823, y: -0.0000000053200635, z: 1.2928818e-10, w: 0.99970484}
+  m_LocalPosition: {x: 0.00000010630704, y: 4, z: -16.138195}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -104,7 +104,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 3
+    serializedVersion: 2
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -117,7 +117,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    buildHeightMesh: 0
+    accuratePlacement: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -227,7 +227,6 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4921245023048312, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
@@ -267,8 +266,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
 --- !u!1 &208251802
 GameObject:
@@ -322,7 +319,7 @@ MonoBehaviour:
   m_Priority: 10
   m_StandbyUpdate: 2
   m_Weight0: 20
-  m_Weight1: 0.6701252
+  m_Weight1: 13.89101
   m_Weight2: 0.5
   m_Weight3: 0.5
   m_Weight4: 0.5
@@ -383,7 +380,6 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 3
     m_TransformParent: {fileID: 436401188}
     m_Modifications:
     - target: {fileID: 1645899274665124, guid: 309ca2bfc1e81fa4eb43845cbdf4a42b, type: 3}
@@ -423,8 +419,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 309ca2bfc1e81fa4eb43845cbdf4a42b, type: 3}
 --- !u!4 &1009893196 stripped
 Transform:
@@ -456,13 +450,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1684366071}
-  m_LocalRotation: {x: 0.6456714, y: 0.000000009842293, z: -0.000000008322102, w: 0.7636154}
+  m_LocalRotation: {x: 0.64567137, y: 0.000000032520095, z: -0.000000027497197, w: 0.7636155}
   m_LocalPosition: {x: 5, y: 31, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 208251805}
-  m_RootOrder: -1
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1684366073
 MonoBehaviour:
@@ -493,7 +487,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.5996169, y: 1}
+    m_SensorSize: {x: 0.89220405, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -612,17 +606,9 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
-  m_Iso: 200
-  m_ShutterSpeed: 0.005
-  m_Aperture: 16
-  m_FocusDistance: 10
-  m_FocalLength: 50
-  m_BladeCount: 5
-  m_Curvature: {x: 2, y: 11}
-  m_BarrelClipping: 0.25
-  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -631,7 +617,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 43.388454
+  field of view: 56.194782
   orthographic: 0
   orthographic size: 10
   m_Depth: 0
@@ -656,8 +642,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1747380105}
-  m_LocalRotation: {x: 0.17269309, y: -0.000000025824264, z: -0.0000000013932667, w: 0.9849757}
-  m_LocalPosition: {x: 5, y: 3.9077597, z: -4.4}
+  m_LocalRotation: {x: 0.55367845, y: 0.00000003692383, z: -0.000000018451628, w: 0.83273053}
+  m_LocalPosition: {x: 5, y: 14.476444, z: -4.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -679,26 +665,26 @@ MonoBehaviour:
   m_Title: MixingCamera
   m_Description: 'Turn this window off by removing the script on Main Camera
 
-    
+
 
     Use
     the arrow keys to move the character
 
-    
-
-    In this scene, we have a simple
-    MixingCamera with two cameras in it. One at the ground level (bottom) and another
-    one higher in the space (top).
-
-    
-
-    A script is hooked to the Z position
-    value of the character and will apply more weight on the top camera as the character
-    moves towards to end of the corridor.
 
 
-    Select the CM MixingCamera1 to see
-    the mix ratios change as the character runs around'
+    In this scene, we have a simple MixingCamera
+    with two cameras in it. One at the ground level (bottom) and another one higher
+    in the space (top).
+
+
+
+    A script is hooked to the Z position value of the
+    character and will apply more weight on the top camera as the character moves
+    towards to end of the corridor.
+
+
+    Select the CM MixingCamera1 to see the
+    mix ratios change as the character runs around'
 --- !u!4 &1794056721 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4807132077054408, guid: f9dee39d229a4bb4087224760ba2d338, type: 3}
@@ -735,7 +721,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 208251805}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2068328996
 MonoBehaviour:
@@ -766,7 +752,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.5996169, y: 1}
+    m_SensorSize: {x: 0.89220405, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
