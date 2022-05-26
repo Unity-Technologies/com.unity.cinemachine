@@ -57,7 +57,7 @@ namespace Cinemachine.Editor
                 });
                 var customProp = mainProperty.FindPropertyRelative(() => def.CustomLookAtTarget);
                 var isCustom = customProp.boolValue;
-                menu.AddItem(new GUIContent("Use Custom LookAt Target"), isCustom, () =>
+                menu.AddItem(new GUIContent("Use Separate LookAt Target"), isCustom, () =>
                 {
                     customProp.boolValue = !isCustom;
                     customProp.serializedObject.ApplyModifiedProperties();
@@ -116,7 +116,7 @@ namespace Cinemachine.Editor
                         return disable ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                     }
                 );
-                evt.menu.AppendAction("Use Custom LookAt Target", 
+                evt.menu.AppendAction("Use Separate LookAt Target", 
                     (action) => 
                     {
                         customProp.boolValue = !customProp.boolValue;
