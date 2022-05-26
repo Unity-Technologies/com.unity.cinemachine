@@ -192,8 +192,7 @@ namespace Cinemachine.Editor
                         flexGrow = 0,
                         backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
                         width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center,
-                        //paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                        alignSelf = Align.Center
                     }
                 });
                 warningIcon.SetVisible(false);
