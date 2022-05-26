@@ -295,12 +295,11 @@ namespace Cinemachine
                 m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
 
                 Vector2 center = value.center;
-                center = new Vector2((float)Math.Round(center.x, 6), (float)Math.Round(center.y, 6)); // rounding imprecision
                 Vector2 bias = center - new Vector2(m_ScreenX, m_ScreenY);
                 float biasWidth = Mathf.Max(0, m_SoftZoneWidth - m_DeadZoneWidth);
                 float biasHeight = Mathf.Max(0, m_SoftZoneHeight - m_DeadZoneHeight);
-                m_BiasX = biasWidth < Epsilon ? 0 : Mathf.Clamp(bias.x / biasWidth, -0.5f, 0.5f);
-                m_BiasY = biasHeight < Epsilon ? 0 : Mathf.Clamp(bias.y / biasHeight, -0.5f, 0.5f);
+                m_BiasX = biasWidth < Epsilon ? 0 : (float) Math.Round(Mathf.Clamp(bias.x / biasWidth, -0.5f, 0.5f), 4);
+                m_BiasY = biasHeight < Epsilon ? 0 : (float) Math.Round(Mathf.Clamp(bias.y / biasHeight, -0.5f, 0.5f), 4);
             }
         }
 
