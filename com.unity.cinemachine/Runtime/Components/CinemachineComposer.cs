@@ -342,7 +342,7 @@ namespace Cinemachine
                 m_DeadZoneWidth = Mathf.Min(m_DeadZoneWidth, m_SoftZoneWidth);
                 m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
 
-                Vector2 center = value.center;
+                var center = new Vector2((float)Math.Round(value.center.x, 6), (float)Math.Round(value.center.y, 6));
                 Vector2 bias = center - new Vector2(m_ScreenX, m_ScreenY);
                 float biasWidth = Mathf.Max(0, m_SoftZoneWidth - m_DeadZoneWidth);
                 float biasHeight = Mathf.Max(0, m_SoftZoneHeight - m_DeadZoneHeight);
