@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-// #define DEBUG_HELPERS
+#define DEBUG_HELPERS
 // suppress obsolete warnings
 #pragma warning disable CS0618 
 
@@ -177,6 +177,9 @@ namespace Cinemachine.Upgrader
                     {
                         var clone = Object.Instantiate(m_Freelook.gameObject);
                         clone.name = clone.name.Substring(0, go.name.Length - "(Clone)".Length) + "(Not fully upgradable)";
+                        
+                        Debug.LogWarning("Freelook camera \"" + m_Freelook.name + "\" was not fully upgradable " +
+                            "automatically! It was partially upgraded. Your data was saved to " + clone.name);
                     }
                     var oldExtensions = go.GetComponents<CinemachineExtension>();
 
@@ -190,7 +193,7 @@ namespace Cinemachine.Upgrader
                     ConvertLens(cmCamera, freeLookModifier);
                     
                     ConvertFreelookBody(go, freeLookModifier);
-                    ConvertFreelookAim(go);
+                    ConvertFreelookAim(go, freeLookModifier);
                     ConvertFreelookNoise(go, freeLookModifier);
 
                     foreach (var extension in oldExtensions)
@@ -201,22 +204,16 @@ namespace Cinemachine.Upgrader
                     var topRig = m_TopRig.gameObject;
                     var middleRig = m_MiddleRig.gameObject;
                     var bottomRig = m_BottomRig.gameObject;
-                    if (isUpgradable)
-                    {
-                        Object.DestroyImmediate(topRig);
-                        Object.DestroyImmediate(middleRig);
-                        Object.DestroyImmediate(bottomRig);
-                        Object.DestroyImmediate(m_Freelook);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Freelook camera \"" + m_Freelook.name + "\" was not fully upgradable " +
-                            "automatically! It was partially upgraded. You need to manually adjust some parameters.");
-                    }
-
+                    
+                    Object.DestroyImmediate(topRig);
+                    Object.DestroyImmediate(middleRig);
+                    Object.DestroyImmediate(bottomRig);
+                    Object.DestroyImmediate(m_Freelook);
+                    
                     return true;
                 }
-                
+
+                static string[] s_IgnoreList = { "m_ScreenX", "m_ScreenY" };
                 bool IsFreelookUpgradable()
                 {
                     // Freelook is not upgradable if it has:
@@ -230,13 +227,17 @@ namespace Cinemachine.Upgrader
                     var bottomNoise = m_BottomRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var midAim = m_MiddleRig.GetCinemachineComponent(CinemachineCore.Stage.Aim);
 
+                    // TODO: aim fields don't need to be the same for composer and group composer ScreenX and Y
+                    // TODO: modify PublicFieldsEqual(aim1, aim2, ignoreField)
+                    // TODO: test! 
+                    
                     return
                         parentLookAt == m_TopRig.LookAt && parentLookAt == m_MiddleRig.LookAt && parentLookAt == m_BottomRig.LookAt &&
                         IsEqualNoise(topNoise, middleNoise) &&
                         IsEqualNoise(middleNoise, bottomNoise) &&
                         IsEqualNoise(topNoise, bottomNoise) &&
-                        PublicFieldsEqual(m_TopRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim) &&
-                        PublicFieldsEqual(m_BottomRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim);
+                        PublicFieldsEqual(m_TopRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_IgnoreList) &&
+                        PublicFieldsEqual(m_BottomRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_IgnoreList);
 
                     static bool IsEqualNoise(CinemachineBasicMultiChannelPerlin a, CinemachineBasicMultiChannelPerlin b)
                     {
@@ -245,7 +246,7 @@ namespace Cinemachine.Upgrader
                                 && a.m_PivotOffset == b.m_PivotOffset);
                     }
 
-                    static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b)
+                    static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b, params string[] ignoreList)
                     {
                         if (a == null && b == null)
                             return true;
@@ -261,9 +262,18 @@ namespace Cinemachine.Upgrader
                         var publicFields = aType.GetFields();
                         foreach (var pi in publicFields)
                         {
-                            var field = aType.GetField(pi.Name);
-                            if (!field.GetValue(a).Equals(field.GetValue(b)))
+                            var name = pi.Name;
+                            if (ignoreList.Contains(name))
+                                continue; // ignore
+                            
+                            var field = aType.GetField(name);
+                            if (!field.GetValue(a).Equals(field.GetValue(b))) 
+                            {
+#if DEBUG_HELPERS
+                                Debug.Log("Rig values differ: " + name);
+#endif
                                 return false;
+                            }
                         }
 
                         return true;
@@ -335,7 +345,7 @@ namespace Cinemachine.Upgrader
                     }
                 }
 
-                void ConvertFreelookAim(GameObject go)
+                void ConvertFreelookAim(GameObject go, CinemachineFreeLookModifier freeLookModifier)
                 {
                     var middle = m_MiddleRig.GetCinemachineComponent(CinemachineCore.Stage.Aim);
                     if (middle == null)
@@ -345,6 +355,21 @@ namespace Cinemachine.Upgrader
 
                     var newComponent = (CinemachineComponentBase)go.AddComponent(middle.GetType());
                     CopyValues(middle, newComponent);
+                    
+                    var topComposer = m_TopRig.GetCinemachineComponent<CinemachineComposer>();
+                    var bottomComposer = m_BottomRig.GetCinemachineComponent<CinemachineComposer>();
+                    freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.ScreenPositionModifier
+                    {
+                        Screen = new CinemachineFreeLookModifier.TopBottomRigs<Vector2>
+                        {
+                            Top = topComposer == null
+                                ? Vector3.zero
+                                : new Vector2(topComposer.m_ScreenX, topComposer.m_ScreenY),
+                            Bottom = bottomComposer == null
+                                ? Vector3.zero
+                                : new Vector2(bottomComposer.m_ScreenX, bottomComposer.m_ScreenY),
+                        }
+                    });
                 }
 
                 void ConvertFreelookNoise(GameObject go, CinemachineFreeLookModifier freeLookModifier)
@@ -621,9 +646,6 @@ namespace Cinemachine.Upgrader
                         if (vcam == null && exposedRef.exposedName != 0)
                         {
                             director.SetReferenceValue(exposedRef.exposedName, upgraded);
-#if DEBUG_HELPERS
-                            Debug.Log("Updated Timeline reference " + timelineAsset.name + ":" + upgraded.name);
-#endif
                         }
                     }
                 }
