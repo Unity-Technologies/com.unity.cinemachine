@@ -20,6 +20,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     {
         Vector3 PositionDamping { get; set; }
     }
+    
+    public interface IModifiableScreenPosition
+    {
+        Vector2 Screen { get; set; }
+    }
 
     public interface IModifiableDistance
     {
@@ -175,8 +180,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
     
     /// <summary>
-    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
-    /// at the end of the camera pipeline.
+    /// Builtin Freelook modifier for positional damping. Modifies positional damping at the start of the camera pipeline.
     /// </summary>
     public class PositionDampingModifier : ComponentModifier<IModifiablePositionDamping>
     {
@@ -220,10 +224,60 @@ public class CinemachineFreeLookModifier : CinemachineExtension
                 CachedComponent.PositionDamping = m_CenterDamping;
         }
     }
+    
+    /// <summary>
+    /// Builtin Freelook modifier for Composer's Screen position. Modifies Screen position at the start of the camera pipeline.
+    /// </summary>
+    public class ScreenPositionModifier : ComponentModifier<IModifiableScreenPosition>
+    {
+        [HideFoldout]
+        public TopBottomRigs<Vector2> Screen;
+
+        public override void Validate(CinemachineVirtualCameraBase vcam)
+        {
+            Screen.Top.x = Mathf.Clamp(Screen.Top.x, -0.5f, 1.5f);
+            Screen.Top.y = Mathf.Clamp(Screen.Top.y, -0.5f, 1.5f);
+            Screen.Bottom.x = Mathf.Clamp(Screen.Bottom.x, -0.5f, 1.5f);
+            Screen.Bottom.y = Mathf.Clamp(Screen.Bottom.y, -0.5f, 1.5f);
+        }
+
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            if (CachedComponent != null)
+            {
+                Screen.Top = Screen.Bottom = new Vector2(CachedComponent.Screen.x, CachedComponent.Screen.y);
+            }
+        }
+
+        Vector2 m_CenterScreen;
+        public override void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float modifierValue) 
+        {
+            if (CachedComponent != null)
+            {
+                m_CenterScreen = new Vector2(CachedComponent.Screen.x, CachedComponent.Screen.y);
+                CachedComponent.Screen = modifierValue >= 0
+                    ? Vector2.Lerp(m_CenterScreen, Screen.Top, modifierValue)
+                    : Vector2.Lerp(Screen.Bottom, m_CenterScreen, modifierValue + 1);
+            }
+        }
+
+        public override void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float modifierValue)
+        {
+            // Restore the settings
+            if (CachedComponent != null)
+            {
+                CachedComponent.Screen = m_CenterScreen;
+            }
+        }
+    }
 
     /// <summary>
-    /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
-    /// at the end of the camera pipeline.
+    /// Builtin FreeLook modifier for camera distance.  Applies distance to the camera at the start of the camera pipeline.
     /// </summary>
     public class DistanceModifier : ComponentModifier<IModifiableDistance>
     {
