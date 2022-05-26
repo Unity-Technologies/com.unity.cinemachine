@@ -135,7 +135,7 @@ namespace Cinemachine.Editor
             var targets = Targets; // capture for lambda
 
             // Add a dropdown for each pipeline stage
-            m_pipelineItems = new List<PipelineStageItem>();
+            m_PipelineItems = new List<PipelineStageItem>();
             for (int i = 0; i < PipelineStageMenu.s_StageData.Length; ++i)
             {
                 // Skip empty categories
@@ -198,7 +198,7 @@ namespace Cinemachine.Editor
                 warningIcon.SetVisible(false);
                 row.Right.Add(dropdown);
 
-                m_pipelineItems.Add(new PipelineStageItem
+                m_PipelineItems.Add(new PipelineStageItem
                 {
                     Stage = (CinemachineCore.Stage)i,
                     Dropdown = dropdown,
@@ -214,16 +214,16 @@ namespace Cinemachine.Editor
             public DropdownField Dropdown;
             public Label WarningIcon;
         }
-        List<PipelineStageItem> m_pipelineItems;
+        List<PipelineStageItem> m_PipelineItems;
 
         void RefreshPipelinDropdowns()
         {
             var cmCam = Target as CmCamera;
             if (cmCam == null)
                 return;
-            for (int i = 0; i < m_pipelineItems.Count; ++i)
+            for (int i = 0; i < m_PipelineItems.Count; ++i)
             {
-                var item = m_pipelineItems[i];
+                var item = m_PipelineItems[i];
                 var c = cmCam.GetCinemachineComponent(item.Stage);
                 int selection = PipelineStageMenu.GetSelectedComponent((int)item.Stage, c);
                 item.Dropdown.value = PipelineStageMenu.s_StageData[(int)item.Stage].Choices[selection];
