@@ -27,7 +27,7 @@ namespace Tests.Runtime
             m_Cam.orthographic = true;
             m_Vcam.AddExtension(m_Confiner2D);
 
-            m_Vcam.m_Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
+            m_Vcam.Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
 
             base.SetUp();
         }
@@ -35,7 +35,7 @@ namespace Tests.Runtime
         [TearDown]
         public override void TearDown()
         {
-            m_Vcam.m_Lens.OrthographicSize = 1;
+            m_Vcam.Lens.OrthographicSize = 1;
             
             base.TearDown();
         }
