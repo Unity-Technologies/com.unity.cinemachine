@@ -385,6 +385,11 @@ namespace Cinemachine.Editor
                     var top = m_TopRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var middle = m_MiddleRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var bottom = m_BottomRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+                    if (top == null && middle == null && bottom == null)
+                    {
+                        return;
+                    }
+                    
                     if (middle == null)
                     {
                         var middleNoise = go.AddComponent<CinemachineBasicMultiChannelPerlin>();
