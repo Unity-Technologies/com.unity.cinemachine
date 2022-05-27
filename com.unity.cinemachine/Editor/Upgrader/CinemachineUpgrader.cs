@@ -13,8 +13,11 @@ using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
 
-namespace Cinemachine.Upgrader
+namespace Cinemachine.Editor
 {
+    /// <summary>
+    /// Upgrades cm2 to cm3
+    /// </summary>
     class CinemachineUpgrader
     {
         SceneManager m_SceneManager;
@@ -121,6 +124,7 @@ namespace Cinemachine.Upgrader
 #if DEBUG_HELPERS
                 Debug.Log("**** All scenes ****");
                 m_AllSceneGuids.ForEach(guid => Debug.Log(AssetDatabase.GUIDToAssetPath(guid)));
+                Debug.Log("********************");
 #endif
             }
         }
@@ -532,6 +536,7 @@ namespace Cinemachine.Upgrader
 #if DEBUG_HELPERS
                 Debug.Log("**** All prefabs ****");
                 m_PrefabVcams.ForEach(prefab => Debug.Log(prefab.name));
+                Debug.Log("*********************");
 #endif
             }
         }
