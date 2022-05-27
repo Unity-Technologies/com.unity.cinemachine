@@ -18,11 +18,10 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Upgrades cm2 to cm3
     /// </summary>
-    public class CinemachineUpgrader
+    class CinemachineUpgrader
     {
         SceneManager m_SceneManager;
         PrefabManager m_PrefabManager;
-        Cm2ToCm3Upgrader m_Cm2ToCm3;
 
         public CinemachineUpgrader()
         {
