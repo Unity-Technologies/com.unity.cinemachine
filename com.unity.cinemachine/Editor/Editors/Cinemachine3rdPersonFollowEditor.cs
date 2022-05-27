@@ -35,6 +35,19 @@ namespace Cinemachine.Editor
                 Gizmos.color = originalGizmoColour;
             }
         }
+        
+        public override void OnInspectorGUI()
+        {
+            BeginInspector();
+            bool needWarning = false;
+            for (int i = 0; !needWarning && i < targets.Length; ++i)
+                needWarning = (targets[i] as Cinemachine3rdPersonFollow).FollowTarget == null;
+            if (needWarning)
+                EditorGUILayout.HelpBox(
+                    "3rd Person Follow requires a Follow Target.  Change Body to Do Nothing if you don't want a Follow target.",
+                    MessageType.Warning);
+            DrawRemainingPropertiesInInspector();
+        }
 
 #if UNITY_2021_2_OR_NEWER
         protected virtual void OnEnable()
@@ -73,9 +86,16 @@ namespace Cinemachine.Editor
 
                 EditorGUI.BeginChangeCheck();
                 // shoulder handle
-                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+#if UNITY_2022_2_OR_NEWER
+                var sHandleIds = Handles.PositionHandleIds.@default;
+                var newShoulderPosition = Handles.PositionHandle(sHandleIds, shoulderPosition, heading);
+                var sHandleMinId = sHandleIds.x - 1;
+                var sHandleMaxId = sHandleIds.xyz + 1;
+#else
+                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
-                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+#endif
 
                 Handles.color = Handles.preselectionColor;
                 // arm handle
@@ -116,7 +136,7 @@ namespace Cinemachine.Editor
                     + camDistance.ToString("F1") + ")", armPosition, camPos);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleMaxId);
-                
+
                 Handles.color = originalColor;
             }
             
