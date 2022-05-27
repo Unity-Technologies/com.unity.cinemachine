@@ -341,11 +341,6 @@ namespace Cinemachine
                 m_SoftZoneHeight = Mathf.Clamp(value.height, 0, 2f);
                 m_DeadZoneWidth = Mathf.Min(m_DeadZoneWidth, m_SoftZoneWidth);
                 m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
-
-                if (Mathf.Max(0, m_SoftZoneWidth - m_DeadZoneWidth) < Epsilon)
-                    m_BiasX = 0;
-                if (Mathf.Max(0, m_SoftZoneHeight - m_DeadZoneHeight) < Epsilon)
-                    m_BiasY = 0;
             }
         }
 
