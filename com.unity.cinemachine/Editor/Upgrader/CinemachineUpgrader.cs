@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-#define DEBUG_HELPERS
+// #define DEBUG_HELPERS
 // suppress obsolete warnings
 #pragma warning disable CS0618 
 
@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Upgrades cm2 to cm3
     /// </summary>
-    class CinemachineUpgrader
+    public class CinemachineUpgrader
     {
         SceneManager m_SceneManager;
         PrefabManager m_PrefabManager;
@@ -30,11 +30,19 @@ namespace Cinemachine.Editor
             m_PrefabManager = new PrefabManager();
         }
             
-        bool Upgrade(GameObject go)
+        /// <summary>
+        /// Upgrades the input gameobject.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <returns></returns>
+        public bool Upgrade(GameObject go)
         {
             return Cm2ToCm3Upgrader.Upgrade(go);
         }
-            
+        
+        /// <summary>
+        /// Upgrades all vcams in all scenes and prefabs
+        /// </summary>
         public void UpgradeAll()
         {
             UpgradePrefabs();
