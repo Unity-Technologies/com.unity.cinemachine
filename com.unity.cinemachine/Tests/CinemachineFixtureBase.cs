@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -50,11 +51,7 @@ namespace Tests
         {
             foreach (var go in m_GameObjectsToDestroy)
             {
-#if UNITY_EDITOR
-                Object.DestroyImmediate(go);
-#else
-                Object.Destroy(go);
-#endif
+                RuntimeUtility.DestroyObject(go);
             }
 
             m_GameObjectsToDestroy.Clear();
