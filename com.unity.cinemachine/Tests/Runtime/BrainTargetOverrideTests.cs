@@ -70,7 +70,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator DoNothing()
         {
-            m_Vcam.m_Lens.FieldOfView = 50;
+            m_Vcam.Lens.FieldOfView = 50;
             yield return CheckThatBrainsAreControllingTheirTargets();
         }
 
@@ -78,7 +78,7 @@ namespace Tests.Runtime
         public IEnumerator ThirdPerson()
         {
             m_Vcam.gameObject.AddComponent<Cinemachine3rdPersonFollow>();
-            m_Vcam.m_Lens.FieldOfView = 50;
+            m_Vcam.Lens.FieldOfView = 50;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();
