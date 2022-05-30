@@ -486,8 +486,11 @@ namespace Cinemachine.Editor
                                 splineDolly.m_CameraPosition = trackedDolly.m_PathPosition;
                                 splineDolly.m_SplineOffset = trackedDolly.m_PathOffset;
                                 var path = trackedDolly.m_Path;
-                                path.UpgradeTo(out splineDolly.m_Spline);
-                                Object.DestroyImmediate(path);
+                                if (path != null)
+                                {
+                                    path.UpgradeTo(out splineDolly.m_Spline);
+                                    Object.DestroyImmediate(path);
+                                }
                                 Object.DestroyImmediate(trackedDolly);
                                 return;
                             }

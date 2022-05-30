@@ -43,6 +43,8 @@ namespace Tests.Editor
                     && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 foreach (var cmComponent in s_AllCinemachineComponents)
                 {
+                    if (cmComponent == typeof(CinemachineTrackedDolly))
+                        continue;
                     yield return new TestCaseData(cmComponent).SetName(cmComponent.Name).Returns(null);
                 }
             }
