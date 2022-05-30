@@ -1,4 +1,3 @@
-#if CINEMACHINE_UNITY_SPLINES
 using UnityEngine;
 using System;
 using System.Linq;
@@ -490,4 +489,3 @@ namespace Cinemachine
         }
     }
 }
-#endif

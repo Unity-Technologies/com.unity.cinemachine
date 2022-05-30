@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-#if CINEMACHINE_UNITY_SPLINES
 using UnityEngine.Splines;
-#endif
 
 namespace Cinemachine.Editor
 {
@@ -108,21 +106,12 @@ namespace Cinemachine.Editor
                 "Virtual Camera", command.context as GameObject, true);
             vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
             vcam.gameObject.AddComponent<CinemachineComposer>();
-#if CINEMACHINE_UNITY_SPLINES
             var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
             splineContainer.Spline.EditType = SplineType.CatmullRom;
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
             var splineDolly = vcam.gameObject.AddComponent<CinemachineSplineDolly>();
             splineDolly.spline = splineContainer;
-#else
-            var path = CreateCinemachineObject<CinemachineSmoothPath>(
-                "Dolly Track", command.context as GameObject, false);
-#pragma warning disable 618 // disable obsolete warning
-            var trackedDolly = vcam.gameObject.AddComponent<CinemachineTrackedDolly>(vcam);
-            trackedDolly.m_Path = path;
-#pragma warning restore 618
-#endif
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]

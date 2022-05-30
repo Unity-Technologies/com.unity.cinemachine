@@ -1,4 +1,3 @@
-#if CINEMACHINE_UNITY_SPLINES
 using System;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -49,4 +48,3 @@ namespace Cinemachine
     [AttributeUsage(AttributeTargets.Field)]
     public class SplineRollHandleAttribute : SplineDataHandleAttribute {}
 }
-#endif

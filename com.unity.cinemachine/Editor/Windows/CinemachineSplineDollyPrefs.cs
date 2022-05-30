@@ -1,4 +1,3 @@
-#if CINEMACHINE_UNITY_SPLINES
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Editor;
@@ -85,4 +84,3 @@ namespace Cinemachine
         }
     }
 }
-#endif

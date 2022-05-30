@@ -1,4 +1,3 @@
-#if CINEMACHINE_UNITY_SPLINES
 using System;
 using System.Linq.Expressions;
 using UnityEditor;
@@ -187,4 +186,3 @@ namespace Cinemachine.Editor
         }
     }
 }
-#endif
