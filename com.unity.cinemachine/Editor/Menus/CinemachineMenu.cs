@@ -114,7 +114,7 @@ namespace Cinemachine.Editor
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
             var splineDolly = vcam.gameObject.AddComponent<CinemachineSplineDolly>();
-            splineDolly.m_Spline = splineContainer;
+            splineDolly.spline = splineContainer;
 #else
             var path = CreateCinemachineObject<CinemachineSmoothPath>(
                 "Dolly Track", command.context as GameObject, false);

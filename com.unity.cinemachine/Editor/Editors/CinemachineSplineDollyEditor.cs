@@ -26,16 +26,16 @@ namespace Cinemachine.Editor
 
         void OnEnable()
         {
-            m_SplineGUIContent = new GUIContent("Spline", (m_Spline = FindProperty(x => x.m_Spline)).tooltip);
-            m_CameraPositionGUIContent = new GUIContent("Camera Position", (m_CameraPosition = FindProperty(x => x.m_CameraPosition)).tooltip);
-            m_PositionUnitsGUIContent = new GUIContent(" ", (m_PositionUnits = FindProperty(x => x.m_PositionUnits)).tooltip);
-            m_SplineOffsetGUIContent = new GUIContent("Offset", (m_SplineOffset = FindProperty(x => x.m_SplineOffset)).tooltip);
-            m_CameraUpGUIContent = new GUIContent("Camera Up", (m_CameraUp = FindProperty(x => x.m_CameraUp)).tooltip);
-            m_DampingEnabledGUIContent = new GUIContent("Damping", (m_DampingEnabled = FindProperty(x => x.m_DampingEnabled)).tooltip);
-            m_DampingGUIContent = new GUIContent("Positional", (m_Damping = FindProperty(x => x.m_Damping)).tooltip);
-            m_AngularDampingGUIContent = new GUIContent("Angular", (m_AngularDamping = FindProperty(x => x.m_AngularDamping)).tooltip);
-            m_AutoDollyEnabledGUIContent = new GUIContent("Auto Dolly", (m_AutoDollyEnabled = FindProperty(x => x.m_AutoDolly.m_Enabled)).tooltip);
-            m_AutoDollyPositionOffsetGUIContent = new GUIContent("Position Offset", (m_AutoDollyPositionOffset = FindProperty(x => x.m_AutoDolly.m_PositionOffset)).tooltip);
+            m_SplineGUIContent = new GUIContent("Spline", (m_Spline = FindProperty(x => x.spline)).tooltip);
+            m_CameraPositionGUIContent = new GUIContent("Camera Position", (m_CameraPosition = FindProperty(x => x.cameraPosition)).tooltip);
+            m_PositionUnitsGUIContent = new GUIContent(" ", (m_PositionUnits = FindProperty(x => x.positionUnits)).tooltip);
+            m_SplineOffsetGUIContent = new GUIContent("Offset", (m_SplineOffset = FindProperty(x => x.splineOffset)).tooltip);
+            m_CameraUpGUIContent = new GUIContent("Camera Up", (m_CameraUp = FindProperty(x => x.cameraUp)).tooltip);
+            m_DampingEnabledGUIContent = new GUIContent("Damping", (m_DampingEnabled = FindProperty(x => x.dampingEnabled)).tooltip);
+            m_DampingGUIContent = new GUIContent("Positional", (m_Damping = FindProperty(x => x.damping)).tooltip);
+            m_AngularDampingGUIContent = new GUIContent("Angular", (m_AngularDamping = FindProperty(x => x.angularDamping)).tooltip);
+            m_AutoDollyEnabledGUIContent = new GUIContent("Auto Dolly", (m_AutoDollyEnabled = FindProperty(x => x.autoDolly.enabled)).tooltip);
+            m_AutoDollyPositionOffsetGUIContent = new GUIContent("Position Offset", (m_AutoDollyPositionOffset = FindProperty(x => x.autoDolly.positionOffset)).tooltip);
         }
 
         public override void OnInspectorGUI()
@@ -44,7 +44,7 @@ namespace Cinemachine.Editor
             
             bool nullSpline = false;
             for (int i = 0; !nullSpline && i < targets.Length; ++i)
-                nullSpline = ((CinemachineSplineDolly)targets[i]).m_Spline == null;
+                nullSpline = ((CinemachineSplineDolly)targets[i]).spline == null;
             if (nullSpline)
             {
                 EditorGUILayout.HelpBox("A Spline is required", MessageType.Warning);
@@ -54,7 +54,7 @@ namespace Cinemachine.Editor
             bool autoDollyEnabled = false;
             for (int i = 0; !(noFollowTarget && autoDollyEnabled) && i < targets.Length; ++i)
             {
-                autoDollyEnabled = ((CinemachineSplineDolly)targets[i]).m_AutoDolly.m_Enabled;
+                autoDollyEnabled = ((CinemachineSplineDolly)targets[i]).autoDolly.enabled;
                 noFollowTarget = ((CinemachineSplineDolly)targets[i]).FollowTarget == null;
             }
 
