@@ -132,6 +132,33 @@ namespace Tests.Editor
             return true;
         }
 
+
+        [UnityTest]
+        public IEnumerator ConvertTrackedDolly()
+        {
+            var vcamGo = CreateGameObject("TestVcam", typeof(CinemachineVirtualCamera));
+
+            yield return null;
+            
+            var vcam = vcamGo.GetComponent<CinemachineVirtualCamera>();
+            vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
+            vcam.InvalidateComponentPipeline();
+
+            yield return null;
+            
+            var upgrader = new CinemachineUpgrader();
+            upgrader.Upgrade(vcamGo);
+
+            yield return null;
+
+            Assert.That(vcamGo.GetComponent<CinemachineVirtualCamera>(), Is.Null);
+            Assert.That(vcamGo.GetComponent<CinemachineTrackedDolly>(), Is.Null);
+            Assert.That(vcamGo.transform.childCount, Is.Zero);
+            Assert.That(vcamGo.GetComponent<CmCamera>(), Is.Not.Null);
+            Assert.That(vcamGo.GetComponent<CinemachineSplineDolly>(), Is.Not.Null);
+            Assert.That(vcamGo.GetComponents<MonoBehaviour>().Length, Is.EqualTo(2));
+        } 
+
         [UnityTest]
         public IEnumerator ConvertFreelook()
         {
