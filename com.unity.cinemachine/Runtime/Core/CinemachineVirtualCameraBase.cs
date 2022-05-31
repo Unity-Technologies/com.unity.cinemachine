@@ -114,7 +114,7 @@ namespace Cinemachine
         /// Override this to handle any upgrades necessitated by a streaming version change
         /// </summary>
         /// <param name="streamedVersion">The version that was streamed</param>
-        protected virtual void LegacyUpgrade(int streamedVersion)
+        internal protected virtual void LegacyUpgrade(int streamedVersion)
         {
             if (streamedVersion < 20220601)
                 CameraPriority = new CameraPriority { Priority = m_LegacyPriority, UseCustomPriority = true };

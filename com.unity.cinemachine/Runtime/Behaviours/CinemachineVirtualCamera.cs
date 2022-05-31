@@ -188,7 +188,7 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        protected override void LegacyUpgrade(int streamedVersion)
+        internal protected override void LegacyUpgrade(int streamedVersion)
         {
             base.LegacyUpgrade(streamedVersion);
             if (m_LegacyBlendHint != BlendHint.None)
