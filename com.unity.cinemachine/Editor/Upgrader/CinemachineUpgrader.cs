@@ -214,7 +214,6 @@ namespace Cinemachine.Editor
                     var topRig = m_TopRig.gameObject;
                     var middleRig = m_MiddleRig.gameObject;
                     var bottomRig = m_BottomRig.gameObject;
-                    
                     Object.DestroyImmediate(topRig);
                     Object.DestroyImmediate(middleRig);
                     Object.DestroyImmediate(bottomRig);
@@ -223,7 +222,7 @@ namespace Cinemachine.Editor
                     return true;
                 }
 
-                static string[] s_IgnoreList = { "m_ScreenX", "m_ScreenY" };
+                static string[] s_IgnoreList = { "m_ScreenX", "m_ScreenY", "m_BiasX", "m_BiasY" };
                 bool IsFreelookUpgradable()
                 {
                     // Freelook is not upgradable if it has:
@@ -374,6 +373,18 @@ namespace Cinemachine.Editor
                             Bottom = bottomComposer == null
                                 ? Vector3.zero
                                 : new Vector2(bottomComposer.m_ScreenX, bottomComposer.m_ScreenY),
+                        }
+                    });
+                    freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.BiasPositionModifier
+                    {
+                        Bias = new CinemachineFreeLookModifier.TopBottomRigs<Vector2>
+                        {
+                            Top = topComposer == null
+                                ? Vector3.zero
+                                : new Vector2(topComposer.m_BiasX, topComposer.m_BiasY),
+                            Bottom = bottomComposer == null
+                                ? Vector3.zero
+                                : new Vector2(bottomComposer.m_BiasX, bottomComposer.m_BiasY),
                         }
                     });
                 }
@@ -540,6 +551,8 @@ namespace Cinemachine.Editor
                     // if both no variants or both variants, we just use the name to compare just to be consistent.
                     return a.name.CompareTo(b.name);
                 });
+
+                prefabCount = m_PrefabVcams.Count;
                     
 #if DEBUG_HELPERS
                 Debug.Log("**** All prefabs ****");

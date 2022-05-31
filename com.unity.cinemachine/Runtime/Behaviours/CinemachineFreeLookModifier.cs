@@ -26,6 +26,11 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         Vector2 Screen { get; set; }
     }
 
+    public interface IModifiableBiasPosition
+    {
+        Vector2 Bias { get; set; }
+    }
+
     public interface IModifiableDistance
     {
         float Distance { get; set; }
@@ -275,6 +280,58 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
     }
+    
+    /// <summary>
+    /// Builtin Freelook modifier for Composer's Screen position. Modifies Screen position at the start of the camera pipeline.
+    /// </summary>
+    public class BiasPositionModifier : ComponentModifier<IModifiableBiasPosition>
+    {
+        [HideFoldout]
+        public TopBottomRigs<Vector2> Bias;
+
+        public override void Validate(CinemachineVirtualCameraBase vcam)
+        {
+            Bias.Top.x = Mathf.Clamp(Bias.Top.x, -0.5f, 0.5f);
+            Bias.Top.y = Mathf.Clamp(Bias.Top.y, -0.5f, 0.5f);
+            Bias.Bottom.x = Mathf.Clamp(Bias.Bottom.x, -0.5f, 0.5f);
+            Bias.Bottom.y = Mathf.Clamp(Bias.Bottom.y, -0.5f, 0.5f);
+        }
+
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            if (CachedComponent != null)
+            {
+                Bias.Top = Bias.Bottom = new Vector2(CachedComponent.Bias.x, CachedComponent.Bias.y);
+            }
+        }
+
+        Vector2 m_CenterBias;
+        public override void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float modifierValue) 
+        {
+            if (CachedComponent != null)
+            {
+                m_CenterBias = new Vector2(CachedComponent.Bias.x, CachedComponent.Bias.y);
+                CachedComponent.Bias = modifierValue >= 0
+                    ? Vector2.Lerp(m_CenterBias, Bias.Top, modifierValue)
+                    : Vector2.Lerp(Bias.Bottom, m_CenterBias, modifierValue + 1);
+            }
+        }
+
+        public override void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float modifierValue)
+        {
+            // Restore the settings
+            if (CachedComponent != null)
+            {
+                CachedComponent.Bias = m_CenterBias;
+            }
+        }
+    }
+
 
     /// <summary>
     /// Builtin FreeLook modifier for camera distance.  Applies distance to the camera at the start of the camera pipeline.

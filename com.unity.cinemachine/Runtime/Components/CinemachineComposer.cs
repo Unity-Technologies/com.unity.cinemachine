@@ -17,7 +17,8 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
-    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition
+    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition,
+        CinemachineFreeLookModifier.IModifiableBiasPosition
     {
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
@@ -524,6 +525,16 @@ namespace Cinemachine
             {
                 m_ScreenX = value.x;
                 m_ScreenY = value.y;
+            }
+        }
+
+        Vector2 CinemachineFreeLookModifier.IModifiableBiasPosition.Bias
+        {
+            get => new Vector2(m_BiasX, m_BiasY);
+            set
+            {
+                m_BiasX = value.x;
+                m_BiasY = value.y;
             }
         }
     }

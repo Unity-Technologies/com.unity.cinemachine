@@ -35,6 +35,7 @@ namespace Cinemachine
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
         , CinemachineFreeLookModifier.IModifiableScreenPosition
+        , CinemachineFreeLookModifier.IModifiableBiasPosition
     {
         /// <summary>
         /// Offset from the Follow Target object (in target-local co-ordinates).  The camera will attempt to
@@ -710,6 +711,15 @@ namespace Cinemachine
             {
                 m_ScreenX = value.x;
                 m_ScreenY = value.y;
+            }
+        }
+        Vector2 CinemachineFreeLookModifier.IModifiableBiasPosition.Bias
+        {
+            get => new Vector2(m_BiasX, m_BiasY);
+            set
+            {
+                m_BiasX = value.x;
+                m_BiasY = value.y;
             }
         }
     }
