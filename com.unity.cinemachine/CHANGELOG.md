@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
 - Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
+- Bugfix: Fixed spurious Z rotations during speherical blend.
 
 
 ## [2.9.0-pre.7] - 2022-03-29
