@@ -101,6 +101,7 @@ namespace Cinemachine
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         private int m_StreamingVersion = CinemachineCore.kStreamingVersion;
 
+        /// <summary>Post-Serialization handler - performs legacy upgrade</summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
@@ -108,6 +109,7 @@ namespace Cinemachine
             m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
 
+        /// <summary>Pre-Serialization handler - does nothing</summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize() {}
 
         /// <summary>
@@ -123,6 +125,7 @@ namespace Cinemachine
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
         int m_LegacyPriority = 10;
 
+        /// <summary>Obsolete field - use Priority instead</summary>
         // GML this does not work because we can't auto-upgrade an int field to an int property :-/
         //[Obsolete("m_Priority has been removed.  Please use Priority. (UnityUpgradable) -> Priority", false)]
         [Obsolete("m_Priority has been removed.  Please use Priority.", false)]
