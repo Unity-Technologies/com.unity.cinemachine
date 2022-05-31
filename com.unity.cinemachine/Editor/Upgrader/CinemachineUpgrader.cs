@@ -1,8 +1,9 @@
 #if UNITY_EDITOR
 #define DEBUG_HELPERS
 // suppress obsolete warnings
-#pragma warning disable CS0618 
+#pragma warning disable CS0618
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Codice.CM.SemanticMerge.Gui;
@@ -12,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
+using Object = UnityEngine.Object;
 
 namespace Cinemachine.Editor
 {
@@ -203,6 +205,10 @@ namespace Cinemachine.Editor
                     foreach (var extension in oldExtensions)
                     {
                         cmCamera.AddExtension(extension);
+                    }
+                    if (cmCamera.GetComponent<InputAxisController>() == null)
+                    {
+                        go.AddComponent<InputAxisController>();
                     }
 
                     var topRig = m_TopRig.gameObject;
@@ -448,8 +454,10 @@ namespace Cinemachine.Editor
                     }
 
                     var pipelineHolder = go.GetComponentInChildren<CinemachinePipeline>().gameObject;
+                    
                     Object.DestroyImmediate(pipelineHolder);
                     Object.DestroyImmediate(m_Vcam);
+                    
                     return true;
 
                     static void UpgradeComponent(CinemachineComponentBase oldComponent, GameObject go)
