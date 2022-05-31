@@ -381,8 +381,9 @@ namespace Cinemachine
                 }
                 else
                 {
-                    var blendUp = Vector3.Slerp(
-                        stateA.RawOrientation * Vector3.up, stateB.RawOrientation * Vector3.up, t);
+                    var blendUp = (state.BlendHint & BlendHintValue.CylindricalPositionBlend) != 0 
+                        ? state.ReferenceUp // the pre-blended up vectors
+                        : Vector3.Slerp(stateA.RawOrientation * Vector3.up, stateB.RawOrientation * Vector3.up, t);
 
                     // Rotate while preserving our lookAt target
                     if (Vector3.Cross(dirTarget, blendUp).AlmostZero())
