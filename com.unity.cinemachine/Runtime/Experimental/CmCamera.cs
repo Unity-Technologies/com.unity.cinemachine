@@ -71,9 +71,8 @@ namespace Cinemachine
         }
 
         /// <summary>Validates the settings avter inspector edit</summary>
-        protected override void OnValidate()
+        void OnValidate()
         {
-            base.OnValidate();
             Lens.Validate();
         }
 

@@ -148,7 +148,7 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
             DrawHeaderInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.m_Priority));
+            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));

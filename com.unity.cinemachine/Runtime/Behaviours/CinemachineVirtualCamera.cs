@@ -173,15 +173,6 @@ namespace Cinemachine
             base.OnEnable();
             m_State = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
             InvalidateComponentPipeline();
-
-            // Can't add components during OnValidate
-            if (ValidatingStreamVersion < 20170927)
-            {
-                if (Follow != null && GetCinemachineComponent(CinemachineCore.Stage.PositionControl) == null)
-                    AddCinemachineComponent<CinemachineHardLockToTarget>();
-                if (LookAt != null && GetCinemachineComponent(CinemachineCore.Stage.RotationControl) == null)
-                    AddCinemachineComponent<CinemachineHardLookAt>();
-            }
         }
 
         /// <summary>Calls the DestroyPipelineDelegate for destroying the hidden
@@ -197,16 +188,20 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
-        protected override void OnValidate()
+        protected override void LegacyUpgrade(int streamedVersion)
         {
-            base.OnValidate();
-            m_Lens.Validate();
+            base.LegacyUpgrade(streamedVersion);
             if (m_LegacyBlendHint != BlendHint.None)
             {
                 m_Transitions.m_BlendHint = m_LegacyBlendHint;
                 m_LegacyBlendHint = BlendHint.None;
             }
+        }
+
+        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
+        protected void OnValidate()
+        {
+            m_Lens.Validate();
         }
 
         void OnTransformChildrenChanged()
