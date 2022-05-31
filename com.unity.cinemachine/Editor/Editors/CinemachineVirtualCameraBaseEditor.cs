@@ -152,6 +152,10 @@ namespace Cinemachine.Editor
             + "if it does not have one, enabling the vcam to read input from Input Actions. "
             + "By default, a simple mouse XY input action is added.");
 
+        /// <summary>
+        /// Draw a message prompting the user to add a CinemachineInputProvider.  
+        /// Does nothing if Input package not installed.
+        /// </summary>
         protected void DrawInputProviderButtonInInspector()
         {
             bool needsButton = false;
@@ -183,6 +187,10 @@ namespace Cinemachine.Editor
             EditorGUILayout.Space();
         }
 #else
+        /// <summary>
+        /// Draw a message prompting the user to add a CinemachineInputProvider.  
+        /// Does nothing if Input package not installed.
+        /// </summary>
         protected void DrawInputProviderButtonInInspector() {}
 #endif
 

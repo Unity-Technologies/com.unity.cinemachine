@@ -71,6 +71,7 @@ namespace Cinemachine
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
         public float Radius = 10;
 
+        /// <summary>Defines a complex surface rig from 3 horizontal rings.</summary>
         [Tooltip("Defines a complex surface rig from 3 horizontal rings.")]
         [HideFoldout]
         public Cinemachine3OrbitRig.Settings Orbits = Cinemachine3OrbitRig.Settings.Default;
@@ -130,6 +131,7 @@ namespace Cinemachine
 
         // 3-rig orbit implementation
         Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
+        IInputAxisTarget.ResetHandler m_ResetHandler;
 
         static InputAxis DefaultHorizontal => new InputAxis 
         { 
@@ -206,6 +208,7 @@ namespace Cinemachine
         }
 
         /// <summary>Report the available input axes</summary>
+        /// <param name="axes">Output list to which the axes will be added</param>
         public void GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
         {
             axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
@@ -213,13 +216,12 @@ namespace Cinemachine
             axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = RadialAxis, Name = "Radial", AxisIndex = 2 });
         }
 
-        IInputAxisTarget.ResetHandler m_ResetHandler;
+        /// <summary>Register a handler that will be called when input needs to be reset</summary>
+        /// <param name="handler">The hanlder to register</param>
         public void RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
 
-        /// <summary>
-        /// Unregister a handler that will be called when input needs to be reset
-        /// </summary>
-        /// <param name="handler">Then hanlder to unregister</param>
+        /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
+        /// <param name="handler">The hanlder to unregister</param>
         public void UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
 
         /// <summary>Inspector checks this and displays warnng if no handler</summary>
@@ -408,16 +410,20 @@ namespace Cinemachine
         [Serializable]
         public struct Settings
         {
+            /// <summary>Value to take at the top of the axis range</summary>
             [Tooltip("Value to take at the top of the axis range")]
             public Orbit Top;
 
+            /// <summary>Value to take at the center of the axis range</summary>
             [Tooltip("Value to take at the center of the axis range")]
             public Orbit Center;
 
+            /// <summary>Value to take at the bottom of the axis range</summary>
             [Tooltip("Value to take at the bottom of the axis range")]
             public Orbit Bottom;
 
-            /// <summary></summary>
+            /// <summary>Controls how taut is the line that connects the rigs' orbits, which 
+            /// determines final placement on the Y axis</summary>
             [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
             [RangeSlider(0f, 1f)]
             public float SplineCurvature;

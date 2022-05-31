@@ -50,8 +50,13 @@ namespace Cinemachine
     /// </summary>
     public sealed class RangeSliderAttribute : PropertyAttribute 
     { 
+        /// <summary>Minimum value for the range slider</summary>
         public float Min;
+        /// <summary>Maximum value for the range slider</summary>
         public float Max;
+        /// <summary>Constructor for the range slider attribute</summary>
+        /// <param name="min">Minimum value for the range slider</param>
+        /// <param name="max">Maximum value for the range slider</param>
         public RangeSliderAttribute(float min, float max) { Min = min; Max = max; }
     }
     
@@ -60,8 +65,13 @@ namespace Cinemachine
     /// </summary>
     public sealed class MinMaxRangeSliderAttribute : PropertyAttribute 
     { 
+        /// <summary>Minimum value for the range slider</summary>
         public float Min;
+        /// <summary>Maximum value for the range slider</summary>
         public float Max;
+        /// <summary>Constructor for the range slider attribute</summary>
+        /// <param name="min">Minimum value for the range slider</param>
+        /// <param name="max">Maximum value for the range slider</param>
         public MinMaxRangeSliderAttribute(float min, float max) { Min = min; Max = max; }
     }
 

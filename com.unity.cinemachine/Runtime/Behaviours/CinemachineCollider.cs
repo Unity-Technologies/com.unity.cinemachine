@@ -261,7 +261,7 @@ namespace Cinemachine
             return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
         }
         
-          /// <summary>
+        /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
         /// <param name="vcam">The virtual camera being processed</param>

@@ -45,13 +45,16 @@ namespace Cinemachine
     /// In order to be driven by a CM camera, the Unity Camera must have a CinemachineBrain
     /// behaviour, which will select the most eligible CM camera based on its priority
     /// or on other criteria, and will manage blending.
+    /// </summary>
     /// 
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CmCamera")]
     public class CmCamera : CinemachineVirtualCameraBase
     {
+        /// <summary>The Tracking and LookAt targets for this camera.</summary>
         [NoSaveDuringPlay]
+        [Tooltip("Specifies the Tracking and LookAt targets for this camera.")]
         public CameraTarget Target;
 
         /// <summary>Specifies the LensSettings of this camera.
@@ -233,7 +236,7 @@ namespace Cinemachine
                 m_Pipeline != null && m_Pipeline.Any(t => t != null && t.RequiresUserInput);
         }
 
-        protected CameraState InvokeComponentPipeline(ref CameraState state, float deltaTime)
+        CameraState InvokeComponentPipeline(ref CameraState state, float deltaTime)
         {
             // Extensions first
             InvokePrePipelineMutateCameraStateCallback(this, ref state, deltaTime);
