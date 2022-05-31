@@ -99,15 +99,13 @@ namespace Cinemachine
         // Legacy streaming support
 
         [HideInInspector, SerializeField, NoSaveDuringPlay]
-        private int m_StreamingVersion;
+        private int m_StreamingVersion = CinemachineCore.kStreamingVersion;
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            if (m_StreamingVersion != CinemachineCore.kStreamingVersion)
-            {
+            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
                 LegacyUpgrade(m_StreamingVersion);
-                m_StreamingVersion = CinemachineCore.kStreamingVersion;
-            }
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
 
         void ISerializationCallbackReceiver.OnBeforeSerialize() {}
