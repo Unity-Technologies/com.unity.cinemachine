@@ -127,7 +127,8 @@ namespace Cinemachine
 
         // GML this does not work because we can't auto-upgrade an int field to an int property :-/
         //[Obsolete("m_Priority has been removed.  Please use Priority. (UnityUpgradable) -> Priority", false)]
-        //public int m_Priority { get => Priority; set => Priority = value; }
+        [Obsolete("m_Priority has been removed.  Please use Priority.", false)]
+        public int m_Priority { get => Priority; set => Priority = value; }
 
         //============================================================================
 
