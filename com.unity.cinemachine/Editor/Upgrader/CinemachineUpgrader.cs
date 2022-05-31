@@ -182,7 +182,7 @@ namespace Cinemachine.Editor
                     if (!isUpgradable)
                     {
                         var clone = Object.Instantiate(m_Freelook.gameObject);
-                        clone.name = clone.name.Substring(0, go.name.Length - "(Clone)".Length) + "(Not fully upgradable)";
+                        clone.name = go.name + " (Not fully upgradable)";
                         
                         Debug.LogWarning("Freelook camera \"" + m_Freelook.name + "\" was not fully upgradable " +
                             "automatically! It was partially upgraded. Your data was saved to " + clone.name);
