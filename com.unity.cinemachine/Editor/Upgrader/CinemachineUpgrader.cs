@@ -491,7 +491,7 @@ namespace Cinemachine.Editor
                         {
                             if (oldComponent is CinemachineTrackedDolly trackedDolly)
                             {
-                                var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
+                                var splineDolly = go.AddComponent<CinemachineSplineDolly>();
                                 splineDolly.Damping = new Vector3(
                                     trackedDolly.m_XDamping, trackedDolly.m_YDamping, trackedDolly.m_ZDamping);
                                 splineDolly.AngularDamping = Mathf.Max(trackedDolly.m_YawDamping,
