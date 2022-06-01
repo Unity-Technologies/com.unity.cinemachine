@@ -50,7 +50,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CmCamera")]
-    public class CmCamera : CinemachineVirtualCameraBase
+    public sealed class CmCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The Tracking and LookAt targets for this camera.</summary>
         [NoSaveDuringPlay]
@@ -84,7 +84,7 @@ namespace Cinemachine
         public override CameraState State { get => m_State; }
 
         /// <summary>The current camera state, which will applied to the Unity Camera</summary>
-        protected CameraState m_State = CameraState.Default;
+        CameraState m_State = CameraState.Default;
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
