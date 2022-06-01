@@ -11,7 +11,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.RotationControl)]
+    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
     public class CinemachineSameAsFollowTarget : CinemachineComponentBase
     {
         /// <summary>

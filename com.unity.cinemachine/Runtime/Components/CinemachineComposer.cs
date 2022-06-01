@@ -15,7 +15,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.RotationControl)]
+    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
     public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition
     {
         /// <summary>Target offset from the object's center in LOCAL space which

@@ -16,7 +16,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.PositionControl)]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
 #if UNITY_2022_1_OR_NEWER
     [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
 #endif

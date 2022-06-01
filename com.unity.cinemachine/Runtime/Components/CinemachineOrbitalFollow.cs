@@ -13,7 +13,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.PositionControl)]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class CinemachineOrbitalFollow 
         : CinemachineComponentBase, IInputAxisTarget
         , CinemachineFreeLookModifier.IModifierValueSource
