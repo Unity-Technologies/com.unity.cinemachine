@@ -77,7 +77,9 @@ namespace Cinemachine
 
         void DrawReticle(CinemachineBrain brain)
         {
-            if (AimTargetReticle != null && brain.OutputCamera != null && brain.IsLive(VirtualCamera))
+            if (!brain.IsLive(VirtualCamera) || brain.OutputCamera == null)
+                CinemachineCore.CameraUpdatedEvent.RemoveListener(DrawReticle);
+            else if (AimTargetReticle != null)
                 AimTargetReticle.position = brain.OutputCamera.WorldToScreenPoint(AimTarget);
         }
 
