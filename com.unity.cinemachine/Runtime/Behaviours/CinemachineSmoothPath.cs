@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using Cinemachine.Utility;
-using UnityEngine.Splines;
 
 namespace Cinemachine
 {
@@ -95,29 +94,7 @@ namespace Cinemachine
             m_ControlPoints1 = null;
             m_ControlPoints2 = null;
         }
-
-        internal override void UpgradeTo(out SplineContainer spline)
-        {
-            spline = gameObject.AddComponent<SplineContainer>();
-            var waypoints = m_Waypoints;
-            spline.Spline = new Spline(waypoints.Length, Looped)
-            {
-                EditType = SplineType.CatmullRom
-            };
-
-            var splineRoll = gameObject.AddComponent<CinemachineSplineRoll>();
-            splineRoll.Roll = new SplineData<float>();
-            for (var i = 0; i < waypoints.Length; i++)
-            {
-                spline.Spline.Add(new BezierKnot
-                {
-                    Position = waypoints[i].position,
-                    Rotation = Quaternion.identity,
-                });
-                splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
-            }
-        }
-
+        
         Waypoint[] m_ControlPoints1;
         Waypoint[] m_ControlPoints2;
         bool m_IsLoopedCache;

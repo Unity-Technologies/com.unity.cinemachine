@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Codice.CM.SemanticMerge.Gui;
+using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.Splines;
 using UnityEngine.Timeline;
 using Object = UnityEngine.Object;
 
@@ -507,7 +509,7 @@ namespace Cinemachine.Editor
                                 var path = trackedDolly.m_Path;
                                 if (path != null)
                                 {
-                                    path.UpgradeTo(out splineDolly.Spline);
+                                    ConvertCinemachinePathToSpline(path, out splineDolly.Spline);
                                     Object.DestroyImmediate(path);
                                 }
                                 Object.DestroyImmediate(trackedDolly);
@@ -525,6 +527,63 @@ namespace Cinemachine.Editor
             {
                 var json = JsonUtility.ToJson(from);
                 JsonUtility.FromJsonOverwrite(json, to);
+            }
+
+            static void ConvertCinemachinePathToSpline(CinemachinePathBase pathBase, out SplineContainer spline)
+            {
+                var gameObject = pathBase.gameObject;
+                switch (pathBase)
+                {
+                    case CinemachinePath path:
+                    {
+                        spline = gameObject.AddComponent<SplineContainer>();
+                        var waypoints = path.m_Waypoints;
+                        spline.Spline = new Spline(waypoints.Length, path.Looped);
+            
+                        var splineRoll = gameObject.AddComponent<CinemachineSplineRoll>();
+                        splineRoll.Roll = new SplineData<float>();
+                        for (var i = 0; i < waypoints.Length; i++)
+                        {
+                            spline.Spline.Add(new BezierKnot
+                            {
+                                Position = waypoints[i].position,
+                                Rotation = Quaternion.identity,
+                                TangentIn = -waypoints[i].tangent,
+                                TangentOut = waypoints[i].tangent,
+                            });
+                            splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
+                        }
+
+                        break;
+                    }
+                    case CinemachineSmoothPath smoothPath:
+                    {
+                        spline = gameObject.AddComponent<SplineContainer>();
+                        var waypoints = smoothPath.m_Waypoints;
+                        spline.Spline = new Spline(waypoints.Length, smoothPath.Looped)
+                        {
+                            EditType = SplineType.CatmullRom
+                        };
+
+                        var splineRoll = gameObject.AddComponent<CinemachineSplineRoll>();
+                        splineRoll.Roll = new SplineData<float>();
+                        for (var i = 0; i < waypoints.Length; i++)
+                        {
+                            spline.Spline.Add(new BezierKnot
+                            {
+                                Position = waypoints[i].position,
+                                Rotation = Quaternion.identity,
+                            });
+                            splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
+                        }
+
+                        break;
+                    }
+                    default:
+                        Assert.True(false, "Path type (" + pathBase.GetType() + ") is not handled by the upgrader!");
+                        spline = null;
+                        break;
+                }
             }
         }
 
