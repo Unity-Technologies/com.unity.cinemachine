@@ -13,7 +13,6 @@ namespace Cinemachine
     /// Depending on the camera's position along the spline connecting these three rigs,
     /// these settings are interpolated to give the final camera position and state.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
@@ -637,7 +636,7 @@ namespace Cinemachine
                 rig.m_ExcludedPropertiesInInspector = m_CommonLens
                     ? new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
                     : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
-                rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
+                rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.PositionControl };
             }
 #endif
 

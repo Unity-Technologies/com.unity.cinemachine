@@ -13,16 +13,14 @@ namespace Cinemachine
     /// re-orient or otherwise aim the camera.  To to that, you need to instruct
     /// the vcam in the Aim section of its pipeline.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class CinemachineTransposer : CinemachineComponentBase
     {
         /// <summary>
         /// The coordinate space to use when interpreting the offset from the target
         /// </summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum BindingMode
         {
             /// <summary>
@@ -171,7 +169,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
 
         /// <summary>
         /// Report maximum damping time needed for this component.

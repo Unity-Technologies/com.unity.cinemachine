@@ -17,12 +17,10 @@ namespace Cinemachine
     /// and is the basis of much signal processing.  It doesn't really have much to do with this
     /// asset, but it's super interesting!
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineNoiseProfiles.html")]
     public sealed class NoiseSettings : SignalSourceAsset
     {
         /// <summary>Describes the behaviour for a channel of noise</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct NoiseParams
         {
@@ -54,7 +52,6 @@ namespace Cinemachine
         /// <summary>
         /// Contains the behaviour of noise for the noise module for all 3 cardinal axes of the camera
         /// </summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct TransformNoiseParams
         {

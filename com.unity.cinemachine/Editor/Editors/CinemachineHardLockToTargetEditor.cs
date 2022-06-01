@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineHardLockToTarget).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Hard Lock requires a Follow Target.  Change Body to Do Nothing if you don't want a Follow target.",
+                    "Hard Lock requires a Tracking Target.  Change Position Control to None if you don't want a Tracking target.",
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }

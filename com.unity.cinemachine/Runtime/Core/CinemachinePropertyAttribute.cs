@@ -50,8 +50,13 @@ namespace Cinemachine
     /// </summary>
     public sealed class RangeSliderAttribute : PropertyAttribute 
     { 
+        /// <summary>Minimum value for the range slider</summary>
         public float Min;
+        /// <summary>Maximum value for the range slider</summary>
         public float Max;
+        /// <summary>Constructor for the range slider attribute</summary>
+        /// <param name="min">Minimum value for the range slider</param>
+        /// <param name="max">Maximum value for the range slider</param>
         public RangeSliderAttribute(float min, float max) { Min = min; Max = max; }
     }
     
@@ -60,8 +65,13 @@ namespace Cinemachine
     /// </summary>
     public sealed class MinMaxRangeSliderAttribute : PropertyAttribute 
     { 
+        /// <summary>Minimum value for the range slider</summary>
         public float Min;
+        /// <summary>Maximum value for the range slider</summary>
         public float Max;
+        /// <summary>Constructor for the range slider attribute</summary>
+        /// <param name="min">Minimum value for the range slider</param>
+        /// <param name="max">Maximum value for the range slider</param>
         public MinMaxRangeSliderAttribute(float min, float max) { Min = min; Max = max; }
     }
 
@@ -116,31 +126,4 @@ namespace Cinemachine
     /// Used for custom drawing in the inspector.
     /// </summary>
     public sealed class Vector2AsRangeAttribute : PropertyAttribute {}
-    
-    /// <summary>
-    /// Atrtribute to control the automatic generation of documentation.  This attribute is obsolete and not used.
-    /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
-    public sealed class DocumentationSortingAttribute : System.Attribute
-    {
-        /// <summary>Refinement level of the documentation</summary>
-        public enum Level 
-        { 
-            /// <summary>Type is excluded from documentation</summary>
-            Undoc, 
-            /// <summary>Type is documented in the API reference</summary>
-            API, 
-            /// <summary>Type is documented in the highly-refined User Manual</summary>
-            UserRef 
-        };
-        /// <summary>Refinement level of the documentation.  The more refined, the more is excluded.</summary>
-        public Level Category { get; private set; }
-
-        /// <summary>Contructor with specific values</summary>
-        /// <param name="category">Documentation level</param>
-        public DocumentationSortingAttribute(Level category)
-        {
-            Category = category;
-        }
-    }
 }

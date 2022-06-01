@@ -9,7 +9,6 @@ namespace Cinemachine
     /// allowing it to participate in blends.
     /// Just add it as a component alongside an existing Unity Camera component.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/CinemachineExternalCamera")]
     [ExecuteAlways]

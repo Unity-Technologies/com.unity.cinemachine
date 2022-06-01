@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineTransposer).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Transposer requires a Follow Target.  Change Body to Do Nothing if you don't want a Follow target.",
+                    "Transposer requires a Tracking Target.  Change Position Control to None if you don't want a Tracking target.",
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }

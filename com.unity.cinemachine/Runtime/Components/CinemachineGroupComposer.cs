@@ -13,10 +13,9 @@ namespace Cinemachine
     /// will adjust the FOV and the camera distance to ensure that the entire group of targets
     /// is framed properly.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
+    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
     public class CinemachineGroupComposer : CinemachineComposer
     {
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
@@ -25,7 +24,6 @@ namespace Cinemachine
         public float m_GroupFramingSize = 0.8f;
 
         /// <summary>What screen dimensions to consider when framing</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum FramingMode
         {
             /// <summary>Consider only the horizontal dimension.  Vertical framing is ignored.</summary>

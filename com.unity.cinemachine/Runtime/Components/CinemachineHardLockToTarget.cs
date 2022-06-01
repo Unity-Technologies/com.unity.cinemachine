@@ -8,10 +8,9 @@ namespace Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to place the camera on the Follow Target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
     {
         /// <summary>
@@ -26,7 +25,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
 
         /// <summary>
         /// Report maximum damping time needed for this component.

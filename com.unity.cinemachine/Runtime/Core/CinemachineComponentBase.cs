@@ -7,7 +7,6 @@ namespace Cinemachine
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
     // GML todo: rename this to CinemachinePipelineComponent ?
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
     {
@@ -29,6 +28,10 @@ namespace Cinemachine
         }
         CinemachineVirtualCameraBase m_vcamOwner;
 
+        /// <summary>
+        /// Standard OnEnable call.  Derived classes should call the base class implementation.
+        /// Handles pipeline validation.
+        /// </summary>
         protected virtual void OnEnable()
         {
             var vcam = VirtualCamera as CmCamera;
@@ -36,6 +39,10 @@ namespace Cinemachine
                 vcam.InvalidatePipelineCache();
         }
 
+        /// <summary>
+        /// Standard OnEnable call.  Derived classes should call the base class implementation.
+        /// Handles pipeline validation.
+        /// </summary>
         protected virtual void OnDisable()
         {
             var vcam = VirtualCamera as CmCamera;

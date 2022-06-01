@@ -123,7 +123,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == CinemachineCore.Stage.Body)
+            if (stage == CinemachineCore.Stage.PositionControl)
             {
                 // Raycast to establish what we're actually aiming at
                 var player = vcam.Follow;

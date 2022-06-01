@@ -114,6 +114,8 @@ namespace Cinemachine
         public RecenteringSettings Recentering;
 
         /// <summary>Clamp the value to range, taking wrap into account</summary>
+        /// <param name="v">The value to clamp</param>
+        /// <returns>The value clamped to the axis range</returns>
         public float ClampValue(float v)
         {
             float r = Range.y - Range.x;
@@ -125,6 +127,7 @@ namespace Cinemachine
         }
 
         /// <summary>Clamp and scale the value to range 0...1, taking wrap into account</summary>
+        /// <returns>The axis value, mapped onto [0...1]</returns>
         public float GetNormalizedValue()
         {
             float v = ClampValue(Value);
@@ -132,7 +135,8 @@ namespace Cinemachine
             return (v - Range.x) / (r > UnityVectorExtensions.Epsilon ? r : 1);
         }
 
-        /// <summary>Return clamped value</summary>
+        /// <summary>Get the clamped axis value</summary>
+        /// <returns>The axis value, clamped to the axis range</returns>
         public float GetClampedValue()
         {
             return ClampValue(Value);
@@ -230,7 +234,6 @@ namespace Cinemachine
         /// <summary>Call this to manage recentering axis valkue to axis center.</summary>
         /// <param name="deltaTime"></param>
         /// <param name="axis"></param>
-        /// <param name="recentering"></param>
         public void DoRecentering(float deltaTime, InputAxis axis)
         {
             if (!axis.Recentering.Enabled 

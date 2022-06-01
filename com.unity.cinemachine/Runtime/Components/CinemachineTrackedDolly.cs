@@ -14,13 +14,12 @@ namespace Cinemachine
     /// In Auto-Dolly mode, the Path Position field is animated automatically every frame by finding
     /// the position on the path that's closest to the virtual camera's Follow target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
 #if UNITY_2022_1_OR_NEWER
     [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
-#endif   
+#endif
     public class CinemachineTrackedDolly : CinemachineComponentBase
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
@@ -85,7 +84,6 @@ namespace Cinemachine
         public float m_ZDamping = 1f;
 
         /// <summary>Different ways to set the camera's up vector</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum CameraUpMode
         {
             /// <summary>Leave the camera's up vector alone.  It will be set according to the Brain's WorldUp.</summary>
@@ -127,7 +125,6 @@ namespace Cinemachine
         public float m_RollDamping = 0f;
 
         /// <summary>Controls how automatic dollying occurs</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct AutoDolly
         {
@@ -177,7 +174,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
 
         /// <summary>
         /// Report maximum damping time needed for this component.

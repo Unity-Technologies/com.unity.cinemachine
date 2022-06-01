@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System;
 using Cinemachine.Utility;
-using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -14,11 +13,10 @@ namespace Cinemachine
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
-    public class CinemachineComposer : CinemachineComponentBase
+    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
+    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition
     {
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
@@ -132,7 +130,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.RotationControl; } }
 
         /// <summary>Internal API for inspector</summary>
         public Vector3 TrackedPoint { get; private set; }
@@ -516,6 +514,16 @@ namespace Cinemachine
                 }
             }
             return false;
+        }
+
+        Vector2 CinemachineFreeLookModifier.IModifiableScreenPosition.Screen
+        {
+            get => new Vector2(m_ScreenX, m_ScreenY);
+            set
+            {
+                m_ScreenX = value.x;
+                m_ScreenY = value.y;
+            }
         }
     }
 }
