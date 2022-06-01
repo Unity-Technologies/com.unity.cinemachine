@@ -48,6 +48,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public interface IModifiableBiasPosition
     {
+        /// <summary>Get/set the bias position</summary>
         Vector2 Bias { get; set; }
     }
 
@@ -395,9 +396,12 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class BiasPositionModifier : ComponentModifier<IModifiableBiasPosition>
     {
+        /// <summary>Values for the top and bottom rigs</summary>
         [HideFoldout]
         public TopBottomRigs<Vector2> Bias;
 
+        /// <summary>Called from OnValidate to validate this component</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Bias.Top.x = Mathf.Clamp(Bias.Top.x, -0.5f, 0.5f);
@@ -406,6 +410,8 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             Bias.Bottom.y = Mathf.Clamp(Bias.Bottom.y, -0.5f, 0.5f);
         }
 
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
@@ -415,6 +421,17 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         }
 
         Vector2 m_CenterBias;
+        
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
@@ -428,6 +445,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
@@ -451,7 +478,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         [HideFoldout]
         public TopBottomRigs<float> Distance;
 
-        /// <summary>Called from OnValidate to calidate this component</summary>
+        /// <summary>Called from OnValidate to validate this component</summary>
         /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
