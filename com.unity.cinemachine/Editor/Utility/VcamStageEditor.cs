@@ -195,7 +195,7 @@ namespace Cinemachine.Editor
             Rect rect = EditorGUILayout.GetControlRect(true);
 
             // Don't use PrefixLabel() because it will link the enabled status of field and label
-            GUIContent label = new GUIContent(InspectorUtility.NicifyClassName(m_Stage.ToString()));
+            GUIContent label = new GUIContent(ObjectNames.NicifyVariableName(m_Stage.ToString()));
             if (m_StageError)
                 label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
             float labelWidth = EditorGUIUtility.labelWidth - EditorGUI.indentLevel * indentSize;

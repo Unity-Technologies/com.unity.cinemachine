@@ -163,7 +163,7 @@ namespace Cinemachine
                 m_SearchRadius = searchRadius;
                 m_SearchResolution = stepsPerSegment;
             }
-        };
+        }
 
         /// <summary>Controls how automatic dollying occurs</summary>
         [Tooltip("Controls how automatic dollying occurs.  A Follow target is necessary to use this feature.")]

@@ -207,8 +207,6 @@ namespace Cinemachine.Editor
             });
         }
     }
-    
-    
 
     /// <summary>
     /// Creates a toggle tool on the Cinemachine toolbar that is exclusive with other

@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
 {
-    internal static class CinemachineMenu
+    static class CinemachineMenu
     {
         const string m_CinemachineAssetsRootMenu = "Assets/Create/Cinemachine/";
         const string m_CinemachineGameObjectRootMenu = "GameObject/Cinemachine/";
@@ -124,15 +125,16 @@ namespace Cinemachine.Editor
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
-            var path = CreateCinemachineObject<CinemachineSmoothPath>(
-                "Dolly Track", command.context as GameObject, false);
             var vcam = CreateCinemachineObject<CmCamera>(
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
-
             vcam.gameObject.AddComponent<CinemachineComposer>();
-            var trackedDolly = vcam.gameObject.AddComponent<CinemachineTrackedDolly>();
-            trackedDolly.m_Path = path;
+            var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
+            splineContainer.Spline.Add(new BezierKnot(Vector3.right));
+            var splineDolly = vcam.gameObject.AddComponent<CinemachineSplineDolly>();
+            splineDolly.Spline = splineContainer;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]

@@ -20,6 +20,7 @@ namespace Cinemachine
             {
                 if (m_vcamOwner == null)
                     m_vcamOwner = GetComponent<CinemachineVirtualCameraBase>();
+                // GML todo: remove this
                 if (m_vcamOwner == null && transform.parent != null)
                     m_vcamOwner = transform.parent.GetComponent<CinemachineVirtualCameraBase>();
                 return m_vcamOwner;
