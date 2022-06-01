@@ -177,12 +177,6 @@ namespace Cinemachine
             UpdateSplineData();
         }
 
-        /// <summary>
-        /// Subscribe to onSplineChanged if you'd like to react to changes to the Spline attached to this vcam.
-        /// This action is invoked by the Spline's changed event when a spline property is modified. Available in editor only.
-        /// </summary>
-        public event Action onSplineChanged;
-
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>
@@ -393,7 +387,6 @@ namespace Cinemachine
         {
             if (m_SplineCache != null)
             {
-                m_SplineCache.Spline.changed -= onSplineChanged;
                 m_SplineCache.Spline.changed -= UpdateSplineData;
                 m_SplineCache = Spline;
                 m_Registered = false;
@@ -402,7 +395,6 @@ namespace Cinemachine
             {
                 m_Registered = true;
                 m_SplineCache = Spline;
-                Spline.Spline.changed += onSplineChanged;
                 Spline.Spline.changed += UpdateSplineData;
             }
 
