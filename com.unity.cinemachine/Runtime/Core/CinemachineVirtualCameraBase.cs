@@ -40,12 +40,23 @@ namespace Cinemachine
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         public CinemachineCore.Stage[] m_LockStageInInspector;
 
-        /// <summary>The priority will determine which camera becomes active based on the
-        /// state of other cameras and this camera.  Higher numbers have greater priority.
+        /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
+        /// active simultaneously.  The most-recently-activated CmCamera will take control, unless there 
+        /// is another Cm Camera active with a higher priority.  In general, the most-recently-activated 
+        /// highest-priority CmCamera will control the main camera. 
+        /// 
+        /// The default priority is 0.  Often it is sufficient to leave the default setting.  
+        /// In special cases where you want a CmCamera to have a higher or lower priority than 0, 
+        /// the value can be set here.
         /// </summary>
         [NoSaveDuringPlay]
-        [Tooltip("The priority will determine which camera becomes active based on the state of "
-            + "other cameras and this camera.  Higher numbers have greater priority. 0 is default.")]
+        [Tooltip("Priority can be used to control which Cm Camera is live when multiple CM Cameras are "
+            + "active simultaneously.  The most-recently-activated CmCamera will take control, unless there "
+            + "is another Cm Camera active with a higher priority.  In general, the most-recently-activated "
+            + "highest-priority CmCamera will control the main camera. \n\n"
+            + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
+            + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
+            + "the value can be set here.")]
         public CameraPriority CameraPriority;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
