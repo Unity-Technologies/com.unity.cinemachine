@@ -7,7 +7,6 @@ namespace Cinemachine
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
     // GML todo: rename this to CinemachinePipelineComponent ?
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
     {

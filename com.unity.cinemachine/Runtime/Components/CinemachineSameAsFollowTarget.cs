@@ -9,7 +9,6 @@ namespace Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to match the orientation of the Follow target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.RotationControl)]

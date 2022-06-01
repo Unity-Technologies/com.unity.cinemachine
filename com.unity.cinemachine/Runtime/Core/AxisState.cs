@@ -9,7 +9,6 @@ namespace Cinemachine
     /// Axis state for defining how to react to player input.
     /// The settings here control the responsiveness of the axis to player input.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
     public struct AxisState
     {
@@ -351,7 +350,6 @@ namespace Cinemachine
         public bool HasRecentering { get; set; }
 
         /// <summary>Helper for automatic axis recentering</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct Recentering
         {

@@ -7,7 +7,6 @@ namespace Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to aim the camera hard at the LookAt target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.RotationControl)]

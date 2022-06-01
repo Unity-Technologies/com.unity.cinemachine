@@ -20,7 +20,6 @@ namespace Cinemachine.Editor
     /// <summary>
     /// User-definable named presets for lenses.  This is a Singleton asset, available in editor only
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
     public sealed class CinemachineLensPresets : ScriptableObject
     {
@@ -75,7 +74,6 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>Lens Preset</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct Preset
         {
@@ -99,7 +97,6 @@ namespace Cinemachine.Editor
         public Preset[] m_Presets = Array.Empty<Preset>();
 
         /// <summary>Physical Lens Preset</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct PhysicalPreset
         {

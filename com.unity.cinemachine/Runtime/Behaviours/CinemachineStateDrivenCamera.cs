@@ -22,7 +22,6 @@ namespace Cinemachine
     /// In order to use this behaviour, you must have an animated target (i.e. an object
     /// animated with a state machine) to drive the behaviour.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
@@ -113,7 +112,6 @@ namespace Cinemachine
 
         /// <summary>Internal API for the Inspector editor.  This implements nested states.</summary>
         [Serializable]
-        [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
         internal struct ParentHash
         {
             /// <summary>Internal API for the Inspector editor</summary>

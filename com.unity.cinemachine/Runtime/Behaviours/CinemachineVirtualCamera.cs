@@ -51,7 +51,6 @@ namespace Cinemachine
     /// <seealso cref="CinemachineComposer"/>
     /// <seealso cref="CinemachineTransposer"/>
     /// <seealso cref="CinemachineBasicMultiChannelPerlin"/>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]

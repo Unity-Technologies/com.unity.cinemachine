@@ -29,7 +29,6 @@ namespace Cinemachine
     /// control the way the camera positions itself in relation to the target heading.  This allows
     /// the camera to move to any spot on an orbit around the target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.PositionControl)]
@@ -39,7 +38,6 @@ namespace Cinemachine
         /// How the "forward" direction is defined.  Orbital offset is in relation to the forward
         /// direction.
         /// </summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct Heading
         {
@@ -47,7 +45,6 @@ namespace Cinemachine
             /// Sets the algorithm for determining the target's heading for purposes
             /// of re-centering the camera
             /// </summary>
-            [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
             public enum HeadingDefinition
             {
                 /// <summary>

@@ -27,7 +27,6 @@ namespace Cinemachine
     /// Although this component was designed for orthographic cameras, it works equally
     /// well with persective cameras and can be used in 3D environments.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipelineAttribute(CinemachineCore.Stage.PositionControl)]
@@ -184,7 +183,6 @@ namespace Cinemachine
         public bool m_CenterOnActivate = true;
 
         /// <summary>What screen dimensions to consider when framing</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum FramingMode
         {
             /// <summary>Consider only the horizontal dimension.  Vertical framing is ignored.</summary>

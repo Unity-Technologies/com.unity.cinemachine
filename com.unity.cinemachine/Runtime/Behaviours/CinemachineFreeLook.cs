@@ -13,7 +13,6 @@ namespace Cinemachine
     /// Depending on the camera's position along the spline connecting these three rigs,
     /// these settings are interpolated to give the final camera position and state.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]

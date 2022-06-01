@@ -12,7 +12,6 @@ namespace Cinemachine
     /// We do it this way in order to support weight animation from the Timeline.
     /// Timeline cannot animate array elements.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]

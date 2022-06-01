@@ -45,7 +45,6 @@ namespace Cinemachine.PostFX
     /// applying them to the current Post-Processing profile, provided that profile has a
     /// DepthOfField effect that is enabled.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteAlways]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]

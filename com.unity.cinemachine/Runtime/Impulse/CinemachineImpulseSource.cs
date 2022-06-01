@@ -12,7 +12,6 @@ namespace Cinemachine
     /// methods from your custom code, or hook them up to game events in the Editor.
     /// 
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseSourceOverview.html")]
     public class CinemachineImpulseSource : MonoBehaviour
