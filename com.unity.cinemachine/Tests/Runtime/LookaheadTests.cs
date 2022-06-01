@@ -7,7 +7,7 @@ using Cinemachine;
 namespace Tests.Runtime
 {
     [TestFixture]
-    public class LookaheadTests : CinemachineFixtureBase
+    public class LookaheadTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_VCam;
         CinemachineComposer m_Composer;

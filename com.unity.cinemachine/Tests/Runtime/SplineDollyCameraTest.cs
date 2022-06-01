@@ -10,7 +10,7 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
-    public class SplineDollyCameraTest : CinemachineFixtureBase
+    public class SplineDollyCameraTest : CinemachineRuntimeFixtureBase
     {
         CmCamera m_CmCam;
         CinemachineSplineDolly m_Dolly;

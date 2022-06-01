@@ -10,9 +10,8 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class CmCameraProceduralBehaviourCacheTests
+    public class CmCameraProceduralBehaviourCacheTests : CinemachineFixtureBase
     {
-        GameObject m_MainCamera;
         CmCamera m_CmCamera;
         static IEnumerable<Type> s_AllCinemachineComponents;
 
@@ -23,13 +22,11 @@ namespace Tests
         }
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
-            m_MainCamera = new GameObject("MainCamera");
-            m_MainCamera.AddComponent<Camera>();
-            m_MainCamera.AddComponent<CinemachineBrain>();
-            var cmCameraGo = new GameObject("CmCamera");
-            m_CmCamera = cmCameraGo.AddComponent<CmCamera>();
+            base.SetUp();
+            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            m_CmCamera = CreateGameObject("CmCamera", typeof(CmCamera)).GetComponent<CmCamera>();
             m_CmCamera.Priority = 100;
             
             s_AllCinemachineComponents = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
@@ -39,10 +36,9 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
+        public override void TearDown()
         {
-            RuntimeUtility.DestroyObject(m_CmCamera.gameObject);
-            RuntimeUtility.DestroyObject(m_MainCamera);
+            base.TearDown();
         }
 
         [UnityTest]
