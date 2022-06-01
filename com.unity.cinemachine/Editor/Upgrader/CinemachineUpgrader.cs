@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-#define DEBUG_HELPERS
+// #define DEBUG_HELPERS
 // suppress obsolete warnings
 #pragma warning disable CS0618
 
@@ -24,7 +24,6 @@ namespace Cinemachine.Editor
     {
         SceneManager m_SceneManager;
         PrefabManager m_PrefabManager;
-        Cm2ToCm3Upgrader m_Cm2ToCm3;
 
         public CinemachineUpgrader()
         {
@@ -32,11 +31,19 @@ namespace Cinemachine.Editor
             m_PrefabManager = new PrefabManager();
         }
             
-        bool Upgrade(GameObject go)
+        /// <summary>
+        /// Upgrades the input gameobject.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <returns></returns>
+        public bool Upgrade(GameObject go)
         {
             return Cm2ToCm3Upgrader.Upgrade(go);
         }
-            
+        
+        /// <summary>
+        /// Upgrades all vcams in all scenes and prefabs
+        /// </summary>
         public void UpgradeAll()
         {
             UpgradePrefabs();
@@ -394,6 +401,11 @@ namespace Cinemachine.Editor
                     var top = m_TopRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var middle = m_MiddleRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var bottom = m_BottomRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+                    if (top == null && middle == null && bottom == null)
+                    {
+                        return;
+                    }
+                    
                     if (middle == null)
                     {
                         var middleNoise = go.AddComponent<CinemachineBasicMultiChannelPerlin>();
@@ -493,8 +505,11 @@ namespace Cinemachine.Editor
                                 splineDolly.m_CameraPosition = trackedDolly.m_PathPosition;
                                 splineDolly.m_SplineOffset = trackedDolly.m_PathOffset;
                                 var path = trackedDolly.m_Path;
-                                path.UpgradeTo(out splineDolly.m_Spline);
-                                Object.DestroyImmediate(path);
+                                if (path != null)
+                                {
+                                    path.UpgradeTo(out splineDolly.m_Spline);
+                                    Object.DestroyImmediate(path);
+                                }
                                 Object.DestroyImmediate(trackedDolly);
                                 return;
                             }
