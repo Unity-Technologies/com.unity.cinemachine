@@ -237,6 +237,9 @@ namespace Cinemachine
             return axis.Value;
         }
 
+        /// <summary>
+        /// Standard OnEnable call.  Updates the input axis provider.
+        /// </summary>
         protected override void OnEnable()
         {
             base.OnEnable();

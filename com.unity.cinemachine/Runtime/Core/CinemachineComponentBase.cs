@@ -28,6 +28,10 @@ namespace Cinemachine
         }
         CinemachineVirtualCameraBase m_vcamOwner;
 
+        /// <summary>
+        /// Standard OnEnable call.  Derived classes should call the base class implementation.
+        /// Handles pipeline validation.
+        /// </summary>
         protected virtual void OnEnable()
         {
             var vcam = VirtualCamera as CmCamera;
@@ -35,6 +39,10 @@ namespace Cinemachine
                 vcam.InvalidatePipelineCache();
         }
 
+        /// <summary>
+        /// Standard OnEnable call.  Derived classes should call the base class implementation.
+        /// Handles pipeline validation.
+        /// </summary>
         protected virtual void OnDisable()
         {
             var vcam = VirtualCamera as CmCamera;
