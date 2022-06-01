@@ -11,33 +11,61 @@ using System.Collections.Generic;
 [ExecuteAlways]
 public class CinemachineFreeLookModifier : CinemachineExtension
 {
+    /// <summary>
+    /// Interface for CInemachineComponentBase-derived to expose a normalized value that 
+    /// can be consumed by CinemachineFreeLookModifier to drive the rig selecion.
+    /// </summary>
     public interface IModifierValueSource
     {
+        /// <summary>
+        /// This value will be 0 for the middle rig, -1 for the bottom rid, and 1 for the top rig.
+        /// Values in-between represent a blend between rigs.
+        /// </summary>
         float NormalizedModifierValue { get; }
     }
 
+    /// <summary>
+    /// Interface for CinemachineComponentBase-derived to allow its position damping to be driven.
+    /// </summary>
     public interface IModifiablePositionDamping
     {
+        /// <summary>Get/Set the position damping value</summary>
         Vector3 PositionDamping { get; set; }
     }
     
+    /// <summary>
+    /// Interface for CinemachineComponentBase-derived to allow its screen position to be driven
+    /// </summary>
     public interface IModifiableScreenPosition
     {
+        /// <summary>Get/set the screen position</summary>
         Vector2 Screen { get; set; }
     }
 
+
+    /// <summary>
+    /// Interface for CinemachineComponentBase-derived to allow its bias position to be driven
+    /// </summary>
     public interface IModifiableBiasPosition
     {
         Vector2 Bias { get; set; }
     }
 
+    /// <summary>
+    /// Interface for CinemachineComponentBase-derived to allow the camera distance to be modified
+    /// </summary>
     public interface IModifiableDistance
     {
+        /// <summary>Get/set the camera distance</summary>
         float Distance { get; set; }
     }
 
+    /// <summary>
+    /// Interface for CinemachineComponentBase-derived to allow the noise amplitude and frequency to be modified
+    /// </summary>
     public interface IModifiableNoise
     {
+        /// <summary>Get/set the noise amplitude and frequency</summary>
         (float, float) NoiseAmplitudeFrequency { get; set; }
     }
 
@@ -58,7 +86,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>Type of the cached component (null if no cached component).  If this modifier targets
         /// specific components, this value indicates the type of that component.
-        /// The modifier should cache the component, for performance.  
+        /// The modifier should cache the component, for performance.  </summary>
         /// <see cref="ComponentModifier"/> for a base class for implementing this.
         public virtual Type CachedComponentType => null;
 
@@ -109,7 +137,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         /// <summary>The CinemachineComponentBase that will be modified.  Cached here for efficiency.</summary>
         protected T CachedComponent;
 
-        /// <summary>True if the CmCamera has the component we intend to modify</summary>
+        /// <summary>True if the CmCamera has the component we intend to modify.</summary>
         public override bool HasRequiredComponent => CachedComponent != null;
 
         /// <summary>The type of the component being modified</summary>
@@ -127,18 +155,33 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class TiltModifier : Modifier
     {
+        /// <summary>Values for the top and bottom rigs</summary>
         [HideFoldout]
         public TopBottomRigs<float> Tilt;
 
+        /// <summary>Called from OnValidate to calidate this component</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Tilt.Top = Mathf.Clamp(Tilt.Top, -30, 30);
             Tilt.Bottom = Mathf.Clamp(Tilt.Bottom, -30, 30);
         }
 
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
             => Tilt = new TopBottomRigs<float>() { Top = -5, Bottom = 5 };
 
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
@@ -159,20 +202,35 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class LensModifier : Modifier
     {
+        /// <summary>Values for the top and bottom rigs</summary>
         [HideFoldout]
         public TopBottomRigs<LensSettings> Lens;
 
+        /// <summary>Called from OnValidate to calidate this component</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam) 
         {
             Lens.Top.Validate();
             Lens.Bottom.Validate();
         }
 
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             Lens.Top = Lens.Bottom = vcam == null ? LensSettings.Default : vcam.State.Lens;
         }
 
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
@@ -189,15 +247,20 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class PositionDampingModifier : ComponentModifier<IModifiablePositionDamping>
     {
+        /// <summary>Values for the top and bottom rigs</summary>
         [HideFoldout]
         public TopBottomRigs<Vector3> Damping;
 
+        /// <summary>Called from OnValidate to calidate this component</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Damping.Top = new Vector3(Mathf.Max(0, Damping.Top.x), Mathf.Max(0, Damping.Top.y), Mathf.Max(0, Damping.Top.z));
             Damping.Bottom = new Vector3(Mathf.Max(0, Damping.Bottom.x), Mathf.Max(0, Damping.Bottom.y), Mathf.Max(0, Damping.Bottom.z));
         }
 
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
@@ -206,6 +269,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         Vector3 m_CenterDamping;
 
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
@@ -219,6 +292,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
@@ -235,9 +318,12 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class ScreenPositionModifier : ComponentModifier<IModifiableScreenPosition>
     {
+        /// <summary>Values for the top and bottom rigs</summary>
         [HideFoldout]
         public TopBottomRigs<Vector2> Screen;
 
+        /// <summary>Called from OnValidate to calidate this component</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Screen.Top.x = Mathf.Clamp(Screen.Top.x, -0.5f, 1.5f);
@@ -246,6 +332,8 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             Screen.Bottom.y = Mathf.Clamp(Screen.Bottom.y, -0.5f, 1.5f);
         }
 
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
@@ -255,6 +343,17 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         }
 
         Vector2 m_CenterScreen;
+
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
@@ -268,6 +367,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
@@ -338,15 +447,20 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class DistanceModifier : ComponentModifier<IModifiableDistance>
     {
+        /// <summary>Values for the top and bottom rigs</summary>
         [HideFoldout]
         public TopBottomRigs<float> Distance;
 
+        /// <summary>Called from OnValidate to calidate this component</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam)
         {
             Distance.Top = Mathf.Max(0, Distance.Top);
             Distance.Bottom = Mathf.Max(0, Distance.Bottom);
         }
 
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
@@ -355,6 +469,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         float m_CenterDistance;
 
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
@@ -368,6 +492,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
@@ -385,21 +519,29 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// </summary>
     public class NoiseModifier : ComponentModifier<IModifiableNoise>
     {
+        /// <summary>
+        /// Settings to apply to the IModifiableNoise component
+        /// </summary>
         [Serializable]
         public struct NoiseSettings
         {
+            /// <summary>Multiplier for the noise amplitude</summary>
             [Tooltip("Multiplier for the noise amplitude")]
             public float Amplitude;
 
+            /// <summary>Multiplier for the noise frequency</summary>
             [Tooltip("Multiplier for the noise frequency")]
             public float Frequency;
         }
     
+        /// <summary>Values for the top and bottom rigs</summary>
         [HideFoldout]
         public TopBottomRigs<NoiseSettings> Noise;
 
         (float, float) m_CenterNoise;
 
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
             if (CachedComponent != null)
@@ -409,6 +551,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void BeforePipeline(
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
@@ -427,6 +579,16 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             }
         }
 
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
         public override void AfterPipeline(
             CinemachineVirtualCameraBase vcam,
             ref CameraState state, float deltaTime,
@@ -470,6 +632,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             Modifiers[i].Validate(vcam);
     }
 
+    /// <summary>Called when component is enabled</summary>
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -534,6 +697,13 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         }
     }
             
+    /// <summary>
+    /// Callback to perform the requested rig modifications.
+    /// </summary>
+    /// <param name="vcam">The virtual camera being processed</param>
+    /// <param name="stage">The current pipeline stage</param>
+    /// <param name="state">The current virtual camera state</param>
+    /// <param name="deltaTime">The current applicable deltaTime</param>
     protected override void PostPipelineStageCallback(
         CinemachineVirtualCameraBase vcam,
         CinemachineCore.Stage stage, ref CameraState state, float deltaTime)

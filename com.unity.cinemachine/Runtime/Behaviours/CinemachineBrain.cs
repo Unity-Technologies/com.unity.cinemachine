@@ -80,7 +80,6 @@ namespace Cinemachine
     /// You can specify the time over which to blend, as well as the blend curve shape.
     /// Note that a camera cut is just a zero-time blend.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
     [ExecuteAlways]
@@ -123,7 +122,6 @@ namespace Cinemachine
         public Transform m_WorldUpOverride;
 
         /// <summary>This enum defines the options available for the update method.</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum UpdateMethod
         {
             /// <summary>Virtual cameras are updated in sync with the Physics module, in FixedUpdate</summary>
@@ -148,7 +146,6 @@ namespace Cinemachine
         public UpdateMethod m_UpdateMethod = UpdateMethod.SmartUpdate;
 
         /// <summary>This enum defines the options available for the update method.</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum BrainUpdateMethod
         {
             /// <summary>Camera is updated in sync with the Physics module, in FixedUpdate</summary>

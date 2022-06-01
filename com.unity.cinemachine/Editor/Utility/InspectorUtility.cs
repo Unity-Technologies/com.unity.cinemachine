@@ -419,6 +419,8 @@ namespace Cinemachine.Editor
             public VisualElement Left;
             public VisualElement Right;
 
+            public static float kLeftMarginHack = 3;
+
             /// <summary>
             /// Set this to offset the Left/Right division from the inspector's Label/Content line
             /// </summary>
@@ -430,7 +432,7 @@ namespace Cinemachine.Editor
                 var hack = AddChild(this,  new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }});
 
                 var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
-                Left = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }});
+                Left = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0, marginLeft = kLeftMarginHack }});
                 Right = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
 
                 hack.Label.RegisterCallback<GeometryChangedEvent>(
@@ -454,7 +456,7 @@ namespace Cinemachine.Editor
 
                 // There are 2 modes for this element: foldout closed and foldout open.
                 // When closed, we cheat the layout system, and to implement this we do a switcheroo
-                var closedContainer = AddChild(this, new LeftRightContainer() { style = { flexGrow = 1 }});
+                var closedContainer = AddChild(this, new LeftRightContainer() { style = { flexGrow = 1, marginLeft = -LeftRightContainer.kLeftMarginHack }});
                 Add(foldout);
 
                 var closedFoldout = new Foldout { text = foldout.text, tooltip = foldout.tooltip, value = false };

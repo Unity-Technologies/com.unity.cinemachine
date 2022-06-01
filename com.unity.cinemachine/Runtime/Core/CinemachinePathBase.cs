@@ -16,7 +16,6 @@ namespace Cinemachine
 
         /// <summary>This class holds the settings that control how the path
         /// will appear in the editor scene view.  The path is not visible in the game view</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable] public class Appearance
         {
             /// <summary>The color of the path itself when it is active in the editor</summary>

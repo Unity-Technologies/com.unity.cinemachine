@@ -27,10 +27,9 @@ namespace Cinemachine
     /// Although this component was designed for orthographic cameras, it works equally
     /// well with persective cameras and can be used in 3D environments.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class CinemachineFramingTransposer : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
@@ -185,7 +184,6 @@ namespace Cinemachine
         public bool m_CenterOnActivate = true;
 
         /// <summary>What screen dimensions to consider when framing</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum FramingMode
         {
             /// <summary>Consider only the horizontal dimension.  Vertical framing is ignored.</summary>
@@ -341,7 +339,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
 
         /// <summary>FramingTransposer's algorithm tahes camera orientation as input, 
         /// so even though it is a Body component, it must apply after Aim</summary>

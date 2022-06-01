@@ -189,7 +189,7 @@ namespace Cinemachine.Editor
             public FovPropertyControl(SerializedProperty property, bool hideLabel) 
             {
                 m_Property = property;
-                ShortLabel = new Label("(fov)") { style = { alignSelf = Align.Center }};
+                ShortLabel = new Label("(fov)") { style = { alignSelf = Align.Center, opacity = 0.5f }};
                 ShortLabel.AddToClassList("unity-base-field__label--with-dragger");
 
                 var orthoProp = property.FindPropertyRelative(() => m_LensSettingsDef.OrthographicSize);

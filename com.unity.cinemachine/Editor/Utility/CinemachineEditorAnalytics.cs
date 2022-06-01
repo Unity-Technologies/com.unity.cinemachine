@@ -99,7 +99,7 @@ namespace Cinemachine.Editor
             var vcam = vcamBase as CmCamera;
             if (vcam != null)
             {
-                vcamData.SetTransitionsAndLens(vcam.m_Transitions, vcam.m_Lens);
+                vcamData.SetTransitionsAndLens(vcam.Transitions, vcam.Lens);
                 vcamData.SetComponents(vcam.GetComponents<CinemachineComponentBase>());
                 vcamDatas.Add(vcamData);
                 return;
@@ -194,10 +194,10 @@ namespace Cinemachine.Editor
                         var componentName = GetTypeName(cmComps[i].GetType(), ref custom_component_count);
                         switch (cmComps[i].Stage)
                         {
-                            case CinemachineCore.Stage.Body:
+                            case CinemachineCore.Stage.PositionControl:
                                 body_component = componentName;
                                 break;
-                            case CinemachineCore.Stage.Aim:
+                            case CinemachineCore.Stage.RotationControl:
                                 aim_component = componentName;
                                 break;
                             case CinemachineCore.Stage.Noise:

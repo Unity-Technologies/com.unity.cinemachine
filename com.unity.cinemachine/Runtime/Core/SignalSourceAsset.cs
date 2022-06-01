@@ -22,7 +22,6 @@ namespace Cinemachine
     /// This is an asset that defines a 6D signal that can be retrieved in a random-access fashion.
     /// This is used by the Cinemachine Impulse module.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     public abstract class SignalSourceAsset : ScriptableObject, ISignalSource6D
     {
         /// <summary>

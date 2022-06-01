@@ -12,10 +12,9 @@ namespace Cinemachine
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
+    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
     public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>
@@ -81,7 +80,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.RotationControl; } }
 
         private void OnValidate()
         {
@@ -91,6 +90,9 @@ namespace Cinemachine
             m_HorizontalRecentering.Validate();
         }
 
+        /// <summary>
+        /// Standard OnEnable call.  Updates the input axis provider.
+        /// </summary>
         protected override void OnEnable()
         {
             base.OnEnable();

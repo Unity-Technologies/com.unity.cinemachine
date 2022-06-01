@@ -200,7 +200,7 @@ namespace Cinemachine.Editor
                     CopyValues<CinemachineVirtualCameraBase>(m_Freelook, cmCamera);
                     cmCamera.Follow = m_Freelook.Follow;
                     cmCamera.LookAt = m_Freelook.LookAt;
-                    cmCamera.m_Transitions = m_Freelook.m_Transitions;
+                    cmCamera.Transitions = m_Freelook.m_Transitions;
                     
                     var freeLookModifier = go.AddComponent<CinemachineFreeLookModifier>();
                     ConvertLens(cmCamera, freeLookModifier);
@@ -241,15 +241,15 @@ namespace Cinemachine.Editor
                     var topNoise = m_TopRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var middleNoise = m_MiddleRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                     var bottomNoise = m_BottomRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-                    var midAim = m_MiddleRig.GetCinemachineComponent(CinemachineCore.Stage.Aim);
+                    var midAim = m_MiddleRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl);
 
                     return
                         parentLookAt == m_TopRig.LookAt && parentLookAt == m_MiddleRig.LookAt && parentLookAt == m_BottomRig.LookAt &&
                         IsEqualNoise(topNoise, middleNoise) &&
                         IsEqualNoise(middleNoise, bottomNoise) &&
                         IsEqualNoise(topNoise, bottomNoise) &&
-                        PublicFieldsEqual(m_TopRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_IgnoreList) &&
-                        PublicFieldsEqual(m_BottomRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_IgnoreList);
+                        PublicFieldsEqual(m_TopRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl), midAim, s_IgnoreList) &&
+                        PublicFieldsEqual(m_BottomRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl), midAim, s_IgnoreList);
 
                     static bool IsEqualNoise(CinemachineBasicMultiChannelPerlin a, CinemachineBasicMultiChannelPerlin b)
                     {
@@ -296,11 +296,11 @@ namespace Cinemachine.Editor
                 {
                     if (m_Freelook.m_CommonLens)
                     {
-                        cmCamera.m_Lens = m_Freelook.m_Lens;
+                        cmCamera.Lens = m_Freelook.m_Lens;
                     }
                     else
                     {
-                        cmCamera.m_Lens = m_MiddleRig.m_Lens;
+                        cmCamera.Lens = m_MiddleRig.m_Lens;
                         freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.LensModifier
                         {
                             Lens = new CinemachineFreeLookModifier.TopBottomRigs<LensSettings>
@@ -359,7 +359,7 @@ namespace Cinemachine.Editor
 
                 void ConvertFreelookAim(GameObject go, CinemachineFreeLookModifier freeLookModifier)
                 {
-                    var middle = m_MiddleRig.GetCinemachineComponent(CinemachineCore.Stage.Aim);
+                    var middle = m_MiddleRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl);
                     if (middle == null)
                     {
                         return; // no need to return because all aims are null on this freelook - see IsFreelookUpgradable why
@@ -462,8 +462,8 @@ namespace Cinemachine.Editor
                     CopyValues<CinemachineVirtualCameraBase>(m_Vcam, cmCamera);
                     cmCamera.Follow = m_Vcam.Follow;
                     cmCamera.LookAt = m_Vcam.LookAt;
-                    cmCamera.m_Lens = m_Vcam.m_Lens;
-                    cmCamera.m_Transitions = m_Vcam.m_Transitions;
+                    cmCamera.Lens = m_Vcam.m_Lens;
+                    cmCamera.Transitions = m_Vcam.m_Transitions;
 
                     var oldPipeline = m_Vcam.GetComponentPipeline();
                     foreach (var oldComponent in oldPipeline)
@@ -490,24 +490,24 @@ namespace Cinemachine.Editor
                             if (oldComponent is CinemachineTrackedDolly trackedDolly)
                             {
                                 var splineDolly = (CinemachineSplineDolly)go.AddComponent<CinemachineSplineDolly>();
-                                splineDolly.m_Damping = new Vector3(
+                                splineDolly.Damping = new Vector3(
                                     trackedDolly.m_XDamping, trackedDolly.m_YDamping, trackedDolly.m_ZDamping);
-                                splineDolly.m_AngularDamping = Mathf.Max(trackedDolly.m_YawDamping,
+                                splineDolly.AngularDamping = Mathf.Max(trackedDolly.m_YawDamping,
                                     Mathf.Max(trackedDolly.m_RollDamping, trackedDolly.m_PitchDamping));
-                                splineDolly.m_CameraUp = (CinemachineSplineDolly.CameraUpMode)trackedDolly.m_CameraUp;
-                                splineDolly.m_DampingEnabled = true;
-                                splineDolly.m_AutoDolly = new CinemachineSplineDolly.AutoDolly
+                                splineDolly.CameraUp = (CinemachineSplineDolly.CameraUpMode)trackedDolly.m_CameraUp;
+                                splineDolly.DampingEnabled = true;
+                                splineDolly.AutomaticDolly = new CinemachineSplineDolly.AutoDolly
                                 {
-                                    m_Enabled = trackedDolly.m_AutoDolly.m_Enabled,
-                                    m_PositionOffset = trackedDolly.m_AutoDolly.m_PositionOffset,
-                                    m_SearchResolution = trackedDolly.m_AutoDolly.m_SearchResolution,
+                                    Enabled = trackedDolly.m_AutoDolly.m_Enabled,
+                                    PositionOffset = trackedDolly.m_AutoDolly.m_PositionOffset,
+                                    SearchResolution = trackedDolly.m_AutoDolly.m_SearchResolution,
                                 };
-                                splineDolly.m_CameraPosition = trackedDolly.m_PathPosition;
-                                splineDolly.m_SplineOffset = trackedDolly.m_PathOffset;
+                                splineDolly.CameraPosition = trackedDolly.m_PathPosition;
+                                splineDolly.SplineOffset = trackedDolly.m_PathOffset;
                                 var path = trackedDolly.m_Path;
                                 if (path != null)
                                 {
-                                    path.UpgradeTo(out splineDolly.m_Spline);
+                                    path.UpgradeTo(out splineDolly.Spline);
                                     Object.DestroyImmediate(path);
                                 }
                                 Object.DestroyImmediate(trackedDolly);

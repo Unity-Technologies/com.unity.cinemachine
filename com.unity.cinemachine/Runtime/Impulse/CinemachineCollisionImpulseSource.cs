@@ -22,7 +22,6 @@ namespace Cinemachine
     /// filtered according to the layer and tag settings defined here, and if they
     /// pass the filter, they will cause an impulse event to be generated.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCollisionImpulseSource.html")]
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource

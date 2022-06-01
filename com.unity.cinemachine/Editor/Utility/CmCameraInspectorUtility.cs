@@ -23,7 +23,7 @@ namespace Cinemachine.Editor
 
         public bool IsPrefab { get; private set; }
 
-        /// <summary>Call from Inspector's OnEnsable</summary>
+        /// <summary>Call from Inspector's OnEnable</summary>
         public void OnEnable(UnityEngine.Object[] targets)
         {
             Targets = targets;
@@ -35,6 +35,7 @@ namespace Cinemachine.Editor
         public void OnDisable()
         {
             EditorApplication.update -= UpdateCameraStatus;
+            EditorApplication.update -= RefreshPipelinDropdowns;
             Undo.undoRedoPerformed -= UpdateCameraState;
             if (Target != null && CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
             {
@@ -120,7 +121,7 @@ namespace Cinemachine.Editor
             if (m_SoloButton != null)
                 m_SoloButton.style.color = color;
 
-            // Refrest the game view if solo and not playing
+            // Refresh the game view if solo and not playing
             if (isSolo && !Application.isPlaying)
                 InspectorUtility.RepaintGameView();
         }
@@ -134,21 +135,24 @@ namespace Cinemachine.Editor
             var targets = Targets; // capture for lambda
 
             // Add a dropdown for each pipeline stage
+            m_PipelineItems = new List<PipelineStageItem>();
             for (int i = 0; i < PipelineStageMenu.s_StageData.Length; ++i)
             {
                 // Skip empty categories
                 if (PipelineStageMenu.s_StageData[i].Types.Count < 2)
                     continue;
 
+                var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
                 int currentSelection = PipelineStageMenu.GetSelectedComponent(
                     i, cmCam.GetCinemachineComponent((CinemachineCore.Stage)i));
                 var stage = i; // capture for lambda
                 var dropdown = new DropdownField
                 {
                     name = PipelineStageMenu.s_StageData[stage].Name + " selector",
-                    label = PipelineStageMenu.s_StageData[stage].Name,
+                    label = "",
                     choices = PipelineStageMenu.s_StageData[stage].Choices,
-                    index = currentSelection
+                    index = currentSelection,
+                    style = { flexGrow = 1 }
                 };
                 dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
                 dropdown.RegisterValueChangedCallback((evt) => 
@@ -178,7 +182,53 @@ namespace Cinemachine.Editor
                         return 0;
                     }
                 });
-                ux.Add(dropdown);
+                row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
+                    { style = { flexGrow = 1, alignSelf = Align.Center }});
+                var warningIcon = row.Left.AddChild(new Label 
+                { 
+                    tooltip = "Component is disabled or has a problem",
+                    style = 
+                    { 
+                        flexGrow = 0,
+                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
+                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                        alignSelf = Align.Center
+                    }
+                });
+                warningIcon.SetVisible(false);
+                row.Right.Add(dropdown);
+
+                m_PipelineItems.Add(new PipelineStageItem
+                {
+                    Stage = (CinemachineCore.Stage)i,
+                    Dropdown = dropdown,
+                    WarningIcon = warningIcon
+                });
+            }
+            EditorApplication.update += RefreshPipelinDropdowns;
+        }
+
+        struct PipelineStageItem
+        {
+            public CinemachineCore.Stage Stage;
+            public DropdownField Dropdown;
+            public Label WarningIcon;
+        }
+        List<PipelineStageItem> m_PipelineItems;
+
+        void RefreshPipelinDropdowns()
+        {
+            var cmCam = Target as CmCamera;
+            if (cmCam == null)
+                return;
+            for (int i = 0; i < m_PipelineItems.Count; ++i)
+            {
+                var item = m_PipelineItems[i];
+                var c = cmCam.GetCinemachineComponent(item.Stage);
+                int selection = PipelineStageMenu.GetSelectedComponent((int)item.Stage, c);
+                item.Dropdown.value = PipelineStageMenu.s_StageData[(int)item.Stage].Choices[selection];
+                
+                item.WarningIcon.SetVisible(c != null && !c.IsValid);
             }
         }
 
@@ -231,7 +281,7 @@ namespace Cinemachine.Editor
             // Extensions
             public static List<Type> s_ExtentionTypes;
             public static List<string> s_ExtentionNames;
-        
+
             public static int GetSelectedComponent(int stage, CinemachineComponentBase component)
             {
                 if (component != null)
@@ -252,10 +302,9 @@ namespace Cinemachine.Editor
                     s_StageData[i] = new StageData
                     {
                         Stage = stage,
-                        Name = stage.ToString(),
+                        Name = ObjectNames.NicifyVariableName(stage.ToString()),
                         Types = new List<Type>() { null }, // first item is "none"
-                        Choices = new List<string>() 
-                            { (stage == CinemachineCore.Stage.Aim || stage == CinemachineCore.Stage.Body) ? "Do nothing" : "none" }
+                        Choices = new List<string>() { "none" }
                     };
                 }
 
@@ -336,7 +385,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// This is only for aesthetics, sort order does not affect camera logic.
         /// Behaviours should be sorted like this:
-        /// CmCamera, Body, Aim, Noise, Finalize, Extensions, everything else.
+        /// CmCamera, PositionControl, RotationControl, Noise, Finalize, Extensions, everything else.
         /// </summary>
         public void SortComponents()
         {
@@ -357,8 +406,8 @@ namespace Cinemachine.Editor
                 // This is painful, but it won't happen too often
                 var pos = 0;
                 if (MoveComponentToPosition(pos, SortOrder.Camera, s_componentCache)) ++pos;
-                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Body, s_componentCache)) ++pos;
-                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Aim, s_componentCache)) ++pos;
+                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.PositionControl, s_componentCache)) ++pos;
+                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.RotationControl, s_componentCache)) ++pos;
                 if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Noise, s_componentCache)) ++pos;
                 MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Finalize, s_componentCache);
                 // leave everything else where it is

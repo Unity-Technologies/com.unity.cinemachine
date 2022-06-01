@@ -43,7 +43,7 @@ namespace Cinemachine.Editor
             // Ordinary properties
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.m_Priority));
+            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawRemainingPropertiesInInspector();
 

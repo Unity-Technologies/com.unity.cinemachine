@@ -27,7 +27,6 @@ namespace Cinemachine
     ///
     /// You can also define custom blends between the ClearShot children.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]

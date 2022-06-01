@@ -31,7 +31,7 @@ namespace Cinemachine.Editor
                 var stageTypes = new List<Type>[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
                 for (int i = 0; i < stageTypes.Length; ++i)
                 {
-                    sStageData[i].Name = ((CinemachineCore.Stage)i).ToString();
+                    sStageData[i].Name = ObjectNames.NicifyVariableName(((CinemachineCore.Stage)i).ToString());
                     stageTypes[i] = new List<Type>();
                 }
 
@@ -53,16 +53,8 @@ namespace Cinemachine.Editor
                     sStageData[i].types = stageTypes[i].ToArray();
                     var names = new GUIContent[sStageData[i].types.Length];
                     for (int n = 0; n < names.Length; ++n)
-                    {
-                        if (n == 0)
-                        {
-                            bool useSimple = (i == (int)CinemachineCore.Stage.Aim) ||
-                                (i == (int)CinemachineCore.Stage.Body);
-                            names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
-                        }
-                        else
-                            names[n] = new GUIContent(InspectorUtility.NicifyClassName(sStageData[i].types[n]));
-                    }
+                        names[n] = new GUIContent(
+                            n == 0 ? "none" : InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
                     sStageData[i].PopupOptions = names;
                 }
             }
@@ -267,9 +259,9 @@ namespace Cinemachine.Editor
         static GUIContent ProceduralMotionLabel = new GUIContent(
             "Procedural Motion", 
             "Use the procedural motion algorithms to automatically drive the transform in "
-                + "relation to the LookAt and Follow targets.  \n\n"
-                + "Body controls the position, and Aim controls the rotation.\n\n"
-                + "If Do Nothing is selected, "
+                + "relation to the LookAt and Tracking targets.  \n\n"
+                + "Position Control controls the position, and Rotation Control controls the rotation.\n\n"
+                + "If None is selected, "
                 + "then the transform will not be written to, and can be controlled manually "
                 + "or otherwise driven by script.");
                 
@@ -281,7 +273,7 @@ namespace Cinemachine.Editor
             VcamStageEditor.SetComponentDelegate setComponent)
         {
             m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var ed = new VcamStageEditor(stage);

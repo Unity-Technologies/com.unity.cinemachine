@@ -121,8 +121,8 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineFramingTransposer).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Framing Transposer requires a Follow target.  "
-                        + "Change Body to Do Nothing if you don't want a Follow target.",
+                    "Framing Transposer requires a Tracking target.  "
+                        + "Change Position Control to None if you don't want a Tracking target.",
                     MessageType.Warning);
 
             // First snapshot some settings
@@ -137,11 +137,7 @@ namespace Cinemachine.Editor
         protected virtual void OnGUI()
         {
             // Draw the camera guides
-            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
-                return;
-
-            // If inspector is collapsed in the vcam editor, don't draw the guides
-            if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
+            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides || !Target.isActiveAndEnabled)
                 return;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);

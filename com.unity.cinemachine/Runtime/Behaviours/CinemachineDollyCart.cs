@@ -8,7 +8,6 @@ namespace Cinemachine
     /// It can be used to animate any objects along a path, or as a Follow target for 
     /// Cinemachine Virtual Cameras.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]

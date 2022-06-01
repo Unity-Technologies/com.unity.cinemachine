@@ -45,68 +45,60 @@ namespace Cinemachine
     /// In order to be driven by a CM camera, the Unity Camera must have a CinemachineBrain
     /// behaviour, which will select the most eligible CM camera based on its priority
     /// or on other criteria, and will manage blending.
+    /// </summary>
     /// 
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CmCamera")]
-    public class CmCamera : CinemachineVirtualCameraBase
+    public sealed class CmCamera : CinemachineVirtualCameraBase
     {
-        /// <summary>Object for the camera to look at (the aim target)</summary>
-        [Tooltip("Object for the camera to look at (the aim target).")]
+        /// <summary>The Tracking and LookAt targets for this camera.</summary>
         [NoSaveDuringPlay]
-        [VcamTargetProperty]
-        public Transform m_LookAt = null;
-
-        /// <summary>Object for the camera to move with (the body target)</summary>
-        [Tooltip("Object for the camera to move with (the body target).")]
-        [NoSaveDuringPlay]
-        [VcamTargetProperty]
-        public Transform m_Follow = null;
+        [Tooltip("Specifies the Tracking and LookAt targets for this camera.")]
+        public CameraTarget Target;
 
         /// <summary>Specifies the LensSettings of this camera.
         /// These settings will be transferred to the Unity camera when the CM Camera is live.</summary>
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally mirrors the "
             + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
-        public LensSettings m_Lens = LensSettings.Default;
+        public LensSettings Lens = LensSettings.Default;
 
         /// <summary> Collection of parameters that influence how this CM camera transitions from
         /// other CM cameras </summary>
-        public TransitionParams m_Transitions;
+        public TransitionParams Transitions;
 
         void Reset()
         {
-            m_LookAt = null;
-            m_Follow = null;
-            m_Lens = LensSettings.Default;
+            Target = default;
+            Lens = LensSettings.Default;
         }
 
         /// <summary>Validates the settings avter inspector edit</summary>
-        protected override void OnValidate()
+        void OnValidate()
         {
-            base.OnValidate();
-            m_Lens.Validate();
+            Lens.Validate();
         }
 
         /// <summary>The current camera state, which will applied to the Unity Camera</summary>
-        public override CameraState State { get { return m_State; } }
+        public override CameraState State { get => m_State; }
 
         /// <summary>The current camera state, which will applied to the Unity Camera</summary>
-        protected CameraState m_State = CameraState.Default;
+        CameraState m_State = CameraState.Default;
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
         public override Transform LookAt
         {
-            get { return ResolveLookAt(m_LookAt); }
-            set { m_LookAt = value; }
+            get { return ResolveLookAt(Target.CustomLookAtTarget ? Target.LookAtTarget : Target.TrackingTarget); }
+            set { Target.CustomLookAtTarget = true; Target.LookAtTarget = value; }
         }
 
         /// <summary>Get the current Follow target.  Returns parent's Follow if parent
         /// is non-null and no specific Follow defined for this camera</summary>
         public override Transform Follow
         {
-            get { return ResolveFollow(m_Follow); }
-            set { m_Follow = value; }
+            get { return ResolveFollow(Target.TrackingTarget); }
+            set { Target.TrackingTarget = value; }
         }
 
         /// <summary>This is called to notify the CM camera that a target got warped,
@@ -178,12 +170,12 @@ namespace Cinemachine
             bool forceUpdate = false;
 
             // Cant't inherit position if already live, because there will be a pop
-            if (m_Transitions.m_InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
+            if (Transitions.m_InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
                 ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
             
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
-                if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime, ref m_Transitions))
+                if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime, ref Transitions))
                     forceUpdate = true;
 
             if (!forceUpdate)
@@ -195,8 +187,8 @@ namespace Cinemachine
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
 
-            if (m_Transitions.m_OnCameraLive != null)
-                m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.m_OnCameraLive != null)
+                Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
@@ -211,15 +203,15 @@ namespace Cinemachine
             LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
-            m_State = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            m_State = PullStateFromVirtualCamera(worldUp, ref Lens);
 
             // Do our stuff
-            var lookAt = ResolveLookAt(m_LookAt);
+            var lookAt = LookAt;
             if (lookAt != null)
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.FinalPosition : TargetPositionCache.GetTargetPosition(lookAt);
             InvokeComponentPipeline(ref m_State, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
+            ApplyPositionBlendMethod(ref m_State, Transitions.m_BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -243,14 +235,14 @@ namespace Cinemachine
                 m_Pipeline != null && m_Pipeline.Any(t => t != null && t.RequiresUserInput);
         }
 
-        protected CameraState InvokeComponentPipeline(ref CameraState state, float deltaTime)
+        CameraState InvokeComponentPipeline(ref CameraState state, float deltaTime)
         {
             // Extensions first
             InvokePrePipelineMutateCameraStateCallback(this, ref state, deltaTime);
 
             // Apply the component pipeline
             UpdatePipelineCache();
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Pipeline[(int)stage];
@@ -258,13 +250,13 @@ namespace Cinemachine
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
             CinemachineComponentBase postAimBody = null;
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Pipeline[(int)stage];
                 if (c != null && c.IsValid)
                 {
-                    if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
+                    if (stage == CinemachineCore.Stage.PositionControl && c.BodyAppliesAfterAim)
                     {
                         postAimBody = c;
                         continue; // do the body stage of the pipeline after Aim
@@ -272,7 +264,7 @@ namespace Cinemachine
                     c.MutateCameraState(ref state, deltaTime);
                 }
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
-                if (stage == CinemachineCore.Stage.Aim)
+                if (stage == CinemachineCore.Stage.RotationControl)
                 {
                     if (c == null)
                         state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
@@ -280,7 +272,7 @@ namespace Cinemachine
                     if (postAimBody != null)
                     {
                         postAimBody.MutateCameraState(ref state, deltaTime);
-                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
+                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.PositionControl, ref state, deltaTime);
                     }
                 }
             }

@@ -13,11 +13,10 @@ namespace Cinemachine
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Aim)]
-    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition,
+    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
+    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition, 
         CinemachineFreeLookModifier.IModifiableBiasPosition
     {
         /// <summary>Target offset from the object's center in LOCAL space which
@@ -132,7 +131,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.RotationControl; } }
 
         /// <summary>Internal API for inspector</summary>
         public Vector3 TrackedPoint { get; private set; }

@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.0.0] -
 - Upgrade mechanism for upgrading Cinemachine 2 to Cinemachine 3.
+## ## [3.0.0-pre.1] - 2022-06-01
+- VirtualCamera refactor: CinemachineVirtualCamera is now CmCamera.
+- FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
+- Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
+- Add flag for custom priority setting.
 
 
 ## UNRELEASED
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
+- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
+- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
 
 
 ## [2.9.0-pre.7] - 2022-03-29

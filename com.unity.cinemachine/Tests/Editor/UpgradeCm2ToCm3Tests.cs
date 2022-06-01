@@ -20,11 +20,16 @@ namespace Tests.Editor
             "HorizontalAxis", "VerticalAxis", "RadialAxis", "m_HorizontalRecentering", "m_VerticalRecentering",
             "m_RecenterToTargetHeading"
         };
-
+        CinemachineBrain m_Brain;
+        
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
+            var mainCamera = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            m_Brain = mainCamera.GetComponent<CinemachineBrain>();
+            m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate;
+            CinemachineCore.UniformDeltaTimeOverride = 0.1f;
         }
 
         [TearDown]
@@ -59,6 +64,11 @@ namespace Tests.Editor
             yield return null;
             
             var vcam = vcamGo.GetComponent<CinemachineVirtualCamera>();
+            vcam.InvalidateComponentPipeline();
+            m_Brain.ManualUpdate(); // ensure pipeline is built
+
+            yield return null;
+            
             var componentAdded = AddCinemachineComponent(vcam, type);
             // Copy fields but ignore fields that don't have a proper Equals override.
             var componentValues = CopyPublicFields(componentAdded, k_IgnoreList);
@@ -176,7 +186,8 @@ namespace Tests.Editor
             Assert.That(freelookGo.GetComponent<CinemachineOrbitalFollow>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineComposer>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineFreeLookModifier>(), Is.Not.Null);
-            Assert.That(freelookGo.GetComponents<MonoBehaviour>().Length, Is.EqualTo(4));
+            Assert.That(freelookGo.GetComponent<InputAxisController>(), Is.Not.Null);
+            Assert.That(freelookGo.GetComponents<MonoBehaviour>().Length, Is.EqualTo(5));
         }
 #pragma warning restore CS0618
     }

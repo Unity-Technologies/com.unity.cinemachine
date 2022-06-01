@@ -6,7 +6,6 @@ namespace Cinemachine
     /// <summary>
     /// Asset that defines the rules for blending between Virtual Cameras.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBlending.html")]
     public sealed class CinemachineBlenderSettings : ScriptableObject
@@ -15,7 +14,6 @@ namespace Cinemachine
         /// Container specifying how two specific Cinemachine Virtual Cameras
         /// blend together.
         /// </summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct CustomBlend
         {
