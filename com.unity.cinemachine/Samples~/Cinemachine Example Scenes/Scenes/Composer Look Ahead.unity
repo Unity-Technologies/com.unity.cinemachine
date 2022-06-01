@@ -192,7 +192,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 457536436}
-  m_LocalRotation: {x: 0.016226392, y: -0.6213018, z: 0.012870576, w: 0.7832977}
+  m_LocalRotation: {x: 0.0162286, y: -0.6212947, z: 0.012872461, w: 0.7833032}
   m_LocalPosition: {x: 0, y: 3.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -240,25 +240,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: Cinemachine Composer
+  m_Title: Cinemachine Composer Look Ahead
   m_Description: "Turn this window off by removing the script on Main Camera\n\nComposer
     procedurally tracks any object using compositional \u2018screen space\u2019 framing.
     \ It works on the camera\u2019s ORIENTATION only - it does not translate the camera
     - that\u2019s what Cinemachine Transposer is for. \n\nLook at: Is this target
-    you wish to compose (camera rotation)\nFollow: is the object you want the camera
-    body to follow (camera translation)\n\nComposer Module Settings\nTracked Object
-    Offset:  This allows for offsets from the center of your tracked object in LOCAL
-    space, for when you want to track the front right headlight of a car or the left
-    ear of your character or anywhere which isn\u2019t the object center\n\nSoft Dampening:
-    \ This is how aggressively the camera tracks the subject.  It makes the blue overlay
-    zones \u2018squishy\u2019.  0 = fully hard tracking, it will turn the blue zones
-    into red zones - the target will not pass into them.  Increasing the dampening
-    value will cause the target to squish into the blue zones which is the same thing
-    as having the camera lag behind the motion.\n\nSoft/Hard settings:  This is where
-    you setup the screen based compositional controls.  Blue areas are soft, red areas
-    are hard - the target will never enter the red zones.  You can create a \u2018dead\u2019
-    zone if you open up the soft settings which creates an area on screen where the
-    camera will ignore motion - great for looping character animation cycles.\n"
+    you wish to compose (camera rotation)\n\nThe Look Ahead setting will project a
+    virtual target ahead of the object based on the speed and look ahead setting amount\n"
 --- !u!1 &744369521
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,14 +484,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TrackedObjectOffset: {x: 0, y: 0, z: 0}
-  m_LookaheadTime: 0
+  m_LookaheadTime: 0.3
   m_LookaheadSmoothing: 10
-  m_HorizontalDamping: 0.5
+  m_HorizontalDamping: 0.1
   m_VerticalDamping: 0.5
   m_ScreenX: 0.4948714
   m_ScreenY: 0.5068337
-  m_DeadZoneWidth: 0.1
-  m_DeadZoneHeight: 0.1
+  m_DeadZoneWidth: 0
+  m_DeadZoneHeight: 0
   m_SoftZoneWidth: 0.8
   m_SoftZoneHeight: 0.8
   m_BiasX: 0
@@ -518,7 +506,7 @@ GameObject:
   - component: {fileID: 1543933883}
   - component: {fileID: 1543933882}
   m_Layer: 0
-  m_Name: VirtualCamera1
+  m_Name: VirtualCamera look ahead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -555,7 +543,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1543933881}
-  m_LocalRotation: {x: 0.016226392, y: -0.6213018, z: 0.012870576, w: 0.7832977}
+  m_LocalRotation: {x: 0.0162286, y: -0.6212947, z: 0.012872461, w: 0.7833032}
   m_LocalPosition: {x: 0, y: 3.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
