@@ -70,7 +70,7 @@ namespace Cinemachine.Editor
             // Ordinary properties
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.m_Priority));
+            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_AnimatedTarget));
 
@@ -425,7 +425,7 @@ namespace Cinemachine.Editor
                     EditorGUIUtility.labelWidth = hBigSpace;
                     SerializedObject obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth + hBigSpace;
-                    SerializedProperty priorityProp = obj.FindProperty(() => Target.m_Priority);
+                    SerializedProperty priorityProp = obj.FindProperty(() => Target.CameraPriority);
                     EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" ", priorityProp.tooltip));
                     EditorGUIUtility.labelWidth = oldWidth;
                     obj.ApplyModifiedProperties();

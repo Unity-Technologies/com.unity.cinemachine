@@ -38,6 +38,29 @@ namespace Cinemachine.Editor
             CreateDefaultVirtualCamera(parentObject: command.context as GameObject, select: true);
         }
 
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Follow Camera", false, m_GameObjectMenuPriority)]
+        static void CreateFollowCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Cm Camera");
+            var vcam = CreateCinemachineObject<CmCamera>(
+                "Cm Camera", command.context as GameObject, true);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
+
+            vcam.gameObject.AddComponent<CinemachineTransposer>();
+            vcam.gameObject.AddComponent<CinemachineComposer>();
+        }
+
+        [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
+        static void Create2DCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
+            var vcam = CreateCinemachineObject<CmCamera>(
+                "Cm Camera", command.context as GameObject, true);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
+
+            vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
+        }
+
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
         static void CreateFreeLookCamera(MenuCommand command)
         {
@@ -149,17 +172,6 @@ namespace Cinemachine.Editor
             // We give the camera a couple of children as an example of setup
             CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
             CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
-        }
-
-        [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
-        static void Create2DCamera(MenuCommand command)
-        {
-            CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
-            var vcam = CreateCinemachineObject<CmCamera>(
-                "Cm Camera", command.context as GameObject, true);
-            vcam.Lens = MatchSceneViewCamera(vcam.transform);
-
-            vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
         }
 
         /// <summary>
