@@ -7,7 +7,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.Splines",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "Cinemachine.Shared.Tests"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -35,6 +36,11 @@
             "name": "com.unity.modules.animation",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_ANIMATION"
+        },
+        {
+            "name": "com.unity.splines",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_SPLINES"
         }
     ],
     "noEngineReferences": false

@@ -16,7 +16,8 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.RotationControl)]
-    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition
+    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition, 
+        CinemachineFreeLookModifier.IModifiableBiasPosition
     {
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
@@ -340,13 +341,6 @@ namespace Cinemachine
                 m_SoftZoneHeight = Mathf.Clamp(value.height, 0, 2f);
                 m_DeadZoneWidth = Mathf.Min(m_DeadZoneWidth, m_SoftZoneWidth);
                 m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
-
-                Vector2 center = value.center;
-                Vector2 bias = center - new Vector2(m_ScreenX, m_ScreenY);
-                float biasWidth = Mathf.Max(0, m_SoftZoneWidth - m_DeadZoneWidth);
-                float biasHeight = Mathf.Max(0, m_SoftZoneHeight - m_DeadZoneHeight);
-                m_BiasX = biasWidth < Epsilon ? 0 : Mathf.Clamp(bias.x / biasWidth, -0.5f, 0.5f);
-                m_BiasY = biasHeight < Epsilon ? 0 : Mathf.Clamp(bias.y / biasHeight, -0.5f, 0.5f);
             }
         }
 
@@ -523,6 +517,16 @@ namespace Cinemachine
             {
                 m_ScreenX = value.x;
                 m_ScreenY = value.y;
+            }
+        }
+
+        Vector2 CinemachineFreeLookModifier.IModifiableBiasPosition.Bias
+        {
+            get => new Vector2(m_BiasX, m_BiasY);
+            set
+            {
+                m_BiasX = value.x;
+                m_BiasY = value.y;
             }
         }
     }

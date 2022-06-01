@@ -7,7 +7,7 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
-    public class CameraPositionTests : CinemachineFixtureBase
+    public class CameraPositionTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_Vcam;
         GameObject m_FollowObject;

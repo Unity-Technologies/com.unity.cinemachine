@@ -12,7 +12,7 @@ namespace Tests.Runtime
 {
 #if CINEMACHINE_UNITY_ANIMATION
     [TestFixture]
-    public class StateDrivenCameraTests : CinemachineFixtureBase
+    public class StateDrivenCameraTests : CinemachineRuntimeFixtureBase
     {
         private CinemachineStateDrivenCamera m_StateDrivenCamera;
         private Animator m_Animator;

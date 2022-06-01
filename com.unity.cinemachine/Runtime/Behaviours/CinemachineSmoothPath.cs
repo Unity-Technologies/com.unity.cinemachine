@@ -94,7 +94,7 @@ namespace Cinemachine
             m_ControlPoints1 = null;
             m_ControlPoints2 = null;
         }
-
+        
         Waypoint[] m_ControlPoints1;
         Waypoint[] m_ControlPoints2;
         bool m_IsLoopedCache;

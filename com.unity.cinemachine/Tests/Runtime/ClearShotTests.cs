@@ -9,7 +9,7 @@ namespace Tests.Runtime
 {
 #if CINEMACHINE_PHYSICS
     [TestFixture]
-    public class ClearShotTests : CinemachineFixtureBase
+    public class ClearShotTests : CinemachineRuntimeFixtureBase
     {
         private GameObject m_Character;
         private CinemachineClearShot m_ClearShot;

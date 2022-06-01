@@ -10,7 +10,7 @@ using UnityEngine.TestTools.Utils;
 namespace Tests.Runtime
 {
 #if CINEMACHINE_PHYSICS_2D
-    public class Confiner2DUnitTests : CinemachineFixtureBase
+    public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
     {
         private Camera m_Cam;
         private CmCamera m_Vcam;

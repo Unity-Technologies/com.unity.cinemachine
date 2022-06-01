@@ -228,6 +228,7 @@ namespace Cinemachine
                 const float maxNormalizedValue = 1f;
                 float prev = m_PreviousNormalizedSplinePosition;
                 float next = normalizedSplinePosition;
+
                 if (splinePath.Closed && Mathf.Abs(next - prev) > maxNormalizedValue / 2f)
                 {
                     if (next > prev)
@@ -267,6 +268,7 @@ namespace Cinemachine
                 Vector3 delta = (currentCameraPos - newCameraPos);
                 Vector3 delta1 = Vector3.Dot(delta, offsetY) * offsetY;
                 Vector3 delta0 = delta - delta1;
+
                 delta0 = Damper.Damp(delta0, Damping.x, deltaTime);
                 delta1 = Damper.Damp(delta1, Damping.y, deltaTime);
                 newCameraPos = currentCameraPos - (delta0 + delta1);
@@ -281,8 +283,8 @@ namespace Cinemachine
                 newOrientation = Quaternion.Slerp(m_PreviousOrientation, newOrientation, t);
             }
             m_PreviousOrientation = newOrientation;
-
             curState.RawOrientation = newOrientation;
+
             if (CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }

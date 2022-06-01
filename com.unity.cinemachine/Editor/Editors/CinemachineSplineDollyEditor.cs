@@ -44,6 +44,7 @@ namespace Cinemachine.Editor
             bool nullSpline = false;
             for (int i = 0; !nullSpline && i < targets.Length; ++i)
                 nullSpline = ((CinemachineSplineDolly)targets[i]).Spline == null;
+
             if (nullSpline)
             {
                 EditorGUILayout.HelpBox("A Spline is required", MessageType.Warning);
