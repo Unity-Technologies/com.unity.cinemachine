@@ -88,11 +88,6 @@
             "name": "com.unity.inputsystem",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
-        },
-        {
-            "name": "com.unity.splines",
-            "expression": "0.9.9",
-            "define": "CINEMACHINE_UNITY_SPLINES"
         }
     ],
     "noEngineReferences": false
