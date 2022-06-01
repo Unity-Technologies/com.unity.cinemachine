@@ -4,12 +4,11 @@ using UnityEditor;
 using UnityEngine;
 namespace Cinemachine.Editor
 {
+    
+#pragma warning disable CS0618 // disable obsolete warning for tracked dolly
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
-#if UNITY_2022_1_OR_NEWER
-    [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
-#endif   
-    internal sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
+    sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -72,4 +71,5 @@ namespace Cinemachine.Editor
             }
         }
     }
+#pragma warning restore CS0618
 }
