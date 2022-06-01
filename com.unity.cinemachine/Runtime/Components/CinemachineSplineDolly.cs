@@ -17,7 +17,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipelineAttribute(CinemachineCore.Stage.Body)]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class CinemachineSplineDolly : CinemachineComponentBase
     {
         /// <summary>The Spline container to which the camera will be constrained.  This must be non-null.</summary>
@@ -158,7 +158,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.PositionControl;
 
         /// <summary>
         /// Report maximum damping time needed for this component.
