@@ -4,8 +4,8 @@ ci_trigger:
   name: Package CI Trigger
   triggers:
     recurring:
-    - branch: ci/weekly
-      frequency: weekly
+      - branch: ci/weekly
+        frequency: weekly
   dependencies:
     {% for test_project in all_weeklytestprojects %}
       {% for editor in test_project.editors %}
@@ -31,4 +31,3 @@ ci_trigger:
     {% endfor %}
     {% endfor %}
     - .yamato/package-coverage.yml#coverage_ubuntu_trunk
-    
