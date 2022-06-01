@@ -551,7 +551,7 @@ namespace Cinemachine
         {
             // Invalidate the cache
             mOrbitals = null;
-            float[] softCenterDefaultsV = new float[] { 0.5f, 0.5f, 0.5f };
+            float[] softCenterDefaultsV = new float[] { 0.5f, 0.55f, 0.6f };
             CinemachineVirtualCamera[] newRigs = new CinemachineVirtualCamera[3];
             for (int i = 0; i < RigNames.Length; ++i)
             {
