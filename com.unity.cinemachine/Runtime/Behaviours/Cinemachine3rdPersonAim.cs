@@ -79,7 +79,7 @@ namespace Cinemachine
         {
             if (!brain.IsLive(VirtualCamera) || brain.OutputCamera == null)
                 CinemachineCore.CameraUpdatedEvent.RemoveListener(DrawReticle);
-            if (AimTargetReticle != null && brain.OutputCamera != null && brain.IsLive(VirtualCamera))
+            else if (AimTargetReticle != null)
                 AimTargetReticle.position = brain.OutputCamera.WorldToScreenPoint(AimTarget);
         }
 
