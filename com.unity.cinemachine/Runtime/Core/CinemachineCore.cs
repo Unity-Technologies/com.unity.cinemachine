@@ -59,8 +59,9 @@ namespace Cinemachine
 
         /// <summary>
         /// If true, show hidden Cinemachine objects, to make manual script mapping possible.
+        /// GML todo: delete this
         /// </summary>
-        public static bool sShowHiddenObjects = false;
+        public static bool sShowHiddenObjects = true;
 
         /// <summary>Delegate for overriding Unity's default input system.  Returns the value
         /// of the named axis.</summary>

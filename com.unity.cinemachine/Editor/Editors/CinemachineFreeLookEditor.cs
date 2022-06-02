@@ -68,6 +68,7 @@ namespace Cinemachine
 
             // Ordinary properties
             BeginInspector();
+            DrawUpgradeButton();
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();

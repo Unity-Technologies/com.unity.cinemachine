@@ -48,8 +48,20 @@ namespace Cinemachine.Editor
         /// </summary>
         public void UpgradeAll()
         {
-            UpgradePrefabs();
-            UpgradeInScenes();
+            if (EditorUtility.DisplayDialog(
+                "Upgrade Project to Cinemachine 3",
+                "This project contains objects created with Cinemachine 2, "
+                + "which need to be upgraded to Cinemachine 3 equivalents.  "
+                + "This can mostly be done automatically, but it is possible that "
+                + "some objects might not be fully converted.\n\n"
+                + "NOTE: Undo is not supported for this operation.  You are strongly "
+                + "advised to make a full backup of the project before proceeding.\n\n"
+                + "Upgrade project?",
+                "I made a backup, go ahead", "Cancel"))
+            {
+                UpgradePrefabs();
+                UpgradeInScenes();
+            }
         }
             
         void UpgradePrefabs()
@@ -202,6 +214,7 @@ namespace Cinemachine.Editor
                     CopyValues<CinemachineVirtualCameraBase>(m_Freelook, cmCamera);
                     cmCamera.Follow = m_Freelook.Follow;
                     cmCamera.LookAt = m_Freelook.LookAt;
+                    cmCamera.Target.CustomLookAtTarget = m_Freelook.Follow != m_Freelook.LookAt;
                     cmCamera.Transitions = m_Freelook.m_Transitions;
                     
                     var freeLookModifier = go.AddComponent<CinemachineFreeLookModifier>();
@@ -317,6 +330,7 @@ namespace Cinemachine.Editor
                 void ConvertFreelookBody(GameObject go, CinemachineFreeLookModifier freeLookModifier)
                 {
                     var orbitalFollow = go.AddComponent<CinemachineOrbitalFollow>();
+                    orbitalFollow.OrbitStyle = CinemachineOrbitalFollow.OrbitMode.ThreeRing;
                     orbitalFollow.Orbits = ConvertFreelookSettings();
                     orbitalFollow.BindingMode = m_Freelook.m_BindingMode;
                         
@@ -464,6 +478,7 @@ namespace Cinemachine.Editor
                     CopyValues<CinemachineVirtualCameraBase>(m_Vcam, cmCamera);
                     cmCamera.Follow = m_Vcam.Follow;
                     cmCamera.LookAt = m_Vcam.LookAt;
+                    cmCamera.Target.CustomLookAtTarget = m_Vcam.Follow != m_Vcam.LookAt;
                     cmCamera.Lens = m_Vcam.m_Lens;
                     cmCamera.Transitions = m_Vcam.m_Transitions;
 

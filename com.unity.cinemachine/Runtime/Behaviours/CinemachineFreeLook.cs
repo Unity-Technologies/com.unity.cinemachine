@@ -17,7 +17,7 @@ namespace Cinemachine
     [ExecuteAlways]
     [ExcludeFromPreset]
     [Obsolete("This is deprecated. Use Create -> Cinemachine -> FreeLook camera, or " +
-        "create a virtual camera with CinemachineOrbitalFollow body component")]
+        "create a CmCamera with appropriate components")]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase

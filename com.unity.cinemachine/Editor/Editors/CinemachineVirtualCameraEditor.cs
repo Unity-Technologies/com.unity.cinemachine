@@ -161,6 +161,7 @@ namespace Cinemachine.Editor
         {
             if (!IsPropertyExcluded("Header"))
             {
+                DrawUpgradeButton();
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
                 DrawInputProviderButtonInInspector();
