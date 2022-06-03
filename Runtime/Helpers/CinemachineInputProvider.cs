@@ -45,14 +45,17 @@ namespace Cinemachine
         /// <returns>The current axis value</returns>
         public virtual float GetAxisValue(int axis)
         {
-            var action = ResolveForPlayer(axis, axis == 2 ? ZAxis : XYAxis);
-            if (action != null)
+            if (enabled)
             {
-                switch (axis)
+                var action = ResolveForPlayer(axis, axis == 2 ? ZAxis : XYAxis);
+                if (action != null)
                 {
-                    case 0: return action.ReadValue<Vector2>().x;
-                    case 1: return action.ReadValue<Vector2>().y;
-                    case 2: return action.ReadValue<float>();
+                    switch (axis)
+                    {
+                        case 0: return action.ReadValue<Vector2>().x;
+                        case 1: return action.ReadValue<Vector2>().y;
+                        case 2: return action.ReadValue<float>();
+                    }
                 }
             }
             return 0;
