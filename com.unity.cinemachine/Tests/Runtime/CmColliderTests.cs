@@ -8,6 +8,7 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
+#if CINEMACHINE_PHYSICS
     public class CmColliderTests : CinemachineFixtureBase
     {
         CinemachineBrain m_Brain;
@@ -164,4 +165,5 @@ namespace Tests.Runtime
             yield return null; 
         }
     }
+#endif
 }
