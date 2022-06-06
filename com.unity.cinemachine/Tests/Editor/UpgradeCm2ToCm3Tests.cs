@@ -18,7 +18,7 @@ namespace Tests.Editor
         static IEnumerable<Type> s_AllCinemachineComponents;
         static readonly string[] k_IgnoreList = {
             "HorizontalAxis", "VerticalAxis", "RadialAxis", "m_HorizontalRecentering", "m_VerticalRecentering",
-            "m_RecenterToTargetHeading"
+            "m_RecenterToTargetHeading", "m_RecenterTarget", "m_HorizontalAxis", "m_VerticalAxis",
         };
         CinemachineBrain m_Brain;
         
