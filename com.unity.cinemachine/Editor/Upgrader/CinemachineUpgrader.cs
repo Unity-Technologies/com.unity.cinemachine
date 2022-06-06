@@ -24,24 +24,24 @@ namespace Cinemachine.Editor
     //
     // UpgradeManager:
     //  - Scans project for scenes and prefabs and timelines, maintains lists of these things
-    //  - Has no knowledge of upgrade specifics (cm3 vs cm4 etc).  Doesnot know which classes are getting upgraded
+    //  - This should be a framework only.  Has no knowledge of upgrade specifics (cm3 vs cm4 etc).  Does not know which classes are getting upgraded.
     //  - Instantiates and invokes specific upgraders (e.g. cm3, cm4, etc)
     //  - Provides public API for launching an upgrade
     //
     // Cm2ToCm3Upgrader:
     //  - Knows which classes need to be upgraded
     //  - Uses the services of UpgradeManager to access objects in the project
+    //  - Upgrading objects:
+    //      - Don't delete old vcam components - just disable them and maintain a list of (old, new) component pairs.
+    //      - Use the list later for upgrading timeline references.
+    //      - Keeping the old components will help the client upgrade their scripts because references will be maintained
+    //      - UpgradeManager can expose a separate API to delete all obsolete components after the client has finished upgrading custom stuff manually
     //  - The prefab upgrade process should be something like this:
     //      - find all prefab instances in the project, record which prefab they're instances of
     //      - unpack completely all prefab instances
     //      - upgrade all prefabs
     //      - upgrade all prefab instances
     //      - re-connect the prefab instances to their upgraded prefabs
-    //  - Upgrading objects:
-    //      - Don't delete old vcam components - just disable them and maintain a list of (old, new) component pairs.
-    //      - Use the list later for upgrading timeline references.
-    //      - Keeping the old components will help the client upgrade their scripts because references will be maintained
-    //      - UpgradeManager can expose a separate API to delete all obsolete components after the client has finished upgrading custom stuff manually
 
 
     /// <summary>
@@ -769,6 +769,8 @@ namespace Cinemachine.Editor
                     {
                         var exposedRef = cmShot.VirtualCamera;
                         var vcam = exposedRef.Resolve(director);
+
+                        // This is problematic - what if there were already some null references in the project?
                         if (vcam == null && exposedRef.exposedName != 0)
                         {
                             director.SetReferenceValue(exposedRef.exposedName, upgraded);
