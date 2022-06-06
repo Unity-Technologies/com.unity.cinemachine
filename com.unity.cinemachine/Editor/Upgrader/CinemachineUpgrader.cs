@@ -121,11 +121,10 @@ namespace Cinemachine.Editor
                     foreach (var component in componentsList)
                     {
                         var unconvertedPrefabInstance = component.gameObject;
-                        var go = unconvertedPrefabInstance;
-                        var prefabInstanceRoot = PrefabUtility.GetCorrespondingObjectFromSource(go);
+                        var prefabInstanceRoot = PrefabUtility.GetCorrespondingObjectFromSource(unconvertedPrefabInstance);
                         if (prefabRoot.Equals(prefabInstanceRoot))
                         {
-                            var convertedCopy = Object.Instantiate(go);
+                            var convertedCopy = Object.Instantiate(unconvertedPrefabInstance);
                             Upgrade(convertedCopy);
                             oldToNewConversion.Add(unconvertedPrefabInstance, convertedCopy);
                         }
