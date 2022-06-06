@@ -88,7 +88,7 @@ namespace Cinemachine.Editor
                 "I made a backup, go ahead", "Cancel"))
             {
                 UpgradePrefabs();
-                UpgradeInScenes();
+                //UpgradeInScenes();
             }
         }
 
@@ -133,19 +133,36 @@ namespace Cinemachine.Editor
                 }
 
                 Upgrade(contents);
+                m_PrefabManager.SavePrefabContents(p, contents);
+                
                 var allPrefabInstances = PrefabUtility.FindAllInstancesOfPrefab(prefabRoot);
                 for (var pi = 0; pi < allPrefabInstances.Length; pi++)
                 {
                     var prefabInstance = allPrefabInstances[pi];
                     var converted = oldToNewConversion[prefabInstance];
-                    prefabInstance = converted;
-                    var components = prefabInstance.GetComponents<MonoBehaviour>();
-                    
 
+                    var components = prefabInstance.GetComponents<Component>();
+                    foreach (var component in components)
+                    {
+                        Object.DestroyImmediate(component);
+                    }
+
+                    var modifiedComponents = converted.GetComponents<Component>();
+                    foreach (var modifiedComponent in modifiedComponents)
+                    {
+                        UnityEditorInternal.ComponentUtility.CopyComponent(modifiedComponent);
+                        UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
+                    }
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
+                    EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
                 }
 
-                m_PrefabManager.SavePrefabContents(p, contents);
             }
+        }
+        static void CopyValues<T>(T from, T to)
+        {
+            var json = JsonUtility.ToJson(from);
+            JsonUtility.FromJsonOverwrite(json, to);
         }
             
         /// <summary>
