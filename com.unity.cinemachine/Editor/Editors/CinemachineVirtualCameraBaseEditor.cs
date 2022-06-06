@@ -156,7 +156,7 @@ namespace Cinemachine.Editor
 #if true // For testing only - do not release with this because no undo and no animation fixup
                 if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Convert to CmCamera")))
                 {
-                    var upgrader = new CinemachineUpgrader();
+                    var upgrader = new CinemachineUpgradeManager();
                     Undo.SetCurrentGroupName("Convert to CmCamera");
                     for (int i = 0; i < targets.Length; ++i)
                     {
@@ -167,7 +167,7 @@ namespace Cinemachine.Editor
 #endif
                 if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Upgrade Project to Cinemachine 3")))
                 {
-                    var upgrader = new CinemachineUpgrader();
+                    var upgrader = new CinemachineUpgradeManager();
                     upgrader.UpgradeAll();
                     GUIUtility.ExitGUI();
                 }
