@@ -14,7 +14,7 @@ namespace Tests.Editor
 {
      public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
     {
-        CinemachineUpgrader m_Upgrader;
+        CinemachineUpgradeManager m_Upgrader;
         static IEnumerable<Type> s_AllCinemachineComponents;
         static readonly string[] k_IgnoreList = {
             "HorizontalAxis", "VerticalAxis", "RadialAxis", "m_HorizontalRecentering", "m_VerticalRecentering",
@@ -75,7 +75,7 @@ namespace Tests.Editor
 
             yield return null;
             
-            var upgrader = new CinemachineUpgrader();
+            var upgrader = new CinemachineUpgradeManager();
             upgrader.Upgrade(vcamGo);
 
             yield return null;
@@ -156,7 +156,7 @@ namespace Tests.Editor
 
             yield return null;
             
-            var upgrader = new CinemachineUpgrader();
+            var upgrader = new CinemachineUpgradeManager();
             upgrader.Upgrade(vcamGo);
 
             yield return null;
@@ -176,7 +176,7 @@ namespace Tests.Editor
 
             yield return null;
             
-            var upgrader = new CinemachineUpgrader();
+            var upgrader = new CinemachineUpgradeManager();
             upgrader.Upgrade(freelookGo);
             yield return null;
 

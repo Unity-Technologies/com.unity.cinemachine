@@ -267,7 +267,7 @@ namespace Cinemachine
         /// See CinemachineCore.Stage.
         /// </summary>
         /// <param name="extension">The extension to add.</param>
-        public virtual void AddExtension(CinemachineExtension extension)
+        internal void AddExtension(CinemachineExtension extension)
         {
             if (mExtensions == null)
                 mExtensions = new List<CinemachineExtension>();
@@ -278,7 +278,7 @@ namespace Cinemachine
 
         /// <summary>Remove a Pipeline stage hook callback.</summary>
         /// <param name="extension">The extension to remove.</param>
-        public virtual void RemoveExtension(CinemachineExtension extension)
+        internal void RemoveExtension(CinemachineExtension extension)
         {
             if (mExtensions != null)
                 mExtensions.Remove(extension);
