@@ -139,34 +139,63 @@ namespace Cinemachine.Editor
                 for (var pi = 0; pi < allPrefabInstances.Length; pi++)
                 {
                     var prefabInstance = allPrefabInstances[pi];
-                    var components = prefabInstance.GetComponents<CinemachineComponentBase>();
+                    var prefabComponents = prefabInstance.GetComponents<CinemachineComponentBase>();
                     
                     var converted = oldToNewConversion[prefabInstance];
-                    var modifiedComponents = converted.GetComponents<CinemachineComponentBase>();
+                    var convertedComponents = converted.GetComponents<CinemachineComponentBase>();
 
-                    for (var ci = 0; ci < components.Length; ci++)
+                    // delete components that are not on the converted one
+                    foreach (var prefabComponent in prefabComponents)
                     {
-                        var component = components[ci];
-                        for (var mci = 0; mci < modifiedComponents.Length; mci++)
+                        var found = false;
+                        foreach (var convertedComponent in convertedComponents)
                         {
-                            var modifiedComponent = modifiedComponents[mci];
-                            if (component.GetType() == modifiedComponent.GetType())
+                            if (prefabComponent.Stage == convertedComponent.Stage)
                             {
-                                UnityEditorInternal.ComponentUtility.CopyComponent(modifiedComponent);
-                                UnityEditorInternal.ComponentUtility.PasteComponentValues(component);
-                                break;
-                            }
-
-                            if (component.Stage == modifiedComponent.Stage)
-                            {
-                                UnityEditorInternal.ComponentUtility.CopyComponent(modifiedComponent);
-                                UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
-                                Object.DestroyImmediate(component);
+                                found = true;
                                 break;
                             }
                         }
-                    }
 
+                        if (!found)
+                        {
+                            // deleted component, because it is not on the converted one
+                            Object.DestroyImmediate(prefabComponent);
+                        }
+                    }
+                    
+                    // copy converted component and paste it to the prefab instance (as new if new component)
+                    foreach (var convertedComponent in convertedComponents)
+                    {
+                        var pastedValues = false;
+                        UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
+                        foreach (var prefabComponent in prefabComponents)
+                        {
+                            if (prefabComponent.Stage == convertedComponent.Stage)
+                            {
+                                if (prefabComponent.GetType() == convertedComponent.GetType())
+                                {
+                                    // Same component type -> copy values
+                                    UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabComponent);
+                                    pastedValues = true;
+                                }
+                                else
+                                {
+                                    // Same stage, but different component type -> delete old, so we can paste new
+                                    Object.DestroyImmediate(prefabComponent);
+                                }
+                                break;
+                            }
+                        }
+ 
+                        if (!pastedValues)
+                        {
+                            // No same stage component -> copy as new
+                            UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
+                            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
+                        }
+                    }
+                    
                     PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
                     EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
                 }
@@ -174,8 +203,10 @@ namespace Cinemachine.Editor
                 // clean up
                 foreach (var (_, converted) in oldToNewConversion)
                 {
+                    Debug.Log("Deleting " + converted.name + "...");
                     Object.DestroyImmediate(converted);
                 }
+                EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
             }
         }
             
@@ -432,10 +463,18 @@ namespace Cinemachine.Editor
 
                 return
                     parentLookAt == topRig.LookAt && parentLookAt == middleRig.LookAt && parentLookAt == bottomRig.LookAt &&
-                    PublicFieldsEqual(topNoise, middleNoise) &&
-                    PublicFieldsEqual(middleNoise, bottomNoise) &&
+                    IsEqualNoise(topNoise, middleNoise) &&
+                    IsEqualNoise(middleNoise, bottomNoise) &&
+                    IsEqualNoise(topNoise, bottomNoise) &&
                     PublicFieldsEqual(topRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl), midAim, s_IgnoreList) &&
                     PublicFieldsEqual(bottomRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl), midAim, s_IgnoreList);
+
+                static bool IsEqualNoise(CinemachineBasicMultiChannelPerlin a, CinemachineBasicMultiChannelPerlin b)
+                {
+                    return a == null || b == null ||
+                        ((a.m_NoiseProfile == null || b.m_NoiseProfile == null || a.m_NoiseProfile == b.m_NoiseProfile)
+                            && a.m_PivotOffset == b.m_PivotOffset);
+                }
 
                 static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b, params string[] ignoreList)
                 {

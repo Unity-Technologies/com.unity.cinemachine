@@ -389,6 +389,7 @@ namespace Cinemachine.Editor
         /// </summary>
         public void SortComponents()
         {
+            return; // causes problem in prefabs
             if (Target == null)
                 return; // target was deleted
             SortOrder lastItem = SortOrder.None;
