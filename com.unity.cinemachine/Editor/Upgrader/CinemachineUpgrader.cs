@@ -236,6 +236,10 @@ namespace Cinemachine.Editor
                 foreach (var extension in oldExtensions)
                     cmCamera.AddExtension(extension);
 
+                cmCamera.TryGetComponent<InputAxisController>(out var inputAxisController);
+                if (inputAxisController == null)
+                    go.AddComponent<InputAxisController>();
+
                 Object.DestroyImmediate(topRig.gameObject);
                 Object.DestroyImmediate(middleRig.gameObject);
                 Object.DestroyImmediate(bottomRig.gameObject);
