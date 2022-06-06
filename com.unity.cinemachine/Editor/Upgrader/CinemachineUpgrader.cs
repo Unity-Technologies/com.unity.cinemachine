@@ -139,30 +139,44 @@ namespace Cinemachine.Editor
                 for (var pi = 0; pi < allPrefabInstances.Length; pi++)
                 {
                     var prefabInstance = allPrefabInstances[pi];
+                    var components = prefabInstance.GetComponents<CinemachineComponentBase>();
+                    
                     var converted = oldToNewConversion[prefabInstance];
+                    var modifiedComponents = converted.GetComponents<CinemachineComponentBase>();
 
-                    var components = prefabInstance.GetComponents<Component>();
-                    foreach (var component in components)
+                    for (var ci = 0; ci < components.Length; ci++)
                     {
-                        Object.DestroyImmediate(component);
+                        var component = components[ci];
+                        for (var mci = 0; mci < modifiedComponents.Length; mci++)
+                        {
+                            var modifiedComponent = modifiedComponents[mci];
+                            if (component.GetType() == modifiedComponent.GetType())
+                            {
+                                UnityEditorInternal.ComponentUtility.CopyComponent(modifiedComponent);
+                                UnityEditorInternal.ComponentUtility.PasteComponentValues(component);
+                                break;
+                            }
+
+                            if (component.Stage == modifiedComponent.Stage)
+                            {
+                                UnityEditorInternal.ComponentUtility.CopyComponent(modifiedComponent);
+                                UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
+                                Object.DestroyImmediate(component);
+                                break;
+                            }
+                        }
                     }
 
-                    var modifiedComponents = converted.GetComponents<Component>();
-                    foreach (var modifiedComponent in modifiedComponents)
-                    {
-                        UnityEditorInternal.ComponentUtility.CopyComponent(modifiedComponent);
-                        UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
-                    }
                     PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
                     EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
                 }
 
+                // clean up
+                foreach (var (_, converted) in oldToNewConversion)
+                {
+                    Object.DestroyImmediate(converted);
+                }
             }
-        }
-        static void CopyValues<T>(T from, T to)
-        {
-            var json = JsonUtility.ToJson(from);
-            JsonUtility.FromJsonOverwrite(json, to);
         }
             
         /// <summary>
