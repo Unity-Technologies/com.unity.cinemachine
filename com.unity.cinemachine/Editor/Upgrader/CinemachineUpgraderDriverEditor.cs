@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineUpgraderDriver))]
     public class CinemachineUpgraderDriverEditor : UnityEditor.Editor
     {
-        CinemachineUpgrader m_Upgrader;
+        CinemachineUpgradeManager m_Upgrader;
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -25,7 +25,7 @@ namespace Cinemachine.Editor
             if (driver.triggerUpgrade)
             {
                 driver.triggerUpgrade = false;
-                m_Upgrader = new CinemachineUpgrader();
+                m_Upgrader = new CinemachineUpgradeManager();
                 m_Upgrader.UpgradeAll();
             }
         }
