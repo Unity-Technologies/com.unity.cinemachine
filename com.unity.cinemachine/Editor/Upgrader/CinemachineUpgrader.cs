@@ -197,7 +197,7 @@ namespace Cinemachine.Editor
 
                 return true;
             }
-
+            
             static bool UpgradeFreelook(CinemachineFreeLook freelook)
             {
                 var topRig = freelook.GetRig(0);
@@ -239,6 +239,7 @@ namespace Cinemachine.Editor
                 Object.DestroyImmediate(topRig.gameObject);
                 Object.DestroyImmediate(middleRig.gameObject);
                 Object.DestroyImmediate(bottomRig.gameObject);
+                Object.DestroyImmediate(freelook);
                     
                 return true;
             }
@@ -321,6 +322,7 @@ namespace Cinemachine.Editor
                         });
                     }
                 }
+
                 bool LensesAreEqual(ref LensSettings a, ref LensSettings b)
                 {
                     return Mathf.Approximately(a.NearClipPlane, b.NearClipPlane)
@@ -772,7 +774,7 @@ namespace Cinemachine.Editor
                         var exposedRef = cmShot.VirtualCamera;
                         var vcam = exposedRef.Resolve(director);
 
-                        // This is problematic - what if there were already some null references in the project?
+                        // cmShots collected had to have a not null vcam
                         if (vcam == null && exposedRef.exposedName != 0)
                         {
                             director.SetReferenceValue(exposedRef.exposedName, upgraded);
