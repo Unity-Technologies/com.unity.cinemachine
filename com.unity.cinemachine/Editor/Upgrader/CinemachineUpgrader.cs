@@ -36,12 +36,14 @@ namespace Cinemachine.Editor
     //      - Use the list later for upgrading timeline references.
     //      - Keeping the old components will help the client upgrade their scripts because references will be maintained
     //      - UpgradeManager can expose a separate API to delete all obsolete components after the client has finished upgrading custom stuff manually
+    //  - Be minimally destructive.  Keep things as much as possible, delete them at the end so information is not lost during the process.
     //  - The prefab upgrade process should be something like this:
     //      - find all prefab instances in the project, record which prefab they're instances of
     //      - unpack completely all prefab instances
     //      - upgrade all prefabs
     //      - upgrade all prefab instances
     //      - re-connect the prefab instances to their upgraded prefabs
+    //  - Objects that are not upgradable should be tracked (keep a list) and a report generated at the end.  Maybe it makes sense to keep copies of them in the project, but maybe not
 
 
     /// <summary>
