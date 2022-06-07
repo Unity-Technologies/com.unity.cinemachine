@@ -92,6 +92,9 @@ namespace Cinemachine.Editor
             }
         }
 
+        /// <summary>
+        /// Links prefab modifications to prefab instances
+        /// </summary>
         struct ConversionLink
         {
             public string unconvertedPrefabInstanceOriginalName;
@@ -117,20 +120,19 @@ namespace Cinemachine.Editor
                     var componentsList = new List<CinemachineVirtualCameraBase>();
                     foreach (var go in rootObjects)
                     {
-                        var freelooks = go.GetComponentsInChildren<CinemachineFreeLook>(true);
-                        componentsList.AddRange(freelooks.ToList());
+                        componentsList.AddRange(go.GetComponentsInChildren<CinemachineFreeLook>(true).ToList());
                     }
 
                     foreach (var go in rootObjects)
                     {
-                        var vcams = go.GetComponentsInChildren<CinemachineVirtualCamera>(true);
-                        componentsList.AddRange(vcams.ToList());
+                        componentsList.AddRange(go.GetComponentsInChildren<CinemachineVirtualCamera>(true).ToList());
                     }
 
                     foreach (var component in componentsList)
                     {
                         var prefabInstance = component.gameObject;
-                        var rootOfPrefabInstance = PrefabUtility.GetCorrespondingObjectFromSource(prefabInstance);
+                        var rootOfPrefabInstance = 
+                            PrefabUtility.GetCorrespondingObjectFromSource(prefabInstance);
                         if (prefabRoot.Equals(rootOfPrefabInstance))
                         {
                             var convertedCopy = Object.Instantiate(prefabInstance);
@@ -179,12 +181,16 @@ namespace Cinemachine.Editor
 
                     foreach (var currentConvertedObjectInfo in currentPrefabRootConvertedObjectInfos)
                     {
-                        var prefabInstance = GameObject.Find(currentConvertedObjectInfo.unconvertedPrefabInstanceGUIDName);
+                        var prefabInstance = 
+                            GameObject.Find(currentConvertedObjectInfo.unconvertedPrefabInstanceGUIDName);
                         Assert.NotNull(prefabInstance);
-                        var prefabInstanceComponents = prefabInstance.GetComponents<CinemachineComponentBase>();
-                        var convertedCopy = GameObject.Find(currentConvertedObjectInfo.convertedInstanceGUIDName);
+                        var prefabInstanceComponents = 
+                            prefabInstance.GetComponents<CinemachineComponentBase>();
+                        var convertedCopy = 
+                            GameObject.Find(currentConvertedObjectInfo.convertedInstanceGUIDName);
                         Assert.NotNull(convertedCopy);
-                        var convertedComponents = convertedCopy.GetComponents<CinemachineComponentBase>();
+                        var convertedComponents = 
+                            convertedCopy.GetComponents<CinemachineComponentBase>();
 
                         // Delete stages that are not on the upgraded copy. 
                         foreach (var prefabInstanceComponent in prefabInstanceComponents)
@@ -200,7 +206,7 @@ namespace Cinemachine.Editor
                         // Copy upgraded copy component and paste it to the prefab instance (as new if needed)
                         foreach (var convertedComponent in convertedComponents)
                         {
-                            var pastedValues = false;
+                            var didPasteValues = false;
                             UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
                             
                             foreach (var prefabInstanceComponent in prefabInstanceComponents)
@@ -211,7 +217,7 @@ namespace Cinemachine.Editor
                                     {
                                         // Same component type -> paste values
                                         UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabInstanceComponent);
-                                        pastedValues = true;
+                                        didPasteValues = true;
                                     }
                                     else
                                     {
@@ -223,7 +229,7 @@ namespace Cinemachine.Editor
                                 }
                             }
 
-                            if (!pastedValues)
+                            if (!didPasteValues)
                             {
                                 // No same stage component -> paste as new
                                 UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
