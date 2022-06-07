@@ -88,7 +88,7 @@ namespace Cinemachine.Editor
                 "I made a backup, go ahead", "Cancel"))
             {
                 UpgradePrefabs();
-                //UpgradeInScenes();
+                UpgradeInScenes();
             }
         }
 
@@ -699,6 +699,7 @@ namespace Cinemachine.Editor
                                 Enabled = trackedDolly.m_AutoDolly.m_Enabled,
                                 PositionOffset = trackedDolly.m_AutoDolly.m_PositionOffset,
                                 SearchResolution = trackedDolly.m_AutoDolly.m_SearchResolution,
+                                SearchIteration = 4,
                             };
                             splineDolly.CameraPosition = trackedDolly.m_PathPosition;
                             splineDolly.SplineOffset = trackedDolly.m_PathOffset;
