@@ -652,6 +652,12 @@ namespace Cinemachine.Editor
                 var oldExtensions = go.GetComponents<CinemachineExtension>();
 
                 var cmCamera = go.AddComponent<CmCamera>();
+                if (cmCamera == null)
+                {
+                    go.TryGetComponent(out cmCamera); // this solves problems when RequireComponent already added CmCamera
+                    cmCamera.enabled = true;
+                }
+                Assert.NotNull(cmCamera);
                 CopyValues<CinemachineVirtualCameraBase>(vcam, cmCamera);
                 cmCamera.Follow = vcam.Follow;
                 cmCamera.LookAt = vcam.LookAt;
