@@ -232,22 +232,23 @@ namespace Cinemachine.Editor
                         }
 
                         prefabInstance.name = currentConvertedObjectInfo.unconvertedPrefabInstanceOriginalName;
+                        Object.DestroyImmediate(convertedCopy);
                         PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
                         EditorSceneManager.SaveScene(activeScene);
                     }
                 }
 
-                // clean up
-                foreach (var convertedObjectInfo in convertedObjectInfos)
-                {
-                    var activeScene = m_SceneManager.LoadScene(convertedObjectInfo.scenePath);
-                    var converted = GameObject.Find(convertedObjectInfo.convertedInstanceGUIDName);
-                    if (converted != null)
-                    {
-                        Object.DestroyImmediate(converted);
-                        EditorSceneManager.SaveScene(activeScene);
-                    }
-                }
+                // // clean up
+                // foreach (var convertedObjectInfo in convertedObjectInfos)
+                // {
+                //     var activeScene = m_SceneManager.LoadScene(convertedObjectInfo.scenePath);
+                //     var converted = GameObject.Find(convertedObjectInfo.convertedInstanceGUIDName);
+                //     if (converted != null)
+                //     {
+                //         Object.DestroyImmediate(converted);
+                //         EditorSceneManager.SaveScene(activeScene);
+                //     }
+                // }
             }
         }
         
