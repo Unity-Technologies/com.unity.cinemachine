@@ -298,12 +298,6 @@ namespace Cinemachine.Editor
                 return EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
             }
 
-            public Scene LoadScene(string scenePath)
-            {
-                return EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-            }
-            
-
             public void UpdateScene(Scene scene)
             {
                 EditorSceneManager.MarkSceneDirty(scene);
