@@ -92,26 +92,27 @@ namespace Cinemachine.Editor
             }
         }
 
-        struct ConvertedObjectInfo
+        struct ConversionLink
         {
-            public string scenePath;
             public string unconvertedPrefabInstanceOriginalName;
             public string unconvertedPrefabInstanceGUIDName;
             public string convertedInstanceGUIDName;
         }
         void UpgradePrefabs()
         {
-            var prefabCount = m_PrefabManager.prefabCount;
-
+            var prefabCount = m_PrefabManager.prefabCount; // asset prefabs, not instances
             for (var p = 0; p < prefabCount; p++)
             {
                 var prefabRoot = m_PrefabManager.GetPrefabRoot(p);
-                var contents = m_PrefabManager.LoadPrefabContents(p); // load root prefab
-                var convertedObjectInfos = new List<ConvertedObjectInfo>();
-                int sceneCount = m_SceneManager.sceneCount;
-                for (int s = 0; s < sceneCount; ++s)
+                var prefabRootContents = m_PrefabManager.LoadPrefabContents(p); // only use for updating prefab data
+                var conversionLinks = new List<ConversionLink>();
+                var sceneCount = m_SceneManager.sceneCount;
+                
+                // In each scene, store all prefab modifications in an upgraded copy of the prefab instances of prefabRoot.
+                for (var s = 0; s < sceneCount; ++s)
                 {
                     var activeScene = m_SceneManager.LoadScene(s);
+                    
                     var rootObjects = activeScene.GetRootGameObjects();
                     var componentsList = new List<CinemachineVirtualCameraBase>();
                     foreach (var go in rootObjects)
@@ -119,6 +120,7 @@ namespace Cinemachine.Editor
                         var freelooks = go.GetComponentsInChildren<CinemachineFreeLook>(true);
                         componentsList.AddRange(freelooks.ToList());
                     }
+
                     foreach (var go in rootObjects)
                     {
                         var vcams = go.GetComponentsInChildren<CinemachineVirtualCamera>(true);
@@ -127,44 +129,50 @@ namespace Cinemachine.Editor
 
                     foreach (var component in componentsList)
                     {
-                        var unconvertedPrefabInstance = component.gameObject;
-                        var prefabInstanceRoot = PrefabUtility.GetCorrespondingObjectFromSource(unconvertedPrefabInstance);
-                        if (prefabRoot.Equals(prefabInstanceRoot))
+                        var prefabInstance = component.gameObject;
+                        var rootOfPrefabInstance = PrefabUtility.GetCorrespondingObjectFromSource(prefabInstance);
+                        if (prefabRoot.Equals(rootOfPrefabInstance))
                         {
-                            var convertedCopy = Object.Instantiate(unconvertedPrefabInstance);
+                            var convertedCopy = Object.Instantiate(prefabInstance);
                             Upgrade(convertedCopy);
-                            var convertedInfo = new ConvertedObjectInfo
+
+                            var conversionLink = new ConversionLink
                             {
-                                scenePath = unconvertedPrefabInstance.scene.path,
-                                unconvertedPrefabInstanceOriginalName = unconvertedPrefabInstance.name,
+                                unconvertedPrefabInstanceOriginalName = prefabInstance.name,
                                 unconvertedPrefabInstanceGUIDName = GUID.Generate().ToString(),
                                 convertedInstanceGUIDName = GUID.Generate().ToString(),
                             };
-                            unconvertedPrefabInstance.name = convertedInfo.unconvertedPrefabInstanceGUIDName;
-                            convertedCopy.name = convertedInfo.convertedInstanceGUIDName;
-                            convertedObjectInfos.Add(convertedInfo);
-                            PrefabUtility.RecordPrefabInstancePropertyModifications(unconvertedPrefabInstance);
+                            prefabInstance.name = conversionLink.unconvertedPrefabInstanceGUIDName;
+                            convertedCopy.name = conversionLink.convertedInstanceGUIDName;
+                            conversionLinks.Add(conversionLink);
+                            PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
                         }
-
                     }
+
                     EditorSceneManager.SaveScene(activeScene);
                 }
 
-                Upgrade(contents);
-                m_PrefabManager.SavePrefabContents(p, contents);
+                // Upgrade prefabRoot
+                Upgrade(prefabRootContents); 
+                m_PrefabManager.SavePrefabContents(p, prefabRootContents);
 
+                // In each scene, restore modifications in all prefab instances of prefabRoot by copying data from the
+                // linked upgraded copy of the prefab instances of prefabRoot. 
                 for (int s = 0; s < sceneCount; ++s)
                 {
                     var activeScene = m_SceneManager.LoadScene(s);
-                    var allPrefabInstances = PrefabUtility.FindAllInstancesOfPrefab(prefabRoot);
-                    var currentPrefabRootConvertedObjectInfos = new List<ConvertedObjectInfo>(allPrefabInstances.Length);
-                    foreach (var convertedObjectInfo in convertedObjectInfos)
+                    
+                    var currentPrefabRootConvertedObjectInfos = new List<ConversionLink>();
                     {
-                        foreach (var prefabInstance in allPrefabInstances)
+                        var allPrefabInstances = PrefabUtility.FindAllInstancesOfPrefab(prefabRoot);
+                        foreach (var convertedObjectInfo in conversionLinks)
                         {
-                            if (convertedObjectInfo.unconvertedPrefabInstanceGUIDName == prefabInstance.name)
+                            foreach (var prefabInstance in allPrefabInstances)
                             {
-                                currentPrefabRootConvertedObjectInfos.Add(convertedObjectInfo);
+                                if (convertedObjectInfo.unconvertedPrefabInstanceGUIDName == prefabInstance.name)
+                                {
+                                    currentPrefabRootConvertedObjectInfos.Add(convertedObjectInfo);
+                                }
                             }
                         }
                     }
@@ -178,77 +186,58 @@ namespace Cinemachine.Editor
                         Assert.NotNull(convertedCopy);
                         var convertedComponents = convertedCopy.GetComponents<CinemachineComponentBase>();
 
-                        // delete components that are not on the converted one
-                        foreach (var prefabComponent in prefabInstanceComponents)
+                        // Delete stages that are not on the upgraded copy. 
+                        foreach (var prefabInstanceComponent in prefabInstanceComponents)
                         {
-                            var found = false;
-                            foreach (var convertedComponent in convertedComponents)
-                            {
-                                if (prefabComponent.Stage == convertedComponent.Stage)
-                                {
-                                    found = true;
-                                    break;
-                                }
-                            }
-
+                            var found = convertedComponents.Any(
+                                convertedComponent => prefabInstanceComponent.Stage == convertedComponent.Stage);
                             if (!found)
                             {
-                                // deleted component, because it is not on the converted one
-                                Object.DestroyImmediate(prefabComponent);
+                                Object.DestroyImmediate(prefabInstanceComponent);
                             }
                         }
 
-                        // copy converted component and paste it to the prefab instance (as new if new component)
+                        // Copy upgraded copy component and paste it to the prefab instance (as new if needed)
                         foreach (var convertedComponent in convertedComponents)
                         {
                             var pastedValues = false;
                             UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
-                            foreach (var prefabComponent in prefabInstanceComponents)
+                            
+                            foreach (var prefabInstanceComponent in prefabInstanceComponents)
                             {
-                                if (prefabComponent.Stage == convertedComponent.Stage)
+                                if (prefabInstanceComponent.Stage == convertedComponent.Stage)
                                 {
-                                    if (prefabComponent.GetType() == convertedComponent.GetType())
+                                    if (prefabInstanceComponent.GetType() == convertedComponent.GetType())
                                     {
-                                        // Same component type -> copy values
-                                        UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabComponent);
+                                        // Same component type -> paste values
+                                        UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabInstanceComponent);
                                         pastedValues = true;
                                     }
                                     else
                                     {
-                                        // Same stage, but different component type -> delete old, so we can paste new
-                                        Object.DestroyImmediate(prefabComponent);
+                                        // Same stage, but different component type -> delete component
+                                        Object.DestroyImmediate(prefabInstanceComponent);
                                     }
-
+                                    
                                     break;
                                 }
                             }
 
                             if (!pastedValues)
                             {
-                                // No same stage component -> copy as new
-                                UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
+                                // No same stage component -> paste as new
                                 UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
                             }
                         }
 
+                        // Restore original scene state
                         prefabInstance.name = currentConvertedObjectInfo.unconvertedPrefabInstanceOriginalName;
                         Object.DestroyImmediate(convertedCopy);
                         PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
-                        EditorSceneManager.SaveScene(activeScene);
                     }
-                }
 
-                // // clean up
-                // foreach (var convertedObjectInfo in convertedObjectInfos)
-                // {
-                //     var activeScene = m_SceneManager.LoadScene(convertedObjectInfo.scenePath);
-                //     var converted = GameObject.Find(convertedObjectInfo.convertedInstanceGUIDName);
-                //     if (converted != null)
-                //     {
-                //         Object.DestroyImmediate(converted);
-                //         EditorSceneManager.SaveScene(activeScene);
-                //     }
-                // }
+                    EditorSceneManager.SaveScene(activeScene);
+                }
             }
         }
         
