@@ -271,12 +271,14 @@ namespace Cinemachine.Editor
                 var modified = false;
                 foreach (var component in componentsList)
                 {
-                    if (component == null) continue;
-                        
+                    if (component == null || component.ParentCamera is CinemachineFreeLook)
+                        continue; // ignore null components or freelook children vcams
+                    
                     var go = component.gameObject;
                     if (go.name.Contains("(Clone) (Not fully upgradable)"))
                         continue; // no need to upgrade, because we created it.
                     
+
                     if (Upgrade(go))
                     {
                         modified = true;
