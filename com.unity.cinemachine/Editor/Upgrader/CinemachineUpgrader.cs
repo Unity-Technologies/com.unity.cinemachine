@@ -92,6 +92,13 @@ namespace Cinemachine.Editor
             }
         }
 
+        struct ConvertedObjectInfo
+        {
+            public string scenePath;
+            public string unconvertedPrefabInstanceOriginalName;
+            public string unconvertedPrefabInstanceGUIDName;
+            public string convertedInstanceGUIDName;
+        }
         void UpgradePrefabs()
         {
             var prefabCount = m_PrefabManager.prefabCount;
@@ -100,12 +107,12 @@ namespace Cinemachine.Editor
             {
                 var prefabRoot = m_PrefabManager.GetPrefabRoot(p);
                 var contents = m_PrefabManager.LoadPrefabContents(p); // load root prefab
-                Dictionary<GameObject, GameObject> oldToNewConversion = new Dictionary<GameObject, GameObject>();
+                var convertedObjectInfos = new List<ConvertedObjectInfo>();
                 int sceneCount = m_SceneManager.sceneCount;
                 for (int s = 0; s < sceneCount; ++s)
                 {
-                    var scene = m_SceneManager.LoadScene(s);
-                    var rootObjects = scene.GetRootGameObjects();
+                    var activeScene = m_SceneManager.LoadScene(s);
+                    var rootObjects = activeScene.GetRootGameObjects();
                     var componentsList = new List<CinemachineVirtualCameraBase>();
                     foreach (var go in rootObjects)
                     {
@@ -126,179 +133,124 @@ namespace Cinemachine.Editor
                         {
                             var convertedCopy = Object.Instantiate(unconvertedPrefabInstance);
                             Upgrade(convertedCopy);
-                            oldToNewConversion.Add(unconvertedPrefabInstance, convertedCopy);
+                            var convertedInfo = new ConvertedObjectInfo
+                            {
+                                scenePath = unconvertedPrefabInstance.scene.path,
+                                unconvertedPrefabInstanceOriginalName = unconvertedPrefabInstance.name,
+                                unconvertedPrefabInstanceGUIDName = GUID.Generate().ToString(),
+                                convertedInstanceGUIDName = GUID.Generate().ToString(),
+                            };
+                            unconvertedPrefabInstance.name = convertedInfo.unconvertedPrefabInstanceGUIDName;
+                            convertedCopy.name = convertedInfo.convertedInstanceGUIDName;
+                            convertedObjectInfos.Add(convertedInfo);
+                            PrefabUtility.RecordPrefabInstancePropertyModifications(unconvertedPrefabInstance);
                         }
+
                     }
+                    EditorSceneManager.SaveScene(activeScene);
                 }
 
                 Upgrade(contents);
                 m_PrefabManager.SavePrefabContents(p, contents);
-                
-                var allPrefabInstances = PrefabUtility.FindAllInstancesOfPrefab(prefabRoot);
-                for (var pi = 0; pi < allPrefabInstances.Length; pi++)
-                {
-                    var prefabInstance = allPrefabInstances[pi];
-                    var prefabComponents = prefabInstance.GetComponents<CinemachineComponentBase>();
-                    
-                    var converted = oldToNewConversion[prefabInstance];
-                    var convertedComponents = converted.GetComponents<CinemachineComponentBase>();
 
-                    // delete components that are not on the converted one
-                    foreach (var prefabComponent in prefabComponents)
+                for (int s = 0; s < sceneCount; ++s)
+                {
+                    var activeScene = m_SceneManager.LoadScene(s);
+                    var allPrefabInstances = PrefabUtility.FindAllInstancesOfPrefab(prefabRoot);
+                    var currentPrefabRootConvertedObjectInfos = new List<ConvertedObjectInfo>(allPrefabInstances.Length);
+                    foreach (var convertedObjectInfo in convertedObjectInfos)
                     {
-                        var found = false;
+                        foreach (var prefabInstance in allPrefabInstances)
+                        {
+                            if (convertedObjectInfo.unconvertedPrefabInstanceGUIDName == prefabInstance.name)
+                            {
+                                currentPrefabRootConvertedObjectInfos.Add(convertedObjectInfo);
+                            }
+                        }
+                    }
+
+                    foreach (var currentConvertedObjectInfo in currentPrefabRootConvertedObjectInfos)
+                    {
+                        var prefabInstance = GameObject.Find(currentConvertedObjectInfo.unconvertedPrefabInstanceGUIDName);
+                        Assert.NotNull(prefabInstance);
+                        var prefabInstanceComponents = prefabInstance.GetComponents<CinemachineComponentBase>();
+                        var convertedCopy = GameObject.Find(currentConvertedObjectInfo.convertedInstanceGUIDName);
+                        Assert.NotNull(convertedCopy);
+                        var convertedComponents = convertedCopy.GetComponents<CinemachineComponentBase>();
+
+                        // delete components that are not on the converted one
+                        foreach (var prefabComponent in prefabInstanceComponents)
+                        {
+                            var found = false;
+                            foreach (var convertedComponent in convertedComponents)
+                            {
+                                if (prefabComponent.Stage == convertedComponent.Stage)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                // deleted component, because it is not on the converted one
+                                Object.DestroyImmediate(prefabComponent);
+                            }
+                        }
+
+                        // copy converted component and paste it to the prefab instance (as new if new component)
                         foreach (var convertedComponent in convertedComponents)
                         {
-                            if (prefabComponent.Stage == convertedComponent.Stage)
+                            var pastedValues = false;
+                            UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
+                            foreach (var prefabComponent in prefabInstanceComponents)
                             {
-                                found = true;
-                                break;
+                                if (prefabComponent.Stage == convertedComponent.Stage)
+                                {
+                                    if (prefabComponent.GetType() == convertedComponent.GetType())
+                                    {
+                                        // Same component type -> copy values
+                                        UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabComponent);
+                                        pastedValues = true;
+                                    }
+                                    else
+                                    {
+                                        // Same stage, but different component type -> delete old, so we can paste new
+                                        Object.DestroyImmediate(prefabComponent);
+                                    }
+
+                                    break;
+                                }
+                            }
+
+                            if (!pastedValues)
+                            {
+                                // No same stage component -> copy as new
+                                UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
+                                UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
                             }
                         }
 
-                        if (!found)
-                        {
-                            // deleted component, because it is not on the converted one
-                            Object.DestroyImmediate(prefabComponent);
-                        }
+                        prefabInstance.name = currentConvertedObjectInfo.unconvertedPrefabInstanceOriginalName;
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
+                        EditorSceneManager.SaveScene(activeScene);
                     }
-                    
-                    // copy converted component and paste it to the prefab instance (as new if new component)
-                    foreach (var convertedComponent in convertedComponents)
-                    {
-                        var pastedValues = false;
-                        UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
-                        foreach (var prefabComponent in prefabComponents)
-                        {
-                            if (prefabComponent.Stage == convertedComponent.Stage)
-                            {
-                                if (prefabComponent.GetType() == convertedComponent.GetType())
-                                {
-                                    // Same component type -> copy values
-                                    UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabComponent);
-                                    pastedValues = true;
-                                }
-                                else
-                                {
-                                    // Same stage, but different component type -> delete old, so we can paste new
-                                    Object.DestroyImmediate(prefabComponent);
-                                }
-                                break;
-                            }
-                        }
- 
-                        if (!pastedValues)
-                        {
-                            // No same stage component -> copy as new
-                            UnityEditorInternal.ComponentUtility.CopyComponent(convertedComponent);
-                            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
-                        }
-                    }
-                    
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
-                    EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
                 }
 
                 // clean up
-                foreach (var (_, converted) in oldToNewConversion)
+                foreach (var convertedObjectInfo in convertedObjectInfos)
                 {
-                    Debug.Log("Deleting " + converted.name + "...");
-                    Object.DestroyImmediate(converted);
-                }
-                EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-            }
-        }
-            
-        /// <summary>
-        /// for each prefab root: Prefab
-        /// for each scene: Scene
-        /// for each gameobject in scene: GO
-        ///     if (GO's root prefab is Prefab)
-        ///         save difference between GO and Prefab -> <Prefab, GO, List<Modification>>
-        /// </summary>
-        void UpgradePrefabs2()
-        {
-            var prefabCount = m_PrefabManager.prefabCount;
-
-            for (var p = 0; p < prefabCount; p++)
-            {
-                var prefabRoot = m_PrefabManager.GetPrefabRoot(p);
-                var contents = m_PrefabManager.LoadPrefabContents(p); // load root prefab
-                GameObject newGO, oldGO;
-                int sceneCount = m_SceneManager.sceneCount;
-                for (int s = 0; s < sceneCount; ++s)
-                {
-                    var scene = m_SceneManager.LoadScene(s);
-                    var rootObjects = scene.GetRootGameObjects();
-                    var componentsList = new List<CinemachineVirtualCameraBase>();
-                    foreach (var go in rootObjects)
+                    var activeScene = m_SceneManager.LoadScene(convertedObjectInfo.scenePath);
+                    var converted = GameObject.Find(convertedObjectInfo.convertedInstanceGUIDName);
+                    if (converted != null)
                     {
-                        var freelooks = go.GetComponentsInChildren<CinemachineFreeLook>(true);
-                        componentsList.AddRange(freelooks.ToList());
-                    }
-                    foreach (var go in rootObjects)
-                    {
-                        var vcams = go.GetComponentsInChildren<CinemachineVirtualCamera>(true);
-                        componentsList.AddRange(vcams.ToList());
-                    }
-
-                    foreach (var component in componentsList)
-                    {
-                        oldGO = component.gameObject;
-                        var go = oldGO;
-                        var prefabInstanceRoot = PrefabUtility.GetCorrespondingObjectFromSource(go);
-                        if (prefabRoot.Equals(prefabInstanceRoot))
-                        {
-                            newGO = Object.Instantiate(go);
-                            newGO.name += "*";
-                            Upgrade(newGO);
-                            Debug.Log(go.name + " is a prefab child of " + prefabRoot.name);
-                            var modifications = PrefabUtility.GetPropertyModifications(go);
-                            if (modifications != null && modifications.Length > 0)
-                            {
-                                foreach (var mod in modifications)
-                                {
-                                    // Examples
-                                    // Freelook
-                                    // - It modifies Cinemachine.CinemachineFreeLook-m_Orbits.Array.data[1].m_Height to 3.22
-                                    // Vcam
-                                    // - It modifies Cinemachine.CinemachineVirtualCamera-m_Lens.FieldOfView to 41.86
-                                    // - It modifies Cinemachine.Cinemachine3rdPersonFollow-ShoulderOffset.x to 1.61
-                                    // - It modifies Cinemachine.CinemachineBasicMultiChannelPerlin-m_PivotOffset.x to 0.51
-                                    Debug.Log("It modifies " + mod.target.GetType() + "-" + mod.propertyPath + " to " + mod.value);
-                                }
-                            }
-                            
-
-                            var addedComponents = PrefabUtility.GetAddedComponents(go);
-                            if (addedComponents != null && addedComponents.Count > 0)
-                            {
-                                foreach (var addedComponent in addedComponents)
-                                {
-                                    // TODO: this looks like the gameobject, so we need to check what component is added probably
-                                    Debug.Log("It adds " + addedComponent.instanceComponent.name);
-                                }
-                            }
-                            
-                            var removedComponents = PrefabUtility.GetRemovedComponents(go);
-                            if (removedComponents != null && removedComponents.Count > 0)
-                            {
-                                foreach (var removedComponent in removedComponents)
-                                {
-                                    Debug.Log("It removes " + removedComponent.assetComponent.name);
-                                }
-                            }
-                        }
+                        Object.DestroyImmediate(converted);
+                        EditorSceneManager.SaveScene(activeScene);
                     }
                 }
-
-                Upgrade(contents);
-                
-                
-                m_PrefabManager.SavePrefabContents(p, contents);
             }
         }
-
+        
         void UpgradeInScenes()
         {
             int sceneCount = m_SceneManager.sceneCount;
@@ -349,6 +301,12 @@ namespace Cinemachine.Editor
                 var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
                 return EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
             }
+
+            public Scene LoadScene(string scenePath)
+            {
+                return EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+            }
+            
 
             public void UpdateScene(Scene scene)
             {
