@@ -274,6 +274,9 @@ namespace Cinemachine.Editor
                     if (component == null) continue;
                         
                     var go = component.gameObject;
+                    if (go.name.Contains("(Clone) (Not fully upgradable)"))
+                        continue; // no need to upgrade, because we created it.
+                    
                     if (Upgrade(go))
                     {
                         modified = true;
