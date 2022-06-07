@@ -707,7 +707,7 @@ namespace Cinemachine.Editor
                             if (path != null)
                             {
                                 ConvertCinemachinePathToSpline(path, out splineDolly.Spline);
-                                Object.DestroyImmediate(path); // GML todo: what if multiple objects are referencing path?  Must convert all paths first
+                                path.enabled = false;
                             }
                             Object.DestroyImmediate(trackedDolly);
                             return;
@@ -728,6 +728,12 @@ namespace Cinemachine.Editor
             static void ConvertCinemachinePathToSpline(CinemachinePathBase pathBase, out SplineContainer spline)
             {
                 var gameObject = pathBase.gameObject;
+                gameObject.TryGetComponent(out spline);
+                if (spline != null)
+                {
+                    return; // already converted
+                }
+                
                 switch (pathBase)
                 {
                     case CinemachinePath path:
