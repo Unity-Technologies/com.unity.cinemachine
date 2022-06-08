@@ -115,7 +115,7 @@ namespace Cinemachine.Editor
                 for (var s = 0; s < sceneCount; ++s)
                 {
                     var activeScene = m_SceneManager.LoadScene(s);
-                    var allPrefabInstances = PrefabUtility.FindAllInstancesOfPrefab(prefabRoot);
+                    var allPrefabInstances = m_PrefabManager.FindAllInstancesOfPrefabIncludingInsideNestedPrefabs(prefabRoot);
 
                     var componentsList = new List<CinemachineVirtualCameraBase>();
                     foreach (var prefabInstance in allPrefabInstances)
@@ -840,6 +840,20 @@ namespace Cinemachine.Editor
                 m_PrefabVcams.ForEach(prefab => Debug.Log(prefab.name));
                 Debug.Log("*********************");
 #endif
+            }
+
+            public GameObject[] FindAllInstancesOfPrefabIncludingInsideNestedPrefabs(GameObject root)
+            {
+                // TODO: implement 
+                // foreach gameobject in scene
+                //
+                // var result = PrefabUtility.GetCorrespondingObjectFromSource(gameObject);
+                // if root == result <=> gameobject is an instance of root
+                //
+                // var result2 = PrefabUtility.GetOutermostPrefabInstanceRoot(gameObject);
+                //
+                // if (result != result2) <=> nested prefab
+                return null;
             }
         }
 
