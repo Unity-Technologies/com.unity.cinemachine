@@ -130,6 +130,9 @@ namespace Cinemachine.Editor
 
                     foreach (var component in componentsList)
                     {
+                        if (component.ParentCamera is CinemachineFreeLook)
+                            continue; // ignore freelook rigs
+                        
                         var prefabInstance = component.gameObject;
                         var convertedCopy = Object.Instantiate(prefabInstance);
                         Upgrade(convertedCopy);
