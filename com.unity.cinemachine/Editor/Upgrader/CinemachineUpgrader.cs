@@ -115,7 +115,7 @@ namespace Cinemachine.Editor
                 for (var s = 0; s < sceneCount; ++s)
                 {
                     var activeScene = m_SceneManager.LoadScene(s);
-                    var allPrefabInstances = m_PrefabManager.FindAllInstancesOfPrefabIncludingInsideNestedPrefabs(prefabRoot);
+                    var allPrefabInstances = m_PrefabManager.FindAllInstancesOfPrefabIncludingInsideNestedPrefabs(activeScene, prefabRoot);
 
                     var componentsList = new List<CinemachineVirtualCameraBase>();
                     foreach (var prefabInstance in allPrefabInstances)
@@ -842,18 +842,41 @@ namespace Cinemachine.Editor
 #endif
             }
 
-            public GameObject[] FindAllInstancesOfPrefabIncludingInsideNestedPrefabs(GameObject root)
+            public List<GameObject> FindAllInstancesOfPrefabIncludingInsideNestedPrefabs(Scene activeScene, GameObject prefab)
             {
-                // TODO: implement 
-                // foreach gameobject in scene
-                //
-                // var result = PrefabUtility.GetCorrespondingObjectFromSource(gameObject);
-                // if root == result <=> gameobject is an instance of root
-                //
-                // var result2 = PrefabUtility.GetOutermostPrefabInstanceRoot(gameObject);
-                //
-                // if (result != result2) <=> nested prefab
-                return null;
+                var rootObjects = activeScene.GetRootGameObjects();
+                var componentsList = new List<CinemachineVirtualCameraBase>();
+                foreach (var go in rootObjects)
+                {
+                    componentsList.AddRange(go.GetComponentsInChildren<CinemachineFreeLook>(true).ToList());
+                }
+
+                foreach (var go in rootObjects)
+                {
+                    componentsList.AddRange(go.GetComponentsInChildren<CinemachineVirtualCamera>(true).ToList());
+                }
+
+                var allInstances = new List<GameObject>();
+                foreach (var component in componentsList)
+                {
+                    var prefabInstance = component.gameObject;
+                    var r1 = PrefabUtility.GetCorrespondingObjectFromSource(prefabInstance);
+                    var r2 = PrefabUtility.GetOutermostPrefabInstanceRoot(prefabInstance);
+                    var r3 = PrefabUtility.GetCorrespondingObjectFromSource(r2);
+                    // Check if prefabInstance is an instance of prefab
+                    // When prefab is part of a nested prefab, the returned corresponding object is unfortunately different from the asset,
+                    // so I am comparing their names, which should match. It does not make sense to have prefabs with the same name, but it is not enforced...
+                    // so this check could cause problems in rare cases -> but user made a back up.
+                    if (prefab.Equals(r1) || prefab.name == r1.name)
+                    {
+                        // Check if prefabInstance is part of a nested prefab
+                        //if (!prefab.Equals(r3))
+                        {
+                            allInstances.Add(prefabInstance);
+                        }
+                    }
+                }
+                return allInstances;
             }
         }
 
