@@ -126,12 +126,15 @@ namespace Cinemachine.Editor
                     {
                         componentsList.AddRange(prefabInstance.GetComponentsInChildren<CinemachineVirtualCamera>(true).ToList());
                     }
-                    
 
+                    var beenThereDoneThat = new List<CinemachineVirtualCameraBase>();
                     foreach (var component in componentsList)
                     {
-                        if (component.ParentCamera is CinemachineFreeLook)
+                        if (component == null || component.ParentCamera is CinemachineFreeLook)
                             continue; // ignore freelook rigs
+                        if (beenThereDoneThat.Contains(component))
+                            continue;
+                        beenThereDoneThat.Add(component);
                         
                         var prefabInstance = component.gameObject;
                         var convertedCopy = Object.Instantiate(prefabInstance);
@@ -859,6 +862,9 @@ namespace Cinemachine.Editor
                 var allInstances = new List<GameObject>();
                 foreach (var component in componentsList)
                 {
+                    if (component.ParentCamera is CinemachineFreeLook)
+                        continue;
+                    
                     var prefabInstance = component.gameObject;
                     var r1 = PrefabUtility.GetCorrespondingObjectFromSource(prefabInstance);
                     var r2 = PrefabUtility.GetOutermostPrefabInstanceRoot(prefabInstance);
