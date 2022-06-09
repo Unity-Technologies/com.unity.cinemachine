@@ -822,16 +822,10 @@ namespace Cinemachine.Editor
                 m_PrefabRoots = allPrefabs.Where(p =>
                     p.GetComponentsInChildren<CinemachineVirtualCamera>() != null ||
                     p.GetComponentsInChildren<CinemachineFreeLook>() != null).ToList();
-                    
+
                 // Sort by no variant prefabs first
                 m_PrefabRoots.Sort((a, b) =>
                 {
-                    // var aIsVariant = PrefabUtility.IsPartOfVariantPrefab(a);
-                    // var bIsVariant = PrefabUtility.IsPartOfVariantPrefab(b);
-                    //
-                    // if (aIsVariant != bIsVariant)
-                    //     return -1;
-
                     if (IsFirstPartOfSecond(a, b))
                     {
                         return -1; // test
@@ -841,11 +835,10 @@ namespace Cinemachine.Editor
                         return 1; // test
                     }
 
-                    // if both no variants or both variants, we just use the name to compare just to be consistent.
+                    // if they are not part of each other then we use the name to compare just to be consistent.
                     return a.name.CompareTo(b.name);
                 });
                 
-
                 prefabCount = m_PrefabRoots.Count;
                     
 #if DEBUG_HELPERS
