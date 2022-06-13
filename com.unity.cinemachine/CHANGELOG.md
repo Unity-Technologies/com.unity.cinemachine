@@ -4,16 +4,8 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## UNRELEASED
-- Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
-- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
-- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
-- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
-- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
-- Bugfix: Fixed spurious Z rotations during speherical blend.
 
-
-## [2.9.0-pre.7] - 2022-03-29
+## [2.9.0-pre.7] - 2022-05-13
 - Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
 - Bugfix: Standalone profiler no longer crashed with CM.
 - Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
@@ -24,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
 - Bugfix: POV orientation was incorrect with World Up override
 - Added AutoEnable option to CinemachineInputHandler
+- Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
+- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
+- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
+- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
+- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
+- Bugfix: Fixed spurious Z rotations during speherical blend.
 
 
 ## [2.9.0-pre.6] - 2022-01-12
