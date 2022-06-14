@@ -341,7 +341,7 @@ namespace Cinemachine.Editor
                         && Mathf.Approximately(a.SensorSize.y, b.SensorSize.y)
                         && a.GateFit == b.GateFit
 #if CINEMACHINE_HDRP
-                        && Mathf.Approximately(a.iso, b.iso)
+                        && Mathf.Approximately(a.Iso, b.Iso)
                         && Mathf.Approximately(a.ShutterSpeed, b.ShutterSpeed)
                         && Mathf.Approximately(a.Aperture, b.Aperture)
                         && a.BladeCount == b.BladeCount
