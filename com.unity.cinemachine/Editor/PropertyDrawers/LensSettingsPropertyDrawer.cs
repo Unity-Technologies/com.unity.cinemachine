@@ -59,6 +59,8 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_HDRP
         static bool s_PhysicalExapnded;
 #endif
+        static bool s_AdvancedLensExpanded;
+
 
         static List<string> m_PresetOptions;
         static List<string> m_PhysicalPresetOptions;
@@ -119,9 +121,18 @@ namespace Cinemachine.Editor
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane)));
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch)));
 
-            var physical = foldout.AddChild(new VisualElement());
+            var physicalNote = foldout.AddChild(new InspectorUtility.LeftRightContainer());
+            physicalNote.Left.Add(new Label("Physical Camera") { style = { alignSelf = Align.Center }});
+            physicalNote.Right.Add(new Label("(using setting in Unity Camera)")
+                    { style = { alignSelf = Align.Center, unityFontStyleAndWeight = FontStyle.Italic }});
 
-            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift)));
+            var physical = foldout.AddChild(new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded });
+            physical.RegisterValueChangedCallback((evt) => 
+            {
+                s_PhysicalExapnded = evt.newValue;
+                evt.StopPropagation();
+            });
+
             var ssProp = property.FindPropertyRelative("m_SensorSize");
             var sensorSizeField = physical.AddChild(new PropertyField(ssProp));
             sensorSizeField.RegisterValueChangeCallback((evt) =>
@@ -133,35 +144,44 @@ namespace Cinemachine.Editor
                 property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
                 evt.StopPropagation();
             });
-            var gateFitField = physical.AddChild(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit)));
 
 #if CINEMACHINE_HDRP
-            var physicalFoldout = physical.AddChild(new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded });
-            physicalFoldout.RegisterValueChangedCallback((evt) => 
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Iso)));
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed)));
+#endif
+            var gateFitField = physical.AddChild(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit)));
+
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift)));
+#if CINEMACHINE_HDRP
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Aperture)));
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FocusDistance)));
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount)));
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Curvature)));
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping)));
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism)));
+#endif
+
+            var modeOverrideProperty = property.FindPropertyRelative("ModeOverride");
+            var advanced = foldout.AddChild(new Foldout() { text = "Advanced", value = s_AdvancedLensExpanded });
+            advanced.RegisterValueChangedCallback((evt) => 
             {
-                s_PhysicalExapnded = evt.newValue;
+                s_AdvancedLensExpanded = evt.newValue;
                 evt.StopPropagation();
             });
-
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Aperture)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Iso)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Curvature)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping)));
-            physicalFoldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism)));
-#endif
-            
+            advanced.Add(new HelpBox("Setting a mode override here implies changes to the Camera component when "
+                + "Cinemachine activates this CM Camera, and the changes will remain after the CM "
+                + "Camera deactivation. If you set a mode override in any CM Camera, you should set "
+                + "one in all CM Cameras.", HelpBoxMessageType.Info));
+            advanced.Add(new PropertyField(modeOverrideProperty));
 
             // GML: This is rather evil.  Is there a better (event-driven) way?
-            var modeOverrideProperty = property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride);
             ux.schedule.Execute(() => 
             {
                 if (property.serializedObject.targetObject == null)
                     return; // target deleted
-                physical.SetVisible(IsPhysical(property));
-                sensorSizeField.SetVisible(modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
-                gateFitField.SetVisible(modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
+                bool isPhysical = IsPhysical(property);
+                physical.SetVisible(isPhysical);
+                physicalNote.SetVisible(modeOverrideProperty.intValue == (int)LensSettings.OverrideModes.None);
                 fovControl.Update(true);
                 fovControl2.Update(false);
             }).Every(250);

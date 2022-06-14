@@ -968,11 +968,12 @@ namespace Cinemachine
                     bool isPhysical = state.Lens.ModeOverride == LensSettings.OverrideModes.None 
                         ? cam.usePhysicalProperties : state.Lens.IsPhysicalCamera;
                     cam.usePhysicalProperties = isPhysical;
-                    if (isPhysical && state.Lens.IsPhysicalCamera)
+                    if (isPhysical)
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
 #if CINEMACHINE_HDRP
+                        cam.focusDistance = state.Lens.FocusDistance;
                         cam.iso = state.Lens.Iso;
                         cam.shutterSpeed = state.Lens.ShutterSpeed;
                         cam.aperture = state.Lens.Aperture;

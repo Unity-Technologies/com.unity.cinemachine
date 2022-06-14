@@ -200,8 +200,9 @@ namespace Cinemachine.PostFX
                                 if (focusTarget != null)
                                     focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
                             }
-                            dof.focusDistance.value = Mathf.Max(0, focusDistance);
-                            
+                            focusDistance = Mathf.Max(0, focusDistance);
+                            dof.focusDistance.value = focusDistance;
+                            state.Lens.FocusDistance = focusDistance;                            
                             profile.isDirty = true;
                         }
                     }

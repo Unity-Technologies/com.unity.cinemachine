@@ -95,7 +95,8 @@ namespace Cinemachine.PostFX.Editor
                         MessageType.Warning);
 #else
                 {
-                    valid = dof.active && dof.focusDistance.overrideState
+                    valid = dof.active 
+                        && (dof.focusDistance.overrideState || dof.focusDistanceMode == FocusDistanceMode.Camera)
                         && dof.focusMode.overrideState && dof.focusMode == DepthOfFieldMode.UsePhysicalCamera;
                 }
                 if (!valid)
