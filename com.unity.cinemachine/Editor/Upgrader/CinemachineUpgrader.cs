@@ -113,6 +113,7 @@ namespace Cinemachine.Editor
                 var sceneCount = m_SceneManager.sceneCount;
                 for (var s = 0; s < sceneCount; ++s)
                 {
+                    Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                     
                     var allPrefabInstances = 
@@ -178,6 +179,7 @@ namespace Cinemachine.Editor
                 // from the linked converted copy of the prefab instance.
                 for (int s = 0; s < sceneCount; ++s)
                 {
+                    Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                     
                     foreach (var conversionLink in conversionLinks)
@@ -253,6 +255,7 @@ namespace Cinemachine.Editor
             var sceneCount = m_SceneManager.sceneCount;
             for (var s = 0; s < sceneCount; ++s)
             {
+                Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
                 var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                 
                 var timelineManager = new TimelineManager(activeScene);
