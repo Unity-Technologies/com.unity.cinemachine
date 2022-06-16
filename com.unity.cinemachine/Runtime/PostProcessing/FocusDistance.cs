@@ -19,20 +19,29 @@ namespace Cinemachine.PostFX
         [Range(0, 1)]
         public float Stickiness = 0.4f;
 
+        [Tooltip("Radius of the FocusDistance sensor in the center of the screen.  A value of 1 would fill the screen.  "
+            + "It's recommended to keep this quite small.  Default value is 0.02")]
         [Range(0, 1)]
         public float KernelRadius = 0.02f;
 
+        [Tooltip("Depth tolerance for inclusion in the same depth bucket.  Effectively the depth resolution.")]
         [Range(0, 1)]
         public float DepthTolerance = 0.02f;
 
+        [Tooltip("Position on the screen of the depth sensor.  (0, 0) is screen center.")]
         public Vector2 ScreenPosition;
 
-        public ComputeShader m_ComputeShader;
-        public Camera m_Camera;
+        [Tooltip("Must be the FocusDistance compute shader.")]
+        public ComputeShader ComputeShader;
+
+        [Tooltip("The camera whose depth buffer will be checked.")]
+        public Camera Camera;
+
+        [Tooltip("If true, then the focus distance will be pushed to the camera's focusDistance field.")]
         public bool PushToCamera = true;
 
+        /// <summary>This holds the computed output.  Clients can read it as desired</summary>
         public float ComputedFocusDistance;
-
 
         // Same As FocusDistance.compute
         struct FocusDistanceParams
@@ -79,7 +88,7 @@ namespace Cinemachine.PostFX
 
         protected override void Execute(CustomPassContext ctx)
         {
-            if (m_Camera == null || m_ComputeShader == null || ctx.hdCamera.camera != m_Camera)
+            if (Camera == null || ComputeShader == null || ctx.hdCamera.camera != Camera)
                 return;
 
             ctx.cmd.BeginSample(Uniforms.FocusDistanceKeyword);
@@ -93,21 +102,21 @@ namespace Cinemachine.PostFX
             m_FocusDistanceParams[0].DefaultFocusDistance = ComputedFocusDistance;
 
             m_FocusDistanceParamsCB.SetData(m_FocusDistanceParams);
-            ctx.cmd.SetComputeBufferParam(m_ComputeShader, 0, Uniforms._FocusDistanceParams, m_FocusDistanceParamsCB);
-            ctx.cmd.SetComputeBufferParam(m_ComputeShader, 0, Uniforms._FocusDistanceOutput, m_FocusDistanceOutputCB);
-            ctx.cmd.DispatchCompute(m_ComputeShader, 0, 1, 1, 1);
+            ctx.cmd.SetComputeBufferParam(ComputeShader, 0, Uniforms._FocusDistanceParams, m_FocusDistanceParamsCB);
+            ctx.cmd.SetComputeBufferParam(ComputeShader, 0, Uniforms._FocusDistanceOutput, m_FocusDistanceOutputCB);
+            ctx.cmd.DispatchCompute(ComputeShader, 0, 1, 1, 1);
             ctx.cmd.SetGlobalBuffer(Uniforms._FocusDistanceOutput, m_FocusDistanceOutputCB);
             ctx.cmd.EndSample(Uniforms.FocusDistanceKeyword);
 
             // Read back the output when complete
             ctx.cmd.RequestAsyncReadback(m_FocusDistanceOutputCB, (req) =>
             {
-                if (m_FocusDistanceOutputCB != null && m_Camera != null)
+                if (m_FocusDistanceOutputCB != null && Camera != null)
                 {
                     m_FocusDistanceOutputCB.GetData(m_FocusDistanceOutput);
                     ComputedFocusDistance = m_FocusDistanceOutput[0].FocusDistance;
                     if (PushToCamera)
-                        m_Camera.focusDistance = ComputedFocusDistance;
+                        Camera.focusDistance = ComputedFocusDistance;
                 }
             });
         }

@@ -53,9 +53,9 @@ namespace Cinemachine.PostFX
             ScreenCenter
         };
 
-        /// <summary>The camera's focus disttance will be set to the distance from the selected 
+        /// <summary>The camera's focus distance will be set to the distance from the selected 
         /// target to the camera.  The Focus Offset field will then modify that distance</summary>
-        [Tooltip("The camera's focus disttance will be set to the distance from the selected "
+        [Tooltip("The camera's focus distance will be set to the distance from the selected "
             + "target to the camera.  The Focus Offset field will then modify that distance.")]
         public FocusTrackingMode FocusTarget;
 
@@ -180,8 +180,7 @@ namespace Cinemachine.PostFX
             var volume = GetFocusVolume(vcam);
             if (volume != null && volume.customPasses.Count > 0)
             {
-                var fd = volume.customPasses[0] as FocusDistance;
-                if (fd != null)
+                if (volume.customPasses[0] is FocusDistance fd)
                 {
                     fd.KernelRadius = AutoDetectionRadius;
                     return fd.ComputedFocusDistance;
@@ -191,13 +190,13 @@ namespace Cinemachine.PostFX
         }
 
         static Dictionary<Camera, int> s_VolumeRefCounts;
-        static List<CustomPassVolume> s_scratchList;
+        static List<CustomPassVolume> s_ScratchList;
 
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule()
         {
             s_VolumeRefCounts = null;
-            s_scratchList = null;
+            s_ScratchList = null;
         }
         
         CustomPassVolume GetFocusVolume(CinemachineVirtualCameraBase vcam)
@@ -205,56 +204,56 @@ namespace Cinemachine.PostFX
             if (s_VolumeRefCounts == null || s_VolumeRefCounts.Count == 0)
             {
                 s_VolumeRefCounts = new Dictionary<Camera, int>();
-                s_scratchList = new List<CustomPassVolume>();
+                s_ScratchList = new List<CustomPassVolume>();
                 m_CustomPassVolume = null; // re-fetch after domain reload
             }
             if (m_CustomPassVolume == null)
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
-                var camera = brain == null ? null : brain.OutputCamera;
-                if (camera != null)
+                var cam = brain == null ? null : brain.OutputCamera;
+                if (cam != null)
                 {
                     // Find an existing custom pass volume with our custom shader pass
-                    s_scratchList.Clear();
-                    camera.GetComponents(s_scratchList);
-                    for (int i = 0; i < s_scratchList.Count; ++i)
+                    s_ScratchList.Clear();
+                    cam.GetComponents(s_ScratchList);
+                    for (int i = 0; i < s_ScratchList.Count; ++i)
                     {
-                        var v = s_scratchList[i];
+                        var v = s_ScratchList[i];
                         if (v.injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal
                             && v.customPasses.Count == 1
                             && v.customPasses[0] is FocusDistance)
                         {
                             m_CustomPassVolume = v;
-                            if (!s_VolumeRefCounts.ContainsKey(camera))
-                                s_VolumeRefCounts[camera] = 0;
+                            if (!s_VolumeRefCounts.ContainsKey(cam))
+                                s_VolumeRefCounts[cam] = 0;
                             break;
                         }
                     }
                     if (m_CustomPassVolume == null)
                     {
-                        m_CustomPassVolume = camera.gameObject.AddComponent<CustomPassVolume>();
+                        m_CustomPassVolume = cam.gameObject.AddComponent<CustomPassVolume>();
                         m_CustomPassVolume.hideFlags = HideFlags.HideAndDontSave;
                         m_CustomPassVolume.isGlobal = true;
                         m_CustomPassVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
-                        m_CustomPassVolume.targetCamera = camera;
+                        m_CustomPassVolume.targetCamera = cam;
                         m_CustomPassVolume.runInEditMode = true;
 
                         var pass = m_CustomPassVolume.AddPassOfType<FocusDistance>() as FocusDistance;
-                        pass.m_ComputeShader = m_ComputeShader;
+                        pass.ComputeShader = m_ComputeShader;
                         pass.PushToCamera = false;
-                        pass.ComputedFocusDistance = camera.focusDistance;
-                        pass.m_Camera = camera;
+                        pass.ComputedFocusDistance = cam.focusDistance;
+                        pass.Camera = cam;
                         pass.targetColorBuffer = CustomPass.TargetBuffer.None;
                         pass.targetDepthBuffer = CustomPass.TargetBuffer.Camera;
                         pass.clearFlags = ClearFlag.None;
                         pass.KernelRadius = AutoDetectionRadius;
                         pass.name = GetType().Name;
 
-                        s_VolumeRefCounts[camera] = 0;
+                        s_VolumeRefCounts[cam] = 0;
                     }
-                    var refs = s_VolumeRefCounts[camera];
+                    var refs = s_VolumeRefCounts[cam];
                     ++refs;
-                    s_VolumeRefCounts[camera] = refs;
+                    s_VolumeRefCounts[cam] = refs;
                     m_CustomPassVolume.enabled = refs > 0;
                 }
             }
@@ -265,11 +264,11 @@ namespace Cinemachine.PostFX
         {
             if (m_CustomPassVolume != null && s_VolumeRefCounts != null)
             {
-                if (m_CustomPassVolume.TryGetComponent(out Camera camera))
+                if (m_CustomPassVolume.TryGetComponent(out Camera cam))
                 {
-                    var refs = s_VolumeRefCounts[camera];
+                    var refs = s_VolumeRefCounts[cam];
                     --refs;
-                    s_VolumeRefCounts[camera] = refs;
+                    s_VolumeRefCounts[cam] = refs;
                     m_CustomPassVolume.enabled = refs > 0;
                 }
             }
