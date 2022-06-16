@@ -56,7 +56,7 @@ namespace Cinemachine
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
-    public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
+    public class CinemachineVirtualCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>The object that the camera wants to look at (the Aim target).
         /// The Aim component of the CinemachineComponent pipeline
@@ -622,5 +622,13 @@ namespace Cinemachine
                 return true;
             return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
         }
+
+        public void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.zero;
+        }
+
+        public void OnAfterDeserialize() {}
     }
 }
