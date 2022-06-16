@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
 - Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
 - Add flag for custom priority setting.
+- HDRP only: Added FocusDistance setting to lens
+- HDRP only: New AutoFocus extension.  Use instead of VolumeSettings for Focus Tracking.  Includes Automatic mode that queries depth buffer instead of tracking a specific target.
 
 
 ## UNRELEASED
