@@ -164,11 +164,24 @@ namespace Cinemachine.PostFX
             return -1; // unavailable
         }
 
-        static Dictionary<Camera, int> s_VolumeRefCounts = new Dictionary<Camera, int>();
-        static List<CustomPassVolume> s_scratchList = new List<CustomPassVolume>();
+        static Dictionary<Camera, int> s_VolumeRefCounts;
+        static List<CustomPassVolume> s_scratchList;
 
+        [RuntimeInitializeOnLoadMethod]
+        static void InitializeModule()
+        {
+            s_VolumeRefCounts = null;
+            s_scratchList = null;
+        }
+        
         CustomPassVolume GetFocusVolume(CinemachineVirtualCameraBase vcam)
         {
+            if (s_VolumeRefCounts == null || s_VolumeRefCounts.Count == 0)
+            {
+                s_VolumeRefCounts = new Dictionary<Camera, int>();
+                s_scratchList = new List<CustomPassVolume>();
+                m_CustomPassVolume = null; // re-fetch after domain reload
+            }
             if (m_CustomPassVolume == null)
             {
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
@@ -186,13 +199,15 @@ namespace Cinemachine.PostFX
                             && v.customPasses[0] is FocusDistance)
                         {
                             m_CustomPassVolume = v;
+                            if (!s_VolumeRefCounts.ContainsKey(camera))
+                                s_VolumeRefCounts[camera] = 0;
                             break;
                         }
                     }
                     if (m_CustomPassVolume == null)
                     {
                         m_CustomPassVolume = camera.gameObject.AddComponent<CustomPassVolume>();
-                        m_CustomPassVolume.hideFlags = HideFlags.DontSave;
+                        m_CustomPassVolume.hideFlags = HideFlags.DontSave; // GML: should be HideAndDontSave ?
                         m_CustomPassVolume.isGlobal = true;
                         m_CustomPassVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
                         m_CustomPassVolume.targetCamera = camera;
@@ -221,7 +236,7 @@ namespace Cinemachine.PostFX
 
         void ReleaseFocusVolume()
         {
-            if (m_CustomPassVolume != null)
+            if (m_CustomPassVolume != null && s_VolumeRefCounts != null)
             {
                 if (m_CustomPassVolume.TryGetComponent(out Camera camera))
                 {
@@ -233,6 +248,6 @@ namespace Cinemachine.PostFX
             }
             m_CustomPassVolume = null;
         }
-#endif
     }
+#endif
 }

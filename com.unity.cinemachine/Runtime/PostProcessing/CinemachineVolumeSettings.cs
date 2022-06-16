@@ -202,7 +202,9 @@ namespace Cinemachine.PostFX
                             }
                             focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
-                            state.Lens.FocusDistance = focusDistance;                            
+#if CINEMACHINE_HDRP_7_3_1
+                            state.Lens.FocusDistance = focusDistance;
+#endif
                             profile.isDirty = true;
                         }
                     }
