@@ -56,11 +56,8 @@ namespace Cinemachine.Editor
                 return default(T);
         }
 
-#if CINEMACHINE_HDRP
         static bool s_PhysicalExapnded;
-#endif
         static bool s_AdvancedLensExpanded;
-
 
         static List<string> m_PresetOptions;
         static List<string> m_PhysicalPresetOptions;
@@ -133,6 +130,8 @@ namespace Cinemachine.Editor
                 evt.StopPropagation();
             });
 
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit)));
+
             var ssProp = property.FindPropertyRelative("m_SensorSize");
             var sensorSizeField = physical.AddChild(new PropertyField(ssProp));
             sensorSizeField.RegisterValueChangeCallback((evt) =>
@@ -149,8 +148,6 @@ namespace Cinemachine.Editor
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Iso)));
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed)));
 #endif
-            var gateFitField = physical.AddChild(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit)));
-
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift)));
 #if CINEMACHINE_HDRP
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Aperture)));
@@ -188,7 +185,6 @@ namespace Cinemachine.Editor
 
             return ux;
         }
-
 
         /// <summary>
         /// Make the complicated FOV widget which works in 3 modes, with preset popups, 
@@ -520,6 +516,12 @@ namespace Cinemachine.Editor
             "Actual size of the image sensor (in mm), used to "
             + "convert between focal length and field of view.");
         static readonly GUIContent s_EmptyContent = new GUIContent(" ");
+        static readonly GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
+        static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
+        static readonly string AdvancedHelpboxMessage = "Setting a mode override here implies changes to the Camera component when "
+            + "Cinemachine activates this Virtual Camera, and the changes will remain after the Virtual "
+            + "Camera deactivation. If you set a mode override in any Virtual Camera, you should set "
+            + "one in all Virtual Cameras.";
 
         struct Snapshot
         {
@@ -532,10 +534,6 @@ namespace Cinemachine.Editor
             public GUIContent[] m_PhysicalPresetOptions;
         }
         Snapshot m_Snapshot;
-
-    #if CINEMACHINE_HDRP
-        static readonly GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
-    #endif
 
         const float vSpace= 2;
         const float hSpace = 2;
@@ -564,7 +562,7 @@ namespace Cinemachine.Editor
             m_Snapshot.SensorSize = SensorSize(property);
         }
 
-        static float FoldoutHackWTF => EditorGUI.indentLevel == 0 ? 13 : 0; 
+        static float FoldoutHackWTF => 13;
 
         GUIContent GetFOVLabel()
         {
@@ -742,12 +740,18 @@ namespace Cinemachine.Editor
 
                 if (m_Snapshot.IsPhysical)
                 {
-                    rect.y += rect.height + vSpace;
-                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
-                    if (property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride).intValue != (int)LensSettings.OverrideModes.None)
-                    {
-                        rect.y += rect.height + vSpace;
+                    rect.y += rect.height + vSpace; rect.x -= FoldoutHackWTF;
+                    s_PhysicalExapnded = EditorGUI.Foldout(rect, s_PhysicalExapnded, PhysicalPropertiesLabel, true);
+                    rect.x += FoldoutHackWTF;
 
+                    if (s_PhysicalExapnded)
+                    {
+                        ++EditorGUI.indentLevel;
+
+                        rect.y += rect.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
+
+                        rect.y += rect.height + vSpace;
                         var ssProp = property.FindPropertyRelative("m_SensorSize");
                         EditorGUI.BeginProperty(rect, SensorSizeLabel, ssProp);
                         var v = EditorGUI.Vector2Field(rect, SensorSizeLabel, ssProp.vector2Value);
@@ -757,15 +761,8 @@ namespace Cinemachine.Editor
                         EditorGUI.EndProperty();
 
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
-                    }
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
 #if CINEMACHINE_HDRP
-                    rect.y += rect.height + vSpace; rect.x -= FoldoutHackWTF;
-                    s_PhysicalExapnded = EditorGUI.Foldout(rect, s_PhysicalExapnded, PhysicalPropertiesLabel, true);
-                    rect.x += FoldoutHackWTF;
-                    if (s_PhysicalExapnded)
-                    {
-                        ++EditorGUI.indentLevel;
                         rect.y += rect.height + vSpace;
                         EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Aperture));
                         rect.y += rect.height + vSpace;
@@ -780,10 +777,25 @@ namespace Cinemachine.Editor
                         EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping));
                         rect.y += rect.height + vSpace;
                         EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism));
+#endif
                         --EditorGUI.indentLevel;
                     }
-#endif
                 }
+                rect.y += rect.height + vSpace; rect.x -= FoldoutHackWTF;
+                s_AdvancedLensExpanded = EditorGUI.Foldout(rect, s_AdvancedLensExpanded, AdvancedLabel);
+                rect.x += FoldoutHackWTF;
+                if (s_AdvancedLensExpanded)
+                {
+                    ++EditorGUI.indentLevel;
+                    rect.y += rect.height + vSpace;
+                    var r = EditorGUI.IndentedRect(rect); r.height *= 4;
+                    EditorGUI.HelpBox(r, AdvancedHelpboxMessage, MessageType.Info);
+
+                    rect.y += r.height + vSpace;
+                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride));
+                    --EditorGUI.indentLevel;
+                }
+
                 --EditorGUI.indentLevel;
             }
             property.serializedObject.ApplyModifiedProperties();
@@ -800,14 +812,20 @@ namespace Cinemachine.Editor
             int numLines = 4;
             if (m_Snapshot.IsPhysical)
             {
-#if CINEMACHINE_HDRP
+                numLines += 1;
                 if (s_PhysicalExapnded)
-                    numLines += 7;
-                if (property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride).intValue != (int)LensSettings.OverrideModes.None)
-                    numLines += 2;
+                {
+#if CINEMACHINE_HDRP
+                    numLines += 10;
+#else
+                    numLines += 3;
 #endif
-                numLines += 2;
+                }
             }
+            // Advanced section
+            numLines += 1;
+            if (s_AdvancedLensExpanded)
+                numLines += 5;  // not correct but try to make it big enough to hold the help box
             return lineHeight + numLines * (lineHeight + vSpace);
         }
     }

@@ -28,7 +28,7 @@ namespace Cinemachine
             // This must run during the Body stage because CinemachineConfiner also runs during Body stage,
             // and CinemachinePixelPerfect needs to run before CinemachineConfiner as the confiner reads the
             // orthographic size. We also altered the script execution order to ensure this.
-            if (stage != CinemachineCore.Stage.Body)
+            if (stage != CinemachineCore.Stage.PositionControl)
                 return;
 
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
