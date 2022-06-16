@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
 - Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
 - Bugfix: Fixed spurious Z rotations during speherical blend.
+- Bugfix: SensorSize is not saved when not using physical camera.
 
 
 ## [2.9.0-pre.7] - 2022-03-29
