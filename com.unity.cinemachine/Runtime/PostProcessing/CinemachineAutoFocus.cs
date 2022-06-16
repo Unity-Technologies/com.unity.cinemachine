@@ -50,7 +50,7 @@ namespace Cinemachine.PostFX
             Camera,
             /// <summary>Focus will be on whatever is located in the depth buffer 
             /// at the center of the screen</summary>
-            Automatic
+            ScreenCenter
         };
 
         /// <summary>The camera's focus disttance will be set to the distance from the selected 
@@ -74,11 +74,34 @@ namespace Cinemachine.PostFX
         [Tooltip("The value corresponds approximately to the time the focus will take to adjust to the new value.")]
         public float Damping;
 
+        /// <summary>
+        /// Radius of the AutoFocus sensor in the center of the screen.  A value of 1 would fill the screen.  
+        /// It's recommended to keep this quite small.  Default value is 0.02.
+        /// </summary>
+        [Tooltip("Radius of the AutoFocus sensor in the center of the screen.  A value of 1 would fill the screen.  "
+            + "It's recommended to keep this quite small.  Default value is 0.02")]
+        [Range(0, 0.1f)]
+        public float AutoDetectionRadius;
+
         CustomPassVolume m_CustomPassVolume;
 
         /// <summary>Serialized so that the compute shader is include in the build</summary>
         [SerializeField, HideInInspector]
         ComputeShader m_ComputeShader;
+
+        void Reset()
+        {
+            Damping = 0.2f;
+            FocusTarget = FocusTrackingMode.None;
+            CustomTarget = null;
+            FocusOffset = 0;
+            AutoDetectionRadius = 0.02f;
+        }
+
+        void OnValidate()
+        {
+            Damping = Mathf.Max(0, Damping);
+        }
 
 #if UNITY_EDITOR
         // GML todo: is there a better way to set up this binding?
@@ -105,7 +128,7 @@ namespace Cinemachine.PostFX
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (FocusTarget != FocusTrackingMode.Automatic || !CinemachineCore.Instance.IsLive(vcam))
+            if (FocusTarget != FocusTrackingMode.ScreenCenter || !CinemachineCore.Instance.IsLive(vcam))
                 ReleaseFocusVolume();
 
             // Set the focus after the camera has been fully positioned
@@ -126,7 +149,7 @@ namespace Cinemachine.PostFX
                     case FocusTrackingMode.CustomTarget: 
                         focusTarget = CustomTarget; 
                         break;
-                    case FocusTrackingMode.Automatic:
+                    case FocusTrackingMode.ScreenCenter:
                         focusDistance = FetchAutoFocusDistance(vcam);
                         if (focusDistance < 0)
                             return; // not available, abort
@@ -159,7 +182,10 @@ namespace Cinemachine.PostFX
             {
                 var fd = volume.customPasses[0] as FocusDistance;
                 if (fd != null)
+                {
+                    fd.KernelRadius = AutoDetectionRadius;
                     return fd.ComputedFocusDistance;
+                }
             }
             return -1; // unavailable
         }
@@ -207,7 +233,7 @@ namespace Cinemachine.PostFX
                     if (m_CustomPassVolume == null)
                     {
                         m_CustomPassVolume = camera.gameObject.AddComponent<CustomPassVolume>();
-                        m_CustomPassVolume.hideFlags = HideFlags.DontSave; // GML: should be HideAndDontSave ?
+                        m_CustomPassVolume.hideFlags = HideFlags.HideAndDontSave;
                         m_CustomPassVolume.isGlobal = true;
                         m_CustomPassVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
                         m_CustomPassVolume.targetCamera = camera;
@@ -221,6 +247,7 @@ namespace Cinemachine.PostFX
                         pass.targetColorBuffer = CustomPass.TargetBuffer.None;
                         pass.targetDepthBuffer = CustomPass.TargetBuffer.Camera;
                         pass.clearFlags = ClearFlag.None;
+                        pass.KernelRadius = AutoDetectionRadius;
                         pass.name = GetType().Name;
 
                         s_VolumeRefCounts[camera] = 0;

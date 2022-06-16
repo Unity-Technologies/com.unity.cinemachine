@@ -34,6 +34,8 @@ namespace Cinemachine.PostFX.Editor
             var mode = (CinemachineAutoFocus.FocusTrackingMode)focusTargetProp.intValue;
             if (mode != CinemachineAutoFocus.FocusTrackingMode.CustomTarget)
                 excluded.Add(FieldPath(x => x.CustomTarget));
+            if (mode != CinemachineAutoFocus.FocusTrackingMode.ScreenCenter)
+                excluded.Add(FieldPath(x => x.AutoDetectionRadius));
             if (mode == CinemachineAutoFocus.FocusTrackingMode.None)
             {
                 excluded.Add(FieldPath(x => x.FocusOffset));
