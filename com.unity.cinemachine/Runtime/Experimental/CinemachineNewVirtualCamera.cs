@@ -16,7 +16,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CinemachineNewVirtualCamera")]
-    public class CinemachineNewVirtualCamera : CinemachineVirtualCameraBase
+    public class CinemachineNewVirtualCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
@@ -439,6 +439,14 @@ namespace Cinemachine
                 }
             }
         }
+
+        public void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
+        }
+
+        public void OnAfterDeserialize() {}
     }
 }
 #endif

@@ -20,7 +20,7 @@ namespace Cinemachine
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
-    public class CinemachineFreeLook : CinemachineVirtualCameraBase
+    public class CinemachineFreeLook : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
@@ -880,5 +880,13 @@ namespace Cinemachine
                 m_CachedTension = m_SplineCurvature;
             }
         }
+
+        public void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
+        }
+
+        public void OnAfterDeserialize() {}
     }
 }

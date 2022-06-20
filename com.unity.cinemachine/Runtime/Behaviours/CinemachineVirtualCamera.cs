@@ -626,7 +626,7 @@ namespace Cinemachine
         public void OnBeforeSerialize()
         {
             if (!m_Lens.IsPhysicalCamera) 
-                m_Lens.SensorSize = Vector2.zero;
+                m_Lens.SensorSize = Vector2.one;
         }
 
         public void OnAfterDeserialize() {}
