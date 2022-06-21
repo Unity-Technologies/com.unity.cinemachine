@@ -40,8 +40,11 @@ namespace Cinemachine.PostFX
         [Tooltip("If true, then the focus distance will be pushed to the camera's focusDistance field.")]
         public bool PushToCamera = true;
 
+        /// <summary>Initialize this with the current focus distance, to be used as a default value</summary>
+        public float CurrentFocusDistance;
+
         /// <summary>This holds the computed output.  Clients can read it as desired</summary>
-        public float ComputedFocusDistance;
+        public float ComputedFocusDistance { get; private set; }
 
         // Same As FocusDistance.compute
         struct FocusDistanceParams
@@ -99,7 +102,8 @@ namespace Cinemachine.PostFX
             m_FocusDistanceParams[0].SampleRadius = KernelRadius;
             m_FocusDistanceParams[0].SamplePosX = ScreenPosition.x;
             m_FocusDistanceParams[0].SamplePosY = ScreenPosition.y;
-            m_FocusDistanceParams[0].DefaultFocusDistance = ComputedFocusDistance;
+            m_FocusDistanceParams[0].DefaultFocusDistance 
+                = (PushToCamera || CurrentFocusDistance <= 0) ? Camera.focusDistance : CurrentFocusDistance;
 
             m_FocusDistanceParamsCB.SetData(m_FocusDistanceParams);
             ctx.cmd.SetComputeBufferParam(ComputeShader, 0, Uniforms._FocusDistanceParams, m_FocusDistanceParamsCB);

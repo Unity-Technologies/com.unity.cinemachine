@@ -134,6 +134,7 @@ namespace Cinemachine.PostFX
             // Set the focus after the camera has been fully positioned
             if (stage == CinemachineCore.Stage.Finalize && FocusTarget != FocusTrackingMode.None)
             {
+                var extra = GetExtraState<VcamExtraState>(vcam);
                 float focusDistance = 0;
                 Transform focusTarget = null;
                 switch (FocusTarget)
@@ -150,7 +151,7 @@ namespace Cinemachine.PostFX
                         focusTarget = CustomTarget; 
                         break;
                     case FocusTrackingMode.ScreenCenter:
-                        focusDistance = FetchAutoFocusDistance(vcam);
+                        focusDistance = FetchAutoFocusDistance(vcam, extra);
                         if (focusDistance < 0)
                             return; // not available, abort
                         break;
@@ -161,7 +162,6 @@ namespace Cinemachine.PostFX
                 focusDistance = Mathf.Max(0, focusDistance + FocusOffset);
 
                 // Apply damping
-                var extra = GetExtraState<VcamExtraState>(vcam);
                 if (deltaTime >= 0 && vcam.PreviousStateIsValid)
                     focusDistance = extra.CurrentFocusDistance + Damper.Damp(
                         focusDistance - extra.CurrentFocusDistance, Damping, deltaTime);
@@ -175,7 +175,7 @@ namespace Cinemachine.PostFX
             public float CurrentFocusDistance;
         }
 
-        float FetchAutoFocusDistance(CinemachineVirtualCameraBase vcam)
+        float FetchAutoFocusDistance(CinemachineVirtualCameraBase vcam, VcamExtraState extra)
         {
             var volume = GetFocusVolume(vcam);
             if (volume != null && volume.customPasses.Count > 0)
@@ -183,6 +183,7 @@ namespace Cinemachine.PostFX
                 if (volume.customPasses[0] is FocusDistance fd)
                 {
                     fd.KernelRadius = AutoDetectionRadius;
+                    fd.CurrentFocusDistance = vcam.PreviousStateIsValid ? extra.CurrentFocusDistance : 0;
                     return fd.ComputedFocusDistance;
                 }
             }
@@ -241,7 +242,7 @@ namespace Cinemachine.PostFX
                         var pass = m_CustomPassVolume.AddPassOfType<FocusDistance>() as FocusDistance;
                         pass.ComputeShader = m_ComputeShader;
                         pass.PushToCamera = false;
-                        pass.ComputedFocusDistance = cam.focusDistance;
+                        pass.CurrentFocusDistance = cam.focusDistance;
                         pass.Camera = cam;
                         pass.targetColorBuffer = CustomPass.TargetBuffer.None;
                         pass.targetDepthBuffer = CustomPass.TargetBuffer.Camera;
