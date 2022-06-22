@@ -88,7 +88,7 @@ namespace Cinemachine.Editor
                 "I made a backup, go ahead", "Cancel"))
             {
                 UpgradePrefabs();
-                // UpgradeInScenes();
+                UpgradeInScenes();
             }
         }
 
@@ -350,12 +350,12 @@ namespace Cinemachine.Editor
                 {
                     var sceneGuid = allSceneGuids[i];
                     var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
-                    bool add = false;
+                    var add = true;
                     foreach (var ignore in s_IgnoreListGigaya)
                     {
-                        if (scenePath.Contains("Movement_Gym"))
+                        if (scenePath.Contains(ignore))
                         {
-                            add = true;
+                            add = false;
                             break;
                         }
                     }
