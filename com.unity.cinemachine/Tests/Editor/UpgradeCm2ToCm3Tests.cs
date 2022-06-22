@@ -48,8 +48,10 @@ namespace Tests.Editor
                     && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 foreach (var cmComponent in s_AllCinemachineComponents)
                 {
+#pragma warning disable 618 // disable obsolete warning
                     if (cmComponent == typeof(CinemachineTrackedDolly))
                         continue;
+#pragma warning restore 618
                     yield return new TestCaseData(cmComponent).SetName(cmComponent.Name).Returns(null);
                 }
             }
