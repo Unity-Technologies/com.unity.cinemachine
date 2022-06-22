@@ -57,7 +57,7 @@ namespace Cinemachine
     [Obsolete("This is deprecated. Use CmCamera instead.")]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
-    public class CinemachineVirtualCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
+    public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The object that the camera wants to look at (the Aim target).
         /// The Aim component of the CinemachineComponent pipeline
@@ -195,6 +195,13 @@ namespace Cinemachine
                 m_Transitions.m_BlendHint = m_LegacyBlendHint;
                 m_LegacyBlendHint = BlendHint.None;
             }
+        }
+
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
         }
 
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
@@ -618,13 +625,5 @@ namespace Cinemachine
                 return true;
             return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
         }
-
-        public void OnBeforeSerialize()
-        {
-            if (!m_Lens.IsPhysicalCamera) 
-                m_Lens.SensorSize = Vector2.one;
-        }
-
-        public void OnAfterDeserialize() {}
     }
 }

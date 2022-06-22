@@ -21,7 +21,7 @@ namespace Cinemachine
         "create a CmCamera with appropriate components")]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
-    public class CinemachineFreeLook : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
+    public class CinemachineFreeLook : CinemachineVirtualCameraBase
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
@@ -168,6 +168,13 @@ namespace Cinemachine
                 if (m_Rigs[i] != null)
                     CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 #endif
+        }
+
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
         }
 
         /// <summary>Get a child rig</summary>
@@ -882,13 +889,5 @@ namespace Cinemachine
                 m_CachedTension = m_SplineCurvature;
             }
         }
-
-        public void OnBeforeSerialize()
-        {
-            if (!m_Lens.IsPhysicalCamera) 
-                m_Lens.SensorSize = Vector2.one;
-        }
-
-        public void OnAfterDeserialize() {}
     }
 }

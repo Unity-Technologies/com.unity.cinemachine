@@ -50,7 +50,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CmCamera")]
-    public sealed class CmCamera : CinemachineVirtualCameraBase
+    public sealed class CmCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>The Tracking and LookAt targets for this camera.</summary>
         [NoSaveDuringPlay]
@@ -317,6 +317,13 @@ namespace Cinemachine
             UpdatePipelineCache();
             var i = (int)stage;
             return i >= 0 && i < m_Pipeline.Length ? m_Pipeline[i] : null;
+        }
+
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!Lens.IsPhysicalCamera) 
+                Lens.SensorSize = Vector2.one;
         }
     }
 }
