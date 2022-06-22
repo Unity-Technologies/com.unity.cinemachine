@@ -494,7 +494,7 @@ namespace Cinemachine
             if (m_ComponentPipeline == null)
             {
                 state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
-                for (var stage = CinemachineCore.Stage.PositionControl; stage <= CinemachineCore.Stage.Finalize; ++stage)
+                for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
                     InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
             }
             else
@@ -505,14 +505,14 @@ namespace Cinemachine
 
                 int componentIndex = 0;
                 CinemachineComponentBase postAimBody = null;
-                for (var stage = CinemachineCore.Stage.PositionControl; stage <= CinemachineCore.Stage.Finalize; ++stage)
+                for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
                 {
                     var c = componentIndex < m_ComponentPipeline.Length 
                         ? m_ComponentPipeline[componentIndex] : null;
                     if (c != null && stage == c.Stage)
                     {
                         ++componentIndex;
-                        if (stage == CinemachineCore.Stage.PositionControl && c.BodyAppliesAfterAim)
+                        if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
                         {
                             postAimBody = c;
                             continue; // do the body stage of the pipeline after Aim
@@ -521,7 +521,7 @@ namespace Cinemachine
                     }
                     InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
 
-                    if (stage == CinemachineCore.Stage.RotationControl)
+                    if (stage == CinemachineCore.Stage.Aim)
                     {
                         if (c == null)
                             state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
@@ -529,7 +529,7 @@ namespace Cinemachine
                         if (postAimBody != null)
                         {
                             postAimBody.MutateCameraState(ref state, deltaTime);
-                            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.PositionControl, ref state, deltaTime);
+                            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
                         }
                     }
                 }

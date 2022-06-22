@@ -302,7 +302,9 @@ namespace Cinemachine.Editor
                     s_StageData[i] = new StageData
                     {
                         Stage = stage,
-                        Name = ObjectNames.NicifyVariableName(stage.ToString()),
+                        Name = stage == CinemachineCore.Stage.Body ? "Position Control" 
+                            : stage == CinemachineCore.Stage.Aim ? "Rotation Control"
+                            : ObjectNames.NicifyVariableName(stage.ToString()),
                         Types = new List<Type>() { null }, // first item is "none"
                         Choices = new List<string>() { "none" }
                     };
@@ -385,7 +387,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// This is only for aesthetics, sort order does not affect camera logic.
         /// Behaviours should be sorted like this:
-        /// CmCamera, PositionControl, RotationControl, Noise, Finalize, Extensions, everything else.
+        /// CmCamera, Body, Aim, Noise, Finalize, Extensions, everything else.
         /// </summary>
         public void SortComponents()
         {
@@ -406,8 +408,8 @@ namespace Cinemachine.Editor
                 // This is painful, but it won't happen too often
                 var pos = 0;
                 if (MoveComponentToPosition(pos, SortOrder.Camera, s_componentCache)) ++pos;
-                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.PositionControl, s_componentCache)) ++pos;
-                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.RotationControl, s_componentCache)) ++pos;
+                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Body, s_componentCache)) ++pos;
+                if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Aim, s_componentCache)) ++pos;
                 if (MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Noise, s_componentCache)) ++pos;
                 MoveComponentToPosition(pos, SortOrder.Pipeline + (int)CinemachineCore.Stage.Finalize, s_componentCache);
                 // leave everything else where it is

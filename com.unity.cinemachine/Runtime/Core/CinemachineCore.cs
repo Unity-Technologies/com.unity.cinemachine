@@ -29,11 +29,11 @@ namespace Cinemachine
         /// </summary>
         public enum Stage
         {
-            /// <summary>Second stage: position the camera in space</summary>
-            PositionControl,
+            /// <summary>First stage: position the camera in space</summary>
+            Body,
 
-            /// <summary>Third stage: orient the camera to point at the target</summary>
-            RotationControl,
+            /// <summary>Second stage: orient the camera to point at the target</summary>
+            Aim,
 
             /// <summary>Final pipeline stage: apply noise (this is done separately, in the
             /// Correction channel of the CameraState)</summary>

@@ -263,14 +263,14 @@ namespace Cinemachine.Editor
                 var topNoise = topRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                 var middleNoise = middleRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
                 var bottomNoise = bottomRig.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-                var midAim = middleRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl);
+                var midAim = middleRig.GetCinemachineComponent(CinemachineCore.Stage.Aim);
 
                 return
                     parentLookAt == topRig.LookAt && parentLookAt == middleRig.LookAt && parentLookAt == bottomRig.LookAt &&
                     PublicFieldsEqual(topNoise, middleNoise) &&
                     PublicFieldsEqual(middleNoise, bottomNoise) &&
-                    PublicFieldsEqual(topRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl), midAim, s_IgnoreList) &&
-                    PublicFieldsEqual(bottomRig.GetCinemachineComponent(CinemachineCore.Stage.RotationControl), midAim, s_IgnoreList);
+                    PublicFieldsEqual(topRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_IgnoreList) &&
+                    PublicFieldsEqual(bottomRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_IgnoreList);
 
                 static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b, params string[] ignoreList)
                 {
@@ -403,7 +403,7 @@ namespace Cinemachine.Editor
             static void ConvertFreelookAim(CinemachineFreeLook freelook, GameObject go, CinemachineFreeLookModifier freeLookModifier)
             {
                 // We assume that the middle aim is a suitable template
-                var template = freelook.GetRig(1).GetCinemachineComponent(CinemachineCore.Stage.RotationControl);
+                var template = freelook.GetRig(1).GetCinemachineComponent(CinemachineCore.Stage.Aim);
                 if (template == null)
                     return;
                 var newAim = (CinemachineComponentBase)go.AddComponent(template.GetType());

@@ -15,7 +15,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachineGroupComposer : CinemachineComposer
     {
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>

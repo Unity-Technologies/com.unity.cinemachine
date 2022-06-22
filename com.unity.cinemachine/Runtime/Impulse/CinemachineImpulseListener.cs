@@ -21,7 +21,7 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("When to apply the impulse reaction.  Default is after the Noise stage.  "
             + "Modify this if necessary to influence the ordering of extension effects")]
-        public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.RotationControl; // legacy compatibility setting
+        public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.Aim; // legacy compatibility setting
 
         /// <summary>
         /// Impulse events on channels not included in the mask will be ignored.

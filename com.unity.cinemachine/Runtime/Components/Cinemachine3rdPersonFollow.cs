@@ -14,7 +14,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping
@@ -165,7 +165,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
 #if CINEMACHINE_PHYSICS
         /// <summary>

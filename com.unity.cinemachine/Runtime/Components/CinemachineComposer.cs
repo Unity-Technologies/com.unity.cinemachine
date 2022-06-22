@@ -15,7 +15,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition, 
         CinemachineFreeLookModifier.IModifiableBiasPosition
     {
@@ -131,7 +131,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.RotationControl; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
 
         /// <summary>Internal API for inspector</summary>
         public Vector3 TrackedPoint { get; private set; }

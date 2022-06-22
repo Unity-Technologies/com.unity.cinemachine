@@ -9,7 +9,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachineHardLookAt : CinemachineComponentBase
     {
         /// <summary>True if component is enabled and has a LookAt defined</summary>
@@ -17,7 +17,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.RotationControl; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
 
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>

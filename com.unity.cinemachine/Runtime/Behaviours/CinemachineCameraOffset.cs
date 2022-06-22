@@ -21,7 +21,7 @@ public class CinemachineCameraOffset : CinemachineExtension
     /// When to apply the offset
     /// </summary>
     [Tooltip("When to apply the offset")]
-    public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.RotationControl;
+    public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.Aim;
 
     /// <summary>
     /// If applying offset after aim, re-adjust the aim to preserve the screen position
@@ -45,7 +45,7 @@ public class CinemachineCameraOffset : CinemachineExtension
         if (stage == m_ApplyAfter)
         {
             bool preserveAim = m_PreserveComposition
-                && state.HasLookAt && stage > CinemachineCore.Stage.PositionControl;
+                && state.HasLookAt && stage > CinemachineCore.Stage.Body;
 
             Vector3 screenOffset = Vector2.zero;
             if (preserveAim)

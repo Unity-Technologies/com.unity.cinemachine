@@ -29,7 +29,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineFramingTransposer : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
@@ -332,7 +332,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
         /// <summary>FramingTransposer's algorithm tahes camera orientation as input, 
         /// so even though it is a Body component, it must apply after Aim</summary>
