@@ -88,7 +88,7 @@ namespace Cinemachine.Editor
                 "I made a backup, go ahead", "Cancel"))
             {
                 UpgradePrefabs();
-                UpgradeInScenes();
+                // UpgradeInScenes();
             }
         }
 
@@ -161,13 +161,13 @@ namespace Cinemachine.Editor
                 using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_PrefabManager.GetPrefabAssetPath(p)))
                 {
                     var prefabContents= editingScope.prefabContentsRoot;
-                    var freelooks = prefabContents.GetComponentsInChildren<CinemachineFreeLook>();
+                    var freelooks = prefabContents.GetComponentsInChildren<CinemachineFreeLook>(true);
                     foreach (var freelook in freelooks)
                     {
                         Upgrade(freelook.gameObject);
                     }
 
-                    var vcams = prefabContents.GetComponentsInChildren<CinemachineVirtualCamera>();
+                    var vcams = prefabContents.GetComponentsInChildren<CinemachineVirtualCamera>(true);
                     foreach (var vcam in vcams)
                     {
                         if (vcam.ParentCamera is not CinemachineFreeLook) // this check is needed in case a freelook was not fully upgradable
@@ -341,12 +341,12 @@ namespace Cinemachine.Editor
                 {
                     var sceneGuid = allSceneGuids[i];
                     var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
-                    bool add = true;
+                    bool add = false;
                     foreach (var ignore in s_IgnoreListGigaya)
                     {
-                        if (scenePath.Contains(ignore))
+                        if (scenePath.Contains("Movement_Gym"))
                         {
-                            add = false;
+                            add = true;
                             break;
                         }
                     }
@@ -877,8 +877,8 @@ namespace Cinemachine.Editor
                 m_PrefabAssets = new List<GameObject>();
                 foreach (var prefab in allPrefabs)
                 {
-                    var freelooks = prefab.GetComponentsInChildren<CinemachineFreeLook>();
-                    var vcams = prefab.GetComponentsInChildren<CinemachineVirtualCamera>();
+                    var freelooks = prefab.GetComponentsInChildren<CinemachineFreeLook>(true);
+                    var vcams = prefab.GetComponentsInChildren<CinemachineVirtualCamera>(true);
                     if ((freelooks != null && freelooks.Length > 0) || (vcams != null && vcams.Length > 0))
                     {
                         m_PrefabAssets.Add(prefab);
@@ -951,22 +951,13 @@ namespace Cinemachine.Editor
                     if (prefabInstance.name.Contains(k_UnupgradableTag))
                         continue; // ignore, because we created it
                     
-                    var source = PrefabUtility.GetCorrespondingObjectFromSource(prefabInstance);
                     var nearestPrefabRoot = PrefabUtility.GetNearestPrefabInstanceRoot(prefabInstance);
-                    var nearestPrefabRootSource = PrefabUtility.GetCorrespondingObjectFromSource(nearestPrefabRoot);
                     var nearestPrefabRootPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefabInstance);
                     // Check if prefabInstance is an instance of the input prefab
-                    // If prefabInstance is a direct instance of prefab, then source is the same object as prefab
-                    // However, if prefabInstance is part of a nested prefab, then source is unfortunately a different object.
-                    // So I have to compare their names, which should be a sufficient condition, it does not make sense
-                    // to have prefabs assets with the same name, but it is not enforced, so it could happen...
-                    if (source != null && (
-                            prefab.Equals(nearestPrefabRoot) ||
-                            prefab.name == nearestPrefabRoot.name ||
-                            nearestPrefabRootPath.Equals(prefabPath))
-                       )
+                    if (nearestPrefabRoot != null && nearestPrefabRootPath.Equals(prefabPath))
                     {
-                        allInstances.Add(prefabInstance);
+                        if (!allInstances.Contains(nearestPrefabRoot)) 
+                            allInstances.Add(nearestPrefabRoot);
                     }
                 }
                 return allInstances;
