@@ -181,7 +181,6 @@ namespace Cinemachine.Editor
                 {
                     Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
-
                     var allGameObjectsInScene = GetAllGameObjects();
                     foreach (var conversionLink in conversionLinks)
                     {
@@ -255,8 +254,20 @@ namespace Cinemachine.Editor
                 return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject) && 
                     !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave)).ToList();
             }
-            static GameObject Find(string name, List<GameObject> gameobjects) => 
-                gameobjects.FirstOrDefault(go => go.name.Equals(name));
+
+            static GameObject Find(string name, List<GameObject> gameobjects)
+            {
+                foreach (var go in gameobjects)
+                {
+                    if (go == null)
+                    {
+                        continue; ;
+                    }
+                    if (go.name.Equals(name))
+                        return go;
+                }
+                return null;
+            }
         }
 
         void UpgradeInScenes()
