@@ -181,13 +181,12 @@ namespace Cinemachine.Editor
                 {
                     Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
-                    
+
+                    var allGameObjectsInScene = GetAllGameObjects();
                     foreach (var conversionLink in conversionLinks)
                     {
-                        var prefabInstance = 
-                            GameObject.Find(conversionLink.originalGUIDName);
-                        var convertedCopy = 
-                            GameObject.Find(conversionLink.convertedGUIDName);
+                        var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
+                        var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
                         if (prefabInstance == null || convertedCopy == null)
                             continue; // ignore, instance is not in this scene
                         
@@ -248,8 +247,18 @@ namespace Cinemachine.Editor
                     EditorSceneManager.SaveScene(activeScene);
                 }
             }
+            
+            // local functions
+            List<GameObject> GetAllGameObjects()
+            {
+                var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+                return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject) && 
+                    !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave)).ToList();
+            }
+            static GameObject Find(string name, List<GameObject> gameobjects) => 
+                gameobjects.FirstOrDefault(go => go.name.Equals(name));
         }
-        
+
         void UpgradeInScenes()
         {
             var sceneCount = m_SceneManager.SceneCount;
