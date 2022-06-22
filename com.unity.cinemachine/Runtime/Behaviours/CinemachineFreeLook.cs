@@ -14,10 +14,11 @@ namespace Cinemachine
     /// Depending on the camera's position along the spline connecting these three rigs,
     /// these settings are interpolated to give the final camera position and state.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
+    [Obsolete("This is deprecated. Use Create -> Cinemachine -> FreeLook camera, or " +
+        "create a CmCamera with appropriate components")]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase
@@ -131,12 +132,10 @@ namespace Cinemachine
         private float m_LegacyHeadingBias = float.MaxValue;
         bool mUseLegacyRigDefinitions = false;
 
-        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
-        protected override void OnValidate()
+        internal protected override void LegacyUpgrade(int streamedVersion)
         {
-            base.OnValidate();
+            base.LegacyUpgrade(streamedVersion);
 
-            // Upgrade after a legacy deserialize
             if (m_LegacyHeadingBias != float.MaxValue)
             {
                 m_Heading.m_Bias= m_LegacyHeadingBias;
@@ -151,6 +150,11 @@ namespace Cinemachine
                 m_Transitions.m_BlendHint = m_LegacyBlendHint;
                 m_LegacyBlendHint = BlendHint.None;
             }
+        }
+        
+        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
+        void OnValidate()
+        {
             m_YAxis.Validate();
             m_XAxis.Validate();
             m_RecenterToTargetHeading.Validate();
@@ -666,7 +670,6 @@ namespace Cinemachine
                 for (int i = 0; i < m_Rigs.Length; ++i)
                      mOrbitals[i] = m_Rigs[i].GetCinemachineComponent<CinemachineOrbitalTransposer>();
 
-#if UNITY_EDITOR
                 foreach (var rig in m_Rigs)
                 {
                     // Configure the UI
@@ -677,7 +680,6 @@ namespace Cinemachine
                         : new string[] { "m_Script", "Header", "Extensions", "m_Priority", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
                     rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
                 }
-#endif
 
                 // Create the blend objects
                 mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);

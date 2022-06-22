@@ -21,7 +21,7 @@ namespace Cinemachine
     public sealed class CinemachineCore
     {
         /// <summary>Data version string.  Used to upgrade from legacy projects</summary>
-        public static readonly int kStreamingVersion = 20170927;
+        public static readonly int kStreamingVersion = 20220201;
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
@@ -30,10 +30,10 @@ namespace Cinemachine
         public enum Stage
         {
             /// <summary>Second stage: position the camera in space</summary>
-            Body,
+            PositionControl,
 
             /// <summary>Third stage: orient the camera to point at the target</summary>
-            Aim,
+            RotationControl,
 
             /// <summary>Final pipeline stage: apply noise (this is done separately, in the
             /// Correction channel of the CameraState)</summary>
@@ -59,8 +59,9 @@ namespace Cinemachine
 
         /// <summary>
         /// If true, show hidden Cinemachine objects, to make manual script mapping possible.
+        /// GML todo: delete this
         /// </summary>
-        public static bool sShowHiddenObjects = false;
+        public static bool sShowHiddenObjects = true;
 
         /// <summary>Delegate for overriding Unity's default input system.  Returns the value
         /// of the named axis.</summary>

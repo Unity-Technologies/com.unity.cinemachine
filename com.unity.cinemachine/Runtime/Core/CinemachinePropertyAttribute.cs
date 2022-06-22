@@ -8,6 +8,11 @@ namespace Cinemachine
     public sealed class AxisStatePropertyAttribute : PropertyAttribute {}
 
     /// <summary>
+    /// Property applied to legacy input axis name specification.  Used for custom drawing in the inspector.
+    /// </summary>
+    public sealed class InputAxisNamePropertyAttribute : PropertyAttribute {}
+
+    /// <summary>
     /// Property applied to OrbitalTransposer.Heading.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute {}
@@ -16,6 +21,59 @@ namespace Cinemachine
     /// This attributs is obsolete and unused.
     /// </summary>
     public sealed class LensSettingsPropertyAttribute : PropertyAttribute {}
+
+    /// <summary>
+    /// Suppresses the top-level foldout on a complex property
+    /// </summary>
+    public sealed class HideFoldoutAttribute : PropertyAttribute {}
+    
+    /// <summary>
+    /// Draw a foldout with an Enabled toggle that shadows a field inside the foldout
+    /// </summary>
+    public sealed class FoldoutWithEnabledButtonAttribute : PropertyAttribute 
+    { 
+        /// <summary>The name of the field controlling the enabled state</summary>
+        public string EnabledPropertyName; 
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
+        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled") 
+        { 
+            EnabledPropertyName = enabledProperty; 
+        }
+    }
+
+    /// <summary>
+    /// Property applied to int or float fields to generate a slider in the inspector.
+    /// </summary>
+    public sealed class RangeSliderAttribute : PropertyAttribute 
+    { 
+        /// <summary>Minimum value for the range slider</summary>
+        public float Min;
+        /// <summary>Maximum value for the range slider</summary>
+        public float Max;
+        /// <summary>Constructor for the range slider attribute</summary>
+        /// <param name="min">Minimum value for the range slider</param>
+        /// <param name="max">Maximum value for the range slider</param>
+        public RangeSliderAttribute(float min, float max) { Min = min; Max = max; }
+    }
+    
+    /// <summary>
+    /// Property applied to int or float fields to generate a minmax range slider in the inspector.
+    /// </summary>
+    public sealed class MinMaxRangeSliderAttribute : PropertyAttribute 
+    { 
+        /// <summary>Minimum value for the range slider</summary>
+        public float Min;
+        /// <summary>Maximum value for the range slider</summary>
+        public float Max;
+        /// <summary>Constructor for the range slider attribute</summary>
+        /// <param name="min">Minimum value for the range slider</param>
+        /// <param name="max">Maximum value for the range slider</param>
+        public MinMaxRangeSliderAttribute(float min, float max) { Min = min; Max = max; }
+    }
 
     /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
@@ -64,29 +122,8 @@ namespace Cinemachine
     }
     
     /// <summary>
-    /// Atrtribute to control the automatic generation of documentation.  This attribute is obsolete and not used.
+    /// Property applied to Vector2 to treat (x, y) as (min, max).
+    /// Used for custom drawing in the inspector.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
-    public sealed class DocumentationSortingAttribute : System.Attribute
-    {
-        /// <summary>Refinement level of the documentation</summary>
-        public enum Level 
-        { 
-            /// <summary>Type is excluded from documentation</summary>
-            Undoc, 
-            /// <summary>Type is documented in the API reference</summary>
-            API, 
-            /// <summary>Type is documented in the highly-refined User Manual</summary>
-            UserRef 
-        };
-        /// <summary>Refinement level of the documentation.  The more refined, the more is excluded.</summary>
-        public Level Category { get; private set; }
-
-        /// <summary>Contructor with specific values</summary>
-        /// <param name="category">Documentation level</param>
-        public DocumentationSortingAttribute(Level category)
-        {
-            Category = category;
-        }
-    }
+    public sealed class Vector2AsRangeAttribute : PropertyAttribute {}
 }

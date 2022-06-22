@@ -9,7 +9,6 @@ namespace Cinemachine.Utility
 {
     /// <summary>An ad-hoc collection of helpers for reflection, used by Cinemachine
     /// or its editor tools in various places</summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
     public static class ReflectionHelpers
     {
         /// <summary>Copy the fields from one object to another</summary>

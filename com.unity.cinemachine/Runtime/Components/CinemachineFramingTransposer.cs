@@ -27,10 +27,14 @@ namespace Cinemachine
     /// Although this component was designed for orthographic cameras, it works equally
     /// well with persective cameras and can be used in 3D environments.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class CinemachineFramingTransposer : CinemachineComponentBase
+        , CinemachineFreeLookModifier.IModifiablePositionDamping
+        , CinemachineFreeLookModifier.IModifiableDistance
+        , CinemachineFreeLookModifier.IModifiableScreenPosition
+        , CinemachineFreeLookModifier.IModifiableBiasPosition
     {
         /// <summary>
         /// Offset from the Follow Target object (in target-local co-ordinates).  The camera will attempt to
@@ -180,7 +184,6 @@ namespace Cinemachine
         public bool m_CenterOnActivate = true;
 
         /// <summary>What screen dimensions to consider when framing</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum FramingMode
         {
             /// <summary>Consider only the horizontal dimension.  Vertical framing is ignored.</summary>
@@ -254,6 +257,18 @@ namespace Cinemachine
         [Tooltip("If adjusting Orthographic Size, will not set it higher than this.")]
         public float m_MaximumOrthoSize = 5000;
 
+        Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
+        {
+            get => new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            set { m_XDamping = value.x; m_YDamping = value.y; m_ZDamping = value.z; }
+        }
+
+        float CinemachineFreeLookModifier.IModifiableDistance.Distance
+        {
+            get => m_CameraDistance;
+            set => m_CameraDistance = value;
+        }
+        
         /// <summary>Internal API for the inspector editor</summary>
         internal Rect SoftGuideRect
         {
@@ -317,7 +332,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
 
         /// <summary>FramingTransposer's algorithm tahes camera orientation as input, 
         /// so even though it is a Body component, it must apply after Aim</summary>
@@ -678,6 +693,25 @@ namespace Cinemachine
             return new Bounds(
                 new Vector3(0, 0, d/2),
                 new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
+        }
+
+        Vector2 CinemachineFreeLookModifier.IModifiableScreenPosition.Screen
+        {
+            get => new Vector2(m_ScreenX, m_ScreenY);
+            set
+            {
+                m_ScreenX = value.x;
+                m_ScreenY = value.y;
+            }
+        }
+        Vector2 CinemachineFreeLookModifier.IModifiableBiasPosition.Bias
+        {
+            get => new Vector2(m_BiasX, m_BiasY);
+            set
+            {
+                m_BiasX = value.x;
+                m_BiasY = value.y;
+            }
         }
     }
 }

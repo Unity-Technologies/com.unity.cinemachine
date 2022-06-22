@@ -29,16 +29,15 @@ namespace Cinemachine
     /// control the way the camera positions itself in relation to the target heading.  This allows
     /// the camera to move to any spot on an orbit around the target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class CinemachineOrbitalTransposer : CinemachineTransposer
     {
         /// <summary>
         /// How the "forward" direction is defined.  Orbital offset is in relation to the forward
         /// direction.
         /// </summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct Heading
         {
@@ -46,7 +45,6 @@ namespace Cinemachine
             /// Sets the algorithm for determining the target's heading for purposes
             /// of re-centering the camera
             /// </summary>
-            [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
             public enum HeadingDefinition
             {
                 /// <summary>
@@ -230,13 +228,19 @@ namespace Cinemachine
                 return finalHeading;
             }
 
-            float targetHeading = GetTargetHeading(axis.Value, GetReferenceOrientation(up));
+            float targetHeading = GetTargetHeading(
+                axis.Value, m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up));
             recentering.DoRecentering(ref axis, deltaTime, targetHeading);
             return axis.Value;
         }
 
-        private void OnEnable()
+        /// <summary>
+        /// Standard OnEnable call.  Updates the input axis provider.
+        /// </summary>
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             // GML todo: do we really need this?
             m_PreviousTarget = null;
             m_LastTargetPosition = Vector3.zero;
@@ -325,7 +329,7 @@ namespace Cinemachine
         /// <returns>The best value to put into the X axis, to approximate the desired camera pos</returns>
         public float GetAxisClosestValue(Vector3 cameraPos, Vector3 up)
         {
-            Quaternion orient = GetReferenceOrientation(up);
+            Quaternion orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up);
             Vector3 fwd = (orient * Vector3.forward).ProjectOntoPlane(up);
             if (!fwd.AlmostZero() && FollowTarget != null)
             {
@@ -351,7 +355,7 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            InitPrevFrameStateInfo(ref curState, deltaTime);
+            m_TargetTracker.InitStateInfo(this, deltaTime, m_BindingMode, curState.ReferenceUp);
 
             // Update the heading
             if (FollowTarget != m_PreviousTarget)
@@ -376,7 +380,10 @@ namespace Cinemachine
                 Vector3 offset = headingRot * rawOffset;
 
                 // Track the target, with damping
-                TrackTarget(deltaTime, curState.ReferenceUp, offset, out Vector3 pos, out Quaternion orient);
+                m_TargetTracker.TrackTarget(
+                    this, m_BindingMode, deltaTime, curState.ReferenceUp, offset, 
+                    Damping, AngularDamping, m_AngularDamping, m_AngularDampingMode,
+                    out Vector3 pos, out Quaternion orient);
 
                 // Place the camera
                 offset = orient * offset;
@@ -384,8 +391,8 @@ namespace Cinemachine
 
                 // Respect minimum target distance on XZ plane
                 var targetPosition = FollowTargetPosition;
-                pos += GetOffsetForMinimumTargetDistance(
-                    pos, offset, curState.RawOrientation * Vector3.forward,
+                pos += m_TargetTracker.GetOffsetForMinimumTargetDistance(
+                    this, pos, offset, curState.RawOrientation * Vector3.forward,
                     curState.ReferenceUp, targetPosition);
                 curState.RawPosition = pos + offset;
 
@@ -416,7 +423,7 @@ namespace Cinemachine
             if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 heading += m_Heading.m_Bias;
             Quaternion orient = Quaternion.AngleAxis(heading, Vector3.up);
-            orient = GetReferenceOrientation(worldUp) * orient;
+            orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, worldUp) * orient;
             var pos = orient * EffectiveOffset;
             pos += m_LastTargetPosition;
             return pos;

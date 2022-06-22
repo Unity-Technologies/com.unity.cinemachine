@@ -1,4 +1,5 @@
-﻿using Cinemachine.Utility;
+﻿using System;
+using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
@@ -11,10 +12,10 @@ namespace Cinemachine
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CinemachinePOV : CinemachineComponentBase
+    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
+    public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>
         /// Defines the recentering target: Recentering goes here
@@ -65,12 +66,21 @@ namespace Cinemachine
         [Tooltip("Obsolete - no longer used")]
         public bool m_ApplyBeforeBody;
 
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
+        {
+            get
+            {
+                var r = m_VerticalAxis.m_MaxValue - m_VerticalAxis.m_MinValue;
+                return (m_VerticalAxis.Value - m_VerticalAxis.m_MinValue) / (r > 0.001f ? r : 1) * 2 - 1;
+            }
+        }
+
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled; } }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.RotationControl; } }
 
         private void OnValidate()
         {
@@ -80,8 +90,12 @@ namespace Cinemachine
             m_HorizontalRecentering.Validate();
         }
 
-        private void OnEnable()
+        /// <summary>
+        /// Standard OnEnable call.  Updates the input axis provider.
+        /// </summary>
+        protected override void OnEnable()
         {
+            base.OnEnable();
             UpdateInputAxisProvider();
         }
         

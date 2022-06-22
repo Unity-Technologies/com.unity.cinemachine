@@ -16,7 +16,6 @@ namespace Cinemachine
     /// the final position of the virtual camera. It will confine the virtual
     /// camera's position to the volume specified in the Bounding Volume field.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [ExecuteAlways]
@@ -136,7 +135,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (IsValid && stage == CinemachineCore.Stage.Body)
+            if (IsValid && stage == CinemachineCore.Stage.PositionControl)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement;

@@ -21,7 +21,6 @@ namespace Cinemachine
     /// Additionally, the Collider can be used to assess the shot quality and
     /// report this as a field in the camera State.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [ExecuteAlways]
@@ -260,7 +259,7 @@ namespace Cinemachine
             return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
         }
         
-          /// <summary>
+        /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
         /// <param name="vcam">The virtual camera being processed</param>
@@ -271,7 +270,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == CinemachineCore.Stage.Body)
+            if (stage == CinemachineCore.Stage.PositionControl)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = false;
@@ -339,7 +338,7 @@ namespace Cinemachine
                 }
             }
             // Rate the shot after the aim was set
-            if (stage == CinemachineCore.Stage.Aim)
+            if (stage == CinemachineCore.Stage.RotationControl)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);

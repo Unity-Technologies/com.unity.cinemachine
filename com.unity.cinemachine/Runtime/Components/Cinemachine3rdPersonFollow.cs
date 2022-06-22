@@ -2,6 +2,7 @@
 #define CINEMACHINE_PHYSICS
 #endif
 
+using System;
 using UnityEngine;
 using Cinemachine.Utility;
 
@@ -13,7 +14,11 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
+        , CinemachineFreeLookModifier.IModifierValueSource
+        , CinemachineFreeLookModifier.IModifiablePositionDamping
+        , CinemachineFreeLookModifier.IModifiableDistance
     {
         /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 
         /// can have its own setting.  Value is the approximate time it takes the camera 
@@ -45,8 +50,8 @@ namespace Cinemachine
         [Range(0, 1)]
         public float CameraSide;
 
-        /// <summary>How far baehind the hand the camera will be placed.</summary>
-        [Tooltip("How far baehind the hand the camera will be placed")]
+        /// <summary>How far behind the hand the camera will be placed.</summary>
+        [Tooltip("How far behind the hand the camera will be placed")]
         public float CameraDistance;
 
 #if CINEMACHINE_PHYSICS
@@ -131,13 +136,36 @@ namespace Cinemachine
             RuntimeUtility.DestroyScratchCollider();
         }
 #endif
+
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue
+        {
+            get
+            {
+                var up = VirtualCamera.State.ReferenceUp;
+                var rot = FollowTargetRotation;
+                var a = Vector3.SignedAngle(rot * Vector3.up, up, rot * Vector3.right);
+                return Mathf.Clamp(a, -90, 90) / -90;
+            }
+        }
+
+        Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
+        {
+            get => Damping;
+            set => Damping = value;
+        }
+
+        float CinemachineFreeLookModifier.IModifiableDistance.Distance
+        {
+            get => CameraDistance;
+            set => CameraDistance = value;
+        }
         
         /// <summary>True if component is enabled and has a Follow target defined</summary>
         public override bool IsValid => enabled && FollowTarget != null;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
 
 #if CINEMACHINE_PHYSICS
         /// <summary>

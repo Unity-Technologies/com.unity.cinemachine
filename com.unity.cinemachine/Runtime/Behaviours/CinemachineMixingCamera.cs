@@ -12,7 +12,6 @@ namespace Cinemachine
     /// We do it this way in order to support weight animation from the Timeline.
     /// Timeline cannot animate array elements.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
@@ -177,9 +176,8 @@ namespace Cinemachine
         }
 
         /// <summary>Makes sure the weights are non-negative</summary>
-        protected override void OnValidate()
+        void OnValidate()
         {
-            base.OnValidate();
             for (int i = 0; i < MaxCameras; ++i)
                 SetWeight(i, Mathf.Max(0, GetWeight(i)));
         }

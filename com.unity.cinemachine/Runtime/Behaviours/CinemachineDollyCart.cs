@@ -8,7 +8,6 @@ namespace Cinemachine
     /// It can be used to animate any objects along a path, or as a Follow target for 
     /// Cinemachine Virtual Cameras.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
@@ -17,7 +16,7 @@ namespace Cinemachine
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
         public CinemachinePathBase m_Path;
-
+        
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
         {
