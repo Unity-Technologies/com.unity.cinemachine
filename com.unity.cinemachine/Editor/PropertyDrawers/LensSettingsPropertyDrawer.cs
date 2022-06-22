@@ -118,10 +118,10 @@ namespace Cinemachine.Editor
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane)));
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch)));
 
-            var physicalNote = foldout.AddChild(new InspectorUtility.LeftRightContainer());
-            physicalNote.Left.Add(new Label("Physical Camera") { style = { alignSelf = Align.Center }});
-            physicalNote.Right.Add(new Label("(using setting in Unity Camera)")
-                    { style = { alignSelf = Align.Center, unityFontStyleAndWeight = FontStyle.Italic }});
+            //var physicalNote = foldout.AddChild(new InspectorUtility.LeftRightContainer());
+            //physicalNote.Left.Add(new Label("Physical Camera") { style = { alignSelf = Align.Center }});
+            //physicalNote.Right.Add(new Label("(using setting in Unity Camera)")
+            //        { style = { alignSelf = Align.Center, unityFontStyleAndWeight = FontStyle.Italic }});
 
             var physical = foldout.AddChild(new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded });
             physical.RegisterValueChangedCallback((evt) => 
@@ -165,23 +165,25 @@ namespace Cinemachine.Editor
                 s_AdvancedLensExpanded = evt.newValue;
                 evt.StopPropagation();
             });
-            advanced.Add(new HelpBox("Setting a mode override here implies changes to the Camera component when "
-                + "Cinemachine activates this CM Camera, and the changes will remain after the CM "
-                + "Camera deactivation. If you set a mode override in any CM Camera, you should set "
-                + "one in all CM Cameras.", HelpBoxMessageType.Info));
+            var modeHelp = advanced.AddChild(
+                new HelpBox("Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect", 
+                    HelpBoxMessageType.Info));
             advanced.Add(new PropertyField(modeOverrideProperty));
 
             // GML: This is rather evil.  Is there a better (event-driven) way?
-            ux.schedule.Execute(() => 
+            DoUpdate();
+            ux.schedule.Execute(DoUpdate).Every(250);
+            void DoUpdate()
             {
                 if (property.serializedObject.targetObject == null)
                     return; // target deleted
                 bool isPhysical = IsPhysical(property);
                 physical.SetVisible(isPhysical);
-                physicalNote.SetVisible(modeOverrideProperty.intValue == (int)LensSettings.OverrideModes.None);
+                //physicalNote.SetVisible(modeOverrideProperty.intValue == (int)LensSettings.OverrideModes.None);
                 fovControl.Update(true);
                 fovControl2.Update(false);
-            }).Every(250);
+                modeHelp.SetVisible(s_AdvancedLensExpanded && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
+            }
 
             return ux;
         }
@@ -518,10 +520,7 @@ namespace Cinemachine.Editor
         static readonly GUIContent s_EmptyContent = new GUIContent(" ");
         static readonly GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
         static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
-        static readonly string AdvancedHelpboxMessage = "Setting a mode override here implies changes to the Camera component when "
-            + "Cinemachine activates this Virtual Camera, and the changes will remain after the Virtual "
-            + "Camera deactivation. If you set a mode override in any Virtual Camera, you should set "
-            + "one in all Virtual Cameras.";
+        static readonly string AdvancedHelpboxMessage = "Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect";
 
         struct Snapshot
         {
@@ -788,7 +787,7 @@ namespace Cinemachine.Editor
                 {
                     ++EditorGUI.indentLevel;
                     rect.y += rect.height + vSpace;
-                    var r = EditorGUI.IndentedRect(rect); r.height *= 4;
+                    var r = EditorGUI.IndentedRect(rect); r.height *= 2;
                     EditorGUI.HelpBox(r, AdvancedHelpboxMessage, MessageType.Info);
 
                     rect.y += r.height + vSpace;
@@ -825,7 +824,7 @@ namespace Cinemachine.Editor
             // Advanced section
             numLines += 1;
             if (s_AdvancedLensExpanded)
-                numLines += 5;  // not correct but try to make it big enough to hold the help box
+                numLines += 3;  // not correct but try to make it big enough to hold the help box
             return lineHeight + numLines * (lineHeight + vSpace);
         }
     }
