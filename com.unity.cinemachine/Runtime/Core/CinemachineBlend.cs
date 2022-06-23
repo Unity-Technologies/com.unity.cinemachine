@@ -44,7 +44,7 @@ namespace Cinemachine
         public float Duration;
         
         internal float CumulativeDuration;
-        internal float TermCount;
+        internal int TermCount;
 
         /// <summary>True if the time relative to the start of the blend is greater
         /// than or equal to the blend duration</summary>

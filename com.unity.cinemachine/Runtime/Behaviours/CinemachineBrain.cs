@@ -756,7 +756,6 @@ namespace Cinemachine
             // Are we transitioning cameras?
             var activeCamera = TopCameraFromPriorityQueue();
             var outGoingCamera = frame.blend.CamB;
-            var lofutty = 0f;
             if (activeCamera != outGoingCamera)
             {
                 // Do we need to create a game-play blend?
@@ -771,7 +770,8 @@ namespace Cinemachine
                         {
                             frame.blend.CamA = outGoingCamera; // new blend
                             frame.blend.CumulativeDuration = 0;
-                            frame.blend.TermCount = 0;
+                            frame.blend.TermCount = -1;
+                            Debug.Log("Blend finished - CumulativeDuration reset");
                         }
                         else
                         {
@@ -779,16 +779,26 @@ namespace Cinemachine
                             // with the same blend in reverse, adjust the blend time
                             if ((frame.blend.CamA == activeCamera 
                                     || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
-                                && frame.blend.CamB == outGoingCamera 
-                                && frame.blend.Duration <= blendDef.BlendTime)
+                                && frame.blend.CamB == outGoingCamera)
+                                //&& frame.blend.Duration <= blendDef.BlendTime)
                             {
+                                Debug.Log("Blend reversed");
+                                frame.blend.TermCount++;
                                 var e0 = frame.blend.TimeInBlend;
                                 var d0 = frame.blend.Duration;
-                                frame.blend.CumulativeDuration += (true ? -1f : 1f) * (e0 / d0); // todo: sign
-                                var d1 = blendDef.BlendTime * (frame.blend.CumulativeDuration);
+                                // TODO: DEBUG HERE - DIRECTION IS WRONG!!
+                                Debug.Log("Direction " + (frame.blend.TermCount % 2 == 0 ? "right" : "left"));
+                                frame.blend.CumulativeDuration += (frame.blend.TermCount % 2 == 0 ? 1f : -1f) * (e0 / d0);
+                                Debug.Log(frame.blend.CumulativeDuration); // todo: Something wrong here
+                                var d1 = blendDef.BlendTime * frame.blend.CumulativeDuration;
                                 var e1 = 0f;
-                                blendDef.m_Time = 
-                                    (frame.blend.TimeInBlend / frame.blend.Duration) * blendDef.BlendTime;
+                                blendDef.m_Time = d1;
+
+                                //(frame.blend.TimeInBlend / frame.blend.Duration) * blendDef.BlendTime;
+                            }
+                            else
+                            {
+                                Debug.Log("Blend interrupted, but not reversed");
                             }
 
                             // Chain to existing blend
@@ -796,12 +806,12 @@ namespace Cinemachine
                                 new CinemachineBlend(
                                     frame.blend.CamA, frame.blend.CamB,
                                     frame.blend.BlendCurve, frame.blend.Duration,
-                                    frame.blend.TimeInBlend, frame.blend.TermCount + 1));
+                                    frame.blend.TimeInBlend, frame.blend.CumulativeDuration, frame.blend.TermCount));
                         }
                     }
                     frame.blend.BlendCurve = blendDef.BlendCurve;
                     frame.blend.Duration = blendDef.BlendTime;
-                    frame.blend.TimeInBlend = lofutty;
+                    frame.blend.TimeInBlend = 0;
                 }
                 // Set the current active camera
                 frame.blend.CamB = activeCamera;
@@ -810,6 +820,7 @@ namespace Cinemachine
             // Advance the current blend (if any)
             if (frame.blend.CamA != null)
             {
+                Debug.Log("Blend advanced");
                 frame.blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : frame.blend.Duration;
                 if (frame.blend.IsComplete)
                 {
@@ -818,6 +829,9 @@ namespace Cinemachine
                     frame.blend.BlendCurve = null;
                     frame.blend.Duration = 0;
                     frame.blend.TimeInBlend = 0;
+                    frame.blend.CumulativeDuration = 0;
+                    frame.blend.TermCount = -1;
+                    Debug.Log("Blend done - CumulativeDuration reset");
                 }
             }
         }
