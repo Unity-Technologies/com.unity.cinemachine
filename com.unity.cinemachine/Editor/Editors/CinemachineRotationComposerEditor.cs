@@ -1,15 +1,20 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineComposer))]
+    [CustomEditor(typeof(CinemachineRotationComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineComposerEditor : BaseEditor<CinemachineComposer>
+    internal class CinemachineRotationComposerEditor : BaseEditor<CinemachineRotationComposer>
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
+        VisualElement m_NoTargetHelp;
+
+        //CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
         protected virtual void OnEnable()
         {
@@ -28,9 +33,8 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
    
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
-#endif
+            //EditorApplication.update += OnApplicationUpdate;
         }
 
         protected virtual void OnDisable()
@@ -40,9 +44,8 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
   
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-#endif
+            //EditorApplication.update -= OnApplicationUpdate;
         }
 
         public override void OnInspectorGUI()
@@ -50,7 +53,7 @@ namespace Cinemachine.Editor
             BeginInspector();
             bool needWarning = false;
             for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineComposer).LookAtTarget == null;
+                needWarning = (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
                     "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.",
@@ -65,6 +68,36 @@ namespace Cinemachine.Editor
             m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
         }
 
+#if false // wait for group composer upgrade
+        public override VisualElement CreateInspectorGUI()
+        {
+            var serializedTarget = new SerializedObject(Target);
+            var ux = new VisualElement();
+
+            m_NoTargetHelp = ux.AddChild(new HelpBox(
+                "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.", 
+                HelpBoxMessageType.Warning));
+
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
+
+            return ux;
+        }
+
+        void OnApplicationUpdate()
+        {
+            if (target == null)
+                return;  // target was deleted
+            bool noTarget = false;
+            for (int i = 0; i < targets.Length; ++i)
+                noTarget |= (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
+            if (m_NoTargetHelp != null)
+                m_NoTargetHelp.SetVisible(noTarget);
+        }
+#endif
         protected virtual void OnGUI()
         {
             // Draw the camera guides
@@ -106,50 +139,17 @@ namespace Cinemachine.Editor
             }
         }
 
-#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-        
-        void DrawSceneTools()
         {
             var composer = Target;
             if (composer == null || !composer.IsValid)
-            {
                 return;
-            }
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(composer, 
-                    new SerializedObject(composer).FindProperty(() => composer.m_TrackedObjectOffset));
+                    new SerializedObject(composer).FindProperty(() => composer.TrackedObjectOffset));
             }
         }
-#endif
-
-#if false
-        // debugging only
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineComposer))]
-        static void DrawComposerGizmos(CinemachineComposer target, GizmoType selectionType)
-        {
-            // Draw lookahead path
-            if (target.m_LookaheadTime > 0)
-            {
-                Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineSettings.ComposerSettings.TargetColour;
-
-                var p0 = target.m_Predictor.PredictPosition(0);
-                int numSteps = 20;
-                for (int i = 1; i <= numSteps; ++i)
-                {
-                    var p1 = target.m_Predictor.PredictPosition(i * target.m_LookaheadTime / numSteps);
-                    Gizmos.DrawLine(p0, p1);
-                    p0 = p1;
-                }
-                Gizmos.color = originalGizmoColour;
-            }
-        }
-#endif
     }
 }

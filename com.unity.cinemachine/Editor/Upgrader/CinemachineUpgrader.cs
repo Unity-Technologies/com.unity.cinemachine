@@ -187,15 +187,49 @@ namespace Cinemachine.Editor
 #if DEBUG_HELPERS
                 Debug.Log("Upgrading " + old.name + " to CM3!");
 #endif
+                bool result = true;
                 old.TryGetComponent<CinemachineFreeLook>(out var freelook);
                 if (freelook != null)
-                    return UpgradeFreelook(freelook);
+                    result = UpgradeFreelook(freelook);
+                else
+                {
+                    old.TryGetComponent<CinemachineVirtualCamera>(out var vcam);
+                    if (vcam != null)
+                        result = UpgradeVcam(vcam);
+                }
+                old.TryGetComponent<CinemachineComposer>(out var composer);
+                if (composer != null)
+                    UpgradeComposer(composer);
 
-                old.TryGetComponent<CinemachineVirtualCamera>(out var vcam);
-                if (vcam != null)
-                    return UpgradeVcam(vcam);
+                return result;
+            }
+            
+            static void UpgradeComposer(CinemachineComposer c)
+            {
+                var rc = c.gameObject.AddComponent<CinemachineRotationComposer>();
+                rc.TrackedObjectOffset = c.m_TrackedObjectOffset;
+                rc.Lookahead = new LookaheadSettings
+                {
+                    Enabled = c.m_LookaheadTime > 0,
+                    Time = c.m_LookaheadTime,
+                    Smoothing = c.m_LookaheadSmoothing,
+                    IgnoreY = c.m_LookaheadIgnoreY
+                };
+                rc.Damping = new Vector2(c.m_HorizontalDamping, c.m_VerticalDamping);
+                rc.Composition = ScreenComposerSettingsFromLegacyComposer(c);
+                rc.CenterOnActivate = c.m_CenterOnActivate;
+                Object.DestroyImmediate(c);
+            }
 
-                return true;
+            static ScreenComposerSettings ScreenComposerSettingsFromLegacyComposer(CinemachineComposer c)
+            {
+                return new ScreenComposerSettings
+                {
+                    ScreenPosition = new Vector2(c.m_ScreenX, c.m_ScreenY) - new Vector2(0.5f, 0.5f),
+                    DeadZoneSize = new Vector2(c.m_DeadZoneWidth, c.m_DeadZoneHeight),
+                    SoftZoneSize = new Vector2(c.m_SoftZoneWidth, c.m_SoftZoneHeight),
+                    CenterShift = new Vector2(c.m_BiasX, c.m_BiasY)
+                };
             }
             
             static bool UpgradeFreelook(CinemachineFreeLook freelook)
@@ -408,38 +442,25 @@ namespace Cinemachine.Editor
                     return;
                 var newAim = (CinemachineComponentBase)go.AddComponent(template.GetType());
                 CopyValues(template, newAim);
-                
+
                 // Add modifier if it is a composer
-                var middle = newAim as CinemachineComposer;
-                var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineComposer>();
-                var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineComposer>();
+                var middle = newAim as CinemachineRotationComposer;
+                var top = freelook.GetRig(0).GetComponentInChildren<CinemachineComposer>();
+                var bottom = freelook.GetRig(2).GetComponentInChildren<CinemachineComposer>();
                 if (middle != null && top != null && bottom != null)
                 {
-                    if (!Mathf.Approximately(middle.m_ScreenX, top.m_ScreenX)
-                        || !Mathf.Approximately(middle.m_ScreenY, top.m_ScreenY)
-                        || !Mathf.Approximately(middle.m_ScreenX, bottom.m_ScreenX)
-                        || !Mathf.Approximately(middle.m_ScreenY, bottom.m_ScreenY))
+                    var topComposition = ScreenComposerSettingsFromLegacyComposer(top);
+                    var bottomComposition = ScreenComposerSettingsFromLegacyComposer(bottom);
+
+                    if (!ScreenComposerSettings.Approximately(middle.Composition, topComposition)
+                        || !ScreenComposerSettings.Approximately(middle.Composition, bottomComposition))
                     {
-                        freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.ScreenPositionModifier
+                        freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.CompositionModifier
                         {
-                            Screen = new CinemachineFreeLookModifier.TopBottomRigs<Vector2>
+                            Composition = new CinemachineFreeLookModifier.TopBottomRigs<ScreenComposerSettings>
                             {
-                                Top = new Vector2(top.m_ScreenX, top.m_ScreenY),
-                                Bottom = new Vector2(bottom.m_ScreenX, bottom.m_ScreenY),
-                            }
-                        });
-                    }
-                    if (!Mathf.Approximately(middle.m_BiasX, top.m_BiasX)
-                        || !Mathf.Approximately(middle.m_BiasY, top.m_BiasY)
-                        || !Mathf.Approximately(middle.m_BiasX, bottom.m_BiasX)
-                        || !Mathf.Approximately(middle.m_BiasY, bottom.m_BiasY))
-                    {
-                        freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.BiasPositionModifier
-                        {
-                            Bias = new CinemachineFreeLookModifier.TopBottomRigs<Vector2>
-                            {
-                                Top = new Vector2(top.m_BiasX, top.m_BiasY),
-                                Bottom = new Vector2(bottom.m_BiasX, bottom.m_BiasY),
+                                Top = topComposition,
+                                Bottom = bottomComposition
                             }
                         });
                     }

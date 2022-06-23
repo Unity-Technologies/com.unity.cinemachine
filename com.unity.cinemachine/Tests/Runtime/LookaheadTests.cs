@@ -10,7 +10,7 @@ namespace Tests.Runtime
     public class LookaheadTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_VCam;
-        CinemachineComposer m_Composer;
+        CinemachineRotationComposer m_Composer;
         CinemachineFramingTransposer m_FramingTransposer;
         Transform m_Target;
 
@@ -26,9 +26,9 @@ namespace Tests.Runtime
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
             m_FramingTransposer = m_VCam.gameObject.AddComponent<CinemachineFramingTransposer>();
-            m_Composer = m_VCam.gameObject.AddComponent<CinemachineComposer>();
-            m_FramingTransposer.m_LookaheadSmoothing = m_Composer.m_LookaheadSmoothing = 0.3f;
-            m_FramingTransposer.m_LookaheadTime = m_Composer.m_LookaheadTime = 10;
+            m_Composer = m_VCam.gameObject.AddComponent<CinemachineRotationComposer>();
+            m_FramingTransposer.m_LookaheadSmoothing = m_Composer.Lookahead.Smoothing = 0.3f;
+            m_FramingTransposer.m_LookaheadTime = m_Composer.Lookahead.Time = 10;
 
             base.SetUp();
         }
@@ -70,7 +70,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator LookaheadDelta()
         {
-            var delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.m_LookaheadTime);
+            var delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
             
             delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.m_LookaheadTime);
@@ -79,7 +79,7 @@ namespace Tests.Runtime
             m_Target.Translate(10, 0, 0);
             yield return null;
             
-            delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.m_LookaheadTime);
+            delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.True);
             
             delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.m_LookaheadTime);

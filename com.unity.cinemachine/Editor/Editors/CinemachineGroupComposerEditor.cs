@@ -8,7 +8,7 @@ using Cinemachine.Utility;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineGroupComposer))]
-    internal class CinemachineGroupComposerEditor : CinemachineComposerEditor
+    internal class CinemachineGroupComposerEditor : CinemachineRotationComposerEditor
     {
         // Specialization
         private CinemachineGroupComposer MyTarget { get { return target as CinemachineGroupComposer; } }
