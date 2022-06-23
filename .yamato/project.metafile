@@ -18,6 +18,18 @@ packages:
           Projects/URP:
             test_tool: upm-ci
             enabled_platforms: [win, mac, ubuntu, ubuntu-20]
+          Projects/HDRP:
+            test_tool: upm-ci
+            enabled_platforms: [win, mac, ubuntu, ubuntu-20]
+          Projects/Standalone:
+            test_tool: upm-ci
+            enabled_platforms: [win, mac, ubuntu, ubuntu-20]
+          Projects/InputSystem:
+            test_tool: upm-ci
+            enabled_platforms: [win, mac, ubuntu, ubuntu-20]
+          Projects/HDRP2019.4:
+            test_tool: upm-ci
+            enabled_platforms: [win, mac, ubuntu, ubuntu-20]
 
 is_monorepo: !!bool false
 enable_nightly: !!bool false
@@ -29,6 +41,9 @@ enable_sonarqube: !!bool false
 
 test_editors:
   - version: 2022.1
+  - version: 2021.3
+  - version: 2020.3
+  - version: 2019.4
   - version: trunk
      
 test_platforms:
@@ -71,6 +86,30 @@ test_triggers:
                 editors: [all]
 
             - project_name: URP
+              PR:
+                platforms: [ubuntu-20]
+                editors: [all]
+              nightly:
+                platforms: [win, mac, ubuntu, ubuntu-20]
+                editors: [all]
+            
+            - project_name: HDRP
+              PR:
+                platforms: [ubuntu-20]
+                editors: [all]
+              nightly:
+                platforms: [win, mac, ubuntu, ubuntu-20]
+                editors: [all]
+            
+            - project_name: HDRP2019.4
+              PR:
+                platforms: [ubuntu-20]
+                editors: [2019.4]
+              nightly:
+                platforms: [win, mac, ubuntu, ubuntu-20]
+                editors: [2019.4]
+            
+            - project_name: InputSystem
               PR:
                 platforms: [ubuntu-20]
                 editors: [all]
