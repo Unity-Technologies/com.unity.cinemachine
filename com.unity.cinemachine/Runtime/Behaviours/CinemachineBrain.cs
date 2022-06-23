@@ -756,6 +756,7 @@ namespace Cinemachine
             // Are we transitioning cameras?
             var activeCamera = TopCameraFromPriorityQueue();
             var outGoingCamera = frame.blend.CamB;
+            var lofutty = 0f;
             if (activeCamera != outGoingCamera)
             {
                 // Do we need to create a game-play blend?
@@ -767,7 +768,11 @@ namespace Cinemachine
                     if (blendDef.BlendCurve != null && blendDef.BlendTime > 0)
                     {
                         if (frame.blend.IsComplete)
-                            frame.blend.CamA = outGoingCamera;  // new blend
+                        {
+                            frame.blend.CamA = outGoingCamera; // new blend
+                            frame.blend.CumulativeDuration = 0;
+                            frame.blend.TermCount = 0;
+                        }
                         else
                         {
                             // Special case: if backing out of a blend-in-progress
@@ -777,6 +782,11 @@ namespace Cinemachine
                                 && frame.blend.CamB == outGoingCamera 
                                 && frame.blend.Duration <= blendDef.BlendTime)
                             {
+                                var e0 = frame.blend.TimeInBlend;
+                                var d0 = frame.blend.Duration;
+                                frame.blend.CumulativeDuration += (true ? -1f : 1f) * (e0 / d0); // todo: sign
+                                var d1 = blendDef.BlendTime * (frame.blend.CumulativeDuration);
+                                var e1 = 0f;
                                 blendDef.m_Time = 
                                     (frame.blend.TimeInBlend / frame.blend.Duration) * blendDef.BlendTime;
                             }
@@ -786,12 +796,12 @@ namespace Cinemachine
                                 new CinemachineBlend(
                                     frame.blend.CamA, frame.blend.CamB,
                                     frame.blend.BlendCurve, frame.blend.Duration,
-                                    frame.blend.TimeInBlend));
+                                    frame.blend.TimeInBlend, frame.blend.TermCount + 1));
                         }
                     }
                     frame.blend.BlendCurve = blendDef.BlendCurve;
                     frame.blend.Duration = blendDef.BlendTime;
-                    frame.blend.TimeInBlend = 0;
+                    frame.blend.TimeInBlend = lofutty;
                 }
                 // Set the current active camera
                 frame.blend.CamB = activeCamera;

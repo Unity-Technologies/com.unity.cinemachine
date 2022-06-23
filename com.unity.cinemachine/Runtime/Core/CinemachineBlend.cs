@@ -42,6 +42,9 @@ namespace Cinemachine
 
         /// <summary>Duration in seconds of the blend.</summary>
         public float Duration;
+        
+        internal float CumulativeDuration;
+        internal float TermCount;
 
         /// <summary>True if the time relative to the start of the blend is greater
         /// than or equal to the blend duration</summary>
@@ -108,6 +111,18 @@ namespace Cinemachine
             BlendCurve = curve;
             TimeInBlend = t;
             Duration = duration;
+        }
+
+        internal CinemachineBlend(ICinemachineCamera a, ICinemachineCamera b, AnimationCurve curve, 
+            float duration, float t, float cumulativeDuration, int termCount)
+        {
+            CamA = a;
+            CamB = b;
+            BlendCurve = curve;
+            TimeInBlend = t;
+            Duration = duration;
+            CumulativeDuration = cumulativeDuration;
+            TermCount = termCount;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>
