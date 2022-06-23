@@ -36,6 +36,12 @@ Cinemachine Brain holds the following key properties:
 | __Blend Update Method__ || When to resolve the blends and update the main camera.  |
 | | _Late Update_ | In MonoBehaviour LateUpdate. This is the recommended setting. |
 | | _Fixed Update_ | Use this setting only if your Update Method is FixedUpdate and you see judder when blending. |
+| __Lens Mode Override__ || When enabled, CM camras are permitted to override the camera's lens mode (Perspective vs Orthographic vs Physical).  |
+| __Default Mode__ || When Lens Mode Override is enabled and there is no CM camera actively overriding the lens mode, this lens mode will be pushed to the camera. |
+| | _None_ | If Lens Override Mode is enabled and Default Mode is set to _None_, there will be no default mode pushed to the Camera when the CM camera is not overriding the lens mode.  This setting is not recommended, because it can produce unpredictable results.  It's always best to have a default mode. |
+| | _Orthographic_ | Sets the __Projection__ property to __Orthographic__. |
+| | _Perspective_ | Sets the __Projection__ property to __Perspective__ and *disables* the __Physical Camera__ feature and properties. |
+| | _Physical_ | Sets the __Projection__ property to __Perspective__ and *enables* the __Physical Camera__ feature and properties. |
 | __Default Blend__ || The blend to use when you haven’t explicitly defined a blend between two Virtual Cameras. |
 | | _Cut_ | Zero-length blend. |
 | | _Ease In Out_ | S-shaped curve, giving a gentle and smooth transition. |
