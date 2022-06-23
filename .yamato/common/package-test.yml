@@ -1,0 +1,277 @@
+{% metadata_file .yamato/common/environments.metafile %}
+{% metadata_file .yamato/project.metafile %}
+---
+
+{% for package in packages -%}
+{% for editor in test_editors -%}
+{% for runtime_platform in package.runtime_platforms -%}
+{% for platform in test_platforms[runtime_platform['0']] -%}
+
+{%- comment -%}
+# Skip this Unity editor version if test_editors is defined for this platform and the unity editor version doesn't need to be tested on this platform 
+{%- endcomment -%}
+{% if platform.test_editors -%}
+{% unless platform.test_editors contains editor.version -%}
+{% continue -%}
+{% endunless -%}
+{% endif -%}
+
+{% assign env_yamato_source_dir = "YAMATO_SOURCE_DIR" | prepend: ci[platform.name].env_prefix | append: ci[platform.name].env_suffix -%}
+{% if platform.unity_path_var -%}
+{% assign env_unity_path = platform.unity_path_var -%}
+{% else -%}
+{% assign env_unity_path = "YAMATO_WORK_DIR" | prepend: ci[platform.name].env_prefix | append: ci[platform.name].env_suffix | append: "/.Editor" -%}
+{% endif -%}
+
+{%- comment -%}
+# Create test jobs for each of the tests in test_path
+{%- endcomment -%}
+{% for job_test_path in runtime_platform['1'].test_paths %}
+
+{%- comment -%}
+# If enabled_platforms is defined for this test and current platform is not in enabled_platforms, skip it
+{%- endcomment -%}
+{% if job_test_path['1'].enabled_platforms -%}
+{% unless job_test_path['1'].enabled_platforms contains platform.name -%}
+{% continue -%}
+{% endunless -%}
+{% endif %}
+
+{%- comment -%}
+# If enabled_editors is defined for this test and current editor version is not in enabled_editors, skip it
+{%- endcomment -%}
+{% if job_test_path['1'].enabled_editors -%}
+{% unless job_test_path['1'].enabled_editors contains editor.version -%}
+{% continue -%}
+{% endunless -%}
+{% endif %}
+
+{%- comment -%}
+# If the path equals package_test, then this is a package test instead of a project test
+{%- endcomment -%}
+{% if job_test_path[0] == "package_test" -%}
+test_{{ package.short_name }}_package_{{ runtime_platform['0'] }}_{{ editor.version }}_{{ platform.name }}:
+{% if is_monorepo == true -%}
+  name : "{{ package.short_name }}: Test {{ runtime_platform['0'] }} package {{ editor.version }} on {{ platform.name }} on {{ runtime_platform['0'] }} platform"
+{% else -%}
+  name : "{{ runtime_platform['0'] }} platform: Test package in {{ editor.version }} on {{ platform.name }}"
+{% endif -%}
+{%- comment -%}
+# Otherwise the project is a custom project, and it is project test, name the job accordingly
+{%- endcomment -%}
+{% else -%}
+{% assign project_name = job_test_path[0] | replace: "\\", "/" | split: "/" | last -%}
+{% assign display_project_name = job_test_path[0] | replace: "\\", "/" | split: "/" | last | prepend: " " | append: " " -%}
+test_{{ package.short_name }}_{{ runtime_platform['0'] }}_{{ project_name }}_{{ editor.version }}_{{ platform.name }}:
+{% if is_monorepo == true -%}
+  name : "{{ package.short_name }}: Test {{ runtime_platform['0'] }}{{ display_project_name }}{{ editor.version }} on {{ platform.name }} on {{ runtime_platform['0'] }} platform"
+{% else -%}
+  name : "{{ runtime_platform['0'] }} platform: Test project {{ display_project_name }} in {{ editor.version }} on {{ platform.name }}"
+{% endif -%}
+{% endif -%}
+  agent:
+    type: {{ platform.type }}
+{% if platform.model -%}
+    model: {{ platform.model }}
+{% endif -%}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+{%- comment -%}
+# If the test_tool is set to upm-ci for this test, use upm-ci for this test job.
+# If test_tool is not set, use upm-ci by default.
+#Install upm-ci first
+{%- endcomment -%}
+{% if job_test_path['1'].test_tool == "upm-ci" or job_test_path['1'].test_tool == nil -%}
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+{%- comment -%}
+# If pre_test_command is set, add pre test commands one by one
+{%- endcomment -%}
+{% if job_test_path['1'].pre_test_command -%}
+{% for command in job_test_path['1'].pre_test_command -%}
+    - {{command}}
+{% endfor -%}
+{% endif -%}
+{%- comment -%}
+# Prepare upm-ci command flags
+{%- endcomment -%}
+{% assign upm-ci-flags = job_test_path['1'].extra_upm-ci_flags -%}
+{% if job_test_path['1'].extra-utr-arg -%}
+{% assign upm-ci-flags = upm-ci-flags | append:  ' --extra-utr-arg="' | append: job_test_path['1'].extra-utr-arg | append: '"'-%}
+{% endif -%}
+{%- comment -%}
+# Run upm-ci package test if it is a package test
+{%- endcomment -%}
+{% if job_test_path[0] == "package_test" -%}
+    - {% if platform.name == 'centOS' -%} DISPLAY=:0 {% endif -%} upm-ci package test --package-path {{ package.root_dir }} --unity-version {{ editor.version }}{% if upm-ci-flags %} {{upm-ci-flags}}{% endif %}
+{%- comment -%}
+# Otherwise run upm-ci project test
+{%- endcomment -%}
+{% elsif runtime_platform['0'] == "editor" -%}
+    - {% if platform.name == 'centOS' -%} DISPLAY=:0 {% endif -%} upm-ci project test --project-path {{ job_test_path[0] }} --type project-tests --unity-version {{ editor.version }}{% if upm-ci-flags %} {{upm-ci-flags}}{% endif %}
+{% else -%}
+    - {% if platform.name == 'centOS' -%} DISPLAY=:0 {% endif -%} upm-ci project test --project-path {{ job_test_path[0] }} --type project-tests --unity-version {{ editor.version }}{% if upm-ci-flags %} {{upm-ci-flags}}{% endif %} --platform standalone
+{% endif -%}
+  artifacts:
+    logs.zip:
+      paths:
+        - "upm-ci~/logs/**/*"
+        - "upm-ci~/test-results/**/*"
+    artifacts.zip:
+      paths:
+        - "upm-ci~/packages/**/*"
+        - "upm-ci~/templates/**/*"
+{%- comment -%}
+# Use utr to run the test
+{%- endcomment -%}
+{% else -%}
+{%- comment -%}
+# If pre_test_command is set, add pre test commands one by one
+{%- endcomment -%}
+{% if job_test_path['1'].pre_test_command -%}
+{% for command in job_test_path['1'].pre_test_command -%}
+    - {{command}}
+{% endfor -%}
+{% endif -%}
+{% if platform.name == "win" -%}
+    - gsudo powershell.exe -file .yamato\common\scripts~\win_defender_exclusions.ps1
+    - gsudo choco source add --priority 1 -n Unity -s {{ artifactory_url }}/api/nuget/unity-choco-local
+    - gsudo choco install unity-config -y
+    - gsudo choco install unity-downloader-cli -y
+    - curl -s {{ artifactory_url }}/unity-tools-local/utr-standalone/utr.bat --output {{ ci["win"].tool_utr }}
+{% elsif platform.name == "mac" -%}
+    - brew tap --force-auto-update unity/unity {{ homebrew_url }}
+    - brew install unity-config
+    - curl -s {{ artifactory_url }}/unity-tools-local/utr-standalone/utr --output {{ ci["mac"].tool_utr }}
+    - chmod +x {{ ci["mac"].tool_utr }}
+{% endif -%}
+{%- comment -%}
+# If it is package test, using generic_project_path as the test project for package
+{%- endcomment -%}
+{% if job_test_path[0] == "package_test" -%}
+    - unity-config project create {{ generic_project_path }}
+    - unity-config project add testable {{ package.name }}
+    - unity-config project add dependency {{ package.name }}@file:./../../../../{{ package.root_dir }}
+    - unity-config project set registry {{ npm_registry }}
+{% if resolve_dependencies_from_package and resolve_dependencies_from_package == true -%}
+    - python .yamato/common/scripts~/AddPackageDependencies.py {{ package.name }} {{ packages_root }} {{ generic_project_path }}
+{% endif -%}
+{% if package.dependencies -%}
+{% for dependency in package.dependencies -%}
+    - unity-config project add dependency {{ dependency.name }}@{{ dependency.version }} -p {{ job_test_path[0] }}
+{% endfor -%}
+{% endif -%}
+{% endif -%}
+{% if using_submodule == true -%}
+    - git submodule update --init --recursive
+{% endif -%}
+    - unity-downloader-cli -u {{ editor.version }} --path {{ env_unity_path }} -c Editor --wait --published-only
+    - >
+      {{ ci[platform.name].tool_utr }}
+      {{ job_test_path['1'].utr_arg_suite | append: platform.platform }}
+      --testproject={{ job_test_path[0] }}
+      --editor-location={{ env_unity_path }}
+      --artifacts_path={{ log_path }}/{{ package.short_name }}/{{ runtime_platform['0'] }}/{{ platform.name }}/{{ editor.version }}
+      --api-profile=NET_4_6
+      --testfilter={{ package.assembly }}*
+      --enable-code-coverage
+      --coverage-pkg-version=1.2.0-exp.7
+      --coverage-results-path={{ env_yamato_source_dir }}/{{ log_path }}/{{ package.short_name }}/{{ runtime_platform['0'] }}/{{ platform.name }}/{{ editor.version }}/CoverageResults
+      --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+{{ package.assembly }}*;pathReplacePatterns:**/bokken,c:"
+  artifacts:
+    logs_{{ runtime_platform['0'] }}_{{ platform.name }}_{{ editor.version }}:
+      paths:
+        - "{{ log_path }}/**/*"
+        - "{{ job_test_path[0] }}/Packages/*.json"
+{% endif -%}
+{%- comment -%}
+# Add extra artifacts if there are.
+{%- endcomment -%}
+{% if job_test_path['1'].extra_artifacts -%}
+    {{job_test_path['1'].extra_artifacts.name}}_{{project_name}}_{{platform.name}}_{{editor.version}}:
+      paths:
+{% for path in job_test_path['1'].extra_artifacts.paths -%}
+        - {{path}}
+{% endfor -%}
+{% if job_test_path['1'].test_tool == "upm-ci" or job_test_path['1'].test_tool == nil-%}
+    - .yamato/common/pack.yml#pack {{ package.short_name }} {% if  job_test_path[0] != "package_test" %}{{ job_test_path[0] }}{%endif%}
+{%endif%}
+{% endif -%}
+{%- comment -%}
+# If the test has dependencies, add them.
+# This applies to both upm-ci and utr
+{%- endcomment -%}
+{% if job_test_path['1'].dependencies -%}
+  dependencies:
+{% for dependency in job_test_path['1'].dependencies -%}
+    - .yamato/dependencies.yml#{{dependency}}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
+
+{%- comment -%}
+# Virtual job to test in all editors on all_platforms
+# Just a convenient way to run all test jobs. It is not a trigger. 
+{%- endcomment -%}
+{% if is_monorepo == true -%}
+test_all_packages_all_editors_all_platforms:
+  name: "All packages: Test all editors on all platforms"
+  dependencies:
+{% for package in packages -%}
+    - .yamato/common/package-test.yml#test_{{ package.short_name }}_all_editors_all_platforms
+{% endfor -%}
+{% endif -%}  
+{% for package in packages -%}
+test_{{ package.short_name }}_all_editors_all_platforms:
+{% if is_monorepo == true -%}
+  name: "{{ package.short_name }}: Test all editors on all platforms"
+{% else -%}
+  name : "Test all editors on all platforms"
+{% endif -%}  
+  dependencies:
+{% for editor in test_editors -%}
+{% for runtime_platform in package.runtime_platforms -%}
+{% for platform in test_platforms[runtime_platform['0']] -%}
+{%- comment -%}
+# Skip this Unity editor version if test_editors is defined for this platform and the unity editor version doesn't need to be tested on this platform 
+{%- endcomment -%}
+{% if platform.test_editors -%}
+{% unless platform.test_editors contains editor.version -%}
+{% continue -%}
+{% endunless -%}
+{% endif -%}
+{% for job_test_path in runtime_platform['1'].test_paths %}
+{%- comment -%}
+# If enabled_platforms is defined for this test and current platform is not in enabled_platforms, skip it
+{%- endcomment -%}
+{% if job_test_path['1'].enabled_platforms -%}
+{% unless job_test_path['1'].enabled_platforms contains platform.name -%}
+{% continue -%}
+{% endunless -%}
+{% endif -%}
+{%- comment -%}
+# If enabled_editors is defined for this test and current editor version is not in enabled_editors, skip it
+{%- endcomment -%}
+{% if job_test_path['1'].enabled_editors -%}
+{% unless job_test_path['1'].enabled_editors contains editor.version -%}
+{% continue -%}
+{% endunless -%}
+{% endif -%}
+{%- comment -%}
+# If the path equals package_test, then this is a package test instead of a project test
+{%- endcomment -%}
+{% if job_test_path[0] == "package_test" -%}
+    - .yamato/common/package-test.yml#test_{{ package.short_name }}_package_{{ runtime_platform['0'] }}_{{ editor.version }}_{{ platform.name }}
+{% else -%}
+{% assign project_name = job_test_path[0] | replace: "\\", "/" | split: "/" | last -%}
+    - .yamato/common/package-test.yml#test_{{ package.short_name }}_{{ runtime_platform['0'] }}_{{ project_name }}_{{ editor.version }}_{{ platform.name }}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}

@@ -1,0 +1,27 @@
+{% metadata_file .yamato/project.metafile %}
+---
+{% for package in packages -%}
+{% for runtime_platform in package.runtime_platforms -%}
+{% for platform in runtime_platform['1'] -%}
+{% for test_paths in platform.test_paths -%}
+pack {{ package.short_name }} {% if  test_paths[0] != "package_test" %}{{ test_paths[0] }}{%endif%} :
+  name: Pack {{ package.short_name }} {% if  test_paths[0] != "package_test" %}{{ test_paths[0] }}{%endif%}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.xlarge
+  commands:
+  - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+{% if  test_paths[0] == "package_test" -%}
+  - upm-ci package pack --package-path {{ package.root_dir }}
+{%else-%}
+  - upm-ci project pack --project-path {{ test_paths[0] }}
+{%endif%}
+  artifacts:
+    packages:
+      paths:
+      - "upm-ci~/packages/**/*"
+{%endfor%}
+{%endfor%}
+{%endfor%}
+{%endfor%}

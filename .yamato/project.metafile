@@ -1,0 +1,79 @@
+packages:
+  - name: "com.unity.cinemachine"
+    short_name: "cinemachine"
+    root_dir: "com.unity.cinemachine"
+    assembly: "com.unity.cinemachine"
+    runtime_platforms:
+      editor:
+        # Set test path. If need package test, set "package_test" which will use a dummy test project.
+        test_paths:
+          package_test:
+            test_tool: upm-ci
+            # Set "enabled_platforms" to specify which platforms this test will run on.
+            # If not set, all platforms will be tested.
+            enabled_platforms: [win, mac, ubuntu, ubuntu-20]
+            extra-utr-arg: "--reruncount=2"
+          
+          # URP project
+          Projects/URP:
+            test_tool: upm-ci
+            enabled_platforms: [win, mac, ubuntu, ubuntu-20]
+
+is_monorepo: !!bool false
+enable_nightly: !!bool false
+using_submodule: !!bool false
+git_main_branch: master
+
+enable_codecov: !!bool false
+enable_sonarqube: !!bool false
+
+test_editors:
+  - version: 2022.1
+  - version: trunk
+     
+test_platforms:
+  editor:
+    - name: win
+      type: Unity::VM
+      image: "package-ci/win10:stable"
+      # test_editors can be set to specify which editor versions will run on this platform
+      # If not set, all editor versions are supported.
+      # test_editors: [2022.1, trunk]
+      flavor: b1.large
+
+    - name: mac
+      type: Unity::VM::osx
+      image: package-ci/mac:stable
+      flavor: m1.mac
+
+    - name: ubuntu
+      type: Unity::VM
+      image: filmtv/recorder_test_ubuntu_image:stable
+      flavor: b1.large
+
+    - name: ubuntu-20
+      type: Unity::VM
+      image: filmtv/recorder_test_ubuntu_image-20:latest
+      flavor: b1.large
+
+test_triggers:
+  packages:
+    - short_name: "cinemachine"
+      runtime_platforms:
+        editor:
+          test_projects:
+            - project_name: package_test
+              PR:
+                platforms: [ubuntu-20]
+                editors: [all]
+              nightly:
+                platforms: [win, mac, ubuntu, ubuntu-20]
+                editors: [all]
+
+            - project_name: Projects/URP
+              PR:
+                platforms: [ubuntu-20]
+                editors: [all]
+              nightly:
+                platforms: [win, mac, ubuntu, ubuntu-20]
+                editors: [all]

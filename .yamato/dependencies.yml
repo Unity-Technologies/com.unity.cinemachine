@@ -1,0 +1,13 @@
+pack:
+  name: Pack cinemachine package
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.xlarge
+  commands:
+  - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+  - upm-ci package pack --package-path com.unity.cinemachine
+  artifacts:
+    packages:
+      paths:
+      - "upm-ci~/packages/**/*"
