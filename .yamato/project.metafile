@@ -70,7 +70,7 @@ test_triggers:
                 platforms: [win, mac, ubuntu, ubuntu-20]
                 editors: [all]
 
-            - project_name: Projects/URP
+            - project_name: URP
               PR:
                 platforms: [ubuntu-20]
                 editors: [all]
