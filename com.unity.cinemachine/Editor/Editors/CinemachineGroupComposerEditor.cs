@@ -4,66 +4,76 @@ using System.Linq.Expressions;
 using UnityEditor;
 using UnityEngine;
 using Cinemachine.Utility;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineGroupComposer))]
     internal class CinemachineGroupComposerEditor : CinemachineRotationComposerEditor
     {
-        // Specialization
-        private CinemachineGroupComposer MyTarget { get { return target as CinemachineGroupComposer; } }
-        protected string FieldPath<TValue>(Expression<Func<CinemachineGroupComposer, TValue>> expr)
-        {
-            return ReflectionHelpers.GetFieldPath(expr);
-        }
+        CinemachineGroupComposer Target => target as CinemachineGroupComposer;
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        public override VisualElement CreateInspectorGUI()
         {
-            base.GetExcludedPropertiesInInspector(excluded);
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(MyTarget.VirtualCamera);
-            bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
-            if (ortho)
+            var serializedTarget = new SerializedObject(Target);
+            var ux = base.CreateInspectorGUI();
+
+            InspectorUtility.AddSpace(ux);
+            var notGroupHelp = ux.AddChild(new HelpBox(
+                "The Framing settings will be ignored because the LookAt target is not a kind of ICinemachineTargetGroup.", 
+                HelpBoxMessageType.Info));
+
+            var framingMode = ux.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_FramingMode)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_GroupFramingSize)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_FrameDamping)));
+
+            var nonOrthoControls = ux.AddChild(new VisualElement());
+            var adjustmentModeProperty = serializedTarget.FindProperty(() => Target.m_AdjustmentMode);
+            var adjustmentMode = nonOrthoControls.AddChild(new PropertyField(adjustmentModeProperty));
+            var maxDollyIn = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaxDollyIn)));
+            var maxDollyOut = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaxDollyOut)));
+            var minDistance = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumDistance)));
+            var maxDistance = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumDistance)));
+            var minFov = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumFOV)));
+            var maxFov = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumFOV)));
+
+            var orthoControls = ux.AddChild(new VisualElement());
+            var minOrtho = orthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumOrthoSize)));
+            var maxOrtho = orthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumOrthoSize)));
+
+            // GML: This is rather evil.  Is there a better (event-driven) way?
+            UpdateUX();
+            ux.schedule.Execute(UpdateUX).Every(250);
+
+            void UpdateUX()
             {
-                excluded.Add(FieldPath(x => x.m_AdjustmentMode));
-                excluded.Add(FieldPath(x => x.m_MinimumFOV));
-                excluded.Add(FieldPath(x => x.m_MaximumFOV));
-                excluded.Add(FieldPath(x => x.m_MaxDollyIn));
-                excluded.Add(FieldPath(x => x.m_MaxDollyOut));
-                excluded.Add(FieldPath(x => x.m_MinimumDistance));
-                excluded.Add(FieldPath(x => x.m_MaximumDistance));
+                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
+                bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
+                nonOrthoControls.SetVisible(!ortho);
+                orthoControls.SetVisible(ortho);
+
+                bool noTarget = false;
+                for (int i = 0; i < targets.Length; ++i)
+                    noTarget |= targets[i] != null && (targets[i] as CinemachineGroupComposer).AbstractLookAtTargetGroup == null;
+                if (notGroupHelp != null)
+                    notGroupHelp.SetVisible(noTarget);
             }
-            else
+
+            nonOrthoControls.TrackPropertyValue(adjustmentModeProperty, (prop) =>
             {
-                excluded.Add(FieldPath(x => x.m_MinimumOrthoSize));
-                excluded.Add(FieldPath(x => x.m_MaximumOrthoSize));
-                switch (MyTarget.m_AdjustmentMode)
-                {
-                    case CinemachineGroupComposer.AdjustmentMode.DollyOnly:
-                        excluded.Add(FieldPath(x => x.m_MinimumFOV));
-                        excluded.Add(FieldPath(x => x.m_MaximumFOV));
-                        break;
-                    case CinemachineGroupComposer.AdjustmentMode.ZoomOnly:
-                        excluded.Add(FieldPath(x => x.m_MaxDollyIn));
-                        excluded.Add(FieldPath(x => x.m_MaxDollyOut));
-                        excluded.Add(FieldPath(x => x.m_MinimumDistance));
-                        excluded.Add(FieldPath(x => x.m_MaximumDistance));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+                bool haveDolly = prop.intValue != (int)CinemachineGroupComposer.AdjustmentMode.ZoomOnly;
+                bool haveZoom = prop.intValue != (int)CinemachineGroupComposer.AdjustmentMode.DollyOnly;
 
-        public override void OnInspectorGUI()
-        {
-            if (MyTarget.IsValid && MyTarget.AbstractLookAtTargetGroup == null)
-                EditorGUILayout.HelpBox(
-                    "The Framing settings will be ignored because the LookAt target is not a kind of ICinemachineTargetGroup",
-                    MessageType.Info);
+                minFov.SetVisible(haveZoom);
+                maxFov.SetVisible(haveZoom);
+                maxDollyIn.SetVisible(haveDolly);
+                maxDollyOut.SetVisible(haveDolly);
+                minDistance.SetVisible(haveDolly);
+                maxDistance.SetVisible(haveDolly);
+            });
 
-            base.OnInspectorGUI();
+            return ux;
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineGroupComposer))]

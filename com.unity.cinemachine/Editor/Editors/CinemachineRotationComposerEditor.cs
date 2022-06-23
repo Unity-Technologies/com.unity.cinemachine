@@ -8,13 +8,12 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineRotationComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineRotationComposerEditor : BaseEditor<CinemachineRotationComposer>
+    internal class CinemachineRotationComposerEditor : UnityEditor.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
-        VisualElement m_NoTargetHelp;
 
-        //CinemachineRotationComposer Target => target as CinemachineRotationComposer;
+        CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
         protected virtual void OnEnable()
         {
@@ -34,7 +33,6 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
    
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
-            //EditorApplication.update += OnApplicationUpdate;
         }
 
         protected virtual void OnDisable()
@@ -45,36 +43,14 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
   
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-            //EditorApplication.update -= OnApplicationUpdate;
         }
 
-        public override void OnInspectorGUI()
-        {
-            BeginInspector();
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.",
-                    MessageType.Warning);
-
-            // First snapshot some settings
-            Rect oldHard = Target.HardGuideRect;
-            Rect oldSoft = Target.SoftGuideRect;
-
-            // Draw the properties
-            DrawRemainingPropertiesInInspector();
-            m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
-        }
-
-#if false // wait for group composer upgrade
         public override VisualElement CreateInspectorGUI()
         {
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            m_NoTargetHelp = ux.AddChild(new HelpBox(
+            var noTargetHelp = ux.AddChild(new HelpBox(
                 "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.", 
                 HelpBoxMessageType.Warning));
 
@@ -84,20 +60,21 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
 
+            // GML: This is rather evil.  Is there a better (event-driven) way?
+            UpdateNoTargetHelp();
+            ux.schedule.Execute(UpdateNoTargetHelp).Every(250);
+
+            void UpdateNoTargetHelp()
+            {
+                bool noTarget = false;
+                for (int i = 0; i < targets.Length; ++i)
+                    noTarget |= targets[i] != null && (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
+                if (noTargetHelp != null)
+                    noTargetHelp.SetVisible(noTarget);
+            }
             return ux;
         }
 
-        void OnApplicationUpdate()
-        {
-            if (target == null)
-                return;  // target was deleted
-            bool noTarget = false;
-            for (int i = 0; i < targets.Length; ++i)
-                noTarget |= (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
-            if (m_NoTargetHelp != null)
-                m_NoTargetHelp.SetVisible(noTarget);
-        }
-#endif
         protected virtual void OnGUI()
         {
             // Draw the camera guides
