@@ -32,7 +32,7 @@ packages:
             enabled_platforms: [win, mac, ubuntu, ubuntu-20]
 
 is_monorepo: !!bool false
-enable_nightly: !!bool false
+enable_nightly: !!bool true
 using_submodule: !!bool false
 git_main_branch: master
 
@@ -99,7 +99,7 @@ test_triggers:
                 editors: [all]
               nightly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
-                editors: [all]
+                editors: [2020.3, 2021.3, 2022.1]
             
             - project_name: HDRP2019.4
               PR:
@@ -107,7 +107,7 @@ test_triggers:
                 editors: [2019.4]
               nightly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
-                editors: [2019.4]
+                editors: [all]
             
             - project_name: InputSystem
               PR:
