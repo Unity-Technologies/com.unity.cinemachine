@@ -42,9 +42,20 @@ namespace Cinemachine
 
         /// <summary>Duration in seconds of the blend.</summary>
         public float Duration;
-        
-        internal float CumulativeDuration;
-        internal int TermCount;
+
+        internal struct BlendReverseCache
+        {
+            public float CumulativeDuration;
+            public int Count;
+
+            public void Reset()
+            {
+                Debug.Log("BlendReverseCache reset");
+                CumulativeDuration = 0;
+                Count = 0;
+            }
+        }
+        internal BlendReverseCache ReverseCache;
 
         /// <summary>True if the time relative to the start of the blend is greater
         /// than or equal to the blend duration</summary>
@@ -114,15 +125,14 @@ namespace Cinemachine
         }
 
         internal CinemachineBlend(ICinemachineCamera a, ICinemachineCamera b, AnimationCurve curve, 
-            float duration, float t, float cumulativeDuration, int termCount)
+            float duration, float t, BlendReverseCache reverseCache)
         {
             CamA = a;
             CamB = b;
             BlendCurve = curve;
             TimeInBlend = t;
             Duration = duration;
-            CumulativeDuration = cumulativeDuration;
-            TermCount = termCount;
+            ReverseCache = reverseCache;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>

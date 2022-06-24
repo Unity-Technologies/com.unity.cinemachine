@@ -769,9 +769,7 @@ namespace Cinemachine
                         if (frame.blend.IsComplete)
                         {
                             frame.blend.CamA = outGoingCamera; // new blend
-                            frame.blend.CumulativeDuration = 0;
-                            frame.blend.TermCount = -1;
-                            Debug.Log("Blend finished - CumulativeDuration reset");
+                            frame.blend.ReverseCache.Reset();
                         }
                         else
                         {
@@ -780,34 +778,23 @@ namespace Cinemachine
                             if ((frame.blend.CamA == activeCamera 
                                     || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
                                 && frame.blend.CamB == outGoingCamera)
-                                //&& frame.blend.Duration <= blendDef.BlendTime)
                             {
-                                Debug.Log("Blend reversed");
-                                
                                 var blendDefReverse = LookupBlend(activeCamera, outGoingCamera);
                                 var previousOriginalDuration = blendDefReverse.m_Time;
                                 var currentOriginalDuration = blendDef.m_Time;
-                                Debug.Log("Original Duration of previous direction: " + previousOriginalDuration);
-                                Debug.Log("Original Duration of current direction: " + currentOriginalDuration);
                                 
-                                frame.blend.TermCount++;
-                                var evenTerm = frame.blend.TermCount % 2 == 0;
-                                var e0 = frame.blend.TimeInBlend;
-                                var sign = evenTerm ? 1f : -1f;
-                                Debug.Log("CumulativeDuration:"+frame.blend.CumulativeDuration);
-                                var deltaDuration = sign * (e0 / previousOriginalDuration);
-                                Debug.Log("deltaDuration:"+deltaDuration);
-                                frame.blend.CumulativeDuration += deltaDuration;
-                                Debug.Log("CumulativeDuration:"+frame.blend.CumulativeDuration);
-                                var d1 = currentOriginalDuration * frame.blend.CumulativeDuration;
-                                Debug.Log("d1:"+d1);
-                                var e1 = 0f;
-                                blendDef.m_Time = evenTerm ? d1 : currentOriginalDuration - d1;
-                                Debug.Log("duration" + blendDef.m_Time);
+                                frame.blend.ReverseCache.Count++;
+                                var evenReverse = frame.blend.ReverseCache.Count % 2 == 0;
+                                var deltaDuration = (evenReverse ? -1f : 1f) * 
+                                    (frame.blend.TimeInBlend / previousOriginalDuration);
+                                frame.blend.ReverseCache.CumulativeDuration += deltaDuration;
+                                var duration = currentOriginalDuration * frame.blend.ReverseCache.CumulativeDuration;
+                                var remainingDuration = evenReverse ? currentOriginalDuration - duration : duration;
+                                blendDef.m_Time = remainingDuration;
                             }
                             else
                             {
-                                Debug.Log("Blend interrupted, but not reversed");
+                                frame.blend.ReverseCache.Reset();
                             }
 
                             // Chain to existing blend
@@ -815,7 +802,7 @@ namespace Cinemachine
                                 new CinemachineBlend(
                                     frame.blend.CamA, frame.blend.CamB,
                                     frame.blend.BlendCurve, frame.blend.Duration,
-                                    frame.blend.TimeInBlend, frame.blend.CumulativeDuration, frame.blend.TermCount));
+                                    frame.blend.TimeInBlend, frame.blend.ReverseCache));
                         }
                     }
                     frame.blend.BlendCurve = blendDef.BlendCurve;
@@ -838,9 +825,7 @@ namespace Cinemachine
                     frame.blend.BlendCurve = null;
                     frame.blend.Duration = 0;
                     frame.blend.TimeInBlend = 0;
-                    frame.blend.CumulativeDuration = 0;
-                    frame.blend.TermCount = -1;
-                    Debug.Log("Blend done - CumulativeDuration reset");
+                    frame.blend.ReverseCache.Reset();
                 }
             }
         }
