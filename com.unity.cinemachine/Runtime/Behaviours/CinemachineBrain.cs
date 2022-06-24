@@ -816,7 +816,6 @@ namespace Cinemachine
             // Advance the current blend (if any)
             if (frame.blend.CamA != null)
             {
-                // Debug.Log("Blend advanced");
                 frame.blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : frame.blend.Duration;
                 if (frame.blend.IsComplete)
                 {
