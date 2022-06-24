@@ -50,7 +50,6 @@ namespace Cinemachine
 
             public void Reset()
             {
-                Debug.Log("BlendReverseCache reset");
                 CumulativeDuration = 0;
                 Count = 0;
             }
