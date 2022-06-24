@@ -24,7 +24,6 @@ namespace Cinemachine
     /// A multi-purpose script which causes an action to occur when
     /// a trigger collider is entered and exited.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineTriggerAction.html")]
     public class CinemachineTriggerAction : MonoBehaviour

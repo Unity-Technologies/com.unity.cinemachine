@@ -7,7 +7,6 @@ namespace Cinemachine
     /// <summary>Defines a world-space path, consisting of an array of waypoints,
     /// each of which has position, tangent, and roll settings.  Bezier interpolation
     /// is performed between the waypoints, to get a smooth and continuous path.</summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("Cinemachine/CinemachinePath")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
@@ -15,7 +14,6 @@ namespace Cinemachine
     public class CinemachinePath : CinemachinePathBase
     {
         /// <summary>A waypoint along the path</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable] public struct Waypoint
         {
             /// <summary>Position in path-local space</summary>

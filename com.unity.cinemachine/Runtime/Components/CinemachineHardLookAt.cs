@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -6,9 +7,9 @@ namespace Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to aim the camera hard at the LookAt target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachineHardLookAt : CinemachineComponentBase
     {
         /// <summary>True if component is enabled and has a LookAt defined</summary>

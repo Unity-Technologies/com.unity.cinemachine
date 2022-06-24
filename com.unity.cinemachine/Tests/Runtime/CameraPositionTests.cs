@@ -7,16 +7,16 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
-    public class CameraPositionTests : CinemachineFixtureBase
+    public class CameraPositionTests : CinemachineRuntimeFixtureBase
     {
-        CinemachineVirtualCamera m_Vcam;
+        CmCamera m_Vcam;
         GameObject m_FollowObject;
 
         [SetUp]
         public override void SetUp()
         {
             CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_FollowObject = CreateGameObject("Follow Object");
             
@@ -36,7 +36,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator ThirdPerson()
         {
-            m_Vcam.AddCinemachineComponent<Cinemachine3rdPersonFollow>();
+            m_Vcam.gameObject.AddComponent<Cinemachine3rdPersonFollow>();
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
@@ -46,21 +46,22 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator FramingTransposer()
         {
-            var component = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
-            component.m_XDamping = 0;
-            component.m_YDamping = 0;
-            component.m_ZDamping = 0;
-            component.m_CameraDistance = 1f;
+            var cameraDistance = 1f;
+            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
+            framingTransposer.m_XDamping = 0;
+            framingTransposer.m_YDamping = 0;
+            framingTransposer.m_ZDamping = 0;
+            framingTransposer.m_CameraDistance = cameraDistance;
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(new Vector3(10, 0, -component.m_CameraDistance)).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.FinalPosition, Is.EqualTo(new Vector3(10, 0, -cameraDistance)).Using(Vector3EqualityComparer.Instance));
         }
 
         [UnityTest]
         public IEnumerator HardLockToTarget()
         {
-            m_Vcam.AddCinemachineComponent<CinemachineHardLockToTarget>();
+            m_Vcam.gameObject.AddComponent<CinemachineHardLockToTarget>();
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
@@ -70,11 +71,11 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator OrbTransposer()
         {
-            var component = m_Vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
-            component.m_XDamping = 0;
-            component.m_YDamping = 0;
-            component.m_ZDamping = 0;
-            component.m_FollowOffset = new Vector3(0, 0, 0);
+            var orbitalTransposer = m_Vcam.gameObject.AddComponent<CinemachineOrbitalTransposer>();
+            orbitalTransposer.m_XDamping = 0;
+            orbitalTransposer.m_YDamping = 0;
+            orbitalTransposer.m_ZDamping = 0;
+            orbitalTransposer.m_FollowOffset = Vector3.zero;
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
@@ -84,7 +85,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator TrackedDolly()
         {
-            m_Vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
+#pragma warning disable 618 // disable obsolete warning
+            m_Vcam.gameObject.AddComponent<CinemachineTrackedDolly>();
+#pragma warning restore 618
             m_Vcam.Follow = m_FollowObject.transform;
             var oldPos = m_Vcam.transform.position;
             m_FollowObject.transform.position += new Vector3(2, 2, 2);
@@ -95,11 +98,11 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator Transposer()
         {
-            var component = m_Vcam.AddCinemachineComponent<CinemachineTransposer>();
-            component.m_XDamping = 0;
-            component.m_YDamping = 0;
-            component.m_ZDamping = 0;
-            component.m_FollowOffset = new Vector3(0, 0, 0);
+            var transposer = m_Vcam.gameObject.AddComponent<CinemachineTransposer>();
+            transposer.m_XDamping = 0;
+            transposer.m_YDamping = 0;
+            transposer.m_ZDamping = 0;
+            transposer.m_FollowOffset = Vector3.zero;
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;

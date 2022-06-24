@@ -421,6 +421,80 @@ namespace Cinemachine.Editor
 
             Handles.color = originalColor;
         }
+        
+        public static void FovToolHandle(CmCamera cmCam, SerializedProperty lensProperty,
+            in LensSettings lens, bool isLensHorizontal)
+        {
+            var orthographic = lens.Orthographic;
+            if (GUIUtility.hotControl == 0)
+            {
+                s_FOVAfterLastToolModification = orthographic ? lens.OrthographicSize : lens.FieldOfView;
+            }
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            
+            var camPos = cmCam.State.FinalPosition;
+            var camRot = cmCam.State.FinalOrientation;
+            var camForward = camRot * Vector3.forward;
+                
+            EditorGUI.BeginChangeCheck();
+            var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive) + 1; // TODO: KGB workaround until id is exposed
+            var newFov = Handles.ScaleSlider(
+                s_FOVAfterLastToolModification, 
+                camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (orthographic)
+                {
+                    lensProperty.FindPropertyRelative("OrthographicSize").floatValue += 
+                        (s_FOVAfterLastToolModification - newFov);
+                }
+                else
+                {
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue += 
+                        (s_FOVAfterLastToolModification - newFov);
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue = 
+                        Mathf.Clamp(lensProperty.FindPropertyRelative("FieldOfView").floatValue, 1f, 179f);
+                }
+                lensProperty.serializedObject.ApplyModifiedProperties();
+            }
+            s_FOVAfterLastToolModification = newFov;
+
+            var fovHandleDraggedOrHovered = 
+                GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId;
+            if (fovHandleDraggedOrHovered)
+            {
+                var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
+                if (lens.IsPhysicalCamera)
+                {
+                    DrawLabel(labelPos, "Focal Length (" + 
+                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.SensorSize.y).ToString("F1") + ")");
+                }
+                else if (orthographic)
+                {
+                    DrawLabel(labelPos, "Orthographic Size (" + 
+                        lens.OrthographicSize.ToString("F1") + ")");
+                }
+                else if (isLensHorizontal)
+                {
+                    DrawLabel(labelPos, "Horizontal FOV (" +
+                        Camera.VerticalToHorizontalFieldOfView(lens.FieldOfView, lens.Aspect).ToString("F1") + ")");
+                }
+                else
+                {
+                    DrawLabel(labelPos, "Vertical FOV (" + 
+                        lens.FieldOfView.ToString("F1") + ")");
+                }
+            }
+            
+            Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
+            var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
+            DrawFrustum(vcamLocalToWorld, lens);
+                
+            SoloOnDrag(GUIUtility.hotControl == fovHandleId, cmCam, fovHandleId);
+
+            Handles.color = originalColor;
+        }
 
         public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
         {
@@ -473,6 +547,61 @@ namespace Cinemachine.Editor
             
             SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
                 vcam, Mathf.Min(ncHandleId, fcHandleId));
+
+            Handles.color = originalColor;
+        }
+         
+        public static void NearFarClipHandle(CmCamera cmCamera, SerializedProperty lens)
+        {
+            var originalColor = Handles.color;
+            Handles.color = Handles.preselectionColor;
+            
+            var vcamState = cmCamera.State;
+            var camPos = vcamState.FinalPosition;
+            var camRot = vcamState.FinalOrientation;
+            var camForward = camRot * Vector3.forward;
+            var nearClipPlane = lens.FindPropertyRelative("NearClipPlane");
+            var farClipPlane = lens.FindPropertyRelative("FarClipPlane");
+            var nearClipPos = camPos + camForward * nearClipPlane.floatValue;
+            var farClipPos = camPos + camForward * farClipPlane.floatValue;
+            var vcamLens = vcamState.Lens;
+            
+            EditorGUI.BeginChangeCheck();
+            var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
+            var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
+                CubeHandleCapSize(nearClipPos), Handles.CubeHandleCap, 0.5f);
+            var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
+            var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
+                CubeHandleCapSize(farClipPos), Handles.CubeHandleCap, 0.5f);
+            if (EditorGUI.EndChangeCheck())
+            {
+                nearClipPlane.floatValue += 
+                    SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
+                if (!vcamLens.Orthographic)
+                {
+                    nearClipPlane.floatValue = Mathf.Max(0.01f, nearClipPlane.floatValue);
+                }
+                farClipPlane.floatValue += 
+                    SliderHandleDelta(newFarClipPos, farClipPos, camForward);
+                lens.serializedObject.ApplyModifiedProperties();
+            }
+            
+            var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
+            Handles.color = HelperLineDefaultColor;
+            DrawFrustum(vcamLocalToWorld, vcamLens);
+            if (GUIUtility.hotControl == ncHandleId || HandleUtility.nearestControl == ncHandleId)
+            {
+                DrawPreFrustum(vcamLocalToWorld, vcamLens);
+                DrawLabel(nearClipPos, "Near Clip Plane (" + nearClipPlane.floatValue.ToString("F1") + ")");
+            }
+            if (GUIUtility.hotControl == fcHandleId || HandleUtility.nearestControl == fcHandleId)
+            {
+                DrawPreFrustum(vcamLocalToWorld, vcamLens);
+                DrawLabel(farClipPos, "Far Clip Plane (" + farClipPlane.floatValue.ToString("F1") + ")");
+            }
+            
+            SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
+                cmCamera, Mathf.Min(ncHandleId, fcHandleId));
 
             Handles.color = originalColor;
         }
@@ -643,7 +772,7 @@ namespace Cinemachine.Editor
             var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
             var camPos = cmComponent.GetTargetCameraPosition(up);
             var camRot = cmComponent.GetReferenceOrientation(up);
-
+        
             EditorGUI.BeginChangeCheck();
 #if UNITY_2022_2_OR_NEWER
             var foHandleIds = Handles.PositionHandleIds.@default;
@@ -664,7 +793,7 @@ namespace Cinemachine.Editor
                 followOffset.vector3Value = cmComponent.EffectiveOffset;
                 so.ApplyModifiedProperties();
             }
-
+        
             var followOffsetHandleIsDragged = 
                 foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
             var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
@@ -673,7 +802,7 @@ namespace Cinemachine.Editor
             {
                 DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
             }
-
+        
             Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
             Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
             
@@ -686,7 +815,7 @@ namespace Cinemachine.Editor
         /// Draws Orbit handles (e.g. for freelook)
         /// </summary>
         /// <returns>Index of the rig being edited, or -1 if none</returns>
-        public static int OrbitControlHandle(
+        public static int OrbitControlHandleFreelook(
             CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
         {
             var originalColor = Handles.color;
@@ -698,16 +827,73 @@ namespace Cinemachine.Editor
                 var orbit = orbits.GetArrayElementAtIndex(rigIndex);
                 var orbitHeight = orbit.FindPropertyRelative("m_Height");
                 var orbitRadius = orbit.FindPropertyRelative("m_Radius");
-                Handles.color = Handles.preselectionColor;
+                
+                if (OrbitHandles(orbits.serializedObject, orbitHeight, orbitRadius, followPos, 
+                        out var heightHandleId, out var radiusHandleId))
+                {
+                    draggedRig = rigIndex;
+                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
+                }
+            }
+            SoloOnDrag(draggedRig != -1, vcam, minIndex);
+
+            Handles.color = originalColor;
+            return draggedRig;
+        }
+
+        /// <summary>
+        /// Draws Orbit handles for OrbitalFollow
+        /// </summary>
+        /// <returns>Index of the rig being edited, or -1 if none</returns>
+        static Cinemachine3OrbitRig.Settings s_Cinemachine3OrbitRigSettings = Cinemachine3OrbitRig.Settings.Default;
+        public static int OrbitControlHandleOrbitalFollow(
+            CinemachineVirtualCameraBase vcam, SerializedProperty orbitSetting)
+        {
+            var originalColor = Handles.color;
+            var followPos = vcam.Follow.position;
+            var draggedRig = -1;
+            var minIndex = 1;
+            SerializedProperty[] orbits =
+            {
+                orbitSetting.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Top),
+                orbitSetting.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Center),
+                orbitSetting.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Bottom),
+            };
+            for (var rigIndex = 0; rigIndex < orbits.Length; ++rigIndex)
+            {
+                var orbit = orbits[rigIndex];
+                var orbitHeight = 
+                    orbit.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Top.Height);
+                var orbitRadius = 
+                    orbit.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Top.Radius);
+                
+                if (OrbitHandles(orbitSetting.serializedObject, orbitHeight, orbitRadius, followPos, 
+                        out var heightHandleId, out var radiusHandleId))
+                {
+                    draggedRig = rigIndex;
+                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
+                }
+            }
+            SoloOnDrag(draggedRig != -1, vcam, minIndex);
+
+            Handles.color = originalColor;
+            return draggedRig;
+        }
+
+        static bool OrbitHandles(SerializedObject orbit, 
+            SerializedProperty orbitHeight, SerializedProperty orbitRadius, Vector3 followPos,
+            out int heightHandleId, out int radiusHandleId)
+        {
+            Handles.color = Handles.preselectionColor;
                 EditorGUI.BeginChangeCheck();
             
-                var heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var heightHandlePos = followPos + Vector3.up * orbitHeight.floatValue;
                 var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up, 
                     CubeHandleCapSize(heightHandlePos), Handles.CubeHandleCap, 0.5f);
                 
                 var radiusHandleOffset = Vector3.right;
-                var radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
                 var radiusHandlePos = followPos + Vector3.up * orbitHeight.floatValue
                     + radiusHandleOffset * orbitRadius.floatValue;
                 var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset, 
@@ -719,7 +905,7 @@ namespace Cinemachine.Editor
                         SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
                     orbitRadius.floatValue += 
                         SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
-                    orbits.serializedObject.ApplyModifiedProperties();
+                    orbit.ApplyModifiedProperties();
                 }
 
                 var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
@@ -735,16 +921,7 @@ namespace Cinemachine.Editor
                 }
 
                 Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
-                if (isDragged)
-                {
-                    draggedRig = rigIndex;
-                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
-                }
-            }
-            SoloOnDrag(draggedRig != -1, vcam, minIndex);
-
-            Handles.color = originalColor;
-            return draggedRig;
+                return isDragged;
         }
         
         static bool s_IsDragging;

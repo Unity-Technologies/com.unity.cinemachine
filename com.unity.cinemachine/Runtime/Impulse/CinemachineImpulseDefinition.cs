@@ -26,7 +26,6 @@ namespace Cinemachine
     /// [CinemachineImpulseDefinition] attribute on the field, to get the right
     /// property drawer for it.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     [Serializable]
     public class CinemachineImpulseDefinition
     {

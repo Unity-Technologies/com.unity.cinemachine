@@ -80,7 +80,6 @@ namespace Cinemachine
     /// You can specify the time over which to blend, as well as the blend curve shape.
     /// Note that a camera cut is just a zero-time blend.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
     [ExecuteAlways]
@@ -123,7 +122,6 @@ namespace Cinemachine
         public Transform m_WorldUpOverride;
 
         /// <summary>This enum defines the options available for the update method.</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum UpdateMethod
         {
             /// <summary>Virtual cameras are updated in sync with the Physics module, in FixedUpdate</summary>
@@ -148,7 +146,6 @@ namespace Cinemachine
         public UpdateMethod m_UpdateMethod = UpdateMethod.SmartUpdate;
 
         /// <summary>This enum defines the options available for the update method.</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         public enum BrainUpdateMethod
         {
             /// <summary>Camera is updated in sync with the Physics module, in FixedUpdate</summary>
@@ -988,22 +985,19 @@ namespace Cinemachine
                     bool isPhysical = state.Lens.ModeOverride == LensSettings.OverrideModes.None 
                         ? cam.usePhysicalProperties : state.Lens.IsPhysicalCamera;
                     cam.usePhysicalProperties = isPhysical;
-                    if (isPhysical && state.Lens.IsPhysicalCamera)
+                    if (isPhysical)
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
 #if CINEMACHINE_HDRP
-                        cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
-                        if (hda != null)
-                        {
-                            hda.physicalParameters.iso = state.Lens.Iso;
-                            hda.physicalParameters.shutterSpeed = state.Lens.ShutterSpeed;
-                            hda.physicalParameters.aperture = state.Lens.Aperture;
-                            hda.physicalParameters.bladeCount = state.Lens.BladeCount;
-                            hda.physicalParameters.curvature = state.Lens.Curvature;
-                            hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
-                            hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
-                        }
+                        cam.focusDistance = state.Lens.FocusDistance;
+                        cam.iso = state.Lens.Iso;
+                        cam.shutterSpeed = state.Lens.ShutterSpeed;
+                        cam.aperture = state.Lens.Aperture;
+                        cam.bladeCount = state.Lens.BladeCount;
+                        cam.curvature = state.Lens.Curvature;
+                        cam.barrelClipping = state.Lens.BarrelClipping;
+                        cam.anamorphism = state.Lens.Anamorphism;
 #endif
                     }
                 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 
@@ -10,6 +11,9 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(Cinemachine3rdPersonFollow))]
         static void Draw3rdPersonGizmos(Cinemachine3rdPersonFollow target, GizmoType selectionType)
         {
+            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+                return; // don't draw gizmo when using handles
+            
             if (target.IsValid)
             {
                 var isLive = CinemachineCore.Instance.IsLive(target.VirtualCamera);

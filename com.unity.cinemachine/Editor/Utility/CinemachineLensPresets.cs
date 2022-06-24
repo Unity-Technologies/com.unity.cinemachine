@@ -20,7 +20,6 @@ namespace Cinemachine.Editor
     /// <summary>
     /// User-definable named presets for lenses.  This is a Singleton asset, available in editor only
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [Serializable]
     public sealed class CinemachineLensPresets : ScriptableObject
     {
@@ -75,7 +74,6 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>Lens Preset</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct Preset
         {
@@ -96,10 +94,9 @@ namespace Cinemachine.Editor
         }
         /// <summary>The array containing Preset definitions for nonphysical cameras</summary>
         [Tooltip("The array containing Preset definitions, for nonphysical cameras")]
-        public Preset[] m_Presets = new Preset[0];
+        public Preset[] m_Presets = Array.Empty<Preset>();
 
         /// <summary>Physical Lens Preset</summary>
-        [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
         [Serializable]
         public struct PhysicalPreset
         {
@@ -121,9 +118,9 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_HDRP
             public int Iso;
             public float ShutterSpeed;
-            [Range(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
+            [Range(Camera.kMinAperture, Camera.kMaxAperture)]
             public float Aperture;
-            [Range(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
+            [Range(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
             public int BladeCount;
             public Vector2 Curvature;
             [Range(0, 1)]
@@ -135,7 +132,7 @@ namespace Cinemachine.Editor
 
         /// <summary>The array containing Preset definitions, for physical cameras</summary>
         [Tooltip("The array containing Preset definitions, for physical cameras")]
-        public PhysicalPreset[] m_PhysicalPresets = new PhysicalPreset[0];
+        public PhysicalPreset[] m_PhysicalPresets = Array.Empty<PhysicalPreset>();
 
         /// <summary>Get the index of the preset that matches the lens settings</summary>
         /// <param name="verticalFOV">Vertical field of view</param>
@@ -148,6 +145,17 @@ namespace Cinemachine.Editor
             return -1;
         }
 
+        /// <summary>Get the index of the first preset that matches the preset name</summary>
+        /// <param name="presetName">Name of the preset</param>
+        /// <returns>the preset index, or -1 if no matching preset</returns>
+        public int GetPresetIndex(string presetName)
+        {
+            for (int i = 0; i < m_Presets.Length; ++i)
+                if (m_Presets[i].m_Name == presetName)
+                    return i;
+            return -1;
+        }
+
         /// <summary>Get the index of the physical preset that matches the lens settings</summary>
         /// <param name="focalLength">Focal length to match</param>
         /// <returns>the preset index, or -1 if no matching preset</returns>
@@ -155,6 +163,17 @@ namespace Cinemachine.Editor
         {
             for (int i = 0; i < m_PhysicalPresets.Length; ++i)
                 if (Mathf.Approximately(m_PhysicalPresets[i].m_FocalLength, focalLength))
+                    return i;
+            return -1;
+        }
+
+        /// <summary>Get the index of the first physical preset that matches the preset name</summary>
+        /// <param name="presetName">Name of the preset</param>
+        /// <returns>the preset index, or -1 if no matching preset</returns>
+        public int GetPhysicalPresetIndex(string presetName)
+        {
+            for (int i = 0; i < m_PhysicalPresets.Length; ++i)
+                if (m_PhysicalPresets[i].m_Name == presetName)
                     return i;
             return -1;
         }

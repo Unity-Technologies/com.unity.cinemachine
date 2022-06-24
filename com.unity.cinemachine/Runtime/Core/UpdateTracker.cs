@@ -8,7 +8,6 @@ namespace Cinemachine
     /// <summary>
     /// Attempt to track on what clock transforms get updated
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
     internal class UpdateTracker
     {
         public enum UpdateClock { Fixed, Late }
