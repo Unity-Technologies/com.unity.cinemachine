@@ -783,18 +783,27 @@ namespace Cinemachine
                                 //&& frame.blend.Duration <= blendDef.BlendTime)
                             {
                                 Debug.Log("Blend reversed");
+                                
+                                var blendDefReverse = LookupBlend(activeCamera, outGoingCamera);
+                                var previousOriginalDuration = blendDefReverse.m_Time;
+                                var currentOriginalDuration = blendDef.m_Time;
+                                Debug.Log("Original Duration of previous direction: " + previousOriginalDuration);
+                                Debug.Log("Original Duration of current direction: " + currentOriginalDuration);
+                                
                                 frame.blend.TermCount++;
+                                var evenTerm = frame.blend.TermCount % 2 == 0;
                                 var e0 = frame.blend.TimeInBlend;
-                                var d0 = frame.blend.Duration;
-                                // TODO: DEBUG HERE - DIRECTION IS WRONG!!
-                                Debug.Log("Direction " + (frame.blend.TermCount % 2 == 0 ? "right" : "left"));
-                                frame.blend.CumulativeDuration += (frame.blend.TermCount % 2 == 0 ? 1f : -1f) * (e0 / d0);
-                                Debug.Log(frame.blend.CumulativeDuration); // todo: Something wrong here
-                                var d1 = blendDef.BlendTime * frame.blend.CumulativeDuration;
+                                var sign = evenTerm ? 1f : -1f;
+                                Debug.Log("CumulativeDuration:"+frame.blend.CumulativeDuration);
+                                var deltaDuration = sign * (e0 / previousOriginalDuration);
+                                Debug.Log("deltaDuration:"+deltaDuration);
+                                frame.blend.CumulativeDuration += deltaDuration;
+                                Debug.Log("CumulativeDuration:"+frame.blend.CumulativeDuration);
+                                var d1 = currentOriginalDuration * frame.blend.CumulativeDuration;
+                                Debug.Log("d1:"+d1);
                                 var e1 = 0f;
-                                blendDef.m_Time = d1;
-
-                                //(frame.blend.TimeInBlend / frame.blend.Duration) * blendDef.BlendTime;
+                                blendDef.m_Time = evenTerm ? d1 : currentOriginalDuration - d1;
+                                Debug.Log("duration" + blendDef.m_Time);
                             }
                             else
                             {
@@ -820,7 +829,7 @@ namespace Cinemachine
             // Advance the current blend (if any)
             if (frame.blend.CamA != null)
             {
-                Debug.Log("Blend advanced");
+                // Debug.Log("Blend advanced");
                 frame.blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : frame.blend.Duration;
                 if (frame.blend.IsComplete)
                 {
