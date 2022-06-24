@@ -113,7 +113,9 @@ namespace Cinemachine.Editor
                 var sceneCount = m_SceneManager.SceneCount;
                 for (var s = 0; s < sceneCount; ++s)
                 {
+#if DEBUG_HELPERS
                     Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
+#endif
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                     
                     var allPrefabInstances = 
@@ -179,7 +181,9 @@ namespace Cinemachine.Editor
                 // from the linked converted copy of the prefab instance.
                 for (int s = 0; s < sceneCount; ++s)
                 {
+#if DEBUG_HELPERS
                     Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
+#endif
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                     var allGameObjectsInScene = GetAllGameObjects();
                     foreach (var conversionLink in conversionLinks)
@@ -275,7 +279,9 @@ namespace Cinemachine.Editor
             var sceneCount = m_SceneManager.SceneCount;
             for (var s = 0; s < sceneCount; ++s)
             {
+#if DEBUG_HELPERS
                 Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
+#endif
                 var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                 
                 var timelineManager = new TimelineManager(activeScene);
@@ -319,29 +325,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        static List<string> s_IgnoreListGigaya = new()
-        { 
-            "Characters_Zoo.unity", 
-            "VFXSample.unity", 
-            "Scene_CharacterGym_Interactables.unity", 
-            "Scene_Dev_Character_RigAndFace.unity",
-            "Scene_Dev_DesignTestGameplayOverlayMap.unity",
-            "Scene_Dev_Glyphs.unity",
-            "Scene_Diorama.unity",
-            "Scene_Material_And_Polish.unity",
-            "Scene_02_OasisClimbIntoGigaya_Geo.unity",
-            "Scene_02_OasisClimbIntoGigaya_Mechanics.unity",
-            "Scene_Menu_Main.unity",
-            "QA_TestScene.unity",
-            "Scene_InnerHand_Geo.unity",
-            "Scene_InnerHand_Mechanics.unity",
-            "Scene_Oasis_Geo_Bckp.unity",
-            "SampleScene.unity",
-            "VFX_TestScene_v02.unity",
-            "StartingArea_Geo.unity",
-            "Logic.unity",
-            "Lighting.unity"
-        };
+        static List<string> s_IgnoreListGigaya = new() {}; // TODO: expose this to the user
 
         class SceneManager
         {
@@ -879,19 +863,6 @@ namespace Cinemachine.Editor
                 var prefabGuids = AssetDatabase.FindAssets($"t:prefab", new [] { "Assets" });
                 var allPrefabs = prefabGuids.Select(
                     g => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(g))).ToList();
-                for (var i = allPrefabs.Count - 1; i >= 0; i--)
-                {
-                    var prefab = allPrefabs[i];
-                    var assetPath = AssetDatabase.GetAssetPath(prefab);
-                    foreach (var ignore in s_IgnoreListGigaya)
-                    {
-                        if (assetPath.Contains("DesignPrefabs/ActionCamerasAndTriggers"))
-                        {
-                            allPrefabs.RemoveAt(i);
-                            break;
-                        }
-                    }
-                }
 
                 // Select Prefab Assets containing CinemachineVirtualCameras or CinemachineFreeLooks.
                 m_PrefabAssets = new List<GameObject>();
