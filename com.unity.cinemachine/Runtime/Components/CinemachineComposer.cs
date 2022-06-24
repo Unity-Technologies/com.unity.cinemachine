@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System;
 using Cinemachine.Utility;
-using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -14,10 +13,11 @@ namespace Cinemachine
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    public class CinemachineComposer : CinemachineComponentBase
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
+    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition, 
+        CinemachineFreeLookModifier.IModifiableBiasPosition
     {
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
@@ -508,6 +508,26 @@ namespace Cinemachine
                 }
             }
             return false;
+        }
+
+        Vector2 CinemachineFreeLookModifier.IModifiableScreenPosition.Screen
+        {
+            get => new Vector2(m_ScreenX, m_ScreenY);
+            set
+            {
+                m_ScreenX = value.x;
+                m_ScreenY = value.y;
+            }
+        }
+
+        Vector2 CinemachineFreeLookModifier.IModifiableBiasPosition.Bias
+        {
+            get => new Vector2(m_BiasX, m_BiasY);
+            set
+            {
+                m_BiasX = value.x;
+                m_BiasY = value.y;
+            }
         }
     }
 }

@@ -9,7 +9,6 @@ namespace Cinemachine
 {
     /// <summary>An ad-hoc collection of helpers, used by Cinemachine
     /// or its editor tools in various places</summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.Undoc)]
     public static class RuntimeUtility
     {
         /// <summary>Convenience to destroy an object, using the appropriate method depending 

@@ -9,6 +9,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Cinemachine
 {
+
+#pragma warning disable 618 // CinemachineFreeLook obsolete
+
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor
@@ -76,8 +79,11 @@ namespace Cinemachine
 
             // Ordinary properties
             BeginInspector();
-            DrawHeaderInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.m_Priority));
+            DrawUpgradeButton();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
+            DrawInputProviderButtonInInspector();
+            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
@@ -156,7 +162,7 @@ namespace Cinemachine
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandle(freelook,
+                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleFreelook(freelook,
                     new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits));
                 if (draggedRig >= 0)
                     SetSelectedRig(Target, draggedRig);

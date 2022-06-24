@@ -12,7 +12,7 @@ namespace Tests.Runtime
     public class CmColliderTests : CinemachineFixtureBase
     {
         CinemachineBrain m_Brain;
-        CinemachineVirtualCamera m_Vcam;
+        CmCamera m_Vcam;
         CinemachineCollider m_Collider;
         GameObject m_FollowObject;
 
@@ -22,10 +22,10 @@ namespace Tests.Runtime
             var camera = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_Brain = camera.GetComponent<CinemachineBrain>();
 
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera), typeof(CinemachineCollider)).GetComponent<CinemachineVirtualCamera>();
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineCollider)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_Vcam.Follow = CreateGameObject("Follow Object").transform;
-            var framingTransposer = m_Vcam.AddCinemachineComponent<CinemachineFramingTransposer>();
+            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
             framingTransposer.m_CameraDistance = 5f;
             m_Collider = m_Vcam.GetComponent<CinemachineCollider>();
             m_Collider.m_Strategy = CinemachineCollider.ResolutionStrategy.PullCameraForward;

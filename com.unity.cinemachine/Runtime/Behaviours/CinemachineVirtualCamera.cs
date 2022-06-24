@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -50,10 +51,10 @@ namespace Cinemachine
     /// <seealso cref="CinemachineComposer"/>
     /// <seealso cref="CinemachineTransposer"/>
     /// <seealso cref="CinemachineBasicMultiChannelPerlin"/>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
+    [Obsolete("This is deprecated. Use CmCamera instead.")]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
@@ -171,15 +172,6 @@ namespace Cinemachine
             base.OnEnable();
             m_State = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
             InvalidateComponentPipeline();
-
-            // Can't add components during OnValidate
-            if (ValidatingStreamVersion < 20170927)
-            {
-                if (Follow != null && GetCinemachineComponent(CinemachineCore.Stage.Body) == null)
-                    AddCinemachineComponent<CinemachineHardLockToTarget>();
-                if (LookAt != null && GetCinemachineComponent(CinemachineCore.Stage.Aim) == null)
-                    AddCinemachineComponent<CinemachineHardLookAt>();
-            }
         }
 
         /// <summary>Calls the DestroyPipelineDelegate for destroying the hidden
@@ -195,16 +187,27 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
-        protected override void OnValidate()
+        internal protected override void LegacyUpgrade(int streamedVersion)
         {
-            base.OnValidate();
-            m_Lens.Validate();
+            base.LegacyUpgrade(streamedVersion);
             if (m_LegacyBlendHint != BlendHint.None)
             {
                 m_Transitions.m_BlendHint = m_LegacyBlendHint;
                 m_LegacyBlendHint = BlendHint.None;
             }
+        }
+
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
+        }
+
+        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
+        protected void OnValidate()
+        {
+            m_Lens.Validate();
         }
 
         void OnTransformChildrenChanged()

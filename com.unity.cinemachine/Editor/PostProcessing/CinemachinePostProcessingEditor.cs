@@ -1,17 +1,32 @@
-#if CINEMACHINE_POST_PROCESSING_V2
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
+
+#if CINEMACHINE_POST_PROCESSING_V2
 using UnityEngine.Rendering.PostProcessing;
 using UnityEditor.Rendering.PostProcessing;
-using System.Collections.Generic;
 #endif
 
 namespace Cinemachine.PostFX.Editor
 {
-#if CINEMACHINE_POST_PROCESSING_V2
     [CustomEditor(typeof(CinemachinePostProcessing))]
     public sealed class CinemachinePostProcessingEditor : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
     {
+#if !CINEMACHINE_POST_PROCESSING_V2
+        public override void OnInspectorGUI()
+        {
+    #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+            EditorGUILayout.HelpBox(
+                "This component is not valid for HDRP and URP projects.  Use the CinemachineVolumeSettings component instead.",
+                MessageType.Warning);
+    #else
+            EditorGUILayout.HelpBox(
+                "This component requires the PostProcessing package, which can be downloaded from the Package Manager.\n\n"
+                + "Note: For HDRP and URP projects, use the CinemachineVolumeSettings component instead.",
+                MessageType.Warning);
+    #endif
+        }
+#else
         SerializedProperty m_Profile;
         SerializedProperty m_FocusTracking;
 
@@ -62,6 +77,11 @@ namespace Cinemachine.PostFX.Editor
 
         public override void OnInspectorGUI()
         {
+#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+            EditorGUILayout.HelpBox(
+                "This component is not valid for HDRP and URP projects.  Use the CinemachineVolumeSettings component instead.",
+                MessageType.Warning);
+#endif
             BeginInspector();
             DrawRemainingPropertiesInInspector();
 
@@ -209,6 +229,6 @@ namespace Cinemachine.PostFX.Editor
             AssetDatabase.Refresh();
             return profile;
         }
-    }
 #endif
+    }
 }

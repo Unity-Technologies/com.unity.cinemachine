@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineHardLookAt).LookAtTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Hard Look At requires a LookAt target.  Change Aim to Do Nothing if you don't want a LookAt target.", 
+                    "Hard Look At requires a Tracking target.  Change Rotation Control to None if you don't want a Tracking or LookAt target.", 
                     MessageType.Warning);
             EditorGUI.BeginChangeCheck();
             GUI.enabled = false;

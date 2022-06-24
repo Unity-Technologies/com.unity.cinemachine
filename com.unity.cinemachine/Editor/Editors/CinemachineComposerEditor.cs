@@ -53,7 +53,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineComposer).LookAtTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "A LookAt target is required.  Change Aim to Do Nothing if you don't want a LookAt target.",
+                    "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.",
                     MessageType.Warning);
 
             // First snapshot some settings
@@ -68,11 +68,7 @@ namespace Cinemachine.Editor
         protected virtual void OnGUI()
         {
             // Draw the camera guides
-            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
-                return;
-
-            // If inspector is collapsed in the vcam editor, don't draw the guides
-            if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
+            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides || !Target.isActiveAndEnabled)
                 return;
 
             // Don't draw the guides if rendering to texture

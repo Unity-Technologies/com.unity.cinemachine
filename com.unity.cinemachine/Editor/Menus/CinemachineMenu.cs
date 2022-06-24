@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
 {
-    internal static class CinemachineMenu
+    static class CinemachineMenu
     {
         const string m_CinemachineAssetsRootMenu = "Assets/Create/Cinemachine/";
         const string m_CinemachineGameObjectRootMenu = "GameObject/Cinemachine/";
@@ -31,18 +32,45 @@ namespace Cinemachine.Editor
 
         // GameObject Menu
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Virtual Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Cm Camera", false, m_GameObjectMenuPriority)]
         static void CreateVirtualCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
             CreateDefaultVirtualCamera(parentObject: command.context as GameObject, select: true);
         }
 
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Follow Camera", false, m_GameObjectMenuPriority)]
+        static void CreateFollowCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Cm Camera");
+            var vcam = CreateCinemachineObject<CmCamera>(
+                "Cm Camera", command.context as GameObject, true);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
+
+            vcam.gameObject.AddComponent<CinemachineTransposer>();
+            vcam.gameObject.AddComponent<CinemachineComposer>();
+        }
+
+        [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
+        static void Create2DCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
+            var vcam = CreateCinemachineObject<CmCamera>(
+                "Cm Camera", command.context as GameObject, true);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
+
+            vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
+        }
+
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
         static void CreateFreeLookCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
-            CreateCinemachineObject<CinemachineFreeLook>("FreeLook Camera", command.context as GameObject, true);
+            var vcam = CreatePassiveVirtualCamera("FreeLook Camera", command.context as GameObject, true);
+            Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitMode.ThreeRing;
+            Undo.AddComponent<CinemachineComposer>(vcam.gameObject);
+            Undo.AddComponent<InputAxisController>(vcam.gameObject);
+            Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]
@@ -55,7 +83,7 @@ namespace Cinemachine.Editor
             // We give the camera a couple of children as an example of setup
             var childVcam1 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
             var childVcam2 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
-            childVcam2.m_Lens.FieldOfView = 10;
+            childVcam2.Lens.FieldOfView = 10;
 
             // Set up initial instruction set
             blendListCamera.m_Instructions = new CinemachineBlendListCamera.Instruction[2];
@@ -97,14 +125,16 @@ namespace Cinemachine.Editor
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
-            var path = CreateCinemachineObject<CinemachineSmoothPath>(
-                "Dolly Track", command.context as GameObject, false);
-            var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(
-                "Virtual Camera", command.context as GameObject, true);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
-
-            AddCinemachineComponent<CinemachineComposer>(vcam);
-            AddCinemachineComponent<CinemachineTrackedDolly>(vcam).m_Path = path;
+            var vcam = CreateCinemachineObject<CmCamera>(
+                "Cm Camera", command.context as GameObject, true);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
+            vcam.gameObject.AddComponent<CinemachineComposer>();
+            var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
+            splineContainer.Spline.Add(new BezierKnot(Vector3.right));
+            var splineDolly = vcam.gameObject.AddComponent<CinemachineSplineDolly>();
+            splineDolly.Spline = splineContainer;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]
@@ -121,12 +151,12 @@ namespace Cinemachine.Editor
         static void CreateTargetGroupCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
-            var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(
-                "Virtual Camera", command.context as GameObject, false);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            var vcam = CreateCinemachineObject<CmCamera>(
+                "Cm Camera", command.context as GameObject, false);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            AddCinemachineComponent<CinemachineGroupComposer>(vcam);
-            AddCinemachineComponent<CinemachineTransposer>(vcam);
+            vcam.gameObject.AddComponent<CinemachineGroupComposer>();
+            vcam.gameObject.AddComponent<CinemachineTransposer>();
 
             var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
                 "Target Group", command.context as GameObject, true);
@@ -144,17 +174,6 @@ namespace Cinemachine.Editor
             // We give the camera a couple of children as an example of setup
             CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
             CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
-        }
-
-        [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
-        static void Create2DCamera(MenuCommand command)
-        {
-            CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
-            var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(
-                "Virtual Camera", command.context as GameObject, true);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
-
-            AddCinemachineComponent<CinemachineFramingTransposer>(vcam);
         }
 
         /// <summary>
@@ -193,14 +212,11 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Creates a <see cref="CinemachineVirtualCamera"/> with standard procedural components.
         /// </summary>
-        public static CinemachineVirtualCamera CreateDefaultVirtualCamera(
-            string name = "Virtual Camera", GameObject parentObject = null, bool select = false)
+        public static CmCamera CreateDefaultVirtualCamera(
+            string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
-            var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(name, parentObject, select);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
-
-            AddCinemachineComponent<CinemachineComposer>(vcam);
-            AddCinemachineComponent<CinemachineTransposer>(vcam);
+            var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             return vcam;
         }
@@ -208,11 +224,11 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Creates a <see cref="CinemachineVirtualCamera"/> with no procedural components.
         /// </summary>
-        public static CinemachineVirtualCamera CreatePassiveVirtualCamera(
-            string name = "Virtual Camera", GameObject parentObject = null, bool select = false)
+        public static CmCamera CreatePassiveVirtualCamera(
+            string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
-            var vcam = CreateCinemachineObject<CinemachineVirtualCamera>(name, parentObject, select);
-            vcam.m_Lens = MatchSceneViewCamera(vcam.transform);
+            var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
             return vcam;
         }
 
@@ -269,25 +285,6 @@ namespace Cinemachine.Editor
 
             // No camera, just create a brain on an empty object
             return ObjectFactory.CreateGameObject("CinemachineBrain").AddComponent<CinemachineBrain>();
-        }
-
-        /// <summary>
-        /// Adds an component to the specified <see cref="CinemachineVirtualCamera"/>'s hidden 
-        /// component owner, that supports undo.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="Component"/> to add to the cinemachine pipeline.</typeparam>
-        /// <param name="vcam">The <see cref="CinemachineVirtualCamera"/> to add components to.</param>
-        /// <returns>The instance of the componented that was added.</returns>
-        static T AddCinemachineComponent<T>(CinemachineVirtualCamera vcam) where T : CinemachineComponentBase
-        {
-            // We can't use the CinemachineVirtualCamera.AddCinemachineComponent<T>()
-            // because we want to support undo/redo
-            var componentOwner = vcam.GetComponentOwner().gameObject;
-            if (componentOwner == null)
-                return null; // maybe it's an invalid prefab instance
-            var component = Undo.AddComponent<T>(componentOwner);
-            vcam.InvalidateComponentPipeline();
-            return component;
         }
     }
 }

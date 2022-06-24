@@ -14,7 +14,10 @@
         "Unity.ugui",
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.RenderPipelines.Universal.Editor",
-        "Unity.InputSystem"
+        "Unity.Splines",
+        "Unity.Splines.Editor",
+        "Unity.InputSystem",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [
         "Editor"

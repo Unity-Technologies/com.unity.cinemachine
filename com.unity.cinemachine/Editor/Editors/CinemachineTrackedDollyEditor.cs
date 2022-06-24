@@ -1,12 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
 namespace Cinemachine.Editor
 {
+    
+#pragma warning disable CS0618 // disable obsolete warning for tracked dolly
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
+    sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -53,13 +55,13 @@ namespace Cinemachine.Editor
         {
             if (target.IsValid)
             {
-                CinemachinePathBase path = target.m_Path;
+                var path = target.m_Path;
                 if (path != null)
                 {
                     var isActive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
                     CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
-                    Vector3 pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
-                    Color oldColor = Gizmos.color;
+                    var pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
+                    var oldColor = Gizmos.color;
                     Gizmos.color = isActive
                         ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                         : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
@@ -69,4 +71,5 @@ namespace Cinemachine.Editor
             }
         }
     }
+#pragma warning restore CS0618
 }

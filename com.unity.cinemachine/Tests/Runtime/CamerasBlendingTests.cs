@@ -8,7 +8,7 @@ using Tests.Runtime;
 namespace Tests.Runtime
 {
     [TestFixture]
-    public class CamerasBlendingTests : CinemachineFixtureBase
+    public class CamerasBlendingTests : CinemachineRuntimeFixtureBase
     {
         private const float k_BlendingTime = 1;
 

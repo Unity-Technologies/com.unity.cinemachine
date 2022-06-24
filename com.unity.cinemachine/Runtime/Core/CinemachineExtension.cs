@@ -8,7 +8,6 @@ namespace Cinemachine
     /// Hooks into the Cinemachine Pipeline.  Use this to add extra processing 
     /// to the vcam, modifying its generated state
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
     public abstract class CinemachineExtension : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>

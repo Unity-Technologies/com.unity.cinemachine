@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System;
+using System.Linq;
 
 namespace Cinemachine.Editor
 {
@@ -139,5 +140,22 @@ namespace Cinemachine.Editor
 
             return null;
         }
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+        static UnityEngine.InputSystem.InputActionReference s_DefaultLookAction = null;
+        internal static UnityEngine.InputSystem.InputActionReference DefaultLookAction
+        {
+            get
+            {
+                if (s_DefaultLookAction == null)
+                {
+                    s_DefaultLookAction = (UnityEngine.InputSystem.InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
+                        FirstOrDefault(x => x.name == "Player/Look");
+                }
+                return s_DefaultLookAction;
+            }
+        }
+#endif
     }
 }
