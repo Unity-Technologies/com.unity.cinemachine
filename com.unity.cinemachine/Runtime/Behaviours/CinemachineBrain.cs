@@ -783,13 +783,21 @@ namespace Cinemachine
                                 var previousOriginalDuration = blendDefReverse.m_Time;
                                 var currentOriginalDuration = blendDef.m_Time;
                                 
-                                frame.blend.ReverseCache.Count++;
-                                var evenReverse = frame.blend.ReverseCache.Count % 2 == 0;
-                                var deltaDuration = (evenReverse ? -1f : 1f) * 
+                                frame.blend.ReverseCache.OriginalDirection = !frame.blend.ReverseCache.OriginalDirection;
+                                var originalDir = frame.blend.ReverseCache.OriginalDirection;
+                                // DeltaRatio determines the amount traveled as ratio by the previous blend,
+                                // the sign is determined by the direction with respect to the original direction
+                                var deltaRatio = (originalDir ? -1f : 1f) * 
                                     (frame.blend.TimeInBlend / previousOriginalDuration);
-                                frame.blend.ReverseCache.CumulativeDuration += deltaDuration;
-                                var duration = currentOriginalDuration * frame.blend.ReverseCache.CumulativeDuration;
-                                var remainingDuration = evenReverse ? currentOriginalDuration - duration : duration;
+                                
+                                // CumulativeRatio is the amount traveled overall as a ratio
+                                // in all previous blends with respect to the current blend's original duration
+                                frame.blend.ReverseCache.CumulativeRatio += deltaRatio;
+                                var duration = currentOriginalDuration * frame.blend.ReverseCache.CumulativeRatio;
+                                
+                                // Remaining duration depends on the original direction
+                                // A->B => A[xxxxxrrr]B, A<-B => A[rrrrrxxx]B
+                                var remainingDuration = originalDir ? currentOriginalDuration - duration : duration;
                                 blendDef.m_Time = remainingDuration;
                             }
                             else

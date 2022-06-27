@@ -45,13 +45,16 @@ namespace Cinemachine
 
         internal struct BlendReverseCache
         {
-            public float CumulativeDuration;
-            public int Count;
+            // CumulativeRatio [0,1] determines the amount the camera has traveled between outGoingCamera and activeCamera.
+            [Range(0,1)]
+            public float CumulativeRatio;
+            // OriginalDirection determines the direction of the current blend with respect to the original blend
+            public bool OriginalDirection;
 
             public void Reset()
             {
-                CumulativeDuration = 0;
-                Count = 0;
+                CumulativeRatio = 0;
+                OriginalDirection = true;
             }
         }
         internal BlendReverseCache ReverseCache;
