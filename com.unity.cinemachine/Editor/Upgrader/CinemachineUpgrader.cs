@@ -263,11 +263,7 @@ namespace Cinemachine.Editor
             {
                 foreach (var go in gameobjects)
                 {
-                    if (go == null)
-                    {
-                        continue; ;
-                    }
-                    if (go.name.Equals(name))
+                    if (go != null && go.name.Equals(name))
                         return go;
                 }
                 return null;
@@ -325,10 +321,10 @@ namespace Cinemachine.Editor
             }
         }
         
-        static List<string> s_IgnoreListGigaya = new() {}; // TODO: expose this to the user
 
         class SceneManager
         {
+            public List<string> s_IgnoreList = new() {}; // TODO: expose this to the user
             public int SceneCount { get; private set; }
             public string GetScenePath(int index) => m_AllScenePaths[index];
 
@@ -346,7 +342,7 @@ namespace Cinemachine.Editor
                     var sceneGuid = allSceneGuids[i];
                     var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
                     var add = true;
-                    foreach (var ignore in s_IgnoreListGigaya)
+                    foreach (var ignore in s_IgnoreList)
                     {
                         if (scenePath.Contains(ignore))
                         {
