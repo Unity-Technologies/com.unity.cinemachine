@@ -42,9 +42,6 @@ enable_sonarqube: !!bool false
 
 test_editors:
   - version: 2022.1
-  - version: 2021.3
-  - version: 2020.3
-  - version: 2019.4
   - version: trunk
      
 test_platforms:
@@ -100,16 +97,8 @@ test_triggers:
                 editors: [all]
               weekly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
-                editors: [2020.3, 2021.3, 2022.1]
-            
-            - project_name: HDRP2019.4
-              PR:
-                platforms: [ubuntu-20]
-                editors: [2019.4]
-              weekly:
-                platforms: [win, mac, ubuntu, ubuntu-20]
-                editors: [all]
-            
+                editors: [2022.1]
+                
             - project_name: InputSystem
               PR:
                 platforms: [ubuntu-20]
